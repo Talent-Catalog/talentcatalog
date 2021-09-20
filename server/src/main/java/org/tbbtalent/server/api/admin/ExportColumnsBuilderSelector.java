@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,22 +14,35 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "~src/scss/variables";
+package org.tbbtalent.server.api.admin;
 
-.admin-panel {
-  display: flex;
-  justify-content: space-between;
-  //align-items: flex-end;
-  background-color: #efefef;
-  padding: 1em;
-  border-radius: 0.25rem;
-}
+import javax.validation.constraints.NotNull;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 
-.dropdown-text {
-  font-size: 15px;
-}
+/**
+ *  Utility for selecting a ExportColumns DTO builder
+ *
+ * @author John Cameron
+ */
+public class ExportColumnsBuilderSelector {
 
-#status {
-  background-color: #ffffff;
-  font-size: 13px;
+  public @NotNull DtoBuilder selectBuilder() {
+    return exportColumnDto();
+  }
+
+  private DtoBuilder exportColumnDto() {
+    return new DtoBuilder()
+        .add("index")
+        .add("key")
+        .add("properties", publishedDocColumnPropsDto())
+        ;
+  }
+
+  private DtoBuilder publishedDocColumnPropsDto() {
+    return new DtoBuilder()
+        .add("header")
+        .add("constant")
+        ;
+  }
+
 }

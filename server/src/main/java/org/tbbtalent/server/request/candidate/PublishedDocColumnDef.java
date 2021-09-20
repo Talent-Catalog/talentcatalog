@@ -26,13 +26,13 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PublishedDocColumnInfo {
+public class PublishedDocColumnDef {
 
   /**
    * This the unique id of this column.
    * <p/>
-   * Candidate sources store lists of these in their exportColumns field, representing the last
-   * used list of columns used to publish with.
+   * Candidate sources store these in their exportColumns field inside ExportColumn objects, 
+   * representing the last used list of columns used to publish with.
    */
   private String key;
   
@@ -48,10 +48,10 @@ public class PublishedDocColumnInfo {
    */
   private PublishedDocColumnContent content = new PublishedDocColumnContent();
 
-  public PublishedDocColumnInfo() {
+  public PublishedDocColumnDef() {
   }
 
-  public PublishedDocColumnInfo(String key, String header) {
+  public PublishedDocColumnDef(String key, String header) {
     this.key = key;
     this.header = header;
   }

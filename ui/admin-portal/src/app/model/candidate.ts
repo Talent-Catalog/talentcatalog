@@ -371,6 +371,11 @@ export interface UpdateCandidateShareableNotesRequest {
   shareableNotes?: string;
 }
 
+export interface UpdateCandidateShareableDocsRequest {
+  shareableCvAttachmentId: number,
+  shareableDocAttachmentId: number,
+}
+
 export interface UpdateCandidateStatusInfo {
   status: CandidateStatus;
   comment?: string;

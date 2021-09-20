@@ -21,6 +21,7 @@ import {
   SalesforceOppParams,
   UpdateCandidateListOppsRequest,
   UpdateCandidateOppsRequest,
+  UpdateCandidateShareableDocsRequest,
   UpdateCandidateShareableNotesRequest,
   UpdateCandidateStatusRequest
 } from '../model/candidate';
@@ -30,7 +31,6 @@ import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
 import {CandidateSource} from "../model/base";
-import {isSavedSearch} from "../model/saved-search";
 
 @Injectable({providedIn: 'root'})
 export class CandidateService {
@@ -78,6 +78,11 @@ export class CandidateService {
   updateShareableNotes(
     id: number, request: UpdateCandidateShareableNotesRequest): Observable<Candidate> {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/shareable-notes`, request);
+  }
+
+  updateShareableDocs(
+    id: number, request: UpdateCandidateShareableDocsRequest): Observable<Candidate> {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/shareable-docs`, request);
   }
 
   updateStatus(details: UpdateCandidateStatusRequest): Observable<void>  {

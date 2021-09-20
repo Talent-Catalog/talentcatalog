@@ -14,29 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  AfterViewInit,
-  Component,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {FormBuilder} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
-import {
-  catchError,
-  debounceTime,
-  switchMap,
-  takeUntil,
-  tap
-} from 'rxjs/operators';
-import {Observable, Subject} from 'rxjs';
-import {
-  CandidateSource,
-  UpdateCandidateContextNoteRequest
-} from '../../../model/base';
+import {Observable} from 'rxjs';
+import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model/base';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 import {getCandidateSourceType, isSavedSearch} from "../../../model/saved-search";
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
@@ -79,6 +61,10 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
     return this.form.value?.contextNote;
   }
 
+  get isCandidateSelected(): boolean {
+    return this.candidate.selected;
+  }
+
   get title(): string {
     return "Notes for " + this.candidate.user.firstName + " in " + this.candidateSource.name +
       " " + getCandidateSourceType(this.candidateSource);
@@ -90,5 +76,15 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
     if (this.form) {
       this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
     }
+  }
+
+  isContextNoteDisplayed() {
+    let display: boolean = true;
+    if (isSavedSearch(this.candidateSource)) {
+      if (this.candidateSource.defaultSearch || !this.isCandidateSelected) {
+        display = false;
+      }
+    }
+    return display;
   }
 }

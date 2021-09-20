@@ -27,13 +27,11 @@ import org.tbbtalent.server.model.db.Candidate;
  */
 public class PublishedDocBuilder {
 
-  public Object buildCell(Candidate candidate, PublishedDocColumnInfo columnInfo) {
+  public Object buildCell(Candidate candidate, PublishedDocColumnDef columnInfo) {
     PublishedDocColumnContent columnContent = columnInfo.getContent();
     //Object value = columnContent.getValue().fetchData(candidate);
-
-    final PublishedDocValueSource valueSource = columnContent.getValue();
-    Object value = valueSource == null ? null : valueSource.fetchData(candidate);
-
+    final PublishedDocValueSource contentValue = columnContent.getValue();
+    Object value = contentValue == null ? null : contentValue.fetchData(candidate);
     final PublishedDocValueSource linkSource = columnContent.getLink();
     String link = linkSource == null ? null : (String) linkSource.fetchData(candidate);
 
@@ -46,18 +44,18 @@ public class PublishedDocBuilder {
     }
   }
 
-  public List<Object> buildRow(Candidate candidate, List<PublishedDocColumnInfo> columnInfos) {
+  public List<Object> buildRow(Candidate candidate, List<PublishedDocColumnDef> columnInfos) {
     List<Object> candidateData = new ArrayList<>();
-    for (PublishedDocColumnInfo columnInfo : columnInfos) {
+    for (PublishedDocColumnDef columnInfo : columnInfos) {
       Object obj = buildCell(candidate, columnInfo);
       candidateData.add(obj);
     }
     return candidateData;
   }
 
-  public List<Object> buildTitle(List<PublishedDocColumnInfo> columnInfos) {
+  public List<Object> buildTitle(List<PublishedDocColumnDef> columnInfos) {
     List<Object> title = new ArrayList<>();
-    for (PublishedDocColumnInfo columnInfo : columnInfos) {
+    for (PublishedDocColumnDef columnInfo : columnInfos) {
       title.add(columnInfo.getHeader());
     }
     return title;

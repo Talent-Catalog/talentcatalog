@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,22 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "~src/scss/variables";
+create table export_column
+(
+    id              bigserial not null primary key,
+    saved_list_id   bigint references saved_list,
+    saved_search_id bigint references saved_search,
+    index           integer   not null,
+    key             text,
+    properties      text
+);
 
-.admin-panel {
-  display: flex;
-  justify-content: space-between;
-  //align-items: flex-end;
-  background-color: #efefef;
-  padding: 1em;
-  border-radius: 0.25rem;
-}
+alter table saved_list drop column export_columns;
+alter table saved_search drop column export_columns;
 
-.dropdown-text {
-  font-size: 15px;
-}
-
-#status {
-  background-color: #ffffff;
-  font-size: 13px;
-}

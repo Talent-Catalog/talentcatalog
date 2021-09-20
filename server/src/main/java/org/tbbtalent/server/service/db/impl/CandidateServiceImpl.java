@@ -17,38 +17,10 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.index.query.SimpleQueryStringBuilder;
+import org.elasticsearch.index.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,102 +44,39 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.CircularReferencedException;
-import org.tbbtalent.server.exception.CountryRestrictionException;
-import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.exception.ExportFailedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.PasswordMatchException;
-import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateDestination;
-import org.tbbtalent.server.model.db.CandidateEducation;
-import org.tbbtalent.server.model.db.CandidateExam;
-import org.tbbtalent.server.model.db.CandidateLanguage;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.DataRow;
-import org.tbbtalent.server.model.db.DependantRelations;
-import org.tbbtalent.server.model.db.EducationLevel;
-import org.tbbtalent.server.model.db.Exam;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.LanguageLevel;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.SearchJoin;
-import org.tbbtalent.server.model.db.SearchType;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.SurveyType;
-import org.tbbtalent.server.model.db.UnhcrStatus;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.db.YesNoUnsure;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.CandidateExamRepository;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CandidateSpecification;
-import org.tbbtalent.server.repository.db.CountryRepository;
-import org.tbbtalent.server.repository.db.EducationLevelRepository;
-import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
-import org.tbbtalent.server.repository.db.LanguageLevelRepository;
-import org.tbbtalent.server.repository.db.OccupationRepository;
-import org.tbbtalent.server.repository.db.SavedSearchRepository;
-import org.tbbtalent.server.repository.db.SurveyTypeRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
-import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
-import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
-import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.PasswordHelper;
-import org.tbbtalent.server.service.db.CandidateCitizenshipService;
-import org.tbbtalent.server.service.db.CandidateDependantService;
-import org.tbbtalent.server.service.db.CandidateDestinationService;
-import org.tbbtalent.server.service.db.CandidateExamService;
-import org.tbbtalent.server.service.db.CandidateNoteService;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
-import org.tbbtalent.server.service.db.CandidateVisaService;
-import org.tbbtalent.server.service.db.CountryService;
-import org.tbbtalent.server.service.db.FileSystemService;
-import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -202,6 +111,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CountryRepository countryRepository;
     private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
+    private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final PasswordHelper passwordHelper;
     private final AuthService authService;
     private final SavedSearchService savedSearchService;
@@ -233,6 +143,7 @@ public class CandidateServiceImpl implements CandidateService {
         CountryRepository countryRepository,
         CountryService countryService,
         EducationLevelRepository educationLevelRepository,
+        CandidateAttachmentRepository candidateAttachmentRepository,
         PasswordHelper passwordHelper,
         AuthService authService,
         SavedSearchService savedSearchService,
@@ -259,6 +170,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.countryRepository = countryRepository;
         this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
+        this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.passwordHelper = passwordHelper;
         this.authService = authService;
         this.savedSearchService = savedSearchService;
@@ -1130,6 +1042,31 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setShareableNotes(request.getShareableNotes());
+        return save(candidate, true);
+    }
+
+    @Override
+    public Candidate updateShareableDocs(long id, UpdateCandidateShareableDocsRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        CandidateAttachment cv = null;
+        if (request.getShareableCvAttachmentId() != null) {
+            cv = this.candidateAttachmentRepository.findById(request.getShareableCvAttachmentId())
+                    .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getShareableCvAttachmentId()));
+        }
+
+        CandidateAttachment doc = null;
+        if (request.getShareableDocAttachmentId() != null) {
+            doc = this.candidateAttachmentRepository.findById(request.getShareableDocAttachmentId())
+                    .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getShareableDocAttachmentId()));
+        }
+        candidate.setShareableCv(cv);
+        candidate.setShareableDoc(doc);
         return save(candidate, true);
     }
 

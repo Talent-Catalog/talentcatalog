@@ -155,6 +155,14 @@ public class CandidateAdminApi {
         return builder.build(candidate);
     }
 
+    @PutMapping("{id}/shareable-docs")
+    public Map<String, Object> updateShareableDocs(@PathVariable("id") long id,
+                                                    @RequestBody UpdateCandidateShareableDocsRequest request) {
+        Candidate candidate = this.candidateService.updateShareableDocs(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
     @PutMapping("{id}/survey")
     public Map<String, Object> updateSurvey(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateSurveyRequest request) {

@@ -17,8 +17,8 @@
 package org.tbbtalent.server.model.db;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,10 +26,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -122,7 +122,7 @@ public class SavedList extends AbstractCandidateSource {
      * SavedList. There is one of these for each candidate in the list.
      * @see #getCandidates() 
      * <p/>
-     * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that 
+     * We would prefer CascadeType.ALL with 'orphanRemoval' so that 
      * removing from the candidateSavedLists collection would automatically
      * cascade down to delete the corresponding entry in the 
      * candidate_saved_list table.
@@ -132,6 +132,11 @@ public class SavedList extends AbstractCandidateSource {
      * See
      * https://stackoverflow.com/questions/16246675/hibernate-error-a-different-object-with-the-same-identifier-value-was-already-a
      * <p/>
+     * A very good simple explanation of why JPA does not automatically delete the previous
+     * contents of a collection is here:
+     * https://stackoverflow.com/a/2011546/929968
+     * <p/>
+     * 
      * This means that we have to manually manage all deletions. That has been
      * moved into {@link CandidateSavedListService} which is used to manage all
      * those deletions, also making sure that the corresponding 
@@ -145,6 +150,19 @@ public class SavedList extends AbstractCandidateSource {
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedLists", cascade = CascadeType.MERGE)
     private Set<User> users = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedList", cascade = CascadeType.MERGE)
+    @OrderBy("index ASC")
+    private List<ExportColumn> exportColumns;
+
+    @Nullable
+    public List<ExportColumn> getExportColumns() {
+        return exportColumns;
+    }
+
+    public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
+        this.exportColumns = exportColumns;
+    }
 
     @Nullable
     public String getFolderlink() {
