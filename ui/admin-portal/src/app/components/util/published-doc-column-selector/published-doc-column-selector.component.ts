@@ -31,7 +31,9 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
     const dragulaGroup = this.dragulaService.find(this.dragulaGroupName);
     if (!dragulaGroup) {
       this.dragulaService.createGroup(this.dragulaGroupName, {
-        copy: true,
+        copy: (el, source) => {
+          return source.id === 'availableColumns';
+        },
         copyItem: (item: PublishedDocColumnConfig) => {
           const copy = new PublishedDocColumnConfig();
           copy.columnDef = item.columnDef;
@@ -60,11 +62,14 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
   }
 
   close() {
-    console.log(this.selectedColumns);
-    this.activeModal.close(this.selectedColumns);
+    if (this.selectedColumns.length > 0) {
+      this.activeModal.close(this.selectedColumns);
+    } else {
+      this.activeModal.dismiss();
+    }
   }
 
   default() {
-    //this.selectedColumns = this.availableColumns;
+    this.selectedColumns = [];
   }
 }
