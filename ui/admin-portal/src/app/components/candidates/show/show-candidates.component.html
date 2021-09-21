@@ -146,7 +146,7 @@
         Export <i class="fas fa-file-excel"></i>
       </button>
 
-      <button *ngIf="isPublishable()" class="btn btn-sm btn-secondary" (click)="publishCandidates()"
+      <button *ngIf="isPublishable()" class="btn btn-sm btn-secondary" (click)="modifyExportColumns()"
               title="Publish candidates to be shared externally - eg with employers">
         <i class="fas fa-spinner fa-spin" *ngIf=publishing></i>
         Publish <i class="fas fa-file-excel"></i>

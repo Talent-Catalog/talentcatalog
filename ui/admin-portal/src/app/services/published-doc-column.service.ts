@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
-  ExportColumn, PublishedDocColumnConfig,
-  PublishedDocColumnDef, PublishedDocConstantSource,
+  ExportColumn,
+  PublishedDocColumnConfig,
+  PublishedDocColumnDef,
+  PublishedDocColumnProps,
+  PublishedDocConstantSource,
   PublishedDocFieldSource,
   PublishedDocValueSource
 } from "../model/saved-list";
-import {CandidateFieldInfo} from "../model/candidate-field-info";
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +33,8 @@ export class PublishedDocColumnService {
   private allColumnInfosMap = new Map<string, PublishedDocColumnDef>();
 
   constructor() {
+    //Keep empty column first, so we know the index and can sort at the end.
+    this.addColumn("emptyColumn", "Empty Column", null);
     this.addColumn("candidateNumber", "Candidate number", new PublishedDocFieldSource("candidateNumber"));
     this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
     this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
@@ -38,7 +42,6 @@ export class PublishedDocColumnService {
     this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"));
     this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"));
     this.addColumn("ieltsScore", "IELTS", new PublishedDocFieldSource("ieltsScore"));
-    this.addColumn("emptyColumn", "Empty Column", null);
     this.addColumn("lastName", "Last Name", new PublishedDocFieldSource("user.lastName"));
     this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
     this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"));
@@ -62,8 +65,43 @@ export class PublishedDocColumnService {
     return columnConfigs;
   }
 
-  getAllColumnInfos() {
-    return [...this.allColumnInfosMap.values()].slice(0, 2);
+  getColumnConfigFromAllColumns(): PublishedDocColumnConfig[] {
+    const columnConfigs: PublishedDocColumnConfig[] = [];
+    for (const exportColumn of this.allColumnInfosMap) {
+      const columnDef = this.getColumnDefFromKey(exportColumn[0]);
+      if (columnDef != null) {
+        const config = new PublishedDocColumnConfig();
+        config.columnDef = columnDef;
+        columnConfigs.push(config);
+      }
+    }
+    return columnConfigs;
+  }
+
+  getExportColumnObjects(exportColumns: ExportColumn[]): ExportColumn[] {
+    const cols: ExportColumn[] = [];
+    for (const expColumn of exportColumns) {
+      const col: ExportColumn = new ExportColumn();
+      col.index = expColumn.index;
+      col.key = expColumn.key;
+      col.properties = new PublishedDocColumnProps();
+      col.properties.header = this.getColumnDefFromKey(expColumn.key).header;
+      cols.push(col);
+    }
+    return cols;
+  }
+
+  getAllExportColumns(): ExportColumn[] {
+    const exportCols: ExportColumn[] = [];
+    for (const expColumn of this.allColumnInfosMap) {
+      const col: ExportColumn = new ExportColumn();
+      col.index = 0;
+      col.key = expColumn[0];
+      col.properties = new PublishedDocColumnProps();
+      col.properties.header = expColumn[1].header;
+      exportCols.push(col);
+    }
+    return exportCols;
   }
 
   private getColumnDefFromKey(columnKey: string): PublishedDocColumnDef {

@@ -232,6 +232,7 @@ import {NewJobComponent} from './components/job/new-job/new-job.component';
 import {OldIntakeInputComponent} from './components/util/old-intake-input-modal/old-intake-input.component';
 import {CandidateShareableNotesComponent} from './components/util/candidate-shareable-notes/candidate-shareable-notes.component';
 import {ShareableDocsComponent} from './components/candidates/view/shareable-docs/shareable-docs.component';
+import {PublishedDocColumnSelectorComponent} from "./components/util/published-doc-column-selector/published-doc-column-selector.component";
 
 @NgModule({
   declarations: [
@@ -439,7 +440,7 @@ import {ShareableDocsComponent} from './components/candidates/view/shareable-doc
     NewJobComponent,
     OldIntakeInputComponent,
     CandidateShareableNotesComponent,
-    ShareableDocsComponent
+    ShareableDocsComponent,
     CandidateShareableNotesComponent,
     PublishedDocColumnSelectorComponent
   ],
