@@ -36,14 +36,14 @@
   <div class="flex mb-3">
     <div class="container">
       <p class="text-center h6">Optional Fields</p>
-      <div [dragula]="dragulaGroupName" [(dragulaModel)]="availableColumns">
+      <div id="availableColumns" [dragula]="dragulaGroupName" [(dragulaModel)]="availableColumns">
         <div id="field" class="field" *ngFor="let field of availableColumns; last as isLast" [ngClass]="{'mt-4': isLast}">{{ field.columnDef.header }}</div>
       </div>
     </div>
     <div class="container">
       <p class="text-center h6">Selected Fields</p>
         <div *ngIf="selectedColumns.length">
-          <div [dragula]="dragulaGroupName" [(dragulaModel)]="selectedColumns">
+          <div id="selectedColumns" [dragula]="dragulaGroupName" [(dragulaModel)]="selectedColumns">
             <div class="field" *ngFor="let field of selectedColumns">{{ field.columnDef.header }}</div>
           </div>
         </div>

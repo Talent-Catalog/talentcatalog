@@ -30,7 +30,14 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
   ngOnInit(): void {
     const dragulaGroup = this.dragulaService.find(this.dragulaGroupName);
     if (!dragulaGroup) {
-      this.dragulaService.createGroup(this.dragulaGroupName, {});
+      this.dragulaService.createGroup(this.dragulaGroupName, {
+        copy: true,
+        copyItem: (item: PublishedDocColumnConfig) => {
+          const copy = new PublishedDocColumnConfig();
+          copy.columnDef = item.columnDef;
+          return copy;
+        }
+      });
     }
     // todo pull out empty column and put at bottom + alphabetise columns
     const emptyCol = this.availableColumns.shift();
