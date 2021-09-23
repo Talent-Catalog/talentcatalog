@@ -73,6 +73,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       dob: [null, Validators.required],
       /* LOCATION */
       countryId: ['', Validators.required],
+      state: [''],
       city: [''],
       yearOfArrival: [''],
       /* NATIONALITY */
@@ -101,6 +102,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           /* LOCATION */
           countryId: response.country ? response.country.id : null,
           city: response.city,
+          state: response.state,
           yearOfArrival: response.yearOfArrival,
           /* NATIONALITY */
           nationality: response.nationality ? response.nationality.id : null,

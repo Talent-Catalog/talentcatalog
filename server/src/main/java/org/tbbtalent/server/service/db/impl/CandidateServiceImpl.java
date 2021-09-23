@@ -1197,6 +1197,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setDob(request.getDob());
             candidate.setCountry(country);
             candidate.setCity(request.getCity());
+            candidate.setState(request.getState());
             candidate.setYearOfArrival(request.getYearOfArrival());
             candidate.setNationality(nationality);
             candidate.setUnhcrRegistered(request.getUnhcrRegistered());

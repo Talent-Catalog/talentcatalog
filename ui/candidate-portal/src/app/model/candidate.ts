@@ -34,6 +34,7 @@ export interface Candidate {
   dob: string;
   candidateOccupations: CandidateOccupation[];
   country: Country;
+  state: string;
   city: string;
   yearOfArrival: number;
   nationality: Country;

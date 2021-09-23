@@ -247,6 +247,7 @@ const ALL_FIELDS = {
           "DOB": null,
           "COUNTRYID": null,
           "CITY": null,
+          "STATE": null,
           "YEAROFARRIVAL": null,
           "NATIONALITY": null,
           "REGISTEREDWITHUN": null,

@@ -214,6 +214,7 @@ public class CandidatePortalApi {
                 .add("dob")
                 .add("country", countryDto())
                 .add("city")
+                .add("state")
                 .add("yearOfArrival")
                 .add("nationality", countryDto())
                 .add("unhcrRegistered")
