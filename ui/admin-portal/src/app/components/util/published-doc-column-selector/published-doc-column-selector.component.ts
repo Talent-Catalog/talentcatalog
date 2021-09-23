@@ -2,8 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {CandidateSource} from "../../../model/base";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 import {DragulaService} from "ng2-dragula";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {PublishedDocColumnConfig} from "../../../model/saved-list";
+import {NgbActiveModal, NgbDropdownConfig} from "@ng-bootstrap/ng-bootstrap";
+import {PublishedDocColumnConfig, PublishedDocColumnProps} from "../../../model/saved-list";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 
 @Component({
@@ -20,12 +20,16 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
   private candidateSource: CandidateSource;
   private longFormat: boolean;
   updating: boolean;
+  edit: boolean = false;
 
   constructor(
     private publishedDocColumnService: PublishedDocColumnService,
     private candidateSourceService: CandidateSourceService,
     private dragulaService: DragulaService,
-    private activeModal: NgbActiveModal) { }
+    private activeModal: NgbActiveModal,
+    config: NgbDropdownConfig) {
+    config.placement = 'bottom-left';
+  }
 
   ngOnInit(): void {
     const dragulaGroup = this.dragulaService.find(this.dragulaGroupName);
@@ -37,11 +41,19 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
         copyItem: (item: PublishedDocColumnConfig) => {
           const copy = new PublishedDocColumnConfig();
           copy.columnDef = item.columnDef;
+          copy.columnProps = new PublishedDocColumnProps();
+          copy.columnProps.header = null;
+          copy.columnProps.constant = null;
           return copy;
-        }
+        },
+        accepts: (el, target, source, sibling) => {
+          // To avoid dragging from right to left container
+          return target.id !== 'availableColumns';
+        },
+        removeOnSpill: true
       });
     }
-    // todo pull out empty column and put at bottom + alphabetise columns
+    // Pull out empty column and put at bottom + alphabetise columns
     const emptyCol = this.availableColumns.shift();
     this.availableColumns = this.availableColumns.sort(
       (field1, field2) =>
@@ -57,19 +69,37 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
     this._selectedColumns = fields;
   }
 
-  dismiss() {
+  cancel() {
     this.activeModal.dismiss(false);
   }
 
-  close() {
-    if (this.selectedColumns.length > 0) {
-      this.activeModal.close(this.selectedColumns);
-    } else {
-      this.activeModal.dismiss();
-    }
+  submit() {
+    this.activeModal.close(this.selectedColumns);
   }
 
   default() {
     this.selectedColumns = [];
+  }
+
+  update(field: PublishedDocColumnConfig) {
+    console.log(field);
+    return field;
+  }
+
+  reset(field: PublishedDocColumnConfig) {
+    field.columnProps.header = null;
+    field.columnProps.constant = null;
+  }
+
+  hasFieldName(field: PublishedDocColumnConfig): boolean {
+    let hasFieldName: boolean = true;
+    if (field.columnDef.content.value != null) {
+      if (field.columnDef.content.value.fieldName == null) {
+        hasFieldName = false;
+      }
+    } else {
+      hasFieldName = false;
+    }
+    return hasFieldName;
   }
 }

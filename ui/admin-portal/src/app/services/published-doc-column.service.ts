@@ -58,7 +58,12 @@ export class PublishedDocColumnService {
       if (columnDef != null) {
         const config = new PublishedDocColumnConfig();
         config.columnDef = columnDef;
-        config.columnProps = exportColumn.properties;
+        const props = new PublishedDocColumnProps();
+        if (exportColumn.properties != null) {
+          props.header = exportColumn.properties?.header;
+          props.constant = exportColumn.properties?.constant;
+        }
+        config.columnProps = props;
         columnConfigs.push(config);
       }
     }
