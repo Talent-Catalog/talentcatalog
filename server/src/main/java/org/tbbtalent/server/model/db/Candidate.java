@@ -124,15 +124,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateOccupation> candidateOccupations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OrderBy("yearCompleted DESC")
     private List<CandidateEducation> candidateEducations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateLanguage> candidateLanguages;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OrderBy("startDate DESC")
     private List<CandidateJobExperience> candidateJobExperiences;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OrderBy("dateCompleted DESC")
     private List<CandidateCertification> candidateCertifications;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
