@@ -402,6 +402,7 @@ public class CandidatePortalApi {
                 .add("gender")
                 .add("dob")
                 .add("city")
+                .add("state")
                 .add("yearOfArrival")
                 .add("nationality", countryDto())
                 .add("country", countryDto())

@@ -365,6 +365,7 @@ const ALL_FIELDS = {
         "DOB": null,
         "COUNTRY": null,
         "CITY": null,
+        "STATE": null,
         "YEAROFARRIVAL": null,
         "NATIONALITY": null
       },
