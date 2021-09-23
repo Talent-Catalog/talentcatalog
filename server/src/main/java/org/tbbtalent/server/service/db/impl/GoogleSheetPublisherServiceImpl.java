@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,11 +63,18 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         folder, name, googleDriveConfig.getPublishedSheetTemplate());
 
     ValueRange body = new ValueRange().setValues(data);
+
+    // todo playing around with styling via batch update
+    BatchUpdateValuesRequest styling = new BatchUpdateValuesRequest();
+
+    styling.setData(Collections.singletonList(body));
+
     UpdateValuesResponse result =
         googleDriveConfig.getGoogleSheetsService().spreadsheets().values()
-            .update(file.getId(), "B7", body)
-            .setValueInputOption("USER_ENTERED")
-            .execute();
+                .batchUpdate(file.getId())
+                .update(file.getId(), "B7", body)
+                .setValueInputOption("USER_ENTERED")
+                .execute();
 
     log.info("Created " + result.getUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
 
