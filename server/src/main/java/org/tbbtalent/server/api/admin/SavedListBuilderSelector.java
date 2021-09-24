@@ -17,7 +17,6 @@
 package org.tbbtalent.server.api.admin;
 
 import javax.validation.constraints.NotNull;
-
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
@@ -26,6 +25,8 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
  * @author John Cameron
  */
 public class SavedListBuilderSelector {
+    private final ExportColumnsBuilderSelector exportColumnsBuilderSelector 
+        = new ExportColumnsBuilderSelector();
 
     public @NotNull DtoBuilder selectBuilder() {
         return savedListDto();
@@ -37,7 +38,7 @@ public class SavedListBuilderSelector {
                 .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
-                .add("exportColumns")
+                .add("exportColumns", exportColumnsBuilderSelector.selectBuilder())
                 .add("status")
                 .add("name")
                 .add("fixed")

@@ -34,6 +34,8 @@ export class LanguageService {
   private languageChangedSource = new Subject<string>();
   languageChanged$ = this.languageChangedSource.asObservable();
 
+  private languageSelectionEnabled: boolean = true;
+
   translations: Translation[];
 
   selectedLanguage: string;
@@ -43,7 +45,17 @@ export class LanguageService {
   constructor(private http: HttpClient,
               private translate: TranslateService,
               private localStorage: LocalStorageService) {
+    this.languageSelectionEnabled = (this.localStorage.get('languageSelectionEnabled') as boolean);
     this.selectedLanguage = (this.localStorage.get('language') as string) || 'en';
+  }
+
+  isLanguageSelectionEnabled(): boolean {
+    return this.languageSelectionEnabled;
+  }
+
+  setLanguageSelectionEnabled(enabled: boolean) {
+    this.localStorage.set('languageSelectionEnabled', enabled);
+    this.languageSelectionEnabled = enabled;
   }
 
   listLanguages(): Observable<Language[]> {

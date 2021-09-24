@@ -1,0 +1,106 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="modal-header">
+
+  <h4 class="modal-title">Select columns to display</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+  <div *ngIf="updating">
+    <i class="fas fa-spinner fa-spin"></i> Updating...
+  </div>
+
+  <div class="flex mb-3">
+    <div class="container">
+      <p class="text-center h6 mb-1">Available Fields</p>
+      <div class="small mb-3 text-muted text-center">
+        Drag and drop into the selected fields column.
+      </div>
+      <div id="availableColumns" [dragula]="dragulaGroupName" [(dragulaModel)]="availableColumns">
+        <div id="field" class="field" *ngFor="let field of availableColumns; last as isLast" [ngClass]="{'mt-4': isLast}">
+          {{ field.columnDef.header }}
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <p class="text-center h6 mb-1">Selected Fields</p>
+      <div class="small mb-3 text-muted text-center">
+        Drag away from column to remove.
+      </div>
+        <div *ngIf="selectedColumns.length">
+          <div id="selectedColumns" [dragula]="dragulaGroupName" [(dragulaModel)]="selectedColumns">
+              <div *ngFor="let field of selectedColumns; let i = index">
+                <div ngbDropdown #dropdown=ngbDropdown class="d-flex">
+                  <button id="dropdownForm" class="btn field" ngbDropdownToggle>
+                    <span *ngIf="field.columnProps.header != null; else defaultHeader">{{field.columnProps.header}}</span>
+                    <ng-template #defaultHeader>
+                      <span>{{field.columnDef.header}}</span>
+                    </ng-template>
+                    <i class="fa fa-pencil"></i>
+                  </button>
+                  <div ngbDropdownMenu aria-labelledby="dropdownForm">
+                    <div class="px-4 py-3">
+                      <h6 class="py-1">{{field.columnDef.header}}</h6>
+                      <div class="form-group">
+                        <label [for]="'header'+ i">New Header Name</label>
+                        <input type="text" class="form-control" [id]="'header'+ i" [(ngModel)]="field.columnProps.header">
+                      </div>
+                      <div *ngIf="!hasFieldName(field)" class="form-group">
+                        <label [for]="'constant'+ i">Constant Name</label>
+                        <input type="text" class="form-control" [id]="'constant'+ i" [(ngModel)]="field.columnProps.constant">
+                      </div>
+                      <div class="d-flex justify-content-between">
+                        <button type="submit" (click)="update(field); dropdown.close()" class="btn btn-primary btn-sm">Update</button>
+                        <button type="submit" (click)="reset(field); dropdown.close()" class="btn btn-secondary btn-sm">Reset</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <div *ngIf="!selectedColumns.length">
+          <div [dragula]="dragulaGroupName" [(dragulaModel)]="selectedColumns">
+            <div class="text-center small mt-3">No Columns Selected</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <button type="button" class="btn btn-primary" (click)="default()">
+    Reset to default
+  </button>
+
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="!selectedColumns.length">
+    Ok
+  </button>
+  <button type="button" class="btn btn-primary" (click)="cancel()">
+    Cancel
+  </button>
+</div>
+

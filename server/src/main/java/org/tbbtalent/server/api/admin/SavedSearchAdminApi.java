@@ -67,6 +67,9 @@ public class SavedSearchAdminApi implements
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
+    private final ExportColumnsBuilderSelector exportColumnsBuilderSelector
+        = new ExportColumnsBuilderSelector();
+
 
     @Autowired
     public SavedSearchAdminApi(SavedSearchService savedSearchService,
@@ -340,7 +343,7 @@ public class SavedSearchAdminApi implements
                 .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
-                .add("exportColumns")
+                .add("exportColumns", exportColumnsBuilderSelector.selectBuilder())
                 .add("name")
                 .add("savedSearchType")
                 .add("savedSearchSubtype")

@@ -20,7 +20,7 @@ import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
 import {SurveyTypeService} from "../../../services/survey-type.service";
-import {SurveyType} from "../../../model/survey-type";
+import {SurveyType, US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 
 @Component({
   selector: 'app-registration-additional-info',
@@ -68,7 +68,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.candidateService.getCandidateSurvey().subscribe(
       (response) => {
         // if afghan
-        if (response?.surveyType?.id === 10) {
+        if (response?.surveyType?.id === US_AFGHAN_SURVEY_TYPE) {
           this.usAfghan = true;
           this.form.removeControl('surveyTypeId');
           this.form.removeControl('surveyComment');

@@ -14,9 +14,35 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export const US_AFGHAN_SURVEY_TYPE = 10;
+package org.tbbtalent.server.api.admin;
 
-export interface SurveyType {
-  id: number;
-  name: string;
+import javax.validation.constraints.NotNull;
+import org.tbbtalent.server.util.dto.DtoBuilder;
+
+/**
+ *  Utility for selecting a ExportColumns DTO builder
+ *
+ * @author John Cameron
+ */
+public class ExportColumnsBuilderSelector {
+
+  public @NotNull DtoBuilder selectBuilder() {
+    return exportColumnDto();
+  }
+
+  private DtoBuilder exportColumnDto() {
+    return new DtoBuilder()
+        .add("index")
+        .add("key")
+        .add("properties", publishedDocColumnPropsDto())
+        ;
+  }
+
+  private DtoBuilder publishedDocColumnPropsDto() {
+    return new DtoBuilder()
+        .add("header")
+        .add("constant")
+        ;
+  }
+
 }

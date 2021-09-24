@@ -14,67 +14,114 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
-  PublishedDocColumnInfo, PublishedDocConstantSource,
+  ExportColumn,
+  PublishedDocColumnConfig,
+  PublishedDocColumnDef,
+  PublishedDocColumnProps,
+  PublishedDocConstantSource,
   PublishedDocFieldSource,
   PublishedDocValueSource
 } from "../model/saved-list";
-import {CandidateFieldInfo} from "../model/candidate-field-info";
 
 @Injectable({
   providedIn: 'root'
 })
 export class PublishedDocColumnService {
 
-  private allColumnInfosMap = new Map<string, PublishedDocColumnInfo>();
+  private allColumnInfosMap = new Map<string, PublishedDocColumnDef>();
 
   constructor() {
-    this.addColumn("id", "Candidate id", null, new PublishedDocFieldSource("id"));
-    this.addColumn("candidateNumber", "Candidate number", null, new PublishedDocFieldSource("candidateNumber"));
-    this.addColumn("contextNote", "Context Note", null, new PublishedDocFieldSource("contextNote"));
-    this.addColumn("email", "Email", null, new PublishedDocFieldSource("user.email"));
-    this.addColumn("firstName", "First Name", null, new PublishedDocFieldSource("user.firstName"));
-    this.addColumn("gender", "Gender", null, new PublishedDocFieldSource("gender"));
-    this.addColumn("ieltsScore", "IELTS", null, new PublishedDocFieldSource("ieltsScore"));
-    this.addColumn("interviewDate", "Interview Date", null, null);
-    this.addColumn("interviewTime", "Interview Time", null, null);
-    this.addColumn("interviewPanel", "Interview Panel", null, null);
-    this.addColumn("interviewFeedback", "Interview Feedback", null, null);
-    this.addColumn("lastName", "Last Name", null, new PublishedDocFieldSource("user.lastName"));
-    this.addColumn("name", "Name", "Full name", new PublishedDocFieldSource("user"));
-    this.addColumn("offer", "Offer?", null, null);
-    this.addColumn("shareableNotes", "Notes", null, new PublishedDocFieldSource("shareableNotes"));
-    this.addColumnWithLink("doc", "Other document", null, new PublishedDocConstantSource("doc"),
+    //Keep empty column first, so we know the index and can sort at the end.
+    this.addColumn("emptyColumn", "Empty Column", null);
+    this.addColumn("candidateNumber", "Candidate number", new PublishedDocFieldSource("candidateNumber"));
+    this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
+    this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
+    this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
+    this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"));
+    this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"));
+    this.addColumn("ieltsScore", "IELTS", new PublishedDocFieldSource("ieltsScore"));
+    this.addColumn("lastName", "Last Name", new PublishedDocFieldSource("user.lastName"));
+    this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
+    this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"));
+    this.addColumnWithLink("doc", "Other document", new PublishedDocConstantSource("doc"),
       new PublishedDocFieldSource("shareableDoc.location"));
-    this.addColumnWithLink("cv", "CV", null, new PublishedDocConstantSource("cv"),
+    this.addColumnWithLink("cv", "CV", new PublishedDocConstantSource("cv"),
       new PublishedDocFieldSource("shareableCv.location"));
   }
 
-  getColumnInfosFromKeys(keys: string[]): PublishedDocColumnInfo[] {
-    const columnInfos: PublishedDocColumnInfo[] = [];
-    for (const columnKey of keys) {
-      const columnInfo = this.getColumnInfoFromKey(columnKey);
-      if (columnInfo != null) {
-        columnInfos.push(columnInfo)
+  getColumnConfigFromExportColumns(exportColumns: ExportColumn[]): PublishedDocColumnConfig[] {
+    const columnConfigs: PublishedDocColumnConfig[] = [];
+    for (const exportColumn of exportColumns) {
+      const columnDef = this.getColumnDefFromKey(exportColumn.key);
+      if (columnDef != null) {
+        const config = new PublishedDocColumnConfig();
+        config.columnDef = columnDef;
+        const props = new PublishedDocColumnProps();
+        if (exportColumn.properties != null) {
+          props.header = exportColumn.properties?.header;
+          props.constant = exportColumn.properties?.constant;
+        }
+        config.columnProps = props;
+        columnConfigs.push(config);
       }
     }
-    return columnInfos;
+    return columnConfigs;
   }
 
-  private getColumnInfoFromKey(columnKey: string): PublishedDocColumnInfo {
+  getColumnConfigFromAllColumns(): PublishedDocColumnConfig[] {
+    const columnConfigs: PublishedDocColumnConfig[] = [];
+    for (const exportColumn of this.allColumnInfosMap) {
+      const columnDef = this.getColumnDefFromKey(exportColumn[0]);
+      if (columnDef != null) {
+        const config = new PublishedDocColumnConfig();
+        config.columnDef = columnDef;
+        columnConfigs.push(config);
+      }
+    }
+    return columnConfigs;
+  }
+
+  getExportColumnObjects(exportColumns: ExportColumn[]): ExportColumn[] {
+    const cols: ExportColumn[] = [];
+    for (const expColumn of exportColumns) {
+      const col: ExportColumn = new ExportColumn();
+      col.index = expColumn.index;
+      col.key = expColumn.key;
+      col.properties = new PublishedDocColumnProps();
+      col.properties.header = this.getColumnDefFromKey(expColumn.key).header;
+      cols.push(col);
+    }
+    return cols;
+  }
+
+  getAllExportColumns(): ExportColumn[] {
+    const exportCols: ExportColumn[] = [];
+    for (const expColumn of this.allColumnInfosMap) {
+      const col: ExportColumn = new ExportColumn();
+      col.index = 0;
+      col.key = expColumn[0];
+      col.properties = new PublishedDocColumnProps();
+      col.properties.header = expColumn[1].header;
+      exportCols.push(col);
+    }
+    return exportCols;
+  }
+
+  private getColumnDefFromKey(columnKey: string): PublishedDocColumnDef {
     return this.allColumnInfosMap.get(columnKey);
   }
 
-  private addColumnWithLink(key: string, name: string, header: string,
+  private addColumnWithLink(key: string, name: string,
                          value: PublishedDocValueSource, link: PublishedDocValueSource) {
-    const info = new PublishedDocColumnInfo(key, name, header);
+    const info = new PublishedDocColumnDef(key, name);
     info.content.value = value;
     info.content.link = link;
     this.allColumnInfosMap.set(key, info);
   }
 
-  private addColumn(key: string, name: string, header: string, value: PublishedDocValueSource) {
-    this.addColumnWithLink(key, name, header, value, null);
+  private addColumn(key: string, name: string, value: PublishedDocValueSource) {
+    this.addColumnWithLink(key, name, value, null);
   }
 }

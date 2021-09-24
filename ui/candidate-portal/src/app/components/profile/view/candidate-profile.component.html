@@ -145,6 +145,15 @@
 
           <div class="col-12 col-md-6">
             <div class="form-group">
+              <label>{{ 'PROFILE.PERSONAL.YEAROFARRIVAL' | translate }}</label>
+              <p>
+                {{candidate?.yearOfArrival || ''}}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="form-group">
               <label>{{ 'PROFILE.PERSONAL.CITY' | translate }}</label>
               <p>
                 {{candidate?.city || ''}}
@@ -154,9 +163,9 @@
 
           <div class="col-12 col-md-6">
             <div class="form-group">
-              <label>{{ 'PROFILE.PERSONAL.YEAROFARRIVAL' | translate }}</label>
+              <label>{{ 'PROFILE.PERSONAL.STATE' | translate }}</label>
               <p>
-                {{candidate?.yearOfArrival || ''}}
+                {{candidate?.state || ''}}
               </p>
             </div>
           </div>

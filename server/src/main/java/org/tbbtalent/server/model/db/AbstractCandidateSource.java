@@ -94,17 +94,6 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     private List<String> displayedFieldsShort;
 
     /**
-     * If not null (or empty) this is the list of column keys which are
-     * exported for each candidate.
-     * <p/>
-     * Similar to {@link #displayedFieldsLong}
-     * @see org.tbbtalent.server.request.candidate.PublishedDocColumnInfo
-     */
-    @Convert(converter = DelimitedStringsConverter.class)
-    @Nullable
-    private List<String> exportColumns; 
-
-    /**
      * If true, only the owner can modify the details of the candidate source
      */
     private Boolean fixed = false;
@@ -131,6 +120,31 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         setStatus(Status.active);
     }
 
+    /**
+     * If not null this is defines which columns are exported for each candidate when publishing
+     * candidates from this candidate source.
+     * <p/>
+     * Note that the actual definition of each column is managed in the front end Angular code.
+     * The server only stores keys identifying the columns and any extra configuration.
+     * <p/>
+     * SavedList or SavedSearch implementations have slightly different ways of storing
+     * export columns on the database - so the actual database mapping has to be done in those
+     * subclasses.
+     * @return Set of columns. Note that the ordering is defined by the 
+     * {@link ExportColumn#getIndex()} attribute in each ExportColumn.
+     */
+    @Nullable
+    public abstract List<ExportColumn> getExportColumns();
+
+    /**
+     * @see #getExportColumns()
+     * <p/>
+     * Note: You can't call setExportColumns and assuming that previous columns on the database 
+     * are deleted. You need to explicitly do that using 
+     * {@link org.tbbtalent.server.service.db.ExportColumnsService}
+     */
+    public abstract void setExportColumns(@Nullable List<ExportColumn> exportColumns);
+    
     @Nullable
     public String getDescription() {
         return description;
@@ -156,15 +170,6 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     public void setDisplayedFieldsShort(@Nullable List<String> displayedFieldsShort) {
         this.displayedFieldsShort = displayedFieldsShort;
-    }
-
-    @Nullable
-    public List<String> getExportColumns() {
-        return exportColumns;
-    }
-
-    public void setExportColumns(@Nullable List<String> exportColumns) {
-        this.exportColumns = exportColumns;
     }
 
     public String getName() {

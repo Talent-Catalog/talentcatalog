@@ -16,6 +16,7 @@
 
 import {User} from './user';
 import {AuthService} from '../services/auth.service';
+import {ExportColumn} from "./saved-list";
 
 export interface HasName {
   name?: string;
@@ -107,7 +108,7 @@ export interface CandidateSource extends Auditable {
   description?: string;
   displayedFieldsLong?: string[];
   displayedFieldsShort?: string[];
-  exportColumns?: string[];
+  exportColumns?: ExportColumn[];
   fixed: boolean;
   global: boolean;
   sfJoblink?: string;

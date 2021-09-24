@@ -22,6 +22,8 @@ import {AuthService} from "../../../services/auth.service";
 import {Candidate, RegisterCandidateRequest} from "../../../model/candidate";
 import {RegistrationService} from "../../../services/registration.service";
 import {ReCaptchaV3Service} from "ng-recaptcha";
+import {LanguageService} from "../../../services/language.service";
+import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 
 @Component({
   selector: 'app-registration-contact',
@@ -52,7 +54,8 @@ export class RegistrationContactComponent implements OnInit {
               private candidateService: CandidateService,
               private authService: AuthService,
               private reCaptchaV3Service: ReCaptchaV3Service,
-              private registrationService: RegistrationService) { }
+              private registrationService: RegistrationService,
+              private languageService: LanguageService) { }
 
   ngOnInit() {
     this.authenticated = false;
@@ -84,6 +87,16 @@ export class RegistrationContactComponent implements OnInit {
         }
       );
     } else {
+
+      //If we are not yet authenticated, look for us-afghan query parameter.
+      //(if we are authenticated we pick up US Afghan tagging from the survey type)
+
+      //Record if this is a US Afghan candidate
+      this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
+
+      //Turn on language selection except for US Afghan candidates
+      this.languageService.setLanguageSelectionEnabled(!this.usAfghan);
+
       // The user has not registered - add the password fields to the reactive form
       this.form.addControl('password', new FormControl('', [Validators.required, Validators.minLength(8)]));
       this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
@@ -160,16 +173,14 @@ export class RegistrationContactComponent implements OnInit {
     req.passwordConfirmation = this.passwordConfirmation;
     req.reCaptchaV3Token = token;
 
-    this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
-
-    const request: UpdateCandidateSurvey = {
-      surveyTypeId: 10,
-    }
-
     this.authService.register(req).subscribe(
       (response) => {
         // If successfully registered, check if US-Afghan and if so update the survey.
         if (this.usAfghan) {
+          //Set special value of candidate survey type indicating US Afghan
+          const request: UpdateCandidateSurvey = {
+            surveyTypeId: US_AFGHAN_SURVEY_TYPE,
+          }
           this.candidateService.updateCandidateSurvey(request).subscribe(
             (res) => {
               console.log(res);

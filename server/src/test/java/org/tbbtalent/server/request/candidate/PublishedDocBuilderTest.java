@@ -31,22 +31,22 @@ import org.tbbtalent.server.model.db.User;
 class PublishedDocBuilderTest {
   PublishedDocBuilder builder;
   Candidate candidate;
-  PublishedDocColumnInfo infoId;
-  PublishedDocColumnInfo infoCN;
-  PublishedDocColumnInfo infoCV;
-  PublishedDocColumnInfo infoUser;
-  List<PublishedDocColumnInfo> columnInfos;
+  PublishedDocColumnDef infoId;
+  PublishedDocColumnDef infoCN;
+  PublishedDocColumnDef infoCV;
+  PublishedDocColumnDef infoUser;
+  List<PublishedDocColumnDef> columnInfos;
 
-  private PublishedDocColumnInfo addColumn(String key, String header,
+  private PublishedDocColumnDef addColumn(String key, String header,
       PublishedDocValueSource value, @Nullable PublishedDocValueSource link) {
-    PublishedDocColumnInfo info = new PublishedDocColumnInfo(key, header);
+    PublishedDocColumnDef info = new PublishedDocColumnDef(key, header);
     info.getContent().setValue(value);
     info.getContent().setLink(link);
     columnInfos.add(info);
     return info;
   }
 
-  private PublishedDocColumnInfo addColumn(String key, String header, PublishedDocValueSource value) {
+  private PublishedDocColumnDef addColumn(String key, String header, PublishedDocValueSource value) {
     return addColumn(key, header, value, null);
   }
 
