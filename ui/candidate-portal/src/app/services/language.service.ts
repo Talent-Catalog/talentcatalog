@@ -45,6 +45,7 @@ export class LanguageService {
   constructor(private http: HttpClient,
               private translate: TranslateService,
               private localStorage: LocalStorageService) {
+    this.languageSelectionEnabled = (this.localStorage.get('languageSelectionEnabled') as boolean);
     this.selectedLanguage = (this.localStorage.get('language') as string) || 'en';
   }
 
@@ -53,6 +54,7 @@ export class LanguageService {
   }
 
   setLanguageSelectionEnabled(enabled: boolean) {
+    this.localStorage.set('languageSelectionEnabled', enabled);
     this.languageSelectionEnabled = enabled;
   }
 

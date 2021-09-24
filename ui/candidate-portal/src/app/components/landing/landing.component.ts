@@ -48,11 +48,9 @@ export class LandingComponent implements OnInit {
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/home']);
     } else {
-      //Logging in or registering - disable language selection if usAfghan
+      //Logging in or registering - language selection enabled unless usAfghan
       const usAfghan: boolean = this.route.snapshot.queryParams['source'] === 'us-afghan';
-      if (usAfghan) {
-        this.languageService.setLanguageSelectionEnabled(false);
-      }
+      this.languageService.setLanguageSelectionEnabled(!usAfghan);
     }
   }
 

@@ -58,10 +58,9 @@ export class HomeComponent implements OnInit {
     //and, if so, to turn off the language selection.
     this.candidateService.getCandidateSurvey().subscribe(
       (response) => {
-        //Disable language selection if this is an USAfghan candidate
-        if (response?.surveyType?.id === US_AFGHAN_SURVEY_TYPE) {
-          this.languageService.setLanguageSelectionEnabled(false);
-        }
+        //Language selection is enabled unless this is an USAfghan candidate
+        const usAfghan: boolean = response?.surveyType?.id === US_AFGHAN_SURVEY_TYPE
+        this.languageService.setLanguageSelectionEnabled(!usAfghan);
         this.loading = false;
       },
       (error) => {

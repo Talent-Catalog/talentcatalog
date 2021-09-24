@@ -68,14 +68,6 @@ export class RegistrationContactComponent implements OnInit {
       // username: ['']
     });
 
-    //Record if this is a US Afghan candidate
-    this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
-
-    //Turn off language selection for US Afghan candidates
-    if (this.usAfghan) {
-      this.languageService.setLanguageSelectionEnabled(false);
-    }
-
     if (this.authService.isAuthenticated()) {
       this.authenticated = true;
       this.candidateService.getCandidateContact().subscribe(
@@ -95,6 +87,16 @@ export class RegistrationContactComponent implements OnInit {
         }
       );
     } else {
+
+      //If we are not yet authenticated, look for us-afghan query parameter.
+      //(if we are authenticated we pick up US Afghan tagging from the survey type)
+
+      //Record if this is a US Afghan candidate
+      this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
+
+      //Turn on language selection except for US Afghan candidates
+      this.languageService.setLanguageSelectionEnabled(!this.usAfghan);
+
       // The user has not registered - add the password fields to the reactive form
       this.form.addControl('password', new FormControl('', [Validators.required, Validators.minLength(8)]));
       this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
