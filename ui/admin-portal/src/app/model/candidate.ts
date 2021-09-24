@@ -36,6 +36,7 @@ export interface Candidate extends HasId {
   dob: Date;
   address1: string;
   city: string;
+  state: string;
   country: Country;
   yearOfArrival: number;
   nationality: Country;

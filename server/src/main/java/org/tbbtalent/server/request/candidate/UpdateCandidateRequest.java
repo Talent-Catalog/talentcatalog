@@ -38,6 +38,7 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
     private Integer yearOfArrival;
     private String address1;
     private String city;
+    private String state;
     private LocalDate dob;
     private UnhcrStatus unhcrStatus;
     private String unhcrNumber;
@@ -105,6 +106,10 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
     public void setCity(String city) {
         this.city = city;
     }
+
+    public String getState() {return state;}
+
+    public void setState(String state) {this.state = state;}
 
     public LocalDate getDob() {
         return dob;
