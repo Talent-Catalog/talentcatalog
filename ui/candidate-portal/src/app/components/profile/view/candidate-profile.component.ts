@@ -18,6 +18,7 @@ import {Component, OnInit} from '@angular/core';
 import {CandidateService} from "../../../services/candidate.service";
 import {Candidate} from "../../../model/candidate";
 import {ActivatedRoute} from "@angular/router";
+import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 
 @Component({
   selector: 'app-candidate-profile',
@@ -40,7 +41,7 @@ export class CandidateProfileComponent implements OnInit {
     this.candidateService.getProfile().subscribe(
       (response) => {
         this.candidate = response;
-        this.usAfghan = response.surveyType?.id === 10;
+        this.usAfghan = response.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
         this.loading = false;
       },
       (error) => {

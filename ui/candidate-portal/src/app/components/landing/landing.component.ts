@@ -18,6 +18,7 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LanguageService} from '../../services/language.service';
+import {CandidateService} from "../../services/candidate.service";
 
 @Component({
   selector: 'app-landing',
@@ -46,6 +47,12 @@ export class LandingComponent implements OnInit {
 
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/home']);
+    } else {
+      //Logging in or registering - disable language selection if usAfghan
+      const usAfghan: boolean = this.route.snapshot.queryParams['source'] === 'us-afghan';
+      if (usAfghan) {
+        this.languageService.setLanguageSelectionEnabled(false);
+      }
     }
   }
 
