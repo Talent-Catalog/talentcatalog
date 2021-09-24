@@ -34,7 +34,7 @@
 
     <div class="row">
 
-      <div *ngIf="candidate.address1 || candidate.city || candidate.country" class="form-group col-sm-12 col-md-4">
+      <div *ngIf="candidate.address1 || candidate.city || candidate.state || candidate.country" class="form-group col-sm-12 col-md-4">
         <label class="col-form-label">
           <i class="fas fa-map-marker"></i>
           Address
@@ -47,6 +47,10 @@
           <span class="comma"></span>
 
           <span class="field" *ngIf="candidate.city">{{candidate.city}}</span>
+
+          <span class="comma"></span>
+
+          <span class="field" *ngIf="candidate.state">{{candidate.state}}</span>
 
           <span class="comma"></span>
 

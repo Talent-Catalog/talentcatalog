@@ -83,6 +83,7 @@ export class EditCandidateContactComponent implements OnInit {
         gender: [candidate.gender],
         address1: [candidate.address1],
         city: [candidate.city],
+        state: [candidate.state],
         countryId: [candidate.country ? candidate.country.id : null, Validators.required],
         yearOfArrival: [candidate.yearOfArrival],
         phone: [candidate.phone],

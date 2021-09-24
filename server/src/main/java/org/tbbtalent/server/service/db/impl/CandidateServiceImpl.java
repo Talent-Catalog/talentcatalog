@@ -1011,6 +1011,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setWhatsapp(request.getWhatsapp());
         candidate.setAddress1(request.getAddress1());
         candidate.setCity(request.getCity());
+        candidate.setState(request.getState());
         candidate.setCountry(country);
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
@@ -1197,6 +1198,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setDob(request.getDob());
             candidate.setCountry(country);
             candidate.setCity(request.getCity());
+            candidate.setState(request.getState());
             candidate.setYearOfArrival(request.getYearOfArrival());
             candidate.setNationality(nationality);
             candidate.setUnhcrRegistered(request.getUnhcrRegistered());

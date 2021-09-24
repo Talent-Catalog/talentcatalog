@@ -52,6 +52,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private LocalDate dob;
     private String address1;
     private String city;
+    private String state;
     private Integer yearOfArrival;
     private String additionalInfo;
     private String candidateMessage;
@@ -654,13 +655,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.address1 = address1;
     }
 
-    public String getCity() {
-        return city;
-    }
+    public String getCity() {return city;}
 
     public void setCity(String city) {
         this.city = city;
     }
+
+    public String getState() {return state;}
+
+    public void setState(String state) {this.state = state;}
 
     public Integer getYearOfArrival() {
         return yearOfArrival;

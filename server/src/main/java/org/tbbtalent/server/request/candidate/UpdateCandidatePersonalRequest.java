@@ -34,6 +34,7 @@ public class UpdateCandidatePersonalRequest {
     /* LOCATION */
     private Long countryId;
     private String city;
+    private String state;
     private Integer yearOfArrival;
     /* NATIONALITY */
     private Long nationality;
@@ -87,6 +88,10 @@ public class UpdateCandidatePersonalRequest {
     public void setCity(String city) {
         this.city = city;
     }
+
+    public String getState() {return state;}
+
+    public void setState(String state) {this.state = state;}
 
     public Integer getYearOfArrival() {
         return yearOfArrival;
