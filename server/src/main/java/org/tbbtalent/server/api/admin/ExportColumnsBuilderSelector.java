@@ -32,7 +32,6 @@ public class ExportColumnsBuilderSelector {
 
   private DtoBuilder exportColumnDto() {
     return new DtoBuilder()
-        .add("index")
         .add("key")
         .add("properties", publishedDocColumnPropsDto())
         ;

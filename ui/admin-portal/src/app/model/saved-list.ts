@@ -169,7 +169,6 @@ export class PublishedDocColumnConfig {
  * See doc for corresponding Java class
  */
 export class ExportColumn {
-  index: number;
   key: string;
   properties?: PublishedDocColumnProps;
 }
