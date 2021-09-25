@@ -16,8 +16,15 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
+import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,10 +34,6 @@ import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.List;
 
 /**
  * Publishes Google Sheets on a Google Drive
@@ -54,24 +57,42 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
 
   @Override
   public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder, 
-      String name, List<List<Object>> data)
+      String name, List<List<Object>> mainData)
       throws GeneralSecurityException, IOException {
 
     GoogleFileSystemFile file = fileSystemService.copyFile(
         folder, name, googleDriveConfig.getPublishedSheetTemplate());
 
-    ValueRange body = new ValueRange().setValues(data);
+    final Sheets service = googleDriveConfig.getGoogleSheetsService();
 
-    // todo try applying spreadsheet styling via batch update
-    //BatchUpdateValuesRequest styling = new BatchUpdateValuesRequest();
+    //Now write to sheet - see https://developers.google.com/sheets/api/guides/values#writing 
 
-    UpdateValuesResponse result =
-        googleDriveConfig.getGoogleSheetsService().spreadsheets().values()
-                .update(file.getId(), "B7", body)
-                .setValueInputOption("USER_ENTERED")
-                .execute();
+    List<ValueRange> data = new ArrayList<>();
 
-    log.info("Created " + result.getUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
+    data.add(new ValueRange()
+        .setRange("B7")
+        .setValues(mainData));
+
+//TODO JC Pass in Properties with other values to set. 
+    List<List<Object>> cell;
+    cell = Collections.singletonList(Collections.singletonList("Freddy Baby"));
+    data.add(new ValueRange()
+        .setRange("name")
+        .setValues(cell));
+
+    cell = Collections.singletonList(Collections.singletonList("Iress"));
+    data.add(new ValueRange()
+        .setRange("employer")
+        .setValues(cell));
+
+    BatchUpdateValuesRequest body = new BatchUpdateValuesRequest()
+        .setValueInputOption("USER_ENTERED")
+        .setData(data);
+
+    BatchUpdateValuesResponse res =
+        service.spreadsheets().values().batchUpdate(file.getId(), body).execute();
+    
+    log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
 
     return file.getUrl();
   }
