@@ -83,32 +83,6 @@ export class PublishedDocColumnService {
     return columnConfigs;
   }
 
-  getExportColumnObjects(exportColumns: ExportColumn[]): ExportColumn[] {
-    const cols: ExportColumn[] = [];
-    for (const expColumn of exportColumns) {
-      const col: ExportColumn = new ExportColumn();
-      col.index = expColumn.index;
-      col.key = expColumn.key;
-      col.properties = new PublishedDocColumnProps();
-      col.properties.header = this.getColumnDefFromKey(expColumn.key).header;
-      cols.push(col);
-    }
-    return cols;
-  }
-
-  getAllExportColumns(): ExportColumn[] {
-    const exportCols: ExportColumn[] = [];
-    for (const expColumn of this.allColumnInfosMap) {
-      const col: ExportColumn = new ExportColumn();
-      col.index = 0;
-      col.key = expColumn[0];
-      col.properties = new PublishedDocColumnProps();
-      col.properties.header = expColumn[1].header;
-      exportCols.push(col);
-    }
-    return exportCols;
-  }
-
   private getColumnDefFromKey(columnKey: string): PublishedDocColumnDef {
     return this.allColumnInfosMap.get(columnKey);
   }
