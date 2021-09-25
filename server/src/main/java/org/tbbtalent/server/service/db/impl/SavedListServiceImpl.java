@@ -24,8 +24,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
@@ -602,8 +604,14 @@ public class SavedListServiceImpl implements SavedListService {
         //Create the doc in the list folder.
         GoogleFileSystemDrive drive = googleDriveConfig.getListFoldersDrive();
         GoogleFileSystemFolder listFolder = new GoogleFileSystemFolder(savedList.getFolderlink());
+        
+        //Set other data to publish.
+        Map<String, String> props = new HashMap<>();
+        props.put("listDescription", savedList.getDescription());
+        props.put("listName", savedList.getName());
+        
         String link = docPublisherService
-            .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData);
+            .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData, props);
 
         /*
          * Need to remove any existing columns - can't rely on the savedList.setExportColumns call
