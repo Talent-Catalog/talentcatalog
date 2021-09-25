@@ -23,8 +23,10 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -57,33 +59,25 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
 
   @Override
   public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder, 
-      String name, List<List<Object>> mainData)
+      String name, List<List<Object>> mainData, Map<String, String> props)
       throws GeneralSecurityException, IOException {
 
+    //Create copy of sheet from template
     GoogleFileSystemFile file = fileSystemService.copyFile(
         folder, name, googleDriveConfig.getPublishedSheetTemplate());
 
-    final Sheets service = googleDriveConfig.getGoogleSheetsService();
-
     //Now write to sheet - see https://developers.google.com/sheets/api/guides/values#writing 
-
+    final Sheets service = googleDriveConfig.getGoogleSheetsService();
     List<ValueRange> data = new ArrayList<>();
 
-    data.add(new ValueRange()
-        .setRange("B7")
-        .setValues(mainData));
+    //Add main data
+    data.add(new ValueRange().setRange("B7").setValues(mainData));
 
-//TODO JC Pass in Properties with other values to set. 
-    List<List<Object>> cell;
-    cell = Collections.singletonList(Collections.singletonList("Freddy Baby"));
-    data.add(new ValueRange()
-        .setRange("name")
-        .setValues(cell));
-
-    cell = Collections.singletonList(Collections.singletonList("Iress"));
-    data.add(new ValueRange()
-        .setRange("employer")
-        .setValues(cell));
+    //Add in extra properties
+    for (Entry<String, String> prop : props.entrySet()) {
+      List<List<Object>> cell = Arrays.asList(Arrays.asList(prop.getValue()));
+      data.add(new ValueRange().setRange(prop.getKey()).setValues(cell));
+    }
 
     BatchUpdateValuesRequest body = new BatchUpdateValuesRequest()
         .setValueInputOption("USER_ENTERED")
