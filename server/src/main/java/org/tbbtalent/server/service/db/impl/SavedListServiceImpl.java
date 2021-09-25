@@ -64,6 +64,7 @@ import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
 import org.tbbtalent.server.request.list.IHasSetOfCandidates;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -523,6 +524,15 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = get(savedListId);
         request.populateFromRequest(savedList);
         return saveIt(savedList);
+    }
+
+    @Override
+    public void updateDescription(long savedListId, 
+        UpdateCandidateSourceDescriptionRequest request)
+        throws  NoSuchObjectException {
+        SavedList savedList = get(savedListId);
+        savedList.setDescription(request.getDescription());
+        saveIt(savedList);
     }
 
     @Override

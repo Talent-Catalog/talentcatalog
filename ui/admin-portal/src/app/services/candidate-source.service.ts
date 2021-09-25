@@ -22,7 +22,7 @@ import {SearchResults} from "../model/search-results";
 import {
   CandidateSource,
   SearchCandidateSourcesRequest,
-  UpdateCandidateContextNoteRequest,
+  UpdateCandidateContextNoteRequest, UpdateCandidateSourceDescriptionRequest,
   UpdateDisplayedFieldPathsRequest
 } from "../model/base";
 import {isSavedSearch, SearchSavedSearchRequest} from "../model/saved-search";
@@ -112,6 +112,14 @@ export class CandidateSourceService {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
     return this.http.put<void>(`${apiUrl}/context/${source.id}`, request);
+
+  }
+
+  updateDescription(source: CandidateSource,
+                    request: UpdateCandidateSourceDescriptionRequest): Observable<void> {
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+    return this.http.put<void>(`${apiUrl}/description/${source.id}`, request);
 
   }
 

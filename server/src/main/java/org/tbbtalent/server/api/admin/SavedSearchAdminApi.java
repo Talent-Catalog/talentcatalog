@@ -44,6 +44,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.search.ClearSelectionRequest;
 import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
@@ -322,6 +323,13 @@ public class SavedSearchAdminApi implements
             @PathVariable("id") long id,
             @RequestBody UpdateCandidateContextNoteRequest request) {
         savedSearchService.updateCandidateContextNote(id, request);
+    }
+
+    @PutMapping("/description/{id}")
+    public void updateDescription(
+        @PathVariable("id") long id,
+        @RequestBody UpdateCandidateSourceDescriptionRequest request) {
+        savedSearchService.updateDescription(id, request);
     }
 
     @PutMapping("/displayed-fields/{id}")

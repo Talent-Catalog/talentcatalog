@@ -159,6 +159,10 @@ export class UpdateCandidateContextNoteRequest {
   contextNote: string;
 }
 
+export class UpdateCandidateSourceDescriptionRequest {
+  description: string;
+}
+
 export class UpdateDisplayedFieldPathsRequest {
   displayedFieldsLong?: string[];
   displayedFieldsShort?: string[];
