@@ -161,6 +161,7 @@ public class SavedList extends AbstractCandidateSource {
     }
 
     public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
+        modifyColumnIndices(exportColumns);
         this.exportColumns = exportColumns;
     }
 
