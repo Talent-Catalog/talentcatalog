@@ -98,6 +98,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
 
     //Now protect the sheets other than the Main one (ie the Data and Feedback sheets)
+    //See https://developers.google.com/sheets/api/samples/ranges 
     List<Request> requests = new ArrayList<>();
 
     List<Integer> sheetIdsToProtect = getSheetsToProtect(service, spreadsheetId);
