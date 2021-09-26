@@ -54,16 +54,13 @@ export class PublishedDocColumnService {
   getColumnConfigFromExportColumns(exportColumns: ExportColumn[]): PublishedDocColumnConfig[] {
     const columnConfigs: PublishedDocColumnConfig[] = [];
     for (const exportColumn of exportColumns) {
-      const columnDef = this.getColumnDefFromKey(exportColumn.key);
-      if (columnDef != null) {
-        const config = new PublishedDocColumnConfig();
-        config.columnDef = columnDef;
-        const props = new PublishedDocColumnProps();
+      const config = this.getDefaultColumnConfigFromKey(exportColumn.key);
+      if (config != null) {
+        const props = config.columnProps;
         if (exportColumn.properties != null) {
           props.header = exportColumn.properties?.header;
           props.constant = exportColumn.properties?.constant;
         }
-        config.columnProps = props;
         columnConfigs.push(config);
       }
     }
@@ -85,6 +82,26 @@ export class PublishedDocColumnService {
 
   private getColumnDefFromKey(columnKey: string): PublishedDocColumnDef {
     return this.allColumnInfosMap.get(columnKey);
+  }
+
+  private getDefaultColumnConfigFromKey(columnKey: string): PublishedDocColumnConfig {
+    const columnDef = this.getColumnDefFromKey(columnKey);
+    if (columnDef == null) {
+      return null;
+    }
+    const config = new PublishedDocColumnConfig();
+    config.columnDef = columnDef;
+    config.columnProps = new PublishedDocColumnProps();
+    return config;
+  }
+
+  public getDefaultColumns(): PublishedDocColumnConfig[] {
+    const columns: PublishedDocColumnConfig[] = [];
+    columns.push(this.getDefaultColumnConfigFromKey("candidateNumber"));
+    columns.push(this.getDefaultColumnConfigFromKey("name"));
+    columns.push(this.getDefaultColumnConfigFromKey("shareableNotes"));
+    columns.push(this.getDefaultColumnConfigFromKey("cv"));
+    return columns;
   }
 
   private addColumnWithLink(key: string, name: string,

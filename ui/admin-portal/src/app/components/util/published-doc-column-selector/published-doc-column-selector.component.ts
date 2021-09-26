@@ -78,7 +78,7 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
   }
 
   default() {
-    this.selectedColumns = [];
+    this.selectedColumns = this.publishedDocColumnService.getDefaultColumns();
   }
 
   update(field: PublishedDocColumnConfig) {

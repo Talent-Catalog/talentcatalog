@@ -569,7 +569,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.publishing = true;
     this.error = null;
 
-    //todo Note: 1 that the same column could appear more than once, 2: we need matching parameters
     //Construct the request
     const request: PublishListRequest = new PublishListRequest();
     request.columns = exportColumns;
