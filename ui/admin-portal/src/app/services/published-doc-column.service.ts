@@ -36,10 +36,10 @@ export class PublishedDocColumnService {
     //Keep empty column first, so we know the index and can sort at the end.
     this.addColumn("emptyColumn", "Empty Column", null);
     this.addColumn("candidateNumber", "Candidate number", new PublishedDocFieldSource("candidateNumber"));
-    this.addColumnWithLink("candidateNumberLinkCv", "Number/CV",
+    this.addColumnWithLink("candidateNumberLinkCv", "Number->CV",
       new PublishedDocFieldSource("candidateNumber"),
       new PublishedDocFieldSource("shareableCv.location"));
-    this.addColumnWithLink("candidateNumberLinkTc", "Number/Talent Catalog",
+    this.addColumnWithLink("candidateNumberLinkTc", "Number->Talent Catalog",
       new PublishedDocFieldSource("candidateNumber"),
       new PublishedDocFieldSource("tcLink"));
     this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
