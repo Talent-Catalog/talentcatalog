@@ -17,8 +17,16 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.AddProtectedRangeRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
+import com.google.api.services.sheets.v4.model.GridRange;
+import com.google.api.services.sheets.v4.model.ProtectedRange;
+import com.google.api.services.sheets.v4.model.Request;
+import com.google.api.services.sheets.v4.model.Sheet;
+import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -83,11 +91,48 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         .setValueInputOption("USER_ENTERED")
         .setData(data);
 
+    final String spreadsheetId = file.getId();
     BatchUpdateValuesResponse res =
-        service.spreadsheets().values().batchUpdate(file.getId(), body).execute();
+        service.spreadsheets().values().batchUpdate(spreadsheetId, body).execute();
     
     log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
 
+
+    List<Request> requests = new ArrayList<>();
+
+    List<Integer> sheetIdsToProtect = getSheetsToProtect(service, spreadsheetId);
+    for (Integer sheetId : sheetIdsToProtect) {
+      Request req = new Request();
+      req.setAddProtectedRange(new AddProtectedRangeRequest().setProtectedRange(
+          new ProtectedRange()
+              .setRange(new GridRange().setSheetId(sheetId))
+              .setWarningOnly(true)
+      ));
+      requests.add(req);
+    }
+    
+    BatchUpdateSpreadsheetRequest content = 
+        new BatchUpdateSpreadsheetRequest().setRequests(requests);
+    BatchUpdateSpreadsheetResponse res2 = 
+        service.spreadsheets().batchUpdate(spreadsheetId, content).execute();
+
+    log.info(res2.getReplies().size() + " protection responses received");
+
     return file.getUrl();
+  }
+
+  private List<Integer> getSheetsToProtect(Sheets service, String spreadsheetId)
+      throws IOException {
+    List<Integer> ids = new ArrayList<>();
+    Sheets.Spreadsheets.Get request = service.spreadsheets().get(spreadsheetId);
+    List<Sheet> sheets = request.execute().getSheets();
+    for (Sheet sheet : sheets) {
+      SheetProperties p = sheet.getProperties();
+      if (!"Main".equals(p.getTitle())) {
+        //Protect this sheet
+        ids.add(p.getSheetId());
+      }
+    }
+    return ids;
   }
 }
