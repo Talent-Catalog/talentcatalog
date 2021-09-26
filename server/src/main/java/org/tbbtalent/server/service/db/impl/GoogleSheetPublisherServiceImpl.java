@@ -97,7 +97,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     
     log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
 
-
+    //Now protect the sheets other than the Main one (ie the Data and Feedback sheets)
     List<Request> requests = new ArrayList<>();
 
     List<Integer> sheetIdsToProtect = getSheetsToProtect(service, spreadsheetId);
@@ -121,6 +121,10 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     return file.getUrl();
   }
 
+  /**
+   * Returns the ids of all sheets (tabs) other than the main one.
+   * Users should normally only be able to change the main sheet - not the other tabs
+   */
   private List<Integer> getSheetsToProtect(Sheets service, String spreadsheetId)
       throws IOException {
     List<Integer> ids = new ArrayList<>();
