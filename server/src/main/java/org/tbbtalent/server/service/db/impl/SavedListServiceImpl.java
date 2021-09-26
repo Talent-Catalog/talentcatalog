@@ -622,6 +622,11 @@ public class SavedListServiceImpl implements SavedListService {
         props.put("listId", savedList.getId());
         props.put("listName", savedList.getName());
         props.put("timeCreated", LocalDate.now().toString());
+        User user = authService.getLoggedInUser().orElse(null);
+        if (user != null) {
+            props.put("createdByName", user.getDisplayName());
+            props.put("createdByEmail", user.getEmail());
+        }
         
         String link = docPublisherService
             .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData, props);
