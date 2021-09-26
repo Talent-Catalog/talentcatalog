@@ -59,7 +59,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
 
   @Override
   public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder, 
-      String name, List<List<Object>> mainData, Map<String, String> props)
+      String name, List<List<Object>> mainData, Map<String, Object> props)
       throws GeneralSecurityException, IOException {
 
     //Create copy of sheet from template
@@ -74,7 +74,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     data.add(new ValueRange().setRange("B7").setValues(mainData));
 
     //Add in extra properties
-    for (Entry<String, String> prop : props.entrySet()) {
+    for (Entry<String, Object> prop : props.entrySet()) {
       List<List<Object>> cell = Arrays.asList(Arrays.asList(prop.getValue()));
       data.add(new ValueRange().setRange(prop.getKey()).setValues(cell));
     }

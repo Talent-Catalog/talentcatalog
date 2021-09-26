@@ -45,6 +45,6 @@ public interface DocPublisherService {
    * @return A link to the created document
    */
   String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
-      String name, List<List<Object>> data, Map<String, String> props) throws GeneralSecurityException, IOException;
+      String name, List<List<Object>> data, Map<String, Object> props) throws GeneralSecurityException, IOException;
 
 }

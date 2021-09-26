@@ -23,6 +23,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -616,9 +617,11 @@ public class SavedListServiceImpl implements SavedListService {
         GoogleFileSystemFolder listFolder = new GoogleFileSystemFolder(savedList.getFolderlink());
         
         //Set other data to publish.
-        Map<String, String> props = new HashMap<>();
+        Map<String, Object> props = new HashMap<>();
         props.put("listDescription", savedList.getDescription());
+        props.put("listId", savedList.getId());
         props.put("listName", savedList.getName());
+        props.put("timeCreated", LocalDate.now().toString());
         
         String link = docPublisherService
             .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData, props);
