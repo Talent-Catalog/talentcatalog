@@ -44,6 +44,11 @@ export class PublishedDocColumnService {
       new PublishedDocFieldSource("tcLink"));
     this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
     this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
+
+    //todo These special feedback fields need to have flag containing feedback type
+    this.addColumn("employerDecision", "Employer Decision", null);
+    this.addColumn("employerFeedback", "Employer Feedback", null);
+
     this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
     this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"));
     this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"));
@@ -106,6 +111,7 @@ export class PublishedDocColumnService {
     columns.push(this.getDefaultColumnConfigFromKey("candidateNumberLinkCv"));
     columns.push(this.getDefaultColumnConfigFromKey("name"));
     columns.push(this.getDefaultColumnConfigFromKey("shareableNotes"));
+    columns.push(this.getDefaultColumnConfigFromKey("contextNote"));
     return columns;
   }
 
