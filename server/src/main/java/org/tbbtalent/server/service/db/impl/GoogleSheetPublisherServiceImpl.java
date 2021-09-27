@@ -22,9 +22,13 @@ import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
+import com.google.api.services.sheets.v4.model.BooleanCondition;
+import com.google.api.services.sheets.v4.model.ConditionValue;
+import com.google.api.services.sheets.v4.model.DataValidationRule;
 import com.google.api.services.sheets.v4.model.GridRange;
 import com.google.api.services.sheets.v4.model.ProtectedRange;
 import com.google.api.services.sheets.v4.model.Request;
+import com.google.api.services.sheets.v4.model.SetDataValidationRequest;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.ValueRange;
@@ -97,19 +101,39 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     
     log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
 
-    //Now protect the sheets other than the Main one (ie the Data and Feedback sheets)
-    //See https://developers.google.com/sheets/api/samples/ranges 
-    List<Request> requests = new ArrayList<>();
+    //Fetch properties of different sheets (tabs)
+    List<SheetProperties> sheetProperties = getSheetProperties(service, spreadsheetId);
+    
+    //Find main sheet id
+    Integer mainSheetId = null;
+    for (SheetProperties sheetProperty : sheetProperties) {
+      if ("Main".equals(sheetProperty.getTitle())) {
+        mainSheetId = sheetProperty.getSheetId();
+      }
+    }
 
-    List<Integer> sheetIdsToProtect = getSheetsToProtect(service, spreadsheetId);
-    for (Integer sheetId : sheetIdsToProtect) {
-      Request req = new Request();
-      req.setAddProtectedRange(new AddProtectedRangeRequest().setProtectedRange(
-          new ProtectedRange()
-              .setRange(new GridRange().setSheetId(sheetId))
-              .setWarningOnly(true)
-      ));
-      requests.add(req);
+    //Now batch various update requests
+    List<Request> requests = new ArrayList<>();
+    Request req;
+
+    //Todo Add a data validation drop downs if needed
+//    req = computeDropDownsRequest(mainSheetId, 6, 7, mainData.size()-1,
+//        Arrays.asList("Offer", "No Offer"));
+//    requests.add(req);
+    
+    //Now protect the sheets other than the Main one (ie the Data and Feedback sheets)
+    //Users should normally only be able to change the main sheet - not the other tabs
+    //See https://developers.google.com/sheets/api/samples/ranges
+    for (SheetProperties sheetProperty : sheetProperties) {
+      if (!"Main".equals(sheetProperty.getTitle())) {
+        req = new Request();
+        req.setAddProtectedRange(new AddProtectedRangeRequest().setProtectedRange(
+            new ProtectedRange()
+                .setRange(new GridRange().setSheetId(sheetProperty.getSheetId()))
+                .setWarningOnly(true)
+        ));
+        requests.add(req);
+      }
     }
     
     BatchUpdateSpreadsheetRequest content = 
@@ -122,22 +146,41 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     return file.getUrl();
   }
 
+  private Request computeDropDownsRequest(
+      Integer sheetId, int column, int startRow, int nRows, List<String> options) {
+    //Add data validation drop downs
+    //See https://developers.google.com/sheets/api/samples/data
+    List<ConditionValue> optionValues = new ArrayList<>();
+    for (String option : options) {
+      optionValues.add(new ConditionValue().setUserEnteredValue(option));
+    }
+    Request req = new Request().setSetDataValidation(new SetDataValidationRequest()
+        .setRange(new GridRange()
+            .setSheetId(sheetId)
+            .setStartRowIndex(startRow).setStartColumnIndex(column)
+            .setEndRowIndex(startRow+nRows).setEndColumnIndex(column+1))
+        .setRule(new DataValidationRule()
+            .setCondition(new BooleanCondition()
+                .setType("ONE_OF_LIST")
+                .setValues(optionValues))
+            .setStrict(true)
+            .setShowCustomUi(true)
+        )
+    );
+    return req;
+  }
+  
   /**
-   * Returns the ids of all sheets (tabs) other than the main one.
-   * Users should normally only be able to change the main sheet - not the other tabs
+   * Returns the properties of all sheets (tabs).
    */
-  private List<Integer> getSheetsToProtect(Sheets service, String spreadsheetId)
+  private List<SheetProperties> getSheetProperties(Sheets service, String spreadsheetId)
       throws IOException {
-    List<Integer> ids = new ArrayList<>();
+    List<SheetProperties> sheetProperties = new ArrayList<>();
     Sheets.Spreadsheets.Get request = service.spreadsheets().get(spreadsheetId);
     List<Sheet> sheets = request.execute().getSheets();
     for (Sheet sheet : sheets) {
-      SheetProperties p = sheet.getProperties();
-      if (!"Main".equals(p.getTitle())) {
-        //Protect this sheet
-        ids.add(p.getSheetId());
-      }
+      sheetProperties.add(sheet.getProperties());
     }
-    return ids;
+    return sheetProperties;
   }
 }
