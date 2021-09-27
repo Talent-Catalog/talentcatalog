@@ -33,15 +33,19 @@
     <i class="fas fa-spinner fa-spin"></i> Updating...
   </div>
 
-  <div class="flex mb-3">
+  <div class="d-flex mb-3">
     <div class="container">
       <p class="text-center h6 mb-1">Available Fields</p>
       <div class="small mb-3 text-muted text-center">
         Drag and drop into the selected fields column.
       </div>
       <div id="availableColumns" [dragula]="dragulaGroupName" [(dragulaModel)]="availableColumns">
-        <div id="field" class="field" *ngFor="let field of availableColumns; last as isLast" [ngClass]="{'mt-4': isLast}">
-          {{ field.columnDef.header }}
+        <div *ngFor="let field of availableColumns; last as isLast" [ngClass]="{'mt-4': isLast}">
+          <div class="d-flex">
+            <div id="field" class="field width-100" >
+              {{ field.columnDef.header }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -54,7 +58,7 @@
           <div id="selectedColumns" [dragula]="dragulaGroupName" [(dragulaModel)]="selectedColumns">
               <div *ngFor="let field of selectedColumns; let i = index">
                 <div ngbDropdown #dropdown=ngbDropdown class="d-flex">
-                  <button id="dropdownForm" class="btn field" ngbDropdownToggle>
+                  <button id="dropdownForm" class="btn field width-100" ngbDropdownToggle>
                     <span *ngIf="field.columnProps.header != null; else defaultHeader">{{field.columnProps.header}}</span>
                     <ng-template #defaultHeader>
                       <span>{{field.columnDef.header}}</span>

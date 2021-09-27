@@ -1,11 +1,5 @@
 @import "src/scss/_variables.scss";
 
-.flex {
-  display: flex;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.4);
-}
-
 .field {
   background-color: $color-secondary-lighter;
   list-style: none;
@@ -16,11 +10,8 @@
   text-align: center;
 }
 
-.container {
-  flex: 1;
-}
 .container:not(:last-child) {
-  margin-right: 8px;
+  margin-right: 4em;
 }
 
 * {
@@ -37,7 +28,7 @@
   top: 0;
 }
 
-#dropdownForm {
+.width-100 {
   width: 100%;
 }
 
