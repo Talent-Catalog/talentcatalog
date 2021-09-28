@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {AfterContentChecked, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {Candidate} from "../../../model/candidate";
@@ -32,7 +32,7 @@ import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
   templateUrl: './registration-personal.component.html',
   styleUrls: ['./registration-personal.component.scss']
 })
-export class RegistrationPersonalComponent implements OnInit, OnDestroy {
+export class RegistrationPersonalComponent implements OnInit, AfterContentChecked, OnDestroy {
 
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
@@ -96,8 +96,6 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       this.loadDropDownData();
     });
 
-    this.checkUsAfghan();
-
     this.candidateService.getCandidatePersonal().subscribe(
       (response) => {
         this.form.patchValue({
@@ -142,6 +140,20 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
         }
         this.form.get('unhcrConsent').updateValueAndValidity();
       });
+  }
+
+  ngAfterContentChecked() {
+    this.candidateService.getCandidateSurvey().subscribe(
+      (response) => {
+        //Language selection is enabled unless this is an USAfghan candidate
+        this.usAfghan = response?.surveyType?.id === US_AFGHAN_SURVEY_TYPE
+        this._loading.usAfghan = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.usAfghan = false;
+      }
+    );
   }
 
   get tbbCriteriaFailed() {
@@ -243,20 +255,6 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-  }
-
-  checkUsAfghan() {
-    this.candidateService.getCandidateSurvey().subscribe(
-      (response) => {
-        //Language selection is enabled unless this is an USAfghan candidate
-        this.usAfghan = response?.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
-        this._loading.usAfghan = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.usAfghan = false;
-      }
-    );
   }
 
 }
