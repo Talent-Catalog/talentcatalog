@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -628,10 +629,13 @@ public class SavedListServiceImpl implements SavedListService {
             props.put("createdByEmail", user.getEmail());
         }
         
+        Map<Integer, List<String>> columnDropDowns = new HashMap<>();
+        columnDropDowns.put(6, Arrays.asList("Offer", "NoOffer", "Wait"));
+        
         String publishedSheetDataRangeName = googleDriveConfig.getPublishedSheetDataRangeName();
         String link = docPublisherService
             .createPublishedDoc(drive, listFolder, savedList.getName(), 
-                publishedSheetDataRangeName, publishedData, props);
+                publishedSheetDataRangeName, publishedData, props, columnDropDowns);
 
         /*
          * Need to remove any existing columns - can't rely on the savedList.setExportColumns call

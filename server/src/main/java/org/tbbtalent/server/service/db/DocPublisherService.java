@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
@@ -43,10 +44,12 @@ public interface DocPublisherService {
    * @param props Extra properties to send to sheet. Each property key should correspond to 
    *              a named cell reference in the document template, and the value is the value
    *              to appear in that cell.
+   * @param columnDropDowns If not null defines columns that have drop downs for data entry              
    * @return A link to the created document
    */
   String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
-      String name, String dataRangeName, List<List<Object>> data, Map<String, Object> props) 
+      String name, String dataRangeName, List<List<Object>> data, Map<String, Object> props,
+      @Nullable Map<Integer, List<String>> columnDropDowns) 
       throws GeneralSecurityException, IOException;
 
 }

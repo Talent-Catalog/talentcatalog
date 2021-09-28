@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.service.db.DocPublisherService;
@@ -70,25 +71,25 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     this.fileSystemService = fileSystemService;
   }
 
-  //todo Map of column index to drop down options
   //todo Array of feedback field columns - -1 if field does not appear
   @Override
   public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder, 
-      String name, String dataRangeName, List<List<Object>> mainData, Map<String, Object> props)
+      String name, String dataRangeName, List<List<Object>> mainData, Map<String, Object> props,
+      @Nullable Map<Integer, List<String>> columnDropDowns)
       throws GeneralSecurityException, IOException {
 
     //Create copy of sheet from template
     GoogleFileSystemFile file = fileSystemService.copyFile(
         folder, name, googleDriveConfig.getPublishedSheetTemplate());
     final String spreadsheetId = file.getId();
-
     
     //Now write to sheet - see https://developers.google.com/sheets/api/guides/values#writing 
     final Sheets service = googleDriveConfig.getGoogleSheetsService();
     List<ValueRange> data = new ArrayList<>();
 
-    //Extract row index and column index from dataRangeName named range. 
-    // See https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets#NamedRange 
+    //Extract row index and column index from dataRangeName named range.
+    //This is useful for calculating the actual column indexes that the mainData gets written to.
+    //Basically you just need to add the start column index as an offset.
     GridRange dataRange = null;
     List<NamedRange> namedRanges = getNamedRanges(service, spreadsheetId);
     for (NamedRange namedRange : namedRanges) {
@@ -97,8 +98,9 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         break;
       }
     }
-    //todo Column start index in dataRange can be used as base for computing actual column
-    //from column index in incoming data - eg for locating drop down options, or feedback columns
+    if (dataRange == null) {
+      throw new IOException("Sheet is missing named data range called " + dataRangeName);
+    }
     
     //Add main data
     data.add(new ValueRange().setRange(dataRangeName).setValues(mainData));
@@ -133,11 +135,16 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     //Now batch various update requests
     List<Request> requests = new ArrayList<>();
     Request req;
-
-    //Todo Add a data validation drop downs if needed
-//    req = computeDropDownsRequest(mainSheetId, 6, 7, mainData.size()-1,
-//        Arrays.asList("Offer", "No Offer"));
-//    requests.add(req);
+    
+    //Add data validation drop downs if needed
+    if (columnDropDowns != null) {
+      for (Entry<Integer, List<String>> entry : columnDropDowns.entrySet()) {
+        req = computeDropDownsRequest(
+            mainSheetId, entry.getKey(), dataRange.getStartRowIndex()+1, 
+            mainData.size()-1, entry.getValue());
+        requests.add(req);
+      }
+    }
     
     //Now protect the sheets other than the Main one (ie the Data and Feedback sheets)
     //Users should normally only be able to change the main sheet - not the other tabs
@@ -195,6 +202,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
    */
   private List<NamedRange> getNamedRanges(Sheets service, String spreadsheetId)
       throws IOException {
+    // See https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets#NamedRange
     Sheets.Spreadsheets.Get request = service.spreadsheets().get(spreadsheetId);
     return request.execute().getNamedRanges();
   }
