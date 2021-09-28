@@ -47,9 +47,9 @@ export class PublishedDocColumnService {
     this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
 
     //These are special employer feedback fields (ie non display only fields - the default type)
-    this.addColumnWithType("employerDecision", "Employer Decision",
+    this.addColumnWithType("employerDecision", "Employer\nDecision",
       PublishedDocColumnType.employerCandidateDecision, null);
-    this.addColumnWithType("employerFeedback", "Employer Feedback",
+    this.addColumnWithType("employerFeedback", "Employer\nFeedback",
       PublishedDocColumnType.employerCandidateNotes, null);
 
     this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
