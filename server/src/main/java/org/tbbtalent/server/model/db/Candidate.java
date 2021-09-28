@@ -604,6 +604,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         return null;
     }
+    
+    @Transient
+    public String getTcLink() {
+        return "https://tbbtalent.org/admin-portal/candidate/" + candidateNumber;
+    }
 
     /**
      * Candidates can have special values associated with a particular 

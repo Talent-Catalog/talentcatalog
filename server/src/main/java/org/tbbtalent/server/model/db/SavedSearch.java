@@ -116,6 +116,7 @@ public class SavedSearch extends AbstractCandidateSource {
     }
 
     public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
+        modifyColumnIndices(exportColumns);
         this.exportColumns = exportColumns;
     }
 

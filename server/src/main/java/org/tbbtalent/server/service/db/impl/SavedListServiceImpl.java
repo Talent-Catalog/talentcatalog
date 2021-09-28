@@ -23,9 +23,12 @@ import com.opencsv.exceptions.CsvValidationException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +65,7 @@ import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
 import org.tbbtalent.server.request.list.IHasSetOfCandidates;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -524,6 +528,15 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public void updateDescription(long savedListId, 
+        UpdateCandidateSourceDescriptionRequest request)
+        throws  NoSuchObjectException {
+        SavedList savedList = get(savedListId);
+        savedList.setDescription(request.getDescription());
+        saveIt(savedList);
+    }
+
+    @Override
     public void updateDisplayedFieldPaths(
             long savedListId, UpdateDisplayedFieldPathsRequest request) 
             throws NoSuchObjectException {
@@ -602,8 +615,21 @@ public class SavedListServiceImpl implements SavedListService {
         //Create the doc in the list folder.
         GoogleFileSystemDrive drive = googleDriveConfig.getListFoldersDrive();
         GoogleFileSystemFolder listFolder = new GoogleFileSystemFolder(savedList.getFolderlink());
+        
+        //Set other data to publish.
+        Map<String, Object> props = new HashMap<>();
+        props.put("listDescription", savedList.getDescription());
+        props.put("listId", savedList.getId());
+        props.put("listName", savedList.getName());
+        props.put("timeCreated", LocalDate.now().toString());
+        User user = authService.getLoggedInUser().orElse(null);
+        if (user != null) {
+            props.put("createdByName", user.getDisplayName());
+            props.put("createdByEmail", user.getEmail());
+        }
+        
         String link = docPublisherService
-            .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData);
+            .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData, props);
 
         /*
          * Need to remove any existing columns - can't rely on the savedList.setExportColumns call

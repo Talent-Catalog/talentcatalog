@@ -35,9 +35,20 @@ export class PublishedDocColumnService {
   constructor() {
     //Keep empty column first, so we know the index and can sort at the end.
     this.addColumn("emptyColumn", "Empty Column", null);
-    this.addColumn("candidateNumber", "Candidate number", new PublishedDocFieldSource("candidateNumber"));
+    this.addColumn("candidateNumber", "Candidate #", new PublishedDocFieldSource("candidateNumber"));
+    this.addColumnWithLink("candidateNumberLinkCv", "Candidate # \n (link to CV)",
+      new PublishedDocFieldSource("candidateNumber"),
+      new PublishedDocFieldSource("shareableCv.location"));
+    this.addColumnWithLink("candidateNumberLinkTc", "Candidate # \n(link to TC)",
+      new PublishedDocFieldSource("candidateNumber"),
+      new PublishedDocFieldSource("tcLink"));
     this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
     this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
+
+    //todo These special feedback fields need to have flag containing feedback type
+    this.addColumn("employerDecision", "Employer Decision", null);
+    this.addColumn("employerFeedback", "Employer Feedback", null);
+
     this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
     this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"));
     this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"));
@@ -54,16 +65,13 @@ export class PublishedDocColumnService {
   getColumnConfigFromExportColumns(exportColumns: ExportColumn[]): PublishedDocColumnConfig[] {
     const columnConfigs: PublishedDocColumnConfig[] = [];
     for (const exportColumn of exportColumns) {
-      const columnDef = this.getColumnDefFromKey(exportColumn.key);
-      if (columnDef != null) {
-        const config = new PublishedDocColumnConfig();
-        config.columnDef = columnDef;
-        const props = new PublishedDocColumnProps();
+      const config = this.getDefaultColumnConfigFromKey(exportColumn.key);
+      if (config != null) {
+        const props = config.columnProps;
         if (exportColumn.properties != null) {
           props.header = exportColumn.properties?.header;
           props.constant = exportColumn.properties?.constant;
         }
-        config.columnProps = props;
         columnConfigs.push(config);
       }
     }
@@ -83,34 +91,28 @@ export class PublishedDocColumnService {
     return columnConfigs;
   }
 
-  getExportColumnObjects(exportColumns: ExportColumn[]): ExportColumn[] {
-    const cols: ExportColumn[] = [];
-    for (const expColumn of exportColumns) {
-      const col: ExportColumn = new ExportColumn();
-      col.index = expColumn.index;
-      col.key = expColumn.key;
-      col.properties = new PublishedDocColumnProps();
-      col.properties.header = this.getColumnDefFromKey(expColumn.key).header;
-      cols.push(col);
-    }
-    return cols;
-  }
-
-  getAllExportColumns(): ExportColumn[] {
-    const exportCols: ExportColumn[] = [];
-    for (const expColumn of this.allColumnInfosMap) {
-      const col: ExportColumn = new ExportColumn();
-      col.index = 0;
-      col.key = expColumn[0];
-      col.properties = new PublishedDocColumnProps();
-      col.properties.header = expColumn[1].header;
-      exportCols.push(col);
-    }
-    return exportCols;
-  }
-
   private getColumnDefFromKey(columnKey: string): PublishedDocColumnDef {
     return this.allColumnInfosMap.get(columnKey);
+  }
+
+  private getDefaultColumnConfigFromKey(columnKey: string): PublishedDocColumnConfig {
+    const columnDef = this.getColumnDefFromKey(columnKey);
+    if (columnDef == null) {
+      return null;
+    }
+    const config = new PublishedDocColumnConfig();
+    config.columnDef = columnDef;
+    config.columnProps = new PublishedDocColumnProps();
+    return config;
+  }
+
+  public getDefaultColumns(): PublishedDocColumnConfig[] {
+    const columns: PublishedDocColumnConfig[] = [];
+    columns.push(this.getDefaultColumnConfigFromKey("candidateNumberLinkCv"));
+    columns.push(this.getDefaultColumnConfigFromKey("name"));
+    columns.push(this.getDefaultColumnConfigFromKey("shareableNotes"));
+    columns.push(this.getDefaultColumnConfigFromKey("contextNote"));
+    return columns;
   }
 
   private addColumnWithLink(key: string, name: string,

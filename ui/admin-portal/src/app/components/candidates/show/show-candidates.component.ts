@@ -569,7 +569,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.publishing = true;
     this.error = null;
 
-    //todo Note: 1 that the same column could appear more than once, 2: we need matching parameters
     //Construct the request
     const request: PublishListRequest = new PublishListRequest();
     request.columns = exportColumns;
@@ -591,7 +590,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   modifyExportColumns() {
-    const modal = this.modalService.open(PublishedDocColumnSelectorComponent);
+    const modal = this.modalService.open(PublishedDocColumnSelectorComponent, {size: "lg"});
 
     modal.componentInstance.availableColumns = this.publishedDocColumnService.getColumnConfigFromAllColumns();
     modal.componentInstance.selectedColumns =  this.publishedDocColumnService.getColumnConfigFromExportColumns(this.candidateSource.exportColumns);
@@ -605,50 +604,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         error => this.error = error
       )
       .catch();
-
-    //Todo - debugging - for now default empty export columns
-
-    // if (exportColumns == null || exportColumns.length === 0) {
-    //   exportColumns = [];
-    //   let col: ExportColumn;
-    //   col = new ExportColumn();
-    //   col.index = 0;
-    //   col.key = "candidateNumber";
-    //   exportColumns.push(col);
-    //
-    //   col = new ExportColumn();
-    //   col.index = 1;
-    //   col.key = "name";
-    //   exportColumns.push(col);
-    //
-    //   col = new ExportColumn();
-    //   col.index = 2;
-    //   col.key = "cv";
-    //   col.properties = new PublishedDocColumnProps();
-    //   col.properties.constant = "Click for CV"
-    //   exportColumns.push(col);
-    //
-    //   col = new ExportColumn();
-    //   col.index = 3;
-    //   col.key = "emptyColumn";
-    //   col.properties = new PublishedDocColumnProps();
-    //   col.properties.header = "Interview date"
-    //   exportColumns.push(col);
-    //
-    //   col = new ExportColumn();
-    //   col.index = 4;
-    //   col.key = "emptyColumn";
-    //   col.properties = new PublishedDocColumnProps();
-    //   col.properties.header = "Interview panel"
-    //   exportColumns.push(col);
-    //
-    //   col = new ExportColumn();
-    //   col.index = 5;
-    //   col.key = "emptyColumn";
-    //   col.properties = new PublishedDocColumnProps();
-    //   col.properties.header = "Offer?"
-    //   exportColumns.push(col);
-    // }
   }
 
   createAndDownloadBlobFile(body, options, filename) {
