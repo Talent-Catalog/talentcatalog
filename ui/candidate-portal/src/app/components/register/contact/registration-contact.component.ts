@@ -183,7 +183,7 @@ export class RegistrationContactComponent implements OnInit {
           }
           this.candidateService.updateCandidateSurvey(request).subscribe(
             (res) => {
-              console.log(res);
+              this.saving = false;
             }, (error) => {
               this.error = error;
               this.saving = false;
