@@ -33,6 +33,18 @@ export enum Progress {
   Finished
 }
 
+/**
+ * Published columns can for display purposes only, or they can allow different kinds of data to be
+ * entered in them (eg by employers) which we can process, interpreting the data depending on its
+ * type.
+ * This entered data may get imported back into the Talent Catalog data base or into Salesforce.
+ */
+export enum PublishedDocColumnType {
+  displayOnly,
+  employerCandidateNotes,
+  employerCandidateDecision
+}
+
 export enum ReviewStatus {
   unverified,
   verified,

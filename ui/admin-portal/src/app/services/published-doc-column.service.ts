@@ -24,6 +24,7 @@ import {
   PublishedDocFieldSource,
   PublishedDocValueSource
 } from "../model/saved-list";
+import {PublishedDocColumnType} from "../model/base";
 
 @Injectable({
   providedIn: 'root'
@@ -45,9 +46,11 @@ export class PublishedDocColumnService {
     this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
     this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
 
-    //todo These special feedback fields need to have flag containing feedback type
-    this.addColumn("employerDecision", "Employer Decision", null);
-    this.addColumn("employerFeedback", "Employer Feedback", null);
+    //These are special employer feedback fields (ie non display only fields - the default type)
+    this.addColumnWithType("employerDecision", "Employer Decision",
+      PublishedDocColumnType.employerCandidateDecision, null);
+    this.addColumnWithType("employerFeedback", "Employer Feedback",
+      PublishedDocColumnType.employerCandidateNotes, null);
 
     this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
     this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"));
@@ -115,15 +118,26 @@ export class PublishedDocColumnService {
     return columns;
   }
 
-  private addColumnWithLink(key: string, name: string,
+  private addColumnWithTypeAndLink(key: string, name: string, type: PublishedDocColumnType,
                          value: PublishedDocValueSource, link: PublishedDocValueSource) {
     const info = new PublishedDocColumnDef(key, name);
+    info.type = type;
     info.content.value = value;
     info.content.link = link;
     this.allColumnInfosMap.set(key, info);
   }
 
+  private addColumnWithLink(key: string, name: string,
+                         value: PublishedDocValueSource, link: PublishedDocValueSource) {
+    this.addColumnWithTypeAndLink(key, name, PublishedDocColumnType.displayOnly, value, link);
+  }
+
   private addColumn(key: string, name: string, value: PublishedDocValueSource) {
     this.addColumnWithLink(key, name, value, null);
+  }
+
+  private addColumnWithType(key: string, name: string, type: PublishedDocColumnType,
+                            value: PublishedDocValueSource) {
+    this.addColumnWithTypeAndLink(key, name, type, value, null);
   }
 }

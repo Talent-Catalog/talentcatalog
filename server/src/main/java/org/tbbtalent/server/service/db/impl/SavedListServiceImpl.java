@@ -64,6 +64,7 @@ import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
@@ -628,9 +629,20 @@ public class SavedListServiceImpl implements SavedListService {
             props.put("createdByName", user.getDisplayName());
             props.put("createdByEmail", user.getEmail());
         }
-        
-        Map<Integer, List<String>> columnDropDowns = new HashMap<>();
-        columnDropDowns.put(6, Arrays.asList("Offer", "NoOffer", "Wait"));
+
+        //Check if we need any drop downs. 
+        Map<Integer, List<String>> columnDropDowns = null;
+        int columnCount = 0;
+        for (PublishedDocColumnDef def : columnInfos) {
+            if (def.getType().equals(PublishedDocColumnType.employerCandidateDecision)) {
+                if (columnDropDowns == null) {
+                    columnDropDowns = new HashMap<>();
+                }
+                //TODO JC Extract values from enum
+                columnDropDowns.put(columnCount, Arrays.asList("Undecided", "Offer", "No Offer", "Wait"));
+            }
+            columnCount++;
+        }
         
         String publishedSheetDataRangeName = googleDriveConfig.getPublishedSheetDataRangeName();
         String link = docPublisherService

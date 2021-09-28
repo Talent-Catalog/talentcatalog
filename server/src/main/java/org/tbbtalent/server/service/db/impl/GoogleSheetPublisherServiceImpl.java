@@ -139,8 +139,9 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     //Add data validation drop downs if needed
     if (columnDropDowns != null) {
       for (Entry<Integer, List<String>> entry : columnDropDowns.entrySet()) {
-        req = computeDropDownsRequest(
-            mainSheetId, entry.getKey(), dataRange.getStartRowIndex()+1, 
+        req = computeDropDownsRequest(mainSheetId, 
+            dataRange.getStartColumnIndex() + entry.getKey(), 
+            dataRange.getStartRowIndex()+1, 
             mainData.size()-1, entry.getValue());
         requests.add(req);
       }

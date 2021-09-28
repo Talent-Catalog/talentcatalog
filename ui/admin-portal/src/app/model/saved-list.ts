@@ -17,10 +17,10 @@
 import {
   CandidateSource,
   PagedSearchRequest,
+  PublishedDocColumnType,
   SearchCandidateSourcesRequest
 } from "./base";
 import {isSavedSearch, SavedSearchRef} from "./saved-search";
-import {TargetListSelection} from "../components/list/select/select-list.component";
 import {UpdateCandidateStatusInfo} from "./candidate";
 
 export enum SearchBy {
@@ -119,6 +119,12 @@ export class PublishedDocColumnDef {
   key: string;
 
   /**
+   * The type of column. The default column type is display only.
+   * Other types of column allow different types of feedback which we can process.
+   */
+  type: PublishedDocColumnType = PublishedDocColumnType.displayOnly;
+
+  /**
    * This is the name which is displayed to Angular users when they are deciding which columns
    * should appear in the published doc.
    * <p/>
@@ -155,7 +161,6 @@ export class PublishedDocColumnDef {
 export class PublishedDocColumnProps {
   header: string;
   constant: string;
-  //todo  Enumerated column type: noFeedback, employerCandidateNotes, employerDecision
 }
 
 /**

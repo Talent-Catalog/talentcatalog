@@ -44,7 +44,9 @@ public interface DocPublisherService {
    * @param props Extra properties to send to sheet. Each property key should correspond to 
    *              a named cell reference in the document template, and the value is the value
    *              to appear in that cell.
-   * @param columnDropDowns If not null defines columns that have drop downs for data entry              
+   * @param columnDropDowns If not null defines columns that have drop downs for data entry. 
+   *                        In the map each key is a column number (starting at 0) and the value
+   *                        is a list of strings providing the drop down values.
    * @return A link to the created document
    */
   String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
