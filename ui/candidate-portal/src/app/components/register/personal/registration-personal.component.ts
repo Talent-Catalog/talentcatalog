@@ -25,6 +25,7 @@ import {RegistrationService} from "../../../services/registration.service";
 import {generateYearArray} from "../../../util/year-helper";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 import {LanguageService} from "../../../services/language.service";
+import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 
 @Component({
   selector: 'app-registration-personal',
@@ -43,7 +44,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   // Component states
   _loading = {
     candidate: true,
-    countries: true
+    countries: true,
+    usAfghan: true
   };
   saving: boolean;
 
@@ -53,6 +55,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   years: number[];
   subscription;
   lang: string;
+  usAfghan: boolean;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -78,6 +81,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       yearOfArrival: [''],
       /* NATIONALITY */
       nationality: ['', Validators.required],
+      externalId: [null],
+      externalIdSource: ['US Afghan Parolee Id'],
       unhcrRegistered: [null, Validators.required],
       unhcrNumber: [null],
       unhcrConsent: [null]
@@ -90,6 +95,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       this.lang = event.lang;
       this.loadDropDownData();
     });
+
+    this.checkUsAfghan();
 
     this.candidateService.getCandidatePersonal().subscribe(
       (response) => {
@@ -106,6 +113,9 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           yearOfArrival: response.yearOfArrival,
           /* NATIONALITY */
           nationality: response.nationality ? response.nationality.id : null,
+          /* IDS */
+          externalId: response.externalId ? response.externalId : null,
+          // externalIdSource: response.externalIdSource ? response.externalIdSource : null,
           unhcrRegistered: response.unhcrRegistered,
           unhcrNumber: response.unhcrNumber,
           unhcrConsent: response.unhcrConsent,
@@ -233,6 +243,20 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  checkUsAfghan() {
+    this.candidateService.getCandidateSurvey().subscribe(
+      (response) => {
+        //Language selection is enabled unless this is an USAfghan candidate
+        this.usAfghan = response?.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
+        this._loading.usAfghan = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.usAfghan = false;
+      }
+    );
   }
 
 }

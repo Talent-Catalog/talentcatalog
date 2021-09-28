@@ -38,6 +38,8 @@ export interface Candidate {
   city: string;
   yearOfArrival: number;
   nationality: Country;
+  externalId: string;
+  externalIdSource: string;
   unhcrRegistered: YesNoUnsure;
   unhcrNumber: string;
   unhcrConsent: YesNo;
