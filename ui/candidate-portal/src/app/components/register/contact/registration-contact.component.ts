@@ -95,7 +95,7 @@ export class RegistrationContactComponent implements OnInit {
       this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
 
       //Turn on language selection except for US Afghan candidates
-      this.languageService.setLanguageSelectionEnabled(!this.usAfghan);
+      this.languageService.setUsAfghan(!this.usAfghan);
 
       // The user has not registered - add the password fields to the reactive form
       this.form.addControl('password', new FormControl('', [Validators.required, Validators.minLength(8)]));

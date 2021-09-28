@@ -126,9 +126,9 @@
     </div>
 
     <!-- EXTERNAL ID -->
-    <hr *ngIf="usAfghan" class="col-12">
+    <hr *ngIf="languageService.isUsAfghan()" class="col-12">
 
-    <div *ngIf="usAfghan" class="col-12 col-md-6" >
+    <div *ngIf="languageService.isUsAfghan()" class="col-12 col-md-6" >
       <div class="form-group">
         <label for="externalId">{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</label>
         <input type="text" class="form-control" id="externalId" placeholder="" [formControlName]="'externalId'">

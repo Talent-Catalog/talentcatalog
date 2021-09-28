@@ -116,6 +116,14 @@
         </div>
       </div>
 
+      <div *ngIf="candidate.externalId" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-id-badge"></i>External Id</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.externalId}}</span><span *ngIf="candidate.externalIdSource">: {{candidate.externalIdSource}}</span>
+        </div>
+      </div>
+
       <div *ngIf="candidate.unhcrRegistered" class="form-group col-sm-12 col-md-4">
         <label class="col-form-label"><i class="far fa-registered"></i>UNHCR Registered</label>
 

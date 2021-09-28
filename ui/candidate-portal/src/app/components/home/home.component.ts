@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit {
       (response) => {
         //Language selection is enabled unless this is an USAfghan candidate
         const usAfghan: boolean = response?.surveyType?.id === US_AFGHAN_SURVEY_TYPE
-        this.languageService.setLanguageSelectionEnabled(!usAfghan);
+        this.languageService.setUsAfghan(!usAfghan);
         this.loading = false;
       },
       (error) => {

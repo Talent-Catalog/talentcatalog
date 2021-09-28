@@ -1015,6 +1015,8 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCountry(country);
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
+        candidate.setExternalId(request.getExternalId());
+        candidate.setExternalIdSource(request.getExternalIdSource());
         candidate.setUnhcrStatus(request.getUnhcrStatus());
         candidate.setUnhcrNumber(request.getUnhcrNumber());
         return save(candidate, true);

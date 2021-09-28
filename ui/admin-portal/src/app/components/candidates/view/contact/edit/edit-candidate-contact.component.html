@@ -113,6 +113,20 @@
                [formControlName]="'whatsapp'">
       </div>
 
+      <!-- EXTERNAL ID -->
+      <div class="form-group">
+        <label for="externalId">External Id</label>
+        <input type="text" class="form-control" id="externalId" placeholder=""
+               [formControlName]="'externalId'">
+      </div>
+
+      <!-- EXTERNAL ID SOURCE -->
+      <div class="form-group">
+        <label for="externalIdSource">External Id Source</label>
+        <input type="text" class="form-control" id="externalIdSource" placeholder=""
+               [formControlName]="'externalIdSource'">
+      </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"
                 [disabled]="candidateForm.invalid || loading || saving">

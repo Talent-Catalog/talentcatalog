@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterContentChecked, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {Candidate} from "../../../model/candidate";
@@ -25,14 +25,13 @@ import {RegistrationService} from "../../../services/registration.service";
 import {generateYearArray} from "../../../util/year-helper";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 import {LanguageService} from "../../../services/language.service";
-import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 
 @Component({
   selector: 'app-registration-personal',
   templateUrl: './registration-personal.component.html',
   styleUrls: ['./registration-personal.component.scss']
 })
-export class RegistrationPersonalComponent implements OnInit, AfterContentChecked, OnDestroy {
+export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
@@ -55,7 +54,6 @@ export class RegistrationPersonalComponent implements OnInit, AfterContentChecke
   years: number[];
   subscription;
   lang: string;
-  usAfghan: boolean;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -140,20 +138,6 @@ export class RegistrationPersonalComponent implements OnInit, AfterContentChecke
         }
         this.form.get('unhcrConsent').updateValueAndValidity();
       });
-  }
-
-  ngAfterContentChecked() {
-    this.candidateService.getCandidateSurvey().subscribe(
-      (response) => {
-        //Language selection is enabled unless this is an USAfghan candidate
-        this.usAfghan = response?.surveyType?.id === US_AFGHAN_SURVEY_TYPE
-        this._loading.usAfghan = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.usAfghan = false;
-      }
-    );
   }
 
   get tbbCriteriaFailed() {
