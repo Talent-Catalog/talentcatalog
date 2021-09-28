@@ -37,7 +37,8 @@ public interface DocPublisherService {
    *
    * @param drive Drive where doc is created
    * @param folder Folder where doc is created
-   * @param name Name of created document 
+   * @param name Name of created document
+   * @param dataRangeName Name of range for candidate data             
    * @param data Data which comprises the published document
    * @param props Extra properties to send to sheet. Each property key should correspond to 
    *              a named cell reference in the document template, and the value is the value
@@ -45,6 +46,7 @@ public interface DocPublisherService {
    * @return A link to the created document
    */
   String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
-      String name, List<List<Object>> data, Map<String, Object> props) throws GeneralSecurityException, IOException;
+      String name, String dataRangeName, List<List<Object>> data, Map<String, Object> props) 
+      throws GeneralSecurityException, IOException;
 
 }

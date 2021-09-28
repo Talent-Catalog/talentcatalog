@@ -178,6 +178,12 @@ public class GoogleDriveConfig {
   private String publishedSheetTemplateId;
 
   /**
+   * Name of range (ie a Named range in the Google sheet) where candidate data should be written 
+   * (including the header line).
+   */
+  private String publishedSheetDataRangeName;
+  
+  /**
    * This is lazily computed from the above template Id.
    * @see #getPublishedSheetTemplate()
    */

@@ -628,8 +628,10 @@ public class SavedListServiceImpl implements SavedListService {
             props.put("createdByEmail", user.getEmail());
         }
         
+        String publishedSheetDataRangeName = googleDriveConfig.getPublishedSheetDataRangeName();
         String link = docPublisherService
-            .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData, props);
+            .createPublishedDoc(drive, listFolder, savedList.getName(), 
+                publishedSheetDataRangeName, publishedData, props);
 
         /*
          * Need to remove any existing columns - can't rely on the savedList.setExportColumns call

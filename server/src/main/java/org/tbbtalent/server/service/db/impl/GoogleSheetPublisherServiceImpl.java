@@ -26,6 +26,7 @@ import com.google.api.services.sheets.v4.model.BooleanCondition;
 import com.google.api.services.sheets.v4.model.ConditionValue;
 import com.google.api.services.sheets.v4.model.DataValidationRule;
 import com.google.api.services.sheets.v4.model.GridRange;
+import com.google.api.services.sheets.v4.model.NamedRange;
 import com.google.api.services.sheets.v4.model.ProtectedRange;
 import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.SetDataValidationRequest;
@@ -69,21 +70,38 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     this.fileSystemService = fileSystemService;
   }
 
+  //todo Map of column index to drop down options
+  //todo Array of feedback field columns - -1 if field does not appear
   @Override
   public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder, 
-      String name, List<List<Object>> mainData, Map<String, Object> props)
+      String name, String dataRangeName, List<List<Object>> mainData, Map<String, Object> props)
       throws GeneralSecurityException, IOException {
 
     //Create copy of sheet from template
     GoogleFileSystemFile file = fileSystemService.copyFile(
         folder, name, googleDriveConfig.getPublishedSheetTemplate());
+    final String spreadsheetId = file.getId();
 
+    
     //Now write to sheet - see https://developers.google.com/sheets/api/guides/values#writing 
     final Sheets service = googleDriveConfig.getGoogleSheetsService();
     List<ValueRange> data = new ArrayList<>();
 
+    //Extract row index and column index from dataRangeName named range. 
+    // See https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets#NamedRange 
+    GridRange dataRange = null;
+    List<NamedRange> namedRanges = getNamedRanges(service, spreadsheetId);
+    for (NamedRange namedRange : namedRanges) {
+      if (namedRange.getName().equals(dataRangeName)) {
+        dataRange = namedRange.getRange();
+        break;
+      }
+    }
+    //todo Column start index in dataRange can be used as base for computing actual column
+    //from column index in incoming data - eg for locating drop down options, or feedback columns
+    
     //Add main data
-    data.add(new ValueRange().setRange("B7").setValues(mainData));
+    data.add(new ValueRange().setRange(dataRangeName).setValues(mainData));
 
     //Add in extra properties
     for (Entry<String, Object> prop : props.entrySet()) {
@@ -95,7 +113,6 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         .setValueInputOption("USER_ENTERED")
         .setData(data);
 
-    final String spreadsheetId = file.getId();
     BatchUpdateValuesResponse res =
         service.spreadsheets().values().batchUpdate(spreadsheetId, body).execute();
     
@@ -109,6 +126,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     for (SheetProperties sheetProperty : sheetProperties) {
       if ("Main".equals(sheetProperty.getTitle())) {
         mainSheetId = sheetProperty.getSheetId();
+        break;
       }
     }
 
@@ -164,10 +182,21 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
                 .setType("ONE_OF_LIST")
                 .setValues(optionValues))
             .setStrict(true)
+            
+            //This causes the drop down to display
             .setShowCustomUi(true)
         )
     );
     return req;
+  }
+  
+  /**
+   * Returns all the named ranges.
+   */
+  private List<NamedRange> getNamedRanges(Sheets service, String spreadsheetId)
+      throws IOException {
+    Sheets.Spreadsheets.Get request = service.spreadsheets().get(spreadsheetId);
+    return request.execute().getNamedRanges();
   }
   
   /**
