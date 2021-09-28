@@ -46,7 +46,7 @@ export class PublishedDocColumnService {
     this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
     this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
 
-    //These are special employer feedback fields (ie non display only fields - the default type)
+    //These are special employer feedback fields (ie not display only fields, which are the default type)
     this.addColumnWithType("employerDecision", "Employer\nDecision",
       PublishedDocColumnType.employerCandidateDecision, null);
     this.addColumnWithType("employerFeedback", "Employer\nFeedback",
