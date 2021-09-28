@@ -515,6 +515,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String healthIssuesNotes;
 
+    @Nullable
+    private String externalId;
+
+    @Nullable
+    private String externalIdSource;
+
     public Candidate() {
     }
 
@@ -1329,6 +1335,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getHealthIssuesNotes() {return healthIssuesNotes;}
 
     public void setHealthIssuesNotes(@Nullable String healthIssuesNotes) {this.healthIssuesNotes = healthIssuesNotes;}
+
+    @Nullable
+    public String getExternalId() {return externalId;}
+
+    public void setExternalId(@Nullable String externalId) {this.externalId = externalId;}
+
+    @Nullable
+    public String getExternalIdSource() {return externalIdSource;}
+
+    public void setExternalIdSource(@Nullable String externalIdSource) {this.externalIdSource = externalIdSource;}
 
     public boolean isSelected() {
         return selected;

@@ -68,6 +68,8 @@ public class CandidateBuilderSelector {
                 .add("state")
                 .add("address1")
                 .add("yearOfArrival")
+                .add("externalId")
+                .add("externalIdSource")
                 .add("unhcrRegistered")
                 .add("unhcrNumber")
                 .add("unhcrConsent")

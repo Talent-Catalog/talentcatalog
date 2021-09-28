@@ -1015,6 +1015,8 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCountry(country);
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
+        candidate.setExternalId(request.getExternalId());
+        candidate.setExternalIdSource(request.getExternalIdSource());
         candidate.setUnhcrStatus(request.getUnhcrStatus());
         candidate.setUnhcrNumber(request.getUnhcrNumber());
         return save(candidate, true);
@@ -1201,6 +1203,8 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setState(request.getState());
             candidate.setYearOfArrival(request.getYearOfArrival());
             candidate.setNationality(nationality);
+            candidate.setExternalId(request.getExternalId());
+            candidate.setExternalIdSource(request.getExternalIdSource());
             candidate.setUnhcrRegistered(request.getUnhcrRegistered());
             candidate.setUnhcrNumber(request.getUnhcrNumber());
             candidate.setUnhcrConsent(request.getUnhcrConsent());

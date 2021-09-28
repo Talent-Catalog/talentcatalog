@@ -38,6 +38,9 @@ public class UpdateCandidatePersonalRequest {
     private Integer yearOfArrival;
     /* NATIONALITY */
     private Long nationality;
+    /* EXTERNAL ID */
+    private String externalId;
+    private String externalIdSource;
     /* UNHCR */
     @Enumerated(EnumType.STRING)
     private YesNoUnsure unhcrRegistered;
@@ -108,6 +111,14 @@ public class UpdateCandidatePersonalRequest {
     public void setNationality(Long nationality) {
         this.nationality = nationality;
     }
+
+    public String getExternalId() {return externalId;}
+
+    public void setExternalId(String externalId) {this.externalId = externalId;}
+
+    public String getExternalIdSource() {return externalIdSource;}
+
+    public void setExternalIdSource(String externalIdSource) {this.externalIdSource = externalIdSource;}
 
     public YesNoUnsure getUnhcrRegistered() {return unhcrRegistered;}
 
