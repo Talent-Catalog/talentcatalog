@@ -33,6 +33,7 @@ import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
@@ -286,6 +287,15 @@ public interface SavedListService {
      */
     SavedList removeSharedUser(long id, UpdateSharingRequest request)
             throws NoSuchObjectException;
+
+    /**
+     * Updates the description of the given saved list.
+     * @param savedListId Id of saved list
+     * @param request Request containing the updated description
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     */
+    void updateDescription(long savedListId, UpdateCandidateSourceDescriptionRequest request)
+        throws  NoSuchObjectException;
     
     /**
      * Updates the fields that are displayed for each candidate in the given 
@@ -309,4 +319,5 @@ public interface SavedListService {
      */
     SavedList publish(long savedListId, PublishListRequest request)
         throws GeneralSecurityException, IOException, ReflectiveOperationException;
+
 }

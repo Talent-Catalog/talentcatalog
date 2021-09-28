@@ -233,6 +233,7 @@ import {OldIntakeInputComponent} from './components/util/old-intake-input-modal/
 import {CandidateShareableNotesComponent} from './components/util/candidate-shareable-notes/candidate-shareable-notes.component';
 import {ShareableDocsComponent} from './components/candidates/view/shareable-docs/shareable-docs.component';
 import {PublishedDocColumnSelectorComponent} from "./components/util/published-doc-column-selector/published-doc-column-selector.component";
+import { CandidateSourceDescriptionComponent } from './components/util/candidate-source-description/candidate-source-description.component';
 
 @NgModule({
   declarations: [
@@ -442,7 +443,8 @@ import {PublishedDocColumnSelectorComponent} from "./components/util/published-d
     CandidateShareableNotesComponent,
     ShareableDocsComponent,
     CandidateShareableNotesComponent,
-    PublishedDocColumnSelectorComponent
+    PublishedDocColumnSelectorComponent,
+    CandidateSourceDescriptionComponent
   ],
   imports: [
     BrowserModule,

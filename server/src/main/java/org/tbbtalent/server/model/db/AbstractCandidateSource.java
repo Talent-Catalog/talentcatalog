@@ -144,6 +144,15 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * {@link org.tbbtalent.server.service.db.ExportColumnsService}
      */
     public abstract void setExportColumns(@Nullable List<ExportColumn> exportColumns);
+
+    protected void modifyColumnIndices(@Nullable List<ExportColumn> exportColumns) {
+        if (exportColumns != null) {
+            int index = 0;
+            for (ExportColumn exportColumn : exportColumns) {
+                exportColumn.setIndex(index++);
+            }
+        }
+    }
     
     @Nullable
     public String getDescription() {

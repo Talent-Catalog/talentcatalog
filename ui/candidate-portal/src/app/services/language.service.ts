@@ -53,7 +53,11 @@ export class LanguageService {
     return this.languageSelectionEnabled;
   }
 
-  setLanguageSelectionEnabled(enabled: boolean) {
+  isUsAfghan(): boolean {
+    return !this.languageSelectionEnabled;
+  }
+
+  setUsAfghan(enabled: boolean) {
     this.localStorage.set('languageSelectionEnabled', enabled);
     this.languageSelectionEnabled = enabled;
   }

@@ -34,6 +34,13 @@
     {{error}}
   </div>
 
+  <div>
+    <app-candidate-source-description
+      [candidateSource]="candidateSource"
+    >
+    </app-candidate-source-description>
+  </div>
+
   <div class="results-area">
 
     <!-- loading -->
@@ -75,10 +82,9 @@
       <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">
         <i class="fab fa-google-drive" title="Create/show Google folder"></i>
       </button>
-<!--      BUTTON REMOVED FOR NOW-->
-<!--      <button class="btn" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">-->
-<!--        <i class="fas fa-globe" title="Show published sheet"></i>-->
-<!--      </button>-->
+      <button class="btn" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
+        <i class="fas fa-globe" title="Show published sheet"></i>
+      </button>
       <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
         <i class="fas fa-sync" title="Refresh search"></i>
       </button>
@@ -146,12 +152,11 @@
         <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
         Export <i class="fas fa-file-excel"></i>
       </button>
-<!--        BUTTON REMOVED FOR NOW -->
-<!--      <button *ngIf="isPublishable()" class="btn btn-sm btn-secondary" (click)="modifyExportColumns()"-->
-<!--              title="Publish candidates to be shared externally - eg with employers">-->
-<!--        <i class="fas fa-spinner fa-spin" *ngIf=publishing></i>-->
-<!--        Publish <i class="fas fa-file-excel"></i>-->
-<!--      </button>-->
+      <button *ngIf="isPublishable()" class="btn btn-sm btn-secondary" (click)="modifyExportColumns()"
+              title="Publish candidates to be shared externally - eg with employers">
+        <i class="fas fa-spinner fa-spin" *ngIf=publishing></i>
+        Publish <i class="fas fa-file-excel"></i>
+      </button>
 
       <button *ngIf="isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
               (click)="createUpdateSalesforce()"

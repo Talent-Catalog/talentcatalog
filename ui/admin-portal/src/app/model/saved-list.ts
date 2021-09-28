@@ -155,6 +155,7 @@ export class PublishedDocColumnDef {
 export class PublishedDocColumnProps {
   header: string;
   constant: string;
+  //todo  Enumerated column type: noFeedback, employerCandidateNotes, employerDecision
 }
 
 /**
@@ -169,7 +170,6 @@ export class PublishedDocColumnConfig {
  * See doc for corresponding Java class
  */
 export class ExportColumn {
-  index: number;
   key: string;
   properties?: PublishedDocColumnProps;
 }

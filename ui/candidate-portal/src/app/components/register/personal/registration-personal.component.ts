@@ -43,7 +43,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   // Component states
   _loading = {
     candidate: true,
-    countries: true
+    countries: true,
+    usAfghan: true
   };
   saving: boolean;
 
@@ -78,6 +79,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       yearOfArrival: [''],
       /* NATIONALITY */
       nationality: ['', Validators.required],
+      externalId: [null],
+      externalIdSource: ['US Afghan Parolee Id'],
       unhcrRegistered: [null, Validators.required],
       unhcrNumber: [null],
       unhcrConsent: [null]
@@ -106,6 +109,9 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           yearOfArrival: response.yearOfArrival,
           /* NATIONALITY */
           nationality: response.nationality ? response.nationality.id : null,
+          /* IDS */
+          externalId: response.externalId ? response.externalId : null,
+          // externalIdSource: response.externalIdSource ? response.externalIdSource : null,
           unhcrRegistered: response.unhcrRegistered,
           unhcrNumber: response.unhcrNumber,
           unhcrConsent: response.unhcrConsent,

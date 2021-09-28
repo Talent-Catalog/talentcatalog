@@ -19,6 +19,7 @@ package org.tbbtalent.server.service.db;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Map;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
@@ -38,9 +39,12 @@ public interface DocPublisherService {
    * @param folder Folder where doc is created
    * @param name Name of created document 
    * @param data Data which comprises the published document
+   * @param props Extra properties to send to sheet. Each property key should correspond to 
+   *              a named cell reference in the document template, and the value is the value
+   *              to appear in that cell.
    * @return A link to the created document
    */
   String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
-      String name, List<List<Object>> data) throws GeneralSecurityException, IOException;
+      String name, List<List<Object>> data, Map<String, Object> props) throws GeneralSecurityException, IOException;
 
 }

@@ -14,34 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.api.admin;
-
-import javax.validation.constraints.NotNull;
-import org.tbbtalent.server.util.dto.DtoBuilder;
-
-/**
- *  Utility for selecting a ExportColumns DTO builder
- *
- * @author John Cameron
- */
-public class ExportColumnsBuilderSelector {
-
-  public @NotNull DtoBuilder selectBuilder() {
-    return exportColumnDto();
-  }
-
-  private DtoBuilder exportColumnDto() {
-    return new DtoBuilder()
-        .add("key")
-        .add("properties", publishedDocColumnPropsDto())
-        ;
-  }
-
-  private DtoBuilder publishedDocColumnPropsDto() {
-    return new DtoBuilder()
-        .add("header")
-        .add("constant")
-        ;
-  }
-
-}
+alter table candidate add column external_id text;
+alter table candidate add column external_id_source text;

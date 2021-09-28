@@ -33,6 +33,7 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.search.*;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
@@ -540,6 +541,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                         .updateCandidateContextNote(savedList.getId(), request); 
             }
         }
+    }
+
+    @Override
+    public void updateDescription(long id, UpdateCandidateSourceDescriptionRequest request)
+        throws  NoSuchObjectException {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+        savedSearch.setDescription(request.getDescription());
+        savedSearchRepository.save(savedSearch);
     }
 
     @Override

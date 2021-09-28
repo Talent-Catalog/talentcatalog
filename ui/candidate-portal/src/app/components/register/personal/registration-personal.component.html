@@ -125,6 +125,16 @@
       </div>
     </div>
 
+    <!-- EXTERNAL ID -->
+    <hr *ngIf="languageService.isUsAfghan()" class="col-12">
+
+    <div *ngIf="languageService.isUsAfghan()" class="col-12 col-md-6" >
+      <div class="form-group">
+        <label for="externalId">{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</label>
+        <input type="text" class="form-control" id="externalId" placeholder="" [formControlName]="'externalId'">
+      </div>
+    </div>
+
     <hr class="col-12">
 
     <!-- UNHCR REGISTRATION -->

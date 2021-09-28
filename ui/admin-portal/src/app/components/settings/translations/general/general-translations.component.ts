@@ -250,6 +250,7 @@ const ALL_FIELDS = {
           "STATE": null,
           "YEAROFARRIVAL": null,
           "NATIONALITY": null,
+          "EXTERNALID": null,
           "REGISTEREDWITHUN": null,
           "REGISTRATIONID": null,
           "UNHCRCONSENT": null
