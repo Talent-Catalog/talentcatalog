@@ -590,7 +590,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   modifyExportColumns() {
-    const modal = this.modalService.open(PublishedDocColumnSelectorComponent);
+    const modal = this.modalService.open(PublishedDocColumnSelectorComponent, {size: "lg"});
 
     modal.componentInstance.availableColumns = this.publishedDocColumnService.getColumnConfigFromAllColumns();
     modal.componentInstance.selectedColumns =  this.publishedDocColumnService.getColumnConfigFromExportColumns(this.candidateSource.exportColumns);
