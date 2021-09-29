@@ -52,28 +52,14 @@
       </ul>
 
       <div class="form-group" *ngIf="!isUserLimited()">
-        <input id="quickEmailSearch"
+        <input id="quickEmailOrPhoneSearch"
                type="text" class="form-control" #input
-               [ngbTypeahead]="doEmailSearch"
+               [ngbTypeahead]="doEmailOrPhoneSearch"
                [resultTemplate]="rt"
                [inputFormatter]="renderCandidateRow"
                [editable]="false"
                (selectItem)="selectSearchResult($event, input)"
-               placeholder="Email..."/>
-        <ng-template #rt let-r="result" let-t="term">
-          <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
-        </ng-template>
-      </div>
-
-      <div class="form-group" *ngIf="!isUserLimited()">
-        <input id="quickPhoneSearch"
-               type="text" class="form-control" #input
-               [ngbTypeahead]="doPhoneSearch"
-               [resultTemplate]="rt"
-               [inputFormatter]="renderCandidateRow"
-               [editable]="false"
-               (selectItem)="selectSearchResult($event, input)"
-               placeholder="Phone number..."/>
+               placeholder="Email or phone..."/>
         <ng-template #rt let-r="result" let-t="term">
           <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
         </ng-template>

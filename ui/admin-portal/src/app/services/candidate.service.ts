@@ -47,6 +47,10 @@ export class CandidateService {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemail`, request);
   }
 
+  findByCandidateEmailOrPhone(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemailorphone`, request);
+  }
+
   findByCandidateNumberOrName(request): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbynumberorname`, request);
   }

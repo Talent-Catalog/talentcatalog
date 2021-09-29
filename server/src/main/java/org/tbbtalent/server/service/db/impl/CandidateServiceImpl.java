@@ -760,6 +760,36 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Page<Candidate> searchCandidates(CandidateEmailOrPhoneSearchRequest request) {
+        String s = request.getCandidateEmailOrPhone();
+        User loggedInUser = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Page<Candidate> candidates = candidateRepository.searchCandidateEmailOrPhone(
+                '%' + s + '%', sourceCountries,
+                        request.getPageRequestWithoutSort());
+
+//        if (searchForNumber) {
+//            candidates = candidateRepository.searchCandidateNumber(
+//                    s +'%', sourceCountries,
+//                    request.getPageRequestWithoutSort());
+//        } else {
+//            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+//                candidates = candidateRepository.searchCandidateName(
+//                        '%' + s + '%', sourceCountries,
+//                        request.getPageRequestWithoutSort());
+//            } else {
+//                return null;
+//            }
+//        }
+
+        log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        return candidates;
+    }
+
+    @Override
     public Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request) {
         String s = request.getCandidateNumberOrName();
         User loggedInUser = authService.getLoggedInUser()
