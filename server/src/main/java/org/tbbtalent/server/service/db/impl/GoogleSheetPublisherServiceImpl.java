@@ -23,15 +23,21 @@ import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.BooleanCondition;
+import com.google.api.services.sheets.v4.model.CellData;
+import com.google.api.services.sheets.v4.model.CellFormat;
 import com.google.api.services.sheets.v4.model.ConditionValue;
 import com.google.api.services.sheets.v4.model.DataValidationRule;
+import com.google.api.services.sheets.v4.model.DimensionProperties;
+import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.GridRange;
 import com.google.api.services.sheets.v4.model.NamedRange;
 import com.google.api.services.sheets.v4.model.ProtectedRange;
+import com.google.api.services.sheets.v4.model.RepeatCellRequest;
 import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.SetDataValidationRequest;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.SheetProperties;
+import com.google.api.services.sheets.v4.model.UpdateDimensionPropertiesRequest;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -82,6 +88,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     GoogleFileSystemFile file = fileSystemService.copyFile(
         folder, name, googleDriveConfig.getPublishedSheetTemplate());
     final String spreadsheetId = file.getId();
+    int nDataColumns = mainData.get(0).size();
     
     //Now write to sheet - see https://developers.google.com/sheets/api/guides/values#writing 
     final Sheets service = googleDriveConfig.getGoogleSheetsService();
@@ -113,6 +120,8 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         break;
       }
     }
+    
+    DataInSheet dataInSheet = new DataInSheet(mainSheetId, dataRange, mainData);
 
     
     //   NOW START POPULATING SHEET
@@ -144,10 +153,28 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     //Add data validation drop downs if needed
     if (columnDropDowns != null) {
       for (Entry<Integer, List<String>> entry : columnDropDowns.entrySet()) {
-        req = computeDropDownsRequest(mainSheetId, 
-            dataRange.getStartColumnIndex() + entry.getKey(), 
-            dataRange.getStartRowIndex()+1, 
-            mainData.size()-1, entry.getValue());
+        GridRange range = dataInSheet.getColumnRange(entry.getKey());
+        req = computeDropDownsRequest(range, entry.getValue());
+        requests.add(req);
+      }
+    }
+
+    //TODO JC What determines centering
+    //Centre align numeric columns 
+    for (int i=0; i < nDataColumns; i++) {
+      if (dataInSheet.isColumnNumeric(i)) {
+        GridRange range = dataInSheet.getColumnRange(i);
+        req = computeAlignmentRequest(range, "CENTER");
+        requests.add(req);
+      }
+    }
+
+    //TODO JC Three column sizes?
+    //Expand some columns 
+    for (int i=0; i < nDataColumns; i++) {
+      if (dataInSheet.isColumnNumeric(i)) {
+        GridRange range = dataInSheet.getColumnRange(i);
+        req = computeColumnWidthRequest(range, 300);
         requests.add(req);
       }
     }
@@ -177,8 +204,87 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     return file.getUrl();
   }
 
-  private Request computeDropDownsRequest(
-      Integer sheetId, int column, int startRow, int nRows, List<String> options) {
+  /**
+   * Represents a region of data located at a certain position in a sheet.
+   * <p/>
+   * Used to convert a column of the data into the corresponding GridRange within the sheet. 
+   */
+  private static class DataInSheet {
+
+    private final GridRange dataRange;
+    private final Integer sheetId;
+    private final List<List<Object>> data;
+
+    /**
+     * Places the given data at the given location in the given sheet.
+     * <p/>
+     * The first row of the data is assumed to be column headers
+     * @param sheetId Sheet id (ie the tab id)
+     * @param dataRange Location within which the data is located in the sheet
+     * @param data The array of data values.
+     */
+    public DataInSheet(Integer sheetId, GridRange dataRange, List<List<Object>> data) {
+      this.dataRange = dataRange;
+      this.sheetId = sheetId;
+      this.data = data;
+    }
+
+    /**
+     * Returns the sheet range of the given column of the data (excluding the header)
+     * @param columnInData Column in data (index 0)
+     * @return A sheet range describing the location of that column of data within the sheet 
+     */
+    GridRange getColumnRange(int columnInData) {
+      //Skip header row
+      int startRow = dataRange.getStartRowIndex()+1;
+      final int startColumn = dataRange.getStartColumnIndex() + columnInData;
+
+      return new GridRange().setSheetId(sheetId)
+          .setStartRowIndex(startRow)
+          .setStartColumnIndex(startColumn)
+          //Don't count header row
+          .setEndRowIndex(startRow + data.size()-1)
+          .setEndColumnIndex(startColumn+1);       
+    }
+
+    public boolean isColumnNumeric(int i) {
+      //TODO JC Need to protect against empty data
+      //Look at data in second row (first row is header)
+      return ! (data.get(1).get(i) instanceof String);
+    }
+  }
+
+  private Request computeAlignmentRequest(GridRange range, String alignment) {
+    //Add alignment
+    //See https://developers.google.com/sheets/api/samples/formatting
+    Request req = new Request().setRepeatCell(new RepeatCellRequest()
+        .setRange(range)
+        .setCell(new CellData()
+            .setUserEnteredFormat(new CellFormat()
+                .setHorizontalAlignment(alignment))
+        )
+        .setFields("userEnteredFormat(horizontalAlignment)")
+    );
+    return req;
+  }
+
+  private Request computeColumnWidthRequest(GridRange range, int pixelSize) {
+    //Set column width
+    //See https://developers.google.com/sheets/api/samples/rowcolumn
+    Request req = new Request().setUpdateDimensionProperties(new UpdateDimensionPropertiesRequest()
+        .setRange(new DimensionRange()
+            .setSheetId(range.getSheetId())
+            .setDimension("COLUMNS")
+            .setStartIndex(range.getStartColumnIndex())
+            .setEndIndex(range.getEndColumnIndex()))
+        .setProperties(new DimensionProperties()
+            .setPixelSize(pixelSize))
+        .setFields("pixelSize")
+    );
+    return req;
+  }
+
+  private Request computeDropDownsRequest(GridRange range, List<String> options) {
     //Add data validation drop downs
     //See https://developers.google.com/sheets/api/samples/data
     List<ConditionValue> optionValues = new ArrayList<>();
@@ -186,10 +292,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
       optionValues.add(new ConditionValue().setUserEnteredValue(option));
     }
     Request req = new Request().setSetDataValidation(new SetDataValidationRequest()
-        .setRange(new GridRange()
-            .setSheetId(sheetId)
-            .setStartRowIndex(startRow).setStartColumnIndex(column)
-            .setEndRowIndex(startRow+nRows).setEndColumnIndex(column+1))
+        .setRange(range)
         .setRule(new DataValidationRule()
             .setCondition(new BooleanCondition()
                 .setType("ONE_OF_LIST")
