@@ -53,6 +53,12 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
         removeOnSpill: true
       });
     }
+
+    // Set default columns if no columns selected.
+    if (this.selectedColumns.length === 0) {
+      this.default();
+    }
+
     // Pull out empty column and put at bottom + alphabetise columns
     const emptyCol = this.availableColumns.shift();
     this.availableColumns = this.availableColumns.sort(

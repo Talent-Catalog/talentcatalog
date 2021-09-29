@@ -120,9 +120,11 @@ public interface CandidateService {
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
 
+    Page<Candidate> searchCandidates(CandidateEmailOrPhoneSearchRequest request);
+
     Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request);
 
-    Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request);
+    Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request);
 
     Page<Candidate> getSavedListCandidates(long id, SavedListGetRequest request);
 
