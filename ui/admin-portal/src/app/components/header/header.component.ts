@@ -33,7 +33,7 @@ export class HeaderComponent implements OnInit {
   isNavbarCollapsed = true;
   doEmailOrPhoneSearch;
   doNumberOrNameSearch;
-  doPhoneSearch;
+  doExternalIdSearch;
   searchFailed: boolean;
   searching: boolean;
   error;
@@ -66,7 +66,7 @@ export class HeaderComponent implements OnInit {
         tap(() => this.searching = false)
       );
 
-    this.doPhoneSearch = (text$: Observable<string>) =>
+    this.doExternalIdSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
         distinctUntilChanged(),
@@ -74,8 +74,8 @@ export class HeaderComponent implements OnInit {
           this.searching = true;
           this.error = null
         }),
-        switchMap(candidatePhone =>
-          this.candidateService.findByCandidatePhone({candidatePhone: candidatePhone, pageSize: 10}).pipe(
+        switchMap(externalId =>
+          this.candidateService.findByExternalId({externalId: externalId, pageSize: 10}).pipe(
             tap(() => this.searchFailed = false),
             map(result => result.content),
             catchError(() => {

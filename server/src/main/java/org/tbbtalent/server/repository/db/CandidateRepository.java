@@ -159,11 +159,11 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                           Pageable pageable);
 
     @Query(" select distinct c from Candidate c "
-            + " where lower(c.phone) like lower(:candidatePhone) "
+            + " where lower(c.externalId) like lower(:externalId) "
             + sourceCountryRestriction)
-    Page<Candidate> searchCandidatePhone(@Param("candidatePhone") String candidatePhone,
-                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                         Pageable pageable);
+    Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
+                                              @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                              Pageable pageable);
 
     @Query(" select distinct c from Candidate c left join c.user u "
             + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)"

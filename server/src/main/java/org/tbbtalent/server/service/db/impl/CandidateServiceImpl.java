@@ -818,8 +818,8 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
-        String s = request.getCandidatePhone();
+    public Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request) {
+        String s = request.getExternalId();
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
@@ -827,8 +827,8 @@ public class CandidateServiceImpl implements CandidateService {
             Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
             Page<Candidate> candidates;
 
-            candidates = candidateRepository.searchCandidatePhone(
-                    '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
+            candidates = candidateRepository.searchCandidateExternalId(
+                    s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
             log.info("Found " + candidates.getTotalElements() + " candidates in search");
             return candidates;

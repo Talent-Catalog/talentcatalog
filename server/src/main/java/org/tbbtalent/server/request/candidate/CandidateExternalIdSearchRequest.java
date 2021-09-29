@@ -18,15 +18,11 @@ package org.tbbtalent.server.request.candidate;
 
 import org.tbbtalent.server.request.PagedSearchRequest;
 
-public class CandidatePhoneSearchRequest extends PagedSearchRequest {
+public class CandidateExternalIdSearchRequest extends PagedSearchRequest {
 
-    private String candidatePhone;
+    private String externalId;
 
-    public String getCandidatePhone() {
-        return candidatePhone;
-    }
+    public String getExternalId() {return externalId;}
 
-    public void setCandidatePhone(String candidatePhone) {
-        this.candidatePhone = candidatePhone;
-    }
+    public void setExternalId(String externalId) {this.externalId = externalId;}
 }
