@@ -69,6 +69,13 @@ public class CandidateAdminApi {
         return builder.buildPage(candidates);
     }
 
+    @PostMapping("findbyemailorphone")
+    public Map<String, Object> findByCandidateEmailOrPhone(@RequestBody CandidateEmailOrPhoneSearchRequest request) {
+        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.buildPage(candidates);
+    }
+
     @PostMapping("findbynumberorname")
     public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateNumberOrNameSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
@@ -76,8 +83,8 @@ public class CandidateAdminApi {
         return builder.buildPage(candidates);
     }
 
-    @PostMapping("findbyphone")
-    public Map<String, Object> findByCandidatePhone(@RequestBody CandidatePhoneSearchRequest request) {
+    @PostMapping("findbyexternalid")
+    public Map<String, Object> findByCandidateExternalId(@RequestBody CandidateExternalIdSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);

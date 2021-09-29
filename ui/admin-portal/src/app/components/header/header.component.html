@@ -52,30 +52,30 @@
       </ul>
 
       <div class="form-group" *ngIf="!isUserLimited()">
-        <input id="quickEmailSearch"
+        <input id="quickExternalIdSearch"
                type="text" class="form-control" #input
-               [ngbTypeahead]="doEmailSearch"
+               [ngbTypeahead]="doExternalIdSearch"
                [resultTemplate]="rt"
                [inputFormatter]="renderCandidateRow"
                [editable]="false"
                (selectItem)="selectSearchResult($event, input)"
-               placeholder="Email..."/>
-        <ng-template #rt let-r="result" let-t="term">
-          <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+               placeholder="External ID..."/>
+        <ng-template #rt let-r="result">
+          <ngb-highlight [result]="renderCandidateRow(r)"></ngb-highlight>
         </ng-template>
       </div>
 
       <div class="form-group" *ngIf="!isUserLimited()">
-        <input id="quickPhoneSearch"
+        <input id="quickEmailOrPhoneSearch"
                type="text" class="form-control" #input
-               [ngbTypeahead]="doPhoneSearch"
+               [ngbTypeahead]="doEmailOrPhoneSearch"
                [resultTemplate]="rt"
                [inputFormatter]="renderCandidateRow"
                [editable]="false"
                (selectItem)="selectSearchResult($event, input)"
-               placeholder="Phone number..."/>
-        <ng-template #rt let-r="result" let-t="term">
-          <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+               placeholder="Email or phone..."/>
+        <ng-template #rt let-r="result">
+          <ngb-highlight [result]="renderCandidateRow(r)"></ngb-highlight>
         </ng-template>
       </div>
 

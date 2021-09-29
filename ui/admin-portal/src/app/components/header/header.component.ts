@@ -20,20 +20,8 @@ import {AuthService} from "../../services/auth.service";
 import {CandidateService} from "../../services/candidate.service";
 import {Candidate} from "../../model/candidate";
 import {Observable, of} from "rxjs";
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  switchMap,
-  tap
-} from "rxjs/operators";
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {User} from "../../model/user";
-import {CreateUpdateListComponent} from "../list/create-update/create-update-list.component";
-import {SavedList} from "../../model/saved-list";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
-import {EncodedQrImage} from "../../util/qr";
 
 @Component({
   selector: 'app-header',
@@ -43,9 +31,9 @@ import {EncodedQrImage} from "../../util/qr";
 export class HeaderComponent implements OnInit {
 
   isNavbarCollapsed = true;
-  doEmailSearch;
+  doEmailOrPhoneSearch;
   doNumberOrNameSearch;
-  doPhoneSearch;
+  doExternalIdSearch;
   searchFailed: boolean;
   searching: boolean;
   error;
@@ -78,7 +66,7 @@ export class HeaderComponent implements OnInit {
         tap(() => this.searching = false)
       );
 
-    this.doPhoneSearch = (text$: Observable<string>) =>
+    this.doExternalIdSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
         distinctUntilChanged(),
@@ -86,8 +74,8 @@ export class HeaderComponent implements OnInit {
           this.searching = true;
           this.error = null
         }),
-        switchMap(candidatePhone =>
-          this.candidateService.findByCandidatePhone({candidatePhone: candidatePhone, pageSize: 10}).pipe(
+        switchMap(externalId =>
+          this.candidateService.findByExternalId({externalId: externalId, pageSize: 10}).pipe(
             tap(() => this.searchFailed = false),
             map(result => result.content),
             catchError(() => {
@@ -98,7 +86,7 @@ export class HeaderComponent implements OnInit {
         tap(() => this.searching = false)
       );
 
-    this.doEmailSearch = (text$: Observable<string>) =>
+    this.doEmailOrPhoneSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
         distinctUntilChanged(),
@@ -106,8 +94,8 @@ export class HeaderComponent implements OnInit {
           this.searching = true;
           this.error = null
         }),
-        switchMap(candidateEmail =>
-          this.candidateService.findByCandidateEmail({candidateEmail: candidateEmail, pageSize: 10}).pipe(
+        switchMap(candidateEmailOrPhone =>
+          this.candidateService.findByCandidateEmailOrPhone({candidateEmailOrPhone: candidateEmailOrPhone, pageSize: 10}).pipe(
             tap(() => this.searchFailed = false),
             map(result => result.content),
             catchError(() => {
@@ -118,7 +106,6 @@ export class HeaderComponent implements OnInit {
         tap(() => this.searching = false)
       );
     this.loggedInUser = this.authService.getLoggedInUser();
-    console.log(this.loggedInUser);
     if (this.loggedInUser == null) {
       this.logout();
     }

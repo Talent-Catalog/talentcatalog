@@ -597,7 +597,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     modal.result
       .then((request: PublishedDocColumnConfig[]) => {
-          console.log(request);
           this.publishCandidates(request);
 
         },

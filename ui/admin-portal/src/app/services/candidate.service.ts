@@ -47,12 +47,16 @@ export class CandidateService {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemail`, request);
   }
 
+  findByCandidateEmailOrPhone(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemailorphone`, request);
+  }
+
   findByCandidateNumberOrName(request): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbynumberorname`, request);
   }
 
-  findByCandidatePhone(request): Observable<SearchResults<Candidate>> {
-    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyphone`, request);
+  findByExternalId(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyexternalid`, request);
   }
 
   getByNumber(number: string): Observable<Candidate> {
