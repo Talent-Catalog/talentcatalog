@@ -645,8 +645,7 @@ public class SavedListServiceImpl implements SavedListService {
         }
         
         String publishedSheetDataRangeName = googleDriveConfig.getPublishedSheetDataRangeName();
-        String link = docPublisherService
-            .createPublishedDoc(drive, listFolder, savedList.getName(), 
+        String link = docPublisherService.createPublishedDoc(drive, listFolder, savedList.getName(), 
                 publishedSheetDataRangeName, publishedData, props, columnDropDowns);
 
         /*

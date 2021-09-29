@@ -101,28 +101,10 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     if (dataRange == null) {
       throw new IOException("Sheet is missing named data range called " + dataRangeName);
     }
-    
-    //Add main data
-    data.add(new ValueRange().setRange(dataRangeName).setValues(mainData));
-
-    //Add in extra properties
-    for (Entry<String, Object> prop : props.entrySet()) {
-      List<List<Object>> cell = Arrays.asList(Arrays.asList(prop.getValue()));
-      data.add(new ValueRange().setRange(prop.getKey()).setValues(cell));
-    }
-
-    BatchUpdateValuesRequest body = new BatchUpdateValuesRequest()
-        .setValueInputOption("USER_ENTERED")
-        .setData(data);
-
-    BatchUpdateValuesResponse res =
-        service.spreadsheets().values().batchUpdate(spreadsheetId, body).execute();
-    
-    log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
 
     //Fetch properties of different sheets (tabs)
     List<SheetProperties> sheetProperties = getSheetProperties(service, spreadsheetId);
-    
+
     //Find main sheet id
     Integer mainSheetId = null;
     for (SheetProperties sheetProperty : sheetProperties) {
@@ -132,7 +114,30 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
       }
     }
 
-    //Now batch various update requests
+    
+    //   NOW START POPULATING SHEET
+    
+    //Add main data - the rows for each candidate, plus the column headers in the first row.
+    data.add(new ValueRange().setRange(dataRangeName).setValues(mainData));
+
+    //Add in extra properties. These go into the named cells whose names are given by the map keys.
+    //This is the data that ends up in the sheet's Data tab.
+    for (Entry<String, Object> prop : props.entrySet()) {
+      List<List<Object>> cell = Arrays.asList(Arrays.asList(prop.getValue()));
+      data.add(new ValueRange().setRange(prop.getKey()).setValues(cell));
+    }
+    BatchUpdateValuesRequest body = new BatchUpdateValuesRequest()
+        .setValueInputOption("USER_ENTERED")
+        .setData(data);
+    BatchUpdateValuesResponse res = service.spreadsheets().values().batchUpdate(spreadsheetId, body).execute();
+    log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
+
+    //todo Now populate the Feedback tab - or instead, how about creating named range(s) for that data
+    //todo very similar to adding protected range - add namedRange's for any feedback cells
+    //and set Feedback page with names.
+    
+    //Now batch various other update requests which involve configuring drop down data entry and
+    //protecting parts of the sheet.
     List<Request> requests = new ArrayList<>();
     Request req;
     
@@ -167,7 +172,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     BatchUpdateSpreadsheetResponse res2 = 
         service.spreadsheets().batchUpdate(spreadsheetId, content).execute();
 
-    log.info(res2.getReplies().size() + " protection responses received");
+    log.info(res2.getReplies().size() + " batch update responses received");
 
     return file.getUrl();
   }
