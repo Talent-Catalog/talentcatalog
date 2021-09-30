@@ -43,6 +43,11 @@ public class PublishedDocColumnDef {
   private PublishedDocColumnType type;
   
   /**
+   * Width of column best suited to display of the column data 
+   */
+  private PublishedDocColumnWidth width;  
+  
+  /**
    * This string appears as the column header
    */
   private String header;

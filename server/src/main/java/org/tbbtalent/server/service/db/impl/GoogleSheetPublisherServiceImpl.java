@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.AddNamedRangeRequest;
 import com.google.api.services.sheets.v4.model.AddProtectedRangeRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
@@ -48,9 +49,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
 import org.tbbtalent.server.service.db.DocPublisherService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
@@ -64,7 +65,6 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
  */
 @Service
 public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
-  private static final String SHEET_MIME_TYPE = "application/vnd.google-apps.spreadsheet";
   private static final Logger log = LoggerFactory.getLogger(GoogleSheetPublisherServiceImpl.class);
 
   private final GoogleDriveConfig googleDriveConfig;
@@ -77,11 +77,10 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     this.fileSystemService = fileSystemService;
   }
 
-  //todo Array of feedback field columns - -1 if field does not appear
   @Override
   public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder, 
       String name, String dataRangeName, List<List<Object>> mainData, Map<String, Object> props,
-      @Nullable Map<Integer, List<String>> columnDropDowns)
+      Map<Integer, PublishedDocColumnSetUp> columnSetUpMap)
       throws GeneralSecurityException, IOException {
 
     //Create copy of sheet from template
@@ -140,41 +139,30 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         .setData(data);
     BatchUpdateValuesResponse res = service.spreadsheets().values().batchUpdate(spreadsheetId, body).execute();
     log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
-
-    //todo Now populate the Feedback tab - or instead, how about creating named range(s) for that data
-    //todo very similar to adding protected range - add namedRange's for any feedback cells
-    //and set Feedback page with names.
     
     //Now batch various other update requests which involve configuring drop down data entry and
     //protecting parts of the sheet.
     List<Request> requests = new ArrayList<>();
     Request req;
     
-    //Add data validation drop downs if needed
-    if (columnDropDowns != null) {
-      for (Entry<Integer, List<String>> entry : columnDropDowns.entrySet()) {
-        GridRange range = dataInSheet.getColumnRange(entry.getKey());
-        req = computeDropDownsRequest(range, entry.getValue());
+    //Add column formatting
+    for (Entry<Integer, PublishedDocColumnSetUp> entry : columnSetUpMap.entrySet()) {
+      GridRange range = dataInSheet.getColumnRange(entry.getKey());
+      PublishedDocColumnSetUp setup = entry.getValue();
+      if (setup.getAlignment() != null) {
+        req = computeAlignmentRequest(range, setup.getAlignment());
         requests.add(req);
       }
-    }
-
-    //TODO JC What determines centering
-    //Centre align numeric columns 
-    for (int i=0; i < nDataColumns; i++) {
-      if (dataInSheet.isColumnNumeric(i)) {
-        GridRange range = dataInSheet.getColumnRange(i);
-        req = computeAlignmentRequest(range, "CENTER");
+      if (setup.getColumnSize() != null) {
+        req = computeColumnWidthRequest(range, setup.getColumnSize());
         requests.add(req);
       }
-    }
-
-    //TODO JC Three column sizes?
-    //Expand some columns 
-    for (int i=0; i < nDataColumns; i++) {
-      if (dataInSheet.isColumnNumeric(i)) {
-        GridRange range = dataInSheet.getColumnRange(i);
-        req = computeColumnWidthRequest(range, 300);
+      if (setup.getDropDowns() != null) {
+        req = computeDropDownsRequest(range, setup.getDropDowns());
+        requests.add(req);
+      }
+      if (setup.getRangeName() != null) {
+        req = computeAddNamedRangeRequest(range, setup.getRangeName());
         requests.add(req);
       }
     }
@@ -246,12 +234,18 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
           .setEndRowIndex(startRow + data.size()-1)
           .setEndColumnIndex(startColumn+1);       
     }
+  }
 
-    public boolean isColumnNumeric(int i) {
-      //TODO JC Need to protect against empty data
-      //Look at data in second row (first row is header)
-      return ! (data.get(1).get(i) instanceof String);
-    }
+  private Request computeAddNamedRangeRequest(GridRange range, String rangeName) {
+    //Add named range
+    //See https://developers.google.com/sheets/api/samples/ranges
+    Request req = new Request().setAddNamedRange(new AddNamedRangeRequest()
+        .setNamedRange(new NamedRange()
+            .setName(rangeName)
+            .setRange(range)
+        )
+    );
+    return req;
   }
 
   private Request computeAlignmentRequest(GridRange range, String alignment) {

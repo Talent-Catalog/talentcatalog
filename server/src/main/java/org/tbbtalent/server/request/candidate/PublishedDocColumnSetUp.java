@@ -16,28 +16,45 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.lang.Nullable;
+
 /**
- * Published columns can for display purposes only, or they can allow different kinds of data to be
- * entered in them (eg by employers) which we can process, interpreting the data depending on its
- * type.
- * This entered data may get imported back into the Talent Catalog data base or into Salesforce.
+ * Defines how a column if set up in a generated sheet
+ * <p/>
+ * Null values are ignored.
+ *
  * @author John Cameron
  */
-public enum PublishedDocColumnType {
+@Getter
+@Setter
+public class PublishedDocColumnSetUp {
+
   /**
-   * Column is only used to display data.
+   * Horizontal alignment: CENTER, LEFT, RIGHT
+   */
+  @Nullable
+  private String alignment;
+
+  /**
+   * Pixel width of column
+   */
+  @Nullable
+  private Integer columnSize;
+
+  /**
+   * Drop down data entry, selected from one of the list of Strings.
    * <p/>
-   * Other types of column are used for entering data which can be subsequently imported.
+   * (This is defined as Data Validation in the sheet) 
    */
-  DisplayOnly,
+  @Nullable
+  private List<String> dropDowns;
 
   /**
-   * Employers should enter their feedback about candidates into the column.
+   * NamedRange defined in sheet corresponding to the data in this column (excluding the header)
    */
-  EmployerCandidateNotes,
-
-  /**
-   * Employers should enter their candidate hiring decision into the column.
-   */
-  EmployerCandidateDecision
+  @Nullable
+  private String rangeName;
 }

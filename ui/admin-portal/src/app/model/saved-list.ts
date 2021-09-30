@@ -18,6 +18,7 @@ import {
   CandidateSource,
   PagedSearchRequest,
   PublishedDocColumnType,
+  PublishedDocColumnWidth,
   SearchCandidateSourcesRequest
 } from "./base";
 import {isSavedSearch, SavedSearchRef} from "./saved-search";
@@ -122,7 +123,12 @@ export class PublishedDocColumnDef {
    * The type of column. The default column type is display only.
    * Other types of column allow different types of feedback which we can process.
    */
-  type: PublishedDocColumnType = PublishedDocColumnType.displayOnly;
+  type: PublishedDocColumnType = PublishedDocColumnType.DisplayOnly;
+
+  /**
+   * Width of column best suited to display of the column data
+   */
+  width: PublishedDocColumnWidth = PublishedDocColumnWidth.Medium;
 
   /**
    * This is the name which is displayed to Angular users when they are deciding which columns
