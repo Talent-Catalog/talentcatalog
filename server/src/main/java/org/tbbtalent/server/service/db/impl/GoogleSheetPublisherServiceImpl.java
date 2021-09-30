@@ -191,50 +191,6 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     return file.getUrl();
   }
 
-  /**
-   * Represents a region of data located at a certain position in a sheet.
-   * <p/>
-   * Used to convert a column of the data into the corresponding GridRange within the sheet. 
-   */
-  private static class DataInSheet {
-
-    private final GridRange dataRange;
-    private final Integer sheetId;
-    private final List<List<Object>> data;
-
-    /**
-     * Places the given data at the given location in the given sheet.
-     * <p/>
-     * The first row of the data is assumed to be column headers
-     * @param sheetId Sheet id (ie the tab id)
-     * @param dataRange Location within which the data is located in the sheet
-     * @param data The array of data values.
-     */
-    public DataInSheet(Integer sheetId, GridRange dataRange, List<List<Object>> data) {
-      this.dataRange = dataRange;
-      this.sheetId = sheetId;
-      this.data = data;
-    }
-
-    /**
-     * Returns the sheet range of the given column of the data (excluding the header)
-     * @param columnInData Column in data (index 0)
-     * @return A sheet range describing the location of that column of data within the sheet 
-     */
-    GridRange getColumnRange(int columnInData) {
-      //Skip header row
-      int startRow = dataRange.getStartRowIndex()+1;
-      final int startColumn = dataRange.getStartColumnIndex() + columnInData;
-
-      return new GridRange().setSheetId(sheetId)
-          .setStartRowIndex(startRow)
-          .setStartColumnIndex(startColumn)
-          //Don't count header row
-          .setEndRowIndex(startRow + data.size()-1)
-          .setEndColumnIndex(startColumn+1);       
-    }
-  }
-
   private Request computeAddNamedRangeRequest(GridRange range, String rangeName) {
     //Add named range
     //See https://developers.google.com/sheets/api/samples/ranges
@@ -322,4 +278,50 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     }
     return sheetProperties;
   }
+
+
+  /**
+   * Represents a region of data located at a certain position in a sheet.
+   * <p/>
+   * Used to convert a column of the data into the corresponding GridRange within the sheet. 
+   */
+  private static class DataInSheet {
+
+    private final GridRange dataRange;
+    private final Integer sheetId;
+    private final List<List<Object>> data;
+
+    /**
+     * Places the given data at the given location in the given sheet.
+     * <p/>
+     * The first row of the data is assumed to be column headers
+     * @param sheetId Sheet id (ie the tab id)
+     * @param dataRange Location within which the data is located in the sheet
+     * @param data The array of data values.
+     */
+    public DataInSheet(Integer sheetId, GridRange dataRange, List<List<Object>> data) {
+      this.dataRange = dataRange;
+      this.sheetId = sheetId;
+      this.data = data;
+    }
+
+    /**
+     * Returns the sheet range of the given column of the data (excluding the header)
+     * @param columnInData Column in data (index 0)
+     * @return A sheet range describing the location of that column of data within the sheet 
+     */
+    GridRange getColumnRange(int columnInData) {
+      //Skip header row
+      int startRow = dataRange.getStartRowIndex()+1;
+      final int startColumn = dataRange.getStartColumnIndex() + columnInData;
+
+      return new GridRange().setSheetId(sheetId)
+          .setStartRowIndex(startRow)
+          .setStartColumnIndex(startColumn)
+          //Don't count header row
+          .setEndRowIndex(startRow + data.size()-1)
+          .setEndColumnIndex(startColumn+1);
+    }
+  }
+  
 }
