@@ -1029,8 +1029,8 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationalityId()));
 
         User user = candidate.getUser();
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setFirstName(request.getFirstName().trim());
+        user.setLastName(request.getLastName().trim());
         user.setEmail(request.getEmail());
         userRepository.save(user);
 
@@ -1218,8 +1218,8 @@ public class CandidateServiceImpl implements CandidateService {
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setFirstName(request.getFirstName().trim());
+        user.setLastName(request.getLastName().trim());
         user = userRepository.save(user);
         Candidate candidate = candidateRepository.findByUserId(user.getId());
 
