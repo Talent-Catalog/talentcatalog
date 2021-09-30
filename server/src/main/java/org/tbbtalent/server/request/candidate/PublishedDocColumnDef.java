@@ -35,6 +35,17 @@ public class PublishedDocColumnDef {
    * representing the last used list of columns used to publish with.
    */
   private String key;
+
+  /**
+   * The type of column. The default column type is display only.
+   * Other types of column allow different types of feedback which we can process.
+   */
+  private PublishedDocColumnType type;
+  
+  /**
+   * Width of column best suited to display of the column data 
+   */
+  private PublishedDocColumnWidth width;  
   
   /**
    * This string appears as the column header

@@ -178,6 +178,22 @@ public class GoogleDriveConfig {
   private String publishedSheetTemplateId;
 
   /**
+   * Name of range (ie a Named range in the Google sheet) where candidate data should be written 
+   * (including the header line).
+   */
+  private String publishedSheetDataRangeName;
+
+  /**
+   * Pixel width of narrow columns in generated published sheets
+   */
+  private Integer publishedSheetNarrowColumn;
+
+  /**
+   * Pixel width of wide columns in generated published sheets
+   */
+  private Integer publishedSheetWideColumn;
+  
+  /**
    * This is lazily computed from the above template Id.
    * @see #getPublishedSheetTemplate()
    */

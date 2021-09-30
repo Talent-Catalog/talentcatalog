@@ -24,6 +24,7 @@ import {
   PublishedDocFieldSource,
   PublishedDocValueSource
 } from "../model/saved-list";
+import {PublishedDocColumnType, PublishedDocColumnWidth} from "../model/base";
 
 @Injectable({
   providedIn: 'root'
@@ -35,31 +36,59 @@ export class PublishedDocColumnService {
   constructor() {
     //Keep empty column first, so we know the index and can sort at the end.
     this.addColumn("emptyColumn", "Empty Column", null);
-    this.addColumn("candidateNumber", "Candidate #", new PublishedDocFieldSource("candidateNumber"));
+
+    this.addColumn("candidateNumber", "Candidate #",
+      new PublishedDocFieldSource("candidateNumber"))
+    .width = PublishedDocColumnWidth.Narrow;
+
     this.addColumnWithLink("candidateNumberLinkCv", "Candidate # \n (link to CV)",
       new PublishedDocFieldSource("candidateNumber"),
-      new PublishedDocFieldSource("shareableCv.location"));
+      new PublishedDocFieldSource("shareableCv.location"))
+    .width = PublishedDocColumnWidth.Narrow;
+
     this.addColumnWithLink("candidateNumberLinkTc", "Candidate # \n(link to TC)",
       new PublishedDocFieldSource("candidateNumber"),
-      new PublishedDocFieldSource("tcLink"));
-    this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
+      new PublishedDocFieldSource("tcLink"))
+    .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumn("contextNote", "Context Note",
+      new PublishedDocFieldSource("contextNote"))
+    .width = PublishedDocColumnWidth.Wide;
+
     this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
 
-    //todo These special feedback fields need to have flag containing feedback type
-    this.addColumn("employerDecision", "Employer Decision", null);
-    this.addColumn("employerFeedback", "Employer Feedback", null);
+    //These are special employer feedback fields (ie not display only fields, which are the default type)
+    this.addColumnWithType("employerDecision", "Employer\nDecision",
+      PublishedDocColumnType.EmployerCandidateDecision, null)
+    .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithType("employerFeedback", "Employer\nFeedback",
+      PublishedDocColumnType.EmployerCandidateNotes, null)
+    .width = PublishedDocColumnWidth.Wide;
 
     this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
-    this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"));
-    this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"));
+
+    this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"))
+    .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"))
+    .width = PublishedDocColumnWidth.Narrow;
+
     this.addColumn("ieltsScore", "IELTS", new PublishedDocFieldSource("ieltsScore"));
     this.addColumn("lastName", "Last Name", new PublishedDocFieldSource("user.lastName"));
     this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
-    this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"));
+
+
+    this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"))
+    .width = PublishedDocColumnWidth.Wide;
+
     this.addColumnWithLink("doc", "Other document", new PublishedDocConstantSource("doc"),
-      new PublishedDocFieldSource("shareableDoc.location"));
+      new PublishedDocFieldSource("shareableDoc.location"))
+    .width = PublishedDocColumnWidth.Narrow;
+
     this.addColumnWithLink("cv", "CV", new PublishedDocConstantSource("cv"),
-      new PublishedDocFieldSource("shareableCv.location"));
+      new PublishedDocFieldSource("shareableCv.location"))
+    .width = PublishedDocColumnWidth.Narrow;
   }
 
   getColumnConfigFromExportColumns(exportColumns: ExportColumn[]): PublishedDocColumnConfig[] {
@@ -115,15 +144,29 @@ export class PublishedDocColumnService {
     return columns;
   }
 
-  private addColumnWithLink(key: string, name: string,
-                         value: PublishedDocValueSource, link: PublishedDocValueSource) {
+  private addColumnWithTypeLink(
+    key: string, name: string, type: PublishedDocColumnType, value: PublishedDocValueSource,
+    link: PublishedDocValueSource): PublishedDocColumnDef {
     const info = new PublishedDocColumnDef(key, name);
+    info.type = type;
     info.content.value = value;
     info.content.link = link;
     this.allColumnInfosMap.set(key, info);
+    return info;
   }
 
-  private addColumn(key: string, name: string, value: PublishedDocValueSource) {
-    this.addColumnWithLink(key, name, value, null);
+  private addColumnWithLink(key: string, name: string, value: PublishedDocValueSource,
+                            link: PublishedDocValueSource): PublishedDocColumnDef {
+    return this.addColumnWithTypeLink(key, name, PublishedDocColumnType.DisplayOnly,
+      value, link);
+  }
+
+  private addColumn(key: string, name: string, value: PublishedDocValueSource): PublishedDocColumnDef {
+    return this.addColumnWithLink(key, name, value, null);
+  }
+
+  private addColumnWithType(key: string, name: string, type: PublishedDocColumnType,
+                            value: PublishedDocValueSource): PublishedDocColumnDef {
+    return this.addColumnWithTypeLink(key, name, type, value, null);
   }
 }

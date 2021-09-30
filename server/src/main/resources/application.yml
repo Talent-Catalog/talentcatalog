@@ -141,6 +141,14 @@ google:
 
   # Published doc sheet template
     publishedSheetTemplateId: 1On2FJP54Qu3hojQj0fyZLy7PaIitIfIsQCBJFe_1JS0
+  # Name of range (ie a Named range in the Google sheet) where candidate data should be written 
+  # (including the header line)
+    publishedSheetDataRangeName: candidateDataRange
+    
+  # Pixel width of narrow columns in generated published sheets    
+    publishedSheetNarrowColumn: 90
+  # Pixel width of wide columns in generated published sheets    
+    publishedSheetWideColumn: 300
       
       
 aws:

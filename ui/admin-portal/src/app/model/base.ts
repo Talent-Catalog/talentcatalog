@@ -33,6 +33,49 @@ export enum Progress {
   Finished
 }
 
+/**
+ * Published columns can for display purposes only, or they can allow different kinds of data to be
+ * entered in them (eg by employers) which we can process, interpreting the data depending on its
+ * type.
+ * This entered data may get imported back into the Talent Catalog data base or into Salesforce.
+ */
+export enum PublishedDocColumnType {
+  DisplayOnly,
+  EmployerCandidateNotes,
+  EmployerCandidateDecision
+}
+
+/**
+ * Published doc columns can be configured in three sizes based on their width.
+ * <p/>
+ * The width can be used to determine other automated formatting - eg alignment.
+ */
+export enum PublishedDocColumnWidth {
+  /**
+   * Narrow columns are good for small amounts of data - eg a candidate number, or a status.
+   * <p/>
+   * Automated formatting may choose to center align the values in narrow columns.
+   */
+  Narrow,
+
+  /**
+   * This is the default column width and does not need to be specified. It can be used for
+   * candidate names, for example.
+   * <p/>
+   * It doesn't trigger any automated formatting. The defaults for the template from which a doc
+   * is created will be used.
+   */
+  Medium,
+
+  /**
+   * Wide columns are good for holding descriptive text - eg candidate descriptions or
+   * employer feedback.
+   * <p/>
+   * Automated formatting will typically choose to left justify the text.
+   */
+  Wide
+}
+
 export enum ReviewStatus {
   unverified,
   verified,

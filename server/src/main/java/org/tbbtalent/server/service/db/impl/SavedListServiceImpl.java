@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -63,6 +64,8 @@ import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
@@ -627,9 +630,50 @@ public class SavedListServiceImpl implements SavedListService {
             props.put("createdByName", user.getDisplayName());
             props.put("createdByEmail", user.getEmail());
         }
+
+        boolean foundCandidateNumber = false;
+        //Format column display
+        Map<Integer, PublishedDocColumnSetUp> columnSetUpMap = new HashMap<>();
+        int columnCount = 0;
+        for (PublishedDocColumnDef def : columnInfos) {
+            final PublishedDocColumnSetUp columnSetUp = new PublishedDocColumnSetUp();
+            columnSetUpMap.put(columnCount, columnSetUp);
+            if (def.getType().equals(PublishedDocColumnType.EmployerCandidateDecision)) {
+                columnSetUp.setDropDowns(Arrays.asList("", "Offer", "No Offer", "Wait"));
+            }
+            
+            if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {
+                columnSetUp.setRangeName(def.getType().toString());
+            }
+            
+            //Check for a candidate number column. We set up a range name for that column as well
+            //as for non display columns.
+            if (!foundCandidateNumber) {
+                if (def.getContent().getValue() != null) {
+                    String fieldName = def.getContent().getValue().getFieldName();
+                    foundCandidateNumber = "candidateNumber".equals(fieldName);
+                    if (foundCandidateNumber) {
+                        columnSetUp.setRangeName("candidateNumber");
+                    }
+                } 
+            }
+            
+            switch(def.getWidth()) {
+                case Narrow:
+                    columnSetUp.setColumnSize(googleDriveConfig.getPublishedSheetNarrowColumn());
+                    columnSetUp.setAlignment("CENTER");
+                    break;
+                case Wide:
+                    columnSetUp.setColumnSize(googleDriveConfig.getPublishedSheetWideColumn());
+                    columnSetUp.setAlignment("LEFT");
+                    break;
+            }
+            columnCount++;
+        }
         
-        String link = docPublisherService
-            .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData, props);
+        String publishedSheetDataRangeName = googleDriveConfig.getPublishedSheetDataRangeName();
+        String link = docPublisherService.createPublishedDoc(drive, listFolder, savedList.getName(), 
+                publishedSheetDataRangeName, publishedData, props, columnSetUpMap);
 
         /*
          * Need to remove any existing columns - can't rely on the savedList.setExportColumns call

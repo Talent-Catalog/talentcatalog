@@ -35,7 +35,11 @@ public class PublishListRequest {
    * Defines the columns of data to be displayed in the doc for each candidate in a list.
    */
   private List<PublishedDocColumnConfig> columns;
-  
+
+  /**
+   * This extracts the corresponding ExportColumn information - this is what is stored on the 
+   * server. 
+   */
   public List<ExportColumn> getExportColumns(SavedList savedList) {
     List<ExportColumn> exportColumns = new ArrayList<>();
     int index = 0;
