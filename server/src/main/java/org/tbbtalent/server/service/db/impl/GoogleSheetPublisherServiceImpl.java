@@ -87,7 +87,6 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     GoogleFileSystemFile file = fileSystemService.copyFile(
         folder, name, googleDriveConfig.getPublishedSheetTemplate());
     final String spreadsheetId = file.getId();
-    int nDataColumns = mainData.get(0).size();
     
     //Now write to sheet - see https://developers.google.com/sheets/api/guides/values#writing 
     final Sheets service = googleDriveConfig.getGoogleSheetsService();
