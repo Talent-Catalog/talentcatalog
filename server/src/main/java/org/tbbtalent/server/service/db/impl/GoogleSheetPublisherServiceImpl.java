@@ -166,7 +166,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
       }
     }
     
-    //Now protect the sheets other than the Main one (ie the Data and Feedback sheets)
+    //Now protect the sheets other than the Main one (eg the Data sheet)
     //Users should normally only be able to change the main sheet - not the other tabs
     //See https://developers.google.com/sheets/api/samples/ranges
     for (SheetProperties sheetProperty : sheetProperties) {
