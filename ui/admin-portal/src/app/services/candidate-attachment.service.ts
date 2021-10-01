@@ -70,6 +70,7 @@ export class CandidateAttachmentService {
     )
   }
 
+  //todo remove use att.url now
   getAttachmentUrl(candidate: Candidate, att: CandidateAttachment) {
     if (att.type === AttachmentType.file) {
       return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' :
