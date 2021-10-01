@@ -70,15 +70,6 @@ export class CandidateAttachmentService {
     )
   }
 
-  //todo remove use att.url now
-  getAttachmentUrl(candidate: Candidate, att: CandidateAttachment) {
-    if (att.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' :
-        candidate.candidateNumber) + '/' + att.location;
-    }
-    return att.location;
-  }
-
   downloadAttachments(candidate: Candidate, ats: CandidateAttachment[]): Observable<string> {
     const downloadComplete = new Subject<string>();
 
@@ -88,7 +79,7 @@ export class CandidateAttachmentService {
         downloads.push(this.downloadAttachment(cv.id, cv.name))
       } else {
         const newTab = window.open();
-        const url = this.getAttachmentUrl(candidate, cv);
+        const url = cv.url;
         newTab.location.href = url;
       }
     })
