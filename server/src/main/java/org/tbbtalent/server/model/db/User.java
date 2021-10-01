@@ -127,7 +127,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = firstName == null ? null : firstName.trim();
     }
 
     public String getLastName() {
@@ -135,7 +135,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = lastName == null ? null : lastName.trim();
     }
 
     public String getEmail() {
