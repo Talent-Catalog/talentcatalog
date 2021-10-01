@@ -1218,8 +1218,17 @@ public class CandidateServiceImpl implements CandidateService {
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        user.setFirstName(request.getFirstName().trim());
-        user.setLastName(request.getLastName().trim());
+        if (request.getFirstName() != null) {
+            user.setFirstName(request.getFirstName().trim());
+        } else {
+            user.setFirstName(null);
+        }
+        if (request.getLastName() != null) {
+            user.setLastName(request.getLastName().trim());
+        } else {
+            user.setLastName(null);
+        }
+
         user = userRepository.save(user);
         Candidate candidate = candidateRepository.findByUserId(user.getId());
 
