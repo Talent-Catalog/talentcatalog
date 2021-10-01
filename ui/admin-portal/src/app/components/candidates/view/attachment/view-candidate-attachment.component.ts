@@ -108,13 +108,6 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     this.doSearch();
   }
 
-  getAttachmentUrl(att: CandidateAttachment) {
-    if (att.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' : this.candidate.candidateNumber) + '/' + att.location;
-    }
-    return att.location;
-  }
-
   editCandidateAttachment(candidateAttachment: CandidateAttachment) {
       const editCandidateAttachmentModal = this.modalService.open(EditCandidateAttachmentComponent, {
       centered: true,

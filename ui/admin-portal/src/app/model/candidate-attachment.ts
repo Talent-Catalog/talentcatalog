@@ -27,6 +27,7 @@ export interface CandidateAttachment {
   type: AttachmentType;
   name: string;
   location: string;
+  url: string;
   createdBy: User;
   createdDate: number;
   updatedBy: User
