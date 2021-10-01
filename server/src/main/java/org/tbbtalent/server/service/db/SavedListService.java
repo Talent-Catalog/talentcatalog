@@ -316,8 +316,24 @@ public interface SavedListService {
      * @throws GeneralSecurityException if there are security problems accessing document storage
      * @throws IOException if there are problems creating the document 
      * @throws ReflectiveOperationException if the publish request contains unknown fields
+     * @throws NoSuchObjectException  if there is no saved list with this id
      */
     SavedList publish(long savedListId, PublishListRequest request)
-        throws GeneralSecurityException, IOException, ReflectiveOperationException;
+        throws GeneralSecurityException, IOException, NoSuchObjectException, ReflectiveOperationException;
 
+    /**
+     * Imports potential employer feedback from the currently published doc associated with a list.
+     * <p/>
+     * Does nothing if the list has not been published.
+     * <p/>
+     * If the published doc cannot be found (perhaps it has been deleted), the returned
+     * SavedList will have its publishedDocLink set to null.
+     * @param savedListId ID of published list
+     * @return SavedList containing a link to the published doc
+     * @throws GeneralSecurityException if there are security problems accessing document storage
+     * @throws IOException if there are problems creating the document 
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     */
+    SavedList importEmployerFeedback(long savedListId) 
+        throws GeneralSecurityException, NoSuchObjectException, IOException;
 }

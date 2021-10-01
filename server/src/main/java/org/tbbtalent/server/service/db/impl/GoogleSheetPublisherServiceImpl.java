@@ -19,6 +19,7 @@ package org.tbbtalent.server.service.db.impl;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.AddNamedRangeRequest;
 import com.google.api.services.sheets.v4.model.AddProtectedRangeRequest;
+import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
@@ -189,6 +190,33 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     log.info(res2.getReplies().size() + " batch update responses received");
 
     return file.getUrl();
+  }
+
+  @Override
+  public List<List<Object>> readPublishedDocColumns(String docUrl, List<String> columnNamedRanges)
+      throws GeneralSecurityException, IOException {
+    GoogleFileSystemFile spreadsheet = new GoogleFileSystemFile(docUrl);
+    String spreadsheetId = spreadsheet.getId();
+    final Sheets service = googleDriveConfig.getGoogleSheetsService();
+    BatchGetValuesResponse result = service.spreadsheets().values().batchGet(spreadsheetId)
+        .setRanges(columnNamedRanges).execute();
+
+    List<List<Object>> feedbackColumns = new ArrayList<>();
+    
+    List<ValueRange> valueRanges = result.getValueRanges();
+    for (ValueRange valueRange : valueRanges) {
+      List<List<Object>> vals = valueRange.getValues();
+      if (vals != null) {
+        List<Object> colVals = new ArrayList<>();
+        feedbackColumns.add(colVals);
+        for (List<Object> val : vals) {
+          if (val.size() > 0) {
+            colVals.add(val.get(0));
+          }
+        }
+      }
+    }
+    return feedbackColumns;
   }
 
   private Request computeAddNamedRangeRequest(GridRange range, String rangeName) {

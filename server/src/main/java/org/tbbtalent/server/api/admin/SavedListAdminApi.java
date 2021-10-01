@@ -215,6 +215,24 @@ public class SavedListAdminApi implements
     }
 
     /**
+     * Imports potential employer feedback from the currently published doc associated with a list.
+     * <p/>
+     * Does nothing if the list has not been published.
+     * <p/>
+     * If the published doc cannot be found (perhaps it has been deleted), the returned
+     * SavedList will have its publishedDocLink set to null.
+     * @param savedListId ID of published list
+     * @return SavedList containing a link to the published doc
+     */
+    @PutMapping(value = "{id}/feedback")
+    public Map<String, Object> importEmployerFeedback(@PathVariable("id") long savedListId)
+        throws IOException, GeneralSecurityException, NoSuchObjectException {
+        SavedList savedList = savedListService.importEmployerFeedback(savedListId);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(savedList);
+    }
+
+    /**
      * Create a published external document from the data of candidates in the given list. 
      * @param savedListId Id of saved list
      * @param request Request containing details of what is to be published 

@@ -372,7 +372,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     @NonNull
-    public SavedList get(long savedListId) {
+    public SavedList get(long savedListId) throws NoSuchObjectException {
         return savedListRepository.findById(savedListId)
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, savedListId));
     }
@@ -586,8 +586,29 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public SavedList importEmployerFeedback(long savedListId)
+        throws NoSuchObjectException, GeneralSecurityException, IOException {
+        SavedList savedList = get(savedListId);
+        
+        String link = savedList.getPublishedDocLink();
+        if (link != null) {
+            //Read data from linked sheet
+            List<List<Object>> feedback = docPublisherService.readPublishedDocColumns(link, 
+                Arrays.asList("candidateNumber", 
+                    PublishedDocColumnType.EmployerCandidateNotes.toString(),
+                    PublishedDocColumnType.EmployerCandidateDecision.toString()
+                    ));
+            log.info("Read columns " + feedback.size());
+
+            //TODO JC Use data to update Salesforce
+        }
+        
+        return savedList;
+    }
+
+    @Override
     public SavedList publish(long id, PublishListRequest request)
-        throws GeneralSecurityException, IOException {
+        throws GeneralSecurityException, IOException, NoSuchObjectException {
 
         //Get list, creating list folder if necessary
         SavedList savedList = createListFolder(id);

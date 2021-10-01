@@ -63,6 +63,19 @@ export class SavedListService {
     return this.http.put<SavedList>(`${this.apiUrl}/${id}/publish`, request);
   }
 
+  /**
+   * Imports potential employer feedback from the currently published doc associated with a list.
+   * <p/>
+   * Does nothing if the list has not been published.
+   * <p/>
+   * If the published doc cannot be found (perhaps it has been deleted), the returned
+   * SavedList will have its publishedDocLink set to null.
+   * @param id ID of published list
+   */
+  importEmployerFeedback(id: number): Observable<SavedList> {
+    return this.http.put<SavedList>(`${this.apiUrl}/${id}/feedback`, null);
+  }
+
   search(request: SearchSavedListRequest): Observable<SavedList[]> {
     return this.http.post<SavedList[]>(`${this.apiUrl}/search`, request);
   }

@@ -136,6 +136,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   searching: boolean;
   exporting: boolean;
   importing: boolean;
+  importingFeedback: boolean;
   publishing: boolean;
   updating: boolean;
   updatingStatuses: boolean;
@@ -585,6 +586,26 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       error => {
         this.error = error;
         this.publishing = false;
+      }
+    );
+  }
+
+  importEmployerFeedback() {
+    this.importingFeedback = true;
+    this.error = null;
+
+    this.savedListService.importEmployerFeedback(this.candidateSource.id).subscribe(
+      (result) => {
+        if (isSavedList(this.candidateSource)) {
+          //Update the list's published doc link (useful if the linked doc no longer exists,
+          //in which case the publishedDocLink will be set to null)
+          this.candidateSource.publishedDocLink = result.publishedDocLink;
+        }
+        this.importingFeedback = false;
+      },
+      error => {
+        this.error = error;
+        this.importingFeedback = false;
       }
     );
   }
