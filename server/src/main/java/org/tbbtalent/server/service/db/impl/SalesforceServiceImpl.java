@@ -173,32 +173,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     @NonNull
-    public Contact createContact(@NonNull Candidate candidate)
-            throws GeneralSecurityException, WebClientException,
-            SalesforceException {
-
-        //Create a contact request using data from the candidate
-        ContactRequest contactRequest = new ContactRequest(candidate);
-
-        //And decode the response
-        CreateRecordResult result = executeCreate(contactRequest);
-
-        assert result != null;
-        if (!result.success) {
-            throw new SalesforceException("Create failed for candidate "
-                    + candidate.getCandidateNumber()
-                    + ": " + result.getErrorMessage());
-        }
-
-
-        Contact contact = new Contact(candidate);
-        contact.setId(result.id);
-
-        return contact;
-    }
-
-    @Override
-    @NonNull
     public Contact createOrUpdateContact(@NonNull Candidate candidate)
             throws GeneralSecurityException, WebClientException,
             SalesforceException {

@@ -112,19 +112,7 @@ public interface SalesforceService {
     <T> T findRecordFieldsFromId(
             String objectType, String id, String fields, Class<T> cl)
             throws GeneralSecurityException, WebClientException;
-    
-    /**
-     * Creates a Salesforce Contact record corresponding to the given candidate.
-     * @param candidate Candidate - candidate number maps to TBBid in Salesforce
-     * @return Created Salesforce contact
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data
-     */
-    @NonNull
-    Contact createContact(@NonNull Candidate candidate)
-            throws GeneralSecurityException, WebClientException, SalesforceException;
+
     /**
      * Creates or updates the Salesforce Contact record corresponding to the 
      * given candidate.
