@@ -37,7 +37,7 @@ import lombok.ToString;
  * will map to the fields.
  * 
  * NOTE: You can request fields using their names starting with lower case, but they are always
- * returned with their standard upper case names.
+ * returned in the response with their standard upper case names.
  * 
  *
  * @author John Cameron
