@@ -593,7 +593,7 @@ public class SavedListServiceImpl implements SavedListService {
         String link = savedList.getPublishedDocLink();
         if (link != null) {
             //Read data from linked sheet
-            List<List<Object>> feedback = docPublisherService.readPublishedDocColumns(link, 
+            Map<String, List<Object>> feedback = docPublisherService.readPublishedDocColumns(link, 
                 Arrays.asList("candidateNumber", 
                     PublishedDocColumnType.EmployerCandidateNotes.toString(),
                     PublishedDocColumnType.EmployerCandidateDecision.toString()

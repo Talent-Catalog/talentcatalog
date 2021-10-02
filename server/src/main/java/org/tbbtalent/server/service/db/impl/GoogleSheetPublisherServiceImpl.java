@@ -45,9 +45,11 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -193,25 +195,38 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
   }
 
   @Override
-  public List<List<Object>> readPublishedDocColumns(String docUrl, List<String> columnNamedRanges)
+  public Map<String, List<Object>> readPublishedDocColumns(String docUrl, List<String> columnNamedRanges)
       throws GeneralSecurityException, IOException {
     GoogleFileSystemFile spreadsheet = new GoogleFileSystemFile(docUrl);
     String spreadsheetId = spreadsheet.getId();
     final Sheets service = googleDriveConfig.getGoogleSheetsService();
-    BatchGetValuesResponse result = service.spreadsheets().values().batchGet(spreadsheetId)
-        .setRanges(columnNamedRanges).execute();
 
-    List<List<Object>> feedbackColumns = new ArrayList<>();
-    
+    //Generate list of column ranges that are present in sheet
+    List<String> rangeNamesInSheet = getRangeNamesInSheet(service, spreadsheetId);
+    List<String> columnRangeNamesInSheet = rangeNamesInSheet.stream()
+        .filter(columnNamedRanges::contains)
+        .collect(Collectors.toList());
+
+    //Fetch data for those column names
+    BatchGetValuesResponse result = service.spreadsheets().values().batchGet(spreadsheetId)
+        .setRanges(columnRangeNamesInSheet).execute();
+
+    Map<String, List<Object>> feedbackColumns = new HashMap<>();
+
     List<ValueRange> valueRanges = result.getValueRanges();
-    for (ValueRange valueRange : valueRanges) {
-      List<List<Object>> vals = valueRange.getValues();
-      if (vals != null) {
+    if (valueRanges != null) {
+      int rangeIndex = 0;
+      for (ValueRange valueRange : valueRanges) {
+        List<List<Object>> vals = valueRange.getValues();
         List<Object> colVals = new ArrayList<>();
-        feedbackColumns.add(colVals);
-        for (List<Object> val : vals) {
-          if (val.size() > 0) {
-            colVals.add(val.get(0));
+        feedbackColumns.put(columnRangeNamesInSheet.get(rangeIndex++), colVals);
+        if (vals != null) {
+          for (List<Object> val : vals) {
+            if (val.size() > 0) {
+              colVals.add(val.get(0));
+            } else {
+              colVals.add(null);
+            }
           }
         }
       }
@@ -281,6 +296,19 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         )
     );
     return req;
+  }
+
+
+  /**
+   * Returns names of all named ranges.
+   */
+  private List<String> getRangeNamesInSheet(Sheets service, String spreadsheetId) throws IOException {
+    List<NamedRange> namedRanges = getNamedRanges(service, spreadsheetId);
+    List<String> rangeNames = new ArrayList<>();
+    for (NamedRange namedRange : namedRanges) {
+      rangeNames.add(namedRange.getName());
+    }
+    return rangeNames;
   }
   
   /**

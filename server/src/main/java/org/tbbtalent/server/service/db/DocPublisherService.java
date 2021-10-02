@@ -54,13 +54,14 @@ public interface DocPublisherService {
       throws GeneralSecurityException, IOException;
 
   /**
-   * Reads data from a number of given columns in an alreday published doc
+   * Looks for data from a number of given columns in an already published doc.
+   * Reads the data for those columns that appear in the doc.
    * @param docUrl Url of published document
-   * @param columnNamedRanges List of named ranges of columns to be read 
-   * @return List of lists of columns values read, corresponding to the of requested columns.
+   * @param columnNamedRanges List of named ranges of columns to be read if present in doc 
+   * @return Map of lists of column values read. The key of the map is the name of the column found.
    * @throws GeneralSecurityException if there are security problems accessing the document
    * @throws IOException if there are problems reading the document 
    */
-  List<List<Object>> readPublishedDocColumns(String docUrl, List<String> columnNamedRanges)
+  Map<String, List<Object>> readPublishedDocColumns(String docUrl, List<String> columnNamedRanges)
       throws GeneralSecurityException, IOException;
 }
