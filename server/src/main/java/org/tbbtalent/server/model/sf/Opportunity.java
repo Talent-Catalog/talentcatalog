@@ -35,6 +35,10 @@ import lombok.ToString;
  * <p/>
  * The (crappy) way around it is to make all the fields public and capitalized. Then the JSON
  * will map to the fields.
+ * 
+ * NOTE: You can request fields using their names starting with lower case, but they are always
+ * returned with their standard upper case names.
+ * 
  *
  * @author John Cameron
  */
