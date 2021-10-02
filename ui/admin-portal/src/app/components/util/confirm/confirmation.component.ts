@@ -24,7 +24,7 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class ConfirmationComponent implements OnInit {
 
-  title: string;
+  title: string = "Confirmation";
   message: string;
 
   constructor(private activeModal: NgbActiveModal) { }
