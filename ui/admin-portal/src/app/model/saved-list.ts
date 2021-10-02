@@ -46,7 +46,7 @@ export interface SavedList extends CandidateSource {
 }
 
 export function isSavedList(source: CandidateSource): source is SavedList {
-  return !isSavedSearch(source);
+  return source == null ? false : !isSavedSearch(source);
 }
 
 export interface UpdateSavedListInfoRequest {
