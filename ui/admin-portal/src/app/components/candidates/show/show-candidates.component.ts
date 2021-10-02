@@ -77,7 +77,7 @@ import {
   CopySourceContentsRequest,
   IHasSetOfCandidates,
   isSavedList,
-  PublishedDocColumnConfig,
+  PublishedDocColumnConfig, PublishedDocImportReport,
   PublishListRequest,
   SavedList,
   SavedListGetRequest,
@@ -596,18 +596,22 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     this.savedListService.importEmployerFeedback(this.candidateSource.id).subscribe(
       (result) => {
-        if (isSavedList(this.candidateSource)) {
-          //Update the list's published doc link (useful if the linked doc no longer exists,
-          //in which case the publishedDocLink will be set to null)
-          this.candidateSource.publishedDocLink = result.publishedDocLink;
-        }
         this.importingFeedback = false;
+        this.displayImportFeedbackReport(result);
       },
       error => {
         this.error = error;
         this.importingFeedback = false;
       }
     );
+  }
+
+  private displayImportFeedbackReport(report: PublishedDocImportReport) {
+    const showReport = this.modalService.open(ConfirmationComponent, {
+      centered: true, backdrop: 'static'});
+    showReport.componentInstance.title = "Feedback Import Report";
+    showReport.componentInstance.message =
+      report.message;
   }
 
   modifyExportColumns() {

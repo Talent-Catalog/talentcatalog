@@ -177,6 +177,14 @@ export class PublishedDocColumnConfig {
   columnDef: PublishedDocColumnDef;
 }
 
+export class PublishedDocImportReport {
+  message: string;
+  nCandidates: number;
+  nEmployerFeedbacks: number;
+  nJobOffers: number;
+  nNoJobOffers: number;
+}
+
 /**
  * See doc for corresponding Java class
  */

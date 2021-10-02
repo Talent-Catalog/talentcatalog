@@ -66,6 +66,7 @@ import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
+import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
@@ -587,9 +588,11 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public SavedList importEmployerFeedback(long savedListId)
+    public PublishedDocImportReport importEmployerFeedback(long savedListId)
         throws NoSuchObjectException, GeneralSecurityException, IOException {
         SavedList savedList = get(savedListId);
+        
+        PublishedDocImportReport report = new PublishedDocImportReport();
         
         String link = savedList.getPublishedDocLink();
         if (link != null) {
@@ -601,10 +604,28 @@ public class SavedListServiceImpl implements SavedListService {
                     ));
             log.info("Read columns " + feedback.size());
 
-            //TODO JC Use data to update Salesforce
+            List<Object> columnData;
+            columnData = feedback.get(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME);
+            int nCandidates = columnData == null ? 0 : columnData.size(); 
+            report.setNCandidates(nCandidates);
+            
+            if (nCandidates == 0) {
+                report.setMessage("No candidate column found - nothing to import");
+            } else {
+                columnData = feedback.get(PublishedDocColumnType.EmployerCandidateNotes.toString());
+                //TODO JC Need to ignore nulls
+                int nFeedbacks = columnData == null ? 0 : columnData.size();
+                report.setNEmployerFeedbacks(nFeedbacks);
+                
+                //TODO JC Extract decision data
+                report.setMessage("Import complete");
+
+                //TODO JC Use data to update Salesforce
+
+            }
         }
         
-        return savedList;
+        return report;
     }
 
     @Override

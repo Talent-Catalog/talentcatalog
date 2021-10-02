@@ -31,6 +31,7 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
+import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
@@ -325,15 +326,13 @@ public interface SavedListService {
      * Imports potential employer feedback from the currently published doc associated with a list.
      * <p/>
      * Does nothing if the list has not been published.
-     * <p/>
-     * If the published doc cannot be found (perhaps it has been deleted), the returned
-     * SavedList will have its publishedDocLink set to null.
      * @param savedListId ID of published list
-     * @return SavedList containing a link to the published doc
+     * @return PublishedDocImportReport containing details of the import
      * @throws GeneralSecurityException if there are security problems accessing document storage
      * @throws IOException if there are problems creating the document 
-     * @throws NoSuchObjectException  if there is no saved list with this id
+     * @throws NoSuchObjectException  if there is no saved list with this id or if published doc
+     * is not found (maybe it has been manually deleted).
      */
-    SavedList importEmployerFeedback(long savedListId) 
+    PublishedDocImportReport importEmployerFeedback(long savedListId) 
         throws GeneralSecurityException, NoSuchObjectException, IOException;
 }

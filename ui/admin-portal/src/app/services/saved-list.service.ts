@@ -20,6 +20,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {
+  PublishedDocImportReport,
   PublishListRequest,
   SavedList,
   SearchSavedListRequest,
@@ -67,13 +68,11 @@ export class SavedListService {
    * Imports potential employer feedback from the currently published doc associated with a list.
    * <p/>
    * Does nothing if the list has not been published.
-   * <p/>
-   * If the published doc cannot be found (perhaps it has been deleted), the returned
-   * SavedList will have its publishedDocLink set to null.
    * @param id ID of published list
+   * @return PublishedDocImportReport containing details of the import
    */
-  importEmployerFeedback(id: number): Observable<SavedList> {
-    return this.http.put<SavedList>(`${this.apiUrl}/${id}/feedback`, null);
+  importEmployerFeedback(id: number): Observable<PublishedDocImportReport> {
+    return this.http.put<PublishedDocImportReport>(`${this.apiUrl}/${id}/feedback`, null);
   }
 
   search(request: SearchSavedListRequest): Observable<SavedList[]> {
