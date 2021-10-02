@@ -111,6 +111,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final AuthService authService;
 
     private static final Logger log = LoggerFactory.getLogger(SavedListServiceImpl.class);
+    private static final String PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME = "CandidateNumber";
 
     @Autowired
     public SavedListServiceImpl(
@@ -594,7 +595,7 @@ public class SavedListServiceImpl implements SavedListService {
         if (link != null) {
             //Read data from linked sheet
             Map<String, List<Object>> feedback = docPublisherService.readPublishedDocColumns(link, 
-                Arrays.asList("candidateNumber", 
+                Arrays.asList(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME, 
                     PublishedDocColumnType.EmployerCandidateNotes.toString(),
                     PublishedDocColumnType.EmployerCandidateDecision.toString()
                     ));
@@ -660,7 +661,7 @@ public class SavedListServiceImpl implements SavedListService {
             final PublishedDocColumnSetUp columnSetUp = new PublishedDocColumnSetUp();
             columnSetUpMap.put(columnCount, columnSetUp);
             if (def.getType().equals(PublishedDocColumnType.EmployerCandidateDecision)) {
-                columnSetUp.setDropDowns(Arrays.asList("", "Offer", "No Offer", "Wait"));
+                columnSetUp.setDropDowns(Arrays.asList("", "Offer", "No Offer"));
             }
             
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {
@@ -674,7 +675,7 @@ public class SavedListServiceImpl implements SavedListService {
                     String fieldName = def.getContent().getValue().getFieldName();
                     foundCandidateNumber = "candidateNumber".equals(fieldName);
                     if (foundCandidateNumber) {
-                        columnSetUp.setRangeName("candidateNumber");
+                        columnSetUp.setRangeName(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME);
                     }
                 } 
             }
