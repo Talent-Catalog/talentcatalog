@@ -39,6 +39,10 @@ import lombok.ToString;
  * NOTE: You can request fields using their names starting with lower case, but they are always
  * returned in the response with their standard upper case names.
  * 
+ * NOTE: The getters (added here automatically by Lombok) mean that utilities that process this
+ * object as a normal bean, will see a normal (lower case) "name" attribute on the bean because 
+ * that is what they expect to be returned by a getName method.
+ * The DtoBuilder is one such utility. In fact it won't find an attribute "Name"!
  *
  * @author John Cameron
  */
