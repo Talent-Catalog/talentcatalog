@@ -27,6 +27,8 @@ import lombok.ToString;
  * Contains the relevant data returned from Salesforce - most importantly
  * the Salesforce id, from which the Salesforce url (the sflink) can be
  * computed.
+ * <p/>
+ * See notes on {@link Opportunity} for the reason for the public fields.
  *
  * @author John Cameron
  */
