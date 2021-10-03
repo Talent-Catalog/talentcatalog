@@ -185,7 +185,21 @@ public interface SalesforceService {
      */
     void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request) throws GeneralSecurityException;
 
-    //TODO JC Doc
+    /**
+     * Updates the Salesforce Candidate Opportunity records based on the given employer feedback
+     * on each candidate. 
+     * <p/>
+     * Note the candidate job opportunities are identified by the unique
+     * external id TBBCandidateExternalId__c
+     *
+     * @param feedbacks Employer feedback on candidates
+     * @param sfJoblink url link to Employer job opportunity on Salesforce
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data,
+     * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
+     */
     void updateCandidateOpportunities(List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink)
         throws GeneralSecurityException, WebClientException, SalesforceException;
         
