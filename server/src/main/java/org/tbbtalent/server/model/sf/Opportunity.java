@@ -50,6 +50,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Opportunity {
+    public String Id;
     public String Name;
     public String AccountId;
     public String AccountCountry__c;

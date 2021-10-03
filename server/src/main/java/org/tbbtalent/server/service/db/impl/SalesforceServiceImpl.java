@@ -542,7 +542,18 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         if (sfId != null) {
             opportunity = findRecordFieldsFromId(
                     "Opportunity", sfId,
-                    "Name,AccountId,OwnerId,AccountCountry__c", Opportunity.class);
+                    "Id,Name,AccountId,OwnerId,AccountCountry__c", Opportunity.class);
+        }
+        return opportunity;
+    }
+
+    private Opportunity findOpportunityFromLink(String linkUrl) throws GeneralSecurityException {
+        //Get id from link.  
+        String id = extractIdFromSfUrl(linkUrl);
+
+        Opportunity opportunity = findOpportunity(id);
+        if (opportunity == null) {
+            throw new SalesforceException("Could not find opportunity " + linkUrl);
         }
         return opportunity;
     }
@@ -571,16 +582,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink) 
         throws GeneralSecurityException, WebClientException, SalesforceException {
 
-        //TODO JC This should come from Opportunity
-        //Get id job opportunity.  
-        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
-        
-        Opportunity opportunity = getOpportunity(sfJoblink);
+        Opportunity opportunity = findOpportunityFromLink(sfJoblink);
         String recordType = getCandidateOpportunityRecordType(opportunity);
         
         //Now build requests of candidate opportunities we want to create
         List<CandidateOpportunityRecordComposite> opportunityRequests = 
-            buildCandidateOpportunityRequests(feedbacks, recordType, jobOpportunityId);
+            buildCandidateOpportunityRequests(feedbacks, recordType, opportunity.Id);
 
         executeCandidateOpportunityRequests(opportunityRequests);
 
@@ -652,17 +659,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
         
         return requests;
-    }
-
-    private Opportunity getOpportunity(String sfJoblink) throws GeneralSecurityException {
-        //Get id job opportunity.  
-        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
-
-        Opportunity opportunity = findOpportunity(jobOpportunityId);
-        if (opportunity == null) {
-            throw new SalesforceException("Could not find job opportunity " + sfJoblink);
-        }
-        return opportunity;
     }
 
     private String getCandidateOpportunityRecordType(Opportunity opportunity) {
