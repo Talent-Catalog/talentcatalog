@@ -59,6 +59,8 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
+import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
+import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 import org.tbbtalent.server.service.db.SalesforceService;
@@ -259,8 +261,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         List<Candidate> candidatesToProcess;
 
-        //TODO JC Using Map requests instead of classes (where all fields are present) we can just 
-        // update individual fields
+        //TODO JC This logic is maybe no longer needed because if no stage is specified, we can 
+        //now just not send stage - now that we are using Map's.
         //Opportunity Stage is a required field. If don't have one, we can't touch existing 
         //candidate opportunities because we need to leave their existing stage unchanged, but
         //can create new opportunities - supplying the default initial stage of "Prospect".
@@ -306,6 +308,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
         
         if (candidatesToProcess.size() > 0) {
+            
+            //TODO JC Use refactored code used by updateCandidateOpps
+            
             //First get some more info about the job: its name, its 
             //associated account and country
             Opportunity opportunity = findOpportunity(jobOpportunityId);
@@ -559,6 +564,114 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         
         //Execute the update request
         executeUpdate(salesforceId, contactRequest);
+    }
+
+    @Override
+    public void updateCandidateOpportunities(
+        List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink) 
+        throws GeneralSecurityException, WebClientException, SalesforceException {
+
+        //TODO JC This should come from Opportunity
+        //Get id job opportunity.  
+        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
+        
+        Opportunity opportunity = getOpportunity(sfJoblink);
+        String recordType = getCandidateOpportunityRecordType(opportunity);
+        
+        //Now build requests of candidate opportunities we want to create
+        List<CandidateOpportunityRecordComposite> opportunityRequests = 
+            buildCandidateOpportunityRequests(feedbacks, recordType, jobOpportunityId);
+
+        executeCandidateOpportunityRequests(opportunityRequests);
+
+    }
+
+    private void executeCandidateOpportunityRequests(
+        List<CandidateOpportunityRecordComposite> requests) throws GeneralSecurityException {
+        
+        OpportunityRequestComposite req = new OpportunityRequestComposite();
+        req.setRecords(requests);
+
+        //Execute and decode the response
+        UpsertResult[] results = executeUpserts(candidateOpportunitySFFieldName, req);
+
+        if (results.length != requests.size()) {
+            //This is a fatal error because if the numbers don't match we don't 
+            //know how to match results to requests.
+            throw new SalesforceException(
+                "Number of results (" + results.length
+                    + ") did not match number of requests ("
+                    + requests.size() + ")");
+        }
+
+        //Log any failures
+        int count = 0;
+        for (CandidateOpportunityRecordComposite request : requests) {
+            UpsertResult result = results[count++];
+            if (!result.isSuccess()) {
+                log.error("Update failed for opportunity "
+                    + request.getName()
+                    + ": " + result.getErrorMessage());
+            }
+        }
+    }
+
+    private List<CandidateOpportunityRecordComposite> buildCandidateOpportunityRequests(
+        List<EmployerCandidateFeedbackData> feedbacks, String recordType, String jobOpportunityId) {
+
+        List<CandidateOpportunityRecordComposite> requests = new ArrayList<>();
+        
+        for (EmployerCandidateFeedbackData feedback : feedbacks) {
+            final String notes = feedback.getEmployerCandidateNotes();
+            final EmployerCandidateDecision decision = feedback.getEmployerCandidateDecision();
+            if (notes != null || decision != null) {
+                //We have something useful feedback to save
+
+                //Create a request using data from the candidate
+                CandidateOpportunityRecordComposite opportunityRequest =
+                    new CandidateOpportunityRecordComposite(recordType,
+                        feedback.getCandidateNumber(), jobOpportunityId);
+                requests.add(opportunityRequest);
+
+                if (notes != null) {
+                    ////TODO JC Set new employer feedback field instead of next step
+                    opportunityRequest.setNextStep(notes);
+                }
+
+                if (decision != null) {
+                    switch (decision) {
+                        case JobOffer:
+                            opportunityRequest.setStageName("Acceptance");
+                            break;
+                        case NoJobOffer:
+                            opportunityRequest.setStageName("No job offer");
+                            break;
+                    }
+                }
+            }
+        }
+        
+        return requests;
+    }
+
+    private Opportunity getOpportunity(String sfJoblink) throws GeneralSecurityException {
+        //Get id job opportunity.  
+        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
+
+        Opportunity opportunity = findOpportunity(jobOpportunityId);
+        if (opportunity == null) {
+            throw new SalesforceException("Could not find job opportunity " + sfJoblink);
+        }
+        return opportunity;
+    }
+
+    private String getCandidateOpportunityRecordType(Opportunity opportunity) {
+        String country = opportunity.getAccountCountry__c();
+        String recordType = "Candidate recruitment";
+        if ("Canada".equals(country)) {
+            recordType = "Candidate recruitment (CAN)";
+        }
+        return recordType;
     }
 
     @Override
@@ -1168,6 +1281,20 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      */
     class CandidateOpportunityRequest extends LinkedHashMap<String, Object> {
 
+        public CandidateOpportunityRequest(
+            @Nullable CompositeAttributes attributes,
+            String recordType, long candidateNumber,
+            String jobOpportunityId) {
+            
+            if (attributes != null) {
+                setAttributes(attributes);
+            }
+            
+            setRecordType(new RecordTypeField(recordType));
+
+            setTBBCandidateExternalId__c(makeExternalId(Long.toString(candidateNumber), jobOpportunityId)); 
+        }
+
         public CandidateOpportunityRequest(@Nullable CompositeAttributes attributes,
             String recordType, Candidate candidate,
             String stageName, String nextStep,
@@ -1309,6 +1436,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Setter
     @ToString(callSuper = true)
     class CandidateOpportunityRecordComposite extends CandidateOpportunityRequest {
+        
+        //TODO JC Constructors should call each other
+        public CandidateOpportunityRecordComposite(
+            String recordType, long candidateNumber, String jobOpportunityId) {
+            super(new CompositeAttributes("Opportunity"), 
+                recordType, candidateNumber, jobOpportunityId);
+        }
+        
         public CandidateOpportunityRecordComposite(String recordType, Candidate candidate,
             String stageName, String nextStep,
             String jobOpportunityName,

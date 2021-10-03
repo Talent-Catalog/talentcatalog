@@ -61,6 +61,8 @@ import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
+import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
@@ -595,37 +597,95 @@ public class SavedListServiceImpl implements SavedListService {
         PublishedDocImportReport report = new PublishedDocImportReport();
         
         String link = savedList.getPublishedDocLink();
-        if (link != null) {
+        if (link == null) {
+            report.setMessage("No Salesforce job opportunity associated with list");
+        } else {
             //Read data from linked sheet
             Map<String, List<Object>> feedback = docPublisherService.readPublishedDocColumns(link, 
                 Arrays.asList(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME, 
                     PublishedDocColumnType.EmployerCandidateNotes.toString(),
                     PublishedDocColumnType.EmployerCandidateDecision.toString()
                     ));
-            log.info("Read columns " + feedback.size());
 
-            List<Object> columnData;
-            columnData = feedback.get(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME);
-            int nCandidates = columnData == null ? 0 : columnData.size(); 
+            List<Object> candidateNumberColumnData = feedback.get(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME);
+            int nCandidates = candidateNumberColumnData == null ? 0 : candidateNumberColumnData.size(); 
             report.setNCandidates(nCandidates);
-            
+
+            List<EmployerCandidateFeedbackData> feedbacks = new ArrayList<>();
             if (nCandidates == 0) {
                 report.setMessage("No candidate column found - nothing to import");
             } else {
-                columnData = feedback.get(PublishedDocColumnType.EmployerCandidateNotes.toString());
-                //TODO JC Need to ignore nulls
-                int nFeedbacks = columnData == null ? 0 : columnData.size();
-                report.setNEmployerFeedbacks(nFeedbacks);
+                List<Object> notesData = feedback.get(PublishedDocColumnType.EmployerCandidateNotes.toString());
+                List<Object> decisionData = feedback.get(PublishedDocColumnType.EmployerCandidateDecision.toString());
                 
-                //TODO JC Extract decision data
-                report.setMessage("Import complete");
+                //Use data to update Salesforce
+                int index = 0;
+                for (Object candidateNumber : candidateNumberColumnData) {
+                    if (candidateNumber == null) {
+                        throw new NoSuchObjectException("Missing candidate number");
+                    } else {
+                        EmployerCandidateFeedbackData feedbackData = 
+                            new EmployerCandidateFeedbackData(Long.parseLong((String) candidateNumber));
+                        feedbacks.add(feedbackData);
+                        
+                        //Notes
+                        String notes = (String) fetchColumnValueByIndex(notesData, index);
+                        feedbackData.setEmployerCandidateNotes(notes);
+                        
+                        //Decision
+                        String val = (String) fetchColumnValueByIndex(decisionData, index);
+                        if (val != null) {
+                            EmployerCandidateDecision decision = EmployerCandidateDecision.textToEnum(val);
+                            feedbackData.setEmployerCandidateDecision(decision);
+                        }
+                    }
+                    index++;
+                }
 
-                //TODO JC Use data to update Salesforce
-
+                int nFeedbacks = 0;
+                int nJobOffers = 0;
+                int nNoJobOffers = 0;
+                for (EmployerCandidateFeedbackData feedbackData : feedbacks) {
+                    if (feedbackData.getEmployerCandidateNotes() != null) {
+                        nFeedbacks++;
+                    }
+                    final EmployerCandidateDecision decision = feedbackData.getEmployerCandidateDecision();
+                    if (decision != null) {
+                        switch (decision) {
+                            case JobOffer:
+                                nJobOffers++;
+                                break;
+                            case NoJobOffer:
+                                nNoJobOffers++;
+                                break;
+                        }
+                    }
+                }
+                
+                report.setNEmployerFeedbacks(nFeedbacks);
+                report.setNJobOffers(nJobOffers);
+                report.setNNoJobOffers(nNoJobOffers);
+                
+                if (nFeedbacks + nJobOffers + nNoJobOffers > 0) {
+                    salesforceService.updateCandidateOpportunities(feedbacks, savedList.getSfJoblink());
+                    report.setMessage("Import complete");
+                } else {
+                    report.setMessage("No feedback detected");
+                }
             }
         }
         
         return report;
+    }
+
+    private Object fetchColumnValueByIndex(List<Object> columnData, int index) {
+        Object val = null;
+        if (columnData != null) {
+            if (index < columnData.size()) {
+                val = columnData.get(index);
+            }
+        }
+        return val;
     }
 
     @Override
@@ -682,7 +742,7 @@ public class SavedListServiceImpl implements SavedListService {
             final PublishedDocColumnSetUp columnSetUp = new PublishedDocColumnSetUp();
             columnSetUpMap.put(columnCount, columnSetUp);
             if (def.getType().equals(PublishedDocColumnType.EmployerCandidateDecision)) {
-                columnSetUp.setDropDowns(Arrays.asList("", "Offer", "No Offer"));
+                columnSetUp.setDropDowns(EmployerCandidateDecision.getDisplayTextValues());
             }
             
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {

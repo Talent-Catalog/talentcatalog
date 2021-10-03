@@ -27,6 +27,7 @@ import org.tbbtalent.server.model.sf.Opportunity;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
+import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 
@@ -150,7 +151,8 @@ public interface SalesforceService {
      * external id TBBCandidateExternalId__c
      * 
      * @param candidates Candidates
-     * @param salesforceOppParams Optional Salesforce fields to set on candidate opportunities           
+     * @param salesforceOppParams Optional Salesforce fields to set on all given candidates' 
+     *                            opportunities           
      * @param sfJoblink url link to Employer job opportunity on Salesforce
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
@@ -158,8 +160,8 @@ public interface SalesforceService {
      * @throws SalesforceException if Salesforce had a problem with the data,
      * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
      */
-    void createOrUpdateCandidateOpportunities(
-            List<Candidate> candidates, @Nullable SalesforceOppParams salesforceOppParams, String sfJoblink)
+    void createOrUpdateCandidateOpportunities(List<Candidate> candidates, 
+        @Nullable SalesforceOppParams salesforceOppParams, String sfJoblink)
             throws GeneralSecurityException, WebClientException, SalesforceException;
     
     /**
@@ -182,4 +184,9 @@ public interface SalesforceService {
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request) throws GeneralSecurityException;
+
+    //TODO JC Doc
+    void updateCandidateOpportunities(List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink)
+        throws GeneralSecurityException, WebClientException, SalesforceException;
+        
 }
