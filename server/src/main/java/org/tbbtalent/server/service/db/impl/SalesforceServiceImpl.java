@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -178,12 +179,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             SalesforceException {
 
         //Create a contact request using data from the candidate
-        ContactRequest contactRequest = new ContactRequest(candidate);
+        ContactRequest contactRequest = new ContactRequest(null, candidate);
         
         //Upsert request bodies should not include the TBBid because it is used as the unique key
         //used to identify the record to be updated - specified in the PATCH uri, not in the
         //request body.
-        contactRequest.setTBBid__c(null);
+        contactRequest.remove("TBBid__c");
 
         //Execute and decode the response
         UpsertResult result = executeUpsert(candidateNumberSFFieldName, 
@@ -258,6 +259,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         List<Candidate> candidatesToProcess;
 
+        //TODO JC Using Map requests instead of classes (where all fields are present) we can just 
+        // update individual fields
         //Opportunity Stage is a required field. If don't have one, we can't touch existing 
         //candidate opportunities because we need to leave their existing stage unchanged, but
         //can create new opportunities - supplying the default initial stage of "Prospect".
@@ -543,7 +546,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public void updateContact(Candidate candidate) 
             throws GeneralSecurityException {
         //Create a contact request using data from the candidate
-        ContactRequest contactRequest = new ContactRequest(candidate);
+        ContactRequest contactRequest = new ContactRequest(null, candidate);
 
         String salesforceId = candidate.getSfId();
         if (salesforceId == null) {
@@ -1002,6 +1005,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public List<String> fields;
     }
 
+
     /**
      * This is the core information that is sent in the body of Salesforce HTTP requests
      * representing the Salesforce Contact fields to be populated in a create or update.
@@ -1013,39 +1017,73 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * object. This is represented by the associated {@link ContactRecordComposite}.
      * <p/>
      * The request containing these multiple updates is represented by {@link ContactRequestComposite}
+     * <p/>
+     * Note that attributes are stored in the Map superclass rather than being explicit fields
+     * (as our original code was written). This is so that we can do partial updates - just 
+     * supplying the fields that we want to change - rather than supplying all fields every
+     * time which is what happens when you have fixed field attributes.
+     * <p/>
+     * A LinkedHashMap is used because we need some control over the order of the fields 
+     * serialized to JSON and sent in the request. In particular the "attributes" field has to come
+     * first if it is present (as it is in "composite" requests).
      */
-    @Getter
-    @Setter
-    @ToString
-    class ContactRequest {
-        public String AccountId;
-        public String FirstName;
-        public String LastName;
-        public String MailingCountry;
-        public String Id;
-        public Long TBBid__c;
+    class ContactRequest extends LinkedHashMap<String, Object> {
 
-        public ContactRequest(Candidate candidate) {
+        public ContactRequest(@Nullable CompositeAttributes attributes, Candidate candidate) {
+            //If present, attributes must be set first - so that it appears first in the JSON
+            //serialization (thanks to using LinkedHashMap rather than a normal HashMap)
+            if (attributes != null) {
+                setAttributes(attributes);
+            }
+            
             final String country = candidate.getCountry().getName();
-            this.MailingCountry = country;
+            setMailingCountry(country);
 
             //Set account id based on candidate's country 
             switch (country) {
                 case "Jordan":
-                    AccountId = tbbJordanAccountId;
+                    setAccountId(tbbJordanAccountId);
                     break;
                 case "Lebanon":
-                    AccountId = tbbLebanonAccountId;
+                    setMailingCountry(tbbLebanonAccountId);
                     break;
                 default:
-                    AccountId = tbbOtherAccountId;
+                    setAccountId(tbbOtherAccountId);
             }
 
             User user = candidate.getUser();
-            this.FirstName = user.getFirstName();
-            this.LastName = user.getLastName();
+            setFirstName(user.getFirstName());
+            setLastName(user.getLastName());
 
-            this.TBBid__c = Long.valueOf(candidate.getCandidateNumber());
+            setTBBid__c(Long.valueOf(candidate.getCandidateNumber()));
+        }
+
+        public void setAccountId(String accountId) {
+            super.put("AccountId", accountId);
+        }
+
+        public void setAttributes(CompositeAttributes attributes) {
+            put("attributes", attributes);
+        }
+
+        public void setFirstName(String firstName) {
+            super.put("FirstName", firstName);
+        }
+
+        public void setLastName(String lastName) {
+            super.put("LastName", lastName);
+        }
+
+        public void setMailingCountry(String mailingCountry) {
+            super.put("MailingCountry", mailingCountry);
+        }
+
+        public void setId(String id) {
+            super.put("Id", id);
+        }
+
+        public void setTBBid__c(Long TBBid__c) {
+            super.put("TBBid__c", TBBid__c);
         }
     }
 
@@ -1076,11 +1114,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Setter
     @ToString(callSuper = true)
     class ContactRecordComposite extends ContactRequest {
-        public CompositeAttributes attributes;
-
         public ContactRecordComposite(Candidate candidate) {
-            super(candidate);
-            attributes = new CompositeAttributes("Contact");
+            super(new CompositeAttributes("Contact"), candidate);
         }
     }
     
@@ -1131,50 +1166,114 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     /**
      * See doc for {@link ContactRequest}
      */
-    @Getter
-    @Setter
-    @ToString
-    class CandidateOpportunityRequest {
-        public RecordTypeField RecordType;
+    class CandidateOpportunityRequest extends LinkedHashMap<String, Object> {
+
+        public CandidateOpportunityRequest(@Nullable CompositeAttributes attributes,
+            String recordType, Candidate candidate,
+            String stageName, String nextStep,
+            String jobOpportunityName,
+            String jobOpportunityId,
+            String jobAccountId, String jobOwnerId) {
+            
+            if (attributes != null) {
+                setAttributes(attributes);
+            }
+            
+            User user = candidate.getUser();
+            String candidateNumber = candidate.getCandidateNumber();
+
+            setRecordType(new RecordTypeField(recordType));
+            
+            setName(user.getFirstName() + 
+                    "(" + candidateNumber + ")-" + jobOpportunityName);
+
+            setTBBCandidateExternalId__c(makeExternalId(candidateNumber, jobOpportunityId)); 
+
+            setAccountId(jobAccountId);
+            setCandidate_Contact__c(candidate.getSfId());
+            setOwnerId(jobOwnerId);
+            setParent_Opportunity__c(jobOpportunityId);
+            
+            LocalDateTime close = LocalDateTime.now().plusYears(1);
+            setCloseDate(close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            
+            setStageName(stageName);
+            setNextStep(nextStep);
+        }
+
+        public String getName() {
+            return (String) get("Name");
+        }
+
+        public void setAttributes(CompositeAttributes attributes) {
+            put("attributes", attributes);
+        }
+        
+        /**
+         * This is the Salesforce record type for this opportunity.
+         * There are two types of TBB Candidate opportunity: "Candidate recruitment" and the 
+         * Canada specific "Candidate recruitment (CAN)" 
+         * @param recordType Salesforce record type 
+         */
+        public void setRecordType(RecordTypeField recordType) {
+            put("RecordType", recordType);
+        }
+
         /**
          * Id of associated Account.
          */
-        public String AccountId;
-        
+        public void setAccountId(String accountId) {
+            put("AccountId", accountId);
+        }
+
         /**
          * Id of associated Candidate contact record
          */
-        public String Candidate_Contact__c;
+        public void setCandidate_Contact__c(String candidate_Contact__c) {
+            put("Candidate_Contact__c", candidate_Contact__c);
+        }
 
         /**
          * Required field for creating opportunity - set to a year from now
          */
-        public String CloseDate;
+        public void setCloseDate(String closeDate) {
+            put("CloseDate", closeDate);
+        }
 
         /**
          * Name of candidate job opportunity
          */
-        public String Name;
-
+        public void setName(String name) {
+            put("Name", name);
+        }
+        
         /**
          * ID job opportunity owner
          */
-        public String OwnerId;
+        public void setOwnerId(String ownerId) {
+            put("OwnerId", ownerId);
+        }
 
         /**
          * Id of associated Job opportunity record
          */
-        public String Parent_Opportunity__c;
-
+        public void setParent_Opportunity__c(String parent_Opportunity__c) {
+            put("Parent_Opportunity__c", parent_Opportunity__c);
+        }
+        
         /**
          * Set to stage - default is "Prospect" 
          */
-        public String StageName = "Prospect";
+        public void setStageName(String stageName) {
+            put("StageName", stageName);
+        }
 
         /**
          * Opportunity next step 
          */
-        public String NextStep;
+        public void setNextStep(String nextStep) {
+            put("NextStep", nextStep);
+        }
         
         /**
          * This is the unique external id that defines all the candidate 
@@ -1182,34 +1281,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          * It is constructed from the candidate id and the job opportunity
          * id.
          */
-        public String TBBCandidateExternalId__c;
-
-        public CandidateOpportunityRequest(String recordType, Candidate candidate,
-            String stageName, String nextStep,
-            String jobOpportunityName,
-            String jobOpportunityId,
-            String jobAccountId, String jobOwnerId) {
-            User user = candidate.getUser();
-            String candidateNumber = candidate.getCandidateNumber();
-
-            RecordType = new RecordTypeField(recordType);
-            
-            Name = user.getFirstName() + 
-                    "(" + candidateNumber + ")-" + jobOpportunityName;
-
-            TBBCandidateExternalId__c = 
-                    makeExternalId(candidateNumber, jobOpportunityId); 
-
-            AccountId = jobAccountId;
-            Candidate_Contact__c = candidate.getSfId();
-            OwnerId = jobOwnerId;
-            Parent_Opportunity__c = jobOpportunityId;
-            
-            LocalDateTime close = LocalDateTime.now().plusYears(1);
-            CloseDate = close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            
-            StageName = stageName;
-            NextStep = nextStep;
+        public void setTBBCandidateExternalId__c(String TBBCandidateExternalId__c) {
+            put("TBBCandidateExternalId__c", TBBCandidateExternalId__c);
         }
     }
 
@@ -1236,15 +1309,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Setter
     @ToString(callSuper = true)
     class CandidateOpportunityRecordComposite extends CandidateOpportunityRequest {
-        public CompositeAttributes attributes;
-
         public CandidateOpportunityRecordComposite(String recordType, Candidate candidate,
             String stageName, String nextStep,
             String jobOpportunityName,
             String jobOpportunityId,
             String jobAccountId, String jobOwnerId) {
-            super(recordType, candidate, stageName, nextStep, jobOpportunityName, jobOpportunityId, jobAccountId, jobOwnerId);
-            attributes = new CompositeAttributes("Opportunity");
+            super(new CompositeAttributes("Opportunity"), recordType, candidate, stageName, 
+                nextStep, jobOpportunityName, jobOpportunityId, jobAccountId, jobOwnerId);
         }
     }
 
