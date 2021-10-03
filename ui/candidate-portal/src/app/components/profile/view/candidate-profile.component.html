@@ -386,7 +386,7 @@
 
         <div class="row">
 
-          <div class="col-12">
+          <div class="col-12 col-md-6">
             <div class="form-group">
               <label>{{ 'PROFILE.OTHER.ADDITIONALINFO' | translate }}</label>
               <p>
@@ -394,26 +394,8 @@
               </p>
             </div>
           </div>
-          <div *ngIf="!usAfghan">
-            <div class="col-12 col-md-6">
-              <div class="form-group">
-                <label>{{ 'PROFILE.OTHER.SURVEY' | translate }}</label>
-                <p>
-                  {{candidate?.surveyType?.name || ''}}
-                </p>
-              </div>
-            </div>
-            <div class="col-12 col-md-6">
-              <div class="form-group">
-                <label>{{ 'PROFILE.OTHER.SURVEYCOMMENT' | translate }}</label>
-                <p>
-                  {{candidate?.surveyComment || ''}}
-                </p>
-              </div>
-            </div>
-          </div>
 
-          <div class="col-12">
+          <div class="col-12 col-md-6">
             <div class="form-group">
               <label>{{ 'PROFILE.OTHER.LINKEDIN' | translate }}</label>
               <p>
@@ -422,6 +404,25 @@
             </div>
           </div>
 
+        </div>
+
+        <div *ngIf="!usAfghan" class="row">
+          <div class="col-12 col-md-6">
+            <div class="form-group">
+              <label>{{ 'PROFILE.OTHER.SURVEY' | translate }}</label>
+              <p>
+                {{candidate?.surveyType?.name || ''}}
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="form-group">
+              <label>{{ 'PROFILE.OTHER.SURVEYCOMMENT' | translate }}</label>
+              <p>
+                {{candidate?.surveyComment || ''}}
+              </p>
+            </div>
+          </div>
         </div>
 
       </div>
