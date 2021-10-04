@@ -624,8 +624,14 @@ public class SavedListServiceImpl implements SavedListService {
                     if (candidateNumber == null) {
                         throw new NoSuchObjectException("Missing candidate number");
                     } else {
+                        Candidate candidate =
+                            candidateRepository.findByCandidateNumber((String) candidateNumber);
+                        if (candidate == null) {
+                            throw new NoSuchObjectException(Candidate.class, (String) candidateNumber);
+                        }
+
                         EmployerCandidateFeedbackData feedbackData = 
-                            new EmployerCandidateFeedbackData(Long.parseLong((String) candidateNumber));
+                            new EmployerCandidateFeedbackData(candidate);
                         feedbacks.add(feedbackData);
                         
                         //Notes

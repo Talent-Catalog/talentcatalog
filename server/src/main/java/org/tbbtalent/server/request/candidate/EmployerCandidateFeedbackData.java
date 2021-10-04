@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.Candidate;
 
 /**
  * A candidate's feed back 
@@ -30,7 +31,7 @@ import org.springframework.lang.Nullable;
 @Setter
 @ToString
 public class EmployerCandidateFeedbackData {
-  private long candidateNumber;
+  private Candidate candidate;
   
   @Nullable
   private String employerCandidateNotes;
@@ -38,7 +39,7 @@ public class EmployerCandidateFeedbackData {
   @Nullable
   private EmployerCandidateDecision employerCandidateDecision;
 
-  public EmployerCandidateFeedbackData(long candidateNumber) {
-    this.candidateNumber = candidateNumber;
+  public EmployerCandidateFeedbackData(Candidate candidate) {
+    this.candidate = candidate;
   }
 }

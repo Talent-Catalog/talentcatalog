@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -256,77 +257,71 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         List<Candidate> candidates, SalesforceOppParams salesforceOppParams, String sfJoblink) 
             throws GeneralSecurityException, WebClientException, SalesforceException {
 
-        Opportunity opportunity = findOpportunityFromLink(sfJoblink);
+        Opportunity jobOpportunity = findOpportunityFromLink(sfJoblink);
 
-        List<Candidate> candidatesToProcess;
+        //Find out which candidates already have opportunities (so just need to be updated) 
+        //and which need opportunities to be created.
+        List<Candidate> candidatesWithNoOpp = selectCandidatesWithNoOpp(candidates, jobOpportunity);
 
-        //TODO JC This logic is maybe no longer needed because if no stage is specified, we can 
-        //now just not send stage - now that we are using Map's.
-        //Opportunity Stage is a required field. If don't have one, we can't touch existing 
-        //candidate opportunities because we need to leave their existing stage unchanged, but
-        //can create new opportunities - supplying the default initial stage of "Prospect".
-        //If we have been supplied with a stage, then we can update and create - using that stage.
+        String recordType = getCandidateOpportunityRecordType(jobOpportunity);
 
-        String stageName = null;
-        String nextStep = null;
-        if (salesforceOppParams != null) {
-            stageName = salesforceOppParams.getStageName();
-            nextStep = salesforceOppParams.getNextStep();
-        }
-        boolean createOnly = stageName == null;
-        
-        if (!createOnly) {
-            //We will be processing all candidates, creating new ones and updating existing ones
-            //with the supplied stage.
-            candidatesToProcess = candidates;
-        } else {
-            //We have no defined stage, so we will just be processing (ie creating) any missing
-            //candidate opportunities.
+        //Now build requests of candidate opportunities we want to create
+        List<CandidateOpportunityRecordComposite> opportunityRequests = new ArrayList<>();
+        for (Candidate candidate : candidates) {
+            boolean create = candidatesWithNoOpp.contains(candidate);
             
-            //We figure out which candidates have opportunities still to be
-            //created by first creating a map of candidates indexed by their unique
-            //opportunity id - constructed from the candidate number and the 
-            //job opportunity id.
-            Map<String, Candidate> idCandidateMap = new HashMap<>();
-            for (Candidate candidate : candidates) {
-                String id = makeExternalId(candidate.getCandidateNumber(),
-                    opportunity.getId());
-                idCandidateMap.put(id, candidate);
-            }
+            //Build candidate opportunity request (create or update as needed)
+            CandidateOpportunityRecordComposite opportunityRequest =
+                new CandidateOpportunityRecordComposite(recordType,
+                    candidate, jobOpportunity, create);
+            opportunityRequests.add(opportunityRequest);
 
-            //Now find all ids for existing candidate opportunities for this job.
-            //Then remove candidates from the map with those ids (because there
-            //is no need to create an opp for them - they have one)
-            List<String> externalIds = findCandidateOpportunities(opportunity.getId());
-            for (String externalId : externalIds) {
-                idCandidateMap.remove(externalId);
+
+            //Now set any requested stage name and next step
+            String stageName = null;
+            String nextStep = null;
+            if (salesforceOppParams != null) {
+                stageName = salesforceOppParams.getStageName();
+                nextStep = salesforceOppParams.getNextStep();
             }
             
-            //The candidates to process will just be ones who need opportunities created
-            candidatesToProcess = new ArrayList<>(idCandidateMap.values());
-        }
-        
-        if (candidatesToProcess.size() > 0) {
-            //First get some more info about the job: its name, its 
-            //associated account and country
-            String jobAccountId = opportunity.getAccountId();
-            String jobOwnerId = opportunity.getOwnerId();
-
-            String recordType = getCandidateOpportunityRecordType(opportunity);
-
-            //Now build requests of candidate opportunities we want to create
-            List<CandidateOpportunityRecordComposite> opportunityRequests = new ArrayList<>();
-            for (Candidate candidate : candidatesToProcess) {
-                //Create a request using data from the candidate
-                CandidateOpportunityRecordComposite opportunityRequest =
-                    new CandidateOpportunityRecordComposite(recordType,
-                        candidate, stageName, nextStep, opportunity.getName(), opportunity.getId(),
-                        jobAccountId, jobOwnerId);
-                opportunityRequests.add(opportunityRequest);
+            //Always need to specify a stage name when creating a new opp
+            if (create && stageName == null) {
+                stageName = "Prospect";
             }
-
-            executeCandidateOpportunityRequests(opportunityRequests);
+            
+            if (stageName != null) {
+                opportunityRequest.setStageName(stageName);
+            }
+            if (nextStep != null) {
+                opportunityRequest.setNextStep(nextStep);
+            }
         }
+
+        executeCandidateOpportunityRequests(opportunityRequests);
+    }
+
+    private List<Candidate> selectCandidatesWithNoOpp(List<Candidate> candidates,
+        Opportunity jobOpportunity) throws GeneralSecurityException {
+        
+        //First creating a map of all candidates indexed by their what their unique
+        //opportunity id should be.
+        Map<String, Candidate> idCandidateMap = new HashMap<>();
+        for (Candidate candidate : candidates) {
+            String id = makeExternalId(candidate.getCandidateNumber(), jobOpportunity.getId());
+            idCandidateMap.put(id, candidate);
+        }
+
+        //Now find the ids we actually have for candidate opportunities for this job.
+        List<String> externalIds = findCandidateOpportunities(jobOpportunity.getId());
+
+        //Remove these from map, leaving just those that need to be created
+        for (String externalId : externalIds) {
+            idCandidateMap.remove(externalId);
+        }
+
+        //Extract these candidates from the map.  
+        return new ArrayList<>(idCandidateMap.values());
     }
 
     /**
@@ -544,15 +539,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink) 
         throws GeneralSecurityException, WebClientException, SalesforceException {
 
-        Opportunity opportunity = findOpportunityFromLink(sfJoblink);
-        String recordType = getCandidateOpportunityRecordType(opportunity);
+        Opportunity jobOpportunity = findOpportunityFromLink(sfJoblink);
+        String recordType = getCandidateOpportunityRecordType(jobOpportunity);
         
-        //Now build requests of candidate opportunities we want to create
+        //Now build requests of candidate opportunities we want to update
         List<CandidateOpportunityRecordComposite> opportunityRequests = 
-            buildCandidateOpportunityRequests(feedbacks, recordType, opportunity.getId());
+            buildCandidateOpportunityRequests(feedbacks, recordType, jobOpportunity);
 
         executeCandidateOpportunityRequests(opportunityRequests);
-
     }
 
     private void executeCandidateOpportunityRequests(
@@ -586,34 +580,51 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     private List<CandidateOpportunityRecordComposite> buildCandidateOpportunityRequests(
-        List<EmployerCandidateFeedbackData> feedbacks, String recordType, String jobOpportunityId) {
+        List<EmployerCandidateFeedbackData> feedbacks, String recordType, Opportunity jobOpportunity)
+        throws GeneralSecurityException {
 
-        List<CandidateOpportunityRecordComposite> requests = new ArrayList<>();
+        //Figure out which candidates need an opp created.
+        //Extract all candidates from feedback.
+        List<Candidate> candidates = feedbacks.stream()
+            .map(EmployerCandidateFeedbackData::getCandidate)
+            .collect(Collectors.toList());
+        List<Candidate> candidatesWithNoOpp = selectCandidatesWithNoOpp(candidates, jobOpportunity);
         
+        //Now build the requests
+        List<CandidateOpportunityRecordComposite> requests = new ArrayList<>();
         for (EmployerCandidateFeedbackData feedback : feedbacks) {
             final String notes = feedback.getEmployerCandidateNotes();
             final EmployerCandidateDecision decision = feedback.getEmployerCandidateDecision();
             if (notes != null || decision != null) {
                 //We have something useful feedback to save
 
-                //Create a request using data from the candidate
-                CandidateOpportunityRecordComposite opportunityRequest =
-                    new CandidateOpportunityRecordComposite(recordType,
-                        feedback.getCandidateNumber(), jobOpportunityId);
-                requests.add(opportunityRequest);
+                //Figure our whether this candidate needs an opp created
+                final Candidate candidate = feedback.getCandidate();
+                boolean create = candidatesWithNoOpp.contains(candidate);
+                
+                //Build and add the request
+                CandidateOpportunityRecordComposite request = new CandidateOpportunityRecordComposite(
+                        recordType, candidate, jobOpportunity, create);
+                requests.add(request);
 
                 if (notes != null) {
                     ////TODO JC Set new employer feedback field instead of next step
-                    opportunityRequest.setNextStep(notes);
+                    request.setNextStep(notes);
                 }
 
-                if (decision != null) {
+                if (decision == null) {
+                    if (create) {
+                        //If we are creating this opp for the first time, we need a stage.
+                        //Given that we have sent to employer, set to a review stage 
+                        request.setStageName("CV review");
+                    }
+                } else {
                     switch (decision) {
                         case JobOffer:
-                            opportunityRequest.setStageName("Acceptance");
+                            request.setStageName("Acceptance");
                             break;
                         case NoJobOffer:
-                            opportunityRequest.setStageName("No job offer");
+                            request.setStageName("No job offer");
                             break;
                     }
                 }
@@ -1241,49 +1252,31 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         public CandidateOpportunityRequest(
             @Nullable CompositeAttributes attributes,
-            String recordType, long candidateNumber,
-            String jobOpportunityId) {
-            
-            if (attributes != null) {
-                setAttributes(attributes);
-            }
-            
-            setRecordType(new RecordTypeField(recordType));
-
-            setTBBCandidateExternalId__c(makeExternalId(Long.toString(candidateNumber), jobOpportunityId)); 
-        }
-
-        public CandidateOpportunityRequest(@Nullable CompositeAttributes attributes,
             String recordType, Candidate candidate,
-            String stageName, String nextStep,
-            String jobOpportunityName,
-            String jobOpportunityId,
-            String jobAccountId, String jobOwnerId) {
+            Opportunity jobOpportunity, boolean create) {
             
             if (attributes != null) {
                 setAttributes(attributes);
             }
             
-            User user = candidate.getUser();
-            String candidateNumber = candidate.getCandidateNumber();
-
             setRecordType(new RecordTypeField(recordType));
-            
-            setName(user.getFirstName() + 
-                    "(" + candidateNumber + ")-" + jobOpportunityName);
 
-            setTBBCandidateExternalId__c(makeExternalId(candidateNumber, jobOpportunityId)); 
+            String candidateNumber = candidate.getCandidateNumber();
+            setTBBCandidateExternalId__c(makeExternalId(candidateNumber, jobOpportunity.getId()));
+            
+            if (create) {
+                User user = candidate.getUser();
+                setName(user.getFirstName() +
+                    "(" + candidateNumber + ")-" + jobOpportunity.getName());
 
-            setAccountId(jobAccountId);
-            setCandidate_Contact__c(candidate.getSfId());
-            setOwnerId(jobOwnerId);
-            setParent_Opportunity__c(jobOpportunityId);
-            
-            LocalDateTime close = LocalDateTime.now().plusYears(1);
-            setCloseDate(close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            
-            setStageName(stageName);
-            setNextStep(nextStep);
+                setAccountId(jobOpportunity.getAccountId());
+                setCandidate_Contact__c(candidate.getSfId());
+                setOwnerId(jobOpportunity.getOwnerId());
+                setParent_Opportunity__c(jobOpportunity.getId());
+
+                LocalDateTime close = LocalDateTime.now().plusYears(1);
+                setCloseDate(close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            }
         }
 
         public String getName() {
@@ -1395,20 +1388,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @ToString(callSuper = true)
     class CandidateOpportunityRecordComposite extends CandidateOpportunityRequest {
         
-        //TODO JC Constructors should call each other
-        public CandidateOpportunityRecordComposite(
-            String recordType, long candidateNumber, String jobOpportunityId) {
-            super(new CompositeAttributes("Opportunity"), 
-                recordType, candidateNumber, jobOpportunityId);
-        }
-        
         public CandidateOpportunityRecordComposite(String recordType, Candidate candidate,
-            String stageName, String nextStep,
-            String jobOpportunityName,
-            String jobOpportunityId,
-            String jobAccountId, String jobOwnerId) {
-            super(new CompositeAttributes("Opportunity"), recordType, candidate, stageName, 
-                nextStep, jobOpportunityName, jobOpportunityId, jobAccountId, jobOwnerId);
+            Opportunity jobOpportunity, boolean create) {
+            super(new CompositeAttributes("Opportunity"), 
+                recordType, candidate, jobOpportunity, create);
         }
     }
 
