@@ -610,8 +610,19 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const showReport = this.modalService.open(ConfirmationComponent, {
       centered: true, backdrop: 'static'});
     showReport.componentInstance.title = "Feedback Import Report";
-    showReport.componentInstance.message =
-      report.message;
+    showReport.componentInstance.showCancel = false;
+    let mess = report.message + ".";
+    if (report.numEmployerFeedbacks > 0) {
+      mess += " Stored employer feedback for " + report.numEmployerFeedbacks + " candidates on Salesforce.";
+    }
+    if (report.numJobOffers > 0) {
+      mess += " Recorded job offers for " + report.numJobOffers + " candidates.";
+    }
+    if (report.numNoJobOffers > 0) {
+      mess += " Closed job opportunities for " + report.numNoJobOffers + " candidates.";
+    }
+
+    showReport.componentInstance.message = mess;
   }
 
   modifyExportColumns() {

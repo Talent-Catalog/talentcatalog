@@ -26,6 +26,7 @@ export class ConfirmationComponent implements OnInit {
 
   title: string = "Confirmation";
   message: string;
+  showCancel: boolean = true;
 
   constructor(private activeModal: NgbActiveModal) { }
 

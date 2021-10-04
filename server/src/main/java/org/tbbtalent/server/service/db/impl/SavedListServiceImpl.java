@@ -609,7 +609,7 @@ public class SavedListServiceImpl implements SavedListService {
 
             List<Object> candidateNumberColumnData = feedback.get(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME);
             int nCandidates = candidateNumberColumnData == null ? 0 : candidateNumberColumnData.size(); 
-            report.setNCandidates(nCandidates);
+            report.setNumCandidates(nCandidates);
 
             List<EmployerCandidateFeedbackData> feedbacks = new ArrayList<>();
             if (nCandidates == 0) {
@@ -668,9 +668,9 @@ public class SavedListServiceImpl implements SavedListService {
                     }
                 }
                 
-                report.setNEmployerFeedbacks(nFeedbacks);
-                report.setNJobOffers(nJobOffers);
-                report.setNNoJobOffers(nNoJobOffers);
+                report.setNumEmployerFeedbacks(nFeedbacks);
+                report.setNumJobOffers(nJobOffers);
+                report.setNumNoJobOffers(nNoJobOffers);
                 
                 if (nFeedbacks + nJobOffers + nNoJobOffers > 0) {
                     salesforceService.updateCandidateOpportunities(feedbacks, savedList.getSfJoblink());

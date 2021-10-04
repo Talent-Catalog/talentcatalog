@@ -28,9 +28,9 @@ import lombok.Setter;
 @Setter
 public class PublishedDocImportReport {
   String message;
-  int nCandidates;
-  int nEmployerFeedbacks;
-  int nJobOffers;
-  int nNoJobOffers;
+  int numCandidates;
+  int numEmployerFeedbacks;
+  int numJobOffers;
+  int numNoJobOffers;
   
 }

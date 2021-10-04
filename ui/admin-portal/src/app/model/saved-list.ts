@@ -179,10 +179,10 @@ export class PublishedDocColumnConfig {
 
 export class PublishedDocImportReport {
   message: string;
-  nCandidates: number;
-  nEmployerFeedbacks: number;
-  nJobOffers: number;
-  nNoJobOffers: number;
+  numCandidates: number;
+  numEmployerFeedbacks: number;
+  numJobOffers: number;
+  numNoJobOffers: number;
 }
 
 /**

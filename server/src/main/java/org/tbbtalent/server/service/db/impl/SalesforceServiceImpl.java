@@ -608,8 +608,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 requests.add(request);
 
                 if (notes != null) {
-                    ////TODO JC Set new employer feedback field instead of next step
-                    request.setNextStep(notes);
+                    request.setEmployer_Feedback__c(notes);
                 }
 
                 if (decision == null) {
@@ -1316,6 +1315,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public void setCloseDate(String closeDate) {
             put("CloseDate", closeDate);
+        }
+
+        /**
+         * Employer feedback notes
+         */
+        public void setEmployer_Feedback__c(String employerFeedback) {
+            put("Employer_Feedback__c", employerFeedback);
         }
 
         /**

@@ -39,7 +39,7 @@
   <button type="button" class="btn btn-primary" (click)="close()">
     Ok
   </button>
-  <button type="button" class="btn btn-primary" (click)="dismiss()">
+  <button *ngIf="showCancel" type="button" class="btn btn-primary" (click)="dismiss()">
     Cancel
   </button>
 </div>
