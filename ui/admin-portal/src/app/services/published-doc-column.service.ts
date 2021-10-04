@@ -43,7 +43,7 @@ export class PublishedDocColumnService {
 
     this.addColumnWithLink("candidateNumberLinkCv", "Candidate # \n (link to CV)",
       new PublishedDocFieldSource("candidateNumber"),
-      new PublishedDocFieldSource("shareableCv.location"))
+      new PublishedDocFieldSource("shareableCv.url"))
     .width = PublishedDocColumnWidth.Narrow;
 
     this.addColumnWithLink("candidateNumberLinkTc", "Candidate # \n(link to TC)",
@@ -84,11 +84,11 @@ export class PublishedDocColumnService {
     .width = PublishedDocColumnWidth.Wide;
 
     this.addColumnWithLink("doc", "Other document", new PublishedDocConstantSource("doc"),
-      new PublishedDocFieldSource("shareableDoc.location"))
+      new PublishedDocFieldSource("shareableDoc.url"))
     .width = PublishedDocColumnWidth.Narrow;
 
     this.addColumnWithLink("cv", "CV", new PublishedDocConstantSource("cv"),
-      new PublishedDocFieldSource("shareableCv.location"))
+      new PublishedDocFieldSource("shareableCv.url"))
     .width = PublishedDocColumnWidth.Narrow;
   }
 
