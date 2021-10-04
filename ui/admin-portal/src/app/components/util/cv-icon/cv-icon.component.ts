@@ -69,15 +69,9 @@ export class CvIconComponent implements OnInit {
   openCVs() {
     this.loading = true;
     this.candidateAttachmentService.downloadAttachments(this.candidate, this.cvs).subscribe(
-      () => {
-        this.loading = false;
-        console.log("hi! loading is false")
-      },
-      (error) => {
-        this.loading = false;
-        this.error = error;
-      });
-    console.log("done")
+      () => this.loading = false,
+      (err: string) => {this.loading = false; this.error = err}
+    );
   }
 
 }

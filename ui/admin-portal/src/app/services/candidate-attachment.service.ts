@@ -91,7 +91,7 @@ export class CandidateAttachmentService {
     //This will automatically unsubscribe any subscribers, avoiding memory leaks.
     //See https://stackoverflow.com/questions/55893962/do-i-need-to-unsubscribe-from-observable-of
     if (downloads.length === 0) {
-      downloadComplete.next(void 0);
+      downloadComplete.next();
       downloadComplete.complete();
     } else {
       forkJoin(...downloads).subscribe(
