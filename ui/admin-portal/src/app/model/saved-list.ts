@@ -46,7 +46,7 @@ export interface SavedList extends CandidateSource {
 }
 
 export function isSavedList(source: CandidateSource): source is SavedList {
-  return !isSavedSearch(source);
+  return source == null ? false : !isSavedSearch(source);
 }
 
 export interface UpdateSavedListInfoRequest {
@@ -175,6 +175,14 @@ export class PublishedDocColumnProps {
 export class PublishedDocColumnConfig {
   columnProps: PublishedDocColumnProps;
   columnDef: PublishedDocColumnDef;
+}
+
+export class PublishedDocImportReport {
+  message: string;
+  numCandidates: number;
+  numEmployerFeedbacks: number;
+  numJobOffers: number;
+  numNoJobOffers: number;
 }
 
 /**

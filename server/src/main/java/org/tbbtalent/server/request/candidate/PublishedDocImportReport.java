@@ -14,34 +14,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, Injectable, OnInit } from '@angular/core';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+package org.tbbtalent.server.request.candidate;
 
-@Component({
-  selector: 'app-work-in-progress',
-  templateUrl: './confirmation.component.html',
-  styleUrls: ['./confirmation.component.scss']
-})
-export class ConfirmationComponent implements OnInit {
+import lombok.Getter;
+import lombok.Setter;
 
-  title: string = "Confirmation";
-  message: string;
-  showCancel: boolean = true;
-
-  constructor(private activeModal: NgbActiveModal) { }
-
-  ngOnInit() {
-  }
-
-  dismiss() {
-    this.activeModal.dismiss(false);
-  }
-
-  close() {
-    this.activeModal.close(true);
-  }
-
-
-
-
+/**
+ * Data about a published doc import from which a report can be generated.
+ *
+ * @author John Cameron
+ */
+@Getter
+@Setter
+public class PublishedDocImportReport {
+  String message;
+  int numCandidates;
+  int numEmployerFeedbacks;
+  int numJobOffers;
+  int numNoJobOffers;
+  
 }

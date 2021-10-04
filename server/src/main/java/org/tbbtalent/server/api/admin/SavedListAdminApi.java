@@ -34,6 +34,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
+import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
@@ -212,6 +213,24 @@ public class SavedListAdminApi implements
         SavedList savedList = this.savedListService.removeSharedUser(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
+    }
+
+    /**
+     * Imports potential employer feedback from the currently published doc associated with a list.
+     * <p/>
+     * Does nothing if the list has not been published.
+     * @param savedListId ID of published list
+     * @return PublishedDocImportReport containing details of the import
+     * @throws GeneralSecurityException if there are security problems accessing document storage
+     * @throws IOException if there are problems creating the document 
+     * @throws NoSuchObjectException  if there is no saved list with this id or if published doc
+     * is not found (maybe it has been manually deleted).
+     */
+    @PutMapping(value = "{id}/feedback")
+    public PublishedDocImportReport importEmployerFeedback(@PathVariable("id") long savedListId)
+        throws IOException, GeneralSecurityException, NoSuchObjectException {
+        PublishedDocImportReport report = savedListService.importEmployerFeedback(savedListId);
+        return report;
     }
 
     /**

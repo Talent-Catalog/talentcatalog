@@ -19,6 +19,7 @@ package org.tbbtalent.server.service.db.impl;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.AddNamedRangeRequest;
 import com.google.api.services.sheets.v4.model.AddProtectedRangeRequest;
+import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
@@ -44,9 +45,11 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -166,7 +169,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
       }
     }
     
-    //Now protect the sheets other than the Main one (ie the Data and Feedback sheets)
+    //Now protect the sheets other than the Main one (eg the Data sheet)
     //Users should normally only be able to change the main sheet - not the other tabs
     //See https://developers.google.com/sheets/api/samples/ranges
     for (SheetProperties sheetProperty : sheetProperties) {
@@ -189,6 +192,46 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     log.info(res2.getReplies().size() + " batch update responses received");
 
     return file.getUrl();
+  }
+
+  @Override
+  public Map<String, List<Object>> readPublishedDocColumns(String docUrl, List<String> columnNamedRanges)
+      throws GeneralSecurityException, IOException {
+    GoogleFileSystemFile spreadsheet = new GoogleFileSystemFile(docUrl);
+    String spreadsheetId = spreadsheet.getId();
+    final Sheets service = googleDriveConfig.getGoogleSheetsService();
+
+    //Generate list of column ranges that are present in sheet
+    List<String> rangeNamesInSheet = getRangeNamesInSheet(service, spreadsheetId);
+    List<String> columnRangeNamesInSheet = rangeNamesInSheet.stream()
+        .filter(columnNamedRanges::contains)
+        .collect(Collectors.toList());
+
+    //Fetch data for those column names
+    BatchGetValuesResponse result = service.spreadsheets().values().batchGet(spreadsheetId)
+        .setRanges(columnRangeNamesInSheet).execute();
+
+    Map<String, List<Object>> feedbackColumns = new HashMap<>();
+
+    List<ValueRange> valueRanges = result.getValueRanges();
+    if (valueRanges != null) {
+      int rangeIndex = 0;
+      for (ValueRange valueRange : valueRanges) {
+        List<List<Object>> vals = valueRange.getValues();
+        List<Object> colVals = new ArrayList<>();
+        feedbackColumns.put(columnRangeNamesInSheet.get(rangeIndex++), colVals);
+        if (vals != null) {
+          for (List<Object> val : vals) {
+            if (val.size() > 0) {
+              colVals.add(val.get(0));
+            } else {
+              colVals.add(null);
+            }
+          }
+        }
+      }
+    }
+    return feedbackColumns;
   }
 
   private Request computeAddNamedRangeRequest(GridRange range, String rangeName) {
@@ -253,6 +296,19 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         )
     );
     return req;
+  }
+
+
+  /**
+   * Returns names of all named ranges.
+   */
+  private List<String> getRangeNamesInSheet(Sheets service, String spreadsheetId) throws IOException {
+    List<NamedRange> namedRanges = getNamedRanges(service, spreadsheetId);
+    List<String> rangeNames = new ArrayList<>();
+    for (NamedRange namedRange : namedRanges) {
+      rangeNames.add(namedRange.getName());
+    }
+    return rangeNames;
   }
   
   /**

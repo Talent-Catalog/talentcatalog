@@ -77,7 +77,7 @@ import {
   CopySourceContentsRequest,
   IHasSetOfCandidates,
   isSavedList,
-  PublishedDocColumnConfig,
+  PublishedDocColumnConfig, PublishedDocImportReport,
   PublishListRequest,
   SavedList,
   SavedListGetRequest,
@@ -136,6 +136,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   searching: boolean;
   exporting: boolean;
   importing: boolean;
+  importingFeedback: boolean;
   publishing: boolean;
   updating: boolean;
   updatingStatuses: boolean;
@@ -587,6 +588,41 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.publishing = false;
       }
     );
+  }
+
+  importEmployerFeedback() {
+    this.importingFeedback = true;
+    this.error = null;
+
+    this.savedListService.importEmployerFeedback(this.candidateSource.id).subscribe(
+      (result) => {
+        this.importingFeedback = false;
+        this.displayImportFeedbackReport(result);
+      },
+      error => {
+        this.error = error;
+        this.importingFeedback = false;
+      }
+    );
+  }
+
+  private displayImportFeedbackReport(report: PublishedDocImportReport) {
+    const showReport = this.modalService.open(ConfirmationComponent, {
+      centered: true, backdrop: 'static'});
+    showReport.componentInstance.title = "Feedback Import Report";
+    showReport.componentInstance.showCancel = false;
+    let mess = report.message + ".";
+    if (report.numEmployerFeedbacks > 0) {
+      mess += " Stored employer feedback for " + report.numEmployerFeedbacks + " candidates on Salesforce.";
+    }
+    if (report.numJobOffers > 0) {
+      mess += " Recorded job offers for " + report.numJobOffers + " candidates.";
+    }
+    if (report.numNoJobOffers > 0) {
+      mess += " Closed job opportunities for " + report.numNoJobOffers + " candidates.";
+    }
+
+    showReport.componentInstance.message = mess;
   }
 
   modifyExportColumns() {

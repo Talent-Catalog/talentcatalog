@@ -61,11 +61,14 @@ import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
+import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
+import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
@@ -111,6 +114,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final AuthService authService;
 
     private static final Logger log = LoggerFactory.getLogger(SavedListServiceImpl.class);
+    private static final String PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME = "CandidateNumber";
 
     @Autowired
     public SavedListServiceImpl(
@@ -372,7 +376,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     @NonNull
-    public SavedList get(long savedListId) {
+    public SavedList get(long savedListId) throws NoSuchObjectException {
         return savedListRepository.findById(savedListId)
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, savedListId));
     }
@@ -586,8 +590,113 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public PublishedDocImportReport importEmployerFeedback(long savedListId)
+        throws NoSuchObjectException, GeneralSecurityException, IOException {
+        SavedList savedList = get(savedListId);
+        
+        PublishedDocImportReport report = new PublishedDocImportReport();
+        
+        String link = savedList.getPublishedDocLink();
+        if (link == null) {
+            report.setMessage("No Salesforce job opportunity associated with list");
+        } else {
+            //Read data from linked sheet
+            Map<String, List<Object>> feedback = docPublisherService.readPublishedDocColumns(link, 
+                Arrays.asList(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME, 
+                    PublishedDocColumnType.EmployerCandidateNotes.toString(),
+                    PublishedDocColumnType.EmployerCandidateDecision.toString()
+                    ));
+
+            List<Object> candidateNumberColumnData = feedback.get(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME);
+            int nCandidates = candidateNumberColumnData == null ? 0 : candidateNumberColumnData.size(); 
+            report.setNumCandidates(nCandidates);
+
+            List<EmployerCandidateFeedbackData> feedbacks = new ArrayList<>();
+            if (nCandidates == 0) {
+                report.setMessage("No candidate column found - nothing to import");
+            } else {
+                List<Object> notesData = feedback.get(PublishedDocColumnType.EmployerCandidateNotes.toString());
+                List<Object> decisionData = feedback.get(PublishedDocColumnType.EmployerCandidateDecision.toString());
+                
+                //Use data to update Salesforce
+                int index = 0;
+                for (Object candidateNumber : candidateNumberColumnData) {
+                    if (candidateNumber == null) {
+                        throw new NoSuchObjectException("Missing candidate number");
+                    } else {
+                        Candidate candidate =
+                            candidateRepository.findByCandidateNumber((String) candidateNumber);
+                        if (candidate == null) {
+                            throw new NoSuchObjectException(Candidate.class, (String) candidateNumber);
+                        }
+
+                        EmployerCandidateFeedbackData feedbackData = 
+                            new EmployerCandidateFeedbackData(candidate);
+                        feedbacks.add(feedbackData);
+                        
+                        //Notes
+                        String notes = (String) fetchColumnValueByIndex(notesData, index);
+                        feedbackData.setEmployerCandidateNotes(notes);
+                        
+                        //Decision
+                        String val = (String) fetchColumnValueByIndex(decisionData, index);
+                        if (val != null) {
+                            EmployerCandidateDecision decision = EmployerCandidateDecision.textToEnum(val);
+                            feedbackData.setEmployerCandidateDecision(decision);
+                        }
+                    }
+                    index++;
+                }
+
+                int nFeedbacks = 0;
+                int nJobOffers = 0;
+                int nNoJobOffers = 0;
+                for (EmployerCandidateFeedbackData feedbackData : feedbacks) {
+                    if (feedbackData.getEmployerCandidateNotes() != null) {
+                        nFeedbacks++;
+                    }
+                    final EmployerCandidateDecision decision = feedbackData.getEmployerCandidateDecision();
+                    if (decision != null) {
+                        switch (decision) {
+                            case JobOffer:
+                                nJobOffers++;
+                                break;
+                            case NoJobOffer:
+                                nNoJobOffers++;
+                                break;
+                        }
+                    }
+                }
+                
+                report.setNumEmployerFeedbacks(nFeedbacks);
+                report.setNumJobOffers(nJobOffers);
+                report.setNumNoJobOffers(nNoJobOffers);
+                
+                if (nFeedbacks + nJobOffers + nNoJobOffers > 0) {
+                    salesforceService.updateCandidateOpportunities(feedbacks, savedList.getSfJoblink());
+                    report.setMessage("Import complete");
+                } else {
+                    report.setMessage("No feedback detected");
+                }
+            }
+        }
+        
+        return report;
+    }
+
+    private Object fetchColumnValueByIndex(List<Object> columnData, int index) {
+        Object val = null;
+        if (columnData != null) {
+            if (index < columnData.size()) {
+                val = columnData.get(index);
+            }
+        }
+        return val;
+    }
+
+    @Override
     public SavedList publish(long id, PublishListRequest request)
-        throws GeneralSecurityException, IOException {
+        throws GeneralSecurityException, IOException, NoSuchObjectException {
 
         //Get list, creating list folder if necessary
         SavedList savedList = createListFolder(id);
@@ -639,7 +748,7 @@ public class SavedListServiceImpl implements SavedListService {
             final PublishedDocColumnSetUp columnSetUp = new PublishedDocColumnSetUp();
             columnSetUpMap.put(columnCount, columnSetUp);
             if (def.getType().equals(PublishedDocColumnType.EmployerCandidateDecision)) {
-                columnSetUp.setDropDowns(Arrays.asList("", "Offer", "No Offer", "Wait"));
+                columnSetUp.setDropDowns(EmployerCandidateDecision.getDisplayTextValues());
             }
             
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {
@@ -653,7 +762,7 @@ public class SavedListServiceImpl implements SavedListService {
                     String fieldName = def.getContent().getValue().getFieldName();
                     foundCandidateNumber = "candidateNumber".equals(fieldName);
                     if (foundCandidateNumber) {
-                        columnSetUp.setRangeName("candidateNumber");
+                        columnSetUp.setRangeName(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME);
                     }
                 } 
             }
