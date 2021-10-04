@@ -256,8 +256,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         List<Candidate> candidates, SalesforceOppParams salesforceOppParams, String sfJoblink) 
             throws GeneralSecurityException, WebClientException, SalesforceException {
 
-        //Get id job opportunity.  
-        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
+        Opportunity opportunity = findOpportunityFromLink(sfJoblink);
 
         List<Candidate> candidatesToProcess;
 
@@ -291,14 +290,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             Map<String, Candidate> idCandidateMap = new HashMap<>();
             for (Candidate candidate : candidates) {
                 String id = makeExternalId(candidate.getCandidateNumber(),
-                    jobOpportunityId);
+                    opportunity.getId());
                 idCandidateMap.put(id, candidate);
             }
 
             //Now find all ids for existing candidate opportunities for this job.
             //Then remove candidates from the map with those ids (because there
             //is no need to create an opp for them - they have one)
-            List<String> externalIds = findCandidateOpportunities(jobOpportunityId);
+            List<String> externalIds = findCandidateOpportunities(opportunity.getId());
             for (String externalId : externalIds) {
                 idCandidateMap.remove(externalId);
             }
@@ -308,62 +307,25 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
         
         if (candidatesToProcess.size() > 0) {
-            
-            //TODO JC Use refactored code used by updateCandidateOpps
-            
             //First get some more info about the job: its name, its 
             //associated account and country
-            Opportunity opportunity = findOpportunity(jobOpportunityId);
-            String jobOpportunityName = opportunity == null ? null : opportunity.getName();
-            if (jobOpportunityName == null) {
-                throw new SalesforceException(
-                    "Could not find name for job opportunity " + sfJoblink);
-            }
             String jobAccountId = opportunity.getAccountId();
             String jobOwnerId = opportunity.getOwnerId();
-            String country = opportunity.getAccountCountry__c();
-            String recordType = "Candidate recruitment";
-            if ("Canada".equals(country)) {
-                recordType = "Candidate recruitment (CAN)";
-            }
+
+            String recordType = getCandidateOpportunityRecordType(opportunity);
 
             //Now build requests of candidate opportunities we want to create
             List<CandidateOpportunityRecordComposite> opportunityRequests = new ArrayList<>();
-
             for (Candidate candidate : candidatesToProcess) {
                 //Create a request using data from the candidate
                 CandidateOpportunityRecordComposite opportunityRequest =
                     new CandidateOpportunityRecordComposite(recordType,
-                        candidate, stageName, nextStep, jobOpportunityName, jobOpportunityId,
+                        candidate, stageName, nextStep, opportunity.getName(), opportunity.getId(),
                         jobAccountId, jobOwnerId);
                 opportunityRequests.add(opportunityRequest);
             }
-            OpportunityRequestComposite req = new OpportunityRequestComposite();
-            req.setRecords(opportunityRequests);
 
-            //Execute and decode the response
-            UpsertResult[] results =
-                executeUpserts(candidateOpportunitySFFieldName, req);
-
-            if (results.length != opportunityRequests.size()) {
-                //This is a fatal error because if the numbers don't match we don't 
-                //know how to match results to requests.
-                throw new SalesforceException(
-                    "Number of results (" + results.length
-                        + ") did not match number of requests ("
-                        + opportunityRequests.size() + ")");
-            }
-
-            //Log any failures
-            int count = 0;
-            for (CandidateOpportunityRecordComposite request : opportunityRequests) {
-                UpsertResult result = results[count++];
-                if (!result.isSuccess()) {
-                    log.error("Update failed for opportunity "
-                        + request.getName()
-                        + ": " + result.getErrorMessage());
-                }
-            }
+            executeCandidateOpportunityRequests(opportunityRequests);
         }
     }
 
@@ -587,7 +549,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         
         //Now build requests of candidate opportunities we want to create
         List<CandidateOpportunityRecordComposite> opportunityRequests = 
-            buildCandidateOpportunityRequests(feedbacks, recordType, opportunity.Id);
+            buildCandidateOpportunityRequests(feedbacks, recordType, opportunity.getId());
 
         executeCandidateOpportunityRequests(opportunityRequests);
 
