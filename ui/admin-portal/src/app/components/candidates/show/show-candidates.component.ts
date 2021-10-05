@@ -597,6 +597,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.savedListService.importEmployerFeedback(this.candidateSource.id).subscribe(
       (result) => {
         this.importingFeedback = false;
+        //Refresh to display any changed salesforce stages
+        this.doSearch(true);
         this.displayImportFeedbackReport(result);
       },
       error => {
@@ -1310,12 +1312,20 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       const sfJobLink: string = this.candidateSource.sfJoblink;
       const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
       this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobLink, info)
-      .subscribe(result => {this.updating = false; },
+      .subscribe(result => {
+          //Refresh to display any changed stages
+          this.doSearch(true);
+          this.updating = false;
+        },
         err => {this.error = err; this.updating = false; }
       );
     } else {
       this.candidateService.createUpdateSalesforceFromList(this.candidateSource, info)
-      .subscribe(result => {this.updating = false; },
+      .subscribe(result => {
+          //Refresh to display any changed salesforce stages
+          this.doSearch(true);
+          this.updating = false;
+        },
         err => {this.error = err; this.updating = false; }
       );
     }
