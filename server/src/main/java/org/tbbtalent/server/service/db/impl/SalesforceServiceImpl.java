@@ -1209,7 +1209,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     class EmployerOpportunityRequest {
 
         /**
-         * Link (url) to Google CVs folder
+         * Link (url) to Google list folder.
+         * <p/>
+         * Note:The field used to be called CVs folder. It is now displayed as "List folder" in SF
+         * but the field still has the old internal name
          */
         public String CVs_Folder__c;
 
@@ -1224,10 +1227,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public String Talent_Catalog_List__c;
         
         public EmployerOpportunityRequest(UpdateEmployerOpportunityRequest request) {
-            //Note that we only populate the CVs and JD folders - we don't bother with the 
-            //root folder. Not really needed because TBB staff can get to it on Google Drive 
-            // from the others.
-            CVs_Folder__c = request.getFoldercvlink();
+            //Note that we now store the Root folder link in what used to be called the CVs folder 
+            //on SF. It is now displayed in SF as "List folder" - but it still has the old
+            //internal name "CVs_Folder__c".
+            //We no longer automatically create a CVs folder since we moved to publishing
+            //Google sheets.
+            CVs_Folder__c = request.getFolderlink();
             Job_Description_Folder__c = request.getFolderjdlink();
             Talent_Catalog_List__c = request.getListlink();
         }
