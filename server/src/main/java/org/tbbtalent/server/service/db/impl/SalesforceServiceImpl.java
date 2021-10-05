@@ -181,6 +181,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             Candidate candidate = oppIdCandidateMap.get(candidateOpp.getTBBCandidateExternalId__c());
             if (candidate != null) {
                 candidate.setStage(candidateOpp.getStageName());
+                candidate.setSfOpportunityLink(candidateOpp.getUrl());
             }
         }
 

@@ -183,6 +183,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private boolean selected = false;
 
     /**
+     * Url link to a Candidate opportunity for this candidate. 
+     * Retrieved from Salesforce when candidate is displayed as a member of a Saved List associated 
+     * with a job opportunity. This is the candidate's opportunity associated with that job.
+     */
+    @Transient
+    @Nullable
+    private String sfOpportunityLink;
+
+    /**
      * Candidate opportunity stage. Retrieved from Salesforce when candidate is displayed as
      * a member of a Saved List associated with a job opportunity.
      */
@@ -1401,6 +1410,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setShareableDoc(@Nullable CandidateAttachment shareableDoc) {
         this.shareableDoc = shareableDoc;
+    }
+
+    @Nullable
+    public String getSfOpportunityLink() {
+        return sfOpportunityLink;
+    }
+
+    public void setSfOpportunityLink(@Nullable String sfOpportunityLink) {
+        this.sfOpportunityLink = sfOpportunityLink;
     }
 
     @Nullable

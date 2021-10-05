@@ -73,6 +73,7 @@ export interface Candidate extends HasId {
   numberDependants: number;
   langAssessmentScore: string;
   candidateExams: CandidateExam[];
+  sfOpportunityLink: string;
   stage: string;
 }
 

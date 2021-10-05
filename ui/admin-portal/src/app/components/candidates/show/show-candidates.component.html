@@ -283,7 +283,9 @@
               </app-cv-icon>
             </td>
             <td *ngIf="isShowStage()">
-              {{candidate.stage}}
+              <a *ngIf="candidate.stage" [href]="candidate.sfOpportunityLink" target="_blank">
+                {{candidate.stage}}
+              </a>
             </td>
             <td>
               <input type="checkbox" class="custom-checkbox" id="selected" data-onstyle="primary"

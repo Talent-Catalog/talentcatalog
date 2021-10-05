@@ -104,6 +104,7 @@ public class CandidateBuilderSelector {
                 .add("shareableDoc", candidateAttachmentDto())
                 .add("shareableNotes")
                 .add("stage")
+                .add("sfOpportunityLink")
 
             ;
     }
