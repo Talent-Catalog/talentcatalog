@@ -90,15 +90,15 @@ public class SlackServiceImpl implements SlackService {
         .builder()
         .text(MarkdownTextObject
             .builder()
-            .text("• Talent Catalog List: " + request.getListlink())
+            .text("• Talent Catalog List: " + request.getListlink() + 
+                ". Put candidates in this list and publish the list to a sheet you can share with employer.")
             .build())
         .build());
     
     String folderDescription =
         "• Google Folders:" 
-            + " <" + request.getFolderlink() + "|Root> folder,"
-            + " <" + request.getFoldercvlink() + "|CVs> folder (share with employers),"
-            + " <" + request.getFolderjdlink() + "|Job Description> folder";
+            + " <" + request.getFolderlink() + "|Root> folder (contains published list sheets),"
+            + " <" + request.getFolderjdlink() + "|Job Description> sub folder";
     message.add(SectionBlock
         .builder()
         .text(MarkdownTextObject
