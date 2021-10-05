@@ -273,10 +273,6 @@ public class SavedListServiceImpl implements SavedListService {
             folderName = savedList.getName();
             GoogleFileSystemFolder subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
             savedList.setFolderlink(subfolder.getUrl());
-            // Cv folder
-            GoogleFileSystemFolder cvfolder =
-                fileSystemService.createFolder(foldersDrive, subfolder, LIST_CVS_SUBFOLDER);
-            savedList.setFoldercvlink(cvfolder.getUrl());
             // JD folder
             GoogleFileSystemFolder jdfolder =
                 fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
