@@ -18,25 +18,6 @@ package org.tbbtalent.server.service.db.impl;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -67,6 +48,20 @@ import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Standard implementation of Salesforce service
@@ -117,6 +112,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     private final String contactRetrievalFields = 
             "Id,AccountId," + candidateNumberSFFieldName;
+    private final String candidateOpportunityRetrievalFields = 
+            "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName," 
+                + candidateOpportunitySFFieldName;
      
     
     private final EmailHelper emailHelper;
@@ -168,6 +166,32 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 .defaultHeader("Accept","application/json");
 
         webClient = builder.build();
+    }
+
+    @Override
+    public void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfJoblink)
+         throws SalesforceException {
+
+        String id = extractIdFromSfUrl(sfJoblink);
+        Map<String, Candidate> oppIdCandidateMap = buildCandidateOppsMap(candidates, id);
+        
+        //Now find the candidate opp ids we actually have for candidate opportunities for this job.
+        List<Opportunity> candidateOpps = findCandidateOpportunities(id);
+        for (Opportunity candidateOpp : candidateOpps) {
+            Candidate candidate = oppIdCandidateMap.get(candidateOpp.getTBBCandidateExternalId__c());
+            candidate.setStage(candidateOpp.getStageName());
+        }
+
+    }
+
+    private Map<String, Candidate> buildCandidateOppsMap(Iterable<Candidate> candidates,
+        String jobOpportunityId) {
+        Map<String, Candidate> idCandidateMap = new HashMap<>();
+        for (Candidate candidate : candidates) {
+            String id = makeExternalId(candidate.getCandidateNumber(), jobOpportunityId);
+            idCandidateMap.put(id, candidate);
+        }
+        return idCandidateMap;
     }
 
     @Override
@@ -302,22 +326,19 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     private List<Candidate> selectCandidatesWithNoOpp(List<Candidate> candidates,
-        Opportunity jobOpportunity) throws GeneralSecurityException {
+        Opportunity jobOpportunity) throws SalesforceException {
         
         //First creating a map of all candidates indexed by their what their unique
         //opportunity id should be.
-        Map<String, Candidate> idCandidateMap = new HashMap<>();
-        for (Candidate candidate : candidates) {
-            String id = makeExternalId(candidate.getCandidateNumber(), jobOpportunity.getId());
-            idCandidateMap.put(id, candidate);
-        }
+        Map<String, Candidate> idCandidateMap = 
+            buildCandidateOppsMap(candidates, jobOpportunity.getId());
 
         //Now find the ids we actually have for candidate opportunities for this job.
-        List<String> externalIds = findCandidateOpportunities(jobOpportunity.getId());
+        List<Opportunity> opps = findCandidateOpportunities(jobOpportunity.getId());
 
         //Remove these from map, leaving just those that need to be created
-        for (String externalId : externalIds) {
-            idCandidateMap.remove(externalId);
+        for (Opportunity opp : opps) {
+            idCandidateMap.remove(opp.getTBBCandidateExternalId__c());
         }
 
         //Extract these candidates from the map.  
@@ -449,36 +470,33 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public List<Contact> records;
     }
 
+    private List<Opportunity> findCandidateOpportunities(String jobOpportunityId)
+        throws SalesforceException {
+        try {
+            String query =
+                "SELECT " + candidateOpportunityRetrievalFields +
+                    " FROM Opportunity WHERE Parent_Opportunity__c='" +
+                    jobOpportunityId + "'";
 
-    private List<String> findCandidateOpportunities(String jobOpportunityId) 
-            throws GeneralSecurityException {
-        String query =
-                "SELECT " + candidateOpportunitySFFieldName +
-                        " FROM Opportunity WHERE Parent_Opportunity__c='" +
-                        jobOpportunityId + "'";
+            ClientResponse response = executeQuery(query);
 
-        ClientResponse response = executeQuery(query);
-
-        OpportunityQueryResult result =
+            OpportunityQueryResult result =
                 response.bodyToMono(OpportunityQueryResult.class).block();
-        
-        //Retrieve the contact from the response 
-        List<String> ids = new ArrayList<>();
-        if (result != null) {
-            for (OpportunityQueryResult.Opp record : result.records) {
-                ids.add(record.TBBCandidateExternalId__c);
-            }
-        }
 
-        return ids;
+            //Retrieve the contact from the response 
+            List<Opportunity> opps = null;
+            if (result != null) {
+                opps = result.records;
+            }
+
+            return opps;
+        } catch (GeneralSecurityException ex) {
+            throw new SalesforceException("Failed to find Candidate Opportunities: " + ex);
+        }
     }
 
     static class OpportunityQueryResult extends QueryResult {
-        public List<Opp> records;
-
-        static class Opp {
-            public String TBBCandidateExternalId__c;
-        }
+        public List<Opportunity> records;
     }
 
     @Override
@@ -620,7 +638,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 } else {
                     switch (decision) {
                         case JobOffer:
-                            request.setStageName("Acceptance");
+                            request.setStageName("Offer");
                             break;
                         case NoJobOffer:
                             request.setStageName("No job offer");

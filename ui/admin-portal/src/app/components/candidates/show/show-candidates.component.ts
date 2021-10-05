@@ -780,6 +780,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return isSharedWithMe(this.candidateSource, this.authService);
   }
 
+  isShowStage(): boolean {
+    return isSavedList(this.candidateSource) && this.candidateSource.sfJoblink != null;
+  }
+
   isEditable(): boolean {
     return canEditSource(this.candidateSource, this.authService);
   }

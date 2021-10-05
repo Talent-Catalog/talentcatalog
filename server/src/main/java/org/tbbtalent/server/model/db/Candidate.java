@@ -182,6 +182,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Transient
     private boolean selected = false;
 
+    /**
+     * Candidate opportunity stage. Retrieved from Salesforce when candidate is displayed as
+     * a member of a Saved List associated with a job opportunity.
+     */
+    @Transient
+    @Nullable
+    private String stage;
+
     /*
               Intake Fields    
      */
@@ -1393,6 +1401,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setShareableDoc(@Nullable CandidateAttachment shareableDoc) {
         this.shareableDoc = shareableDoc;
+    }
+
+    @Nullable
+    public String getStage() {
+        return stage;
+    }
+
+    public void setStage(@Nullable String stage) {
+        this.stage = stage;
     }
 
     @Nullable

@@ -27,6 +27,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
+import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
@@ -46,6 +47,19 @@ import org.tbbtalent.server.request.search.UpdateSharingRequest;
  * @author John Cameron
  */
 public interface SavedListService {
+
+    /**
+     * If the given list is associated with a Salesforce job opportunity, the given candidates 
+     * are populated with their candidate opportunity stages associated with that job opportunity.
+     * <p/>
+     * Does nothing if the list is not associated with a job opportunity.
+     * @param candidates Candidates to check
+     * @param savedListId ID of list
+     * @throws NoSuchObjectException if there is no saved list with this id
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
+        throws NoSuchObjectException, SalesforceException;
 
     /**
      * Clear the contents of the SavedList with the given ID

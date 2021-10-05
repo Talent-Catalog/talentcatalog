@@ -55,4 +55,6 @@ public class Opportunity {
     public String AccountId;
     public String AccountCountry__c;
     public String OwnerId;
+    public String StageName;
+    public String TBBCandidateExternalId__c;
 }

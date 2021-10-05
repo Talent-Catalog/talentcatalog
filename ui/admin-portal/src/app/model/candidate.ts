@@ -73,6 +73,7 @@ export interface Candidate extends HasId {
   numberDependants: number;
   langAssessmentScore: string;
   candidateExams: CandidateExam[];
+  stage: string;
 }
 
 export interface CandidateIntakeData {

@@ -130,13 +130,14 @@ public class SavedListCandidateAdminApi implements
 
     @Override
     public @NotNull Map<String, Object> searchPaged(
-            long savedListId, @Valid SavedListGetRequest request) 
-            throws NoSuchObjectException {
+            long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
         Page<Candidate> candidates = this.candidateService
                 .getSavedListCandidates(savedListId, request);
         
         this.savedListService.setCandidateContext(savedListId, candidates);
-
+        
+        this.savedListService.addOpportunityStages(savedListId, candidates);
+        
         DtoBuilder builder = candidateBuilderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }

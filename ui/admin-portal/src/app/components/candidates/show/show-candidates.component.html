@@ -240,6 +240,9 @@
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
+            <th *ngIf="isShowStage()">
+              <i class="fab fa-salesforce"></i>
+            </th>
             <th>
               <i class="far fa-hand-pointer"></i>
             </th>
@@ -278,6 +281,9 @@
                 *ngIf="isCandidateNameViewable()"
                 [candidate]="candidate">
               </app-cv-icon>
+            </td>
+            <td *ngIf="isShowStage()">
+              {{candidate.stage}}
             </td>
             <td>
               <input type="checkbox" class="custom-checkbox" id="selected" data-onstyle="primary"
