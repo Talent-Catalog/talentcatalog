@@ -117,6 +117,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     private final String contactRetrievalFields = 
             "Id,AccountId," + candidateNumberSFFieldName;
+    private final String candidateOpportunityRetrievalFields = 
+            "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName," 
+                + candidateOpportunitySFFieldName;
      
     
     private final EmailHelper emailHelper;
@@ -168,6 +171,32 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 .defaultHeader("Accept","application/json");
 
         webClient = builder.build();
+    }
+
+    @Override
+    public void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfJoblink)
+         throws SalesforceException {
+
+        String id = extractIdFromSfUrl(sfJoblink);
+        Map<String, Candidate> oppIdCandidateMap = buildCandidateOppsMap(candidates, id);
+        
+        //Now find the candidate opp ids we actually have for candidate opportunities for this job.
+        List<Opportunity> candidateOpps = findCandidateOpportunities2(id);
+        for (Opportunity candidateOpp : candidateOpps) {
+            Candidate candidate = oppIdCandidateMap.get(candidateOpp.getTBBCandidateExternalId__c());
+            candidate.setStage(candidateOpp.getStageName());
+        }
+
+    }
+
+    private Map<String, Candidate> buildCandidateOppsMap(Iterable<Candidate> candidates,
+        String jobOpportunityId) {
+        Map<String, Candidate> idCandidateMap = new HashMap<>();
+        for (Candidate candidate : candidates) {
+            String id = makeExternalId(candidate.getCandidateNumber(), jobOpportunityId);
+            idCandidateMap.put(id, candidate);
+        }
+        return idCandidateMap;
     }
 
     @Override
@@ -306,11 +335,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         
         //First creating a map of all candidates indexed by their what their unique
         //opportunity id should be.
-        Map<String, Candidate> idCandidateMap = new HashMap<>();
-        for (Candidate candidate : candidates) {
-            String id = makeExternalId(candidate.getCandidateNumber(), jobOpportunity.getId());
-            idCandidateMap.put(id, candidate);
-        }
+        Map<String, Candidate> idCandidateMap = 
+            buildCandidateOppsMap(candidates, jobOpportunity.getId());
 
         //Now find the ids we actually have for candidate opportunities for this job.
         List<String> externalIds = findCandidateOpportunities(jobOpportunity.getId());
@@ -449,7 +475,32 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public List<Contact> records;
     }
 
+    //TODO JC Switch to this and get rid of original.
+    private List<Opportunity> findCandidateOpportunities2(String jobOpportunityId)
+        throws SalesforceException {
+        try {
+            String query =
+                "SELECT " + candidateOpportunityRetrievalFields +
+                    " FROM Opportunity WHERE Parent_Opportunity__c='" +
+                    jobOpportunityId + "'";
 
+            ClientResponse response = executeQuery(query);
+
+            OpportunityQueryResult2 result =
+                response.bodyToMono(OpportunityQueryResult2.class).block();
+
+            //Retrieve the contact from the response 
+            List<Opportunity> opps = null;
+            if (result != null) {
+                opps = result.records;
+            }
+
+            return opps;
+        } catch (GeneralSecurityException ex) {
+            throw new SalesforceException("Failed to find Candidate Opportunities: " + ex);
+        }
+    }
+    
     private List<String> findCandidateOpportunities(String jobOpportunityId) 
             throws GeneralSecurityException {
         String query =
@@ -479,6 +530,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         static class Opp {
             public String TBBCandidateExternalId__c;
         }
+    }
+
+    //TODO JC Use this to replace the other
+    static class OpportunityQueryResult2 extends QueryResult {
+        public List<Opportunity> records;
     }
 
     @Override

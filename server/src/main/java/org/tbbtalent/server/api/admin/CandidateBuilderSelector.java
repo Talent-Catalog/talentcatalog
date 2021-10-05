@@ -103,6 +103,7 @@ public class CandidateBuilderSelector {
                 .add("shareableCv", candidateAttachmentDto())
                 .add("shareableDoc", candidateAttachmentDto())
                 .add("shareableNotes")
+                .add("stage")
 
             ;
     }

@@ -49,6 +49,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
+import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.ExportColumn;
 import org.tbbtalent.server.model.db.SavedList;
@@ -551,6 +552,18 @@ public class SavedListServiceImpl implements SavedListService {
             savedList.setDisplayedFieldsShort(request.getDisplayedFieldsShort());
         }
         saveIt(savedList);
+    }
+
+    @Override
+    public void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
+        throws NoSuchObjectException, SalesforceException {
+        SavedList savedList = get(savedListId);
+        
+        //There will only be candidate opportunities if list has a job opp
+        final String joblink = savedList.getSfJoblink();
+        if (joblink != null) {
+            salesforceService.addCandidateOpportunityStages(candidates, joblink);
+        }
     }
 
     @Override

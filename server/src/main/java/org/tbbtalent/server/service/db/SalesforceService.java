@@ -43,6 +43,16 @@ import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest
 public interface SalesforceService {
 
     /**
+     * Updates the given candidates with their candidate opportunity stages associated with the
+     * given Salesforce job opportunity.
+     * @param candidates Candidates to check
+     * @param sfJoblink url link to a Salesfroce job opportunity
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */ 
+    void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfJoblink)
+        throws SalesforceException;
+
+    /**
      * Searches Salesforce for all Contact records relating to TBB 
      * candidates.
      * @return List of Salesforce Contact records
