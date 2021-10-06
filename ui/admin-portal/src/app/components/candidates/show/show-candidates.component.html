@@ -283,7 +283,8 @@
               </app-cv-icon>
             </td>
             <td *ngIf="isShowStage()">
-              <a *ngIf="candidate.stage" [href]="candidate.sfOpportunityLink" target="_blank">
+              <a *ngIf="candidate.stage" [href]="candidate.sfOpportunityLink" target="_blank"
+              title="Stage that this candidate is at - linking to their SF candidate opportunity">
                 {{candidate.stage}}
               </a>
             </td>
