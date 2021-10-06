@@ -20,7 +20,7 @@ import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
 import {CandidateSource} from "../model/base";
 import {enumKeysToEnumOptions} from "../util/enum";
-import {Candidate, hasIeltsExam, IeltsScore, ResidenceStatus} from "../model/candidate";
+import {Candidate, checkIeltsScoreType, ResidenceStatus} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -33,9 +33,6 @@ export class CandidateFieldService {
   private dateFormatter = (value) => this.datePipe.transform(value, "yyyy-MM-dd");
   private titleCaseFormatter = (value) => this.titleCasePipe.transform(value);
   private levelGetNameFormatter = (value) => value.name;
-  private stringToInt = (value) => {
-    return enumKeysToEnumOptions([value], IeltsScore)[0].displayText;
-  }
   private getDisplayEnum = (value) => {
     return enumKeysToEnumOptions([value], ResidenceStatus)[0].displayText;
   }
@@ -216,10 +213,13 @@ export class CandidateFieldService {
   getIeltsScore(candidate: Candidate): string {
     let score: string = null;
     if (candidate?.ieltsScore) {
-      if (hasIeltsExam(candidate)) {
-        score = candidate?.ieltsScore;
+      const type = checkIeltsScoreType(candidate)
+      if (type === "IELTSGen") {
+        score = candidate?.ieltsScore + ' (Gen)';
+      } else if (type === "IELTSAca") {
+        score = candidate?.ieltsScore + ' (Aca)';
       } else {
-        score = candidate?.ieltsScore + ' (estimated)'
+        score = candidate?.ieltsScore + ' (Est)'
       }
     }
     return score;

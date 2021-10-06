@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {Candidate, IeltsScore, IeltsStatus, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {Candidate, IeltsStatus, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -42,7 +42,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   public partnerRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
   public partnerEnglishOptions: EnumOption[] = enumOptions(YesNo);
   public partnerIeltsOptions: EnumOption[] = enumOptions(IeltsStatus);
-  public partnerIeltsScoreOptions: EnumOption[] = enumOptions(IeltsScore);
+
   years: number[];
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
