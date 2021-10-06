@@ -32,7 +32,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -1579,12 +1578,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                 score = null;
             } else {
                 setLangAssessmentScore(data.getLangAssessmentScore());
-                score = new BigDecimal(data.getLangAssessmentScore());
+                //score = new BigDecimal(data.getLangAssessmentScore());
             }
-            // If no IeltsGen exam exists, the ielts score comes from the lang assessment score and needs to be updated here.
-            if (!hasIelts()) {
-                setIeltsScore(score);
-            }
+            computeIeltsScore();
+//            // If no IeltsGen exam exists, the ielts score comes from the lang assessment score and needs to be updated here.
+//            if (!hasIelts()) {
+//                setIeltsScore(score);
+//            }
         }
 
         if (data.getLeftHomeReasons() != null) {
@@ -1752,7 +1752,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     }
 
-    private boolean hasIelts() {
-        return candidateExams.stream().filter(ce -> Objects.nonNull(ce.getExam())).anyMatch(ce -> ce.getExam().equals(Exam.IELTSGen));
+    public void computeIeltsScore() {
+        CandidateExam ieltsGen = candidateExams.stream()
+                .filter(ce -> ce.getExam().equals(Exam.IELTSGen))
+                .findAny().orElse(null);
+
+        CandidateExam ieltsAca = candidateExams.stream()
+                .filter(ce -> ce.getExam().equals(Exam.IELTSAca))
+                .findAny().orElse(null);
+
+        BigDecimal score;
+        // Setting Ielts Score in order of Ielts General, Ielts Academic, Ielts Estimated.
+        if (ieltsGen != null && ieltsGen.getScore() != null) {
+            score = new BigDecimal(ieltsGen.getScore());
+        } else if (ieltsAca != null && ieltsAca.getScore() != null) {
+            score = new BigDecimal(ieltsAca.getScore());
+        } else if (langAssessmentScore != null) {
+            score = new BigDecimal(langAssessmentScore);
+        } else {
+            score = null;
+        }
+        setIeltsScore(score);
     }
 }

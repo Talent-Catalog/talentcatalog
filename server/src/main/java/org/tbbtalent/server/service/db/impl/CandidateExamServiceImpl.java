@@ -29,8 +29,6 @@ import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.exam.CreateCandidateExamRequest;
 import org.tbbtalent.server.service.db.CandidateExamService;
 
-import java.math.BigDecimal;
-
 /**
  * Manage candidate exams
  *
@@ -84,19 +82,21 @@ public class CandidateExamServiceImpl implements CandidateExamService {
 
         candidateExamRepository.save(ce);
 
-        // If exam score is not null and either existing Ielts exam is being updated, or data updating an Ielts exam.
-        if (data.getExamType().equals(Exam.IELTSGen)) {
-            if (data.getExamScore() != null) {
-                BigDecimal score = new BigDecimal(data.getExamScore());
-                candidate.setIeltsScore(score);
-            }
-        } else {
-            // If changing the type of exam from IELTS (existingIelts = true) to another
-            // exam type (data.getExamType != IeltsGen) then set IeltsScore to null
-            if (existingIelts) {
-                candidate.setIeltsScore(null);
-            }
-        }
+        candidate.computeIeltsScore();
+
+//        // If exam score is not null and either existing Ielts exam is being updated, or data updating an Ielts exam.
+//        if (data.getExamType().equals(Exam.IELTSGen)) {
+//            if (data.getExamScore() != null) {
+//                BigDecimal score = new BigDecimal(data.getExamScore());
+//                candidate.setIeltsScore(score);
+//            }
+//        } else {
+//            // If changing the type of exam from IELTS (existingIelts = true) to another
+//            // exam type (data.getExamType != IeltsGen) then set IeltsScore to null
+//            if (existingIelts) {
+//                candidate.setIeltsScore(null);
+//            }
+//        }
 
     }
 }

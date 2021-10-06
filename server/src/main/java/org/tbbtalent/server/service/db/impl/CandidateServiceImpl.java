@@ -2218,23 +2218,28 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateExam ce = candidateExamRepository.findByIdLoadCandidate(examId)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, examId));
 
-        boolean ieltsExam = false;
+        boolean ieltsExamGen = false;
         if (ce.getExam() != null) {
-            ieltsExam = ce.getExam().equals(Exam.IELTSGen);
+            ieltsExamGen = ce.getExam().equals(Exam.IELTSGen);
         }
+
+        Candidate candidate = ce.getCandidate();
 
         candidateExamRepository.deleteById(examId);
 
-        // If ieltsExam is deleted, set ieltsScore to null UNLESS langAssessmentScore exists, set it to that.
-        if (ieltsExam) {
-            if (ce.getCandidate().getLangAssessmentScore() != null) {
-                BigDecimal score = new BigDecimal(ce.getCandidate().getLangAssessmentScore());
-                ce.getCandidate().setIeltsScore(score);
-            } else {
-                ce.getCandidate().setIeltsScore(null);
-            }
-            save(ce.getCandidate(), true);
-        }
+        candidate.computeIeltsScore();
+        save(candidate, true);
+
+//        // If ieltsExamGen is deleted, set ieltsScore to null UNLESS langAssessmentScore exists, set it to that.
+//        if (ieltsExamGen) {
+//            if (ce.getCandidate().getLangAssessmentScore() != null) {
+//                BigDecimal score = new BigDecimal(ce.getCandidate().getLangAssessmentScore());
+//                ce.getCandidate().setIeltsScore(score);
+//            } else {
+//                ce.getCandidate().setIeltsScore(null);
+//            }
+//            save(ce.getCandidate(), true);
+//        }
         return true;
     }
 
