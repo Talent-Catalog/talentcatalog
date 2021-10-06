@@ -1578,13 +1578,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                 score = null;
             } else {
                 setLangAssessmentScore(data.getLangAssessmentScore());
-                //score = new BigDecimal(data.getLangAssessmentScore());
             }
             computeIeltsScore();
-//            // If no IeltsGen exam exists, the ielts score comes from the lang assessment score and needs to be updated here.
-//            if (!hasIelts()) {
-//                setIeltsScore(score);
-//            }
         }
 
         if (data.getLeftHomeReasons() != null) {

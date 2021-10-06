@@ -2229,17 +2229,6 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.computeIeltsScore();
         save(candidate, true);
-
-//        // If ieltsExamGen is deleted, set ieltsScore to null UNLESS langAssessmentScore exists, set it to that.
-//        if (ieltsExamGen) {
-//            if (ce.getCandidate().getLangAssessmentScore() != null) {
-//                BigDecimal score = new BigDecimal(ce.getCandidate().getLangAssessmentScore());
-//                ce.getCandidate().setIeltsScore(score);
-//            } else {
-//                ce.getCandidate().setIeltsScore(null);
-//            }
-//            save(ce.getCandidate(), true);
-//        }
         return true;
     }
 
