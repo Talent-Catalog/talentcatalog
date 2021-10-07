@@ -56,6 +56,8 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private String countryIds;
 
+    private String surveyTypeIds;
+
     private Integer englishMinWrittenLevel;
     private Integer englishMinSpokenLevel;
 
@@ -96,6 +98,7 @@ public class SavedSearch extends AbstractCandidateSource {
 
     @Transient private List<String> countryNames;
     @Transient private List<String> nationalityNames;
+    @Transient private List<String> surveyTypeNames;
     @Transient private List<String> vettedOccupationNames;
     @Transient private List<String> occupationNames;
     @Transient private List<String> educationMajors;
@@ -217,6 +220,10 @@ public class SavedSearch extends AbstractCandidateSource {
     public void setCountryIds(String countryIds) {
         this.countryIds = countryIds;
     }
+
+    public String getSurveyTypeIds() {return surveyTypeIds;}
+
+    public void setSurveyTypeIds(String surveyTypeIds) {this.surveyTypeIds = surveyTypeIds;}
 
     public Integer getEnglishMinWrittenLevel() {
         return englishMinWrittenLevel;
@@ -345,6 +352,10 @@ public class SavedSearch extends AbstractCandidateSource {
     public void setNationalityNames(List<String> nationalityNames) {
         this.nationalityNames = nationalityNames;
     }
+
+    public List<String> getSurveyTypeNames() {return surveyTypeNames;}
+
+    public void setSurveyTypeNames(List<String> surveyTypeNames) {this.surveyTypeNames = surveyTypeNames;}
 
     public List<String> getVettedOccupationNames() {
         return vettedOccupationNames;

@@ -18,8 +18,6 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
-import {EnumOption, enumOptions} from '../../../../util/enum';
-import {IeltsScore} from '../../../../model/candidate';
 
 @Component({
   selector: 'app-lang-assessment',
@@ -28,7 +26,6 @@ import {IeltsScore} from '../../../../model/candidate';
 })
 export class LangAssessmentComponent extends IntakeComponentBase implements OnInit {
 
-  public langAssessmentScore: EnumOption[] = enumOptions(IeltsScore);
   errorMsg: string;
   regexpIeltsScore: RegExp;
 

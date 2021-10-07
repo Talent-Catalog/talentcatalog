@@ -48,13 +48,18 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString
-public class Opportunity {
-    public String Id;
+@ToString(callSuper = true)
+public class Opportunity extends SalesforceObjectBase {
     public String Name;
     public String AccountId;
     public String AccountCountry__c;
     public String OwnerId;
     public String StageName;
     public String TBBCandidateExternalId__c;
+
+    @Override
+    String getSfObjectName() {
+        return "Opportunity";
+    }
+
 }

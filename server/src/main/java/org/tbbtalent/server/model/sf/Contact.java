@@ -35,12 +35,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Contact {
-    static final String urlRoot = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Contact/";
-    static final String urlSuffix = "/view";
-    
+public class Contact extends SalesforceObjectBase {
     public String AccountId;
-    public String Id;
     public Long TBBid__c;
 
     public Contact() {
@@ -50,11 +46,9 @@ public class Contact {
         TBBid__c = Long.valueOf(candidate.getCandidateNumber());
     }
 
-    public String getUrl() {
-        String url = null;
-        if (Id != null) {
-            url = urlRoot + Id + urlSuffix;
-        }
-        return url; 
+    @Override
+    String getSfObjectName() {
+        return "Contact";
     }
+
 }

@@ -358,6 +358,7 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(savedSearch.getNationalitySearchType());
         searchCandidateRequest.setCountryIds(getIdsFromString(savedSearch.getCountryIds()));
+        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(savedSearch.getSurveyTypeIds()));
         searchCandidateRequest.setEnglishMinSpokenLevel(savedSearch.getEnglishMinSpokenLevel());
         searchCandidateRequest.setEnglishMinWrittenLevel(savedSearch.getEnglishMinWrittenLevel());
         searchCandidateRequest.setOtherLanguageId(savedSearch.getOtherLanguage() != null ? savedSearch.getOtherLanguage().getId() : null);
@@ -2218,23 +2219,17 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateExam ce = candidateExamRepository.findByIdLoadCandidate(examId)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, examId));
 
-        boolean ieltsExam = false;
+        boolean ieltsExamGen = false;
         if (ce.getExam() != null) {
-            ieltsExam = ce.getExam().equals(Exam.IELTSGen);
+            ieltsExamGen = ce.getExam().equals(Exam.IELTSGen);
         }
+
+        Candidate candidate = ce.getCandidate();
 
         candidateExamRepository.deleteById(examId);
 
-        // If ieltsExam is deleted, set ieltsScore to null UNLESS langAssessmentScore exists, set it to that.
-        if (ieltsExam) {
-            if (ce.getCandidate().getLangAssessmentScore() != null) {
-                BigDecimal score = new BigDecimal(ce.getCandidate().getLangAssessmentScore());
-                ce.getCandidate().setIeltsScore(score);
-            } else {
-                ce.getCandidate().setIeltsScore(null);
-            }
-            save(ce.getCandidate(), true);
-        }
+        candidate.computeIeltsScore();
+        save(candidate, true);
         return true;
     }
 

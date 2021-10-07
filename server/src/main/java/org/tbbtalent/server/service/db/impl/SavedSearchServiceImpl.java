@@ -61,6 +61,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final LanguageRepository languageRepository;
     private final CountryRepository countryRepository;
     private final OccupationRepository occupationRepository;
+    private final SurveyTypeRepository surveyTypeRepository;
     private final EducationMajorRepository educationMajorRepository;
     private final EducationLevelRepository educationLevelRepository;
     private final AuthService authService;
@@ -77,6 +78,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             LanguageRepository languageRepository,
             CountryRepository countryRepository,
             OccupationRepository occupationRepository,
+            SurveyTypeRepository surveyTypeRepository,
             EducationMajorRepository educationMajorRepository,
             EducationLevelRepository educationLevelRepository,
             AuthService authService) {
@@ -90,6 +92,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.languageRepository = languageRepository;
         this.countryRepository = countryRepository;
         this.occupationRepository = occupationRepository;
+        this.surveyTypeRepository = surveyTypeRepository;
         this.educationMajorRepository = educationMajorRepository;
         this.educationLevelRepository = educationLevelRepository;
         this.authService = authService;
@@ -195,6 +198,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
         if (!StringUtils.isEmpty(savedSearch.getEducationMajorIds())){
             savedSearch.setEducationMajors(educationMajorRepository.getNamesForIds(getIdsFromString(savedSearch.getEducationMajorIds())));
+        }
+        if (!StringUtils.isEmpty(savedSearch.getSurveyTypeIds())){
+            savedSearch.setSurveyTypeNames(surveyTypeRepository.getNamesForIds(getIdsFromString(savedSearch.getSurveyTypeIds())));
         }
         if (savedSearch.getEnglishMinWrittenLevel() != null){
             savedSearch.setEnglishWrittenLevel(languageLevelMap.get(savedSearch.getEnglishMinWrittenLevel()));
@@ -652,6 +658,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     getListAsString(request.getNationalityIds()));
             savedSearch.setNationalitySearchType(request.getNationalitySearchType());
             savedSearch.setCountryIds(getListAsString(request.getCountryIds()));
+            savedSearch.setSurveyTypeIds(getListAsString(request.getSurveyTypeIds()));
             savedSearch.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
             savedSearch.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
             Optional<Language> language = 
@@ -689,6 +696,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
         searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
         searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
+        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(request.getSurveyTypeIds()));
         searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
 
         // Check if the saved search countries match the source countries of the user

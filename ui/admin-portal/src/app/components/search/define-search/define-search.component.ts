@@ -61,6 +61,8 @@ import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {enumKeysToEnumOptions, EnumOption, enumOptions} from "../../../util/enum";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
+import {SurveyTypeService} from "../../../services/survey-type.service";
+import {SurveyType} from "../../../model/survey-type";
 
 @Component({
   selector: 'app-define-search',
@@ -101,6 +103,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   verifiedOccupations: Occupation[];
   candidateOccupations: Occupation[];
   languageLevels: LanguageLevel[];
+  surveyTypes: SurveyType[];
 
   notElastic;
 
@@ -123,6 +126,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
               private educationLevelService: EducationLevelService,
               private educationMajorService: EducationMajorService,
               private candidateOccupationService: CandidateOccupationService,
+              private surveyTypeService: SurveyTypeService,
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
@@ -158,6 +162,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       maxAge: [null],
       minEducationLevel: [],
       educationMajorIds: [[]],
+      surveyTypeIds: [[]],
       searchJoinRequests: this.fb.array([]),
       //for display purposes
       occupations: [[]],
@@ -166,6 +171,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       educationMajors: [[]],
       nationalities: [[]],
       statusesDisplay: [[]],
+      surveyTypes: [[]],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
 
@@ -185,7 +191,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       'educationLevels': this.educationLevelService.listEducationLevels(),
       'majors': this.educationMajorService.listMajors(),
       'verifiedOccupation': this.candidateOccupationService.listVerifiedOccupations(),
-      'occupations': this.candidateOccupationService.listOccupations()
+      'occupations': this.candidateOccupationService.listOccupations(),
+      'surveyTypes': this.surveyTypeService.listSurveyTypes()
     }).subscribe(results => {
       this.loading = false;
       this.nationalities = results['nationalities'];
@@ -196,6 +203,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       this.educationMajors = results['majors'];
       this.verifiedOccupations = results['verifiedOccupation'];
       this.candidateOccupations = results['occupations'];
+      this.surveyTypes = results['surveyTypes'];
 
       const englishLanguageObj = this.languages.find(l => l.name.toLowerCase() === 'english');
       this.englishLanguageModel = Object.assign(emptyLanguageLevelFormControlModel, {languageId: englishLanguageObj.id || null});
@@ -314,6 +322,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     if (request.statusesDisplay != null) {
       request.statuses = request.statusesDisplay.map(s => s.value);
       delete request.statusesDisplay;
+    }
+
+    if (request.surveyTypes != null) {
+      request.surveyTypeIds = request.surveyTypes.map(s => s.id);
+      delete request.surveyTypes;
     }
 
     return request;
@@ -496,6 +509,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
         .filter(c => request.educationMajorIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['educationMajors'].patchValue(educationMajors);
+
+    /* SURVEY TYPES */
+    let surveyTypes = [];
+    if (request.surveyTypeIds && this.surveyTypes) {
+      surveyTypes = this.surveyTypes
+        .filter(c => request.surveyTypeIds.indexOf(c.id) !== -1);
+    }
+    this.searchForm.controls['surveyTypes'].patchValue(surveyTypes);
 
     /* OTHER LANGUAGE */
     this.otherLanguagePicker.patchModel({
