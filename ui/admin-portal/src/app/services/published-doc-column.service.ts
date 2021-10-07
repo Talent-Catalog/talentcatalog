@@ -80,6 +80,8 @@ export class PublishedDocColumnService {
     this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
     this.addColumn("nationality", "Nationality", new PublishedDocFieldSource("nationality.name"));
 
+    this.addColumn("occupations", "Occupations", new PublishedDocFieldSource("occupationSummary"));
+
     this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"))
     .width = PublishedDocColumnWidth.Wide;
 
