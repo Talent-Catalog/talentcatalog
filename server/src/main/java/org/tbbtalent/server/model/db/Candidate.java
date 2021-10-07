@@ -622,7 +622,17 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return null;
     }
     
-    @Transient
+    public String getOccupationSummary() {
+        StringBuilder s = new StringBuilder();
+        for (CandidateOccupation occupation : candidateOccupations) {
+            if (s.length() > 0) {
+                s.append(", ");
+            }
+            s.append(occupation.getOccupation().getName());
+        }
+        return s.toString();
+    }
+    
     public String getTcLink() {
         return "https://tbbtalent.org/admin-portal/candidate/" + candidateNumber;
     }
