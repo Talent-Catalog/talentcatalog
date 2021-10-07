@@ -382,6 +382,30 @@
             </ng-select>
           </div>
 
+          <div class="form-group col-12 col-md-4 mt-2">
+            <label>Survey Type</label>
+            <ng-select
+              id="surveyType"
+              [items]="surveyTypes"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [clearSearchOnAdd]="true"
+              placeholder="Select or type..."
+              bindLabel="name"
+              [formControlName]="'surveyTypes'">
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                  <span class="ng-value-label">{{item.name}}</span>
+                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('surveyTypes')" popoverTitle="Survey Types"
+                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+
           <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
             <p *ngIf="searchForm.errors.invalidDate">Email is required</p>
           </div>

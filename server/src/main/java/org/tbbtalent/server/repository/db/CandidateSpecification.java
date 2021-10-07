@@ -81,6 +81,9 @@ public class CandidateSpecification {
                 Fetch<Object, Object> countryFetch = candidate.fetch("country");
                 country = (Join<Object, Object>) countryFetch;
 
+                Fetch<Object, Object> surveyTypeFetch = candidate.fetch("surveyType");
+                country = (Join<Object, Object>) surveyTypeFetch;
+
                 Fetch<Object, Object> educationLevelFetch = candidate.fetch("maxEducationLevel");
                 maxEducationLevel = (Join<Object, Object>) educationLevelFetch;
 
@@ -251,8 +254,9 @@ public class CandidateSpecification {
                 );
             }
 
-            //REMOVE US AFGHANS FROM ALL SEARCHES.
-            // No matter what we want US-afghans out of the searches source countries or not..... but if candidate is US then in the searches.
+            // REMOVE US AFGHANS FROM ALL SEARCHES.
+            // This is a temporary hack for the us-afghan parolee push.
+            // We want US-afghans out of the searches w/ source countries or not BUT if candidate is US SOURCE COUNTRY then in the searches.
             Join<Candidate, SurveyType> surveyType = candidate.join("surveyType", JoinType.LEFT);
             //if source countries is not null, check that it's not US
             if (loggedInUser != null && !Collections.isEmpty(loggedInUser.getSourceCountries())) {
@@ -266,6 +270,13 @@ public class CandidateSpecification {
             } else {
                 conjunction.getExpressions().add(
                         builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
+                );
+            }
+
+            // SURVEY TYPE SEARCH
+            if (!Collections.isEmpty(request.getSurveyTypeIds())) {
+                conjunction.getExpressions().add(
+                        builder.isTrue(candidate.get("surveyType").in(request.getSurveyTypeIds()))
                 );
             }
 

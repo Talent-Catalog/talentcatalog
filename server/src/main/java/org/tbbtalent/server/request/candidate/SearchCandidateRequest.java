@@ -102,6 +102,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private List<Long> nationalityIds;
     private SearchType nationalitySearchType;
     private List<Long> countryIds;
+    private List<Long> surveyTypeIds;
     private Integer englishMinWrittenLevel;
     private Integer englishMinSpokenLevel;
     private Long otherLanguageId;

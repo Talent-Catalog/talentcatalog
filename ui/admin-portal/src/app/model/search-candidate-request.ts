@@ -14,7 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Language} from './language';
 import {SavedSearchJoin} from './saved-search';
 
 export interface SearchCandidateRequest {
@@ -42,6 +41,7 @@ export interface SearchCandidateRequest {
   maxAge?: number;
   minEducationLevel?: number;
   educationMajorIds?: number[];
+  surveyTypeIds?: number[];
   countryNames?: string[];
   nationalityNames?: string[];
   vettedOccupationNames?: string[];
