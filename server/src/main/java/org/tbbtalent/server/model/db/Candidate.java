@@ -32,6 +32,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -1749,11 +1750,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void computeIeltsScore() {
         CandidateExam ieltsGen = candidateExams.stream()
-                .filter(ce -> ce.getExam().equals(Exam.IELTSGen))
+                .filter(ce -> Objects.nonNull(ce.getExam()) && ce.getExam().equals(Exam.IELTSGen))
                 .findAny().orElse(null);
 
         CandidateExam ieltsAca = candidateExams.stream()
-                .filter(ce -> ce.getExam().equals(Exam.IELTSAca))
+                .filter(ce -> Objects.nonNull(ce.getExam()) && ce.getExam().equals(Exam.IELTSAca))
                 .findAny().orElse(null);
 
         BigDecimal score;

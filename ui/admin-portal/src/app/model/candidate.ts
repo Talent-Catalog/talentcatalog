@@ -609,7 +609,11 @@ export function hasIeltsExam(candidate: Candidate): boolean {
 
 export function checkIeltsScoreType(candidate: Candidate): string {
   if (candidate.candidateExams.length > 0) {
-    const type: CandidateExam = candidate.candidateExams?.find(e => e.score === candidate.ieltsScore.toString());
-    return type.exam;
+    const type: CandidateExam = candidate.candidateExams?.find(e => e?.score === candidate.ieltsScore.toString());
+    if (type != null && type.exam != null) {
+      return type.exam;
+    } else {
+      return null;
+    }
   }
 }
