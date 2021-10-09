@@ -16,20 +16,48 @@
 
 package org.tbbtalent.server.repository.db;
 
+import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
+
 import io.jsonwebtoken.lang.Collections;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateJobExperience;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateReviewStatusItem;
+import org.tbbtalent.server.model.db.CandidateSkill;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.EducationMajor;
+import org.tbbtalent.server.model.db.Language;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.ReviewStatus;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SearchType;
+import org.tbbtalent.server.model.db.SurveyType;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-
-import javax.persistence.criteria.*;
-import java.time.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
 
 public class CandidateSpecification {
 
@@ -41,6 +69,11 @@ public class CandidateSpecification {
             //GetSavedListCandidatesQuery. JC - The Programmer's Friend.
             
             Predicate conjunction = builder.conjunction();
+            
+            //These joins are only created as needed - depending on the query.
+            //eg candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
+            //Some joins are always needed - eg the user one, and the joins needed to support
+            //sorting.
             Join<Object, Object> user = null;
             Join<Object, Object> nationality = null;
             Join<Object, Object> country = null;
@@ -55,11 +88,6 @@ public class CandidateSpecification {
             query.distinct(true);
 
             /*
-              My theory on the reason for this - JC
-              
-              The main purpose is do the fetches which means that the returned
-              results contain the user, nationality and country entities.
-              
               Those fetches are performed by a join, which can also be reused 
               to do the sorting and other filters.
 
@@ -80,10 +108,7 @@ public class CandidateSpecification {
 
                 Fetch<Object, Object> countryFetch = candidate.fetch("country");
                 country = (Join<Object, Object>) countryFetch;
-
-                Fetch<Object, Object> surveyTypeFetch = candidate.fetch("surveyType");
-                country = (Join<Object, Object>) surveyTypeFetch;
-
+                
                 Fetch<Object, Object> educationLevelFetch = candidate.fetch("maxEducationLevel");
                 maxEducationLevel = (Join<Object, Object>) educationLevelFetch;
 
@@ -257,20 +282,28 @@ public class CandidateSpecification {
             // REMOVE US AFGHANS FROM ALL SEARCHES.
             // This is a temporary hack for the us-afghan parolee push.
             // We want US-afghans out of the searches w/ source countries or not BUT if candidate is US SOURCE COUNTRY then in the searches.
-            Join<Candidate, SurveyType> surveyType = candidate.join("surveyType", JoinType.LEFT);
             //if source countries is not null, check that it's not US
             if (loggedInUser != null && !Collections.isEmpty(loggedInUser.getSourceCountries())) {
                 boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == 6178);
                 if (!us) {
-                    conjunction.getExpressions().add(
-                            builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
-                    );
+                    //This is not a US user, so don't show US Afghans
+                  Join<Candidate, SurveyType> surveyType 
+                      = candidate.join("surveyType", JoinType.LEFT);
+                  conjunction.getExpressions()
+                      .add(builder.or(
+                          builder.isNull(candidate.get("surveyType")),
+                          builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
+                      ));
                 }
-                // if source countries is null, remove us afghans
             } else {
-                conjunction.getExpressions().add(
+                // if source countries is null, remove us afghans
+              Join<Candidate, SurveyType> surveyType
+                  = candidate.join("surveyType", JoinType.LEFT);
+                conjunction.getExpressions()
+                    .add(builder.or(
+                        builder.isNull(candidate.get("surveyType")),
                         builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
-                );
+                    ));
             }
 
             // SURVEY TYPE SEARCH
