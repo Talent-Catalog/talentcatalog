@@ -252,12 +252,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
         }
       }
-    } else {
-      if (changes.searchRequest) {
-        if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
-          if (this.searchRequest) {
-            this.updatedSearch();
-          }
+    }
+    if (changes.searchRequest) {
+      if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
+        if (this.searchRequest) {
+          this.updatedSearch();
         }
       }
     }
@@ -304,6 +303,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.error = null;
     this.searching = true;
     const request = this.searchRequest;
+
+    //Search passed in externally will not have current reviewStatusFilter applied
+    //because that is only managed by this component. So fill it in.
+    if (this.isReviewable()) {
+      request.reviewStatusFilter = this.reviewStatusFilter;
+    }
+
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
@@ -446,6 +452,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   private isCacheable(): boolean {
     return !this.isReviewable() ||
+      //If reviewable, the only results that are cached are for the default review filter
       this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString();
   }
 
@@ -695,6 +702,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //completely change the number of results.
     //Ignoring the page number will allow the cache to supply pageNumber
     //if it has something cached.
+    //Note also that a refresh will still need to be done if the review filter is not
+    //the default review filter - because that is all that is cached. This is handled in doSearch.
     this.doSearch(false, false);
   }
 
