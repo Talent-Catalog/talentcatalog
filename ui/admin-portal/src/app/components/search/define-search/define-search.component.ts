@@ -283,8 +283,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     const request: SearchCandidateRequestPaged =
       this.getIdsMultiSelect(this.searchForm.value)
 
-    request.reviewStatusFilter = null;
-
     //A new search request has to clear page number. Old page number no longer
     //relevant with new search.
     request.pageNumber = 0;

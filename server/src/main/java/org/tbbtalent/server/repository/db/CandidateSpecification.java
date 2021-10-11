@@ -26,15 +26,13 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
@@ -44,7 +42,6 @@ import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.model.db.CandidateJobExperience;
 import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.CandidateReviewStatusItem;
 import org.tbbtalent.server.model.db.CandidateSkill;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationLevel;
@@ -52,8 +49,6 @@ import org.tbbtalent.server.model.db.EducationMajor;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.ReviewStatus;
-import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SearchType;
 import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.model.db.User;
@@ -62,7 +57,8 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 public class CandidateSpecification {
 
     public static Specification<Candidate> buildSearchQuery(
-            final SearchCandidateRequest request, @Nullable User loggedInUser) {
+            final SearchCandidateRequest request, @Nullable User loggedInUser, 
+            final @Nullable Collection<Candidate> excludedCandidates) {
         return (candidate, query, builder) -> {
             
             //To better understand this code, look at the simpler but similar
@@ -125,54 +121,6 @@ public class CandidateSpecification {
                 maxEducationLevel = candidate.join("maxEducationLevel");
             }
             
-            //Review status
-            //Only saved searches support review status - ie has this candidate 
-            //been reviewed as belonging in this saved search.
-            //We want candidates whose MOST RECENT review status for this search id is in filtered statuses.
-            if (request.getSavedSearchId() != null) {
-                if (CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
-                    Predicate pendingPredicate = null;
-                    if (request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
-                        Subquery<Candidate> sq = query.subquery(Candidate.class);
-                        Root<Candidate> subCandidate = sq.from(Candidate.class);
-                        /*
-                        select Candidate from Candidate join 
-                        candidateReviewStatusItems join 
-                        SavedSearch where savedSearchid = requestid
-                         pendingPredicate = candidate id not in the result of the query
-                         
-                         Is this just defaulting everything else as pending? 
-                         */
-                        Join<Object, Object> subReviewStatus = subCandidate.join("candidateReviewStatusItems");
-                        Join<Object, Object> subSavedSearch = subReviewStatus.join("savedSearch");
-                        sq.select(subCandidate).where(builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()));
-                        pendingPredicate = builder.not(builder.in(candidate.get("id")).value(sq));
-                    }
-
-                    Subquery<Candidate> sq = query.subquery(Candidate.class);
-                    Root<Candidate> subCandidate = sq.from(Candidate.class);
-                    Join<Object, Object> subReviewStatus = subCandidate.join("candidateReviewStatusItems");
-                    Join<Object, Object> subSavedSearch = subReviewStatus.join("savedSearch");
-                    sq.select(subCandidate).where(
-                            builder.and(
-                                    builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()), 
-                                    subReviewStatus.get("reviewStatus").in(request.getReviewStatusFilter())
-                            )
-                    );
-                    
-                    Predicate statusPredicate = builder.in(candidate.get("id")).value(sq);
-
-                    if (pendingPredicate != null) {
-                        conjunction.getExpressions().add(builder.and(builder.or(pendingPredicate, statusPredicate)));
-                    } else {
-                        conjunction.getExpressions().add(statusPredicate);
-                    }
-                } else if (query.getResultType().equals(Candidate.class)) {
-                    Fetch<Candidate, CandidateReviewStatusItem> candidateReviewStatusItem = candidate.fetch("candidateReviewStatusItems", JoinType.LEFT);
-                    Fetch<CandidateReviewStatusItem, SavedSearch> savedSearch = candidateReviewStatusItem.fetch("savedSearch", JoinType.LEFT);
-                }
-            }
-
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())) {
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
@@ -252,6 +200,12 @@ public class CandidateSpecification {
                 }
             }
 
+            // EXCLUDED CANDIDATES (eg from Review Status)
+            if (excludedCandidates != null && excludedCandidates.size() > 0) {
+                conjunction.getExpressions().add(candidate.in(excludedCandidates).not()
+                    );
+            }
+
             // NATIONALITY SEARCH
             if (!Collections.isEmpty(request.getNationalityIds())) {
                 if (request.getNationalitySearchType() == null || SearchType.or.equals(request.getNationalitySearchType())) {
@@ -271,7 +225,6 @@ public class CandidateSpecification {
                         builder.isTrue(candidate.get("country").in(request.getCountryIds()))
                 );
                 // If request ids IS EMPTY only show source countries
-                //REMOVE US-AFGHANS FROM SEARCHES, UNLESS USA SOURCE COUNTRY
             } else if (loggedInUser != null &&
                     !Collections.isEmpty(loggedInUser.getSourceCountries())) {
                 conjunction.getExpressions().add(
