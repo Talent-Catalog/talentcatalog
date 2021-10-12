@@ -31,6 +31,13 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
         shareableCvAttachmentId: [this.candidate?.listShareableCv?.id],
         shareableDocAttachmentId: [this.candidate?.listShareableDoc?.id],
       });
+
+      if (this.candidate?.listShareableCv?.id == null) {
+        this.form.patchValue({shareableCvAttachmentId: this.candidate?.shareableCv?.id})
+      }
+      if (this.candidate?.listShareableDoc?.id == null) {
+        this.form.patchValue({shareableDocAttachmentId: this.candidate?.shareableDoc?.id})
+      }
     } else {
       this.form = this.fb.group({
         shareableCvAttachmentId: [this.candidate?.shareableCv?.id],
@@ -57,9 +64,13 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
     if (this.savedList) {
       if (this.shareableCvId != null) {
         this.candidate.listShareableCv = this.cvs.find(att => att.id === this.shareableCvId);
+      } else {
+        this.candidate.listShareableCv = null;
       }
       if (this.shareableDocId != null) {
         this.candidate.listShareableDoc = this.other.find(att => att.id === this.shareableDocId);
+      } else {
+        this.candidate.listShareableDoc = null;
       }
     }
 
