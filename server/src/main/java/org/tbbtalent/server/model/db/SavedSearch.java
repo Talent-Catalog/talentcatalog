@@ -62,6 +62,11 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer englishMinSpokenLevel;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exclusion_list_id")
+    @Nullable
+    private SavedList exclusionList;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "other_language_id")
     private Language otherLanguage;
     private Integer otherMinWrittenLevel;
@@ -404,6 +409,15 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setEnglishSpokenLevel(String englishSpokenLevel) {
         this.englishSpokenLevel = englishSpokenLevel;
+    }
+
+    @Nullable
+    public SavedList getExclusionList() {
+        return exclusionList;
+    }
+
+    public void setExclusionList(@Nullable SavedList exclusionList) {
+        this.exclusionList = exclusionList;
     }
 
     public String getOtherWrittenLevel() {

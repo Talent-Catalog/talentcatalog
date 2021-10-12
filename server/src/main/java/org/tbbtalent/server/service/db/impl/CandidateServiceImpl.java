@@ -492,11 +492,18 @@ public class CandidateServiceImpl implements CandidateService {
 
         Page<Candidate> candidates;
 
-        List<Candidate> excludedCandidates = null;
+        Set<Candidate> excludedCandidates = new HashSet<>();
+
+        final Long exclusionListId = request.getExclusionListId();
+        if (exclusionListId != null) {
+            SavedList exclusionList = savedListService.get(exclusionListId);
+            excludedCandidates.addAll(exclusionList.getCandidates());
+        }
         if (CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
             //Compute excluded candidates based on review statuses
-            excludedCandidates = candidateReviewStatusRepository
-                .findCandidatesExcludedFromSearch(request.getSavedSearchId(), request.getReviewStatusFilter());
+            excludedCandidates.addAll(candidateReviewStatusRepository
+                .findCandidatesExcludedFromSearch(request.getSavedSearchId(), 
+                    request.getReviewStatusFilter()));
         }
         
         //Modify request, defaulting blank statuses

@@ -54,4 +54,5 @@ export interface SearchCandidateRequest {
   minEducationLevelName?: string;
   includeDraftAndDeleted?: boolean;
   searchJoins?: SavedSearchJoin[];
+  exclusionListId?: number;
 }
