@@ -17,6 +17,7 @@
 package org.tbbtalent.server.repository.db;
 
 import java.util.List;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,7 +29,7 @@ public interface CandidateReviewStatusRepository extends JpaRepository<Candidate
 
   @Query(" select review.candidate from CandidateReviewStatusItem review "
       + " where review.savedSearch.id = :savedSearchId and not review.reviewStatus in (:statuses) ")
-  List<Candidate> findCandidatesExcludedFromSearch(
+  Set<Candidate> findCandidatesExcludedFromSearch(
       @Param("savedSearchId") Long savedSearchId, @Param("statuses") List<ReviewStatus> statuses);
 
 }

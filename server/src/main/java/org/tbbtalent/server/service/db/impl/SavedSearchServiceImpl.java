@@ -668,6 +668,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             if (language.isPresent()) {
                 savedSearch.setOtherLanguage(language.get());
             }
+            
+            Optional<SavedList> exclusionList = 
+                    request.getExclusionListId() != null ? 
+                            savedListRepository.findById(
+                                    request.getExclusionListId()) : Optional.empty();
+            if (exclusionList.isPresent()) {
+                savedSearch.setExclusionList(exclusionList.get());
+            }
+            
             savedSearch.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
             savedSearch.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
             savedSearch.setLastModifiedFrom(request.getLastModifiedFrom());
@@ -721,7 +730,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         searchCandidateRequest.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
         searchCandidateRequest.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
-        searchCandidateRequest.setOtherLanguageId(request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
+        searchCandidateRequest.setExclusionListId(
+            request.getExclusionList() != null ? request.getExclusionList().getId() : null);
+        searchCandidateRequest.setOtherLanguageId(
+            request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
         searchCandidateRequest.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
         searchCandidateRequest.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
         searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
