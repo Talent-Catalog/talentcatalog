@@ -16,17 +16,15 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateSavedList;
-import org.tbbtalent.server.model.db.CandidateSavedListKey;
-import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
+
+import java.util.Set;
 
 @Service
 public class CandidateSavedListServiceImpl implements CandidateSavedListService {
@@ -74,6 +72,19 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
                 .orElse(null);
         if (csl != null) {
             csl.setContextNote(request.getContextNote());
+            candidateSavedListRepository.save(csl);
+        }
+    }
+
+    @Override
+    public void updateCandidateShareableDocs(long candidateId, long savedListId, CandidateAttachment cv, CandidateAttachment doc) {
+        CandidateSavedListKey key =
+                new CandidateSavedListKey(candidateId, savedListId);
+        CandidateSavedList csl = candidateSavedListRepository.findById(key)
+                .orElse(null);
+        if (csl != null) {
+            csl.setShareableCv(cv);
+            csl.setShareableDoc(doc);
             candidateSavedListRepository.save(csl);
         }
     }

@@ -59,6 +59,8 @@ export interface Candidate extends HasId {
   videolink: string;
   shareableCv: CandidateAttachment;
   shareableDoc: CandidateAttachment;
+  listShareableCv: CandidateAttachment;
+  listShareableDoc: CandidateAttachment;
   shareableNotes: string;
   surveyType: SurveyType;
   surveyComment: string;
@@ -75,6 +77,7 @@ export interface Candidate extends HasId {
   candidateExams: CandidateExam[];
   sfOpportunityLink: string;
   stage: string;
+  candidateAttachments?: CandidateAttachment[];
 }
 
 export interface CandidateIntakeData {
@@ -379,6 +382,7 @@ export interface UpdateCandidateShareableNotesRequest {
 export interface UpdateCandidateShareableDocsRequest {
   shareableCvAttachmentId: number,
   shareableDocAttachmentId: number,
+  savedListId?: number
 }
 
 export interface UpdateCandidateStatusInfo {

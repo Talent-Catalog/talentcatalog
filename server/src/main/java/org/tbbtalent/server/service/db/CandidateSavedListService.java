@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db;
 
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 
@@ -56,4 +57,7 @@ public interface CandidateSavedListService {
      */
     void updateCandidateContextNote(
             long savedListId, UpdateCandidateContextNoteRequest request);
+
+    void updateCandidateShareableDocs(long candidateId,
+            long savedListId, CandidateAttachment cv, CandidateAttachment doc);
 }

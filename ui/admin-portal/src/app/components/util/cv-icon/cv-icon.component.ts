@@ -53,11 +53,13 @@ export class CvIconComponent implements OnInit {
       // Otherwise get all attachments
       const request: SearchCandidateAttachmentsRequest = {
         candidateId: this.candidate.id,
-        cvOnly: true
+        cvOnly: false
       }
+
       this.candidateAttachmentService.search(request).subscribe(
         results => {
-          this.cvs = results;
+          this.candidate.candidateAttachments = results;
+          this.cvs = results.filter(a => a.cv === true);
         },
         error => {
           this.error = error;
