@@ -62,6 +62,11 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer englishMinSpokenLevel;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exclusion_list_id")
+    @Nullable
+    private SavedList exclusionList;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "other_language_id")
     private Language otherLanguage;
     private Integer otherMinWrittenLevel;
@@ -81,6 +86,15 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer minEducationLevel;
     private String educationMajorIds;
 
+    /**
+     * Reviewable searches allow the front end to supply review filters to the search
+     * in the form of a List of ReviewStatus's. Using the review filters engages the
+     * CandidateReviewItem table to decide which candidates should be excluded from the
+     * results of the search (ie candidates whose review status for the search does not match
+     * one of the statuses in the provided review filter).
+     * <p/>
+     * When a search is marked as not reviewable, the front end will not supply review filters.
+     */
     private Boolean reviewable = false;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
@@ -395,6 +409,15 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setEnglishSpokenLevel(String englishSpokenLevel) {
         this.englishSpokenLevel = englishSpokenLevel;
+    }
+
+    @Nullable
+    public SavedList getExclusionList() {
+        return exclusionList;
+    }
+
+    public void setExclusionList(@Nullable SavedList exclusionList) {
+        this.exclusionList = exclusionList;
     }
 
     public String getOtherWrittenLevel() {
