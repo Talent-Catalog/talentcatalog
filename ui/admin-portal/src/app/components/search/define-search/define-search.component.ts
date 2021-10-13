@@ -63,6 +63,8 @@ import {enumKeysToEnumOptions, EnumOption, enumOptions} from "../../../util/enum
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
+import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
+import {SavedListService} from "../../../services/saved-list.service";
 
 @Component({
   selector: 'app-define-search',
@@ -98,6 +100,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   nationalities: Country[];
   countries: Country[];
   languages: Language[];
+  lists: SavedList[] = [];
   educationLevels: EducationLevel[];
   educationMajors: EducationMajor[];
   verifiedOccupations: Occupation[];
@@ -132,6 +135,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
               private localStorageService: LocalStorageService,
               private route: ActivatedRoute,
               private router: Router,
+              private savedListService: SavedListService,
               private authService: AuthService) {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
@@ -172,6 +176,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       nationalities: [[]],
       statusesDisplay: [[]],
       surveyTypes: [[]],
+      exclusionListId: [null],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
 
@@ -182,8 +187,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.notElastic = {
       readonly: this.elastic()
     }
+    this.loading = true;
+    this.error = null;
 
+    const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
     forkJoin({
+      'lists': this.savedListService.search(request),
       'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
       'languages': this.languageService.listLanguages(),
@@ -204,6 +213,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       this.verifiedOccupations = results['verifiedOccupation'];
       this.candidateOccupations = results['occupations'];
       this.surveyTypes = results['surveyTypes'];
+      this.lists = results['lists'];
 
       const englishLanguageObj = this.languages.find(l => l.name.toLowerCase() === 'english');
       this.englishLanguageModel = Object.assign(emptyLanguageLevelFormControlModel, {languageId: englishLanguageObj.id || null});
@@ -282,8 +292,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     //Initialize a search request from the modified formData
     const request: SearchCandidateRequestPaged =
       this.getIdsMultiSelect(this.searchForm.value)
-
-    request.reviewStatusFilter = null;
 
     //A new search request has to clear page number. Old page number no longer
     //relevant with new search.

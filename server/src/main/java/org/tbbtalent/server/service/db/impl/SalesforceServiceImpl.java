@@ -1147,7 +1147,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                     setAccountId(tbbJordanAccountId);
                     break;
                 case "Lebanon":
-                    setMailingCountry(tbbLebanonAccountId);
+                    setAccountId(tbbLebanonAccountId);
                     break;
                 default:
                     setAccountId(tbbOtherAccountId);

@@ -122,6 +122,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateDependantService candidateDependantService;
     private final CandidateDestinationService candidateDestinationService;
     private final CandidateExamService candidateExamService;
+    private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final SurveyTypeRepository surveyTypeRepository;
     private final OccupationRepository occupationRepository;
     private final LanguageLevelRepository languageLevelRepository;
@@ -154,6 +155,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateVisaService candidateVisaService,
         CandidateVisaJobCheckService candidateVisaJobCheckService,
         CandidateExamService candidateExamService,
+        CandidateReviewStatusRepository candidateReviewStatusRepository,
         SurveyTypeRepository surveyTypeRepository,
         OccupationRepository occupationRepository,
         LanguageLevelRepository languageLevelRepository,
@@ -181,6 +183,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateVisaService = candidateVisaService;
         this.candidateVisaJobCheckService = candidateVisaJobCheckService;
         this.candidateExamService = candidateExamService;
+        this.candidateReviewStatusRepository = candidateReviewStatusRepository;
         this.surveyTypeRepository = surveyTypeRepository;
         this.occupationRepository = occupationRepository;
         this.languageLevelRepository = languageLevelRepository;
@@ -419,7 +422,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     private BoolQueryBuilder addElasticTermFilter(
             BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
-            List<String> values) {
+            List<Object> values) {
         final int nValues = values.size();
         if (nValues > 0) {
             QueryBuilder queryBuilder;
@@ -459,7 +462,8 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    private Specification<Candidate> computeQuery(SearchCandidateRequest request) {
+    private Specification<Candidate> computeQuery(
+        SearchCandidateRequest request, @Nullable Collection<Candidate> excludedCandidates) {
         //There may be no logged in user if the search is called by the
         //overnight Watcher process.
         User user = authService.getLoggedInUser().orElse(null);
@@ -474,7 +478,8 @@ public class CandidateServiceImpl implements CandidateService {
             searchIds.add(request.getSavedSearchId());
         }
 
-        Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request, user);
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, user, excludedCandidates);
         if (CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
             for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
                 query = addQuery(query, searchJoinRequest, searchIds);
@@ -486,6 +491,20 @@ public class CandidateServiceImpl implements CandidateService {
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest request) {
 
         Page<Candidate> candidates;
+
+        Set<Candidate> excludedCandidates = new HashSet<>();
+
+        final Long exclusionListId = request.getExclusionListId();
+        if (exclusionListId != null) {
+            SavedList exclusionList = savedListService.get(exclusionListId);
+            excludedCandidates.addAll(exclusionList.getCandidates());
+        }
+        if (CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
+            //Compute excluded candidates based on review statuses
+            excludedCandidates.addAll(candidateReviewStatusRepository
+                .findCandidatesExcludedFromSearch(request.getSavedSearchId(), 
+                    request.getReviewStatusFilter()));
+        }
         
         //Modify request, defaulting blank statuses
         List<CandidateStatus> requestedStatuses = request.getStatuses();
@@ -497,7 +516,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             //This is an elastic search request
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(request,
-                simpleQueryString);
+                simpleQueryString, excludedCandidates);
 
             //Define sort from request 
             PageRequest req = CandidateEs.convertToElasticSortField(request);
@@ -534,7 +553,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidates = new PageImpl<>(candidateList, request.getPageRequest(),
                     hits.getTotalHits());
         } else {
-            Specification<Candidate> query = computeQuery(request);
+            Specification<Candidate> query = computeQuery(request, excludedCandidates);
             candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
         }
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
@@ -542,7 +561,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private BoolQueryBuilder computeElasticQuery(SearchCandidateRequest request,
-        String simpleQueryString) {
+        String simpleQueryString, @Nullable Collection <Candidate> excludedCandidates) {
     /*
        Constructing a filtered simple query that looks like this:
        
@@ -596,11 +615,19 @@ public class CandidateServiceImpl implements CandidateService {
                             minWrittenLevel, null);
         }
 
+        //Exclude given candidates
+        if (excludedCandidates != null && excludedCandidates.size() > 0) {
+            List<Object> candidateIds = excludedCandidates.stream()
+                .map(Candidate::getId).collect(Collectors.toList());
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                    SearchType.not,"masterId", candidateIds);
+        }
+        
         //Countries
         final List<Long> countryIds = request.getCountryIds();
         if (countryIds != null) {
             //Look up country names from ids.
-            List<String> reqCountries = new ArrayList<>();
+            List<Object> reqCountries = new ArrayList<>();
             for (Long countryId : countryIds) {
                 final Country country = countryService.getCountry(countryId);
                 reqCountries.add(country.getName());
@@ -614,7 +641,7 @@ public class CandidateServiceImpl implements CandidateService {
         final List<Long> nationalityIds = request.getNationalityIds();
         if (nationalityIds != null) {
             //Look up names from ids.
-            List<String> reqNationalities = new ArrayList<>();
+            List<Object> reqNationalities = new ArrayList<>();
             for (Long id : nationalityIds) {
                 final Country nationality = countryService.getCountry(id);
                 reqNationalities.add(nationality.getName());
@@ -628,7 +655,7 @@ public class CandidateServiceImpl implements CandidateService {
         List<CandidateStatus> statuses = request.getStatuses();
         if (statuses != null) {
             //Extract names from enums
-            List<String> reqStatuses = new ArrayList<>();
+            List<Object> reqStatuses = new ArrayList<>();
             for (CandidateStatus status : statuses) {
                 reqStatuses.add(status.name());
             }
@@ -679,7 +706,7 @@ public class CandidateServiceImpl implements CandidateService {
             //This is an elastic search request.
             
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
-                simpleQueryString);
+                simpleQueryString, null);
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
@@ -694,7 +721,7 @@ public class CandidateServiceImpl implements CandidateService {
             }
         } else {
             //Compute the normal query
-            final Specification<Candidate> query = computeQuery(searchRequest);
+            final Specification<Candidate> query = computeQuery(searchRequest, null);
 
             List<Candidate> candidates = candidateRepository.findAll(query);
 
@@ -847,7 +874,7 @@ public class CandidateServiceImpl implements CandidateService {
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
         SearchCandidateRequest request = savedSearchService.loadSavedSearch(searchJoinRequest.getSavedSearchId());
-        Specification<Candidate> joinQuery = CandidateSpecification.buildSearchQuery(request, user);
+        Specification<Candidate> joinQuery = CandidateSpecification.buildSearchQuery(request, user, null);
         if (searchJoinRequest.getSearchType().equals(SearchType.and)) {
             query = Specification.where(query.and(joinQuery));
         } else {

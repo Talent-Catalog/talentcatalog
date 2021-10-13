@@ -406,6 +406,23 @@
             </ng-select>
           </div>
 
+          <!-- EXCLUSION LIST -->
+          <div class="form-group col-12 col-md-4">
+            <label for="exclusion">Exclusion list</label>
+            <ng-select
+              id="exclusion"
+              [items]="lists"
+              [closeOnSelect]="true"
+              [clearable]="true"
+              [searchable]="true"
+              placeholder="Select or type..."
+              bindLabel="name"
+              bindValue="id"
+              formControlName="exclusionListId">
+            </ng-select>
+          </div>
+
+
           <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
             <p *ngIf="searchForm.errors.invalidDate">Email is required</p>
           </div>
