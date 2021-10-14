@@ -5,7 +5,8 @@ import {FormBuilder} from "@angular/forms";
 import {Observable} from "rxjs";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {CandidateService} from "../../../../services/candidate.service";
-import {SavedList} from "../../../../model/saved-list";
+import {isSavedList} from "../../../../model/saved-list";
+import {CandidateSource} from "../../../../model/base";
 
 @Component({
   selector: 'app-shareable-docs',
@@ -15,10 +16,12 @@ import {SavedList} from "../../../../model/saved-list";
 export class ShareableDocsComponent extends AutoSaveComponentBase implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
-  @Input() savedList: SavedList;
+  @Input() candidateSource: CandidateSource;
 
   @Input() cvs: CandidateAttachment[];
   @Input() other: CandidateAttachment[];
+
+  savedList: boolean;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService) {
@@ -26,18 +29,12 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   }
 
   ngOnInit() {
-    if (this.savedList) {
+    // if is saved search if is saved list (remove source type)
+    if (this.isList) {
       this.form = this.fb.group({
         shareableCvAttachmentId: [this.candidate?.listShareableCv?.id],
         shareableDocAttachmentId: [this.candidate?.listShareableDoc?.id],
       });
-
-      if (this.candidate?.listShareableCv?.id == null) {
-        this.form.patchValue({shareableCvAttachmentId: this.candidate?.shareableCv?.id})
-      }
-      if (this.candidate?.listShareableDoc?.id == null) {
-        this.form.patchValue({shareableDocAttachmentId: this.candidate?.shareableDoc?.id})
-      }
     } else {
       this.form = this.fb.group({
         shareableCvAttachmentId: [this.candidate?.shareableCv?.id],
@@ -52,8 +49,8 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
       shareableCvAttachmentId: formValue.shareableCvAttachmentId,
       shareableDocAttachmentId: formValue.shareableDocAttachmentId
     }
-    if (this.savedList) {
-      request.savedListId = this.savedList.id;
+    if (this.isList) {
+      request.savedListId = this.candidateSource.id;
     }
     return this.candidateService.updateShareableDocs(this.candidate.id, request);
   }
@@ -61,7 +58,7 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   onSuccessfulSave() {
     // How to avoid loosing the value in the front end when changing? Have only the ID not the full value so can't set
     // with form value.
-    if (this.savedList) {
+    if (this.isList) {
       if (this.shareableCvId != null) {
         this.candidate.listShareableCv = this.cvs.find(att => att.id === this.shareableCvId);
       } else {
@@ -84,11 +81,15 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
     return this.form.value?.shareableDocAttachmentId;
   }
 
+  get isList() {
+    return isSavedList(this.candidateSource);
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     //Replace the form value with the new candidates context notes when
     //changing from one candidate to the next or when selection has changed.
     if (this.form) {
-      if (this.savedList) {
+      if (this.isList) {
         this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);
         this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id);
       } else {

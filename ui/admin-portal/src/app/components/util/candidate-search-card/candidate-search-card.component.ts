@@ -19,6 +19,8 @@ import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
 import {CandidateSource} from '../../../model/base';
 import {CandidateAttachment} from "../../../model/candidate-attachment";
+import {isSavedSearch} from "../../../model/saved-search";
+import {isSavedList} from "../../../model/saved-list";
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -62,6 +64,24 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges {
 
   toggleNotes() {
     this.showNotes = !this.showNotes;
+  }
+
+  get isList() {
+    return isSavedList(this.candidateSource);
+  }
+
+  get isCandidateSelected(): boolean {
+    return this.candidate.selected;
+  }
+
+  isContextNoteDisplayed() {
+    let display: boolean = true;
+    if (isSavedSearch(this.candidateSource)) {
+      if (this.candidateSource.defaultSearch || !this.isCandidateSelected) {
+        display = false;
+      }
+    }
+    return display;
   }
 
 }

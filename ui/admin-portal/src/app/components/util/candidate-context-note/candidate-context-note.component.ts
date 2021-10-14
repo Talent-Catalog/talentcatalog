@@ -20,7 +20,7 @@ import {Candidate} from '../../../model/candidate';
 import {Observable} from 'rxjs';
 import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model/base';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
-import {getCandidateSourceType, isSavedSearch} from "../../../model/saved-search";
+import {getCandidateSourceType} from "../../../model/saved-search";
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 
 @Component({
@@ -61,10 +61,6 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
     return this.form.value?.contextNote;
   }
 
-  get isCandidateSelected(): boolean {
-    return this.candidate.selected;
-  }
-
   get title(): string {
     return "Notes for " + this.candidate.user.firstName + " in " + this.candidateSource.name +
       " " + getCandidateSourceType(this.candidateSource);
@@ -78,13 +74,5 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
     }
   }
 
-  isContextNoteDisplayed() {
-    let display: boolean = true;
-    if (isSavedSearch(this.candidateSource)) {
-      if (this.candidateSource.defaultSearch || !this.isCandidateSelected) {
-        display = false;
-      }
-    }
-    return display;
-  }
+
 }

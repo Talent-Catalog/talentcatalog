@@ -17,13 +17,43 @@
 <div class="candidate-card" *ngIf="!!candidate">
   <div class="content">
 
-    <ng-container>
-      <app-candidate-context-note
-        [candidate]="candidate"
-        [candidateSource]="candidateSource"
-      >
-      </app-candidate-context-note>
-    </ng-container>
+    <div class="list-specific">
+
+      <div class="candidate-header" *ngIf="isList">
+        <h5>List Specific</h5>
+        <button (click)="toggleAttachments()" id="bt" class="btn btn-sm btn-secondary-light">
+          Shareable Docs
+          <i *ngIf="!showAttachments" class="fas fa-eye"></i>
+          <i *ngIf="showAttachments" class="fas fa-eye-slash"></i>
+        </button>
+      </div>
+
+      <div class="candidate-header" *ngIf="isContextNoteDisplayed() && !isList">
+        <h5>Search Specific</h5>
+      </div>
+
+      <ng-container *ngIf="isContextNoteDisplayed()">
+        <app-candidate-context-note
+          [candidate]="candidate"
+          [candidateSource]="candidateSource">
+        </app-candidate-context-note>
+      </ng-container>
+
+      <ng-container *ngIf="showAttachments">
+        <div class="pb-4">
+          <app-shareable-docs
+            [candidate]="candidate"
+            [candidateSource]="candidateSource"
+            [cvs]="cvs"
+            [other]="other">
+          </app-shareable-docs>
+        </div>
+      </ng-container>
+
+    </div>
+
+    <hr *ngIf="isContextNoteDisplayed()">
+
 
     <!-- HEADER -->
     <div class="candidate-header">
@@ -38,22 +68,17 @@
 
     </div>
 
-    <!-- NAME -->
-    <h5>{{candidate.user?.firstName}} {{candidate.user?.lastName}}</h5>
+    <div class="candidate-header">
+      <!-- NAME -->
+      <h5>{{candidate.user?.firstName}} {{candidate.user?.lastName}}</h5>
 
-    <div class="d-flex justify-content-around py-3">
-      <button (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-secondary-light">
-        Shareable Notes
-        <i *ngIf="!showNotes" class="fas fa-eye"></i>
-        <i *ngIf="showNotes" class="fas fa-eye-slash"></i>
-      </button>
-
-      <button (click)="toggleAttachments()" id="bt" class="btn btn-sm btn-secondary-light">
-        Shareable Docs
-        <i *ngIf="!showAttachments" class="fas fa-eye"></i>
-        <i *ngIf="showAttachments" class="fas fa-eye-slash"></i>
-      </button>
+        <button (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-secondary-light">
+          Shareable Notes
+          <i *ngIf="!showNotes" class="fas fa-eye"></i>
+          <i *ngIf="showNotes" class="fas fa-eye-slash"></i>
+        </button>
     </div>
+
 
     <!-- AUTO UPDATING SHAREABLE NOTES -->
     <ng-container *ngIf="showNotes">
@@ -61,18 +86,6 @@
         [candidate]="candidate">
       </app-candidate-shareable-notes>
     </ng-container>
-
-    <ng-container *ngIf="showAttachments">
-      <div class="pb-4">
-        <app-shareable-docs
-          [candidate]="candidate"
-          [savedList]="candidateSource"
-          [cvs]="cvs"
-          [other]="other">
-        </app-shareable-docs>
-      </div>
-    </ng-container>
-
 
     <!-- TABS -->
     <nav ngbNav #nav="ngbNav" class="nav-tabs">
