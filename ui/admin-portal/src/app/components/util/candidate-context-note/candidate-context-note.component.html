@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="isContextNoteDisplayed()">
+<div>
   <div class="alert alert-danger" *ngIf="error">
     {{error}}
   </div>
@@ -22,7 +22,7 @@
   <form [formGroup]="form">
 
     <div class="form-group">
-      <label class="h6 float-right" for="contextNotes">
+      <label class="h6" for="contextNotes">
         <span class="mr-2 font-weight-normal">{{title}}</span>
         <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
       </label>
@@ -33,5 +33,4 @@
     </div>
 
   </form>
-  <hr>
 </div>

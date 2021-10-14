@@ -1129,8 +1129,19 @@ public class CandidateServiceImpl implements CandidateService {
             doc = this.candidateAttachmentRepository.findById(request.getShareableDocAttachmentId())
                     .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getShareableDocAttachmentId()));
         }
-        candidate.setShareableCv(cv);
-        candidate.setShareableDoc(doc);
+        if (request.getSavedListId() != null) {
+            this.candidateSavedListService.updateCandidateShareableDocs(id, request.getSavedListId(), cv, doc);
+            // If the candidate's shareable docs are null, set them with the list's shareable docs.
+            if (candidate.getShareableCv() == null) {
+                candidate.setShareableCv(cv);
+            }
+            if (candidate.getShareableDoc() == null) {
+                candidate.setShareableDoc(doc);
+            }
+        } else {
+            candidate.setShareableCv(cv);
+            candidate.setShareableDoc(doc);
+        }
         return save(candidate, true);
     }
 

@@ -30,4 +30,7 @@ public class UpdateCandidateShareableDocsRequest {
 
     @Nullable
     private Long shareableDocAttachmentId;
+
+    @Nullable
+    private Long savedListId;
 }

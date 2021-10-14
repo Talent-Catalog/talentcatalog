@@ -102,6 +102,8 @@ public class CandidateBuilderSelector {
 
                 .add("shareableCv", candidateAttachmentDto())
                 .add("shareableDoc", candidateAttachmentDto())
+                .add("listShareableCv", candidateAttachmentDto())
+                .add("listShareableDoc", candidateAttachmentDto())
                 .add("shareableNotes")
                 .add("stage")
                 .add("sfOpportunityLink")

@@ -605,6 +605,36 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return contextNote;
     }
 
+    @Transient
+    @Nullable
+    public CandidateAttachment getListShareableCv() {
+        CandidateAttachment listShareableCv = null;
+        if (contextSavedListId != null) {
+            for (CandidateSavedList csl : candidateSavedLists) {
+                if (contextSavedListId.equals(csl.getSavedList().getId())) {
+                    listShareableCv = csl.getShareableCv();
+                    break;
+                }
+            }
+        }
+        return listShareableCv;
+    }
+
+    @Transient
+    @Nullable
+    public CandidateAttachment getListShareableDoc() {
+        CandidateAttachment listShareableDoc = null;
+        if (contextSavedListId != null) {
+            for (CandidateSavedList csl : candidateSavedLists) {
+                if (contextSavedListId.equals(csl.getSavedList().getId())) {
+                    listShareableDoc = csl.getShareableDoc();
+                    break;
+                }
+            }
+        }
+        return listShareableDoc;
+    }
+
     /**
      * Used alongside @Formula for updating the elasticsearch record of number of
      * dependants.
