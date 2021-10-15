@@ -662,6 +662,53 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         return s.toString();
     }
+
+    public String getEnglishExamsSummary() {
+        StringBuilder s = new StringBuilder();
+        for (CandidateExam exam : candidateExams) {
+            if (s.length() > 0) {
+                s.append(", ");
+            }
+            String examString;
+            if (exam.getScore() != null) {
+                examString = exam.getExam() + ": " + exam.getScore();
+            } else {
+                examString = exam.getExam().toString();
+            }
+            s.append(examString);
+        }
+        return s.toString();
+    }
+
+    public String getEducationsSummary() {
+        StringBuilder s = new StringBuilder();
+        for (CandidateEducation edu : candidateEducations) {
+            if (s.length() > 0) {
+                s.append(", ");
+            }
+            String eduString;
+            if (edu.getEducationMajor() != null) {
+                eduString = edu.getEducationType().toString() + " in " + edu.getEducationMajor().getName();
+            } else {
+                eduString = edu.getEducationType().toString();
+            }
+
+            s.append(eduString);
+        }
+        return s.toString();
+    }
+
+    public String getCertificationsSummary() {
+        StringBuilder s = new StringBuilder();
+        for (CandidateCertification cert : candidateCertifications) {
+            if (s.length() > 0) {
+                s.append(", ");
+            }
+            String certString = cert.getName() + ": " + cert.getInstitution() + " " + cert.getDateCompleted().getYear();
+            s.append(certString);
+        }
+        return s.toString();
+    }
     
     public String getTcLink() {
         return "https://tbbtalent.org/admin-portal/candidate/" + candidateNumber;
