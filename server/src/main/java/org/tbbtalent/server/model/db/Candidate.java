@@ -669,13 +669,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             if (s.length() > 0) {
                 s.append(", ");
             }
+            String examType = exam.getExam().equals(Exam.Other) ? exam.getOtherExam() : exam.getExam().toString();
             String examString;
-            if (exam.getScore() != null) {
-                examString = exam.getExam() + ": " + exam.getScore();
-            } else {
-                examString = exam.getExam().toString();
+            if (examType != null) {
+                if (exam.getScore() != null) {
+                    examString = examType + ": " + exam.getScore();
+                } else {
+                    examString = examType;
+                }
+                s.append(examString);
             }
-            s.append(examString);
         }
         return s.toString();
     }
@@ -687,12 +690,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                 s.append(", ");
             }
             String eduString;
-            if (edu.getEducationMajor() != null) {
-                eduString = edu.getEducationType().toString() + " in " + edu.getEducationMajor().getName();
+            if (edu.getEducationType() != null) {
+                if (edu.getEducationMajor() != null) {
+                    eduString = edu.getEducationType().toString() + " in " + edu.getEducationMajor().getName();
+                } else {
+                    if (edu.getCourseName() != null) {
+                        eduString = edu.getEducationType().toString() + " in " + edu.getCourseName();
+                    } else {
+                        eduString = edu.getEducationType().toString();
+                    }
+                }
             } else {
-                eduString = edu.getEducationType().toString();
+                eduString = edu.getEducationMajor().getName() != null ? edu.getEducationMajor().getName() : edu.getCourseName();
             }
-
             s.append(eduString);
         }
         return s.toString();
