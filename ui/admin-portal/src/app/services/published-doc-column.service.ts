@@ -74,13 +74,17 @@ export class PublishedDocColumnService {
     this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"))
     .width = PublishedDocColumnWidth.Narrow;
 
-    this.addColumn("ieltsScore", "IELTS", new PublishedDocFieldSource("ieltsScore"));
+    this.addColumn("ieltsScore", "IELTS Score", new PublishedDocFieldSource("ieltsScore"));
     this.addColumn("lastName", "Last Name", new PublishedDocFieldSource("user.lastName"));
     this.addColumn("location", "Location", new PublishedDocFieldSource("country.name"));
     this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
     this.addColumn("nationality", "Nationality", new PublishedDocFieldSource("nationality.name"));
 
+    // Summary fields
     this.addColumn("occupations", "Occupations", new PublishedDocFieldSource("occupationSummary"));
+    this.addColumn("englishExams", "English Exams", new PublishedDocFieldSource("englishExamsSummary"));
+    this.addColumn("educations", "Education", new PublishedDocFieldSource("educationsSummary"));
+    this.addColumn("certifications", "Certifications", new PublishedDocFieldSource("certificationsSummary"));
 
     this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"))
     .width = PublishedDocColumnWidth.Wide;
