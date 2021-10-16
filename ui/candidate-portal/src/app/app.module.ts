@@ -28,7 +28,8 @@ import {
   NgbDatepickerI18n,
   NgbModule
 } from '@ng-bootstrap/ng-bootstrap';
-import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import { PhraseAppCompiler } from 'ngx-translate-phraseapp';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
@@ -146,7 +147,16 @@ import {CustomDatepickerI18n} from "./util/custom-date-picker";
       storageType: 'localStorage'
     }),
     TranslateModule.forRoot({
-      loader: {provide: TranslateLoader, useClass: LanguageLoader}
+      loader: {
+        provide: TranslateLoader,
+        useClass: LanguageLoader
+      },
+      // Support for in context Phrase translations
+      // See https://phrase.com/blog/posts/angular-l10n-in-context-translation-editing/
+      compiler: {
+        provide: TranslateCompiler,
+        useClass: PhraseAppCompiler
+      }
     }),
     FontAwesomeModule
   ],

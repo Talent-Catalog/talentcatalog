@@ -18,6 +18,7 @@ import {Component, HostBinding, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {LanguageService} from '../services/language.service';
 import {LanguageLoader} from "../services/language.loader";
+import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
 
 @Component({
   selector: 'app-root',
@@ -34,6 +35,20 @@ export class AppComponent implements OnInit {
   constructor(private translate: TranslateService,
               private languageLoader: LanguageLoader,
               private languageService: LanguageService) {
+
+      //This is the Phrase "In context" translation configuration.
+      //See https://phrase.com/blog/posts/angular-l10n-in-context-translation-editing/
+      const config = {
+        //This is the id associated with the TalentCatalog project - see Project Settings|API
+        projectId: '7043871a7114505fdde77b5e2557331d',
+        //Set this true to enable in context translation
+        phraseEnabled: false,
+        prefix: "{{__",
+        suffix: "__}}",
+        fullReparse: true
+      };
+
+      initializePhraseAppEditor(config);
   }
 
   ngOnInit(): void {
