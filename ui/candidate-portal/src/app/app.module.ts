@@ -155,8 +155,10 @@ export function HttpLoaderFactory(http: HttpClient) {
       defaultLanguage: 'en',
       loader: {
         provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
+        useClass: LanguageLoader
+        // Below is the standard loader which finds json translation files in assets/i18n
+        // useFactory: HttpLoaderFactory,
+        // deps: [HttpClient]
       },
       // Support for in context Phrase translations
       // See https://phrase.com/blog/posts/angular-l10n-in-context-translation-editing/
