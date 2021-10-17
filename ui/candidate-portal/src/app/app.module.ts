@@ -20,7 +20,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
 import {
   NgbDateAdapter,
   NgbDateParserFormatter,
@@ -28,7 +28,8 @@ import {
   NgbDatepickerI18n,
   NgbModule
 } from '@ng-bootstrap/ng-bootstrap';
-import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import { PhraseAppCompiler } from 'ngx-translate-phraseapp';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
@@ -88,6 +89,14 @@ import {faSpinner} from "@fortawesome/free-solid-svg-icons/faSpinner";
 import {RegistrationUploadFileComponent} from './components/register/upload-file/registration-upload-file.component';
 import {DatePickerComponent} from './components/common/date-picker/date-picker.component';
 import {CustomDatepickerI18n} from "./util/custom-date-picker";
+import {TranslateHttpLoader} from "@ngx-translate/http-loader";
+
+//This is not used now - but is left here to show how the standard translation loading works.
+//See https://github.com/ngx-translate/core#configuration
+//See doc for LanguageLoader for the reasons why we do what we do.
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 
 @NgModule({
   declarations: [
@@ -146,7 +155,22 @@ import {CustomDatepickerI18n} from "./util/custom-date-picker";
       storageType: 'localStorage'
     }),
     TranslateModule.forRoot({
-      loader: {provide: TranslateLoader, useClass: LanguageLoader}
+      defaultLanguage: 'en',
+      loader: {
+        provide: TranslateLoader,
+        useClass: LanguageLoader
+        // Below is the standard loader which finds json translation files in assets/i18n
+        //See https://github.com/ngx-translate/core#configuration
+        //See doc for LanguageLoader for the reasons why we do what we do.
+        // useFactory: HttpLoaderFactory,
+        // deps: [HttpClient]
+      },
+      // Support for in context Phrase translations
+      // See https://phrase.com/blog/posts/angular-l10n-in-context-translation-editing/
+      compiler: {
+        provide: TranslateCompiler,
+        useClass: PhraseAppCompiler
+      }
     }),
     FontAwesomeModule
   ],

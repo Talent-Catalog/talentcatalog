@@ -18,6 +18,7 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LanguageService} from '../../services/language.service';
+import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
 
 @Component({
   selector: 'app-landing',
@@ -44,6 +45,35 @@ export class LandingComponent implements OnInit {
       () => this.languageService.changeLanguage(lang), 1000
     )
 
+    /**
+     * Look for xlate query parameter which requests "in context" translation.
+     * The value of the query parameter is the password which must be validated by the server
+     * for "in context" translation to be enabled.
+     */
+    const xlate = this.route.snapshot.queryParams['xlate'];
+    if (!xlate) {
+      //No parameter (or no password supplied) - just continue normally
+      this.proceed();
+    } else {
+      //Validate supplied password
+      this.authService.authorizeInContextTranslation(xlate).subscribe(
+        () => {
+          //Password validated, initialize "in context" translation
+          LandingComponent.intializeInContextTranslation();
+          //...and proceed
+          this.proceed();
+        },
+        (error) => {
+          //Password did not validate. Log the error quietly...
+          console.log(error);
+          //...and proceed as if no request was made
+          this.proceed();
+        }
+      )
+    }
+  }
+
+  private proceed() {
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/home']);
     } else {
@@ -53,4 +83,21 @@ export class LandingComponent implements OnInit {
     }
   }
 
+  private static intializeInContextTranslation() {
+
+    //This is the Phrase "In context" translation configuration.
+    //See https://phrase.com/blog/posts/angular-l10n-in-context-translation-editing/
+    const config = {
+      //This is the id associated with the TalentCatalog project - see Project Settings|API
+      projectId: '7043871a7114505fdde77b5e2557331d',
+      //Set this true to enable in context translation
+      phraseEnabled: true,
+      prefix: "{{__",
+      suffix: "__}}",
+      autoLowercase: false,
+      fullReparse: true
+    };
+
+    initializePhraseAppEditor(config);
+  }
 }
