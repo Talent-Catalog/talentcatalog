@@ -61,7 +61,7 @@ export class AppComponent implements OnInit {
         this.loading = loading;
       })
 
-    //Register for language change events which are used to set the
+    //Register for language change events which are used to set the language and
     //appropriate Right to Left direction. That can only be set in this
     //component.
     this.languageService.languageChanged$.subscribe(

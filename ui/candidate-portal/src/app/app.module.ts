@@ -91,6 +91,9 @@ import {DatePickerComponent} from './components/common/date-picker/date-picker.c
 import {CustomDatepickerI18n} from "./util/custom-date-picker";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 
+//This is not used now - but is left here to show how the standard translation loading works.
+//See https://github.com/ngx-translate/core#configuration
+//See doc for LanguageLoader for the reasons why we do what we do.
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
@@ -157,6 +160,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         provide: TranslateLoader,
         useClass: LanguageLoader
         // Below is the standard loader which finds json translation files in assets/i18n
+        //See https://github.com/ngx-translate/core#configuration
+        //See doc for LanguageLoader for the reasons why we do what we do.
         // useFactory: HttpLoaderFactory,
         // deps: [HttpClient]
       },
