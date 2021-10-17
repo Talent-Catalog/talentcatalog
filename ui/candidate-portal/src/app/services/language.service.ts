@@ -21,7 +21,6 @@ import {Language, SystemLanguage} from '../model/language';
 import {Observable, Subject, throwError} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {Translation} from '../model/translation';
-import {TranslateService} from '@ngx-translate/core';
 import {LocalStorageService} from 'angular-2-local-storage';
 
 @Injectable({
@@ -99,5 +98,4 @@ export class LanguageService {
     }
     this.languageChangedSource.next(lang);
   }
-
 }
