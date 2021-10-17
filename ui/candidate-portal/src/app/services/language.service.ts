@@ -43,7 +43,6 @@ export class LanguageService {
   loading: boolean;
 
   constructor(private http: HttpClient,
-              private translate: TranslateService,
               private localStorage: LocalStorageService) {
     this.languageSelectionEnabled = (this.localStorage.get('languageSelectionEnabled') as boolean);
     this.selectedLanguage = (this.localStorage.get('language') as string) || 'en';
@@ -98,7 +97,6 @@ export class LanguageService {
     } else {
       lang = this.selectedLanguage;
     }
-    this.translate.use(lang);
     this.languageChangedSource.next(lang);
   }
 

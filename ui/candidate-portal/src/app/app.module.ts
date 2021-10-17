@@ -20,7 +20,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
 import {
   NgbDateAdapter,
   NgbDateParserFormatter,
@@ -89,6 +89,11 @@ import {faSpinner} from "@fortawesome/free-solid-svg-icons/faSpinner";
 import {RegistrationUploadFileComponent} from './components/register/upload-file/registration-upload-file.component';
 import {DatePickerComponent} from './components/common/date-picker/date-picker.component';
 import {CustomDatepickerI18n} from "./util/custom-date-picker";
+import {TranslateHttpLoader} from "@ngx-translate/http-loader";
+
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 
 @NgModule({
   declarations: [
@@ -147,9 +152,11 @@ import {CustomDatepickerI18n} from "./util/custom-date-picker";
       storageType: 'localStorage'
     }),
     TranslateModule.forRoot({
+      defaultLanguage: 'en',
       loader: {
         provide: TranslateLoader,
-        useClass: LanguageLoader
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
       },
       // Support for in context Phrase translations
       // See https://phrase.com/blog/posts/angular-l10n-in-context-translation-editing/

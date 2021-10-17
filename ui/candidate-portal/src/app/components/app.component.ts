@@ -45,6 +45,7 @@ export class AppComponent implements OnInit {
         phraseEnabled: false,
         prefix: "{{__",
         suffix: "__}}",
+        autoLowercase: false,
         fullReparse: true
       };
 
@@ -64,11 +65,16 @@ export class AppComponent implements OnInit {
     //appropriate Right to Left direction. That can only be set in this
     //component.
     this.languageService.languageChanged$.subscribe(
-      () => this.rtl = this.languageService.isSelectedLanguageRtl()
+      () => {
+        this.translate.use(this.languageService.getSelectedLanguage());
+        this.rtl = this.languageService.isSelectedLanguageRtl();
+      }
     );
 
     // this language will be used as a fallback when a translation isn't
     // found in the current language. This forces loading of translations.
     this.translate.setDefaultLang('en');
+
+    this.translate.use('en');
   }
 }
