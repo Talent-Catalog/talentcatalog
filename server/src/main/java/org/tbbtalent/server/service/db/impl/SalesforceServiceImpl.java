@@ -1149,7 +1149,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setEmail(email);
 
             final Gender gender = candidate.getGender();
-            setGender(gender.toString());
+            if (gender != null) {
+                setGender(gender.toString());
+            }
 
             final String country = candidate.getCountry().getName();
             setMailingCountry(country);

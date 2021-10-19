@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -41,13 +41,15 @@ import java.util.Set;
 public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     private String candidateNumber;
-    
+
     @Transient
-    private Long contextSavedListId; 
-    
+    private Long contextSavedListId;
+
     private String phone;
     private String whatsapp;
+
     @Enumerated(EnumType.STRING)
+    @Nullable
     private Gender gender;
     private LocalDate dob;
     private String address1;
@@ -57,7 +59,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String additionalInfo;
     private String candidateMessage;
     private String linkedInLink;
-    
+
     @Nullable
     private String shareableNotes;
 
@@ -82,16 +84,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     /**
      * ID of corresponding candidate record in Elasticsearch
-     * @see CandidateEs#getId() 
+     * @see CandidateEs#getId()
      */
     private String textSearchId;
 
     /**
-     * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that 
+     * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that
      * removing from the candidateSavedLists collection would automatically
-     * cascade down to delete the corresponding entry in the 
+     * cascade down to delete the corresponding entry in the
      * candidate_saved_list table.
-     * However we get Hibernate errors with that set up which it seems can only 
+     * However we get Hibernate errors with that set up which it seems can only
      * be fixed by setting CascadeType.MERGE.
      * <p/>
      * See
@@ -99,7 +101,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * <p/>
      * This means that we have to manually manage all deletions. That has been
      * moved into {@link CandidateSavedListService} which is used to manage all
-     * those deletions, also making sure that the corresponding 
+     * those deletions, also making sure that the corresponding
      * candidateSavedLists collections are kept up to date.
      */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
@@ -156,13 +158,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String migrationNationality;
 
     /**
-     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
      */
     @Nullable
     private String folderlink;
 
     /**
-     * Url link to corresponding Salesforce Contact record, if one exists. 
+     * Url link to corresponding Salesforce Contact record, if one exists.
      */
     @Nullable
     private String sflink;
@@ -183,8 +185,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private boolean selected = false;
 
     /**
-     * Url link to a Candidate opportunity for this candidate. 
-     * Retrieved from Salesforce when candidate is displayed as a member of a Saved List associated 
+     * Url link to a Candidate opportunity for this candidate.
+     * Retrieved from Salesforce when candidate is displayed as a member of a Saved List associated
      * with a job opportunity. This is the candidate's opportunity associated with that job.
      */
     @Transient
@@ -200,7 +202,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String stage;
 
     /*
-              Intake Fields    
+              Intake Fields
      */
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
@@ -217,7 +219,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateVisaCheck> candidateVisaChecks;
-    
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure returnedHome;
@@ -231,7 +233,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure visaIssues;
-    
+
     @Nullable
     private String visaIssuesNotes;
 
@@ -555,7 +557,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     public Object extractField(String exportField)
         throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Object obj;        
+        Object obj;
         try {
             obj = PropertyUtils.getProperty(this, exportField);
         } catch (NestedNullException ex) {
@@ -651,7 +653,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         return null;
     }
-    
+
     public String getOccupationSummary() {
         StringBuilder s = new StringBuilder();
         for (CandidateOccupation occupation : candidateOccupations) {
@@ -719,25 +721,25 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         return s.toString();
     }
-    
+
     public String getTcLink() {
         return "https://tbbtalent.org/admin-portal/candidate/" + candidateNumber;
     }
 
     /**
-     * Candidates can have special values associated with a particular 
+     * Candidates can have special values associated with a particular
      * savedList.
      * These values are stored in {@link CandidateSavedList}.
      * Setting this value to refer to a particular SavedList will result in
      * this Candidate object returning attributes corresponding to that list.
      * <p/>
      * For example, see {@link #getContextNote()}
-     * 
+     *
      * @param contextSavedListId The id of the SavedList whose context we want
      */
     @Transient
     public void setContextSavedListId(@Nullable Long contextSavedListId) {
-        this.contextSavedListId = contextSavedListId; 
+        this.contextSavedListId = contextSavedListId;
     }
 
     public String getPhone() {
@@ -756,11 +758,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.whatsapp = whatsapp;
     }
 
-    public Gender getGender() {
+    public @Nullable Gender getGender() {
         return gender;
     }
 
-    public void setGender(Gender gender) {
+    public void setGender(@Nullable Gender gender) {
         this.gender = gender;
     }
 
@@ -1560,7 +1562,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public void addSavedList(SavedList savedList) {
-        final CandidateSavedList csl = 
+        final CandidateSavedList csl =
                 new CandidateSavedList(this, savedList);
         candidateSavedLists.add(csl);
         savedList.getCandidateSavedLists().add(csl);
