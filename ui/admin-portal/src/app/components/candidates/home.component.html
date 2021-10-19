@@ -112,5 +112,15 @@
         </app-browse-candidate-sources>
     </ng-template>
   </ng-container>
+
+  <ng-container ngbNavItem="PublicLists">
+    <a ngbNavLink>Lists With External Links</a>
+    <ng-template ngbNavContent>
+        <app-browse-candidate-sources
+          [sourceType]="CandidateSourceType.SavedList"
+          [searchBy]="SearchBy.sharedWithMe">
+        </app-browse-candidate-sources>
+    </ng-template>
+  </ng-container>
 </nav>
 <div [ngbNavOutlet]="nav" class="mt-2"></div>
