@@ -19,23 +19,23 @@ package org.tbbtalent.server.service.db;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.model.db.LinkSavedList;
+import org.tbbtalent.server.model.db.SavedListLink;
 import org.tbbtalent.server.request.link.CreateLinkRequest;
 import org.tbbtalent.server.request.link.SearchLinkRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
 
 import java.util.List;
 
-public interface LinkSavedListService {
-    List<LinkSavedList> listLinks();
+public interface SavedListLinkService {
+    List<SavedListLink> listLinks();
 
-    Page<LinkSavedList> searchLinks(SearchLinkRequest request);
+    Page<SavedListLink> searchLinks(SearchLinkRequest request);
 
-    LinkSavedList getLink(long id);
+    SavedListLink getLink(long id);
 
-    LinkSavedList createLink(CreateLinkRequest request) throws EntityExistsException;
+    SavedListLink createLink(CreateLinkRequest request) throws EntityExistsException;
 
-    LinkSavedList updateLink(long id, UpdateLinkRequest request) throws EntityExistsException ;
+    SavedListLink updateLink(long id, UpdateLinkRequest request) throws EntityExistsException ;
 
     boolean deleteLink(long id) throws EntityReferencedException;
 }

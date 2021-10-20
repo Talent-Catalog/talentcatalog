@@ -21,11 +21,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.model.db.LinkSavedList;
+import org.tbbtalent.server.model.db.SavedListLink;
 import org.tbbtalent.server.request.link.CreateLinkRequest;
 import org.tbbtalent.server.request.link.SearchLinkRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
-import org.tbbtalent.server.service.db.LinkSavedListService;
+import org.tbbtalent.server.service.db.SavedListLinkService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.Valid;
@@ -35,51 +35,51 @@ import java.util.Map;
 @RestController()
 @RequestMapping("/api/admin/link-saved-list")
 public class LinkSavedListAdminApi {
-    private final LinkSavedListService linkSavedListService;
+    private final SavedListLinkService savedListLinkService;
 
     @Autowired
-    public LinkSavedListAdminApi(LinkSavedListService linkSavedListService) {
-        this.linkSavedListService = linkSavedListService;
+    public LinkSavedListAdminApi(SavedListLinkService savedListLinkService) {
+        this.savedListLinkService = savedListLinkService;
     }
 
     @GetMapping()
     public List<Map<String, Object>> listAllLinks() {
-        List<LinkSavedList> links = linkSavedListService.listLinks();
-        return linkSavedListDto().buildList(links);
+        List<SavedListLink> links = savedListLinkService.listLinks();
+        return savedListLinkDto().buildList(links);
     }
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchLinkRequest request) {
-        Page<LinkSavedList> links = this.linkSavedListService.searchLinks(request);
-        return linkSavedListDto().buildPage(links);
+        Page<SavedListLink> links = this.savedListLinkService.searchLinks(request);
+        return savedListLinkDto().buildPage(links);
     }
 
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
-        LinkSavedList link = this.linkSavedListService.getLink(id);
-        return linkSavedListDto().build(link);
+        SavedListLink link = this.savedListLinkService.getLink(id);
+        return savedListLinkDto().build(link);
     }
 
     @PostMapping
     public Map<String, Object> create(@Valid @RequestBody CreateLinkRequest request) throws EntityExistsException {
-        LinkSavedList link = this.linkSavedListService.createLink(request);
-        return linkSavedListDto().build(link);
+        SavedListLink link = this.savedListLinkService.createLink(request);
+        return savedListLinkDto().build(link);
     }
 
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @Valid @RequestBody UpdateLinkRequest request) throws EntityExistsException  {
 
-        LinkSavedList link = this.linkSavedListService.updateLink(id, request);
-        return linkSavedListDto().build(link);
+        SavedListLink link = this.savedListLinkService.updateLink(id, request);
+        return savedListLinkDto().build(link);
     }
 
     @DeleteMapping("{id}")
     public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
-        return this.linkSavedListService.deleteLink(id);
+        return this.savedListLinkService.deleteLink(id);
     }
 
-    private DtoBuilder linkSavedListDto() {
+    private DtoBuilder savedListLinkDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("savedList", savedListDto())

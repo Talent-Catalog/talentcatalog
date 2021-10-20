@@ -47,7 +47,7 @@
     <tr>
       <th>Saved List Id</th>
       <th>Saved List Name</th>
-      <th>Link</th>
+      <th>Link <span class="small text-muted">https://tbbtalent.org/public-lists/xxx</span></th>
       <th></th>
     </tr>
     </thead>
@@ -57,9 +57,10 @@
       <td>{{link.savedList.id}}</td>
       <td>{{link.savedList.name}}</td>
       <td>{{link.link}}</td>
-      <td></td>
       <td>
         <div class="btn-group" *ngIf="(!loggedInUser.readOnly)">
+          <button type="button" class="btn btn-default" [routerLink]=""><i
+            class="fas fa-link"></i></button>
           <button type="button" class="btn btn-default" (click)="editLink(link)"><i
             class="fas fa-edit"></i></button>
           <button type="button" class="btn btn-default" (click)="deleteLink(link)"><i

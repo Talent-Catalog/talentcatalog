@@ -19,35 +19,35 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {LinkSavedList} from "../model/link-saved-list";
+import {SavedListLink} from "../model/saved-list-link";
 
 @Injectable({
   providedIn: 'root'
 })
-export class LinkSavedListService {
+export class SavedListLinkService {
 
   private apiUrl: string = environment.apiUrl + '/link-saved-list';
 
   constructor(private http: HttpClient) { }
 
-  listLinks(): Observable<LinkSavedList[]> {
-    return this.http.get<LinkSavedList[]>(`${this.apiUrl}`);
+  listLinks(): Observable<SavedListLink[]> {
+    return this.http.get<SavedListLink[]>(`${this.apiUrl}`);
   }
 
-  search(request): Observable<SearchResults<LinkSavedList>> {
-    return this.http.post<SearchResults<LinkSavedList>>(`${this.apiUrl}/search`, request);
+  search(request): Observable<SearchResults<SavedListLink>> {
+    return this.http.post<SearchResults<SavedListLink>>(`${this.apiUrl}/search`, request);
   }
 
-  get(id: number): Observable<LinkSavedList> {
-    return this.http.get<LinkSavedList>(`${this.apiUrl}/${id}`);
+  get(id: number): Observable<SavedListLink> {
+    return this.http.get<SavedListLink>(`${this.apiUrl}/${id}`);
   }
 
-  create(details): Observable<LinkSavedList>  {
-    return this.http.post<LinkSavedList>(`${this.apiUrl}`, details);
+  create(details): Observable<SavedListLink>  {
+    return this.http.post<SavedListLink>(`${this.apiUrl}`, details);
   }
 
-  update(id: number, details): Observable<LinkSavedList>  {
-    return this.http.put<LinkSavedList>(`${this.apiUrl}/${id}`, details);
+  update(id: number, details): Observable<SavedListLink>  {
+    return this.http.put<SavedListLink>(`${this.apiUrl}/${id}`, details);
   }
 
   delete(id: number): Observable<boolean>  {

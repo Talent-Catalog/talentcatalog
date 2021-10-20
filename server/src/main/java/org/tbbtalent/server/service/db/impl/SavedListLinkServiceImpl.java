@@ -25,88 +25,100 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.LinkSavedList;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.repository.db.LinkSavedListRepository;
-import org.tbbtalent.server.repository.db.LinkSavedListSpecification;
+import org.tbbtalent.server.model.db.SavedListLink;
+import org.tbbtalent.server.repository.db.SavedListLinkRepository;
+import org.tbbtalent.server.repository.db.SavedListLinkSpecification;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.request.link.CreateLinkRequest;
 import org.tbbtalent.server.request.link.SearchLinkRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
-import org.tbbtalent.server.service.db.LinkSavedListService;
 import org.tbbtalent.server.service.db.OccupationService;
+import org.tbbtalent.server.service.db.SavedListLinkService;
 
 import java.util.List;
 
 @Service
-public class LinkSavedListServiceImpl implements LinkSavedListService {
+public class SavedListLinkServiceImpl implements SavedListLinkService {
     private static final Logger log = LoggerFactory.getLogger(OccupationService.class);
 
-    private final LinkSavedListRepository linkSavedListRepository;
+    private final SavedListLinkRepository savedListLinkRepository;
     private final SavedListRepository savedListRepository;
 
     @Autowired
-    public LinkSavedListServiceImpl(LinkSavedListRepository linkSavedListRepository,
+    public SavedListLinkServiceImpl(SavedListLinkRepository savedListLinkRepository,
                                     SavedListRepository savedListRepository) {
-        this.linkSavedListRepository = linkSavedListRepository;
+        this.savedListLinkRepository = savedListLinkRepository;
         this.savedListRepository = savedListRepository;
     }
 
     @Override
-    public List<LinkSavedList> listLinks() {
-        List<LinkSavedList> links = linkSavedListRepository.findAll();
+    public List<SavedListLink> listLinks() {
+        List<SavedListLink> links = savedListLinkRepository.findAll();
         return links;
     }
 
     @Override
-    public Page<LinkSavedList> searchLinks(SearchLinkRequest request) {
-        Page<LinkSavedList> occupations = linkSavedListRepository.findAll(LinkSavedListSpecification.buildSearchQuery(request), request.getPageRequest());
+    public Page<SavedListLink> searchLinks(SearchLinkRequest request) {
+        Page<SavedListLink> occupations = savedListLinkRepository.findAll(SavedListLinkSpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + occupations.getTotalElements() + " occupations in search");
         return occupations;
     }
 
     @Override
-    public LinkSavedList getLink(long id) {
-        return this.linkSavedListRepository.findById(id)
+    public SavedListLink getLink(long id) {
+        return this.savedListLinkRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Occupation.class, id));
     }
 
     @Override
     @Transactional
-    public LinkSavedList createLink(CreateLinkRequest request) throws EntityExistsException {
-        LinkSavedList link = new LinkSavedList();
+    public SavedListLink createLink(CreateLinkRequest request) throws EntityExistsException {
+        SavedListLink link = new SavedListLink();
         SavedList savedList = this.savedListRepository.findById(request.getSavedListId())
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, request.getSavedListId()));
+
+        checkDuplicates(null, request.getSavedListId(), request.getLink());
+
         link.setSavedList(savedList);
         link.setLink(request.getLink());
-        //checkDuplicates(null, request.getName());
-        return this.linkSavedListRepository.save(link);
+        return this.savedListLinkRepository.save(link);
     }
 
 
     @Override
     @Transactional
-    public LinkSavedList updateLink(long id, UpdateLinkRequest request) throws EntityExistsException {
-        LinkSavedList link = this.linkSavedListRepository.findById(id)
+    public SavedListLink updateLink(long id, UpdateLinkRequest request) throws EntityExistsException {
+        SavedListLink link = this.savedListLinkRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Occupation.class, id));
-        //checkDuplicates(id, request.getName());
+
+        checkDuplicates(id, request.getSavedListId(), request.getLink());
 
         link.setLink(request.getLink());
-        return linkSavedListRepository.save(link);
+        return savedListLinkRepository.save(link);
     }
 
     @Override
     @Transactional
     public boolean deleteLink(long id) throws EntityReferencedException {
-        LinkSavedList link = linkSavedListRepository.findById(id).orElse(null);
+        this.savedListLinkRepository.deleteById(id);
         return true;
     }
 
-    private void checkDuplicates(Long id, String name) {
-//        LinkSavedList existing = LinkSavedListRepository.findByNameIgnoreCase(name);
-//        if (existing != null && !existing.getId().equals(id) || (existing != null && id == null)){
-//            throw new EntityExistsException("occupation");
-//        }
+    private void checkDuplicates(Long id, Long savedListId, String link) {
+        // Can't have the same link name
+        SavedListLink existingLink = this.savedListLinkRepository.findByLinkIgnoreCase(link);
+
+        if (existingLink != null && !existingLink.getId().equals(id)) {
+            throw new EntityExistsException("external link");
+        }
+
+        // Can't have two of the same saved lists
+        SavedListLink savedListLink = this.savedListLinkRepository.findBySavedList(savedListId);
+        // If the requested saved list already has a link, and it doesn't belong to the record which is being updated.
+        if (savedListLink != null && !savedListLink.getId().equals(id)){
+            throw new EntityExistsException("link for a saved list");
+        }
     }
 }

@@ -235,6 +235,8 @@ import {ShareableDocsComponent} from './components/candidates/view/shareable-doc
 import {PublishedDocColumnSelectorComponent} from "./components/util/published-doc-column-selector/published-doc-column-selector.component";
 import {CandidateSourceDescriptionComponent} from './components/util/candidate-source-description/candidate-source-description.component';
 import {SearchExternalLinksComponent} from './components/settings/external-links/search-external-links.component';
+import {CreateExternalLinkComponent} from './components/settings/external-links/create/create-external-link.component';
+import {EditExternalLinkComponent} from './components/settings/external-links/edit/edit-external-link.component';
 
 @NgModule({
   declarations: [
@@ -446,7 +448,9 @@ import {SearchExternalLinksComponent} from './components/settings/external-links
     CandidateShareableNotesComponent,
     PublishedDocColumnSelectorComponent,
     CandidateSourceDescriptionComponent,
-    SearchExternalLinksComponent
+    SearchExternalLinksComponent,
+    CreateExternalLinkComponent,
+    EditExternalLinkComponent
   ],
   imports: [
     BrowserModule,

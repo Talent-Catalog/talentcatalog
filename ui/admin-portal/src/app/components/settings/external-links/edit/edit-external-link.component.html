@@ -1,0 +1,57 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="modal-header">
+
+  <h4 class="modal-title">Edit External Link</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+
+  <form [formGroup]="linkForm">
+    <div class="form-group">
+      <label>Saved List</label>
+      <ng-select id="savedListId" [formControlName]="'savedListId'" [items]="savedLists" [closeOnSelect]="true"
+                 [clearOnBackspace]="false" placeholder="Select or type..." bindLabel="name" bindValue="id"></ng-select>
+      <p class="text-muted">If you can't see your list here, it will already have an external link assigned to it.</p>
+    </div>
+    <div class="form-group">
+      <div>External link</div>
+      <div class="form-inline">
+        <span class="small text-muted">https://tbbtalent.org/public-lists/</span>
+        <input class="form-control form-inline" id="link" formControlName="link">
+      </div>
+    </div>
+  </form>
+
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="onSave()"
+          [disabled]="linkForm.invalid || saving">
+    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+    Save
+  </button>
+</div>

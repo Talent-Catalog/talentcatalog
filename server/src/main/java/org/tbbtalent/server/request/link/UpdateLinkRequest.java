@@ -17,10 +17,14 @@
 package org.tbbtalent.server.request.link;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class UpdateLinkRequest {
+    @NonNull
+    private Long savedListId;
+
     private String link;
 }

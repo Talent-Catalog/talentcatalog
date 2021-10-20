@@ -17,7 +17,7 @@
 import {SavedList} from "./saved-list";
 import {User} from "./user";
 
-export interface LinkSavedList {
+export interface SavedListLink {
   id: number;
   savedList: SavedList;
   link: string;

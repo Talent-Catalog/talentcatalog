@@ -18,14 +18,14 @@ package org.tbbtalent.server.repository.db;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.db.LinkSavedList;
+import org.tbbtalent.server.model.db.SavedListLink;
 import org.tbbtalent.server.request.link.SearchLinkRequest;
 
 import javax.persistence.criteria.Predicate;
 
-public class LinkSavedListSpecification {
-    public static Specification<LinkSavedList> buildSearchQuery(final SearchLinkRequest request) {
-        return (linkSavedList, query, builder) -> {
+public class SavedListLinkSpecification {
+    public static Specification<SavedListLink> buildSearchQuery(final SearchLinkRequest request) {
+        return (savedListLink, query, builder) -> {
             Predicate conjunction = builder.conjunction();
             query.distinct(true);
 
@@ -35,7 +35,7 @@ public class LinkSavedListSpecification {
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                 conjunction.getExpressions().add(
                         builder.or(
-                                builder.like(builder.lower(linkSavedList.get("name")), likeMatchTerm)
+                                builder.like(builder.lower(savedListLink.get("name")), likeMatchTerm)
                         ));
             }
 

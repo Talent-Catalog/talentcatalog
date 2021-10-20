@@ -5,12 +5,12 @@ import {SearchResults} from "../../../model/search-results";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthService} from "../../../services/auth.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {CreateCountryComponent} from "../countries/create/create-country.component";
-import {EditCountryComponent} from "../countries/edit/edit-country.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {isAdminUser} from "../../../model/base";
-import {LinkSavedList} from "../../../model/link-saved-list";
-import {LinkSavedListService} from "../../../services/link-saved-list.service";
+import {SavedListLink} from "../../../model/saved-list-link";
+import {SavedListLinkService} from "../../../services/saved-list-link.service";
+import {CreateExternalLinkComponent} from "./create/create-external-link.component";
+import {EditExternalLinkComponent} from "./edit/edit-external-link.component";
 
 @Component({
   selector: 'app-search-external-links',
@@ -26,11 +26,11 @@ export class SearchExternalLinksComponent implements OnInit {
   error: any;
   pageNumber: number;
   pageSize: number;
-  results: SearchResults<LinkSavedList>;
+  results: SearchResults<SavedListLink>;
 
 
   constructor(private fb: FormBuilder,
-              private linkSavedListService: LinkSavedListService,
+              private savedListLinkService: SavedListLinkService,
               private modalService: NgbModal,
               private authService: AuthService) {
   }
@@ -67,14 +67,14 @@ export class SearchExternalLinksComponent implements OnInit {
     const request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
-    this.linkSavedListService.search(request).subscribe(results => {
+    this.savedListLinkService.search(request).subscribe(results => {
       this.results = results;
       this.loading = false;
     });
   }
 
   addLink() {
-    const addLinkModal = this.modalService.open(CreateCountryComponent, {
+    const addLinkModal = this.modalService.open(CreateExternalLinkComponent, {
       centered: true,
       backdrop: 'static'
     });
@@ -84,20 +84,20 @@ export class SearchExternalLinksComponent implements OnInit {
       .catch(() => { /* Isn't possible */ });
   }
 
-  editLink(link: LinkSavedList) {
-    const editCountryModal = this.modalService.open(EditCountryComponent, {
+  editLink(link: SavedListLink) {
+    const editLinkModal = this.modalService.open(EditExternalLinkComponent, {
       centered: true,
       backdrop: 'static'
     });
 
-    editCountryModal.componentInstance.countryId = link.id;
+    editLinkModal.componentInstance.savedListLink = link;
 
-    editCountryModal.result
+    editLinkModal.result
       .then((result) => this.search())
       .catch(() => { /* Isn't possible */ });
   }
 
-  deleteLink(link: LinkSavedList) {
+  deleteLink(link: SavedListLink) {
     const deleteCountryModal = this.modalService.open(ConfirmationComponent, {
       centered: true,
       backdrop: 'static'
@@ -109,7 +109,7 @@ export class SearchExternalLinksComponent implements OnInit {
       .then((result) => {
         // console.log(result);
         if (result === true) {
-          this.linkSavedListService.delete(link.id).subscribe(
+          this.savedListLinkService.delete(link.id).subscribe(
             (country) => {
               this.loading = false;
               this.search();

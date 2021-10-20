@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.model.db;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -26,10 +25,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "link_saved_list")
-public class LinkSavedList extends AbstractAuditableDomainObject<Long>{
+@Table(name = "saved_list_link")
+public class SavedListLink extends AbstractAuditableDomainObject<Long>{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "saved_list_id")
     private SavedList savedList;

@@ -20,23 +20,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.tbbtalent.server.model.db.LinkSavedList;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.SavedListLink;
 
-import java.util.List;
+public interface SavedListLinkRepository extends JpaRepository<SavedListLink, Long>, JpaSpecificationExecutor<SavedListLink>  {
 
-public interface LinkSavedListRepository extends JpaRepository<LinkSavedList, Long>, JpaSpecificationExecutor<LinkSavedList>  {
-    @Query(" select o from Occupation o "
-            + " where o.status = :status order by o.name asc")
-    List<Occupation> findByStatus(@Param("status") Status status);
+    @Query(" select distinct l from SavedListLink l "
+            + " where lower(l.link) = lower(:link)")
+    SavedListLink findByLinkIgnoreCase(@Param("link") String link);
 
-    @Query(" select distinct o from Occupation o "
-            + " where lower(o.name) = lower(:name)"
-            + " and o.status != 'deleted' order by o.name asc" )
-    Occupation findByNameIgnoreCase(@Param("name") String name);
-
-    @Query(" select o.name from Occupation o "
-            + " where o.id in (:ids) order by o.name asc" )
-    List<String> getNamesForIds(@Param("ids") List<Long> ids);
+    @Query(" select distinct l from SavedListLink l "
+            + " left join l.savedList s "
+            + " where s.id = :savedListId")
+    SavedListLink findBySavedList(@Param("savedListId") long savedListId);
 }
