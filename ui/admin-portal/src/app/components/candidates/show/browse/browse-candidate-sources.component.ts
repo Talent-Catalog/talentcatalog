@@ -165,6 +165,12 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         req.owned = true;
         req.shared = true;
         break;
+      case SearchBy.externalLink:
+        req.global = true;
+        req.owned = true;
+        req.shared = true;
+        req.externalLink = true;
+        break;
     }
     if (this.savedSearchType !== undefined) {
       if (req instanceof SearchSavedSearchRequest) {

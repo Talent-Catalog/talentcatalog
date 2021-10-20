@@ -93,7 +93,8 @@ export enum SearchBy {
   all,
   mine,
   sharedWithMe,
-  watched
+  watched,
+  externalLink
 }
 
 /**
@@ -195,6 +196,7 @@ export class SearchCandidateSourcesRequest extends PagedSearchRequest {
   owned?: boolean;
   shared?: boolean;
   watched?: boolean;
+  externalLink?: boolean;
 }
 
 export class UpdateCandidateContextNoteRequest {
