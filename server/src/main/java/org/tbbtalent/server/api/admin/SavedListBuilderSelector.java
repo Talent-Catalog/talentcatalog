@@ -16,8 +16,9 @@
 
 package org.tbbtalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Utility for selecting a SavedList DTO builder
@@ -55,6 +56,7 @@ public class SavedListBuilderSelector {
                 .add("updatedBy", userDto())
                 .add("updatedDate")
                 .add("users", userDto())
+                .add("savedListLink", savedListLinkDto())
         ;
     }
 
@@ -69,6 +71,13 @@ public class SavedListBuilderSelector {
                 .add("id")
                 .add("firstName")
                 .add("lastName")
+                ;
+    }
+
+    private DtoBuilder savedListLinkDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("link")
                 ;
     }
 }

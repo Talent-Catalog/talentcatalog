@@ -28,7 +28,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "saved_list_link")
 public class SavedListLink extends AbstractAuditableDomainObject<Long>{
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "saved_list_id")
     private SavedList savedList;
 

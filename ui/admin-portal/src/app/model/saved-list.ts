@@ -23,6 +23,7 @@ import {
 } from "./base";
 import {isSavedSearch, SavedSearchRef} from "./saved-search";
 import {UpdateCandidateStatusInfo} from "./candidate";
+import {SavedListLink} from "./saved-list-link";
 
 export enum SearchBy {
   type,
@@ -43,6 +44,7 @@ export interface SavedList extends CandidateSource {
   foldercvlink?: string;
   folderjdlink?: string;
   publishedDocLink?: string;
+  savedListLink?: SavedListLink;
 }
 
 export function isSavedList(source: CandidateSource): source is SavedList {
