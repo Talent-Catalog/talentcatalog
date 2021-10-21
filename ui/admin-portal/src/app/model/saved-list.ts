@@ -208,3 +208,8 @@ export class SavedListGetRequest extends PagedSearchRequest {
 export interface UpdateSharingRequest {
   savedSearchId: number;
 }
+
+export interface UpdateShortNameRequest {
+  savedListId: number;
+  tbbShortName: string;
+}

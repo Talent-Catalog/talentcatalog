@@ -67,10 +67,14 @@ public class GetSavedListsQuery implements Specification<SavedList> {
             );
         }
 
-        //If fixed is specified, only supply matching saved searches
+        //If short name is specified, only supply matching saved searches. If false, remove
         if (request.getShortName() != null && request.getShortName()) {
             conjunction.getExpressions().add(
                     cb.isNotNull(savedList.get("tbbShortName"))
+            );
+        } else if (request.getShortName() != null && !request.getShortName()){
+            conjunction.getExpressions().add(
+                    cb.isNull(savedList.get("tbbShortName"))
             );
         }
 

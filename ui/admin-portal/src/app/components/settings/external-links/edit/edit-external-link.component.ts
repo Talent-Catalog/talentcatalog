@@ -25,11 +25,14 @@ export class EditExternalLinkComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.fb.group({
+      savedListId: [this.savedList?.id],
       tbbShortName: [this.savedList?.tbbShortName, Validators.required],
     });
     const request: SearchSavedListRequest = {
-
-    }
+      owned: true,
+      shared: true,
+      global: true
+    };
     this.savedListService.search(request).subscribe(
       (response) => {
         this.savedLists = response;
@@ -43,7 +46,7 @@ export class EditExternalLinkComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.savedListService.updateShortName(this.savedList.id, this.form.value).subscribe(
+    this.savedListService.updateShortName(this.form.value).subscribe(
       (link) => {
         this.closeModal(link)
         this.saving = false;

@@ -264,9 +264,9 @@ public class SavedListAdminApi implements
         savedListService.updateDisplayedFieldPaths(id, request);
     }
 
-    @PutMapping("/short-name/{id}")
-    public void updateTbbShortName(@PathVariable("id") long id, @RequestBody UpdateShortNameRequest request) {
-        savedListService.updateTbbShortName(id, request);
+    @PutMapping("/short-name")
+    public void updateTbbShortName(@RequestBody UpdateShortNameRequest request) {
+        savedListService.updateTbbShortName(request);
     }
     
 }

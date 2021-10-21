@@ -311,12 +311,11 @@ public interface SavedListService {
         throws  NoSuchObjectException;
 
     /**
-     * Updates the description of the given saved list.
-     * @param savedListId Id of saved list
-     * @param request Request containing the updated description
+     * Updates the tbb short name used for redirecting to external links (google sheet).
+     * @param request Request containing the updated short name and the saved list id which it belongs to.
      * @throws NoSuchObjectException  if there is no saved list with this id
      */
-    SavedList updateTbbShortName(long savedListId, UpdateShortNameRequest request)
+    SavedList updateTbbShortName(UpdateShortNameRequest request)
         throws  NoSuchObjectException;
     
     /**

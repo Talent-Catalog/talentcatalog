@@ -10,7 +10,7 @@ import {isAdminUser} from "../../../model/base";
 import {SavedListService} from "../../../services/saved-list.service";
 import {CreateExternalLinkComponent} from "./create/create-external-link.component";
 import {EditExternalLinkComponent} from "./edit/edit-external-link.component";
-import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
+import {SavedList, SearchSavedListRequest, UpdateShortNameRequest} from "../../../model/saved-list";
 
 @Component({
   selector: 'app-search-external-links',
@@ -104,13 +104,16 @@ export class SearchExternalLinksComponent implements OnInit {
       backdrop: 'static'
     });
 
-    deleteCountryModal.componentInstance.message = 'Are you sure you want to delete ' + savedList.tbbShortName;
-
+    deleteCountryModal.componentInstance.message = 'Are you sure you want to delete the external link for ' + savedList.name;
+    const request: UpdateShortNameRequest = {
+      savedListId: savedList.id,
+      tbbShortName: null,
+    }
     deleteCountryModal.result
       .then((result) => {
         // console.log(result);
         if (result === true) {
-          this.savedListService.updateShortName(savedList.id, null).subscribe(
+          this.savedListService.updateShortName(request).subscribe(
             (country) => {
               this.loading = false;
               this.search();

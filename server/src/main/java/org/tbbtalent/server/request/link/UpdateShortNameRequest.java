@@ -23,6 +23,8 @@ import org.springframework.lang.Nullable;
 @Getter
 @Setter
 public class UpdateShortNameRequest {
+    private Long savedListId;
+
     @Nullable
     private String tbbShortName;
 }
