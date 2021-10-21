@@ -30,18 +30,12 @@
     {{error}}
   </div>
 
-  <form [formGroup]="linkForm">
-    <div class="form-group">
-      <label>Saved List</label>
-      <ng-select id="savedListId" [formControlName]="'savedListId'" [items]="savedLists" [closeOnSelect]="true"
-                 [clearOnBackspace]="false" placeholder="Select or type..." bindLabel="name" bindValue="id"></ng-select>
-      <p class="text-muted">If you can't see your list here, it will already have an external link assigned to it.</p>
-    </div>
+  <form [formGroup]="form">
     <div class="form-group">
       <div>External link</div>
       <div class="form-inline">
         <span class="small text-muted">https://tbbtalent.org/public-lists/</span>
-        <input class="form-control form-inline" id="link" formControlName="link">
+        <input class="form-control form-inline" id="link" [formControlName]="'tbbShortName'">
       </div>
     </div>
   </form>
@@ -50,7 +44,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" (click)="onSave()"
-          [disabled]="linkForm.invalid || saving">
+          [disabled]="form.invalid || saving">
     <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
     Save
   </button>

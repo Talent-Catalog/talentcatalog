@@ -21,11 +21,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedListLink;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,7 +46,6 @@ public class GetSavedListsQuery implements Specification<SavedList> {
             Root<SavedList> savedList, CriteriaQuery<?> query, CriteriaBuilder cb) {
         Predicate conjunction = cb.conjunction();
         query.distinct(true);
-        Join<SavedList, SavedListLink> savedListLink = savedList.join("savedListLink", JoinType.LEFT);
 
         //Only return lists which are not Selection lists - 
         //ie lists with no associated saved search.
@@ -67,9 +68,9 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         }
 
         //If fixed is specified, only supply matching saved searches
-        if (request.getExternalLink() != null && request.getExternalLink()) {
+        if (request.getShortName() != null && request.getShortName()) {
             conjunction.getExpressions().add(
-                    cb.isNotNull(savedListLink.get("link"))
+                    cb.isNotNull(savedList.get("tbbShortName"))
             );
         }
 

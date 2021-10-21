@@ -75,9 +75,5 @@ public class SearchCandidateSourceRequestPaged extends PagedSearchRequest {
      */
     private Boolean watched;
 
-    /**
-     * If true the candidate list has an external link associated.
-     */
-    private Boolean externalLink;
 }
 

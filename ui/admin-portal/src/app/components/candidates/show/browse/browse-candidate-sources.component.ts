@@ -30,14 +30,7 @@ import {Router} from '@angular/router';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AuthService} from '../../../../services/auth.service';
 import {User} from '../../../../model/user';
-import {
-  CandidateSource,
-  CandidateSourceType,
-  isMine,
-  isSharedWithMe,
-  SearchBy,
-  SearchCandidateSourcesRequest
-} from '../../../../model/base';
+import {CandidateSource, CandidateSourceType, isMine, isSharedWithMe, SearchBy} from '../../../../model/base';
 import {ContentUpdateType, CopySourceContentsRequest, SearchSavedListRequest} from '../../../../model/saved-list';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -131,7 +124,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     //Remember keyword filter from last search
     this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
 
-    let req: SearchCandidateSourcesRequest;
+    let req;
     if (this.sourceType === CandidateSourceType.SavedSearch) {
       req = new SearchSavedSearchRequest();
     } else {
@@ -169,7 +162,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         req.global = true;
         req.owned = true;
         req.shared = true;
-        req.externalLink = true;
+        req.shortName = true;
         break;
     }
     if (this.savedSearchType !== undefined) {

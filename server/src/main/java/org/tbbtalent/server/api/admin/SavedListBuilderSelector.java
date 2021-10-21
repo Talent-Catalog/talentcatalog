@@ -51,12 +51,12 @@ public class SavedListBuilderSelector {
                 .add("folderjdlink")
                 .add("publishedDocLink")
                 .add("registeredJob")
+                .add("tbbShortName")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
                 .add("users", userDto())
-                .add("savedListLink", savedListLinkDto())
         ;
     }
 
@@ -71,13 +71,6 @@ public class SavedListBuilderSelector {
                 .add("id")
                 .add("firstName")
                 .add("lastName")
-                ;
-    }
-
-    private DtoBuilder savedListLinkDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("link")
                 ;
     }
 }

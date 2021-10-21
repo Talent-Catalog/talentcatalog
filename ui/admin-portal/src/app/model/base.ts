@@ -196,7 +196,6 @@ export class SearchCandidateSourcesRequest extends PagedSearchRequest {
   owned?: boolean;
   shared?: boolean;
   watched?: boolean;
-  externalLink?: boolean;
 }
 
 export class UpdateCandidateContextNoteRequest {

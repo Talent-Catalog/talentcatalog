@@ -77,6 +77,12 @@ public class SavedList extends AbstractCandidateSource {
     private String publishedDocLink;
 
     /**
+     * Url link to published list doc, if one exists.
+     */
+    @Nullable
+    private String tbbShortName;
+
+    /**
      * If true, this list is associated with a "registered" job. See the Angular "New Job" menu
      * item. A link to the job record on Salesforce is in {@link #getSfJoblink()}.
      * There should only be one list registered to a particular job, as defined by its sfJoblink.
@@ -146,20 +152,6 @@ public class SavedList extends AbstractCandidateSource {
     @OrderBy("index ASC")
     private List<ExportColumn> exportColumns;
 
-    /**
-     * Each saved list can have a single saved list link.
-     */
-    @OneToOne(mappedBy = "savedList")
-    private SavedListLink savedListLink;
-
-    public SavedListLink getSavedListLink() {
-        return savedListLink;
-    }
-
-    public void setSavedListLink(SavedListLink savedListLink) {
-        this.savedListLink = savedListLink;
-    }
-
     @Nullable
     public List<ExportColumn> getExportColumns() {
         return exportColumns;
@@ -205,6 +197,11 @@ public class SavedList extends AbstractCandidateSource {
     public void setPublishedDocLink(@Nullable String publishedDocLink) {
         this.publishedDocLink = publishedDocLink;
     }
+
+    @Nullable
+    public String getTbbShortName() {return tbbShortName;}
+
+    public void setTbbShortName(@Nullable String tbbShortName) {this.tbbShortName = tbbShortName;}
 
     @NonNull
     public Boolean getRegisteredJob() {

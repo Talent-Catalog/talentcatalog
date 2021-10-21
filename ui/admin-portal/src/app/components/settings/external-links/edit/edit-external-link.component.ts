@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {SavedListLinkService} from "../../../../services/saved-list-link.service";
-import {SavedListLink} from "../../../../model/saved-list-link";
 import {SavedList, SearchSavedListRequest} from "../../../../model/saved-list";
 import {SavedListService} from "../../../../services/saved-list.service";
 
@@ -13,8 +11,8 @@ import {SavedListService} from "../../../../services/saved-list.service";
 })
 export class EditExternalLinkComponent implements OnInit {
 
-  linkForm: FormGroup;
-  savedListLink: SavedListLink;
+  form: FormGroup;
+  savedList: SavedList;
   error;
   saving: boolean;
   savedLists: SavedList[];
@@ -22,14 +20,12 @@ export class EditExternalLinkComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
-              private savedListLinkService: SavedListLinkService,
               private savedListService: SavedListService) {
   }
 
   ngOnInit() {
-    this.linkForm = this.fb.group({
-      savedListId: [this.savedListLink.savedList?.id, Validators.required],
-      link: [this.savedListLink?.link, Validators.required],
+    this.form = this.fb.group({
+      tbbShortName: [this.savedList?.tbbShortName, Validators.required],
     });
     const request: SearchSavedListRequest = {
 
@@ -47,7 +43,7 @@ export class EditExternalLinkComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.savedListLinkService.update(this.savedListLink.id, this.linkForm.value).subscribe(
+    this.savedListService.updateShortName(this.savedList.id, this.form.value).subscribe(
       (link) => {
         this.closeModal(link)
         this.saving = false;
@@ -58,7 +54,7 @@ export class EditExternalLinkComponent implements OnInit {
       });
   }
 
-  closeModal(link: SavedListLink) {
+  closeModal(link: SavedList) {
     this.activeModal.close(link);
   }
 

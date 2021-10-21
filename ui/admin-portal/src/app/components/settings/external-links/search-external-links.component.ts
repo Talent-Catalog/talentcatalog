@@ -7,10 +7,10 @@ import {AuthService} from "../../../services/auth.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {isAdminUser} from "../../../model/base";
-import {SavedListLink} from "../../../model/saved-list-link";
-import {SavedListLinkService} from "../../../services/saved-list-link.service";
+import {SavedListService} from "../../../services/saved-list.service";
 import {CreateExternalLinkComponent} from "./create/create-external-link.component";
 import {EditExternalLinkComponent} from "./edit/edit-external-link.component";
+import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 
 @Component({
   selector: 'app-search-external-links',
@@ -26,11 +26,11 @@ export class SearchExternalLinksComponent implements OnInit {
   error: any;
   pageNumber: number;
   pageSize: number;
-  results: SearchResults<SavedListLink>;
+  results: SearchResults<SavedList>;
 
 
   constructor(private fb: FormBuilder,
-              private savedListLinkService: SavedListLinkService,
+              private savedListService: SavedListService,
               private modalService: NgbModal,
               private authService: AuthService) {
   }
@@ -64,10 +64,11 @@ export class SearchExternalLinksComponent implements OnInit {
   /* SEARCH FORM */
   search() {
     this.loading = true;
-    const request = this.searchForm.value;
+    const request: SearchSavedListRequest = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
-    this.savedListLinkService.search(request).subscribe(results => {
+    request.shortName = true;
+    this.savedListService.searchPaged(request).subscribe(results => {
       this.results = results;
       this.loading = false;
     });
@@ -84,32 +85,32 @@ export class SearchExternalLinksComponent implements OnInit {
       .catch(() => { /* Isn't possible */ });
   }
 
-  editLink(link: SavedListLink) {
+  editLink(link: SavedList) {
     const editLinkModal = this.modalService.open(EditExternalLinkComponent, {
       centered: true,
       backdrop: 'static'
     });
 
-    editLinkModal.componentInstance.savedListLink = link;
+    editLinkModal.componentInstance.savedList = link;
 
     editLinkModal.result
       .then((result) => this.search())
       .catch(() => { /* Isn't possible */ });
   }
 
-  deleteLink(link: SavedListLink) {
+  deleteLink(savedList: SavedList) {
     const deleteCountryModal = this.modalService.open(ConfirmationComponent, {
       centered: true,
       backdrop: 'static'
     });
 
-    deleteCountryModal.componentInstance.message = 'Are you sure you want to delete ' + link.link;
+    deleteCountryModal.componentInstance.message = 'Are you sure you want to delete ' + savedList.tbbShortName;
 
     deleteCountryModal.result
       .then((result) => {
         // console.log(result);
         if (result === true) {
-          this.savedListLinkService.delete(link.id).subscribe(
+          this.savedListService.updateShortName(savedList.id, null).subscribe(
             (country) => {
               this.loading = false;
               this.search();

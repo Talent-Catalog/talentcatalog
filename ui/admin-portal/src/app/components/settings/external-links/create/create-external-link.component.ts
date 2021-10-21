@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {SavedListLinkService} from "../../../../services/saved-list-link.service";
-import {SavedListLink} from "../../../../model/saved-list-link";
 import {SavedListService} from "../../../../services/saved-list.service";
 import {SavedList, SearchSavedListRequest} from "../../../../model/saved-list";
 
@@ -13,7 +11,7 @@ import {SavedList, SearchSavedListRequest} from "../../../../model/saved-list";
 })
 export class CreateExternalLinkComponent implements OnInit {
 
-  linkForm: FormGroup;
+  form: FormGroup;
   error;
   saving: boolean;
   savedLists: SavedList[];
@@ -21,14 +19,13 @@ export class CreateExternalLinkComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
-              private savedListLinkService: SavedListLinkService,
               private savedListService: SavedListService) {
   }
 
   ngOnInit() {
-    this.linkForm = this.fb.group({
+    this.form = this.fb.group({
       savedListId: [null, Validators.required],
-      link: [null, Validators.required],
+      tbbShortName: [null, Validators.required],
     });
     const request: SearchSavedListRequest = {
 
@@ -46,7 +43,7 @@ export class CreateExternalLinkComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.savedListLinkService.create(this.linkForm.value).subscribe(
+    this.savedListService.updateShortName(this.form.value.savedListId, this.form.value).subscribe(
       (link) => {
         this.closeModal(link)
         this.saving = false;
@@ -57,7 +54,7 @@ export class CreateExternalLinkComponent implements OnInit {
       });
   }
 
-  closeModal(link: SavedListLink) {
+  closeModal(link: SavedList) {
     this.activeModal.close(link);
   }
 

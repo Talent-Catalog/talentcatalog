@@ -47,23 +47,23 @@
     <tr>
       <th>Saved List Id</th>
       <th>Saved List Name</th>
-      <th>Link <span class="small text-muted">https://tbbtalent.org/public-lists/xxx</span></th>
+      <th>Link <span class="small text-muted">https://tbbtalent.org/published/xxx</span></th>
       <th></th>
     </tr>
     </thead>
 
     <tbody>
-    <tr *ngFor="let link of results?.content">
-      <td>{{link.savedList.id}}</td>
-      <td>{{link.savedList.name}}</td>
-      <td>{{link.link}}</td>
+    <tr *ngFor="let savedList of results?.content">
+      <td>{{savedList.id}}</td>
+      <td>{{savedList.name}}</td>
+      <td>{{savedList.tbbShortName}}</td>
       <td>
         <div class="btn-group" *ngIf="(!loggedInUser.readOnly)">
           <button type="button" class="btn btn-default" [routerLink]=""><i
             class="fas fa-link"></i></button>
-          <button type="button" class="btn btn-default" (click)="editLink(link)"><i
+          <button type="button" class="btn btn-default" (click)="editLink(savedList)"><i
             class="fas fa-edit"></i></button>
-          <button type="button" class="btn btn-default" (click)="deleteLink(link)"><i
+          <button type="button" class="btn btn-default" (click)="deleteLink(savedList)"><i
             class="fas fa-trash"></i></button>
         </div>
       </td>
