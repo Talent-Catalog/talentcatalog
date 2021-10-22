@@ -317,6 +317,14 @@ public interface SavedListService {
      */
     SavedList updateTbbShortName(UpdateShortNameRequest request)
         throws  NoSuchObjectException;
+
+    /**
+     * Updates the tbb short name used for redirecting to external links (google sheet).
+     * @param request Request containing the updated short name and the saved list id which it belongs to.
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     */
+    SavedList findByShortName(String shortName)
+        throws  NoSuchObjectException;
     
     /**
      * Updates the fields that are displayed for each candidate in the given 

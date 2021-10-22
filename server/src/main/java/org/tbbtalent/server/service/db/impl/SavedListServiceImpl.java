@@ -517,6 +517,11 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public SavedList findByShortName(String shortName) throws  NoSuchObjectException {
+        return this.savedListRepository.findByShortNameIgnoreCase(shortName);
+    }
+
+    @Override
     public void updateDisplayedFieldPaths(
             long savedListId, UpdateDisplayedFieldPathsRequest request) 
             throws NoSuchObjectException {
