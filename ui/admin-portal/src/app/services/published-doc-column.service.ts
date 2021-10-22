@@ -42,7 +42,8 @@ export class PublishedDocColumnService {
     .width = PublishedDocColumnWidth.Narrow;
 
     this.addColumnWithLink("candidateNumberLinkCv", "Candidate # \n (link to CV)",
-      new PublishedDocFieldSource("candidateNumber"), new PublishedDocFieldSource("shareableCv.url"))
+      new PublishedDocFieldSource("candidateNumber"),
+      new PublishedDocFieldSource("shareableCv.url"))
     .width = PublishedDocColumnWidth.Narrow;
 
     this.addColumnWithLink("candidateNumberLinkTc", "Candidate # \n(link to TC)",
