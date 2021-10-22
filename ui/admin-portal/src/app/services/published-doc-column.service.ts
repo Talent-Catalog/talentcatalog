@@ -175,10 +175,4 @@ export class PublishedDocColumnService {
                             value: PublishedDocValueSource): PublishedDocColumnDef {
     return this.addColumnWithTypeLink(key, name, type, value, null);
   }
-
-  // private getShareableCv() {
-  //   const link = new PublishedDocFieldSource(null);
-  //   if ()
-  //   new PublishedDocFieldSource("listShareableCv.url")
-  // }
 }
