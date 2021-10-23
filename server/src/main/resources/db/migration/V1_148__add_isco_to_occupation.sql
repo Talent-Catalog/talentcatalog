@@ -14,9 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export interface Occupation {
-  id: number;
-  name: string;
-  isco08Code: string;
-  status: string;
-}
+alter table occupation add column isco08_code text;
