@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.NotImplementedException;
 import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.model.db.Status;
@@ -87,10 +88,13 @@ public class OccupationServiceImpl implements OccupationService {
     @Override
     @Transactional
     public Occupation createOccupation(CreateOccupationRequest request) throws EntityExistsException {
-        Occupation occupation = new Occupation(
-                request.getName(), request.getStatus());
-        checkDuplicates(null, request.getName());
-        return this.occupationRepository.save(occupation);
+        throw new NotImplementedException(OccupationServiceImpl.class, "createOccupation");
+        //TODO JC New createOccupation which just takes an ISCO code. Need table of all ISCO codes.
+
+//        Occupation occupation = new Occupation(
+//                request.getName(), request.getStatus());
+//        checkDuplicates(null, request.getName());
+//        return this.occupationRepository.save(occupation);
     }
 
 
