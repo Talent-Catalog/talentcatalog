@@ -94,7 +94,7 @@ update occupation set isco08_code = '514' where id = 8530;
 update occupation set isco08_code = '5322' where id = 8531;
 update occupation set isco08_code = '2211' where id = 8646;
 update occupation set isco08_code = '3222' where id = 8647;
-update occupation set isco08_code = '322' where id = 8648;
+update occupation set isco08_code = '222' where id = 8648;
 update occupation set isco08_code = '2267' where id = 8649;
 update occupation set isco08_code = '226' where id = 8650;
 update occupation set isco08_code = '2264' where id = 8651;

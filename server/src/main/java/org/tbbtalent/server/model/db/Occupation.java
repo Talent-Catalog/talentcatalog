@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -27,6 +28,7 @@ import javax.persistence.Table;
 @SequenceGenerator(name = "seq_gen", sequenceName = "occupation_id_seq", allocationSize = 1)
 public class Occupation extends AbstractTranslatableDomainObject<Long> {
 
+    @Column(name = "isco08_code")
     private String isco08Code;
 
     @Enumerated(EnumType.STRING)
