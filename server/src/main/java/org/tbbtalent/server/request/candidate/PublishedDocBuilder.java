@@ -34,21 +34,6 @@ public class PublishedDocBuilder {
     Object value = contentValue == null ? null : contentValue.fetchData(candidate);
     final PublishedDocValueSource linkSource = columnContent.getLink();
 
-    if (linkSource != null && linkSource.getFieldName() != null) {
-      // Check for a link shareable CV, if exists set field name to fetch that cv.
-      if (linkSource.getFieldName().equals("shareableCv.url")) {
-        if (candidate.getListShareableCv() != null) {
-          linkSource.setFieldName("listShareableCv.url");
-        }
-      }
-      // Check for a link shareable Doc, if exists set field name to fetch that doc.
-      if (linkSource.getFieldName().equals("shareableDoc.url")) {
-        if (candidate.getListShareableDoc() != null) {
-          linkSource.setFieldName("listShareableDoc.url");
-        }
-      }
-    }
-
     String link = linkSource == null ? null : (String) linkSource.fetchData(candidate);
 
     if (link == null || value == null) {

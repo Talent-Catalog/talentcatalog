@@ -1,16 +1,21 @@
-<div class="d-flex">
-  <div class="font-15 mr-2">Selected Shareable Attachments <span *ngIf="isList">(for list)</span></div>
+<div class="d-flex h6 font-weight-normal mb-0">
+  <div class="font-15 mr-2 mb-2">Selected Shareable Attachments <span *ngIf="isList">(for list)</span></div>
   <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
 </div>
+<div *ngIf="candidateSource" class="text-muted mb-3">If left blank, the candidate's default selected shareable documents will be used (if present).</div>
 
 <form [formGroup]="form">
-  <div  class="d-flex flex-wrap justify-content-around">
-    <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start">
+  <div  class="flex-wrap justify-content-around">
+    <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start mb-2">
           <span for="surveyTypeId" class="mr-4">
             <i class="far fa-star fa-sm"></i>CV
           </span>
       <ng-select id="surveyTypeId" class="mr-2" [formControlName]="'shareableCvAttachmentId'" [items]="cvs"
                  placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+    </div>
+    <div *ngIf="candidateSource && candidate.shareableCv" class="d-flex mt-1">
+      <p class="mr-2">Default CV: </p>
+      <span class="text-muted">{{candidate.shareableCv.name}}</span>
     </div>
 
     <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start">
@@ -19,6 +24,10 @@
           </span>
       <ng-select id="surveyTypeIds" class="mr-2" [formControlName]="'shareableDocAttachmentId'" [items]="other"
                  placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+    </div>
+    <div *ngIf="candidateSource && candidate.shareableDoc" class="d-flex mt-1">
+      <p class="mr-2">Default Doc: </p>
+      <span class="text-muted">{{candidate.shareableDoc.name}}</span>
     </div>
   </div>
 </form>
