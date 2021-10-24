@@ -40,19 +40,13 @@
       </ng-container>
 
       <ng-container *ngIf="showAttachments">
-        <div class="pb-2">
+        <div>
           <app-shareable-docs
             [candidate]="candidate"
             [candidateSource]="candidateSource"
             [cvs]="cvs"
             [other]="other">
           </app-shareable-docs>
-          <div class="d-flex mt-2">
-            <div class="mr-2">
-              Note:
-            </div>
-            <div class="text-muted">If left blank, the candidate's selected shareable documents will be used (if present). See these docs under 'Additional Info' tab in candidate's profile.</div>
-          </div>
         </div>
       </ng-container>
 
