@@ -38,10 +38,19 @@
       <!-- FIELD -->
       <div class="form-group">
         <label for="occupation">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }} <sup>*</sup></label>
-        <select class="form-control" name="occupation" id="occupation" [formControlName]="'occupationId'">
-          <option value=""></option>
-          <option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</option>
-        </select>
+        <ng-select
+          class="form-control"
+          id="occupation"
+          [formControlName]="'occupationId'"
+          [items]="filteredOccupations"
+          bindLabel="name" bindValue="id"
+        >
+
+        </ng-select>
+<!--        <select class="form-control" name="occupation" id="occupation" [formControlName]="'occupationId'">-->
+<!--          <option value=""></option>-->
+<!--          <option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</option>-->
+<!--        </select>-->
         <app-form-control-error [control]="form.controls.occupationId"></app-form-control-error>
       </div>
 
