@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.service.db.SavedListService;
@@ -28,6 +29,7 @@ import org.tbbtalent.server.service.db.SavedListService;
 import java.net.URI;
 
 @RestController()
+@RequestMapping("admin/published")
 public class PublishedLinkAdminApi {
 
     private final SavedListService savedListService;
@@ -37,7 +39,7 @@ public class PublishedLinkAdminApi {
         this.savedListService = savedListService;
     }
 
-    @GetMapping("/published/{short-name}")
+    @GetMapping("{short-name}")
     public ResponseEntity<Void> redirect(@PathVariable("short-name") String shortName){
         SavedList list = this.savedListService.findByShortName(shortName);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(list.getPublishedDocLink())).build();
