@@ -38,7 +38,7 @@
       <!-- FIELD -->
       <div class="form-group">
         <label for="occupationId">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }} <sup>*</sup></label>
-        <ng-select id="occupationId" [formControlName]="'occupationId'" [clearable]="false" placeholder="Select">
+        <ng-select id="occupationId" [formControlName]="'occupationId'" [clearable]="false">
           <ng-option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</ng-option>
         </ng-select>
         <app-form-control-error [control]="form.controls.occupationId"></app-form-control-error>
