@@ -43,12 +43,11 @@
       <div class="form-group">
         <label for="gender">{{ 'REGISTRATION.PERSONAL.LABEL.GENDER' | translate }} <sup>*</sup></label>
 
-        <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
-          <option value=""></option>
-          <option value="female">{{ 'GENDER.FEMALE' | translate }}</option>
-          <option value="male">{{ 'GENDER.MALE' | translate }}</option>
-          <option value="other">{{ 'GENDER.OTHER' | translate }}</option>
-        </select>
+        <ng-select id="gender" [formControlName]="'gender'" [clearable]="false">
+          <ng-option value="female">{{ 'GENDER.FEMALE' | translate }}</ng-option>
+          <ng-option value="male">{{ 'GENDER.MALE' | translate }}</ng-option>
+          <ng-option value="other">{{ 'GENDER.OTHER' | translate }}</ng-option>
+        </ng-select>
 
         <app-form-control-error [control]="form.controls.gender"></app-form-control-error>
       </div>
@@ -69,10 +68,9 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="countryId">{{ 'REGISTRATION.PERSONAL.LABEL.COUNTRYID' | translate }} <sup>*</sup></label>
-        <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
-          <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
+        <ng-select id="countryId" [formControlName]="'countryId'" [items]="countries"
+                   bindValue="id" bindLabel="name" [clearable]="false">
+        </ng-select>
         <app-form-control-error [control]="form.controls.countryId"></app-form-control-error>
       </div>
     </div>
@@ -83,10 +81,8 @@
         <label for="yearOfArrival">
           {{ 'REGISTRATION.PERSONAL.LABEL.YEAROFARRIVAL' | translate }}
         </label>
-        <select class="form-control" name="yearOfArrival" id="yearOfArrival" [formControlName]="'yearOfArrival'">
-          <option value=""></option>
-          <option *ngFor="let year of years" [value]="year">{{year}}</option>
-        </select>
+        <ng-select id="yearOfArrival" [formControlName]="'yearOfArrival'" [items]="years">
+        </ng-select>
         <!--        <app-form-control-error [control]="form.controls.yearOfArrival"></app-form-control-error>-->
       </div>
     </div>
@@ -117,10 +113,9 @@
     <div class="col-12">
       <div class="form-group">
         <label for="nationality">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
-        <select class="form-control" name="nationality" id="nationality" [formControlName]="'nationality'">
-          <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
+        <ng-select id="nationality" [formControlName]="'nationality'" [items]="countries"
+                   bindLabel="name" bindValue="id" [clearable]="false">
+        </ng-select>
         <app-form-control-error [control]="form.controls.nationality"></app-form-control-error>
       </div>
     </div>
@@ -141,12 +136,11 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="unhcrRegistered">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }} <sup>*</sup></label>
-        <select class="form-control" name="unhcrRegistered" id="unhcrRegistered" [formControlName]="'unhcrRegistered'">
-          <option [value]="''"></option>
-          <option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</option>
-          <option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</option>
-          <option [value]="'Unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</option>
-        </select>
+        <ng-select id="unhcrRegistered" [formControlName]="'unhcrRegistered'" [clearable]="false">
+          <ng-option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</ng-option>
+          <ng-option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</ng-option>
+          <ng-option [value]="'Unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</ng-option>
+        </ng-select>
         <p class="text-muted small">
           {{ 'REGISTRATION.PERSONAL.NOTE.UNHCRREGISTERED' | translate }}
         </p>
@@ -165,11 +159,10 @@
     <div class="col-12" *ngIf="hasUnhcr">
       <div class="form-group">
         <label for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></label>
-        <select class="form-control" name="unhcrConsent" id="unhcrConsent" [formControlName]="'unhcrConsent'">
-          <option [value]="''"></option>
-          <option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</option>
-          <option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</option>
-        </select>
+        <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'" [clearable]="false">
+          <ng-option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</ng-option>
+          <ng-option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</ng-option>
+        </ng-select>
         <p class="text-muted small">
           {{ 'REGISTRATION.PERSONAL.NOTE.UNHCRCONSENT' | translate }}
         </p>

@@ -38,10 +38,9 @@
       <!-- WHICH LANGUAGE -->
       <div class="form-group" *ngIf="!isEnglish()">
         <label for="id">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }} <sup>*</sup></label>
-        <select class="form-control" name="id" id="id" [disabled]="" [formControlName]="'languageId'">
-          <option value=""></option>
-          <option *ngFor="let l of filteredLanguages" [value]="l.id">{{l.name}}</option>
-        </select>
+        <ng-select id="id" [disabled]="" [formControlName]="'languageId'" [clearable]="false">
+          <ng-option *ngFor="let l of filteredLanguages" [value]="l.id">{{l.name}}</ng-option>
+        </ng-select>
       </div>
 
       <ng-container *ngIf="selectedFormLanguage">
@@ -51,10 +50,9 @@
           <label for="spokenLevelId">
             {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
           </label>
-          <select class="form-control" name="spokenLevelId" id="spokenLevelId" [formControlName]="'spokenLevelId'">
-            <option value=""></option>
-            <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
-          </select>
+          <ng-select id="spokenLevelId" [formControlName]="'spokenLevelId'" [items]="languageLevels"
+                     [clearable]="false" bindValue="id" bindLabel="name">
+          </ng-select>
         </div>
 
         <!-- HOW WELL DO YOU READ AND WRITE -->
@@ -62,10 +60,9 @@
           <label for="writtenLevelId">
             {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
           </label>
-          <select class="form-control" name="writtenLevelId" id="writtenLevelId" [formControlName]="'writtenLevelId'">
-            <option value=""></option>
-            <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
-          </select>
+          <ng-select id="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels"
+                     [clearable]="false" bindLabel="name" bindValue="id">
+          </ng-select>
         </div>
 
       </ng-container>

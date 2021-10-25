@@ -22,9 +22,9 @@
 <div class="form-group" *ngIf="!isEnglish(language.languageId)">
   <label>{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
 
-  <select class="form-control" [disabled]="" [(ngModel)]="language.languageId" disabled *ngIf="!preview">
-    <option *ngFor="let l of languages" [value]="l.id">{{l.name}}</option>
-  </select>
+  <ng-select [disabled]="" [(ngModel)]="language.languageId" disabled *ngIf="!preview"
+             [items]="languages" [clearable]="false" bindValue="id" bindLabel="name">
+  </ng-select>
 
   <p class="m-0" *ngIf="preview">
     {{language.language.name | translate }}
@@ -37,9 +37,9 @@
     {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language.languageId)} }}
   </label>
 
-  <select class="form-control" [(ngModel)]="language.spokenLevelId" *ngIf="!preview">
-    <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
-  </select>
+  <ng-select [(ngModel)]="language.spokenLevelId" *ngIf="!preview" [items]="languageLevels"
+             [clearable]="false" bindLabel="name" bindValue="id">
+  </ng-select>
 
   <p class="m-0" *ngIf="preview">
     {{language.spokenLevel.name | translate }}
@@ -52,9 +52,9 @@
     {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language.languageId)} }}
   </label>
 
-  <select class="form-control" [(ngModel)]="language.writtenLevelId" *ngIf="!preview">
-    <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
-  </select>
+  <ng-select [(ngModel)]="language.writtenLevelId" *ngIf="!preview" [items]="languageLevels"
+             [clearable]="false" bindValue="id" bindLabel="name">
+  </ng-select>
 
   <p class="m-0" *ngIf="preview">
     {{language.writtenLevel.name | translate}}

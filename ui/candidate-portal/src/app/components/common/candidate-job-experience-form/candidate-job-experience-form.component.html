@@ -27,12 +27,9 @@
         {{ 'FORM.JOBEXPERIENCE.LABEL.CANDIDATEOCCUPATIONID' | translate }} <sup>*</sup>
       </label>
 
-      <select class="form-control" name="candidateOccupationId" id="candidateOccupationId"
-              [formControlName]="'candidateOccupationId'">
-        <option value=""></option>
-        <option *ngFor="let candidateOccupation of candidateOccupations"
-                [value]="candidateOccupation.id">{{candidateOccupation.occupation.name}}</option>
-      </select>
+      <ng-select  id="candidateOccupationId" [formControlName]="'candidateOccupationId'" [items]="candidateOccupations"
+                  [clearable]="false" bindValue="id" bindLabel="name">
+      </ng-select>
 
       <app-form-control-error [control]="form.controls.candidateOccupationId"></app-form-control-error>
     </div>
@@ -57,12 +54,9 @@
       <label for="country">
         {{ 'FORM.JOBEXPERIENCE.LABEL.COUNTRY' | translate }} <sup>*</sup>
       </label>
-
-      <select class="form-control" name="country" id="country" [formControlName]="'country'">
-        <option value=""></option>
-        <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-      </select>
-
+      <ng-select id="country" [formControlName]="'country'" [items]="countries"
+                 [clearable]="false" bindLabel="name" bindValue="id">
+      </ng-select>
       <app-form-control-error [control]="form.controls.country"></app-form-control-error>
     </div>
   </div>

@@ -22,14 +22,13 @@
     <div class="col-12">
       <div class="form-group">
         <label for="educationType">{{ 'FORM.EDUCATION.EDUCATIONTYPE' | translate }} <sup>*</sup></label>
-        <select class="form-control" id="educationType" [formControlName]="'educationType'">
-          <option value=""></option>
-          <option value="Associate">{{ 'EDUCATIONTYPE.ASSOCIATE' | translate }}</option>
-          <option value="Vocational">{{ 'EDUCATIONTYPE.VOCATIONAL' | translate }}</option>
-          <option value="Bachelor">{{ 'EDUCATIONTYPE.BACHELOR' | translate }}</option>
-          <option value="Masters">{{ 'EDUCATIONTYPE.MASTERS' | translate }}</option>
-          <option value="Doctoral">{{ 'EDUCATIONTYPE.DOCTORAL' | translate }}</option>
-        </select>
+        <ng-select id="educationType" [formControlName]="'educationType'" [clearable]="false">
+          <ng-option value="Associate">{{ 'EDUCATIONTYPE.ASSOCIATE' | translate }}</ng-option>
+          <ng-option value="Vocational">{{ 'EDUCATIONTYPE.VOCATIONAL' | translate }}</ng-option>
+          <ng-option value="Bachelor">{{ 'EDUCATIONTYPE.BACHELOR' | translate }}</ng-option>
+          <ng-option value="Masters">{{ 'EDUCATIONTYPE.MASTERS' | translate }}</ng-option>
+          <ng-option value="Doctoral">{{ 'EDUCATIONTYPE.DOCTORAL' | translate }}</ng-option>
+        </ng-select>
       </div>
     </div>
 
@@ -37,10 +36,9 @@
     <div class="col-12">
       <div class="form-group">
         <label for="educationMajorId">{{ 'FORM.EDUCATION.EDUCATIONMAJORID' | translate }} <sup>*</sup></label>
-        <select class="form-control" id="educationMajorId" [formControlName]="'educationMajorId'">
-          <option value=""></option>
-          <option [value]="major.id" *ngFor="let major of majors">{{major.name}}</option>
-        </select>
+        <ng-select id="educationMajorId" [formControlName]="'educationMajorId'" [items]="majors"
+                   [clearable]="false" bindValue="id" bindLabel="name">
+        </ng-select>
       </div>
     </div>
 
@@ -56,10 +54,9 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="countryId">{{ 'FORM.EDUCATION.COUNTRYID' | translate }} <sup>*</sup></label>
-        <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
-          <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
+        <ng-select id="countryId" [formControlName]="'countryId'" [items]="countries"
+                   [clearable]="false" bindLabel="name" bindValue="id">
+        </ng-select>
       </div>
     </div>
 
@@ -83,10 +80,8 @@
     <div class="col-8 col-md-4">
       <div class="form-group">
         <label for="yearCompleted">{{ 'FORM.EDUCATION.DATECOMPLETED' | translate }} <sup>*</sup></label>
-        <select class="form-control" name="yearCompleted" id="yearCompleted" [formControlName]="'yearCompleted'">
-          <option value=""></option>
-          <option *ngFor="let year of years" [value]="year">{{year}}</option>
-        </select>
+        <ng-select id="yearCompleted" [formControlName]="'yearCompleted'" [items]="years" [clearable]="false">
+        </ng-select>
       </div>
     </div>
 
