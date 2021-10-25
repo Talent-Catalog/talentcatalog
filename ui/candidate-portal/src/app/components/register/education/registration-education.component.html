@@ -27,10 +27,10 @@
       <!-- MAX EDUCATION LEVEL -->
       <div class="form-group">
         <label for="maxEducationLevelId">{{ 'REGISTRATION.EDUCATION.LABEL.MAXEDUCATIONLEVELID' | translate }}</label>
-        <select class="form-control" id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'" >
-          <option value=0></option>
-          <option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</option>
-        </select>
+        <ng-select id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'" [clearable]="false">
+          <ng-option [value]=0></ng-option>
+          <ng-option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</ng-option>
+        </ng-select>
       </div>
 
     </form>
