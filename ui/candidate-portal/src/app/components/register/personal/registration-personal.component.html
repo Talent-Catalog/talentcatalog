@@ -43,7 +43,8 @@
       <div class="form-group">
         <label for="gender">{{ 'REGISTRATION.PERSONAL.LABEL.GENDER' | translate }} <sup>*</sup></label>
 
-        <ng-select id="gender" [formControlName]="'gender'" [clearable]="false">
+        <ng-select id="gender" [formControlName]="'gender'" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
           <ng-option value="female">{{ 'GENDER.FEMALE' | translate }}</ng-option>
           <ng-option value="male">{{ 'GENDER.MALE' | translate }}</ng-option>
           <ng-option value="other">{{ 'GENDER.OTHER' | translate }}</ng-option>
@@ -68,8 +69,8 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="countryId">{{ 'REGISTRATION.PERSONAL.LABEL.COUNTRYID' | translate }} <sup>*</sup></label>
-        <ng-select id="countryId" [formControlName]="'countryId'" [items]="countries"
-                   bindValue="id" bindLabel="name" [clearable]="false">
+        <ng-select id="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindValue="id" bindLabel="name">
         </ng-select>
         <app-form-control-error [control]="form.controls.countryId"></app-form-control-error>
       </div>
@@ -81,7 +82,8 @@
         <label for="yearOfArrival">
           {{ 'REGISTRATION.PERSONAL.LABEL.YEAROFARRIVAL' | translate }}
         </label>
-        <ng-select id="yearOfArrival" [formControlName]="'yearOfArrival'" [items]="years">
+        <ng-select id="yearOfArrival" [formControlName]="'yearOfArrival'" [items]="years"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
         </ng-select>
         <!--        <app-form-control-error [control]="form.controls.yearOfArrival"></app-form-control-error>-->
       </div>
@@ -113,8 +115,8 @@
     <div class="col-12">
       <div class="form-group">
         <label for="nationality">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
-        <ng-select id="nationality" [formControlName]="'nationality'" [items]="countries"
-                   bindLabel="name" bindValue="id" [clearable]="false">
+        <ng-select id="nationality" [formControlName]="'nationality'" [items]="countries" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindLabel="name" bindValue="id">
         </ng-select>
         <app-form-control-error [control]="form.controls.nationality"></app-form-control-error>
       </div>

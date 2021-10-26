@@ -78,7 +78,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       city: [''],
       yearOfArrival: [''],
       /* NATIONALITY */
-      nationality: ['', Validators.required],
+      nationality: [null, Validators.required],
       externalId: [null],
       externalIdSource: ['US Afghan Parolee Id'],
       unhcrRegistered: [null, Validators.required],
@@ -103,12 +103,12 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           gender: response.gender || null ,
           dob: response.dob || null,
           /* LOCATION */
-          countryId: response.country ? response.country.id : null,
+          countryId: response.country.id > 0 ? response.country.id : null,
           city: response.city,
           state: response.state,
           yearOfArrival: response.yearOfArrival,
           /* NATIONALITY */
-          nationality: response.nationality ? response.nationality.id : null,
+          nationality: response.nationality.id > 0 ? response.nationality.id : null,
           /* IDS */
           externalId: response.externalId ? response.externalId : null,
           // externalIdSource: response.externalIdSource ? response.externalIdSource : null,

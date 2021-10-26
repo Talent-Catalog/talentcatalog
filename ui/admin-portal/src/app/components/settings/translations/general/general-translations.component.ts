@@ -423,6 +423,10 @@ const ALL_FIELDS = {
         "SAVE": null,
         "APPROX": null
       },
+      "PLACEHOLDER" : {
+        "SELECT": null,
+        "SELECTORTYPE": null
+      },
       "ERROR": {
         "REQUIRED": null,
         "EMAIL": null,
