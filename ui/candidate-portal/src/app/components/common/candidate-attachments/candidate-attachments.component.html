@@ -27,7 +27,7 @@
   <div class="mb-3" *ngFor="let attachment of attachments; let i = index;" [class.card]="!preview">
 
     <div class="text-right" *ngIf="!preview && attachment.createdBy.id == user?.id">
-      <button class="btn btn-secondary btn-card pb-1"
+      <button class="btn btn-secondary btn-card"
               (click)="editCandidateAttachment(attachment)">
         <fa-icon class="d-flex" icon="edit" size="xs"></fa-icon></button>
 

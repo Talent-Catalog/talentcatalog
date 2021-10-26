@@ -21,31 +21,7 @@
     </div>
 
     <div id="upload">
-      <ngb-accordion #a="ngbAccordion" activeIds="upload-file">
-        <ngb-panel id="upload-file">
-          <ng-template ngbPanelHeader let-opened="opened">
-            <div class="d-flex align-items-center justify-content-between">
-              <div>
-                <strong>{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
-                <p class="mb-0 small">{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
-              </div>
-              <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
-                <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
-                <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
-              </button>
-            </div>
-          </ng-template>
-          <ng-template ngbPanelContent>
-            <app-candidate-attachments
-              [cv]="false">
-            </app-candidate-attachments>
-          </ng-template>
-        </ngb-panel>
-      </ngb-accordion>
-
-      <br>
-
-      <ngb-accordion #a="ngbAccordion">
+      <ngb-accordion #a="ngbAccordion" activeIds="upload-cv">
         <ngb-panel id="upload-cv">
           <ng-template ngbPanelHeader let-opened="opened">
             <div class="d-flex align-items-center justify-content-between">
@@ -62,6 +38,30 @@
           <ng-template ngbPanelContent>
             <app-candidate-attachments
               [cv]="true">
+            </app-candidate-attachments>
+          </ng-template>
+        </ngb-panel>
+      </ngb-accordion>
+
+      <br>
+
+      <ngb-accordion #a="ngbAccordion">
+        <ngb-panel id="upload-file">
+          <ng-template ngbPanelHeader let-opened="opened">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <strong>{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
+                <p class="mb-0 small">{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
+              </div>
+              <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+                <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
+                <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
+              </button>
+            </div>
+          </ng-template>
+          <ng-template ngbPanelContent>
+            <app-candidate-attachments
+              [cv]="false">
             </app-candidate-attachments>
           </ng-template>
         </ngb-panel>
