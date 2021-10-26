@@ -102,6 +102,11 @@
   <app-error [error]="error"></app-error>
 
   <div class="text-center mt-4 submit">
+    <button class="btn btn-outline-primary"
+            [disabled]="loading || saving"
+            (click)="cancel()">
+      {{ 'FORM.JOBEXPERIENCE.BUTTON.CANCEL' | translate }}
+    </button>
     <button class="btn btn-primary"
             [disabled]="form.invalid"
             (click)="save()">

@@ -56,6 +56,7 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
   educationLevels: EducationLevel[];
   candidateEducationItems: CandidateEducation[];
   addingEducation: boolean;
+  editingEducation: boolean;
   educationType: string;
 
   editTarget: CandidateEducation;
@@ -207,6 +208,15 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
     this.addingEducation = true;
   }
 
+  handleClose() {
+    this.addingEducation = false;
+  }
+
+  handleCloseSaved() {
+    this.editTarget = null;
+    this.editingEducation = false;
+  }
+
   handleCandidateEducationCreated(education: CandidateEducation) {
     let index = -1;
     if (this.candidateEducationItems.length) {
@@ -241,11 +251,13 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
 
   editCandidateEducation(education: CandidateEducation) {
     this.editTarget = education;
+    this.editingEducation = true;
   }
 
   handleEducationSaved(education: CandidateEducation, i) {
     this.candidateEducationItems[i] = education;
     this.editTarget = null;
+    this.editingEducation = false;
   }
 
   ngOnDestroy() {
