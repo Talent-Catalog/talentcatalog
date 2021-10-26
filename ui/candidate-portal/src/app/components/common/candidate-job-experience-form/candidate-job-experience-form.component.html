@@ -28,7 +28,7 @@
       </label>
 
       <ng-select  id="candidateOccupationId" [formControlName]="'candidateOccupationId'" [items]="candidateOccupations"
-                  [clearable]="false" bindValue="id" bindLabel="name">
+                  [clearable]="false" bindValue="id" bindLabel="occupation.name">
       </ng-select>
 
       <app-form-control-error [control]="form.controls.candidateOccupationId"></app-form-control-error>
