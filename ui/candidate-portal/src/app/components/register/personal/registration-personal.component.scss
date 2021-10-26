@@ -13,3 +13,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+.ng-select.custom {
+  .ng-select-container {
+    height: 42px;
+    background-color: gold;
+    border: 1px solid salmon;
+    .ng-value-container {
+      color: #e7d362;
+
+      .ng-placeholder {
+        color: saddlebrown;
+      }
+    }
+  }
+}

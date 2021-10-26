@@ -22,7 +22,8 @@
     <div class="col-12">
       <div class="form-group">
         <label for="educationType">{{ 'FORM.EDUCATION.EDUCATIONTYPE' | translate }} <sup>*</sup></label>
-        <ng-select id="educationType" [formControlName]="'educationType'" [clearable]="false">
+        <ng-select id="educationType" [formControlName]="'educationType'" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option value="Associate">{{ 'EDUCATIONTYPE.ASSOCIATE' | translate }}</ng-option>
           <ng-option value="Vocational">{{ 'EDUCATIONTYPE.VOCATIONAL' | translate }}</ng-option>
           <ng-option value="Bachelor">{{ 'EDUCATIONTYPE.BACHELOR' | translate }}</ng-option>
@@ -36,8 +37,8 @@
     <div class="col-12">
       <div class="form-group">
         <label for="educationMajorId">{{ 'FORM.EDUCATION.EDUCATIONMAJORID' | translate }} <sup>*</sup></label>
-        <ng-select id="educationMajorId" [formControlName]="'educationMajorId'" [items]="majors"
-                   [clearable]="false" bindValue="id" bindLabel="name">
+        <ng-select id="educationMajorId" [formControlName]="'educationMajorId'" [items]="majors" [clearable]="false"
+                   bindValue="id" bindLabel="name" placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
         </ng-select>
       </div>
     </div>
@@ -54,8 +55,8 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="countryId">{{ 'FORM.EDUCATION.COUNTRYID' | translate }} <sup>*</sup></label>
-        <ng-select id="countryId" [formControlName]="'countryId'" [items]="countries"
-                   [clearable]="false" bindLabel="name" bindValue="id">
+        <ng-select id="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
+                   bindLabel="name" bindValue="id" placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
         </ng-select>
       </div>
     </div>
@@ -80,7 +81,8 @@
     <div class="col-8 col-md-4">
       <div class="form-group">
         <label for="yearCompleted">{{ 'FORM.EDUCATION.DATECOMPLETED' | translate }} <sup>*</sup></label>
-        <ng-select id="yearCompleted" [formControlName]="'yearCompleted'" [items]="years" [clearable]="false">
+        <ng-select id="yearCompleted" [formControlName]="'yearCompleted'" [items]="years" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
         </ng-select>
       </div>
     </div>

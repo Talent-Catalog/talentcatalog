@@ -36,8 +36,8 @@
           <label for="surveyTypeId">
             {{ 'REGISTRATION.SUBMIT.LABEL.SURVEY' | translate }} <sup>*</sup>
           </label>
-          <ng-select id="surveyTypeId" [formControlName]="'surveyTypeId'" [items]="surveyTypes"
-                     [clearable]="false" bindLabel="name" bindValue="id">
+          <ng-select id="surveyTypeId" [formControlName]="'surveyTypeId'" [items]="surveyTypes" [clearable]="false"
+                     bindLabel="name" bindValue="id" placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
           </ng-select>
         </div>
 

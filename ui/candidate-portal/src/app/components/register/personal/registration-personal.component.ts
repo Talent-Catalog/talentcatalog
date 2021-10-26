@@ -73,12 +73,12 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       gender: [null, Validators.required],
       dob: [null, Validators.required],
       /* LOCATION */
-      countryId: ['', Validators.required],
+      countryId: [null, Validators.required],
       state: [''],
       city: [''],
       yearOfArrival: [''],
       /* NATIONALITY */
-      nationality: [null, Validators.required],
+      nationalityId: [null, Validators.required],
       externalId: [null],
       externalIdSource: ['US Afghan Parolee Id'],
       unhcrRegistered: [null, Validators.required],
@@ -108,7 +108,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           state: response.state,
           yearOfArrival: response.yearOfArrival,
           /* NATIONALITY */
-          nationality: response.nationality.id > 0 ? response.nationality.id : null,
+          nationalityId: response.nationality.id > 0 ? response.nationality.id : null,
           /* IDS */
           externalId: response.externalId ? response.externalId : null,
           // externalIdSource: response.externalIdSource ? response.externalIdSource : null,
@@ -142,8 +142,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   get tbbCriteriaFailed() {
     let failed: boolean = false;
-    if (this.country !== '0' && this.country !== '') {
-      if (this.country === this.nationality && this.country !== '6180') {
+    if (this.country !== null) {
+      if (this.country === this.nationality && this.country !== 6180) {
         failed = true;
       } else {
         failed = false;
@@ -153,11 +153,11 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   }
 
   get nationality() {
-    return this.form.value.nationality?.toString();
+    return this.form.value.nationalityId;
   }
 
   get country() {
-    return this.form.value.countryId?.toString();
+    return this.form.value.countryId;
   }
 
   get hasUnhcr() {

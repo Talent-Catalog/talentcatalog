@@ -43,8 +43,8 @@
       <div class="form-group">
         <label for="gender">{{ 'REGISTRATION.PERSONAL.LABEL.GENDER' | translate }} <sup>*</sup></label>
 
-        <ng-select id="gender" [formControlName]="'gender'" [clearable]="false"
-                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
+        <ng-select id="gender" [formControlName]="'gender'" [clearable]="false" [searchable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option value="female">{{ 'GENDER.FEMALE' | translate }}</ng-option>
           <ng-option value="male">{{ 'GENDER.MALE' | translate }}</ng-option>
           <ng-option value="other">{{ 'GENDER.OTHER' | translate }}</ng-option>
@@ -114,11 +114,11 @@
     <!-- NATIONALITY -->
     <div class="col-12">
       <div class="form-group">
-        <label for="nationality">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
-        <ng-select id="nationality" [formControlName]="'nationality'" [items]="countries" [clearable]="false"
+        <label for="nationalityId">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
+        <ng-select id="nationalityId" [formControlName]="'nationalityId'" [items]="countries" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindLabel="name" bindValue="id">
         </ng-select>
-        <app-form-control-error [control]="form.controls.nationality"></app-form-control-error>
+        <app-form-control-error [control]="form.controls.nationalityId"></app-form-control-error>
       </div>
     </div>
 
@@ -138,7 +138,8 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="unhcrRegistered">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }} <sup>*</sup></label>
-        <ng-select id="unhcrRegistered" [formControlName]="'unhcrRegistered'" [clearable]="false">
+        <ng-select id="unhcrRegistered" class="custom" [formControlName]="'unhcrRegistered'" [clearable]="false" [searchable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</ng-option>
           <ng-option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</ng-option>
           <ng-option [value]="'Unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</ng-option>
@@ -161,7 +162,8 @@
     <div class="col-12" *ngIf="hasUnhcr">
       <div class="form-group">
         <label for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></label>
-        <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'" [clearable]="false">
+        <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'" [clearable]="false" [searchable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</ng-option>
           <ng-option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</ng-option>
         </ng-select>

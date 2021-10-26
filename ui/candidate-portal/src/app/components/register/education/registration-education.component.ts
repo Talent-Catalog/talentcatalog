@@ -77,7 +77,7 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
     this.editTarget = null;
     this.candidateEducationItems = [];
     this.form = this.fb.group({
-      maxEducationLevelId: [0]
+      maxEducationLevelId: [null]
     });
 
     this.form.get('maxEducationLevelId').valueChanges.subscribe(value => {
@@ -108,7 +108,7 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
     this.candidateService.getCandidateEducation().subscribe(
       (candidate) => {
         this.form.patchValue({
-          maxEducationLevelId: candidate.maxEducationLevel ? candidate.maxEducationLevel.id : 0,
+          maxEducationLevelId: candidate.maxEducationLevel?.id > 0 ? candidate.maxEducationLevel.id : null,
         });
         if (candidate.candidateEducations) {
           this.candidateEducationItems = candidate.candidateEducations
@@ -162,6 +162,11 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
 
   save(dir: string) {
     this.saving = true;
+
+    // If nothing input, don't want to send null to database need to send 0.
+    if (this.form.value.maxEducationLevelId === null) {
+      this.form.get('maxEducationLevelId').patchValue(0);
+    }
 
     this.candidateService.updateCandidateEducationLevel(this.form.value).subscribe(
       (response) => {

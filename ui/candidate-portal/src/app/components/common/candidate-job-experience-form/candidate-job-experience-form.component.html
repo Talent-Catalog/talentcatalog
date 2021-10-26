@@ -28,7 +28,7 @@
       </label>
 
       <ng-select  id="candidateOccupationId" [formControlName]="'candidateOccupationId'" [items]="candidateOccupations"
-                  [clearable]="false" bindValue="id" bindLabel="name">
+                  [clearable]="false" bindValue="id" bindLabel="name" placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
       </ng-select>
 
       <app-form-control-error [control]="form.controls.candidateOccupationId"></app-form-control-error>
@@ -54,8 +54,8 @@
       <label for="country">
         {{ 'FORM.JOBEXPERIENCE.LABEL.COUNTRY' | translate }} <sup>*</sup>
       </label>
-      <ng-select id="country" [formControlName]="'country'" [items]="countries"
-                 [clearable]="false" bindLabel="name" bindValue="id">
+      <ng-select id="country" [formControlName]="'country'" [items]="countries" [clearable]="false"
+                  bindLabel="name" bindValue="id" placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
       </ng-select>
       <app-form-control-error [control]="form.controls.country"></app-form-control-error>
     </div>
