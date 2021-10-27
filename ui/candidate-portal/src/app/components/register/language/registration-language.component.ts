@@ -74,9 +74,9 @@ export class RegistrationLanguageComponent implements OnInit, OnDestroy {
     this.addingLanguage = false;
     this.saving = false;
     this.form = this.fb.group({
-      languageId: ['', Validators.required],
-      spokenLevelId: ['', Validators.required],
-      writtenLevelId: ['', Validators.required]
+      languageId: [null, Validators.required],
+      spokenLevelId: [null, Validators.required],
+      writtenLevelId: [null, Validators.required]
     });
 
     this.loadDropDownData();

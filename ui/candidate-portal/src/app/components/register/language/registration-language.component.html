@@ -38,7 +38,8 @@
       <!-- WHICH LANGUAGE -->
       <div class="form-group" *ngIf="!isEnglish()">
         <label for="id">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }} <sup>*</sup></label>
-        <ng-select id="id" [disabled]="" [formControlName]="'languageId'" [clearable]="false">
+        <ng-select id="id" [disabled]="" [formControlName]="'languageId'" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
           <ng-option *ngFor="let l of filteredLanguages" [value]="l.id">{{l.name}}</ng-option>
         </ng-select>
       </div>
@@ -50,8 +51,8 @@
           <label for="spokenLevelId">
             {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
           </label>
-          <ng-select id="spokenLevelId" [formControlName]="'spokenLevelId'" [items]="languageLevels"
-                     [clearable]="false" bindValue="id" bindLabel="name">
+          <ng-select id="spokenLevelId" [formControlName]="'spokenLevelId'" [items]="languageLevels" [clearable]="false"
+                     bindValue="id" bindLabel="name" placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           </ng-select>
         </div>
 
@@ -60,8 +61,8 @@
           <label for="writtenLevelId">
             {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
           </label>
-          <ng-select id="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels"
-                     [clearable]="false" bindLabel="name" bindValue="id">
+          <ng-select id="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels" [clearable]="false"
+                     bindLabel="name" bindValue="id" placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           </ng-select>
         </div>
 
