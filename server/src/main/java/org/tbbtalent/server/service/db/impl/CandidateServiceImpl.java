@@ -1254,8 +1254,8 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
         // Load the nationality from the database - throw an exception if not found
-        Country nationality = countryRepository.findById(request.getNationality())
-                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationality()));
+        Country nationality = countryRepository.findById(request.getNationalityId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationalityId()));
 
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
@@ -1265,7 +1265,7 @@ public class CandidateServiceImpl implements CandidateService {
         user = userRepository.save(user);
         Candidate candidate = candidateRepository.findByUserId(user.getId());
 
-        String newStatus = checkStatusValidity(request.getCountryId(), request.getNationality(), candidate);
+        String newStatus = checkStatusValidity(request.getCountryId(), request.getNationalityId(), candidate);
 
         if (candidate != null) {
             candidate.setGender(request.getGender());

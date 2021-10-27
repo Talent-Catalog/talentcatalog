@@ -37,7 +37,7 @@ public class UpdateCandidatePersonalRequest {
     private String state;
     private Integer yearOfArrival;
     /* NATIONALITY */
-    private Long nationality;
+    private Long nationalityId;
     /* EXTERNAL ID */
     private String externalId;
     private String externalIdSource;
@@ -104,12 +104,12 @@ public class UpdateCandidatePersonalRequest {
         this.yearOfArrival = yearOfArrival;
     }
 
-    public Long getNationality() {
-        return nationality;
+    public Long getNationalityId() {
+        return nationalityId;
     }
 
-    public void setNationality(Long nationality) {
-        this.nationality = nationality;
+    public void setNationalityId(Long nationalityId) {
+        this.nationalityId = nationalityId;
     }
 
     public String getExternalId() {return externalId;}
