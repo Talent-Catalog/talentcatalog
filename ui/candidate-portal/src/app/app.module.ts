@@ -90,6 +90,7 @@ import {RegistrationUploadFileComponent} from './components/register/upload-file
 import {DatePickerComponent} from './components/common/date-picker/date-picker.component';
 import {CustomDatepickerI18n} from "./util/custom-date-picker";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
+import {NgSelectModule} from "@ng-select/ng-select";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -172,7 +173,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         useClass: PhraseAppCompiler
       }
     }),
-    FontAwesomeModule
+    FontAwesomeModule,
+    NgSelectModule
   ],
   providers: [
     {provide: RedirectGuard},

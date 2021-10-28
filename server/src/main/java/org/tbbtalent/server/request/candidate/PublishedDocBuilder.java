@@ -16,9 +16,10 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import org.tbbtalent.server.model.db.Candidate;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.tbbtalent.server.model.db.Candidate;
 
 /**
  * Used to build the published Google sheet doc
@@ -29,10 +30,10 @@ public class PublishedDocBuilder {
 
   public Object buildCell(Candidate candidate, PublishedDocColumnDef columnInfo) {
     PublishedDocColumnContent columnContent = columnInfo.getContent();
-    //Object value = columnContent.getValue().fetchData(candidate);
     final PublishedDocValueSource contentValue = columnContent.getValue();
     Object value = contentValue == null ? null : contentValue.fetchData(candidate);
     final PublishedDocValueSource linkSource = columnContent.getLink();
+
     String link = linkSource == null ? null : (String) linkSource.fetchData(candidate);
 
     if (link == null || value == null) {

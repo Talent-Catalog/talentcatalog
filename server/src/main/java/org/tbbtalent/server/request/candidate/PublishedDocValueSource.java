@@ -71,7 +71,14 @@ public class PublishedDocValueSource {
         log.error("Cannot extract field " + fieldName + " from null candidate");
       } else {
         try {
-          val = candidate.extractField(fieldName);
+          // Get the list specific shareable CV or Doc if exists, otherwise get the field name supplied.
+          if (fieldName.equals("shareableCv.url") && candidate.getListShareableCv() != null) {
+            val = candidate.extractField("listShareableCv.url");
+          } else if (fieldName.equals("shareableDoc.url") && candidate.getListShareableDoc() != null) {
+            val = candidate.extractField("listShareableDoc.url");
+          } else {
+            val = candidate.extractField(fieldName);
+          }
         } catch (Exception e) {
           log.error("Error extracting field " + fieldName + " from candidate " + candidate.getCandidateNumber());
         }

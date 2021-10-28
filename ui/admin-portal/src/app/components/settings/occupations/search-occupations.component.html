@@ -61,7 +61,7 @@
 
     <thead>
     <tr>
-      <th>Name</th>
+      <th>Name (TBB id-ISCO08 code)</th>
       <th>Status</th>
       <th>Translation count</th>
       <th></th>
@@ -70,7 +70,7 @@
 
     <tbody>
     <tr *ngFor="let occupation of results?.content">
-      <td>{{occupation.name}}</td>
+      <td>{{occupation.name}} ({{occupation.id}}-{{occupation.isco08Code}})</td>
       <td>{{occupation.status}}</td>
       <td></td>
       <td>

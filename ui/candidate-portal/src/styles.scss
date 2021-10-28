@@ -24,6 +24,8 @@
 /* Component specific styles */
 @import "scss/component/registration-step";
 
+@import "~@ng-select/ng-select/themes/default.theme.css";
+
 
 // Card specific
 .card.parent-card .card {

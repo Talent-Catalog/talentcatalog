@@ -29,7 +29,8 @@ export class JobOccupationComponent extends IntakeComponentBase implements OnIni
     this.form.controls['visaJobOccupationId']?.valueChanges.subscribe(
       change => {
         //Update my existingRecord with occupation object
-          this.selectedJobCheck.occupation = {id: change, name: null, status: null};
+          this.selectedJobCheck.occupation =
+            {id: change, name: null, isco08Code: null, status: null};
       }
     );
   }
