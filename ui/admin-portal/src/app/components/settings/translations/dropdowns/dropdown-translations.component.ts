@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../services/language.service";
@@ -45,6 +45,7 @@ export class DropdownTranslationsComponent implements OnInit {
   types: SearchResults<any>;
 
   topLevelForm: FormGroup;
+  translations: FormArray;
 
 
   constructor(private fb: FormBuilder,
@@ -73,6 +74,10 @@ export class DropdownTranslationsComponent implements OnInit {
     });
   }
 
+  get translationsArray(): FormArray {
+    return this.topLevelForm.get('translations') as FormArray;
+  }
+
   getSystemLanguages() {
     this.loading = true;
     this.languageService.listSystemLanguages().subscribe(
@@ -94,7 +99,7 @@ export class DropdownTranslationsComponent implements OnInit {
       )
       .subscribe(res => {
         //reset page number as changing types
-        this.pageNumber = 1;
+        // this.pageNumber = 1;
         this.search();
       });
     this.search();
@@ -106,6 +111,7 @@ export class DropdownTranslationsComponent implements OnInit {
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
 
+    console.log(this.pageNumber)
     if (this.searchForm.valid) {
       const type = this.searchForm.controls['type'].value;
       const language = this.searchForm.controls['language'].value;
@@ -114,7 +120,7 @@ export class DropdownTranslationsComponent implements OnInit {
       this.error = null;
       this.translationService.search(request.type, request).subscribe(results => {
           this.results = results;
-
+          this.loading = false;
           //form for editing
           this.topLevelForm = this.fb.group({
             translations: this.fb.array(
@@ -138,6 +144,12 @@ export class DropdownTranslationsComponent implements OnInit {
 
 
   }
+
+
+  //
+  // fieldGlobalIndex(index) {
+  //   return index + this.pageSize * this.pageNumber;
+  // }
 
   updateTranslation(index) {
     const translationForm = this.topLevelForm.get(`translations.${index}`) as FormGroup;
