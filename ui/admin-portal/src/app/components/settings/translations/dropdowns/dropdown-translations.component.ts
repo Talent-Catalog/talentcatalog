@@ -22,7 +22,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../services/language.service";
 import {CountryService} from "../../../../services/country.service";
 import {TranslationService} from "../../../../services/translation.service";
-import {TranslationItem} from '../../../../model/translation-item';
+import {TranslatedObject} from '../../../../model/translated-object';
 import {SystemLanguage} from '../../../../model/language';
 import {User} from "../../../../model/user";
 
@@ -40,7 +40,7 @@ export class DropdownTranslationsComponent implements OnInit {
   error: any;
   pageNumber: number;
   pageSize: number;
-  results: SearchResults<TranslationItem>;
+  results: SearchResults<TranslatedObject>;
   systemLanguages: SystemLanguage[];
   types: SearchResults<any>;
 
@@ -119,11 +119,11 @@ export class DropdownTranslationsComponent implements OnInit {
           this.topLevelForm = this.fb.group({
             translations: this.fb.array(
               this.results.content.map(t => this.fb.group({
-                id: [t.id, [Validators.required]],
-                type: [type, [Validators.required]],
+                id: [t.translatedId, [Validators.required]],
+                objectId: [t.id, [Validators.required]],
+                objectType: [type, [Validators.required]],
                 language: [language, [Validators.required]],
-                translatedId: [t.translatedId, [Validators.required]],
-                translatedName: [t.translatedName, [Validators.required, Validators.minLength(2)]]
+                value: [t.translatedName, [Validators.required, Validators.minLength(2)]]
               }))
             )
           });
@@ -140,11 +140,11 @@ export class DropdownTranslationsComponent implements OnInit {
   }
 
   updateTranslation(index) {
-    let translationForm = this.topLevelForm.get(`translations.${index}`) as FormGroup;
-    let request = translationForm.value;
-    if (request.translatedId) {
+    const translationForm = this.topLevelForm.get(`translations.${index}`) as FormGroup;
+    const request = translationForm.value;
+    if (request.id) {
       //update
-      this.translationService.update(request.translatedId, request).subscribe(results => {
+      this.translationService.update(request.id, request).subscribe(results => {
         this.search();
       })
     } else {

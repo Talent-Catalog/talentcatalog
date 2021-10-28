@@ -17,28 +17,17 @@
 package org.tbbtalent.server.request.translation;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 public class UpdateTranslationRequest {
 
-    @NotNull
-    private Long translatedId;
     @NotBlank
-    private String translatedName;
+    private String value;
 
-    public Long getTranslatedId() {
-        return translatedId;
+    public String getValue() {
+        return value;
     }
 
-    public void setTranslatedId(Long translatedId) {
-        this.translatedId = translatedId;
-    }
-
-    public String getTranslatedName() {
-        return translatedName;
-    }
-
-    public void setTranslatedName(String translatedName) {
-        this.translatedName = translatedName;
+    public void setValue(String value) {
+        this.value = value;
     }
 }

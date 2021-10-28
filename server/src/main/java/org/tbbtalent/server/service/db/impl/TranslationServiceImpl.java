@@ -97,10 +97,10 @@ public class TranslationServiceImpl implements TranslationService {
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        Translation translation = new Translation(user, request.getId(), request.getType(),
-                request.getType(), request.getTranslatedName());
-        List<Translation> existing = translationRepository.findByTypeLanguage(request.getType(), request.getLanguage());
-        if (!CollectionUtils.isEmpty(existing)){
+        Translation translation = new Translation(user, request.getObjectId(), request.getObjectType(),
+                request.getLanguage(), request.getValue());
+        Translation existing = translationRepository.findByObjectIdType(request.getObjectId(), request.getObjectType()).orElse(null);
+        if (existing != null){
             throw new EntityExistsException("translation");
         }
         return this.translationRepository.save(translation);
@@ -112,7 +112,7 @@ public class TranslationServiceImpl implements TranslationService {
     public Translation updateTranslation(long id, UpdateTranslationRequest request) throws EntityExistsException {
         Translation translation = this.translationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Translation.class, id));
-        translation.setValue(request.getTranslatedName());
+        translation.setValue(request.getValue());
         return translationRepository.save(translation);
     }
 
