@@ -85,7 +85,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/portal/**").hasAnyRole("USER")
                 .antMatchers("/api/admin/auth").permitAll()
                 .antMatchers("/api/admin/auth/**").permitAll()
-                .antMatchers("/admin/published").permitAll()
+                .antMatchers("/published/**").permitAll()
 
                 // DELETE: DELETE SAVE SEARCHES
                 .antMatchers(HttpMethod.DELETE, "/api/admin/saved-search/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
