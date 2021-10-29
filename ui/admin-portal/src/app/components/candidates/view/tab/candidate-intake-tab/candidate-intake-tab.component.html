@@ -76,6 +76,10 @@
           </div>
         </ng-template>
         <ng-template ngbPanelContent>
+          <app-covid-vaccination
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-covid-vaccination>
           <app-confirm-contact
             [candidate]="candidate"
             [candidateIntakeData]="candidateIntakeData">

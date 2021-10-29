@@ -109,6 +109,12 @@ export interface CandidateIntakeData {
   conflict?: YesNo;
   conflictNotes?: string;
 
+  covidVaccinated?: YesNo;
+  covidVaccinatedStatus?: VaccinationStatus;
+  covidVaccinatedDate?: string;
+  covidVaccineName?: string;
+  covidVaccineNotes?: string;
+
   crimeConvict?: YesNoUnsure;
   crimeConvictNotes?: string;
 
@@ -592,6 +598,11 @@ export enum Gender {
   female = "Female",
   male = "Male",
   other = "Other",
+}
+
+export enum VaccinationStatus {
+  Full = "Fully Vaccinated",
+  Partial = "Partially Vaccinated",
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

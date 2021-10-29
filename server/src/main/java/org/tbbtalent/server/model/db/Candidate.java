@@ -540,6 +540,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String externalIdSource;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo covidVaccinated;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private VaccinationStatus covidVaccinatedStatus;
+
+    @Nullable
+    private LocalDate covidVaccinatedDate;
+
+    @Nullable
+    private String covidVaccineName;
+
+    @Nullable
+    private String covidVaccineNotes;
+
     public Candidate() {
     }
 
@@ -1462,6 +1479,31 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setExternalIdSource(@Nullable String externalIdSource) {this.externalIdSource = externalIdSource;}
 
+    @Nullable
+    public YesNo getCovidVaccinated() {return covidVaccinated;}
+
+    public void setCovidVaccinated(@Nullable YesNo covidVaccinated) {this.covidVaccinated = covidVaccinated;}
+
+    @Nullable
+    public VaccinationStatus getCovidVaccinatedStatus() {return covidVaccinatedStatus;}
+
+    public void setCovidVaccinatedStatus(@Nullable VaccinationStatus covidVaccinatedStatus) {this.covidVaccinatedStatus = covidVaccinatedStatus;}
+
+    @Nullable
+    public LocalDate getCovidVaccinatedDate() {return covidVaccinatedDate;}
+
+    public void setCovidVaccinatedDate(@Nullable LocalDate covidVaccinatedDate) {this.covidVaccinatedDate = covidVaccinatedDate;}
+
+    @Nullable
+    public String getCovidVaccineName() {return covidVaccineName;}
+
+    public void setCovidVaccineName(@Nullable String covidVaccineName) {this.covidVaccineName = covidVaccineName;}
+
+    @Nullable
+    public String getCovidVaccineNotes() {return covidVaccineNotes;}
+
+    public void setCovidVaccineNotes(@Nullable String covidVaccineNotes) {this.covidVaccineNotes = covidVaccineNotes;}
+
     public boolean isSelected() {
         return selected;
     }
@@ -1603,6 +1645,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getConflictNotes() != null) {
             setConflictNotes(data.getConflictNotes());
         }
+
+        if (data.getCovidVaccinated() != null) {
+            setCovidVaccinated(data.getCovidVaccinated());
+        }
+        if (data.getCovidVaccinatedStatus() != null) {
+            setCovidVaccinatedStatus(data.getCovidVaccinatedStatus());
+        }
+        if (data.getCovidVaccinatedDate() != null) {
+            setCovidVaccinatedDate(data.getCovidVaccinatedDate());
+        }
+        if (data.getCovidVaccineName() != null) {
+            setCovidVaccineName(data.getCovidVaccineName());
+        }
+        if (data.getCovidVaccineNotes() != null) {
+            setCovidVaccineNotes(data.getCovidVaccineNotes());
+        }
+
         if (data.getCrimeConvict() != null) {
             setCrimeConvict(data.getCrimeConvict());
         }

@@ -59,6 +59,12 @@ public class CandidateIntakeDataUpdate {
     private YesNo conflict;
     private String conflictNotes;
 
+    private YesNo covidVaccinated;
+    private VaccinationStatus covidVaccinatedStatus;
+    private LocalDate covidVaccinatedDate;
+    private String covidVaccineName;
+    private String covidVaccineNotes;
+
     private YesNoUnsure crimeConvict;
     private String crimeConvictNotes;
 
