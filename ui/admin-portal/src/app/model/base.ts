@@ -93,7 +93,8 @@ export enum SearchBy {
   all,
   mine,
   sharedWithMe,
-  watched
+  watched,
+  externalLink
 }
 
 /**

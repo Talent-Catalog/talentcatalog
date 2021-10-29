@@ -16,17 +16,22 @@
 
 <div class="card">
 <!--  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>-->
-  <div class="card-body">
-    <div class="row">
+  <div class="card-body d-flex min-height-150 align-items-center">
       <div class="w-75 align-self-center pl-2">
-        <strong>{{candidateSource?.name}} </strong>
-        <span class="d-flex align-items-baseline">
+        <div>
+          <strong>{{candidateSource?.name}} </strong>
+          <span class="d-flex align-items-baseline">
           <i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i>
           <i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i>
           <i *ngIf="candidateSource?.fixed" title="Fixed - can't change" class="fas fa-lock"></i>
+          <i *ngIf="candidateSource?.global" title="Global - all users can see" class="fas fa-globe"></i>
           <i *ngIf="isShared()" title="Shared" class="fas fa-gift"></i>
           <span *ngIf="isShared()" class="small">Shared by: {{candidateSource?.createdBy.firstName}} {{candidateSource?.createdBy.lastName}}</span>
         </span>
+        </div>
+        <div class="position-absolute mt-2">
+          <span *ngIf="hasExternalLink()" class="small">External Link: <a target="_blank" [routerLink]="['/published', hasExternalLink()]">https://tbbtalent.org/published/{{hasExternalLink()}}</a></span>
+        </div>
       </div>
       <div class="w-25 float-right">
         <div class="btn-toolbar">
@@ -55,7 +60,6 @@
           <button class="btn" *ngIf="showMore && isSavedSearch()" (click)="toggleShowMore()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
         </div>
       </div>
-    </div>
     <div class="row pl-2 pt-1" *ngIf="seeMore && isSavedSearch()">
       <div class="w-100" *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
       <div class="w-100" *ngIf="savedSearch.simpleQueryString">Elasticsearch: {{savedSearch.simpleQueryString}},</div>

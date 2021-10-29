@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,25 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.selected {
-  background-color: lightgray;
-}
+package org.tbbtalent.server.request.link;
 
-.watched {
-  color: red;
-}
+import org.tbbtalent.server.request.PagedSearchRequest;
 
-.notwatched {
-  color: grey;
-}
+public class SearchLinkRequest extends PagedSearchRequest {
+    private String keyword;
 
-.d-flex {
-  i {
-    margin-top: 5px;
-    padding-right: 7px;
-  }
-}
+    public String getKeyword() {
+        return keyword;
+    }
 
-.min-height-150 {
-  min-height: 160px;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
 }

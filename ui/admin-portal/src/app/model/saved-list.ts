@@ -43,6 +43,7 @@ export interface SavedList extends CandidateSource {
   foldercvlink?: string;
   folderjdlink?: string;
   publishedDocLink?: string;
+  tbbShortName?: string;
 }
 
 export function isSavedList(source: CandidateSource): source is SavedList {
@@ -198,7 +199,7 @@ export class PublishListRequest {
 }
 
 export class SearchSavedListRequest extends SearchCandidateSourcesRequest {
-
+  shortName?: boolean;
 }
 
 export class SavedListGetRequest extends PagedSearchRequest {
@@ -206,4 +207,9 @@ export class SavedListGetRequest extends PagedSearchRequest {
 
 export interface UpdateSharingRequest {
   savedSearchId: number;
+}
+
+export interface UpdateShortNameRequest {
+  savedListId: number;
+  tbbShortName: string;
 }

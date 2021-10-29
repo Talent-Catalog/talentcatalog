@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,25 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.selected {
-  background-color: lightgray;
-}
+import {SavedList} from "./saved-list";
+import {User} from "./user";
 
-.watched {
-  color: red;
-}
-
-.notwatched {
-  color: grey;
-}
-
-.d-flex {
-  i {
-    margin-top: 5px;
-    padding-right: 7px;
-  }
-}
-
-.min-height-150 {
-  min-height: 160px;
+export interface SavedListLink {
+  id: number;
+  savedList: SavedList;
+  link: string;
+  createdBy: User;
+  createdDate: number;
+  updatedBy: User;
+  updatedDate: number;
 }

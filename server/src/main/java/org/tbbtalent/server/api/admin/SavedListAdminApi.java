@@ -16,30 +16,17 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.List;
-import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.request.candidate.PublishListRequest;
-import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
-import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
+import org.tbbtalent.server.request.link.UpdateShortNameRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
@@ -47,6 +34,13 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.List;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/saved-list")
@@ -268,6 +262,11 @@ public class SavedListAdminApi implements
             @PathVariable("id") long id,
             @RequestBody UpdateDisplayedFieldPathsRequest request) {
         savedListService.updateDisplayedFieldPaths(id, request);
+    }
+
+    @PutMapping("/short-name")
+    public void updateTbbShortName(@RequestBody UpdateShortNameRequest request) {
+        savedListService.updateTbbShortName(request);
     }
     
 }
