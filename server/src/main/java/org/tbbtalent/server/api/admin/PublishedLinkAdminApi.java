@@ -29,7 +29,7 @@ import org.tbbtalent.server.service.db.SavedListService;
 import java.net.URI;
 
 @RestController()
-@RequestMapping("admin/published")
+@RequestMapping("/published")
 public class PublishedLinkAdminApi {
 
     private final SavedListService savedListService;
@@ -42,6 +42,10 @@ public class PublishedLinkAdminApi {
     @GetMapping("{short-name}")
     public ResponseEntity<Void> redirect(@PathVariable("short-name") String shortName){
         SavedList list = this.savedListService.findByShortName(shortName);
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(list.getPublishedDocLink())).build();
+        if (list != null && list.getPublishedDocLink() != null) {
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(list.getPublishedDocLink())).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

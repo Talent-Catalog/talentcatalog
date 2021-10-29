@@ -55,5 +55,5 @@ public interface SavedListRepository extends JpaRepository<SavedList, Long>, Jpa
 
     @Query(" select distinct s from SavedList s "
             + " where lower(s.tbbShortName) = lower(:tbbShortName)")
-    SavedList findByShortNameIgnoreCase(@Param("tbbShortName") String tbbShortName);
+    Optional<SavedList> findByShortNameIgnoreCase(@Param("tbbShortName") String tbbShortName);
 }                       
