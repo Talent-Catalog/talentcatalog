@@ -1645,7 +1645,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getConflictNotes() != null) {
             setConflictNotes(data.getConflictNotes());
         }
-
         if (data.getCovidVaccinated() != null) {
             setCovidVaccinated(data.getCovidVaccinated());
         }
@@ -1661,7 +1660,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getCovidVaccineNotes() != null) {
             setCovidVaccineNotes(data.getCovidVaccineNotes());
         }
-
         if (data.getCrimeConvict() != null) {
             setCrimeConvict(data.getCrimeConvict());
         }

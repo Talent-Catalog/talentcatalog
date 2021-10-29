@@ -17,6 +17,7 @@
 package org.tbbtalent.server.model.db;
 
 public enum VaccinationStatus {
+    NoResponse,
     Full,
     Partial
 }
