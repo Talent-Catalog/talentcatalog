@@ -16,11 +16,10 @@
 
 package org.tbbtalent.server.request.candidate.source;
 
-import org.tbbtalent.server.request.PagedSearchRequest;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tbbtalent.server.request.PagedSearchRequest;
 
 /**
  * Used for searching candidate sources (eg SavedLists and SavedSearches) by
@@ -75,5 +74,6 @@ public class SearchCandidateSourceRequestPaged extends PagedSearchRequest {
      * Watched by me
      */
     private Boolean watched;
+
 }
 

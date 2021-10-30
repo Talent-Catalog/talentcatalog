@@ -97,6 +97,15 @@
         </app-dropdown-translations>
       </ng-template>
     </ng-container>
+
+    <!-- External Links -->
+    <ng-container ngbNavItem>
+      <a ngbNavLink>External Links</a>
+      <ng-template ngbNavContent>
+        <app-search-external-links [loggedInUser]="loggedInUser">
+        </app-search-external-links>
+      </ng-template>
+    </ng-container>
   </ng-container>
 
 </nav>

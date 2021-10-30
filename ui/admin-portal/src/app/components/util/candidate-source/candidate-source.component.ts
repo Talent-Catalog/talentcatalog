@@ -14,17 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import {
-  getCandidateSourceExternalHref, getCandidateSourceNavigation, getCandidateSourceStatsNavigation,
+  getCandidateSourceExternalHref,
+  getCandidateSourceStatsNavigation,
   getSavedSourceNavigation,
   isSavedSearch,
   SavedSearch,
@@ -213,6 +206,14 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     const savedSearchSource = this.getSavedSearchSource();
     if (savedSearchSource != null) {
       this.router.navigate(getSavedSourceNavigation(savedSearchSource));
+    }
+  }
+
+  hasExternalLink(): string {
+    if (isSavedList(this.candidateSource)) {
+      return this.candidateSource.tbbShortName;
+    } else {
+      return null;
     }
   }
 }

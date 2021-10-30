@@ -16,14 +16,7 @@
 
 package org.tbbtalent.server.repository.db;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
@@ -31,7 +24,12 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 
-import lombok.RequiredArgsConstructor;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Specification which defines a GetSavedListsQuery
@@ -66,6 +64,17 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         if (request.getFixed() != null && request.getFixed()) {
             conjunction.getExpressions().add(
                     cb.equal(savedList.get("fixed"), request.getFixed())
+            );
+        }
+
+        //If short name is specified, only supply matching saved searches. If false, remove
+        if (request.getShortName() != null && request.getShortName()) {
+            conjunction.getExpressions().add(
+                    cb.isNotNull(savedList.get("tbbShortName"))
+            );
+        } else if (request.getShortName() != null && !request.getShortName()){
+            conjunction.getExpressions().add(
+                    cb.isNull(savedList.get("tbbShortName"))
             );
         }
 

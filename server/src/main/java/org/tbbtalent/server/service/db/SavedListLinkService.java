@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,25 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.selected {
-  background-color: lightgray;
-}
+package org.tbbtalent.server.service.db;
 
-.watched {
-  color: red;
-}
-
-.notwatched {
-  color: grey;
-}
-
-.d-flex {
-  i {
-    margin-top: 5px;
-    padding-right: 7px;
-  }
-}
-
-.min-height-150 {
-  min-height: 160px;
+public interface SavedListLinkService {
+//    List<SavedListLink> listLinks();
+//
+//    Page<SavedListLink> searchLinks(SearchLinkRequest request);
+//
+//    SavedListLink getLink(long id);
+//
+//    SavedListLink createLink(CreateLinkRequest request) throws EntityExistsException;
+//
+//    SavedListLink updateLink(long id, UpdateShortNameRequest request) throws EntityExistsException ;
+//
+//    boolean deleteLink(long id) throws EntityReferencedException;
 }

@@ -69,6 +69,12 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("conflict")
                 .add("conflictNotes")
 
+                .add("covidVaccinated")
+                .add("covidVaccinatedStatus")
+                .add("covidVaccinatedDate")
+                .add("covidVaccineName")
+                .add("covidVaccineNotes")
+
                 .add("crimeConvict")
                 .add("crimeConvictNotes")
 

@@ -24,7 +24,8 @@ import {
   PublishListRequest,
   SavedList,
   SearchSavedListRequest,
-  UpdateSavedListInfoRequest
+  UpdateSavedListInfoRequest,
+  UpdateShortNameRequest
 } from "../model/saved-list";
 
 @Injectable({
@@ -85,5 +86,9 @@ export class SavedListService {
 
   update(id: number, request: UpdateSavedListInfoRequest): Observable<SavedList>  {
     return this.http.put<SavedList>(`${this.apiUrl}/${id}`, request);
+  }
+
+  updateShortName(request: UpdateShortNameRequest): Observable<SavedList>  {
+    return this.http.put<SavedList>(`${this.apiUrl}/short-name`, request);
   }
 }

@@ -16,22 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.springframework.data.jpa.domain.Specification.where;
-
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,51 +31,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.RegisteredListException;
-import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.ExportColumn;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.ExportColumnRepository;
-import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
-import org.tbbtalent.server.repository.db.GetSavedListsQuery;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
-import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
-import org.tbbtalent.server.request.candidate.PublishListRequest;
-import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
-import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
-import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
-import org.tbbtalent.server.request.list.ContentUpdateType;
-import org.tbbtalent.server.request.list.IHasSetOfCandidates;
-import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.request.link.UpdateShortNameRequest;
+import org.tbbtalent.server.request.list.*;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.DocPublisherService;
-import org.tbbtalent.server.service.db.ExportColumnsService;
-import org.tbbtalent.server.service.db.FileSystemService;
-import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.util.*;
+
+import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Saved List service
@@ -538,6 +502,23 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = get(savedListId);
         savedList.setDescription(request.getDescription());
         saveIt(savedList);
+    }
+
+    @Override
+    public SavedList updateTbbShortName(UpdateShortNameRequest request) throws  NoSuchObjectException {
+        SavedList savedList = get(request.getSavedListId());
+        // Check for duplicate short names, can't have same short name.
+        SavedList existingShortName = this.savedListRepository.findByShortNameIgnoreCase(request.getTbbShortName()).orElse(null);
+        if (existingShortName != null && !existingShortName.getId().equals(request.getSavedListId())) {
+            throw new EntityExistsException("external link");
+        }
+        savedList.setTbbShortName(request.getTbbShortName());
+        return saveIt(savedList);
+    }
+
+    @Override
+    public SavedList findByShortName(String shortName) throws  NoSuchObjectException {
+        return this.savedListRepository.findByShortNameIgnoreCase(shortName).orElse(null);
     }
 
     @Override

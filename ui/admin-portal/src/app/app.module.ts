@@ -233,7 +233,11 @@ import {OldIntakeInputComponent} from './components/util/old-intake-input-modal/
 import {CandidateShareableNotesComponent} from './components/util/candidate-shareable-notes/candidate-shareable-notes.component';
 import {ShareableDocsComponent} from './components/candidates/view/shareable-docs/shareable-docs.component';
 import {PublishedDocColumnSelectorComponent} from "./components/util/published-doc-column-selector/published-doc-column-selector.component";
-import { CandidateSourceDescriptionComponent } from './components/util/candidate-source-description/candidate-source-description.component';
+import {CandidateSourceDescriptionComponent} from './components/util/candidate-source-description/candidate-source-description.component';
+import {SearchExternalLinksComponent} from './components/settings/external-links/search-external-links.component';
+import {CreateExternalLinkComponent} from './components/settings/external-links/create/create-external-link.component';
+import {EditExternalLinkComponent} from './components/settings/external-links/edit/edit-external-link.component';
+import {CovidVaccinationComponent} from './components/candidates/intake/vaccination/covid-vaccination.component';
 
 @NgModule({
   declarations: [
@@ -444,7 +448,11 @@ import { CandidateSourceDescriptionComponent } from './components/util/candidate
     ShareableDocsComponent,
     CandidateShareableNotesComponent,
     PublishedDocColumnSelectorComponent,
-    CandidateSourceDescriptionComponent
+    CandidateSourceDescriptionComponent,
+    SearchExternalLinksComponent,
+    CreateExternalLinkComponent,
+    EditExternalLinkComponent,
+    CovidVaccinationComponent
   ],
   imports: [
     BrowserModule,

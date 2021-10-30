@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,25 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.selected {
-  background-color: lightgray;
-}
-
-.watched {
-  color: red;
-}
-
-.notwatched {
-  color: grey;
-}
-
-.d-flex {
-  i {
-    margin-top: 5px;
-    padding-right: 7px;
-  }
-}
-
-.min-height-150 {
-  min-height: 160px;
-}
+alter table candidate add column covid_vaccinated text;
+alter table candidate add column covid_vaccinated_status text;
+alter table candidate add column covid_vaccinated_date date;
+alter table candidate add column covid_vaccine_name text;
+alter table candidate add column covid_vaccine_notes text;
