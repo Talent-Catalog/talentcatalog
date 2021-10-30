@@ -209,9 +209,9 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     }
   }
 
-  hasExternalLink(): string {
+  publishedLink() {
     if (isSavedList(this.candidateSource)) {
-      return this.candidateSource.tbbShortName;
+      return document.location.origin + "/published/" + this.candidateSource.tbbShortName;
     } else {
       return null;
     }

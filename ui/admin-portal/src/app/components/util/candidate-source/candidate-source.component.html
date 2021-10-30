@@ -30,7 +30,7 @@
         </span>
         </div>
         <div class="position-absolute mt-2">
-          <span *ngIf="hasExternalLink()" class="small">External Link: <a target="_blank" [routerLink]="['/published', hasExternalLink()]">https://tbbtalent.org/published/{{hasExternalLink()}}</a></span>
+          <span *ngIf="publishedLink()" class="small">External Link: <a target="_blank" [href]=publishedLink()>{{publishedLink()}}</a></span>
         </div>
       </div>
       <div class="w-25 float-right">
