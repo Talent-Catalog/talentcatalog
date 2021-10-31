@@ -45,20 +45,19 @@
 
     <thead>
     <tr>
-      <th>Saved List Id</th>
-      <th>Saved List Name</th>
-      <th>Link <span class="small text-muted">https://tbbtalent.org/published/xxx</span></th>
+      <th>Saved List</th>
+      <th>Published Document Link</th>
       <th></th>
     </tr>
     </thead>
 
     <tbody>
     <tr *ngFor="let savedList of results?.content">
-      <td>{{savedList.id}}</td>
-      <td>{{savedList.name}}</td>
-      <td>{{savedList.tbbShortName}}</td>
+      <td><a [routerLink]="['/list', savedList.id]"> {{savedList.name}}</a></td>
+      <td><a target="_blank" href="{{externalDocLink(savedList)}}">{{externalDocLink(savedList)}}</a></td>
       <td>
         <div class="btn-group" *ngIf="(!loggedInUser.readOnly)">
+<!--          todo This should copy the link-->
           <button type="button" class="btn btn-default" [routerLink]=""><i
             class="fas fa-link"></i></button>
           <button type="button" class="btn btn-default" (click)="editLink(savedList)"><i

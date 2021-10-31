@@ -30,7 +30,7 @@ import {CandidateSource, canEditSource, isMine} from '../../../model/base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
-import {isSavedList} from "../../../model/saved-list";
+import {externalDocLink, isSavedList} from "../../../model/saved-list";
 import {environment} from "../../../../environments/environment";
 
 
@@ -213,7 +213,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
 
   publishedLink() {
     if (isSavedList(this.candidateSource)) {
-      return environment.publishUrl + "/" + this.candidateSource.tbbShortName;
+      return externalDocLink(this.candidateSource);
     } else {
       return null;
     }
