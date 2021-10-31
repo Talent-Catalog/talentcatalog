@@ -30,7 +30,10 @@ import {CandidateSource, canEditSource, isMine} from '../../../model/base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
-import {isSavedList} from "../../../model/saved-list";
+import {externalDocLink, isSavedList} from "../../../model/saved-list";
+import {ConfirmationComponent} from "../confirm/confirmation.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+
 
 /**
  * This just displays the basic details about a source plus some icons.
@@ -82,6 +85,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   constructor(
     private savedSearchService: SavedSearchService,
     private location: Location,
+    private modalService: NgbModal,
     private router: Router,
     private authService: AuthService
   ) {
@@ -143,6 +147,12 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   doCopyLink() {
     copyToClipboard(getCandidateSourceExternalHref(
       this.router, this.location, this.candidateSource));
+    const showReport = this.modalService.open(ConfirmationComponent, {
+      centered: true, backdrop: 'static'});
+    showReport.componentInstance.title = "Copied link to clipboard";
+    showReport.componentInstance.showCancel = false;
+    showReport.componentInstance.message = "Paste the link where you want";
+
   }
 
   doSelectColumns() {
@@ -211,7 +221,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
 
   publishedLink() {
     if (isSavedList(this.candidateSource)) {
-      return document.location.origin + "/published/" + this.candidateSource.tbbShortName;
+      return externalDocLink(this.candidateSource);
     } else {
       return null;
     }

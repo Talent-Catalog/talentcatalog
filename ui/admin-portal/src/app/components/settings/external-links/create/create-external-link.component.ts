@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedListService} from "../../../../services/saved-list.service";
 import {SavedList, SearchSavedListRequest} from "../../../../model/saved-list";
+import {environment} from "../../../../../environments/environment";
 
 @Component({
   selector: 'app-create-external-link',
@@ -16,6 +17,7 @@ export class CreateExternalLinkComponent implements OnInit {
   saving: boolean;
   savedLists: SavedList[];
   loading: boolean;
+  publishUrl: string = environment.publishUrl;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,

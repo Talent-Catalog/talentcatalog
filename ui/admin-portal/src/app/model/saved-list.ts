@@ -23,6 +23,7 @@ import {
 } from "./base";
 import {isSavedSearch, SavedSearchRef} from "./saved-search";
 import {UpdateCandidateStatusInfo} from "./candidate";
+import {environment} from "../../environments/environment";
 
 export enum SearchBy {
   type,
@@ -44,6 +45,10 @@ export interface SavedList extends CandidateSource {
   folderjdlink?: string;
   publishedDocLink?: string;
   tbbShortName?: string;
+}
+
+export function externalDocLink(savedList: SavedList): string {
+  return savedList?.tbbShortName ? environment.publishUrl + "/" + savedList.tbbShortName : null;
 }
 
 export function isSavedList(source: CandidateSource): source is SavedList {

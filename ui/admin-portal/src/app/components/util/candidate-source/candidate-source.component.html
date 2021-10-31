@@ -30,13 +30,13 @@
         </span>
         </div>
         <div class="position-absolute mt-2">
-          <span *ngIf="publishedLink()" class="small">External Link: <a target="_blank" [href]=publishedLink()>{{publishedLink()}}</a></span>
+          <span *ngIf="publishedLink()" class="small">Fixed Public Doc Link: <a target="_blank" [href]=publishedLink()>{{publishedLink()}}</a></span>
         </div>
       </div>
       <div class="w-25 float-right">
         <div class="btn-toolbar">
           <button class="btn" *ngIf="showOpen" (click)="doOpenSource()"><i class="fas fa-expand" title="Open"></i></button>
-          <button class="btn" *ngIf="showLink" (click)="doCopyLink()"><i class="fas fa-link" title="Get shareable link"></i></button>
+          <button class="btn" *ngIf="showLink" (click)="doCopyLink()"><i class="fas fa-link" title="Copy shareable link"></i></button>
           <button class="btn" *ngIf="showOpen && hasSavedSearchSource()" (click)="doShowSearch()"><i class="fas fa-search" title="Show Search"></i></button>
           <button class="btn" *ngIf="showWatch && savedSearch" (click)="doToggleWatch()">
             <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch"></i>
