@@ -31,6 +31,8 @@ import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
 import {isSavedList} from "../../../model/saved-list";
+import {environment} from "../../../../environments/environment";
+
 
 /**
  * This just displays the basic details about a source plus some icons.
@@ -211,7 +213,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
 
   publishedLink() {
     if (isSavedList(this.candidateSource)) {
-      return document.location.origin + "/published/" + this.candidateSource.tbbShortName;
+      return environment.publishUrl + "/" + this.candidateSource.tbbShortName;
     } else {
       return null;
     }
