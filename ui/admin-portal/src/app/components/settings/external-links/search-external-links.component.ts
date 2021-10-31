@@ -16,6 +16,7 @@ import {
   SearchSavedListRequest,
   UpdateShortNameRequest
 } from "../../../model/saved-list";
+import {copyToClipboard} from "../../../util/clipboard";
 
 @Component({
   selector: 'app-search-external-links',
@@ -140,5 +141,15 @@ export class SearchExternalLinksComponent implements OnInit {
 
   externalDocLink(savedList: SavedList) {
     return externalDocLink(savedList);
+  }
+
+  doCopyLink(savedList: SavedList) {
+    copyToClipboard(externalDocLink(savedList));
+    const showReport = this.modalService.open(ConfirmationComponent, {
+      centered: true, backdrop: 'static'});
+    showReport.componentInstance.title = "Copied link to clipboard";
+    showReport.componentInstance.showCancel = false;
+    showReport.componentInstance.message = "Paste the link where you want";
+
   }
 }

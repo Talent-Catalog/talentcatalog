@@ -1212,6 +1212,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   doCopyLink() {
     copyToClipboard(getCandidateSourceExternalHref(
       this.router, this.location, this.candidateSource));
+    const showReport = this.modalService.open(ConfirmationComponent, {
+      centered: true, backdrop: 'static'});
+    showReport.componentInstance.title = "Copied link to clipboard";
+    showReport.componentInstance.showCancel = false;
+    showReport.componentInstance.message = "Paste the link where you want";
+
   }
 
   addCandidateToList(candidate: Candidate) {

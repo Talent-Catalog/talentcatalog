@@ -57,9 +57,8 @@
       <td><a target="_blank" href="{{externalDocLink(savedList)}}">{{externalDocLink(savedList)}}</a></td>
       <td>
         <div class="btn-group" *ngIf="(!loggedInUser.readOnly)">
-<!--          todo This should copy the link-->
-          <button type="button" class="btn btn-default" [routerLink]=""><i
-            class="fas fa-link"></i></button>
+          <button type="button" class="btn btn-default" (click)="doCopyLink(savedList)"><i
+            class="fas fa-link" title="Copy shareable link"></i></button>
           <button type="button" class="btn btn-default" (click)="editLink(savedList)"><i
             class="fas fa-edit"></i></button>
           <button type="button" class="btn btn-default" (click)="deleteLink(savedList)"><i
