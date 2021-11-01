@@ -10,12 +10,7 @@ import {isAdminUser} from "../../../model/base";
 import {SavedListService} from "../../../services/saved-list.service";
 import {CreateExternalLinkComponent} from "./create/create-external-link.component";
 import {EditExternalLinkComponent} from "./edit/edit-external-link.component";
-import {
-  externalDocLink,
-  SavedList,
-  SearchSavedListRequest,
-  UpdateShortNameRequest
-} from "../../../model/saved-list";
+import {externalDocLink, SavedList, SearchSavedListRequest, UpdateShortNameRequest} from "../../../model/saved-list";
 import {copyToClipboard} from "../../../util/clipboard";
 
 @Component({
@@ -117,7 +112,6 @@ export class SearchExternalLinksComponent implements OnInit {
     }
     deleteCountryModal.result
       .then((result) => {
-        // console.log(result);
         if (result === true) {
           this.savedListService.updateShortName(request).subscribe(
             (country) => {
