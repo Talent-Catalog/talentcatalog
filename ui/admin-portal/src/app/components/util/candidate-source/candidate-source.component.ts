@@ -226,4 +226,12 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
       return null;
     }
   }
+
+  publishedDoc() {
+    if (isSavedList(this.candidateSource)) {
+      return this.candidateSource.publishedDocLink;
+    } else {
+      return null;
+    }
+  }
 }
