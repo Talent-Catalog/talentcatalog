@@ -14,13 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterContentInit, AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy} from "../../model/base"
 import {LocalStorageService} from "angular-2-local-storage";
 import {SavedSearchService, SavedSearchTypeInfo, SavedSearchTypeSubInfo} from "../../services/saved-search.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder} from "@angular/forms";
 
 @Component({
   selector: 'app-home',
@@ -30,7 +30,6 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 export class HomeComponent implements OnInit, AfterViewChecked {
 
   activeTabId: string;
-  categoryForm: FormGroup;
   private lastTabKey: string = 'HomeLastTab';
   private lastCategoryTabKey: string = 'HomeLastCategoryTab';
 
@@ -52,9 +51,6 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   ngOnInit() {
     this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[0].categories;
-    this.categoryForm = this.fb.group({
-      savedSearchSubtype: [this.selectedSavedSearchSubtype]
-    });
   }
 
   ngAfterViewChecked(): void {
@@ -66,9 +62,8 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     this.setActiveTabId(event.nextId);
   }
 
-  onSavedSearchSubtypeChange($event: Event) {
-    const formValues = this.categoryForm.value;
-    this.setSelectedSavedSearchSubtype(formValues.savedSearchSubtype);
+  onSavedSearchSubtypeChange($event: SavedSearchTypeSubInfo) {
+    this.setSelectedSavedSearchSubtype($event.savedSearchSubtype);
   }
 
   private selectDefaultTab() {
@@ -102,7 +97,6 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   private setSelectedSavedSearchSubtype(savedSearchSubtype: number) {
     this.selectedSavedSearchSubtype = savedSearchSubtype;
-    this.categoryForm?.controls['savedSearchSubtype'].patchValue(savedSearchSubtype);
     this.localStorageService.set(this.lastCategoryTabKey, this.selectedSavedSearchSubtype);
   }
 

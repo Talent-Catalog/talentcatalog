@@ -54,7 +54,13 @@
     <tbody>
     <tr *ngFor="let savedList of results?.content">
       <td><a [routerLink]="['/list', savedList.id]"> {{savedList.name}}</a></td>
-      <td><a target="_blank" href="{{externalDocLink(savedList)}}">{{externalDocLink(savedList)}}</a></td>
+      <td>
+        <a target="_blank" href="{{externalDocLink(savedList)}}">{{externalDocLink(savedList)}}</a>
+        <div *ngIf="savedList.publishedDocLink == null" class="text-muted small">
+          <i class="fas fa-exclamation-circle"></i>
+          No published doc associated with list, link will not go anywhere.
+        </div>
+      </td>
       <td>
         <div class="btn-group" *ngIf="(!loggedInUser.readOnly)">
           <button type="button" class="btn btn-default" (click)="doCopyLink(savedList)"><i
