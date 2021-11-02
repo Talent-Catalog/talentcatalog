@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
@@ -25,19 +25,12 @@ import {
   SavedSearchType,
   SearchSavedSearchRequest
 } from '../../../../model/saved-search';
-import {SavedSearchService} from '../../../../services/saved-search.service';
+import {SavedSearchService, SavedSearchTypeSubInfo} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AuthService} from '../../../../services/auth.service';
 import {User} from '../../../../model/user';
-import {
-  CandidateSource,
-  CandidateSourceType,
-  isMine,
-  isSharedWithMe,
-  SearchBy,
-  SearchCandidateSourcesRequest
-} from '../../../../model/base';
+import {CandidateSource, CandidateSourceType, isMine, isSharedWithMe, SearchBy} from '../../../../model/base';
 import {ContentUpdateType, CopySourceContentsRequest, SearchSavedListRequest} from '../../../../model/saved-list';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -61,6 +54,9 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   @Input() searchBy: SearchBy;
   @Input() savedSearchType: SavedSearchType;
   @Input() savedSearchSubtype: SavedSearchSubtype;
+  @Input() savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
+  @Output() subtypeChange = new EventEmitter<SavedSearchTypeSubInfo>();
+
   searchForm: FormGroup;
   public loading: boolean;
   error: any;
@@ -131,7 +127,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     //Remember keyword filter from last search
     this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
 
-    let req: SearchCandidateSourcesRequest;
+    let req;
     if (this.sourceType === CandidateSourceType.SavedSearch) {
       req = new SearchSavedSearchRequest();
     } else {
@@ -164,6 +160,12 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         req.global = true;
         req.owned = true;
         req.shared = true;
+        break;
+      case SearchBy.externalLink:
+        req.global = true;
+        req.owned = true;
+        req.shared = true;
+        req.shortName = true;
         break;
     }
     if (this.savedSearchType !== undefined) {
@@ -455,5 +457,9 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         }
       })
       .catch(() => { });
+  }
+
+  subtypeChangeEvent($event: SavedSearchTypeSubInfo) {
+    this.subtypeChange.emit($event);
   }
 }

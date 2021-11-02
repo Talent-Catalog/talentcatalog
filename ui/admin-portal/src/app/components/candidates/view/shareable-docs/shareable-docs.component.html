@@ -7,11 +7,15 @@
 <form [formGroup]="form">
   <div  class="flex-wrap justify-content-around">
     <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start mb-2">
-          <span for="surveyTypeId" class="mr-4">
+          <span for="shareableCvId" class="mr-4">
             <i class="far fa-star fa-sm"></i>CV
           </span>
-      <ng-select id="surveyTypeId" class="mr-2" [formControlName]="'shareableCvAttachmentId'" [items]="cvs"
-                 placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+      <ng-select id="shareableCvId" class="mr-2" [formControlName]="'shareableCvAttachmentId'" [items]="cvs"
+                 placeholder="Select" bindValue="id" bindLabel="name">
+        <ng-template ng-option-tmp let-item="item">
+          <span [ngbTooltip]="item.name" container="body">{{item.name}}</span>
+        </ng-template>
+      </ng-select>
     </div>
     <div *ngIf="candidateSource && candidate.shareableCv" class="d-flex mt-1">
       <p class="mr-2">Default CV: </p>
@@ -19,11 +23,15 @@
     </div>
 
     <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start">
-          <span for="surveyTypeId" class="mr-2">
+          <span for="shareableDocId" class="mr-2">
             <i class="far fa-star fa-sm"></i>Other
           </span>
-      <ng-select id="surveyTypeIds" class="mr-2" [formControlName]="'shareableDocAttachmentId'" [items]="other"
-                 placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+      <ng-select id="shareableDocId" class="mr-2" [formControlName]="'shareableDocAttachmentId'" [items]="other"
+                 placeholder="Select" bindValue="id" bindLabel="name">
+        <ng-template ng-option-tmp let-item="item">
+          <span [ngbTooltip]="item.name" container="body">{{item.name}}</span>
+        </ng-template>
+      </ng-select>
     </div>
     <div *ngIf="candidateSource && candidate.shareableDoc" class="d-flex mt-1">
       <p class="mr-2">Default Doc: </p>

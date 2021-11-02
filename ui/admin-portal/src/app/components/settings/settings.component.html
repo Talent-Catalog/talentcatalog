@@ -14,10 +14,10 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<nav ngbNav #nav="ngbNav" class="nav-tabs">
+<nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
   <!-- Admin Users -->
-  <ng-container ngbNavItem>
+  <ng-container ngbNavItem="users">
     <a ngbNavLink>Admin Users</a>
     <ng-template ngbNavContent>
       <app-search-users [loggedInUser]="loggedInUser">
@@ -27,7 +27,7 @@
 
   <ng-container *ngIf="loggedInUser.role == 'admin'">
     <!-- Countries -->
-    <ng-container ngbNavItem>
+    <ng-container ngbNavItem="countries">
       <a ngbNavLink>Countries</a>
       <ng-template ngbNavContent>
         <app-search-countries [loggedInUser]="loggedInUser">
@@ -36,7 +36,7 @@
     </ng-container>
 
     <!-- Languages -->
-    <ng-container ngbNavItem>
+    <ng-container ngbNavItem="languages">
       <a ngbNavLink>Languages</a>
       <ng-template ngbNavContent>
         <app-search-languages [loggedInUser]="loggedInUser">
@@ -45,7 +45,7 @@
     </ng-container>
 
     <!-- Language Levels -->
-    <ng-container ngbNavItem>
+    <ng-container ngbNavItem="langlevels">
       <a ngbNavLink>Language Levels</a>
       <ng-template ngbNavContent>
         <app-search-language-levels [loggedInUser]="loggedInUser">
@@ -54,7 +54,7 @@
     </ng-container>
 
     <!-- Occupations -->
-    <ng-container ngbNavItem>
+    <ng-container ngbNavItem="occupations">
       <a ngbNavLink>Occupations</a>
       <ng-template ngbNavContent>
         <app-search-occupations [loggedInUser]="loggedInUser">
@@ -63,7 +63,7 @@
     </ng-container>
 
     <!-- Education -->
-    <ng-container ngbNavItem>
+    <ng-container ngbNavItem="edulevels">
       <a ngbNavLink>Education Levels</a>
       <ng-template ngbNavContent>
         <app-search-education-levels [loggedInUser]="loggedInUser">
@@ -72,7 +72,7 @@
     </ng-container>
 
     <!-- Education Majors -->
-    <ng-container ngbNavItem>
+    <ng-container ngbNavItem="majors">
       <a ngbNavLink>Education Majors</a>
       <ng-template ngbNavContent>
         <app-search-education-majors [loggedInUser]="loggedInUser">
@@ -81,7 +81,7 @@
     </ng-container>
 
     <!-- Translations -->
-    <ng-container ngbNavItem>
+    <ng-container ngbNavItem="translations-general">
       <a ngbNavLink>Translations (general)</a>
       <ng-template ngbNavContent>
         <app-general-translations [loggedInUser]="loggedInUser">
@@ -90,11 +90,20 @@
     </ng-container>
 
     <!-- Translations -->
-    <ng-container ngbNavItem>
+    <ng-container ngbNavItem="translations-dropdowns">
       <a ngbNavLink>Translations (dropdowns)</a>
       <ng-template ngbNavContent>
         <app-dropdown-translations [loggedInUser]="loggedInUser">
         </app-dropdown-translations>
+      </ng-template>
+    </ng-container>
+
+    <!-- External Links -->
+    <ng-container ngbNavItem="links">
+      <a ngbNavLink>External Links</a>
+      <ng-template ngbNavContent>
+        <app-search-external-links [loggedInUser]="loggedInUser">
+        </app-search-external-links>
       </ng-template>
     </ng-container>
   </ng-container>

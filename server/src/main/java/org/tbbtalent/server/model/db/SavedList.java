@@ -16,25 +16,16 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * There are two kinds of SavedList:
@@ -84,6 +75,12 @@ public class SavedList extends AbstractCandidateSource {
      */
     @Nullable
     private String publishedDocLink;
+
+    /**
+     * Url link to published list doc, if one exists.
+     */
+    @Nullable
+    private String tbbShortName;
 
     /**
      * If true, this list is associated with a "registered" job. See the Angular "New Job" menu
@@ -200,6 +197,11 @@ public class SavedList extends AbstractCandidateSource {
     public void setPublishedDocLink(@Nullable String publishedDocLink) {
         this.publishedDocLink = publishedDocLink;
     }
+
+    @Nullable
+    public String getTbbShortName() {return tbbShortName;}
+
+    public void setTbbShortName(@Nullable String tbbShortName) {this.tbbShortName = tbbShortName;}
 
     @NonNull
     public Boolean getRegisteredJob() {

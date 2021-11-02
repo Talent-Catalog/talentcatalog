@@ -16,18 +16,11 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.RegisteredListException;
-import org.tbbtalent.server.exception.SalesforceException;
+import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
@@ -36,10 +29,15 @@ import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
+import org.tbbtalent.server.request.link.UpdateShortNameRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.List;
 
 /**
  * Saved List Service
@@ -310,6 +308,22 @@ public interface SavedListService {
      * @throws NoSuchObjectException  if there is no saved list with this id
      */
     void updateDescription(long savedListId, UpdateCandidateSourceDescriptionRequest request)
+        throws  NoSuchObjectException;
+
+    /**
+     * Updates the tbb short name used for redirecting to external links (google sheet).
+     * @param request Request containing the updated short name and the saved list id which it belongs to.
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     */
+    SavedList updateTbbShortName(UpdateShortNameRequest request)
+        throws  NoSuchObjectException;
+
+    /**
+     * Updates the tbb short name used for redirecting to external links (google sheet).
+     * @param shortName Request containing the updated short name and the saved list id which it belongs to.
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     */
+    SavedList findByShortName(String shortName)
         throws  NoSuchObjectException;
     
     /**

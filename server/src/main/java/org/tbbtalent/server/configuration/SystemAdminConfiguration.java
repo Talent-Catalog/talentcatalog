@@ -40,14 +40,14 @@ public class SystemAdminConfiguration {
   private final static String SYSTEM_ADMIN_NAME = "SystemAdmin";
   public final static String[] GLOBAL_LIST_NAMES = new String[] {
       "TestCandidates"
-  }; 
-  
+  };
+
   private final SavedListService savedListService;
   private final UserService userService;
 
   @Value("${email.user}")
   private String sysAdminEmail;
-  
+
   @Autowired
   public SystemAdminConfiguration(SavedListService savedListService,
       UserService userService) {
@@ -71,7 +71,9 @@ public class SystemAdminConfiguration {
       req.setReadOnly(false);
       req.setUsingMfa(true);
       req.setPassword("password");
-      systemAdmin = userService.createUser(req);
+
+      //Self create system admin
+      systemAdmin = userService.createUser(req, null);
     }
 
     //Create global lists
@@ -87,5 +89,5 @@ public class SystemAdminConfiguration {
       }
     }
   }
-  
+
 }

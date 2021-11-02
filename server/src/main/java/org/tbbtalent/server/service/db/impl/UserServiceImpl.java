@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -106,8 +107,8 @@ public class UserServiceImpl implements UserService {
     @Value("${web.portal}")
     private String portalUrl;
 
-    
-    //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password) 
+
+    //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password)
     //tools
     @Autowired
     private SecretGenerator totpSecretGenerator;
@@ -117,7 +118,7 @@ public class UserServiceImpl implements UserService {
     private QrGenerator totpQrGenerator;
     @Autowired
     private CodeVerifier totpVerifier;
-    
+
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
@@ -160,6 +161,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User createUser(CreateUserRequest request, @Nullable User creatingUser)
+        throws UsernameTakenException {
+        User user = new User(
+            request.getUsername(),
+            request.getFirstName(),
+            request.getLastName(),
+            request.getEmail(),
+            request.getRole());
+        user.setReadOnly(request.getReadOnly());
+        user.setUsingMfa(request.getUsingMfa());
+
+        //Avoid checks if there is no creating user (ie the currently logged in user)
+        if (creatingUser != null) {
+            //Validate source countries aren't restricted, and add to user.
+            addSourceCountriesIfValid(user, request.getSourceCountries());
+            // Validate the role requested, and add to user.
+            addRoleIfValid(user, request.getRole());
+        }
+
+        /* Validate the password before account creation */
+        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
+        user.setPasswordEnc(passwordEncrypted);
+        User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
+        if (existing != null){
+            throw new UsernameTakenException("username");
+        }
+
+        existing = userRepository.findByEmailIgnoreCase(user.getEmail());
+        if (existing != null){
+            throw new UsernameTakenException("email");
+        }
+        user.setAuditFields(creatingUser == null ? user : creatingUser);
+        return this.userRepository.save(user);
+    }
+
+    @Override
     @Transactional
     public User createUser(CreateUserRequest request) throws UsernameTakenException, InvalidRequestException {
         User loggedInUser = getLoggedInUser();
@@ -174,33 +211,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (authSuccess) {
-            User user = new User(
-                    request.getUsername(),
-                    request.getFirstName(),
-                    request.getLastName(),
-                    request.getEmail(),
-                    request.getRole());
-            user.setReadOnly(request.getReadOnly());
-            user.setUsingMfa(request.getUsingMfa());
-
-            //Validate source countries aren't restricted, and add to user.
-            addSourceCountriesIfValid(user, request.getSourceCountries());
-            // Validate the role requested, and add to user.
-            addRoleIfValid(user, request.getRole());
-            /* Validate the password before account creation */
-            String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
-            user.setPasswordEnc(passwordEncrypted);
-            User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
-            if (existing != null){
-                throw new UsernameTakenException("username");
-            }
-
-            existing = userRepository.findByEmailIgnoreCase(user.getEmail());
-            if (existing != null){
-                throw new UsernameTakenException("email");
-            }
-            user.setAuditFields(loggedInUser);
-            return this.userRepository.save(user);
+            return createUser(request, loggedInUser);
         } else {
             throw new InvalidRequestException("You don't have permission to create a user.");
         }
@@ -271,7 +282,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Validates that if restricted source countries are present, and if valid it adds those source countries are added to new or updated users.
+     * Validates that if restricted source countries are present,
+     * and if valid it adds those source countries are added to new or updated users.
      * If logged in users source countries is empty, it means no restrictions.
      * @param user User to add source countries to.
      * @param requestCountries The list of countries from the request. Can be empty.
@@ -280,6 +292,7 @@ public class UserServiceImpl implements UserService {
         User loggedInUser = getLoggedInUser();
         // Only update source countries if they are different from existing.
         List<Country> currentUserCountries = new ArrayList<>(user.getSourceCountries());
+        //todo This comparison will always be unequal - doesn't compare contents of lists
         if (!currentUserCountries.equals(requestCountries)) {
             // Clear old source country joins before adding again
             user.getSourceCountries().clear();
@@ -447,7 +460,7 @@ public class UserServiceImpl implements UserService {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    public User getLoggedInUser() {
+    private User getLoggedInUser() {
         User user = authService.getLoggedInUser().orElse(null);
         if (user == null) {
             throw new InvalidSessionException("Can not find an active session for a user with this token");
@@ -608,7 +621,7 @@ public class UserServiceImpl implements UserService {
                 totpQrGenerator.generate(data),
                 totpQrGenerator.getImageMimeType()
             );
-    
+
             return new EncodedQrImage(qrCodeImage);
         } catch (QrGenerationException ex) {
             throw new ServiceException("qr_error", "Error generating QR code", ex);
