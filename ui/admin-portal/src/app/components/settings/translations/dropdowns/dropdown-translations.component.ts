@@ -107,17 +107,14 @@ export class DropdownTranslationsComponent implements OnInit {
 
   /* SEARCH FORM */
   search() {
+    this.loading = true;
     const request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
 
-    console.log(this.pageNumber)
     if (this.searchForm.valid) {
       const type = this.searchForm.controls['type'].value;
       const language = this.searchForm.controls['language'].value;
-      this.loading = true;
-      this.results = null;
-      this.error = null;
       this.translationService.search(request.type, request).subscribe(results => {
           this.results = results;
           this.loading = false;
@@ -125,7 +122,7 @@ export class DropdownTranslationsComponent implements OnInit {
           this.topLevelForm = this.fb.group({
             translations: this.fb.array(
               this.results.content.map(t => this.fb.group({
-                id: [t.translatedId, [Validators.required]],
+                translatedId: [t.translatedId],
                 objectId: [t.id, [Validators.required]],
                 objectType: [type, [Validators.required]],
                 language: [language, [Validators.required]],
@@ -145,18 +142,12 @@ export class DropdownTranslationsComponent implements OnInit {
 
   }
 
-
-  //
-  // fieldGlobalIndex(index) {
-  //   return index + this.pageSize * this.pageNumber;
-  // }
-
   updateTranslation(index) {
     const translationForm = this.topLevelForm.get(`translations.${index}`) as FormGroup;
     const request = translationForm.value;
-    if (request.id) {
+    if (request.translatedId) {
       //update
-      this.translationService.update(request.id, request).subscribe(results => {
+      this.translationService.update(request.translatedId, request).subscribe(results => {
         this.search();
       })
     } else {
