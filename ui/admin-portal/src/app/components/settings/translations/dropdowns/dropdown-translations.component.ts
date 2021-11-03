@@ -74,10 +74,6 @@ export class DropdownTranslationsComponent implements OnInit {
     });
   }
 
-  get translationsArray(): FormArray {
-    return this.topLevelForm.get('translations') as FormArray;
-  }
-
   getSystemLanguages() {
     this.loading = true;
     this.languageService.listSystemLanguages().subscribe(
