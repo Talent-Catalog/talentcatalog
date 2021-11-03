@@ -22,28 +22,28 @@ import javax.validation.constraints.NotNull;
 public class CreateTranslationRequest {
 
     @NotNull
-    private Long id;
+    private Long objectId;
     @NotBlank
-    private String type;
+    private String objectType;
     @NotBlank
     private String language;
     @NotBlank
-    private String translatedName;
+    private String value;
 
-    public Long getId() {
-        return id;
+    public Long getObjectId() {
+        return objectId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setObjectId(Long objectId) {
+        this.objectId = objectId;
     }
 
-    public String getType() {
-        return type;
+    public String getObjectType() {
+        return objectType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setObjectType(String objectType) {
+        this.objectType = objectType;
     }
 
     public String getLanguage() {
@@ -54,11 +54,11 @@ public class CreateTranslationRequest {
         this.language = language;
     }
 
-    public String getTranslatedName() {
-        return translatedName;
+    public String getValue() {
+        return value;
     }
 
-    public void setTranslatedName(String translatedName) {
-        this.translatedName = translatedName;
+    public void setValue(String value) {
+        this.value = value;
     }
 }

@@ -84,10 +84,10 @@
               <td>{{translation.status}}</td>
               <td>
                 <div *ngIf="!loggedInUser.readOnly">
-                  <input type="text" formControlName="translatedName" (blur)="updateTranslation(index)"/>
+                  <input type="text" formControlName="value" (blur)="updateTranslation(index)"/>
                 </div>
                 <div *ngIf="loggedInUser.readOnly">
-                  <input type="text" formControlName="translatedName" [readOnly]="loggedInUser.readOnly"/>
+                  <input type="text" formControlName="value" [readOnly]="loggedInUser.readOnly"/>
                 </div>
               </td>
           </tr>

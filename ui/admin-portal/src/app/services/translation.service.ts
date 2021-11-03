@@ -17,7 +17,7 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {TranslationItem} from "../model/translation-item";
+import {TranslatedObject} from "../model/translated-object";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {Translation} from "../model/translation";
@@ -35,8 +35,8 @@ export class TranslationService {
     return this.http.get<Translation[]>(`${this.apiUrl}`);
   }
 
-  search(type: string, request): Observable<SearchResults<TranslationItem>> {
-    return this.http.post<SearchResults<TranslationItem>>(`${this.apiUrl}/${type}`, request);
+  search(type: string, request): Observable<SearchResults<TranslatedObject>> {
+    return this.http.post<SearchResults<TranslatedObject>>(`${this.apiUrl}/${type}`, request);
   }
 
   create(details): Observable<Translation>  {
