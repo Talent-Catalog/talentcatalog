@@ -24,21 +24,19 @@ import lombok.ToString;
 
 /**
  * Represents a Salesforce Contact corresponding to a TBB candidate.
- * Contacts the relevant data returned from Salesforce - most importantly
+ * Contains the relevant data returned from Salesforce - most importantly
  * the Salesforce id, from which the Salesforce url (the sflink) can be
  * computed.
+ * <p/>
+ * See notes on {@link Opportunity} for the reason for the public fields.
  *
  * @author John Cameron
  */
 @Getter
 @Setter
 @ToString
-public class Contact {
-    static final String urlRoot = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Contact/";
-    static final String urlSuffix = "/view";
-    
+public class Contact extends SalesforceObjectBase {
     public String AccountId;
-    public String Id;
     public Long TBBid__c;
 
     public Contact() {
@@ -48,11 +46,9 @@ public class Contact {
         TBBid__c = Long.valueOf(candidate.getCandidateNumber());
     }
 
-    public String getUrl() {
-        String url = null;
-        if (Id != null) {
-            url = urlRoot + Id + urlSuffix;
-        }
-        return url; 
+    @Override
+    String getSfObjectName() {
+        return "Contact";
     }
+
 }

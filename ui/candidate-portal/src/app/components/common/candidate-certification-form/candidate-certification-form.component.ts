@@ -21,7 +21,6 @@ import {CandidateService} from '../../../services/candidate.service';
 import {CandidateCertificationService} from '../../../services/candidate-certification.service';
 import {RegistrationService} from '../../../services/registration.service';
 import {CandidateCertification} from '../../../model/candidate-certification';
-import {generateYearArray} from '../../../util/year-helper';
 
 
 @Component({
@@ -79,7 +78,7 @@ export class CandidateCertificationFormComponent implements OnInit {
         },
       );
     } else {
-      this.candidateCertificationService.update(this.certificate.id, this.form.value).subscribe(
+      this.candidateCertificationService.update(this.form.value).subscribe(
         (response) => {
           this.saved.emit(response);
         },

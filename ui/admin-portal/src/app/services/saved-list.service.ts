@@ -19,11 +19,13 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {SavedSearch} from "../model/saved-search";
 import {
+  PublishedDocImportReport,
+  PublishListRequest,
   SavedList,
   SearchSavedListRequest,
-  UpdateSavedListInfoRequest
+  UpdateSavedListInfoRequest,
+  UpdateShortNameRequest
 } from "../model/saved-list";
 
 @Injectable({
@@ -40,12 +42,38 @@ export class SavedListService {
     return this.http.post<SavedList>(`${this.apiUrl}`, request);
   }
 
+  createFolder(savedListId: number): Observable<SavedList> {
+    return this.http.put<SavedList>(
+      `${this.apiUrl}/${savedListId}/create-folder`, null);
+  }
+
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
 
-  get(id: number): Observable<SavedSearch> {
-    return this.http.get<SavedSearch>(`${this.apiUrl}/${id}`);
+  get(id: number): Observable<SavedList> {
+    return this.http.get<SavedList>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Exports the whole list as a file containing candidate information that is suitable for
+   * "publishing" - ie sharing externally, for example with prospective employers.
+   * @param id ID of list to be published
+   * @param request Request specifying the candidate data to be shared.
+   */
+  publish(id: number, request: PublishListRequest): Observable<SavedList> {
+    return this.http.put<SavedList>(`${this.apiUrl}/${id}/publish`, request);
+  }
+
+  /**
+   * Imports potential employer feedback from the currently published doc associated with a list.
+   * <p/>
+   * Does nothing if the list has not been published.
+   * @param id ID of published list
+   * @return PublishedDocImportReport containing details of the import
+   */
+  importEmployerFeedback(id: number): Observable<PublishedDocImportReport> {
+    return this.http.put<PublishedDocImportReport>(`${this.apiUrl}/${id}/feedback`, null);
   }
 
   search(request: SearchSavedListRequest): Observable<SavedList[]> {
@@ -60,21 +88,7 @@ export class SavedListService {
     return this.http.put<SavedList>(`${this.apiUrl}/${id}`, request);
   }
 
-  //todo Sharing and watching
-  //
-  // addSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {
-  //   return this.http.put<SavedSearch>(`${this.apiUrl}/shared-add/${id}`, request);
-  // }
-  //
-  // removeSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {
-  //   return this.http.put<SavedSearch>(`${this.apiUrl}/shared-remove/${id}`, request);
-  // }
-  //
-  // addWatcher(id: number, request: { userId: number }): Observable<SavedSearch> {
-  //   return this.http.put<SavedSearch>(`${this.apiUrl}/watcher-add/${id}`, request);
-  // }
-  //
-  // removeWatcher(id: number, request: { userId: number }): Observable<SavedSearch> {
-  //   return this.http.put<SavedSearch>(`${this.apiUrl}/watcher-remove/${id}`, request);
-  // }
+  updateShortName(request: UpdateShortNameRequest): Observable<SavedList>  {
+    return this.http.put<SavedList>(`${this.apiUrl}/short-name`, request);
+  }
 }

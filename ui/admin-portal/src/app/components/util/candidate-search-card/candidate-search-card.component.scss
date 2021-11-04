@@ -22,6 +22,9 @@
   width: 100%;
   padding: 1em;
   border: 1px solid #aaa;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .candidate-header {
@@ -47,4 +50,11 @@ expand-button {
   position:absolute;
   top:0;
   right:0;
+}
+
+.btn-secondary-light {
+  background-color: #dedede;
+  color: black;
+  font-size: 12px;
+  border: 1px solid #dedede;
 }

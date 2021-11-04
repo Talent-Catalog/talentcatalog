@@ -214,10 +214,13 @@ public class CandidatePortalApi {
                 .add("dob")
                 .add("country", countryDto())
                 .add("city")
+                .add("state")
                 .add("yearOfArrival")
-                .add("nationality", nationalityDto())
-                .add("unhcrStatus")
+                .add("nationality", countryDto())
+                .add("externalId")
+                .add("unhcrRegistered")
                 .add("unhcrNumber")
+                .add("unhcrConsent")
                 ;
     }
 
@@ -233,13 +236,6 @@ public class CandidatePortalApi {
                 .add("occupation", occupationDto())
                 .add("yearsExperience")
                 .add("migrationOccupation")
-                ;
-    }
-
-    private DtoBuilder nationalityDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
                 ;
     }
 
@@ -407,9 +403,14 @@ public class CandidatePortalApi {
                 .add("gender")
                 .add("dob")
                 .add("city")
+                .add("state")
                 .add("yearOfArrival")
-                .add("nationality", nationalityDto())
+                .add("nationality", countryDto())
                 .add("country", countryDto())
+                .add("externalId")
+                .add("unhcrRegistered")
+                .add("unhcrNumber")
+                .add("unhcrConsent")
                 /* OCCUPATIONS */
                 .add("candidateOccupations", candidateOccupationDto())
                 /* JOB EXPERIENCE */

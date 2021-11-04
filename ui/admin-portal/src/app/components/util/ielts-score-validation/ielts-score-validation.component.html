@@ -1,0 +1,4 @@
+<input type="text" class="form-control" [(ngModel)]="this.value" (ngModelChange)="update()">
+<div class="alert alert-danger" *ngIf="error && this.value != null">
+  {{error}}
+</div>

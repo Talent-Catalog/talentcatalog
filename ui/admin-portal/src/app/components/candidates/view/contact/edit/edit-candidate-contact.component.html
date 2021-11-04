@@ -46,21 +46,15 @@
       </div>
       <div class="form-group">
         <label for="gender">Gender</label>
-        <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
-          <option value=""></option>
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-          <option value="other">Other</option>
-        </select>
+        <ng-select id="gender" [formControlName]="'gender'" [items]="genderOptions" placeholder="Select"
+                   name="gender" bindLabel="displayText" bindValue="value" ></ng-select>
       </div>
 
       <!-- NATIONALITY -->
       <div class="form-group">
-        <label for="nationalityId">Nationality *</label>
-        <select class="form-control" name="nationality" id="nationalityId" [formControlName]="'nationalityId'">
-          <option value=""></option>
-          <option *ngFor="let nationality of nationalities" [value]="nationality.id">{{nationality.name}}</option>
-        </select>
+        <label for="nationalityId">Country of Nationality *</label>
+        <ng-select id="nationalityId" name="nationality" [formControlName]="'nationalityId'" [items]="nationalities"
+                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- DOB -->
@@ -78,26 +72,27 @@
 
       <!-- City -->
       <div class="form-group">
-        <label for="address1">City</label>
+        <label for="city">City</label>
         <input type="text" class="form-control" id="city" placeholder="Enter city" [formControlName]="'city'">
       </div>
 
+      <!-- City -->
+      <div class="form-group">
+        <label for="state">State</label>
+        <input type="text" class="form-control" id="state" placeholder="Enter state" [formControlName]="'state'">
+      </div>
 
       <div class="form-group">
         <label for="countryId">Current country *</label>
-        <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
-          <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
+        <ng-select id="countryId" name="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
+                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- YEAR OF ARRIVAL -->
       <div class="form-group">
         <label for="yearOfArrival">What year did they arrive in this country?</label>
-        <select class="form-control" name="yearOfArrival" id="yearOfArrival" [formControlName]="'yearOfArrival'">
-          <option value=""></option>
-          <option *ngFor="let year of years" [value]="year">{{year}}</option>
-        </select>
+        <ng-select id="yearOfArrival" name="yearOfArrival" [formControlName]="'yearOfArrival'"
+                   [items]="years" placeholder="Select"></ng-select>
       </div>
 
       <div class="form-group">
@@ -116,6 +111,20 @@
         <label for="whatsapp">Whatsapp</label>
         <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp"
                [formControlName]="'whatsapp'">
+      </div>
+
+      <!-- EXTERNAL ID -->
+      <div class="form-group">
+        <label for="externalId">External Id</label>
+        <input type="text" class="form-control" id="externalId" placeholder=""
+               [formControlName]="'externalId'">
+      </div>
+
+      <!-- EXTERNAL ID SOURCE -->
+      <div class="form-group">
+        <label for="externalIdSource">External Id Source</label>
+        <input type="text" class="form-control" id="externalIdSource" placeholder=""
+               [formControlName]="'externalIdSource'">
       </div>
 
       <div class="modal-footer">

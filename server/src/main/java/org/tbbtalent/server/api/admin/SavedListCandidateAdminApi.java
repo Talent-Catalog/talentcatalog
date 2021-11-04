@@ -17,8 +17,9 @@
 package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -30,7 +31,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -41,7 +44,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
 import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -76,17 +79,40 @@ public class SavedListCandidateAdminApi implements
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
     @Autowired
     public SavedListCandidateAdminApi(
-            CandidateService candidateService, SavedListService savedListService, 
-            UserContext userContext) {
+            CandidateService candidateService, SavedListService savedListService,
+            AuthService authService) {
         this.candidateService = candidateService;
         this.savedListService = savedListService;
-        candidateBuilderSelector = new CandidateBuilderSelector(userContext);
+        candidateBuilderSelector = new CandidateBuilderSelector(authService);
+    }
+
+    @Override
+    public List<Map<String, Object>> list(long savedListId) throws NoSuchObjectException {
+        SavedList savedList = savedListService.get(savedListId);
+        Set<Candidate> candidates = savedList.getCandidates();
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder();
+        return builder.buildList(candidates);
     }
 
     @Override
     public void merge(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request) 
             throws NoSuchObjectException {
         savedListService.mergeSavedList(savedListId, request);
+    }
+
+    /**
+     * Merge the contents of the SavedList with the given id with the 
+     * candidates whose candidate numbers (NOT ids) appear in the given file.
+     * @param savedListId ID of saved list to be updated
+     * @param file File containing candidate numbers, one to a line
+     * @throws NoSuchObjectException if there is no saved list with this id
+     * or if any of the candidate numbers are not numeric or do not correspond to a candidate
+     * @throws IOException If there is a problem reading the file
+     */
+    @PutMapping("{id}/merge-from-file")
+    public void mergeFromFile(@PathVariable("id") long savedListId,
+        @RequestParam("file") MultipartFile file) throws NoSuchObjectException, IOException {
+        savedListService.mergeSavedListFromFile(savedListId, file);
     }
 
     @Override
@@ -104,13 +130,14 @@ public class SavedListCandidateAdminApi implements
 
     @Override
     public @NotNull Map<String, Object> searchPaged(
-            long savedListId, @Valid SavedListGetRequest request) 
-            throws NoSuchObjectException {
+            long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
         Page<Candidate> candidates = this.candidateService
                 .getSavedListCandidates(savedListId, request);
         
-        setCandidateContext(savedListId, candidates);
-
+        this.savedListService.setCandidateContext(savedListId, candidates);
+        
+        this.savedListService.addOpportunityStages(savedListId, candidates);
+        
         DtoBuilder builder = candidateBuilderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
@@ -145,17 +172,6 @@ public class SavedListCandidateAdminApi implements
         return builder.build(savedList);
     }
 
-    /**
-     * Mark the Candidate objects with the list context.
-     * This means that context fields (ie ContextNote) associated with the 
-     * list will be returned through the DtoBuilder if present.
-     */
-    private void setCandidateContext(long savedListId, Iterable<Candidate> candidates) {
-        for (Candidate candidate : candidates) {
-            candidate.setContextSavedListId(savedListId);
-        }
-    }
-
     @PostMapping(value = "{id}/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
     public void export(
             @PathVariable("id") long savedListId,
@@ -165,14 +181,7 @@ public class SavedListCandidateAdminApi implements
         response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(savedListId, request, response.getWriter());
     }
-
-    @PutMapping(value = "{id}/update-sf")
-    public void createUpdateSalesforce(
-            @PathVariable("id") long savedListId) 
-            throws NoSuchObjectException, GeneralSecurityException {
-        savedListService.createUpdateSalesforce(savedListId);
-    }
-
+    
     /**
      * Adds or replaces the given candidates to a given existing list.
      * <p/>

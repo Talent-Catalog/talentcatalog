@@ -17,6 +17,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TranslationService} from '../../../../services/translation.service';
 import {User} from '../../../../model/user';
+import {isAdminUser} from "../../../../model/base";
+import {AuthService} from "../../../../services/auth.service";
 
 @Component({
   selector: 'app-general-translations',
@@ -35,7 +37,8 @@ export class GeneralTranslationsComponent implements OnInit {
   saving: boolean;
   saveError: any;
 
-  constructor(private translationService: TranslationService) {
+  constructor(private translationService: TranslationService,
+              private authService: AuthService) {
   }
 
   ngOnInit() {
@@ -95,6 +98,10 @@ export class GeneralTranslationsComponent implements OnInit {
   isBlank(value) {
     return (!value || /^\s*$/.test(value));
   }
+
+  isAnAdmin(): boolean {
+    return isAdminUser(this.authService);
+  }
 }
 
 const ALL_FIELDS = {
@@ -124,7 +131,6 @@ const ALL_FIELDS = {
     },
     "RESETPASSWORD": {
       "TITLE": null,
-      "ERROR": null,
       "SUCCESS": null,
       "LABEL": {
         "EMAIL": null
@@ -182,6 +188,10 @@ const ALL_FIELDS = {
       },
       "INACTIVE": {
         "EXPLANATION": null
+      },
+      "INELIGIBLE": {
+        "EXPLANATION": null,
+        "BUTTON": null
       }
     },
     "REGISTRATION": {
@@ -237,10 +247,17 @@ const ALL_FIELDS = {
           "DOB": null,
           "COUNTRYID": null,
           "CITY": null,
+          "STATE": null,
           "YEAROFARRIVAL": null,
           "NATIONALITY": null,
+          "EXTERNALID": null,
           "REGISTEREDWITHUN": null,
-          "REGISTRATIONID": null
+          "REGISTRATIONID": null,
+          "UNHCRCONSENT": null
+        },
+        "NOTE": {
+          "UNHCRREGISTERED": null,
+          "UNHCRCONSENT": null
         }
       },
       "OCCUPATION": {
@@ -349,6 +366,7 @@ const ALL_FIELDS = {
         "DOB": null,
         "COUNTRY": null,
         "CITY": null,
+        "STATE": null,
         "YEAROFARRIVAL": null,
         "NATIONALITY": null
       },
@@ -404,6 +422,10 @@ const ALL_FIELDS = {
         "CHOOSE": null,
         "SAVE": null,
         "APPROX": null
+      },
+      "PLACEHOLDER" : {
+        "SELECT": null,
+        "SELECTORTYPE": null
       },
       "ERROR": {
         "REQUIRED": null,
@@ -503,5 +525,14 @@ const ALL_FIELDS = {
       "ENTITY_REFERENCED": null,
       "UNKNOWN_OCCUPATION": null,
       "ALLOW_POPUPS": null,
+      "CRITERIA_INVALID": {
+        "HEADING": null,
+        "LINK": null,
+      },
     },
+  "CONFIRMATION": {
+    "YES": null,
+    "NO": null,
+    "UNSURE": null,
+    }
   };

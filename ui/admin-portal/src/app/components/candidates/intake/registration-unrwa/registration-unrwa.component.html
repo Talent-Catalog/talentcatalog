@@ -28,43 +28,44 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="unrwaRegistered" [formControlName]="'unrwaRegistered'">
-      <option *ngFor="let opt of unrwaRegisteredOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="unrwaRegistered" [formControlName]="'unrwaRegistered'" (clear)="setNoResponse('unrwaRegistered')"
+               [items]="unrwaRegisteredOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
+
   <div *ngIf="showAll">
     <div *ngIf="unrwaRegistered == 'Yes'">
       <div class="form-group">
-        <label for="unrwaStatus">
-          What is your registration status with UNRWA?
-        </label>
-        <select class="form-control"
-                id="unrwaStatus" [formControlName]="'unrwaStatus'">
-          <option *ngFor="let opt of unrwaStatusOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
-      </div>
-      <div  *ngIf="showUnrwaNumber()">
-        <div class="form-group">
-          <label for="unrwaNumber">What is your UNRWA number?</label>
-          <input type="text" class="form-control"
-                 id="unrwaNumber" [formControlName]="'unrwaNumber'">
-        </div>
+        <label for="unrwaNumber">What is your UNRWA number?</label>
+        <input type="text" class="form-control"
+               id="unrwaNumber" [formControlName]="'unrwaNumber'">
       </div>
       <div class="form-group">
-        <label for="unrwaNotes">Notes</label>
-        <textarea type="text" class="md-textarea-auto form-control" rows="3"
-                  id="unrwaNotes" [formControlName]="'unrwaNotes'"
-                  placeholder="" ></textarea>
+        <label for="unrwaFile">How many people are included on your UNRWA file?</label>
+        <input type="number" class="form-control"
+               id="unrwaFile" [formControlName]="'unrwaFile'">
+      </div>
+    </div>
+
+    <div *ngIf="unrwaRegistered == 'No'">
+      <div class="form-group">
+        <label for="unrwaNotRegStatus">
+          What best describes your status not being registered?
+        </label>
+        <ng-select id="unrwaNotRegStatus" [formControlName]="'unrwaNotRegStatus'" (clear)="setNoResponse('unrwaNotRegStatus')"
+                   [items]="NotRegisteredStatusOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
     </div>
   </div>
-
-
+  <div *ngIf="hasNotes">
+    <div class="form-group">
+      <label for="unrwaNotes">Additional Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                id="unrwaNotes" [formControlName]="'unrwaNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
 
 </form>
 

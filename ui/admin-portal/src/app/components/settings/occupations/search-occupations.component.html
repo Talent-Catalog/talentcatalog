@@ -18,7 +18,7 @@
   <div class="section">
     <div>
       <div class="float-right">
-        <button class="btn btn-primary" (click)="addOccupation()">Add</button>
+        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="addOccupation()">Add</button>
       </div>
     </div>
     <div class="alert alert-danger" *ngIf="error">
@@ -34,10 +34,10 @@
         </div>
 
         <div class="form-group col-4">
-          <select class="form-control" id="status" formControlName="status">
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+          <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
+            <ng-option value="active">Active</ng-option>
+            <ng-option value="inactive">Inactive</ng-option>
+          </ng-select>
         </div>
 
       </div>
@@ -61,7 +61,7 @@
 
     <thead>
     <tr>
-      <th>Name</th>
+      <th>Name (TBB id-ISCO08 code)</th>
       <th>Status</th>
       <th>Translation count</th>
       <th></th>
@@ -70,7 +70,7 @@
 
     <tbody>
     <tr *ngFor="let occupation of results?.content">
-      <td>{{occupation.name}}</td>
+      <td>{{occupation.name}} ({{occupation.id}}-{{occupation.isco08Code}})</td>
       <td>{{occupation.status}}</td>
       <td></td>
       <td>

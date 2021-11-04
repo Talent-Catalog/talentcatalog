@@ -11,12 +11,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="visaHealthAssessment" [formControlName]="'visaHealthAssessment'">
-      <option *ngFor="let opt of healthAssessmentOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="visaHealthAssessment" [formControlName]="'visaHealthAssessment'" (clear)="setNoResponse('visaHealthAssessment')"
+               [items]="healthAssessmentOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="form-group">
     <label for="visaHealthAssessmentNotes">Notes</label>

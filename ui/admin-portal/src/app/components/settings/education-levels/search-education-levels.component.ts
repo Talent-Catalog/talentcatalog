@@ -28,6 +28,8 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditEducationLevelComponent} from "./edit/edit-education-level.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
+import {AuthService} from "../../../services/auth.service";
+import {isAdminUser} from "../../../model/base";
 
 @Component({
   selector: 'app-search-education-levels',
@@ -48,7 +50,8 @@ export class SearchEducationLevelsComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private educationLevelService: EducationLevelService,
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private authService: AuthService) {
   }
 
   ngOnInit() {
@@ -139,5 +142,9 @@ export class SearchEducationLevelsComponent implements OnInit {
       })
       .catch(() => { /* Isn't possible */ });
 
+  }
+
+  isAnAdmin(): boolean {
+    return isAdminUser(this.authService);
   }
 }

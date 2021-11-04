@@ -16,6 +16,7 @@
 
 import {User} from './user';
 import {AuthService} from '../services/auth.service';
+import {ExportColumn} from "./saved-list";
 
 export interface HasName {
   name?: string;
@@ -26,18 +27,74 @@ export enum CandidateSourceType {
   SavedSearch
 }
 
+export enum Progress {
+  NotStarted,
+  Started,
+  Finished
+}
+
+/**
+ * Published columns can for display purposes only, or they can allow different kinds of data to be
+ * entered in them (eg by employers) which we can process, interpreting the data depending on its
+ * type.
+ * This entered data may get imported back into the Talent Catalog data base or into Salesforce.
+ */
+export enum PublishedDocColumnType {
+  DisplayOnly,
+  EmployerCandidateNotes,
+  EmployerCandidateDecision
+}
+
+/**
+ * Published doc columns can be configured in three sizes based on their width.
+ * <p/>
+ * The width can be used to determine other automated formatting - eg alignment.
+ */
+export enum PublishedDocColumnWidth {
+  /**
+   * Narrow columns are good for small amounts of data - eg a candidate number, or a status.
+   * <p/>
+   * Automated formatting may choose to center align the values in narrow columns.
+   */
+  Narrow,
+
+  /**
+   * This is the default column width and does not need to be specified. It can be used for
+   * candidate names, for example.
+   * <p/>
+   * It doesn't trigger any automated formatting. The defaults for the template from which a doc
+   * is created will be used.
+   */
+  Medium,
+
+  /**
+   * Wide columns are good for holding descriptive text - eg candidate descriptions or
+   * employer feedback.
+   * <p/>
+   * Automated formatting will typically choose to left justify the text.
+   */
+  Wide
+}
+
 export enum ReviewStatus {
   unverified,
   verified,
   rejected
 }
 
+/**
+ * This restricts the data displayed in our browse tabs.
+ * For example, if a tab is showing all my lists or all my searches - this would be "all".
+ * Or if a tab is showing all searches of a given type (eg Profession, Job, Other), this would
+ * be "type"
+ */
 export enum SearchBy {
   type,
   all,
   mine,
   sharedWithMe,
-  watched
+  watched,
+  externalLink
 }
 
 /**
@@ -92,9 +149,12 @@ export interface Auditable extends HasId {
 
 export interface CandidateSource extends Auditable {
   name: string;
+  description?: string;
   displayedFieldsLong?: string[];
   displayedFieldsShort?: string[];
+  exportColumns?: ExportColumn[];
   fixed: boolean;
+  global: boolean;
   sfJoblink?: string;
   users?: User[];
   watcherUserIds?: number[];
@@ -102,6 +162,24 @@ export interface CandidateSource extends Auditable {
 
 export interface Opportunity {
   name: string;
+}
+
+export interface HasJobRelatedLinks {
+  sfJoblink: string;
+  listlink?: string;
+  folderlink?: string;
+  foldercvlink?: string;
+  folderjdlink?: string;
+}
+
+export interface UpdateEmployerOpportunityRequest extends HasJobRelatedLinks {
+}
+
+export interface PostJobToSlackRequest extends HasJobRelatedLinks {
+  jobName?: string;
+}
+export interface PostJobToSlackResponse {
+  slackChannelUrl: string;
 }
 
 export class PagedSearchRequest {
@@ -123,6 +201,10 @@ export class SearchCandidateSourcesRequest extends PagedSearchRequest {
 export class UpdateCandidateContextNoteRequest {
   candidateId: number;
   contextNote: string;
+}
+
+export class UpdateCandidateSourceDescriptionRequest {
+  description: string;
 }
 
 export class UpdateDisplayedFieldPathsRequest {
@@ -174,5 +256,12 @@ export function canEditSource(source: CandidateSource, auth: AuthService) {
     }
   }
   return changeable;
+}
+
+export function isAdminUser(auth: AuthService) {
+  const loggedInUser =
+    auth ? auth.getLoggedInUser() : null;
+  const role = loggedInUser ? loggedInUser.role : null;
+  return role !== 'semilimited' && role !== 'limited';
 }
 

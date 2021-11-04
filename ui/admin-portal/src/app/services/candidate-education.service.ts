@@ -20,23 +20,51 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {CandidateEducation} from "../model/candidate-education";
 
+export interface CreateCandidateEducationRequest {
+  candidateId: number;
+  educationType: string;
+  countryId: number;
+  educationMajorId: number;
+  lengthOfCourseYears: number;
+  institution: string;
+  courseName: string;
+  yearCompleted: string;
+  incomplete: boolean;
+}
+
+export interface UpdateCandidateEducationRequest {
+  id: number;
+  educationType: string;
+  countryId: number;
+  majorId: number;
+  lengthOfCourseYears: number;
+  institution: string;
+  courseName: string;
+  yearCompleted: string;
+  incomplete: boolean;
+}
+
 @Injectable({providedIn: 'root'})
 export class CandidateEducationService {
 
   private apiUrl = environment.apiUrl + '/candidate-education';
 
-  constructor(private http:HttpClient) {}
+  constructor(private http: HttpClient) {}
 
   list(id: number): Observable<CandidateEducation[]> {
     return this.http.get<CandidateEducation[]>(`${this.apiUrl}/${id}/list`);
   }
 
-  create(id: number, details): Observable<CandidateEducation>  {
-    return this.http.post<CandidateEducation>(`${this.apiUrl}/${id}`, details);
+  create(request: CreateCandidateEducationRequest): Observable<CandidateEducation>  {
+    return this.http.post<CandidateEducation>(`${this.apiUrl}`, request);
   }
 
-  update(id: number, details): Observable<CandidateEducation>  {
-    return this.http.put<CandidateEducation>(`${this.apiUrl}/${id}`, details);
+  update(request: UpdateCandidateEducationRequest): Observable<CandidateEducation>  {
+    return this.http.put<CandidateEducation>(`${this.apiUrl}`, request);
+  }
+
+  delete(id: number): Observable<CandidateEducation>  {
+    return this.http.delete<CandidateEducation>(`${this.apiUrl}/${id}`);
   }
 
 }

@@ -32,14 +32,6 @@
 
   <form [formGroup]="form">
 
-<!--    <div class="form-group">-->
-<!--      <label for="type">Attachment Type</label>-->
-<!--      <select class="form-control" name="type" id="type" [formControlName]="'type'" [disabled]="saving">-->
-<!--        <option value="link">Link</option>-->
-<!--        <option value="file">File</option>-->
-<!--      </select>-->
-<!--    </div>-->
-
     <ng-container *ngIf="type === 'link'">
 
       <div class="form-group">
@@ -78,7 +70,8 @@
       </div>
 
       <app-file-upload *ngIf="!uploading"
-                       (uploadStarted)="startServerUpload($event)"></app-file-upload>
+                       (error)="onError($event)"
+                       (newFiles)="startServerUpload($event)"></app-file-upload>
 
 
     </ng-container>

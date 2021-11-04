@@ -19,7 +19,7 @@ import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from "../model/search-results";
-import {Candidate} from "../model/candidate";
+import {Candidate, SalesforceOppParams} from "../model/candidate";
 import {CandidateSource, PagedSearchRequest} from "../model/base";
 import {isSavedSearch} from "../model/saved-search";
 
@@ -30,6 +30,12 @@ export class CandidateSourceCandidateService {
   private savedSearchApiUrl = environment.apiUrl + '/saved-search-candidate';
 
   constructor(private http: HttpClient) {}
+
+  list(source: CandidateSource): Observable<Candidate[]> {
+    const apiUrl = isSavedSearch(source) ? this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.get<Candidate[]>(`${apiUrl}/${source.id}/list`);
+  }
 
   searchPaged(source: CandidateSource, request: PagedSearchRequest):
     Observable<SearchResults<Candidate>> {
@@ -47,12 +53,5 @@ export class CandidateSourceCandidateService {
 
     return this.http.post(
       `${apiUrl}/${source.id}/export/csv`, request, {responseType: 'blob'});
-  }
-
-  createUpdateSalesforce(source: CandidateSource): Observable<void> {
-    const apiUrl = isSavedSearch(source) ?
-      this.savedSearchApiUrl : this.savedListApiUrl;
-
-    return this.http.put<void>(`${apiUrl}/${source.id}/update-sf`, null);
   }
 }

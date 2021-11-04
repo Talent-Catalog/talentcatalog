@@ -16,9 +16,9 @@
 
 package org.tbbtalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
-
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Utility for selecting a SavedList DTO builder
@@ -26,6 +26,8 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
  * @author John Cameron
  */
 public class SavedListBuilderSelector {
+    private final ExportColumnsBuilderSelector exportColumnsBuilderSelector 
+        = new ExportColumnsBuilderSelector();
 
     public @NotNull DtoBuilder selectBuilder() {
         return savedListDto();
@@ -34,13 +36,22 @@ public class SavedListBuilderSelector {
     private DtoBuilder savedListDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
+                .add("exportColumns", exportColumnsBuilderSelector.selectBuilder())
                 .add("status")
                 .add("name")
                 .add("fixed")
+                .add("global")
                 .add("savedSearchSource", savedSearchSourceDto())
                 .add("sfJoblink")
+                .add("folderlink")
+                .add("foldercvlink")
+                .add("folderjdlink")
+                .add("publishedDocLink")
+                .add("registeredJob")
+                .add("tbbShortName")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

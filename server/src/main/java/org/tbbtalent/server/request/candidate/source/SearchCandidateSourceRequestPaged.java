@@ -16,15 +16,29 @@
 
 package org.tbbtalent.server.request.candidate.source;
 
-import org.tbbtalent.server.request.PagedSearchRequest;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tbbtalent.server.request.PagedSearchRequest;
 
 /**
  * Used for searching candidate sources (eg SavedLists and SavedSearches) by
  * their attributes.
+ * <p/>
+ * Flags are Boolean - meaning that they have three values: null (ie undefined, therefore ignored), 
+ * true or false
+ * <p/>
+ * The logic for searching depends on whether watched is specified.
+ * 
+ * If watched is specified and is true, all watched sources (by the user) are returned.
+ * 
+ * Otherwise, sources are returned which match the following logic:
+ * 
+ * keyword matches
+ * AND
+ * fixed (if defined)
+ * AND
+ * (global OR shared OR owned) - for those values that are defined
  */
 @Getter
 @Setter
@@ -34,11 +48,32 @@ public class SearchCandidateSourceRequestPaged extends PagedSearchRequest {
      * Used to match sources whose names are like this keyword
      */
     private String keyword;
-    
+
+    /**
+     * If true the details of the source definition cannot be changed (eg name, or search parameters
+     * for searches)
+     */
     private Boolean fixed;
+
+    /**
+     * Everyone sees global sources. They cannot be removed (ie deleted from view).
+     */
     private Boolean global;
+
+    /**
+     * Owned by me
+     */
     private Boolean owned;
+
+    /**
+     * Shared with me
+     */
     private Boolean shared;
+
+    /**
+     * Watched by me
+     */
     private Boolean watched;
+
 }
 

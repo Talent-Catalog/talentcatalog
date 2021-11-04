@@ -18,6 +18,7 @@ import {Component, HostBinding, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {LanguageService} from '../services/language.service';
 import {LanguageLoader} from "../services/language.loader";
+import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
 
 @Component({
   selector: 'app-root',
@@ -45,15 +46,20 @@ export class AppComponent implements OnInit {
         this.loading = loading;
       })
 
-    //Register for language change events which are used to set the
+    //Register for language change events which are used to set the language and
     //appropriate Right to Left direction. That can only be set in this
     //component.
     this.languageService.languageChanged$.subscribe(
-      () => this.rtl = this.languageService.isSelectedLanguageRtl()
+      () => {
+        this.translate.use(this.languageService.getSelectedLanguage());
+        this.rtl = this.languageService.isSelectedLanguageRtl();
+      }
     );
 
     // this language will be used as a fallback when a translation isn't
     // found in the current language. This forces loading of translations.
     this.translate.setDefaultLang('en');
+
+    this.translate.use('en');
   }
 }

@@ -14,29 +14,29 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {NgbTabChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
+import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy} from "../../model/base"
 import {LocalStorageService} from "angular-2-local-storage";
-import {
-  SavedSearchService,
-  SavedSearchTypeInfo,
-  SavedSearchTypeSubInfo
-} from "../../services/saved-search.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {SavedSearchService, SavedSearchTypeInfo, SavedSearchTypeSubInfo} from "../../services/saved-search.service";
+import {FormBuilder} from "@angular/forms";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewChecked {
 
   activeTabId: string;
-  categoryForm: FormGroup;
   private lastTabKey: string = 'HomeLastTab';
   private lastCategoryTabKey: string = 'HomeLastCategoryTab';
+
+  //Get reference to the nav element
+  @ViewChild(NgbNav)
+  nav: NgbNav;
+
   savedSearchTypeInfos: SavedSearchTypeInfo[];
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   selectedSavedSearchSubtype: SavedSearchSubtype;
@@ -50,21 +50,20 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[0].categories;
+  }
 
-    this.categoryForm = this.fb.group({
-      savedSearchSubtype: [this.selectedSavedSearchSubtype]
-    });
-
+  ngAfterViewChecked(): void {
+    //This is called in order for the navigation tabs, this.nav, to be set.
     this.selectDefaultTab()
   }
 
-  onTabChanged(event: NgbTabChangeEvent) {
+  onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
   }
 
-  onSavedSearchSubtypeChange($event: Event) {
-    const formValues = this.categoryForm.value;
-    this.setSelectedSavedSearchSubtype(formValues.savedSearchSubtype);
+  onSavedSearchSubtypeChange($event: SavedSearchTypeSubInfo) {
+    this.setSelectedSavedSearchSubtype($event.savedSearchSubtype);
   }
 
   private selectDefaultTab() {
@@ -81,8 +80,10 @@ export class HomeComponent implements OnInit {
 
   private setActiveTabId(id: string) {
 
-    this.activeTabId = id;
+    this.nav?.select(id);
 
+    //The typed saved search tabs have id's which look like "type:profession", "type:jobs",
+    //"type:other". Unpack the id to identify the search type
     const parts = id.split(':');
     if (parts[0] === 'type' && parts.length === 2) {
 
@@ -94,10 +95,8 @@ export class HomeComponent implements OnInit {
     this.localStorageService.set(this.lastTabKey, id);
   }
 
-  private setSelectedSavedSearchSubtype(selectedSavedSearchSubtype: number) {
-    this.selectedSavedSearchSubtype = selectedSavedSearchSubtype;
-    this.categoryForm.controls['savedSearchSubtype'].patchValue(selectedSavedSearchSubtype);
-
+  private setSelectedSavedSearchSubtype(savedSearchSubtype: number) {
+    this.selectedSavedSearchSubtype = savedSearchSubtype;
     this.localStorageService.set(this.lastCategoryTabKey, this.selectedSavedSearchSubtype);
   }
 

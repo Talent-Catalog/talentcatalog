@@ -28,37 +28,13 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="workAbroad" [formControlName]="'workAbroad'">
-      <option *ngFor="let opt of workAbroadOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="workAbroad" [formControlName]="'workAbroad'" (clear)="setNoResponse('workAbroad')"
+               [items]="workAbroadOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="workAbroad === 'Yes'">
     <div class="form-group">
-      <div class="form-group">
-        <label for="workAbroadCountryIds">
-          Countries you worked in
-        </label>
-        <ng-multiselect-dropdown
-          id="workAbroadCountryIds"
-          class="custom-primary"
-          [settings]="dropdownSettings"
-          [data]="countries"
-          formControlName="selectedCountries"
-          (onSelect)="addIds()"
-          (onDeSelect)="addIds()">
-        </ng-multiselect-dropdown>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="workAbroadYrs">How many years were you abroad?</label>
-      <input type="number" class="form-control"
-             id="workAbroadYrs" [formControlName]="'workAbroadYrs'">
-    </div>
-    <div class="form-group">
-      <label for="workAbroadNotes">What was the purpose of work/stay? Any additional information?</label>
+      <label for="workAbroadNotes">Please list each country and explain the purpose of work/stay, how many years there and any additional information.</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="workAbroadNotes" [formControlName]="'workAbroadNotes'"
                 placeholder="" ></textarea>

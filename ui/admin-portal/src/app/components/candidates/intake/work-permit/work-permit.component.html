@@ -26,22 +26,26 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="workPermit" [formControlName]="'workPermit'">
-      <option *ngFor="let opt of workPermitOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="workPermit" [formControlName]="'workPermit'" (clear)="setNoResponse('workPermit')"
+               [items]="workPermitOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value">
+    </ng-select>
   </div>
   <div *ngIf="workPermit === 'YesNotDesired' || workPermit === 'No'">
     <div class="form-group">
       <label for="workPermitDesired">Are you legally able to obtain a work permit in your desired field?</label>
-      <select class="form-control"
-              id="workPermitDesired" [formControlName]="'workPermitDesired'">
-        <option *ngFor="let opt of workPermitDesiredOptions" [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
+      <ng-select id="workPermitDesired" [formControlName]="'workPermitDesired'" (clear)="setNoResponse('workPermitDesired')"
+                 [items]="workPermitDesiredOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="displayText" bindValue="value">
+      </ng-select>
+    </div>
+    <div *ngIf="workPermitDesired === 'No'">
+      <div class="form-group">
+          <label for="workPermitDesiredNotes">If no, please add any additional notes</label>
+          <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                    id="workPermitDesiredNotes" [formControlName]="'workPermitDesiredNotes'"
+                    placeholder=""></textarea>
+      </div>
     </div>
   </div>
 </form>

@@ -18,7 +18,7 @@
   <div class="section">
     <div class="float-right">
       <div class="float-right">
-        <button *ngIf="loggedInUser.role === 'admin'" class="btn btn-primary" (click)="addUser()">Add</button>
+        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="addUser()">Add</button>
       </div>
     </div>
     <div class="alert alert-danger" *ngIf="error">
@@ -34,10 +34,10 @@
         </div>
 
         <div class="form-group col-4">
-          <select class="form-control" id="status" formControlName="status">
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+          <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
+            <ng-option value="active">Active</ng-option>
+            <ng-option value="inactive">Inactive</ng-option>
+          </ng-select>
         </div>
 
       </div>
@@ -66,6 +66,7 @@
       <th>Last Name</th>
       <th>Email</th>
       <th>Role</th>
+      <th>Source Countries</th>
       <th>Read Only?</th>
       <th>Status</th>
       <th></th>
@@ -79,10 +80,11 @@
       <td>{{user.lastName}}</td>
       <td>{{user.email}}</td>
       <td>{{user.role}}</td>
+      <td>{{getSourceCountries(user)}}</td>
       <td>{{user.readOnly}}</td>
       <td>{{user.status}}</td>
       <td>
-        <div *ngIf="(!loggedInUser.readOnly)" ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
+        <div *ngIf="!loggedInUser.readOnly && canEdit(user)" ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
           <button class="btn btn-xs hide-after" ngbDropdownToggle>
             <i class="fas fa-ellipsis-h"></i>
           </button>

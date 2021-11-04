@@ -16,8 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,8 @@ import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.repository.db.SurveyTypeRepository;
 import org.tbbtalent.server.service.db.SurveyTypeService;
 import org.tbbtalent.server.service.db.TranslationService;
+
+import java.util.List;
 
 @Service
 public class SurveyTypeServiceImpl implements SurveyTypeService {
@@ -44,8 +44,15 @@ public class SurveyTypeServiceImpl implements SurveyTypeService {
     }
 
     @Override
-    public List<SurveyType> listSurveyTypes() {
+    public List<SurveyType> listActiveSurveyTypes() {
         List<SurveyType> surveyTypes = surveyTypeRepository.findByStatus(Status.active);
+        translationService.translate(surveyTypes, "survey_type");
+        return surveyTypes;
+    }
+
+    @Override
+    public List<SurveyType> listSurveyTypes() {
+        List<SurveyType> surveyTypes = surveyTypeRepository.findAll();
         translationService.translate(surveyTypes, "survey_type");
         return surveyTypes;
     }

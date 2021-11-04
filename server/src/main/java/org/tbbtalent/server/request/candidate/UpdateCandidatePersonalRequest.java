@@ -17,7 +17,11 @@
 package org.tbbtalent.server.request.candidate;
 
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.YesNo;
+import org.tbbtalent.server.model.db.YesNoUnsure;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDate;
 
 public class UpdateCandidatePersonalRequest {
@@ -30,9 +34,19 @@ public class UpdateCandidatePersonalRequest {
     /* LOCATION */
     private Long countryId;
     private String city;
+    private String state;
     private Integer yearOfArrival;
     /* NATIONALITY */
-    private Long nationality;
+    private Long nationalityId;
+    /* EXTERNAL ID */
+    private String externalId;
+    private String externalIdSource;
+    /* UNHCR */
+    @Enumerated(EnumType.STRING)
+    private YesNoUnsure unhcrRegistered;
+    private String unhcrNumber;
+    @Enumerated(EnumType.STRING)
+    private YesNo unhcrConsent;
 
     public String getFirstName() {
         return firstName;
@@ -78,6 +92,10 @@ public class UpdateCandidatePersonalRequest {
         this.city = city;
     }
 
+    public String getState() {return state;}
+
+    public void setState(String state) {this.state = state;}
+
     public Integer getYearOfArrival() {
         return yearOfArrival;
     }
@@ -86,11 +104,31 @@ public class UpdateCandidatePersonalRequest {
         this.yearOfArrival = yearOfArrival;
     }
 
-    public Long getNationality() {
-        return nationality;
+    public Long getNationalityId() {
+        return nationalityId;
     }
 
-    public void setNationality(Long nationality) {
-        this.nationality = nationality;
+    public void setNationalityId(Long nationalityId) {
+        this.nationalityId = nationalityId;
     }
+
+    public String getExternalId() {return externalId;}
+
+    public void setExternalId(String externalId) {this.externalId = externalId;}
+
+    public String getExternalIdSource() {return externalIdSource;}
+
+    public void setExternalIdSource(String externalIdSource) {this.externalIdSource = externalIdSource;}
+
+    public YesNoUnsure getUnhcrRegistered() {return unhcrRegistered;}
+
+    public void setUnhcrRegistered(YesNoUnsure unhcrRegistered) {this.unhcrRegistered = unhcrRegistered;}
+
+    public String getUnhcrNumber() {return unhcrNumber;}
+
+    public void setUnhcrNumber(String unhcrNumber) {this.unhcrNumber = unhcrNumber;}
+
+    public YesNo getUnhcrConsent() {return unhcrConsent;}
+
+    public void setUnhcrConsent(YesNo unhcrConsent) {this.unhcrConsent = unhcrConsent;}
 }

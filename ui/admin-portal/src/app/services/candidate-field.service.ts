@@ -19,6 +19,8 @@ import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
 import {CandidateSource} from "../model/base";
+import {enumKeysToEnumOptions} from "../util/enum";
+import {Candidate, checkIeltsScoreType, ResidenceStatus} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +32,13 @@ export class CandidateFieldService {
   //See https://stackoverflow.com/a/48785621/929968
   private dateFormatter = (value) => this.datePipe.transform(value, "yyyy-MM-dd");
   private titleCaseFormatter = (value) => this.titleCasePipe.transform(value);
+  private levelGetNameFormatter = (value) => value.name;
+  private getDisplayEnum = (value) => {
+    return enumKeysToEnumOptions([value], ResidenceStatus)[0].displayText;
+  }
+  private getIeltsScoreType = (value) => {
+    return this.getIeltsScore(value);
+  }
 
   private allDisplayableFields = [
     new CandidateFieldInfo("First Name", "user.firstName",
@@ -49,11 +58,21 @@ export class CandidateFieldService {
     new CandidateFieldInfo("Phone", "phone",
       null, null),
     new CandidateFieldInfo("Status", "status",
-      null, null),
+      this.titleCaseFormatter, null),
     new CandidateFieldInfo("UNHCR Status", "unhcrStatus",
       null, null),
     new CandidateFieldInfo("Updated", "updatedDate",
       this.dateFormatter, null),
+    new CandidateFieldInfo("DOB", "dob",
+      this.dateFormatter, null),
+    new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level",
+      this.levelGetNameFormatter, null),
+    new CandidateFieldInfo("IELTS Score", "ieltsScore",
+      this.getIeltsScoreType, null),
+    new CandidateFieldInfo("Legal status", "residenceStatus",
+      this.getDisplayEnum, null),
+    new CandidateFieldInfo("Dependants", "numberDependants",
+      null, null),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
@@ -138,6 +157,7 @@ export class CandidateFieldService {
       if (field == null) {
         console.error("CandidateFieldService: Could not find field for " + fieldPath)
       } else {
+        //Ignore fields with a selector which returns false
         if (field.fieldSelector == null || field.fieldSelector()) {
           fields.push(field);
         }
@@ -189,4 +209,20 @@ export class CandidateFieldService {
 
     return same;
   }
+
+  getIeltsScore(candidate: Candidate): string {
+    let score: string = null;
+    if (candidate?.ieltsScore) {
+      const type = checkIeltsScoreType(candidate)
+      if (type === "IELTSGen") {
+        score = candidate?.ieltsScore + ' (Gen)';
+      } else if (type === "IELTSAca") {
+        score = candidate?.ieltsScore + ' (Aca)';
+      } else {
+        score = candidate?.ieltsScore + ' (Est)'
+      }
+    }
+    return score;
+  }
+
 }

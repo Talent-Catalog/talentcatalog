@@ -28,11 +28,12 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.*;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
@@ -48,10 +49,10 @@ public class CandidateAdminApi {
 
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
-                             UserContext userContext) {
+                             AuthService authService) {
         this.candidateService = candidateService;
-        builderSelector = new CandidateBuilderSelector(userContext);
-        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(userContext);
+        builderSelector = new CandidateBuilderSelector(authService);
+        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(authService);
     }
 
     @PostMapping("search")
@@ -68,6 +69,13 @@ public class CandidateAdminApi {
         return builder.buildPage(candidates);
     }
 
+    @PostMapping("findbyemailorphone")
+    public Map<String, Object> findByCandidateEmailOrPhone(@RequestBody CandidateEmailOrPhoneSearchRequest request) {
+        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.buildPage(candidates);
+    }
+
     @PostMapping("findbynumberorname")
     public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateNumberOrNameSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
@@ -75,8 +83,8 @@ public class CandidateAdminApi {
         return builder.buildPage(candidates);
     }
 
-    @PostMapping("findbyphone")
-    public Map<String, Object> findByCandidatePhone(@RequestBody CandidatePhoneSearchRequest request) {
+    @PostMapping("findbyexternalid")
+    public Map<String, Object> findByCandidateExternalId(@RequestBody CandidateExternalIdSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
@@ -142,6 +150,22 @@ public class CandidateAdminApi {
     public Map<String, Object> updateAdditionalInfo(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = this.candidateService.updateCandidateAdditionalInfo(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
+    @PutMapping("{id}/shareable-notes")
+    public Map<String, Object> updateShareableNotes(@PathVariable("id") long id,
+        @RequestBody UpdateCandidateShareableNotesRequest request) {
+        Candidate candidate = this.candidateService.updateShareableNotes(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
+    @PutMapping("{id}/shareable-docs")
+    public Map<String, Object> updateShareableDocs(@PathVariable("id") long id,
+                                                    @RequestBody UpdateCandidateShareableDocsRequest request) {
+        Candidate candidate = this.candidateService.updateShareableDocs(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -213,6 +237,20 @@ public class CandidateAdminApi {
         Candidate candidate = candidateService.createUpdateSalesforce(id);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
+    }
+
+    @PutMapping("update-sf")
+    public void createUpdateSalesforce(@RequestBody UpdateCandidateOppsRequest request)
+            throws GeneralSecurityException, WebClientException {
+        candidateService.createUpdateSalesforce(request);
+    }
+
+    @PutMapping(value = "update-sf-by-list")
+    public void createUpdateSalesforce(
+        @Valid @RequestBody UpdateCandidateListOppsRequest request)
+        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+
+        candidateService.createUpdateSalesforce(request);
     }
 
     @PutMapping("{id}/intake")

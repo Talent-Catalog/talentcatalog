@@ -20,23 +20,41 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {CandidateCertification} from "../model/candidate-certification";
 
+export interface CreateCandidateCertificationRequest {
+  candidateId: number;
+  name: string;
+  institution: string;
+  dateCompleted: string;
+}
+
+export interface UpdateCandidateCertificationRequest {
+  id: number;
+  name: string;
+  institution: string;
+  dateCompleted: string;
+}
+
 @Injectable({providedIn: 'root'})
 export class CandidateCertificationService {
 
   private apiUrl = environment.apiUrl + '/candidate-certification';
 
-  constructor(private http:HttpClient) {}
+  constructor(private http: HttpClient) {}
 
   list(id: number): Observable<CandidateCertification[]> {
     return this.http.get<CandidateCertification[]>(`${this.apiUrl}/${id}/list`);
   }
 
-  create(id: number, details): Observable<CandidateCertification>  {
-    return this.http.post<CandidateCertification>(`${this.apiUrl}/${id}`, details);
+  create(request: CreateCandidateCertificationRequest): Observable<CandidateCertification>  {
+    return this.http.post<CandidateCertification>(`${this.apiUrl}`, request);
   }
 
-  update(id: number, details): Observable<CandidateCertification>  {
-    return this.http.put<CandidateCertification>(`${this.apiUrl}/${id}`, details);
+  update(request: UpdateCandidateCertificationRequest): Observable<CandidateCertification>  {
+    return this.http.put<CandidateCertification>(`${this.apiUrl}`, request);
+  }
+
+  delete(id: number): Observable<CandidateCertification>  {
+    return this.http.delete<CandidateCertification>(`${this.apiUrl}/${id}`);
   }
 
 }

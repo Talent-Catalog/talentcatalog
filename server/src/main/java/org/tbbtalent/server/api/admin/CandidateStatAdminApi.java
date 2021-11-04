@@ -16,13 +16,6 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,18 +24,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.StatReport;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatsRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController()
 @RequestMapping("/api/admin/candidate/stat")
@@ -51,18 +43,18 @@ public class CandidateStatAdminApi {
     private final CandidateService candidateService;
     private final CountryRepository countryRepository;
     private final SavedListService savedListService;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public CandidateStatAdminApi(
             CandidateService candidateService,
-            CountryRepository countryRepository, 
+            CountryRepository countryRepository,
             SavedListService savedListService,
-            UserContext userContext) {
+            AuthService authService) {
         this.candidateService = candidateService;
         this.countryRepository = countryRepository;
         this.savedListService = savedListService;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     /**
@@ -159,7 +151,7 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (female)",
                 this.candidateService.computeBirthYearStats(Gender.female, dateFrom, dateTo, sourceCountryIds), chartType));
 
-        title = "Nationalities";
+        title = "Nationalities by Country";
         statReports.add(new StatReport(title,
                 this.candidateService.computeNationalityStats(null, null, dateFrom, dateTo, sourceCountryIds)));
         statReports.add(new StatReport(title + " (male)",
@@ -170,6 +162,18 @@ public class CandidateStatAdminApi {
                 this.candidateService.computeNationalityStats(null, "jordan", dateFrom, dateTo, sourceCountryIds)));
         statReports.add(new StatReport(title + " (Lebanon)",
                 this.candidateService.computeNationalityStats(null, "lebanon", dateFrom, dateTo, sourceCountryIds)));
+
+        title = "Statuses";
+        statReports.add(new StatReport(title,
+                this.candidateService.computeStatusStats(null, null, dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (male)",
+                this.candidateService.computeStatusStats(Gender.male, null, dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (female)",
+                this.candidateService.computeStatusStats(Gender.female, null, dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (Jordan)",
+                this.candidateService.computeStatusStats(null, "jordan", dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (Lebanon)",
+                this.candidateService.computeStatusStats(null, "lebanon", dateFrom, dateTo, sourceCountryIds)));
 
         title = "Occupations";
         statReports.add(new StatReport(title + "",
@@ -281,6 +285,18 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (Lebanon)",
                 this.candidateService.computeNationalityStats(null, "lebanon", dateFrom, dateTo, candidateIds, sourceCountryIds)));
 
+        title = "Statuses";
+        statReports.add(new StatReport(title,
+                this.candidateService.computeStatusStats(null, null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (male)",
+                this.candidateService.computeStatusStats(Gender.male, null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (female)",
+                this.candidateService.computeStatusStats(Gender.female, null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (Jordan)",
+                this.candidateService.computeStatusStats(null, "jordan", dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (Lebanon)",
+                this.candidateService.computeStatusStats(null, "lebanon", dateFrom, dateTo, candidateIds, sourceCountryIds)));
+
         title = "Occupations";
         statReports.add(new StatReport(title + "",
                 this.candidateService.computeOccupationStats(null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
@@ -351,7 +367,7 @@ public class CandidateStatAdminApi {
      * Get logged in user’s source country Ids, defaulting to all countries if empty
      */
     private List<Long> getDefaultSourceCountryIds(){
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         List<Long> listOfCountryIds;

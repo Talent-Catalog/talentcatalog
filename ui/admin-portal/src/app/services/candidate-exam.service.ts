@@ -18,7 +18,15 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {CandidateExam} from '../model/candidate';
+import {CandidateExam, Exam} from '../model/candidate';
+
+export interface CreateCandidateExamRequest {
+  exam?: Exam;
+  otherExam?: string;
+  score?: string;
+  year?: number;
+  notes?: string;
+}
 
 @Injectable({providedIn: 'root'})
 export class CandidateExamService {
@@ -27,10 +35,10 @@ export class CandidateExamService {
 
   constructor(private http: HttpClient) {}
 
-  create(candidateId: number, candidateExam: CandidateExam):
+  create(candidateId: number, request: CreateCandidateExamRequest):
     Observable<CandidateExam>  {
     return this.http.post<CandidateExam>(
-      `${this.apiUrl}/${candidateId}`, candidateExam);
+      `${this.apiUrl}/${candidateId}`, request);
   }
 
   delete(id: number): Observable<boolean>  {

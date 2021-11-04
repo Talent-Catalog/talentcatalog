@@ -46,11 +46,14 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
     this.form = this.fb.group({
       dependantId: [this.myRecord?.id],
       dependantRelation: [this.myRecord?.relation],
+      dependantRelationOther: [this.myRecord?.relationOther],
       dependantDob: [this.myRecord?.dob],
       dependantName: [this.myRecord?.name],
       dependantRegistered: [this.myRecord?.registered],
+      dependantRegisteredNumber: [this.myRecord?.registeredNumber],
+      dependantRegisteredNotes: [this.myRecord?.registeredNotes],
       dependantHealthConcerns: [this.myRecord?.healthConcern],
-      dependantNotes: [this.myRecord?.notes],
+      dependantHealthNotes: [this.myRecord?.healthNotes],
     });
   }
 
@@ -72,11 +75,19 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
     return found;
   }
 
+  get dependantRelationship(): string {
+    return this.form.value.dependantRelation;
+  }
+
   get dependantAge(): number {
     if (this.form?.value.dependantDob) {
       const timeDiff = Math.abs(Date.now() - new Date(this.form.value.dependantDob).getTime());
       return Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25);
     }
+  }
+
+  get dependantRegistered(): string {
+    return this.form.value.dependantRegistered;
   }
 
   doDelete() {
@@ -89,5 +100,13 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
         }
       );
     this.delete.emit();
+  }
+
+  get dependantRegisteredNumber() {
+    if (this.dependantRelationship === 'Child' || this.dependantRelationship === 'Partner') {
+      if (this.dependantRegistered === 'UNHCR' || this.dependantRegistered === 'UNRWA' || this.dependantRegistered === 'UNHCRUNRWA') {
+        return true;
+      }
+    }
   }
 }

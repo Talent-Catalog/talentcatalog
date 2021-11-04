@@ -17,6 +17,16 @@
 import {Router, UrlTree} from "@angular/router";
 import {Location} from "@angular/common";
 
+/**
+ * Creates an externally usable url from the given navigation path - eg ["list",1000] by prefixing it
+ * with the apps base url - ie https://tbbtalent.org/admin-portal
+ * <p/>
+ * So for example, this could generate the external link for TC list number 1000, from the
+ * navigation ["list",1000] giving https://tbbtalent.org/admin-portal/list/1000
+ * @param router Current Router
+ * @param location Current Location
+ * @param navigation array of navigation elements
+ */
 export function getExternalHref(
   router: Router, location: Location, navigation: any[]): string {
   const urlTree: UrlTree = router.createUrlTree(navigation);

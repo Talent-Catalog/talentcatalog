@@ -16,15 +16,18 @@
 
 package org.tbbtalent.server.request.list;
 
-import org.tbbtalent.server.request.candidate.source.SearchCandidateSourceRequestPaged;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tbbtalent.server.request.candidate.source.SearchCandidateSourceRequestPaged;
 
 @Getter
 @Setter
 @ToString
 public class SearchSavedListRequest extends SearchCandidateSourceRequestPaged {
+    /**
+     * If true will search saved lists where tbb short name is not null.
+     */
+    private Boolean shortName;
 }
 

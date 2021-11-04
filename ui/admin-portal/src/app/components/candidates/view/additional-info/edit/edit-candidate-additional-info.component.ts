@@ -19,7 +19,6 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {Candidate} from "../../../../../model/candidate";
-import {NationalityService} from "../../../../../services/nationality.service";
 import {CountryService} from "../../../../../services/country.service";
 
 @Component({
@@ -40,7 +39,6 @@ export class EditCandidateAdditionalInfoComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private candidateService: CandidateService,
-              private nationalityService: NationalityService,
               private countryService: CountryService ) {
   }
 

@@ -19,7 +19,7 @@ package org.tbbtalent.server.api.admin;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.constraints.NotNull;
@@ -31,14 +31,14 @@ import javax.validation.constraints.NotNull;
  * @author John Cameron
  */
 public class CandidateIntakeDataBuilderSelector {
-    private final UserContext userContext;
+    private final AuthService authService;
 
-    public CandidateIntakeDataBuilderSelector(UserContext userContext) {
-        this.userContext = userContext;
+    public CandidateIntakeDataBuilderSelector(AuthService authService) {
+        this.authService = authService;
     }
 
     private @Nullable Role getRole() {
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         return user == null ? null : user.getRole();
     }
 
@@ -69,14 +69,17 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("conflict")
                 .add("conflictNotes")
 
+                .add("covidVaccinated")
+                .add("covidVaccinatedStatus")
+                .add("covidVaccinatedDate")
+                .add("covidVaccineName")
+                .add("covidVaccineNotes")
+
                 .add("crimeConvict")
                 .add("crimeConvictNotes")
 
                 .add("destLimit")
                 .add("destLimitNotes")
-
-                .add("destJob")
-                .add("destJobNotes")
 
                 .add("drivingLicense")
                 .add("drivingLicenseExp")
@@ -85,10 +88,12 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("familyMove")
                 .add("familyMoveNotes")
 
+                .add("healthIssues")
+                .add("healthIssuesNotes")
                 .add("homeLocation")
                 .add("hostChallenges")
-                .add("hostBorn")
                 .add("hostEntryYear")
+                .add("hostEntryYearNotes")
                 .add("hostEntryLegally")
                 .add("hostEntryLegallyNotes")
                 .add("intRecruitReasons")
@@ -99,7 +104,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("langAssessment")
                 .add("langAssessmentScore")
                 .add("leftHomeReasons")
-                .add("leftHomeOther")
+                .add("leftHomeNotes")
                 .add("militaryService")
                 .add("militaryWanted")
                 .add("militaryNotes")
@@ -107,6 +112,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("militaryEnd")
 
                 .add("maritalStatus")
+                .add("maritalStatusNotes")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", englishLevelDto())
@@ -118,7 +124,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("partnerIelts")
                 .add("partnerIeltsScore")
                 .add("partnerIeltsYr")
-                .add("partnerCitizenship", nationalityDto())
+                .add("partnerCitizenship", countryDto())
 
                 .add("residenceStatus")
                 .add("residenceStatusNotes")
@@ -136,14 +142,16 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("unhcrRegistered")
                 .add("unhcrStatus")
-                .add("unhcrOldStatus")
                 .add("unhcrNumber")
                 .add("unhcrFile")
+                .add("unhcrNotRegStatus")
+                .add("unhcrConsent")
                 .add("unhcrNotes")
-                .add("unhcrPermission")
 
                 .add("unrwaRegistered")
                 .add("unrwaNumber")
+                .add("unrwaFile")
+                .add("unrwaNotRegStatus")
                 .add("unrwaNotes")
 
                 .add("visaReject")
@@ -152,11 +160,10 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("visaIssuesNotes")
 
                 .add("workAbroad")
-                .add("workAbroadCountryIds")
-                .add("workAbroadYrs")
                 .add("workAbroadNotes")
                 .add("workPermit")
                 .add("workPermitDesired")
+                .add("workPermitDesiredNotes")
                 .add("workDesired")
                 .add("workDesiredNotes")
 
@@ -166,7 +173,7 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder candidateCitizenshipDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("nationality", nationalityDto())
+                .add("nationality", countryDto())
                 .add("hasPassport")
                 .add("passportExp")
                 .add("notes")
@@ -180,6 +187,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("otherExam")
                 .add("score")
                 .add("year")
+                .add("notes")
                 ;
     }
 
@@ -187,10 +195,14 @@ public class CandidateIntakeDataBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("relation")
+                .add("relationOther")
                 .add("dob")
                 .add("name")
+                .add("registered")
+                .add("registeredNumber")
+                .add("registeredNotes")
                 .add("healthConcern")
-                .add("notes")
+                .add("healthNotes")
                 ;
     }
     private DtoBuilder candidateDestinationDto() {
@@ -258,12 +270,6 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("firstName")
                 .add("lastName")
-                ;
-    }
-
-    private DtoBuilder nationalityDto() {
-        return new DtoBuilder()
-                .add("id")
                 ;
     }
 

@@ -16,12 +16,13 @@
 
 package org.tbbtalent.server.request.candidate.citizenship;
 
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.HasPassport;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.HasPassport;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -31,6 +32,8 @@ public class CreateCandidateCitizenshipRequest {
     private Long nationalityId;
     @Nullable
     private HasPassport hasPassport;
+    @Nullable
+    private LocalDate passportExp;
     @Nullable
     private String notes;
 }

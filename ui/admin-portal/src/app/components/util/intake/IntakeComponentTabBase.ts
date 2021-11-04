@@ -18,8 +18,6 @@ import {Directive, Input, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Candidate, CandidateIntakeData} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
-import {Nationality} from '../../../model/nationality';
-import {NationalityService} from '../../../services/nationality.service';
 import {CountryService} from '../../../services/country.service';
 import {Country} from '../../../model/country';
 import {EducationLevel} from '../../../model/education-level';
@@ -86,7 +84,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
   /**
    * All standard nationalities
    */
-  nationalities: Nationality[];
+  nationalities: Country[];
 
   /**
    * All TBB destinations
@@ -121,7 +119,6 @@ export abstract class IntakeComponentTabBase implements OnInit {
   public constructor(
     protected candidateService: CandidateService,
     protected countryService: CountryService,
-    protected nationalityService: NationalityService,
     protected educationLevelService: EducationLevelService,
     protected occupationService: OccupationService,
     protected languageLevelService: LanguageLevelService,
@@ -149,7 +146,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
     forkJoin({
       'countries': this.countryService.listCountries(),
       'tbbDestinations': this.countryService.listTBBDestinations(),
-      'nationalities': this.nationalityService.listNationalities(),
+      'nationalities': this.countryService.listCountries(),
       'educationLevels': this.educationLevelService.listEducationLevels(),
       'occupations': this.occupationService.listOccupations(),
       'languageLevels': this.languageLevelService.listLanguageLevels(),
@@ -189,49 +186,66 @@ export abstract class IntakeComponentTabBase implements OnInit {
   public exportAsPdf(formName: string) {
     // parent div is the html element which has to be converted to PDF
     this.saving = true;
-    html2canvas(document.querySelector('#' + formName)).then(canvas => {
+    const element = document.getElementById(formName);
+    html2canvas(element, {scrollY: -window.scrollY, scale: 1}).then(canvas => {
       const heightRatio = canvas.height / canvas.width;
-      const width = 1084;
-      const height = 1084 * heightRatio;
+      //const widthRadio = canvas.width / canvas.height;
+      //jsPdf has a max height of 14440 so set the height less than this
       let pdf;
+      let height;
+      let width;
       if (canvas.height > canvas.width) {
         // Make the PDF the same size as the canvas content
-        pdf = new jsPDF('p', 'pt', [width, height]);
+        height = 14000;
+        width = height / heightRatio;
+          pdf = new jsPDF('p', 'pt', [width, height]);
       } else {
-        // Make the PDF a generic size.
-        pdf = new jsPDF('p', 'pt', [width, 2500]);
+        // Make the PDF a landscape size.
+        width = canvas.width / heightRatio;
+        height = width * heightRatio;
+        pdf = new jsPDF('l', 'pt', [width, height]);
       }
       const imgData  = canvas.toDataURL("image/jpeg", 1.0);
       pdf.addImage(imgData, 0, 0, width, height);
       pdf.save(formName + '_' + this.candidate.user.firstName + '_' + this.candidate.user.lastName + '.pdf');
       this.saving = false;
-    })};
+    })
+  };
 
   /**
    * Called when Start button on intake forms is clicked. Creates a start note with user/time.
    * @param formName is the type of intake interview used for the comment/title.
-   * @param action is either start or update.
+   * @param btnType is either start, update or complete.
    * @param button is the button that's clicked, used to change the button text on click.
    */
-  public createIntakeNote(formName: string, update: boolean, button) {
+  public createIntakeNote(formName: string, btnType: string, button) {
     this.loggedInUser = this.authService.getLoggedInUser();
-
-    if (update) {
+    let btnText: string;
+    if (btnType === "update") {
        this.noteRequest = {
         candidateId: this.candidate.id,
         title: formName + ' interview updated by ' + this.loggedInUser.firstName + ' '
           + this.loggedInUser.lastName + ' on ' + dateString(new Date()) + '.',
       };
+       btnText = 'Updated!';
+    } else if (btnType === "complete") {
+      this.noteRequest = {
+        candidateId: this.candidate.id,
+        title: formName + ' interview completed by ' + this.loggedInUser.firstName + ' '
+          + this.loggedInUser.lastName + ' on ' + dateString(new Date()) + '.',
+      };
+      btnText = 'Completed!';
     } else {
       this.noteRequest = {
         candidateId: this.candidate.id,
         title: formName + ' interview started by ' + this.loggedInUser.firstName + ' '
           + this.loggedInUser.lastName + ' on ' + dateString(new Date()) + '.',
       };
+      btnText = 'Started!';
     }
     this.noteService.create(this.noteRequest).subscribe(
       (candidateNote) => {
-        button.textContent = update ? 'Updated!' : 'Started!';
+        button.textContent = btnText;
       }, (error) => {
         this.error = error;
       })

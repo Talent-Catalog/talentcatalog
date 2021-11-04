@@ -20,7 +20,6 @@ public enum Registration {
     NoResponse,
     UNHCR,
     UNRWA,
-    UNHCRUNRWA,
     Neither,
     NA
 }

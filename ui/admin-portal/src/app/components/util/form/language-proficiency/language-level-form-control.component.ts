@@ -95,15 +95,13 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(c: SimpleChanges) {
+    //This is needed to grey out the language-label element (constructed by renderLevel below)
+    //when this whole component is disabled (as controlled by the @Input disable - generally when
+    //elastic search is being used).
+    //If it is not present, the label does not appear as disabled.
     this.disabledClasses = {
       'disable': this.disable
     };
-
-    // todo: this may be unnecessary for code to work - what is the purpose
-    if (c.form && c.form.currentValue !== c.form.previousValue
-      && c.model && c.model.currentValue !== c.model.previousValue) {
-      this.form.patchValue(c.model.currentValue);
-    }
   }
 
   toggle() {
@@ -121,12 +119,14 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   renderLevel() {
-    const val = (this.form.value as LanguageLevelFormControlModel);
-    const language = val.languageId ? this.languages.find(l => l.id === Number(val.languageId)).name : '';
-    const written = val.writtenLevel ? 'Written: ' + this.languageLevels.find(l => l.level === val.writtenLevel).name : '';
-    const spoken = val.spokenLevel ? 'Spoken: ' + this.languageLevels.find(l => l.level === val.spokenLevel).name : '';
-    const proficiencyString = written && spoken ? written + ', ' + spoken : written || spoken;
-    return language && proficiencyString ? `${language} (${proficiencyString})` : language ? language : proficiencyString;
+    if (this.languageLevels) {
+      const val = (this.form.value as LanguageLevelFormControlModel);
+      const language = val.languageId ? this.languages.find(l => l.id === Number(val.languageId)).name : '';
+      const written = val.writtenLevel !== null ? 'Written: ' + this.languageLevels.find(l => l.level === val.writtenLevel).name : '';
+      const spoken = val.spokenLevel !== null ? 'Spoken: ' + this.languageLevels.find(l => l.level === val.spokenLevel).name : '';
+      const proficiencyString = written && spoken ? written + ', ' + spoken : written || spoken;
+      return language && proficiencyString ? `${language} (${proficiencyString})` : language ? language : proficiencyString;
+    }
   }
 
   clearProficiencies() {

@@ -72,28 +72,20 @@
       </div>
 
       <form class="filter-form" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
-        <div class="row">
-          <p>Introducing Elasticsearch which <strong>searches all CV's as well!</strong></p>
-          <p>
-          When searching + means AND, space means OR.
-            For example <strong>welder diesel+mechanic</strong>
-            will find all candidate profiles containing
-            the word 'welder' OR both words 'diesel' AND 'mechanic'.</p>
-          <p>You can just match the first part of a word using *. For example
-            'account*' will match 'accounting' or 'accountant'.</p>
-          <p>You can also search for phrases as well as words by using
-            double quotes. For example <strong>accountant + "hospital director"</strong>
-            will find profiles with the word 'accountant' AND the phrase
-            'hospital director'.</p>
-          <p>You can use brackets to group terms. For example
-          <strong>accountant + (excel powerpoint)</strong> means find profiles
-          containing the word 'accountant' AND either one of 'excel' or 'powerpoint'.
-            But <strong>(accountant + excel) powerpoint</strong> means find
-            profiles containing both words 'accountant' and 'excel' OR profiles
-          containing the word 'powerpoint'.</p>
+        <div>
+          <p>Introducing Elasticsearch which <strong>searches all CV's as well!</strong> When searching + means AND, space means OR. For example <strong>welder diesel+mechanic</strong>
+            will find all candidate profiles containing the word 'welder' OR both words 'diesel' AND 'mechanic'.
+            You can just match the first part of a word using *. For example 'account*' will match 'accounting' or
+            'accountant'. You can also search for phrases as well as words by using double quotes.
+            For example <strong>accountant + "hospital director"</strong> will find profiles with the word 'accountant'
+            AND the phrase 'hospital director'. You can use brackets to group terms. For example
+            <strong>accountant + (excel powerpoint)</strong> means find profiles
+            containing the word 'accountant' AND either one of 'excel' or 'powerpoint'.
+            But <strong>(accountant + excel) powerpoint</strong> means find profiles containing both words
+            'accountant' and 'excel' OR profiles containing the word 'powerpoint'.</p>
         </div>
+        <hr/>
         <div class="row">
-
           <div class="form-group col-12 col-md-6">
             <label for="simpleQueryString">Elasticsearch</label>
             <input id="simpleQueryString" type="text" class="form-control" placeholder="eg welder diesel+mechanic" aria-label="Elastic"
@@ -104,14 +96,35 @@
           <!-- STATUS -->
           <div class="form-group col-12 col-md-3">
             <label>Status</label>
-            <ng-multiselect-dropdown
+            <ng-select
               id="statuses"
-              class="scroll-select custom-primary"
-              [settings]="statusDropdownSettings"
-              [data]="candidateStatusOptions"
-              formControlName="statusesDisplay"
-            >
-            </ng-multiselect-dropdown>
+              [items]="candidateStatusOptions"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [clearSearchOnAdd]="true"
+              placeholder="Select or type..."
+              bindLabel="displayText"
+              [formControlName]="'statusesDisplay'">
+              <ng-template ng-header-tmp>
+                <div class="d-flex justify-content-between">
+                  <button class="btn btn-sm btn-link" (click)="onSelectAll(candidateStatusOptions, 'statusesDisplay'); $event.preventDefault()">Select All</button>
+                  <button class="btn btn-sm btn-link" (click)="onClearAll('statusesDisplay'); $event.preventDefault()">Clear All</button>
+                </div>
+              </ng-template>
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                  <span class="ng-value-label">{{item.displayText}}</span>
+                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('statusesDisplay')" popoverTitle="Statuses"
+                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+            </ng-select>
+            <p class="small text-muted mt-1">
+              If nothing is specified, the default is to exclude inactive statuses such as draft,
+              deleted, employed, ineligible etc</p>
           </div>
 
           <!-- ENGLISH LANGUAGE -->
@@ -140,15 +153,28 @@
               <!-- OCCUPATION MULTISELECT -->
               <div class="form-group col-12">
                 <label>Occupation</label>
-                <ng-multiselect-dropdown
+                <ng-select
                   id="occupationIds"
-                  class="scroll-select custom-primary"
-                  [settings]="multiSelectSettings"
-                  [data]="candidateOccupations"
-                  formControlName="occupations"
-                  [disabled]="elastic()"
-                >
-                </ng-multiselect-dropdown>
+                  [ngClass]="{'disabled' : elastic()}"
+                  [items]="candidateOccupations"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  [clearSearchOnAdd]="true"
+                  placeholder="Select or type..."
+                  bindLabel="name"
+                  [readonly]="elastic()"
+                  [formControlName]="'occupations'">
+                  <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                    <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                      <span class="ng-value-label">{{item.name}}</span>
+                      <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                    </div>
+                    <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('occupations')" popoverTitle="Occupations"
+                         triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                      <span class="ng-value-label">{{items.length - 3}} more...</span>
+                    </div>
+                  </ng-template>
+                </ng-select>
               </div>
 
               <!-- AGE -->
@@ -160,14 +186,14 @@
                   <div class="form-group col-6 pl-0">
                     <label for="minYrs">Min Years Experience</label>
                     <input id="minYrs" type="number" class="form-control"
-                           name="minYrs" [formControlName]="'minYrs'" [readOnly]="elastic()">
+                           name="minYrs" [formControlName]="'minYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
 
                   <!-- MAX AGE -->
                   <div class="form-group col-6 pr-0">
                     <label for="maxYrs">Max Years Experience</label>
                     <input id="maxYrs" type="number" class="form-control"
-                           name="maxYrs" [formControlName]="'maxYrs'" [readOnly]="elastic()">
+                           name="maxYrs" [formControlName]="'maxYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
                 </div>
 
@@ -190,14 +216,14 @@
                   <div class="form-group col-6 pl-0">
                     <label for="minAge">Min Age</label>
                     <input id="minAge" type="number" class="form-control"
-                           name="minAge" [formControlName]="'minAge'" [readOnly]="elastic()">
+                           name="minAge" [formControlName]="'minAge'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
 
                   <!-- MAX AGE -->
                   <div class="form-group col-6 pr-0">
                     <label for="maxAge">Max Age</label>
                     <input id="maxAge" type="number" class="form-control"
-                           name="maxAge" [formControlName]="'maxAge'" [readOnly]="elastic()">
+                           name="maxAge" [formControlName]="'maxAge'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
                 </div>
 
@@ -214,12 +240,15 @@
               <!-- GENDER -->
               <div class="form-group col-12 col-md-2">
                 <label for="gender">Gender</label>
-                <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
-                  <option [ngValue]="null"></option>
-                  <option value="female">Female</option>
-                  <option value="male">Male</option>
-                  <option value="other">Other</option>
-                </select>
+                <ng-select
+                  id="gender"
+                  [items]="genderOptions"
+                  [searchable]="false"
+                  placeholder="Select"
+                  bindLabel="displayText"
+                  bindValue="value"
+                  [formControlName]="'gender'">
+                </ng-select>
               </div>
 
               <!-- EDUCATION LEVEL -->
@@ -236,29 +265,43 @@
 <!--              </div>-->
               <div class="form-group col-12 col-md-5">
                 <label>Education Level (minimum)</label>
-                <ng-multiselect-dropdown
+                <ng-select
                   id="minEducationLevel"
-                  class="custom-primary"
-                  [settings]="educationLevelSettings"
-                  [data]="educationLevels"
-                  formControlName="minEducationLevelObj"
-                  [disabled]="elastic()"
-                >
-                </ng-multiselect-dropdown>
+                  [ngClass]="{'disabled' : elastic()}"
+                  [items]="educationLevels"
+                  placeholder="Select or type..."
+                  bindLabel="name"
+                  bindValue="level"
+                  [readonly]="elastic()"
+                  [formControlName]="'minEducationLevel'">
+                </ng-select>
               </div>
 
               <!-- EDUCATION MAJOR -->
               <div class="form-group col-12 col-md-5">
                 <label>Education major</label>
-                <ng-multiselect-dropdown
+                <ng-select
                   id="educationMajorIds"
-                  class="scroll-select custom-primary"
-                  [settings]="multiSelectSettings"
-                  [data]="educationMajors"
-                  formControlName="educationMajors"
-                  [disabled]="elastic()"
-                >
-                </ng-multiselect-dropdown>
+                  [ngClass]="{'disabled' : elastic()}"
+                  [items]="educationMajors"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  [clearSearchOnAdd]="true"
+                  placeholder="Select or type..."
+                  bindLabel="name"
+                  [readonly]="elastic()"
+                  [formControlName]="'educationMajors'">
+                  <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                    <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                      <span class="ng-value-label">{{item.name}}</span>
+                      <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                    </div>
+                    <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('educationMajors')" popoverTitle="Education Majors"
+                         triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                      <span class="ng-value-label">{{items.length - 3}} more...</span>
+                    </div>
+                  </ng-template>
+                </ng-select>
               </div>
 
             </div>
@@ -279,7 +322,7 @@
 
           <!-- NATIONALITY -->
           <div class="form-group col-12 col-md-4 mt-2">
-            <label>Nationality</label>
+            <label>Nationality (Country)</label>
 
             <div class="operator">
               <button class="btn btn-link" type="button"
@@ -292,28 +335,93 @@
               </button>
             </div>
 
-            <ng-multiselect-dropdown
+            <ng-select
               id="selectedNationalities"
-              class="scroll-select custom-primary"
-              [settings]="multiSelectSettings"
-              [data]="nationalities"
-              formControlName="nationalities"
-            >
-            </ng-multiselect-dropdown>
+              [items]="nationalities"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [clearSearchOnAdd]="true"
+              placeholder="Select or type..."
+              bindLabel="name"
+              [formControlName]="'nationalities'">
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                  <span class="ng-value-label">{{item.name}}</span>
+                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('nationalities')" popoverTitle="Nationalities"
+                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
 
           <!-- COUNTRIES  -->
           <div class="form-group col-12 col-md-4 mt-2">
-            <label>Country</label>
-            <ng-multiselect-dropdown
+            <label>Location (Country)</label>
+            <ng-select
               id="country"
-              class="scroll-select custom-primary"
-              [settings]="multiSelectSettings"
-              [data]="countries"
-              formControlName="countries"
-            >
-            </ng-multiselect-dropdown>
+              [items]="countries"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [clearSearchOnAdd]="true"
+              placeholder="Select or type..."
+              bindLabel="name"
+              [formControlName]="'countries'">
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                  <span class="ng-value-label">{{item.name}}</span>
+                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('countries')" popoverTitle="Countries"
+                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
+
+          <div class="form-group col-12 col-md-4 mt-2">
+            <label>Survey Type</label>
+            <ng-select
+              id="surveyType"
+              [items]="surveyTypes"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [clearSearchOnAdd]="true"
+              placeholder="Select or type..."
+              bindLabel="name"
+              [formControlName]="'surveyTypes'">
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                  <span class="ng-value-label">{{item.name}}</span>
+                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('surveyTypes')" popoverTitle="Survey Types"
+                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+
+          <!-- EXCLUSION LIST -->
+          <div class="form-group col-12 col-md-4">
+            <label for="exclusion">Exclusion list</label>
+            <ng-select
+              id="exclusion"
+              [items]="lists"
+              [closeOnSelect]="true"
+              [clearable]="true"
+              [searchable]="true"
+              placeholder="Select or type..."
+              bindLabel="name"
+              bindValue="id"
+              formControlName="exclusionListId">
+            </ng-select>
+          </div>
+
 
           <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
             <p *ngIf="searchForm.errors.invalidDate">Email is required</p>

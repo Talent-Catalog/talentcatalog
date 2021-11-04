@@ -27,10 +27,10 @@
       <!-- MAX EDUCATION LEVEL -->
       <div class="form-group">
         <label for="maxEducationLevelId">{{ 'REGISTRATION.EDUCATION.LABEL.MAXEDUCATIONLEVELID' | translate }}</label>
-        <select class="form-control" id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'" >
-          <option value=""></option>
-          <option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</option>
-        </select>
+        <ng-select id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
+          <ng-option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</ng-option>
+        </ng-select>
       </div>
 
     </form>
@@ -49,7 +49,8 @@
                                     [candidateEducation]="item"
                                     [countries]="countries"
                                     [majors]="majors"
-                                    (saved)="handleEducationSaved($event, i)">
+                                    (saved)="handleEducationSaved($event, i)"
+                                    (closed)="handleCloseSaved()">
       </app-candidate-education-form>
 
     </div>
@@ -63,7 +64,8 @@
                                   [educationType]="educationType"
                                   [countries]="countries"
                                   [majors]="majors"
-                                  (saved)="handleCandidateEducationCreated($event)">
+                                  (saved)="handleCandidateEducationCreated($event)"
+                                  (closed)="handleClose()">
     </app-candidate-education-form>
 
     <div class="text-center mt-4" *ngIf="!addingEducation">
@@ -78,7 +80,7 @@
 
 </div>
 
-<app-registration-footer [nextDisabled]="loading || saving"
+<app-registration-footer [nextDisabled]="loading || saving || addingEducation || editingEducation"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="edit ? cancel() : back()"
                          (nextClicked)="next()">

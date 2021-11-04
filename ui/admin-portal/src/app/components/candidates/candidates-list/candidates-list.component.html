@@ -22,7 +22,7 @@
   <i class="fas fa-spinner fa-spin"></i>
 </div>
 
-<app-show-candidates *ngIf="!error && !loading"
+<app-show-candidates *ngIf="!error && !loading && savedList"
                      [candidateSource]="savedList"
                      [pageNumber]="pageNumber"
                      [pageSize]="pageSize"

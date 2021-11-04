@@ -59,6 +59,12 @@ public class CandidateIntakeDataUpdate {
     private YesNo conflict;
     private String conflictNotes;
 
+    private YesNo covidVaccinated;
+    private VaccinationStatus covidVaccinatedStatus;
+    private LocalDate covidVaccinatedDate;
+    private String covidVaccineName;
+    private String covidVaccineNotes;
+
     private YesNoUnsure crimeConvict;
     private String crimeConvictNotes;
 
@@ -67,11 +73,14 @@ public class CandidateIntakeDataUpdate {
     //Corresponds to CandidateDependant fields
     private Long dependantId;
     private DependantRelations dependantRelation;
+    private String dependantRelationOther;
     private LocalDate dependantDob;
     private String dependantName;
     private Registration dependantRegistered;
+    private String dependantRegisteredNumber;
+    private String dependantRegisteredNotes;
     private YesNo dependantHealthConcerns;
-    private String dependantNotes;
+    private String dependantHealthNotes;
 
     //Corresponds to CandidateDestination fields
     private Long destinationId;
@@ -87,12 +96,10 @@ public class CandidateIntakeDataUpdate {
     private String otherExam;
     private String examScore;
     private Long examYear;
+    private String examNotes;
 
     private YesNo destLimit;
     private String destLimitNotes;
-
-    private YesNo destJob;
-    private String destJobNotes;
 
     private DocumentStatus drivingLicense;
     private LocalDate drivingLicenseExp;
@@ -101,10 +108,12 @@ public class CandidateIntakeDataUpdate {
     private YesNo familyMove;
     private String familyMoveNotes;
 
+    private YesNo healthIssues;
+    private String healthIssuesNotes;
     private String homeLocation;
     private String hostChallenges;
-    private YesNo hostBorn;
     private Long hostEntryYear;
+    private String hostEntryYearNotes;
     private YesNo hostEntryLegally;
     private String hostEntryLegallyNotes;
     private List<IntRecruitReason> intRecruitReasons;
@@ -113,9 +122,9 @@ public class CandidateIntakeDataUpdate {
     private String intRecruitRuralNotes;
 
     private String langAssessment;
-    private IeltsScore langAssessmentScore;
+    private String langAssessmentScore;
     private List<LeftHomeReason> leftHomeReasons;
-    private String leftHomeOther;
+    private String leftHomeNotes;
     private YesNo militaryService;
     private YesNoUnsure militaryWanted;
     private String militaryNotes;
@@ -123,6 +132,7 @@ public class CandidateIntakeDataUpdate {
     private LocalDate militaryEnd;
 
     private MaritalStatus maritalStatus;
+    private String maritalStatusNotes;
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;
@@ -132,7 +142,7 @@ public class CandidateIntakeDataUpdate {
     private YesNo partnerEnglish;
     private Long partnerEnglishLevelId;
     private IeltsStatus partnerIelts;
-    private IeltsScore partnerIeltsScore;
+    private String partnerIeltsScore;
     private Long partnerIeltsYr;
     private Long partnerCitizenshipId;
 
@@ -151,14 +161,15 @@ public class CandidateIntakeDataUpdate {
 
     private YesNoUnsure unhcrRegistered;
     private UnhcrStatus unhcrStatus;
-    private UnhcrStatus unhcrOldStatus;
     private String unhcrNumber;
     private Long unhcrFile;
+    private NotRegisteredStatus unhcrNotRegStatus;
+    private YesNo unhcrConsent;
     private String unhcrNotes;
-    private YesNo unhcrPermission;
     private YesNoUnsure unrwaRegistered;
-    private UnrwaStatus unrwaStatus;
     private String unrwaNumber;
+    private Long unrwaFile;
+    private NotRegisteredStatus unrwaNotRegStatus;
     private String unrwaNotes;
 
     //Corresponds to CandidateVisaCheck fields
@@ -203,12 +214,11 @@ public class CandidateIntakeDataUpdate {
     private String visaIssuesNotes;
     
     private YesNo workAbroad;
-    private List<Long> workAbroadCountryIds;
-    private Long workAbroadYrs;
     private String workAbroadNotes;
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
-    private YesNoUnemployed workDesired;
+    private String workPermitDesiredNotes;
+    private YesNoUnemployedOther workDesired;
     private String workDesiredNotes;
 
 }

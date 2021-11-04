@@ -20,7 +20,7 @@
 <form [formGroup]="form">
   <div class="form-group">
     <label for="destLimit">
-      Do you have any other destination limitations?
+      Are there any destination countries or cities that you would be unwilling to move to?
     </label>
     <div class="float-right">
       <app-autosave-status
@@ -28,12 +28,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="destLimit" [formControlName]="'destLimit'">
-      <option *ngFor="let opt of destLimitOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="destLimit" [formControlName]="'destLimit'" (clear)="setNoResponse('destLimit')"
+               [items]="destLimitOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="destLimit === 'Yes'" class="form-group">
     <label for="destLimitNotes">Notes</label>

@@ -19,6 +19,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {
+  PublishListRequest,
   SavedList,
   UpdateExplicitSavedListContentsRequest
 } from "../model/saved-list";
@@ -35,6 +36,10 @@ export class SavedListCandidateService {
 
   create(request: UpdateExplicitSavedListContentsRequest): Observable<SavedList>  {
     return this.http.post<SavedList>(`${this.apiUrl}`, request);
+  }
+
+  mergeFromFile(id: number, formData: FormData): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/merge-from-file`, formData);
   }
 
   merge(id: number, request: UpdateExplicitSavedListContentsRequest): Observable<void> {

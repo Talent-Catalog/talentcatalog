@@ -21,7 +21,6 @@ import {Language, SystemLanguage} from '../model/language';
 import {Observable, Subject, throwError} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {Translation} from '../model/translation';
-import {TranslateService} from '@ngx-translate/core';
 import {LocalStorageService} from 'angular-2-local-storage';
 
 @Injectable({
@@ -34,6 +33,8 @@ export class LanguageService {
   private languageChangedSource = new Subject<string>();
   languageChanged$ = this.languageChangedSource.asObservable();
 
+  private languageSelectionEnabled: boolean = true;
+
   translations: Translation[];
 
   selectedLanguage: string;
@@ -41,9 +42,22 @@ export class LanguageService {
   loading: boolean;
 
   constructor(private http: HttpClient,
-              private translate: TranslateService,
               private localStorage: LocalStorageService) {
+    this.languageSelectionEnabled = (this.localStorage.get('languageSelectionEnabled') as boolean);
     this.selectedLanguage = (this.localStorage.get('language') as string) || 'en';
+  }
+
+  isLanguageSelectionEnabled(): boolean {
+    return this.languageSelectionEnabled;
+  }
+
+  isUsAfghan(): boolean {
+    return !this.languageSelectionEnabled;
+  }
+
+  setUsAfghan(enabled: boolean) {
+    this.localStorage.set('languageSelectionEnabled', enabled);
+    this.languageSelectionEnabled = enabled;
   }
 
   listLanguages(): Observable<Language[]> {
@@ -82,8 +96,6 @@ export class LanguageService {
     } else {
       lang = this.selectedLanguage;
     }
-    this.translate.use(lang);
     this.languageChangedSource.next(lang);
   }
-
 }

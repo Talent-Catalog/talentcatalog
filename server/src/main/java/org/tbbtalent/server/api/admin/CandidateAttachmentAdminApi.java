@@ -28,9 +28,9 @@ import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchByIdCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
-import org.tbbtalent.server.service.db.GoogleFileSystemService;
+import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.servlet.http.HttpServletResponse;
@@ -43,13 +43,13 @@ import java.util.Map;
 public class CandidateAttachmentAdminApi {
 
     private final CandidateAttachmentService candidateAttachmentService;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public CandidateAttachmentAdminApi(CandidateAttachmentService candidateAttachmentService,
-                                       UserContext userContext) {
+                                       AuthService authService) {
         this.candidateAttachmentService = candidateAttachmentService;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @PostMapping("search")
@@ -97,7 +97,7 @@ public class CandidateAttachmentAdminApi {
         CandidateAttachment attachment = 
                 candidateAttachmentService.getCandidateAttachment(id);
         if (attachment.getType() != AttachmentType.googlefile) {
-            throw new NoSuchObjectException(GoogleFileSystemService.class, id);
+            throw new NoSuchObjectException(FileSystemService.class, id);
         }
         
         response.setHeader("Content-Disposition", 
@@ -161,6 +161,7 @@ public class CandidateAttachmentAdminApi {
                 .add("fileType")
                 .add("migrated")
                 .add("cv")
+                .add("url")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

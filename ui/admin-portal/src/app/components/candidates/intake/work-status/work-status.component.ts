@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {YesNoUnemployed} from '../../../../model/candidate';
+import {YesNoUnemployedOther} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -28,7 +28,7 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 })
 export class WorkStatusComponent extends IntakeComponentBase implements OnInit {
 
-  public workDesiredOptions: EnumOption[] = enumOptions(YesNoUnemployed);
+  public workDesiredOptions: EnumOption[] = enumOptions(YesNoUnemployedOther);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);

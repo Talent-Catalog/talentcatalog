@@ -145,6 +145,15 @@
 
           <div class="col-12 col-md-6">
             <div class="form-group">
+              <label>{{ 'PROFILE.PERSONAL.YEAROFARRIVAL' | translate }}</label>
+              <p>
+                {{candidate?.yearOfArrival || ''}}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="form-group">
               <label>{{ 'PROFILE.PERSONAL.CITY' | translate }}</label>
               <p>
                 {{candidate?.city || ''}}
@@ -154,9 +163,9 @@
 
           <div class="col-12 col-md-6">
             <div class="form-group">
-              <label>{{ 'PROFILE.PERSONAL.YEAROFARRIVAL' | translate }}</label>
+              <label>{{ 'PROFILE.PERSONAL.STATE' | translate }}</label>
               <p>
-                {{candidate?.yearOfArrival || ''}}
+                {{candidate?.state || ''}}
               </p>
             </div>
           </div>
@@ -168,6 +177,44 @@
               <label>{{ 'PROFILE.PERSONAL.NATIONALITY' | translate }}</label>
               <p>
                 {{candidate?.nationality.name | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6" *ngIf="usAfghan">
+            <div class="form-group">
+              <label>{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</label>
+              <p>
+                {{candidate?.externalId | translate }}
+              </p>
+            </div>
+          </div>
+
+          <hr class="w-100 mx-5">
+
+          <div class="col-12 col-md-6">
+            <div class="form-group">
+              <label>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }}</label>
+              <p>
+                {{candidate?.unhcrRegistered | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="form-group">
+              <label>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>
+              <p>
+                {{candidate?.unhcrNumber | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-group">
+              <label>{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }}</label>
+              <p>
+                {{candidate?.unhcrConsent | translate }}
               </p>
             </div>
           </div>
@@ -339,7 +386,7 @@
 
         <div class="row">
 
-          <div class="col-12">
+          <div class="col-12 col-md-6">
             <div class="form-group">
               <label>{{ 'PROFILE.OTHER.ADDITIONALINFO' | translate }}</label>
               <p>
@@ -347,6 +394,19 @@
               </p>
             </div>
           </div>
+
+          <div class="col-12 col-md-6">
+            <div class="form-group">
+              <label>{{ 'PROFILE.OTHER.LINKEDIN' | translate }}</label>
+              <p>
+                <a href="{{candidate?.linkedInLink}}" target="_blank">{{candidate?.linkedInLink || ''}}</a>
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <div *ngIf="!usAfghan" class="row">
           <div class="col-12 col-md-6">
             <div class="form-group">
               <label>{{ 'PROFILE.OTHER.SURVEY' | translate }}</label>
@@ -363,16 +423,6 @@
               </p>
             </div>
           </div>
-
-          <div class="col-12">
-            <div class="form-group">
-              <label>{{ 'PROFILE.OTHER.LINKEDIN' | translate }}</label>
-              <p>
-                <a href="{{candidate?.linkedInLink}}" target="_blank">{{candidate?.linkedInLink || ''}}</a>
-              </p>
-            </div>
-          </div>
-
         </div>
 
       </div>

@@ -39,7 +39,7 @@
 
       <!-- COMPANY NAME -->
       <div class="form-group">
-        <label for="companyName">Company Name *</label>
+        <label for="companyName">Company Name</label>
         <input type="text" class="form-control" id="companyName"
                [formControlName]="'companyName'">
       </div>
@@ -47,16 +47,14 @@
       <!-- COUNTRY -->
       <div class="form-group">
         <label for="countryId">Country *</label>
-        <select class="form-control" name="country" id="countryId" [formControlName]="'countryId'">
-          <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
+        <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="countries"
+                   [clearable]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
       </div>
 
 
       <!-- START DATE -->
       <div class="form-group">
-        <label for="startDate">Start Date *</label>
+        <label for="startDate">Start Date</label>
         <app-date-picker id="startDate" [control]="candidateForm.controls.startDate"></app-date-picker>
       </div>
 
@@ -68,34 +66,30 @@
 
       <!-- FULL TIME -->
       <div class="form-group">
-        <label for="fullTime">Contract Type *</label>
-        <select class="form-control" name="fullTime" id="fullTime" [formControlName]="'fullTime'">
-          <option value=""></option>
-          <option value="true">Full time</option>
-          <option value="false">Part Time</option>
-        </select>
+        <label for="fullTime">Contract Type</label>
+        <ng-select id="fullTime" name="fullTime" [formControlName]="'fullTime'" [clearable]="false" placeholder="Select" [items]="fullTime"
+                   bindLabel="displayText" bindValue="value">
+        </ng-select>
       </div>
 
       <!-- PAID -->
       <div class="form-group">
-        <label for="paid">Employment Type *</label>
-        <select class="form-control" name="paid" id="paid" [formControlName]="'paid'">
-          <option value=""></option>
-          <option value="true">Paid</option>
-          <option value="false">Voluntary</option>
-        </select>
+        <label for="paid">Employment Type</label>
+        <ng-select id="paid" name="paid" [formControlName]="'paid'" [clearable]="false" placeholder="Select" [items]="paid"
+                   bindLabel="displayText" bindValue="value">
+        </ng-select>
       </div>
 
       <!-- ROLE NAME -->
       <div class="form-group">
-        <label for="role">Role *</label>
+        <label for="role">Role</label>
         <input type="text" class="form-control" id="role" [formControlName]="'role'">
       </div>
 
 
       <!-- DESCRIPTION -->
       <div class="form-group">
-        <label for="description">Description *</label>
+        <label for="description">Description</label>
         <textarea type="text" class="md-textarea-auto form-control" rows="8" id="description" placeholder="" [formControlName]="'description'"></textarea>
       </div>
 

@@ -16,7 +16,6 @@
 
 import {User} from './user';
 import {Country} from './country';
-import {Nationality} from './nationality';
 import {CandidateReviewStatusItem} from './candidate-review-status-item';
 import {EducationMajor} from './education-major';
 import {EducationLevel} from './education-level';
@@ -26,8 +25,10 @@ import {Location} from '@angular/common';
 import {getExternalHref} from '../util/url';
 import {Occupation} from './occupation';
 import {LanguageLevel} from './language-level';
+import {HasId} from "./base";
+import {CandidateAttachment} from "./candidate-attachment";
 
-export interface Candidate {
+export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
   status: string;
@@ -35,11 +36,17 @@ export interface Candidate {
   dob: Date;
   address1: string;
   city: string;
+  state: string;
   country: Country;
   yearOfArrival: number;
-  nationality: Nationality;
+  nationality: Country;
   phone: string;
   whatsapp: string;
+  externalId: string;
+  externalIdSource: string;
+  unhcrRegistered: YesNoUnsure;
+  unhcrNumber: string;
+  unhcrConsent: YesNo;
   user: User;
   candidateReviewStatusItems: CandidateReviewStatusItem[];
   migrationEducationMajor: EducationMajor;
@@ -50,6 +57,11 @@ export interface Candidate {
   folderlink: string;
   sflink: string;
   videolink: string;
+  shareableCv: CandidateAttachment;
+  shareableDoc: CandidateAttachment;
+  listShareableCv: CandidateAttachment;
+  listShareableDoc: CandidateAttachment;
+  shareableNotes: string;
   surveyType: SurveyType;
   surveyComment: string;
   selected: boolean;
@@ -59,6 +71,13 @@ export interface Candidate {
   maritalStatus: MaritalStatus;
   drivingLicense: DrivingLicenseStatus;
   unhcrStatus: UnhcrStatus;
+  ieltsScore: string;
+  numberDependants: number;
+  langAssessmentScore: string;
+  candidateExams: CandidateExam[];
+  sfOpportunityLink: string;
+  stage: string;
+  candidateAttachments?: CandidateAttachment[];
 }
 
 export interface CandidateIntakeData {
@@ -90,6 +109,12 @@ export interface CandidateIntakeData {
   conflict?: YesNo;
   conflictNotes?: string;
 
+  covidVaccinated?: YesNo;
+  covidVaccinatedStatus?: VaccinationStatus;
+  covidVaccinatedDate?: string;
+  covidVaccineName?: string;
+  covidVaccineNotes?: string;
+
   crimeConvict?: YesNoUnsure;
   crimeConvictNotes?: string;
 
@@ -117,6 +142,7 @@ export interface CandidateIntakeData {
   hostChallenges?: string;
   hostBorn?: YesNo;
   hostEntryYear?: number;
+  hostEntryYearNotes?: string;
   hostEntryLegally?: YesNo;
   hostEntryLegallyNotes?: string;
   intRecruitReasons?: IntRecruitReason[];
@@ -124,15 +150,16 @@ export interface CandidateIntakeData {
   intRecruitRural?: YesNoUnsure;
   intRecruitRuralNotes?: string;
   langAssessment?: string;
-  langAssessmentScore?: IeltsScore;
+  langAssessmentScore?: string;
   leftHomeReasons?: LeftHomeReason[];
-  leftHomeOther?: string;
+  leftHomeNotes?: string;
   militaryService?: YesNo;
   militaryWanted?: YesNo;
   militaryNotes?: string;
   militaryStart?: string;
   militaryEnd?: string;
   maritalStatus?: MaritalStatus;
+  maritalStatusNotes?: string;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
@@ -142,9 +169,9 @@ export interface CandidateIntakeData {
   partnerEnglish?: YesNo;
   partnerEnglishLevel?: LanguageLevel;
   partnerIelts?: IeltsStatus;
-  partnerIeltsScore?: IeltsScore;
+  partnerIeltsScore?: string;
   partnerIeltsYr?: number;
-  partnerCitizenship?: Nationality;
+  partnerCitizenship?: Country;
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
@@ -163,23 +190,23 @@ export interface CandidateIntakeData {
   resettleThirdStatus?: string;
 
   workAbroad?: YesNo;
-  workAbroadCountryIds?: number[];
-  workAbroadYrs?: number;
   workAbroadNotes?: string;
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
-  workDesired?: YesNoUnemployed;
+  workPermitDesiredNotes?: string;
+  workDesired?: YesNoUnemployedOther;
   workDesiredNotes?: string;
   unhcrRegistered?: YesNoUnsure;
   unhcrStatus?: UnhcrStatus;
-  unhcrOldStatus?: UnhcrStatus;
   unhcrNumber?: string;
   unhcrFile?: number;
+  unhcrNotRegStatus?: NotRegisteredStatus;
+  unhcrConsent?: YesNo;
   unhcrNotes?: string;
-  unhcrPermission?: YesNo;
   unrwaRegistered?: YesNoUnsure;
-  unrwaStatus?: UnrwaStatus;
   unrwaNumber?: string;
+  unrwaFile?: number;
+  unrwaNotRegStatus?: NotRegisteredStatus;
   unrwaNotes?: string;
   visaReject?: YesNoUnsure;
   visaRejectNotes?: string;
@@ -198,11 +225,14 @@ export interface CandidateCitizenship {
 export interface CandidateDependant {
   id?: number;
   relation?: DependantRelations;
+  relationOther?: string;
   dob?: string;
   name?: string;
-  registered?: string;
-  healthConcern?: string;
-  notes?: string;
+  registered?: Registrations;
+  registeredNumber?: string;
+  registeredNotes?: string;
+  healthConcern?: YesNo;
+  healthNotes?: string;
 }
 
 export interface CandidateExam {
@@ -211,6 +241,7 @@ export interface CandidateExam {
   otherExam?: string;
   score?: string;
   year?: number;
+  notes?: string;
 }
 
 export interface CandidateDestination {
@@ -288,15 +319,76 @@ export enum AvailImmediateReason {
   Other = "Other"
 }
 
+export enum CandidateOpportunityStage {
+  prospect = "Prospect",
+  miniIntake = "Mini intake",
+  fullIntake = "Full intake",
+  visaEligibility = "Visa eligibility",
+  cvPreparation = "CV preparation",
+  cvReview = "CV review",
+  oneWayPreparation = "1 way preparation",
+  oneWayReview = "1 way review",
+  testPreparation = "Test preparation",
+  testing = "Testing",
+  twoWayPreparation = "2 way preparation",
+  twoWayReview = "2 way review",
+  offer = "Offer",
+  acceptance = "Acceptance",
+  provincialVisaPreparation = "Provincial visa preparation",
+  provincialVisaProcessing = "Provincial visa processing",
+  visaPreparation = "Visa preparation",
+  visaProcessing = "Visa processing",
+  relocating = "Relocating",
+  relocated = "Relocated",
+  settled = "Settled",
+  durableSolution = "Durable solution",
+  noJobOffer = "No job offer",
+  noVisa = "No visa",
+  notFitForRole = "Not fit for role",
+  notEligibleForVisa = "Not eligible for visa",
+  noInterview = "No interview",
+  candidateRejectsOffer = "Candidate rejects offer",
+  candidateWithdraws = "Candidate withdraws"
+
+}
+
 export enum CandidateStatus {
   active = "active",
-  deleted = "deleted",
-  draft = "draft",
-  employed = "employed",
+  autonomousEmployment = "autonomous employment (inactive)",
+  deleted = "deleted (inactive)",
+  draft = "draft (inactive)",
+  employed = "employed (inactive)",
   incomplete = "incomplete",
-  ineligible = "ineligible",
+  ineligible = "ineligible (inactive)",
   pending = "pending",
-  unreachable = "unreachable"
+  unreachable = "unreachable",
+  withdrawn = "withdrawn (inactive)"
+}
+
+export interface SalesforceOppParams {
+  stageName?: string;
+  nextStep?: string;
+}
+
+export interface UpdateCandidateOppsRequest {
+  candidateIds: number[];
+  sfJobLink: string;
+  salesforceOppParams?: SalesforceOppParams;
+}
+
+export interface UpdateCandidateListOppsRequest {
+  savedListId: number;
+  salesforceOppParams?: SalesforceOppParams;
+}
+
+export interface UpdateCandidateShareableNotesRequest {
+  shareableNotes?: string;
+}
+
+export interface UpdateCandidateShareableDocsRequest {
+  shareableCvAttachmentId: number,
+  shareableDocAttachmentId: number,
+  savedListId?: number
 }
 
 export interface UpdateCandidateStatusInfo {
@@ -311,7 +403,6 @@ export interface UpdateCandidateStatusRequest {
 }
 
 export enum FamilyRelations {
-  NoResponse = "",
   NoRelation = "No relatives",
   Child = "Daughter/Son",
   Parent = "Mother/Father",
@@ -323,7 +414,6 @@ export enum FamilyRelations {
 }
 
 export enum DependantRelations {
-  NoResponse = "",
   Partner = "Spouse/Partner",
   Child = "Daughter/Son",
   Parent = "Mother/Father",
@@ -335,21 +425,18 @@ export enum DependantRelations {
 }
 
 export enum HasPassport {
-  NoResponse = "",
   ValidPassport = "Has valid passport",
   InvalidPassport = "Has invalid passport",
   NoPassport = "No passport"
 }
 
 export enum TBBEligibilityAssessment {
-  NoResponse = "",
   Proceed = "Proceed",
   Discuss = "Discuss further",
   DontProceed = "Don't proceed",
 }
 
 export enum VisaEligibility {
-  NoResponse = "",
   Yes = "Yes",
   YesBut = "Yes (but manage expectations about visa pathway)",
   DiscussFurther = "Discuss further",
@@ -375,7 +462,6 @@ export enum IntRecruitReason {
 }
 
 export enum UnhcrStatus {
-  NoResponse = "",
   MandateRefugee = "Assessed by UNHCR as a mandate refugee",
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
@@ -384,35 +470,38 @@ export enum UnhcrStatus {
   NA = "Not applicable"
 }
 
+export enum NotRegisteredStatus {
+  WasRegistered = "No longer registered, but was registered previously.",
+  NeverRegistered = "Never been registered",
+  Unsure = "Unsure",
+  NA = "Not applicable"
+}
+
 export enum WorkPermitValidity {
-  NoResponse = "",
   YesNotDesired = "Yes - a permit to work but not in my desired field",
   YesDesired = "Yes - a permit to work in my desired field",
   No = "No - I do not have a work permit",
 }
 
-export enum YesNoUnemployed {
-  NoResponse = "",
+export enum YesNoUnemployedOther {
   Yes = "Yes",
   No = "No",
   Unemployed = "I am unemployed",
+  Other = "Other"
 }
 
 export enum YesNo {
-  NoResponse = "",
   Yes = "Yes",
   No = "No",
 }
 
 export enum YesNoUnsure {
-  NoResponse = "",
   Yes = "Yes",
   No = "No",
   Unsure = "Unsure"
 }
 
 export enum IeltsStatus {
-  NoResponse = "",
   YesGeneral = "Yes - Ielts General",
   YesAcademic = "Yes - Ielts Academic",
   No = "No",
@@ -420,19 +509,9 @@ export enum IeltsStatus {
 }
 
 export enum YesNoUnsureLearn {
-  NoResponse = "",
   Yes = "Yes",
   No = "No",
   Unsure = "Unsure - I need to learn more."
-}
-
-export enum UnrwaStatus {
-  NoResponse = "",
-  Registered = "Registered",
-  WasRegistered = "No longer registered, but was registered previously.",
-  NeverRegistered = "Never been registered",
-  Unsure = "Unsure",
-  NA = "Not applicable"
 }
 
 export enum Exam {
@@ -446,7 +525,8 @@ export enum Exam {
 export enum ResidenceStatus {
   NoResponse = "",
   LegalRes = "Legal Residency",
-  IllegalRes = "Illegal Residency"
+  IllegalRes = "Illegal Residency",
+  Other = "Other"
 }
 
 export enum LeftHomeReason {
@@ -461,72 +541,43 @@ export enum MaritalStatus {
   Engaged = "Engaged",
   Defacto = "Defacto",
   Single = "Single",
-  Divorced = "Divorced"
-}
-
-export enum IeltsScore {
-  NoResponse = "",
-  Unsure = "Unsure",
-  Zero = "0",
-  Half = "0.5",
-  One = "1",
-  OneHalf = "1.5",
-  Two = "2",
-  TwoHalf = "2.5",
-  Three = "3",
-  ThreeHalf = "3.5",
-  Four = "4",
-  FourHalf = "4.5",
-  Five = "5",
-  FiveHalf = "5.5",
-  Six = "6",
-  SixHalf = "6.5",
-  Seven = "7",
-  SevenHalf = "7.5",
-  Eight = "8",
-  EightHalf = "8.5",
-  Nine = "9",
+  Divorced = "Divorced",
+  Separated = "Separated",
+  Widower = "Widow/er"
 }
 
 export enum DrivingLicenseStatus {
-  NoResponse = "",
   Valid = "Valid",
   Expired = "Expired",
   None = "None"
 }
 
 export enum Registrations {
-  NoResponse = "",
   UNHCR = "UNHCR only",
   UNRWA = "UNRWA only",
-  UNHCRUNRWA = "UNHCR & UNRWA",
   Neither = "Neither",
   NA = "Not Applicable",
 }
 
 export enum TravelDocumentStatus {
-  NoResponse = "",
   Valid = "Valid",
   Expired = "Expired",
   None = "None"
 }
 
 export enum RiskLevel {
-  NoResponse = "",
   Low = "Low Risk",
   Medium = "Medium Risk",
   High = "High Risk"
 }
 
 export enum TbbEligibility {
-  NoResponse = "",
   Proceed = "Ready to proceed",
   Discuss = "Needs discussion",
   NotProceed = "Do not proceed"
 }
 
 export enum OtherVisas {
-  NoResponse = "",
   TempSkilled = "482 temporary skilled (medium stream)",
   SpecialHum = "202 (special humanitarian)",
   OtherHum = "Other humanitarian (200, 201, 203)",
@@ -535,13 +586,23 @@ export enum OtherVisas {
 }
 
 export enum Qualification {
-  NoResponse = "",
   HighSchool = "High School",
   Associates = "Associates",
   Bachelors = "Bachelors",
   Masters = "Masters",
   PHD = "PHD",
   Other = "Other"
+}
+
+export enum Gender {
+  female = "Female",
+  male = "Male",
+  other = "Other",
+}
+
+export enum VaccinationStatus {
+  Full = "Fully Vaccinated",
+  Partial = "Partially Vaccinated",
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {
@@ -551,4 +612,23 @@ export function getCandidateNavigation(candidate: Candidate): any[] {
 export function getCandidateExternalHref(
   router: Router, location: Location, candidate: Candidate): string {
   return getExternalHref(router, location, getCandidateNavigation(candidate));
+}
+
+export function hasIeltsExam(candidate: Candidate): boolean {
+  if (candidate.candidateExams.length > 0) {
+    return candidate?.candidateExams?.find(e => e?.exam?.toString() === "IELTSGen") != null;
+  } else {
+    return false;
+  }
+}
+
+export function checkIeltsScoreType(candidate: Candidate): string {
+  if (candidate.candidateExams.length > 0) {
+    const type: CandidateExam = candidate.candidateExams?.find(e => e?.score === candidate.ieltsScore.toString());
+    if (type != null && type.exam != null) {
+      return type.exam;
+    } else {
+      return null;
+    }
+  }
 }

@@ -23,26 +23,27 @@
 <div *ngIf="!loading && !loadingError">
 
   <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
+    <ol class="breadcrumb align-items-center">
       <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
       <li *ngIf="candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
       <li *ngIf="!candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.candidateNumber}}</li>
+      <li *ngIf="isAnAdmin()" class="ml-auto">
+        <div  class="input-group">
+          <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
+                 value="{{candidate.status | titlecase}}" disabled>
+          <div class="input-group-append">
+            <button class="btn btn-sm btn-secondary" (click)="editCandidate()"><i class="fas fa-edit fa-sm"></i></button>
+          </div>
+        </div>
+      </li>
     </ol>
+
   </nav>
 
-  <div>
-    <div class="float-right" *ngIf="isAnAdmin()">
-      <div class="input-group">
-        <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
-               value="{{candidate.status | titlecase}}" disabled>
-        <div class="input-group-append">
-          <button class="btn btn-outline-dark" (click)="editCandidate()"><i class="fas fa-edit"></i></button>
-        </div>
-      </div>
-    </div>
+  <div class="d-flex justify-content-between align-items-center">
 
-    <h1>{{candidate.user.firstName}} {{candidate.user.lastName}}
-      <span class="small text-muted">
+      <h1>{{candidate.user.firstName}} {{candidate.user.lastName}}
+        <span class="small text-muted">
         {{candidate.candidateNumber}} -
           <a target="_blank" (click)="downloadCV()">
               <i class="fas fa-file-download is-link" title="Download TBB CV"></i>
@@ -67,154 +68,161 @@
             [candidate]="candidate">
           </app-cv-icon>
       </span>
-    </h1>
+      </h1>
 
-    <div class="d-flex align-items-center justify-content-end">
+
+      <div class="col-sm-4">
+        <app-candidate-shareable-notes
+          [candidate]="candidate">
+        </app-candidate-shareable-notes>
+      </div>
+
+  </div>
+
+    <div class="d-flex align-items-end mb-4">
       <div class="flex-grow-1">
         <p class="small text-muted mb-0">Add candidate to a list</p>
-        <ng-multiselect-dropdown
-          id="savedLists"
-          class="flex-fill custom-primary"
-          [settings]="dropdownSettings"
-          [data]="lists"
+        <ng-select
+          [items]="lists"
+          [multiple]="true"
+          [placeholder]="'Select or Type'"
+          [closeOnSelect]="false"
+          [clearable]="false"
+          [loading]="savingList"
+          bindLabel="name"
+          [clearSearchOnAdd]="true"
           [(ngModel)]="selectedLists"
-          (onSelectAll)="onSelectAll($event)"
-          (onDeSelectAll)="onDeSelectAll($event)"
-          (onSelect)="onItemSelect($event)"
-          (onDeSelect)="onItemDeSelect($event)">
-        </ng-multiselect-dropdown>
+          (add)="onItemSelect($event)"
+          [compareWith]="compareLists"
+          [hideSelected]="true">
+          <ng-template ng-header-tmp>
+            <span class="text-muted ml-2">Selected: {{selectedLists.length}}</span>
+          </ng-template>
+          <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+            <div class="ng-value" *ngFor="let item of items">
+              <span class="ng-value-label">
+                <a [routerLink]="['/list', item.id]"> {{item.name}} </a>
+                <a target="_blank" [routerLink]="['/list', item.id]">
+                  <i class="fas fa-external-link-alt" title="Open list in new tab"></i>
+                </a>
+              </span>
+              <span class="ng-value-icon right" (click)="onItemDeSelect(item)" aria-hidden="true">×</span>
+            </div>
+          </ng-template>
+        </ng-select>
       </div>
-      <div class="pl-2 text-right">
+
+      <div class="pl-2 flex-shrink-0">
         <button class="btn btn-sm btn-secondary" type="button"
                 (click)="onNewList()">+ New List
         </button>
       </div>
 
-
-
-    </div>
   </div>
 
-  <div class="row">
-    <div class="col-sm-{{mainColWidth}}">
-      <!-- TABS -->
-      <ngb-tabset [activeId]="activeTabId" (tabChange)="onTabChanged($event)">
+    <div class="row">
+      <div class="col-sm-{{mainColWidth}}">
+        <!-- TABS -->
+        <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
-        <!-- GENERAL -->
-        <ngb-tab id="General" [title]="'General'">
-          <ng-template ngbTabContent>
-            <app-candidate-general-tab
-              [candidate]="candidate"
-              [editable]="!loggedInUser.readOnly"
-              [loggedInUser]="loggedInUser">
-            </app-candidate-general-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- GENERAL -->
+          <ng-container ngbNavItem="General">
+            <a ngbNavLink>General</a>
+            <ng-template ngbNavContent>
+              <app-candidate-general-tab
+                [candidate]="candidate"
+                [editable]="!loggedInUser.readOnly"
+                [loggedInUser]="loggedInUser">
+              </app-candidate-general-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- EXPERIENCE -->
-        <ngb-tab id="Experience" [title]="'Experience'">
-          <ng-template ngbTabContent>
-            <app-candidate-experience-tab
-              [candidate]="candidate"
-              [editable]="!loggedInUser.readOnly">
-            </app-candidate-experience-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- EXPERIENCE -->
+          <ng-container ngbNavItem="Experience">
+            <a ngbNavLink>Experience</a>
+            <ng-template ngbNavContent>
+              <app-candidate-experience-tab
+                [candidate]="candidate"
+                [editable]="!loggedInUser.readOnly">
+              </app-candidate-experience-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- Education -->
-        <ngb-tab id="Education" [title]="'Education'">
-          <ng-template ngbTabContent>
-            <app-candidate-education-tab
-              [candidate]="candidate"
-              [editable]="!loggedInUser.readOnly">
-            </app-candidate-education-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- Education -->
+          <ng-container ngbNavItem="Education">
+            <a ngbNavLink>Education</a>
+            <ng-template ngbNavContent>
+              <app-candidate-education-tab
+                [candidate]="candidate"
+                [editable]="!loggedInUser.readOnly">
+              </app-candidate-education-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- Additional Info -->
-        <ngb-tab id="Additional" [title]="'Additional Info'">
-          <ng-template ngbTabContent>
-            <app-candidate-additional-info-tab
-              [candidate]="candidate"
-              [editable]="!loggedInUser.readOnly"
-              [loggedInUser]="loggedInUser"
-              (candidateChanged)="onCandidateChanged()"
-            >
-            </app-candidate-additional-info-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- Additional Info -->
+          <ng-container ngbNavItem="Additional">
+            <a ngbNavLink>Additional Info</a>
+            <ng-template ngbNavContent>
+              <app-candidate-additional-info-tab
+                [candidate]="candidate"
+                [editable]="!loggedInUser.readOnly"
+                [loggedInUser]="loggedInUser"
+                (candidateChanged)="onCandidateChanged()"
+              >
+              </app-candidate-additional-info-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- Mini Intake -->
-        <ngb-tab id="MiniIntake" [title]="'Mini Intake'" *ngIf="isAnAdmin()">
-          <ng-template ngbTabContent>
-            <app-candidate-mini-intake-tab
-              [candidate]="candidate"
-            >
-            </app-candidate-mini-intake-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- Mini Intake -->
+          <ng-container ngbNavItem="MiniIntake" *ngIf="isAnAdmin()">
+            <a ngbNavLink>Mini Intake</a>
+            <ng-template ngbNavContent>
+              <app-candidate-mini-intake-tab
+                [candidate]="candidate"
+              >
+              </app-candidate-mini-intake-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- Intake -->
-        <ngb-tab id="Intake" [title]="'Intake'" *ngIf="isAnAdmin()">
-          <ng-template ngbTabContent>
-            <app-candidate-intake-tab
-              [candidate]="candidate"
-            >
-            </app-candidate-intake-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- Intake -->
+          <ng-container ngbNavItem="FullIntake" *ngIf="isAnAdmin()">
+            <a ngbNavLink>Full Intake</a>
+            <ng-template ngbNavContent>
+              <app-candidate-intake-tab
+                [candidate]="candidate"
+              >
+              </app-candidate-intake-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- Visa eligibility -->
-        <ngb-tab id="Visa" [title]="'Visa'" *ngIf="isAnAdmin()">
-          <ng-template ngbTabContent>
-            <app-candidate-visa-tab
-              [candidate]="candidate"
-            >
-            </app-candidate-visa-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- Visa eligibility -->
+          <ng-container ngbNavItem="Visa" *ngIf="isAnAdmin()">
+            <a ngbNavLink>Visa</a>
+            <ng-template ngbNavContent>
+              <app-candidate-visa-tab
+                [candidate]="candidate"
+              >
+              </app-candidate-visa-tab>
+            </ng-template>
+          </ng-container>
 
-      </ngb-tabset>
-    </div>
-    <div class="col-sm-{{sidePanelColWidth}} admin-panel">
-      <div class="w-100">
-        <div class="float-right">
-          <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-            class="fas fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
+        </nav>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+      </div>
+      <div class="col-sm-{{sidePanelColWidth}} admin-panel">
+        <div class="w-100">
+          <div class="float-right">
+            <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+              class="fas fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
+          </div>
+          <app-view-candidate-note
+            [candidate]="candidate"
+            [editable]="!loggedInUser.readOnly"
+            [characterLimit]="1000"
+            (onResize)="resizeSidePanel()">
+          </app-view-candidate-note>
         </div>
-        <app-view-candidate-note
-          [candidate]="candidate"
-          [editable]="!loggedInUser.readOnly"
-          [characterLimit]="1000"
-          (onResize)="resizeSidePanel()">
-        </app-view-candidate-note>
-
-
-<!--        <ngb-tabset>-->
-
-<!--          &lt;!&ndash;         HISTORY &ndash;&gt;-->
-<!--          <ngb-tab [title]="'History'">-->
-<!--            <ng-template ngbTabContent>-->
-<!--              <app-candidate-history-tab-->
-<!--                [candidate]="candidate"-->
-<!--                [characterLimit]="1000"-->
-<!--                [editable]="!loggedInUser.readOnly"-->
-<!--                (onResize)="resizeSidePanel()">-->
-<!--              </app-candidate-history-tab>-->
-<!--            </ng-template>-->
-<!--          </ngb-tab>-->
-
-          <!--         HISTORY -->
-<!--          <ngb-tab [title]="'Audit'">-->
-            <!--          <ng-template ngbTabContent>-->
-            <!--            <app-candidate-eligibility-tab></app-candidate-eligibility-tab>-->
-            <!--          </ng-template>-->
-<!--          </ngb-tab>-->
-
-<!--        </ngb-tabset>-->
       </div>
     </div>
   </div>
 
-
-</div>

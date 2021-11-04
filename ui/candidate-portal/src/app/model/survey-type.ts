@@ -14,6 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+export const US_AFGHAN_SURVEY_TYPE = 10;
+
 export interface SurveyType {
   id: number;
   name: string;

@@ -59,6 +59,12 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     private Status status;
 
     /**
+     * Description of the purpose of this candidate source
+     */
+    @Nullable
+    private String description;
+    
+    /**
      * If not null (or empty) this is the list of candidate fields which are
      * displayed for each candidate.
      * <p/>
@@ -85,7 +91,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      */
     @Convert(converter = DelimitedStringsConverter.class)
     @Nullable
-    private List<String> displayedFieldsShort; 
+    private List<String> displayedFieldsShort;
 
     /**
      * If true, only the owner can modify the details of the candidate source
@@ -112,6 +118,49 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     protected AbstractCandidateSource() {
         setStatus(Status.active);
+    }
+
+    /**
+     * If not null this is defines which columns are exported for each candidate when publishing
+     * candidates from this candidate source.
+     * <p/>
+     * Note that the actual definition of each column is managed in the front end Angular code.
+     * The server only stores keys identifying the columns and any extra configuration.
+     * <p/>
+     * SavedList or SavedSearch implementations have slightly different ways of storing
+     * export columns on the database - so the actual database mapping has to be done in those
+     * subclasses.
+     * @return Set of columns. Note that the ordering is defined by the 
+     * {@link ExportColumn#getIndex()} attribute in each ExportColumn.
+     */
+    @Nullable
+    public abstract List<ExportColumn> getExportColumns();
+
+    /**
+     * @see #getExportColumns()
+     * <p/>
+     * Note: You can't call setExportColumns and assuming that previous columns on the database 
+     * are deleted. You need to explicitly do that using 
+     * {@link org.tbbtalent.server.service.db.ExportColumnsService}
+     */
+    public abstract void setExportColumns(@Nullable List<ExportColumn> exportColumns);
+
+    protected void modifyColumnIndices(@Nullable List<ExportColumn> exportColumns) {
+        if (exportColumns != null) {
+            int index = 0;
+            for (ExportColumn exportColumn : exportColumns) {
+                exportColumn.setIndex(index++);
+            }
+        }
+    }
+    
+    @Nullable
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(@Nullable String description) {
+        this.description = description;
     }
 
     @Nullable

@@ -18,7 +18,6 @@ import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SavedList, SearchSavedListRequest} from '../../../model/saved-list';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {SavedListService} from '../../../services/saved-list.service';
 import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
@@ -63,14 +62,6 @@ export class SelectListComponent implements OnInit {
 
   lists: SavedList[] = [];
 
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: false,
-    singleSelection: true,
-    allowSearchFilter: true
-  };
-
   private statusUpdateInfo: UpdateCandidateStatusInfo;
 
   constructor(
@@ -107,6 +98,7 @@ export class SelectListComponent implements OnInit {
     const request: SearchSavedListRequest = {
       owned: true,
       shared: true,
+      global: true,
       fixed: false
     };
 
@@ -128,7 +120,7 @@ export class SelectListComponent implements OnInit {
 
   select() {
     const selection: TargetListSelection = {
-      savedListId: this.savedList === null ? 0 : this.savedList[0].id,
+      savedListId: this.savedList === null ? 0 : this.savedList.id,
       newListName: this.newList ? this.newListName : null,
       replace: this.replace,
       sfJoblink: this.sfJoblink ? this.sfJoblink : null

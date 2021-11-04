@@ -14,53 +14,30 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  AfterViewInit,
-  Component,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {FormBuilder} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
-import {
-  catchError,
-  debounceTime,
-  switchMap,
-  takeUntil,
-  tap
-} from 'rxjs/operators';
-import {Subject} from 'rxjs';
-import {
-  CandidateSource,
-  UpdateCandidateContextNoteRequest
-} from '../../../model/base';
+import {Observable} from 'rxjs';
+import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model/base';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
-import {isSavedSearch} from "../../../model/saved-search";
+import {getCandidateSourceType} from "../../../model/saved-search";
+import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 
 @Component({
   selector: 'app-candidate-context-note',
   templateUrl: './candidate-context-note.component.html',
   styleUrls: ['./candidate-context-note.component.scss']
 })
-export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class CandidateContextNoteComponent extends AutoSaveComponentBase
+  implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
-  @Input() sourceType: String;
-  @Input() savedSearchSelectionChange: boolean;
-
-  form: FormGroup;
-
-  private unsubscribe = new Subject<void>()
-  error: string;
-  saving: boolean;
-  typing: boolean;
 
   constructor(private fb: FormBuilder,
-              private candidateSourceService: CandidateSourceService) { }
+              private candidateSourceService: CandidateSourceService) {
+    super();
+  }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -68,12 +45,25 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
     });
   }
 
+  doSave(formValue: any): Observable<void> {
+    const request: UpdateCandidateContextNoteRequest = {
+      candidateId: this.candidate.id,
+      contextNote: this.contextNote
+    }
+    return this.candidateSourceService.updateContextNote(this.candidateSource, request);
+  }
+
+  onSuccessfulSave() {
+    this.candidate.contextNote = this.contextNote;
+  }
+
   get contextNote(): string {
     return this.form.value?.contextNote;
   }
 
-  get isCandidateSelected(): boolean {
-    return this.candidate.selected;
+  get title(): string {
+    return "Notes for " + this.candidate.user.firstName + " in " + this.candidateSource.name +
+      " " + getCandidateSourceType(this.candidateSource);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -84,64 +74,5 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
     }
   }
 
-  ngAfterViewInit() {
-    //Set timeout (milliseconds)
-    this.autoSaveNote(1000);
-  }
 
-  private autoSaveNote(timeout: number) {
-    this.form.valueChanges.pipe(
-
-      tap(() => this.typing = true),
-
-      //Only pass values on if there has been inactivity for the given timeout
-      debounceTime(timeout),
-
-      //Do a save of the received form values.
-      switchMap(formValue => {
-          this.typing = false;
-          const request: UpdateCandidateContextNoteRequest = {
-            candidateId: this.candidate.id,
-            contextNote: formValue.contextNote
-          }
-          this.error = null;
-          this.saving = true;
-          return this.candidateSourceService.updateContextNote(this.candidateSource, request);
-        }
-      ),
-
-      //We catch errors, copying them to this.error, but then just continuing
-      catchError((error, caught) => {
-        this.saving = false;
-        this.error = error;
-        return caught;
-      }),
-
-      //Subscription will continue until the given Observable emits.
-      //See ngOnDestroy
-      takeUntil(this.unsubscribe)
-    ).subscribe(
-
-      //Save has completed successfully
-      () => {
-        this.saving = false
-        this.candidate.contextNote = this.contextNote;
-        },
-          //Theoretically never get here because we catch errors in the pipe
-          (error) => {
-        this.saving = false;
-        this.error = error;
-      }
-    )
-  }
-
-  ngOnDestroy(): void {
-    //Stop subscribing by emitting a value from the Unsubscribe Observable
-    //See takeUntil in the above pipe.
-    this.unsubscribe.next();
-  }
-
-  isSearch() {
-    return isSavedSearch(this.candidateSource);
-  }
 }

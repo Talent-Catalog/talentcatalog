@@ -32,4 +32,12 @@ public interface PopulateElasticsearchService {
      *                       existing candidate records from Elasticsearch.
      */
     void populateElasticCandidates(boolean deleteExisting);
+
+    /**
+     * This will loop through all candidates on elasticsearch and update
+     * their counterparts in database.
+     * <p/>
+     * It is expected to be run as an asynchronous task.
+     */
+    void populateCandidateFromElastic();
 }

@@ -19,7 +19,7 @@ package org.tbbtalent.server.api.admin;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.constraints.NotNull;
@@ -31,14 +31,14 @@ import javax.validation.constraints.NotNull;
  * @author John Cameron
  */
 public class CandidateBuilderSelector {
-    private final UserContext userContext;
+    private final AuthService authService;
 
-    public CandidateBuilderSelector(UserContext userContext) {
-        this.userContext = userContext;
+    public CandidateBuilderSelector(AuthService authService) {
+        this.authService = authService;
     }
 
     private @Nullable Role getRole() {
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         return user == null ? null : user.getRole();
     }
 
@@ -65,8 +65,14 @@ public class CandidateBuilderSelector {
                 .add("phone")
                 .add("whatsapp")
                 .add("city")
+                .add("state")
                 .add("address1")
                 .add("yearOfArrival")
+                .add("externalId")
+                .add("externalIdSource")
+                .add("unhcrRegistered")
+                .add("unhcrNumber")
+                .add("unhcrConsent")
                 .add("additionalInfo")
                 .add("linkedInLink")
                 .add("candidateMessage")
@@ -82,12 +88,27 @@ public class CandidateBuilderSelector {
                 .add("contextNote")
                 .add("maritalStatus")
                 .add("drivingLicense")
+                .add("langAssessmentScore")
+                .add("residenceStatus")
+                .add("ieltsScore")
+                .add("numberDependants")
+                .add("candidateExams", examsDto())
+                .add("maxEducationLevel", educationLevelDto())
                 .add("surveyType", surveyTypeDto())
                 .add("country", countryDto())
-                .add("nationality", nationalityDto())
+                .add("nationality", countryDto())
                 .add("user", userDto())
                 .add("candidateReviewStatusItems", reviewDto())
-                ;
+
+                .add("shareableCv", candidateAttachmentDto())
+                .add("shareableDoc", candidateAttachmentDto())
+                .add("listShareableCv", candidateAttachmentDto())
+                .add("listShareableDoc", candidateAttachmentDto())
+                .add("shareableNotes")
+                .add("stage")
+                .add("sfOpportunityLink")
+
+            ;
     }
 
     private DtoBuilder candidateSemiLimitedDto() {
@@ -98,6 +119,7 @@ public class CandidateBuilderSelector {
                 .add("gender")
                 .add("dob")
                 .add("city")
+                .add("state")
                 .add("address1")
                 .add("yearOfArrival")
                 .add("additionalInfo")
@@ -110,7 +132,7 @@ public class CandidateBuilderSelector {
                 .add("contextNote")
                 .add("country", countryDto())
                 .add("user",userSemiLimitedDto())
-                .add("nationality", nationalityDto())
+                .add("nationality", countryDto())
                 .add("candidateReviewStatusItems", reviewDto())
                 ;
     }
@@ -162,13 +184,6 @@ public class CandidateBuilderSelector {
                 ;
     }
 
-    private DtoBuilder nationalityDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
     private DtoBuilder reviewDto() {
         return new DtoBuilder()
                 .add("id")
@@ -201,7 +216,31 @@ public class CandidateBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                .add("level")
                 ;
     }
+
+    private DtoBuilder examsDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("exam")
+                .add("score")
+                ;
+    }
+    
+    private DtoBuilder candidateAttachmentDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("type")
+            .add("name")
+            .add("location")
+            .add("fileType")
+            .add("migrated")
+            .add("cv")
+            .add("createdBy", userDto())
+            .add("createdDate")
+            ;
+    }
+
 
 }

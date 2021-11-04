@@ -5,6 +5,16 @@ tbb:
   destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
   partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
 
+  alert:
+    email: alert@talentbeyondboundaries.org
+
+logging:
+  level:
+    reactor:
+      netty:
+        http:
+          client: INFO
+
 spring:
   servlet:
     multipart:
@@ -15,14 +25,14 @@ spring:
     rest:
       uris: ${ELASTICSEARCH_URL:http://localhost:9200}
       username: ${ELASTICSEARCH_USERNAME:}
-      password: ${ELASTICSEARCH_PASSWORD:} 
-  
+      password: ${ELASTICSEARCH_PASSWORD:}
+
   data:
-    # We explicitly enable repositories with @EnableJpaRepositories and 
+    # We explicitly enable repositories with @EnableJpaRepositories and
     # @EnableElasticsearchRepositories.
     # Turn off default enabling to avoid errors
     # jpa has to be enabled otherwise unit tests fail
-    # - see https://stackoverflow.com/questions/47002094/spring-multiple-spring-data-modules-found-entering-strict-repository-configur 
+    # - see https://stackoverflow.com/questions/47002094/spring-multiple-spring-data-modules-found-entering-strict-repository-configur
     jpa:
       repositories:
         enabled: true
@@ -39,12 +49,12 @@ spring:
     hikari:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
-      
+
 #  To catch resource not found errors (404)
 #  See https://stackoverflow.com/questions/36733254/spring-boot-rest-how-to-configure-404-resource-not-found/36734193#36734193
   mvc:
     throw-exception-if-no-handler-found: true
-    
+
   resources:
     add-mappings: false
 
@@ -54,6 +64,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
+        order_by.default_null_ordering: last
         temp:
           use_jdbc_metadata_defaults: false
 
@@ -64,7 +75,8 @@ management:
 
 jwt:
   secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
-  expirationInMs: 604800000
+  # This equates to 24 hours in milliseconds
+  expirationInMs: 86400000
 
 salesforce:
   # Security is set up using a self signed certificate generated using openssl:
@@ -73,7 +85,7 @@ salesforce:
   # The key.pem becomes the private key below.
   # The cert.pem needs to be uploaded to the Salesforce tbbtalent Connected App.
   # (Note that you can only do the certificate upload from Setup|Apps|AppManager
-  # - then selecting Edit. Bizarrely, you can't do it from 
+  # - then selecting Edit. Bizarrely, you can't do it from
   # Setup|Apps|ConnectedApps|Manage Connected Apps)
   #
   # For dev this should be set in tbb-secrets
@@ -83,8 +95,11 @@ salesforce:
     lebanonAccount: 0013l00002Jm2sqAAB
     otherAccount: 0013l00002JmHQhAAN
     tbbAccount: 0011N00001DouDKQAZ
-  
-    
+
+slack:
+  workspace: https://refugeejobsmarket.slack.com
+  channelId: C029WMY6H1U
+  token: ${SLACK_TOKEN}
 
 server:
   tomcat:
@@ -101,26 +116,41 @@ flyway:
 
 google:
   drive:
-  #  These are the credentials set up in the Google Drive API for the TalentCatalog project 
+  #  These are the credentials set up in the Google Drive API for the TalentCatalog project
   #  see https://console.developers.google.com/apis/api/drive.googleapis.com/
-    
+
     clientId: ${GOOGLE_DRIVE_CLIENTID:100905261598930740359}
     clientEmail: ${GOOGLE_DRIVE_CLIENTEMAIL:talentcatalogdrive@talentcatalog.iam.gserviceaccount.com}
     projectId: ${GOOGLE_DRIVE_PROJECTID:talentcatalog}
     tokenUri: ${GOOGLE_DRIVE_TOKENURI:https://oauth2.googleapis.com/token}
-    
-  # For dev these should be set in tbb-secrets    
+
+  # For dev these should be set in tbb-secrets
     privateKey: ${GOOGLE_DRIVE_PRIVATEKEY:}
     privateKeyId: ${GOOGLE_DRIVE_PRIVATEKEYID:}
 
   # We use a different Google Drive in dev than we do in production.
-  # The Drive and folder ids are the latter part of the url you see when you 
+  # The Drive and folder ids are the latter part of the url you see when you
   # go to that drive or folder.
     candidateDataDriveId: ${GOOGLE_DRIVE_CANDIDATEDATADRIVEID:0AHvd4Bs-dSp4Uk9PVA}
     candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1TdqTBpojT07qNPWTgU_wXWON1678beTn}
-        
-      
-      
+    listFoldersDriveId:  ${GOOGLE_DRIVE_LISTFOLDERSDRIVEID:0AJpRzZk9D_kLUk9PVA}
+    listFoldersRootId:  ${GOOGLE_DRIVE_LISTFOLDERSROOTID:1BkMPOr392ubCriQdhBAmFKxlume-c7d2}
+
+  # Job Opportunity Intake template
+    jobOppIntakeTemplateId: 1iDEfXhEaTU-c_Znen-_cR3YIRTl7Mnl2UY-sUeZGH3k
+
+  # Published doc sheet template
+    publishedSheetTemplateId: 1On2FJP54Qu3hojQj0fyZLy7PaIitIfIsQCBJFe_1JS0
+  # Name of range (ie a Named range in the Google sheet) where candidate data should be written
+  # (including the header line)
+    publishedSheetDataRangeName: candidateDataRange
+
+  # Pixel width of narrow columns in generated published sheets
+    publishedSheetNarrowColumn: 90
+  # Pixel width of wide columns in generated published sheets
+    publishedSheetWideColumn: 300
+
+
 aws:
   s3:
     bucketName: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org}
@@ -128,7 +158,7 @@ aws:
     max-size: 52428800
     upload-folder: temp
   credentials:
-    # For dev this should be set in tbb-secrets    
+    # For dev this should be set in tbb-secrets
     accessKey: ${AWS_CREDENTIALS_ACCESSKEY:}
     secretKey: ${AWS_CREDENTIALS_SECRETKEY:}
 
@@ -148,8 +178,13 @@ email:
   port: 587
   user: ${EMAIL_USER:tbbtalent@talentbeyondboundaries.org}
 
-  # For dev this should be set in tbb-secrets    
+  # For dev this should be set in tbb-secrets
   password: ${EMAIL_PASSWORD:}
   authenticated: true
   defaultEmail: ${EMAIL_DEFAULTEMAIL:tbbtalent@talentbeyondboundaries.org}
   testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:tbbtalent@talentbeyondboundaries.org}
+
+
+#Support for in context language translation
+translation:
+  password: ${TRANSLATION_PASSWORD:TGFM}

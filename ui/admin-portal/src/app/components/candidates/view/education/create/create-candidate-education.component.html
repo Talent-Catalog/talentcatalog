@@ -39,46 +39,40 @@
 
       <!-- EDUCATION TYPE -->
       <div class="form-group">
-        <label for="educationType">Education Type *</label>
-        <select class="form-control" id="educationType" [formControlName]="'educationType'">
-          <option value=""></option>
-          <option value="Associate">Associate</option>
-          <option value="Vocational">Vocational</option>
-          <option value="Bachelor">Bachelor</option>
-          <option value="Masters">Masters</option>
-          <option value="Doctoral">Doctoral</option>
-        </select>
+        <label for="educationType">Education Type</label>
+        <ng-select id="educationType" [formControlName]="'educationType'" placeholder="Select" [clearable]="false">
+          <ng-option value="Associate">Associate</ng-option>
+          <ng-option value="Vocational">Vocational</ng-option>
+          <ng-option value="Bachelor">Bachelor</ng-option>
+          <ng-option value="Masters">Masters</ng-option>
+          <ng-option value="Doctoral">Doctoral</ng-option>
+        </ng-select>
       </div>
 
       <!-- MAJOR -->
       <div class="form-group">
         <label for="educationMajorId">Major *</label>
-        <select class="form-control" name="country" id="educationMajorId" [formControlName]="'educationMajorId'">
-          <option value=""></option>
-          <option *ngFor="let major of majors" [value]="major.id">{{major.name}}</option>
-        </select>
+        <ng-select id="educationMajorId" name="educationMajorId" [formControlName]="'educationMajorId'" [items]="majors"
+                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- COURSE NAME -->
       <div class="form-group">
-        <label for="courseName">Course Name *</label>
-        <input type="text" class="form-control" id="courseName"
-               [formControlName]="'courseName'">
+        <label for="courseName">Course Name</label>
+        <input type="text" class="form-control" id="courseName" [formControlName]="'courseName'">
       </div>
 
       <!-- INSTITUTION NAME -->
       <div class="form-group">
-        <label for="institution">Institution *</label>
+        <label for="institution">Institution</label>
         <input type="text" class="form-control" id="institution" [formControlName]="'institution'">
       </div>
 
       <!-- COUNTRY -->
       <div class="form-group">
         <label for="countryId">Country *</label>
-        <select class="form-control" name="country" id="countryId" [formControlName]="'countryId'">
-          <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
+        <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="countries"
+                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- COURSE LENGTH -->
@@ -90,10 +84,8 @@
       <!-- Year -->
       <div class="form-group">
         <label for="yearCompleted">Year of completion</label>
-        <select class="form-control" name="yearCompleted" id="yearCompleted" [formControlName]="'yearCompleted'">
-          <option value=""></option>
-          <option *ngFor="let year of years" [value]="year">{{year}}</option>
-        </select>
+        <ng-select id="yearCompleted" name="yearCompleted" [formControlName]="'yearCompleted'" [items]="years"
+                   placeholder="Select"></ng-select>
       </div>
 
 

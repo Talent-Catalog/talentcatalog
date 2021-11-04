@@ -14,12 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {Candidate} from '../../../../model/candidate';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {NgbAccordion, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {Candidate, hasIeltsExam} from '../../../../model/candidate';
 import {CandidateLanguage} from '../../../../model/candidate-language';
 import {CandidateLanguageService} from '../../../../services/candidate-language.service';
 import {EditCandidateLanguageComponent} from '../language/edit/edit-candidate-language.component';
+import {Subject} from "rxjs";
+import {CreateCandidateLanguageComponent} from "./create/create-candidate-language.component";
+import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-view-candidate-language',
@@ -30,17 +33,35 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  @Input() accordion: boolean = false;
 
   candidateLanguages: CandidateLanguage[];
   loading: boolean;
   error;
+
+  activeIds: string;
+  open: boolean;
+  @Input() toggleAll: Subject<any>;
+
+  @ViewChild(NgbAccordion) acc: NgbAccordion;
 
   constructor(private candidateLanguageService: CandidateLanguageService,
               private modalService: NgbModal ) {
   }
 
   ngOnInit() {
-
+    /*
+      If an accordion in intake set the subscribe to the toggle all buttons in intake candidate component
+     */
+    if (this.accordion) {
+      this.activeIds = 'intake-language';
+      this.open = true;
+      // called when the toggleAll method is called in the parent component
+      this.toggleAll.subscribe(isOpen => {
+        this.open = isOpen;
+        this.setActiveIds();
+      })
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -77,5 +98,67 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
 
   }
 
+  createCandidateLanguage() {
+    const createCandidateLanguageModal = this.modalService.open(CreateCandidateLanguageComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    createCandidateLanguageModal.componentInstance.candidateId = this.candidate.id;
+
+    createCandidateLanguageModal.result
+      .then((candidateLanguage) => this.search())
+      .catch(() => { /* Isn't possible */ });
+
+  }
+
+  deleteCandidateLanguage(candidateLanguage: CandidateLanguage) {
+    const deleteCandidateLanguageModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteCandidateLanguageModal.componentInstance.message = "Are you sure you want to delete this candidate's language?";
+
+    deleteCandidateLanguageModal.result
+      .then((result) => {
+        if (result === true) {
+          this.candidateLanguageService.delete(candidateLanguage.id).subscribe(
+            (user) => {
+              this.loading = false;
+              this.search();
+            },
+            (error) => {
+              this.error = error;
+              this.loading = false;
+            });
+          this.search();
+        }
+      })
+      .catch(() => { /* Isn't possible */ });
+  }
+
+  /*
+    Methods related to the accordion toggle, and the toggle all parent observable
+   */
+
+  toggleOpen() {
+    this.open = !this.open
+    this.setActiveIds();
+  }
+
+  setActiveIds(){
+    if (this.open) {
+      this.acc.expandAll();
+      this.activeIds = 'intake-language';
+    } else {
+      this.acc.collapseAll();
+      this.activeIds = '';
+    }
+  }
+
+  hasIelts(candidate: Candidate): boolean {
+    return hasIeltsExam(candidate);
+  }
 
 }

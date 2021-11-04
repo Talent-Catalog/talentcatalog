@@ -20,7 +20,7 @@
     <div class="header">
       <h4>General Translations</h4>
       <div>
-        <button class="btn btn-primary" (click)="save()" [disabled]="saving">Save</button>
+        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="save()" [disabled]="saving">Save</button>
       </div>
     </div>
 
@@ -34,10 +34,10 @@
     <div class="filter">
       <div class="row">
         <div class="col-sm-6">
-          <select class="form-control" [ngModel]="language" (change)="setLanguage($event.target.value)">
-            <option value="en">English</option>
-            <option value="ar">Arabic</option>
-          </select>
+          <ng-select [ngModel]="language" placeholder="Select" (change)="setLanguage($event)" [clearable]="false">
+            <ng-option value="en">English</ng-option>
+            <ng-option value="ar">Arabic</ng-option>
+          </ng-select>
         </div>
       </div>
     </div>

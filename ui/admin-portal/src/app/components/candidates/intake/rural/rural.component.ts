@@ -41,11 +41,11 @@ export class RuralComponent extends IntakeComponentBase implements OnInit {
     });
   }
 
-  get ruralInterest(): boolean {
-    let interested: boolean;
-    if (this.form.value.intRecruitRural) {
-      interested = this.form.value.intRecruitRural === 'Yes' || this.form.value.intRecruitRural === 'Unsure';
+  get hasNotes(): boolean {
+    if (this.form.value?.intRecruitRural == null || this.form.value?.intRecruitRural === 'NoResponse') {
+      return false;
+    } else {
+      return true;
     }
-    return interested;
   }
 }

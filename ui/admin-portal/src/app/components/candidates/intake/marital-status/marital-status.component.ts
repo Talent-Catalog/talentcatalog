@@ -16,15 +16,15 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {Candidate, IeltsScore, IeltsStatus, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {Candidate, IeltsStatus, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EducationLevel} from '../../../../model/education-level';
 import {Occupation} from '../../../../model/occupation';
 import {LanguageLevel} from '../../../../model/language-level';
-import {Nationality} from '../../../../model/nationality';
 import {generateYearArray} from '../../../../util/year-helper';
+import {Country} from "../../../../model/country";
 
 @Component({
   selector: 'app-marital-status',
@@ -36,13 +36,13 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   @Input() educationLevels: EducationLevel[];
   @Input() occupations: Occupation[];
   @Input() languageLevels: LanguageLevel[];
-  @Input() nationalities: Nationality[];
+  @Input() nationalities: Country[];
 
   public maritalStatusOptions: EnumOption[] = enumOptions(MaritalStatus);
   public partnerRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
   public partnerEnglishOptions: EnumOption[] = enumOptions(YesNo);
   public partnerIeltsOptions: EnumOption[] = enumOptions(IeltsStatus);
-  public partnerIeltsScoreOptions: EnumOption[] = enumOptions(IeltsScore);
+
   years: number[];
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
@@ -52,6 +52,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   ngOnInit(): void {
     this.form = this.fb.group({
       maritalStatus: [this.candidateIntakeData?.maritalStatus],
+      maritalStatusNotes: [this.candidateIntakeData?.maritalStatusNotes],
       partnerRegistered: [this.candidateIntakeData?.partnerRegistered],
       partnerCandId: [this.candidateIntakeData?.partnerCandidate?.id],
       partnerEduLevelId: [this.candidateIntakeData?.partnerEduLevel?.id],
@@ -134,6 +135,14 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
 
   get occupationSelected(): boolean {
     return this.form?.value?.partnerOccupationId != null;
+  }
+
+  get hasNotes(): boolean {
+    if (this.form.value?.maritalStatus == null || this.form.value?.maritalStatus === 'NoResponse') {
+      return false;
+    } else {
+      return true;
+    }
   }
 
 }

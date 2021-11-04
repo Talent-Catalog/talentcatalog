@@ -34,7 +34,7 @@
 
     <div class="row">
 
-      <div *ngIf="candidate.address1 || candidate.city || candidate.country" class="form-group col-sm-12 col-md-4">
+      <div *ngIf="candidate.address1 || candidate.city || candidate.state || candidate.country" class="form-group col-sm-12 col-md-4">
         <label class="col-form-label">
           <i class="fas fa-map-marker"></i>
           Address
@@ -47,6 +47,10 @@
           <span class="comma"></span>
 
           <span class="field" *ngIf="candidate.city">{{candidate.city}}</span>
+
+          <span class="comma"></span>
+
+          <span class="field" *ngIf="candidate.state">{{candidate.state}}</span>
 
           <span class="comma"></span>
 
@@ -88,7 +92,7 @@
       </div>
 
       <div *ngIf="candidate.nationality" class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-globe"></i>Nationality</label>
+        <label class="col-form-label"><i class="fas fa-globe"></i>Country of Nationality</label>
 
         <div class="form-control-plaintext">
           <span>{{candidate.nationality?.name}}</span>
@@ -109,6 +113,30 @@
 
         <div class="form-control-plaintext">
           <span>{{candidate.user.email}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="candidate.externalId" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-id-badge"></i>External Id</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.externalId}}</span><span *ngIf="candidate.externalIdSource">: {{candidate.externalIdSource}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="candidate.unhcrRegistered" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="far fa-registered"></i>UNHCR Registered</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.unhcrRegistered}}</span><span *ngIf="candidate.unhcrNumber && candidate.unhcrRegistered === 'Yes'"> - #{{candidate.unhcrNumber}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="candidate.unhcrConsent" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="far fa-thumbs-up"></i>UNHCR Consent</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.unhcrConsent}}</span>
         </div>
       </div>
 

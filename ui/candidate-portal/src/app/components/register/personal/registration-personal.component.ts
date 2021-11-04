@@ -19,13 +19,12 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {Candidate} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
-import {NationalityService} from "../../../services/nationality.service";
-import {Nationality} from "../../../model/nationality";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {RegistrationService} from "../../../services/registration.service";
 import {generateYearArray} from "../../../util/year-helper";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
+import {LanguageService} from "../../../services/language.service";
 
 @Component({
   selector: 'app-registration-personal',
@@ -45,22 +44,23 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   _loading = {
     candidate: true,
     countries: true,
-    nationalities: true
+    usAfghan: true
   };
   saving: boolean;
 
   candidate: Candidate;
   countries: Country[];
-  nationalities: Nationality[];
+  nationalities: Country[];
   years: number[];
   subscription;
+  lang: string;
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private countryService: CountryService,
-              private nationalityService: NationalityService,
               public translateService: TranslateService,
+              public languageService: LanguageService,
               public registrationService: RegistrationService) { }
 
   ngOnInit() {
@@ -73,17 +73,24 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       gender: [null, Validators.required],
       dob: [null, Validators.required],
       /* LOCATION */
-      countryId: ['', Validators.required],
+      countryId: [null, Validators.required],
+      state: [''],
       city: [''],
       yearOfArrival: [''],
       /* NATIONALITY */
-      nationality: ['', Validators.required],
-      // registeredWithUN: ['', Validators.required],
-      // registrationId: ['', Validators.required]
+      nationalityId: [null, Validators.required],
+      externalId: [null],
+      externalIdSource: ['US Afghan Parolee Id'],
+      unhcrRegistered: [null, Validators.required],
+      unhcrNumber: [null],
+      unhcrConsent: [null]
     });
     this.loadDropDownData();
+
+    this.lang = this.languageService.getSelectedLanguage();
     //listen for change of language and save
     this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.lang = event.lang;
       this.loadDropDownData();
     });
 
@@ -96,13 +103,18 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           gender: response.gender || null ,
           dob: response.dob || null,
           /* LOCATION */
-          countryId: response.country ? response.country.id : null,
+          countryId: response.country.id > 0 ? response.country.id : null,
           city: response.city,
+          state: response.state,
           yearOfArrival: response.yearOfArrival,
           /* NATIONALITY */
-          nationality: response.nationality ? response.nationality.id : null,
-          // registeredWithUN: response.registeredWithUN,
-          // registrationId: response.registrationId
+          nationalityId: response.nationality.id > 0 ? response.nationality.id : null,
+          /* IDS */
+          externalId: response.externalId ? response.externalId : null,
+          // externalIdSource: response.externalIdSource ? response.externalIdSource : null,
+          unhcrRegistered: response.unhcrRegistered,
+          unhcrNumber: response.unhcrNumber,
+          unhcrConsent: response.unhcrConsent,
 
         });
         this._loading.candidate = false;
@@ -112,11 +124,48 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
         this._loading.candidate = false;
       }
     );
+
+    this.form.get('unhcrRegistered').valueChanges
+      .subscribe(unhcrRegistered => {
+        if (unhcrRegistered === 'Yes') {
+          this.form.get('unhcrConsent').setValidators([Validators.required]);
+        } else if (unhcrRegistered === 'No') {
+          this.form.get('unhcrConsent').setValidators(null);
+          this.form.get('unhcrConsent').setValue(null);
+        } else {
+          this.form.get('unhcrConsent').setValidators(null);
+          this.form.get('unhcrConsent').setValue(null);
+        }
+        this.form.get('unhcrConsent').updateValueAndValidity();
+      });
   }
 
-  loadDropDownData(){
+  get tbbCriteriaFailed() {
+    let failed: boolean = false;
+    if (this.country !== null) {
+      if (this.country === this.nationality && this.country !== 6180) {
+        failed = true;
+      } else {
+        failed = false;
+      }
+    }
+    return failed;
+  }
+
+  get nationality() {
+    return this.form.value.nationalityId;
+  }
+
+  get country() {
+    return this.form.value.countryId;
+  }
+
+  get hasUnhcr() {
+   return this.form.value.unhcrRegistered === 'Yes';
+  }
+
+  loadDropDownData() {
     this._loading.countries = true;
-    this._loading.nationalities = true;
 
     /* Load the countries */
     this.countryService.listCountries().subscribe(
@@ -127,17 +176,6 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       (error) => {
         this.error = error;
         this._loading.countries = false;
-      }
-    );
-
-    this.nationalityService.listNationalities().subscribe(
-      (response) => {
-        this.nationalities = response;
-        this._loading.nationalities = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.nationalities = false;
       }
     );
   }
@@ -192,7 +230,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   get loading() {
     const l = this._loading;
-    return l.candidate || l.countries || l.nationalities;
+    return l.candidate || l.countries
   }
 
   cancel() {

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DeleteOccupationComponent } from './delete-occupation.component';
 
@@ -22,7 +22,7 @@ describe('DeleteOccupationComponent', () => {
   let component: DeleteOccupationComponent;
   let fixture: ComponentFixture<DeleteOccupationComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DeleteOccupationComponent ]
     })

@@ -28,17 +28,14 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="familyMove" [formControlName]="'familyMove'">
-      <option *ngFor="let opt of familyMoveOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="familyMove" [formControlName]="'familyMove'" (clear)="setNoResponse('familyMove')"
+               [items]="familyMoveOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     <p class="small mb-0">Note: Explain what is possible with the visa pathway at hand if known, but also explain
       that this will help us determine if other visa pathways are suitable should any opportunities arise.</p>
   </div>
   <div *ngIf="familyMove === 'Yes'" class="form-group">
-    <label for="familyMoveNotes">Notes</label>
+    <label for="familyMoveNotes">If yes, please add any additional notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="familyMoveNotes" [formControlName]="'familyMoveNotes'"
               placeholder="" ></textarea>

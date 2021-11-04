@@ -56,8 +56,15 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private String countryIds;
 
+    private String surveyTypeIds;
+
     private Integer englishMinWrittenLevel;
     private Integer englishMinSpokenLevel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exclusion_list_id")
+    @Nullable
+    private SavedList exclusionList;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "other_language_id")
@@ -79,6 +86,15 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer minEducationLevel;
     private String educationMajorIds;
 
+    /**
+     * Reviewable searches allow the front end to supply review filters to the search
+     * in the form of a List of ReviewStatus's. Using the review filters engages the
+     * CandidateReviewItem table to decide which candidates should be excluded from the
+     * results of the search (ie candidates whose review status for the search does not match
+     * one of the statuses in the provided review filter).
+     * <p/>
+     * When a search is marked as not reviewable, the front end will not supply review filters.
+     */
     private Boolean reviewable = false;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
@@ -88,10 +104,15 @@ public class SavedSearch extends AbstractCandidateSource {
     //relationships here: 
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedSearches", cascade = CascadeType.MERGE)
-    private Set<User> users = new HashSet<>();     
+    private Set<User> users = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
+    @OrderBy("index ASC")
+    private List<ExportColumn> exportColumns;
 
     @Transient private List<String> countryNames;
     @Transient private List<String> nationalityNames;
+    @Transient private List<String> surveyTypeNames;
     @Transient private List<String> vettedOccupationNames;
     @Transient private List<String> occupationNames;
     @Transient private List<String> educationMajors;
@@ -104,6 +125,16 @@ public class SavedSearch extends AbstractCandidateSource {
     @Transient private SavedSearchSubtype savedSearchSubtype;
 
     public SavedSearch() {
+    }
+
+    @Nullable
+    public List<ExportColumn> getExportColumns() {
+        return exportColumns;
+    }
+
+    public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
+        modifyColumnIndices(exportColumns);
+        this.exportColumns = exportColumns;
     }
 
     public Boolean getDefaultSearch() {
@@ -203,6 +234,10 @@ public class SavedSearch extends AbstractCandidateSource {
     public void setCountryIds(String countryIds) {
         this.countryIds = countryIds;
     }
+
+    public String getSurveyTypeIds() {return surveyTypeIds;}
+
+    public void setSurveyTypeIds(String surveyTypeIds) {this.surveyTypeIds = surveyTypeIds;}
 
     public Integer getEnglishMinWrittenLevel() {
         return englishMinWrittenLevel;
@@ -332,6 +367,10 @@ public class SavedSearch extends AbstractCandidateSource {
         this.nationalityNames = nationalityNames;
     }
 
+    public List<String> getSurveyTypeNames() {return surveyTypeNames;}
+
+    public void setSurveyTypeNames(List<String> surveyTypeNames) {this.surveyTypeNames = surveyTypeNames;}
+
     public List<String> getVettedOccupationNames() {
         return vettedOccupationNames;
     }
@@ -370,6 +409,15 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setEnglishSpokenLevel(String englishSpokenLevel) {
         this.englishSpokenLevel = englishSpokenLevel;
+    }
+
+    @Nullable
+    public SavedList getExclusionList() {
+        return exclusionList;
+    }
+
+    public void setExclusionList(@Nullable SavedList exclusionList) {
+        this.exclusionList = exclusionList;
     }
 
     public String getOtherWrittenLevel() {

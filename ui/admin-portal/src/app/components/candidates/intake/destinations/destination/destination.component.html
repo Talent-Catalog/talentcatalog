@@ -29,27 +29,17 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            [id]="'destinationInterest'+myRecordIndex"
-            [formControlName]="'destinationInterest'">
-      <option *ngFor="let opt of destInterestOptions"
-              [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select [id]="'destinationInterest'+myRecordIndex" [formControlName]="'destinationInterest'" (clear)="setNoResponse('destinationInterest')"
+               [items]="destInterestOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
   <div  *ngIf="interest === 'Yes' || interest === 'Unsure'">
     <div class="form-group">
       <label [for]="'destinationFamily'+myRecordIndex">Do you have family in {{country.name}} and if so what is the closest relative?</label>
-      <select class="form-control"
-              [id]="'destinationFamily'+myRecordIndex"
-              [formControlName]="'destinationFamily'">
-        <option *ngFor="let opt of destFamilyOptions"
-                [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
+      <ng-select [id]="'destinationFamily'+myRecordIndex" [formControlName]="'destinationFamily'" (clear)="setNoResponse('destinationFamily')"
+                 [items]="destFamilyOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     </div>
     <div  *ngIf="showLocation()">
       <div class="form-group">

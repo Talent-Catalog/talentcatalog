@@ -18,8 +18,6 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
-import {EnumOption, enumOptions} from '../../../../util/enum';
-import {IeltsScore} from '../../../../model/candidate';
 
 @Component({
   selector: 'app-lang-assessment',
@@ -28,7 +26,8 @@ import {IeltsScore} from '../../../../model/candidate';
 })
 export class LangAssessmentComponent extends IntakeComponentBase implements OnInit {
 
-  public langAssessmentScore: EnumOption[] = enumOptions(IeltsScore);
+  errorMsg: string;
+  regexpIeltsScore: RegExp;
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -39,6 +38,8 @@ export class LangAssessmentComponent extends IntakeComponentBase implements OnIn
       langAssessment: [this.candidateIntakeData?.langAssessment],
       langAssessmentScore: [this.candidateIntakeData?.langAssessmentScore],
     });
+    this.regexpIeltsScore = new RegExp('^([0-8](\\.5)?$)|(^9$)');
+    this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only."
   }
 
 }

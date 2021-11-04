@@ -34,12 +34,10 @@
     <label for="langAssessmentScore">
       Estimated IELTS score
     </label>
-    <select class="form-control"
-            id="langAssessmentScore" [formControlName]="'langAssessmentScore'">
-      <option *ngFor="let opt of langAssessmentScore" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <app-ielts-score-validation
+      id="langAssessmentScore"
+      [control]="form.controls.langAssessmentScore">
+    </app-ielts-score-validation>
   </div>
 </form>
 

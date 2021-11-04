@@ -14,14 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Language} from './language';
 import {SavedSearchJoin} from './saved-search';
 
 export interface SearchCandidateRequest {
   simpleQueryString?: string;
   keyword?: string;
   gender?: string;
-  statuses?: string;
+  statuses?: string[];
   occupationIds?: number[];
   orProfileKeyword?: string;
   verifiedOccupationIds?: number[];
@@ -31,7 +30,7 @@ export interface SearchCandidateRequest {
   countryIds?: number[];
   englishMinWrittenLevel?: number;
   englishMinSpokenLevel?: number;
-  otherLanguage?: Language;
+  otherLanguageId?: number;
   otherMinWrittenLevel?: number;
   otherMinSpokenLevel?: number;
   lastModifiedFrom?: string;
@@ -42,6 +41,7 @@ export interface SearchCandidateRequest {
   maxAge?: number;
   minEducationLevel?: number;
   educationMajorIds?: number[];
+  surveyTypeIds?: number[];
   countryNames?: string[];
   nationalityNames?: string[];
   vettedOccupationNames?: string[];
@@ -54,4 +54,5 @@ export interface SearchCandidateRequest {
   minEducationLevelName?: string;
   includeDraftAndDeleted?: boolean;
   searchJoins?: SavedSearchJoin[];
+  exclusionListId?: number;
 }

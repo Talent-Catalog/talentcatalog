@@ -20,6 +20,7 @@
 
 export const environment = {
   production: false,
+  publishUrl: 'http://localhost:8080/published',
   apiUrl: 'http://localhost:8080/api/admin',
   systemApiUrl: 'http://localhost:8080/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/dev.files.tbbtalent.org'

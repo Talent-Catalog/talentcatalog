@@ -15,12 +15,11 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {enumKeysToEnumOptions, enumMultiSelectSettings, EnumOption, enumOptions} from '../../../../util/enum';
+import {enumKeysToEnumOptions, EnumOption, enumOptions} from '../../../../util/enum';
 import {LeftHomeReason} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
-import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-left-home-reason',
@@ -28,7 +27,6 @@ import {IDropdownSettings} from "ng-multiselect-dropdown";
   styleUrls: ['./left-home-reason.component.scss']
 })
 export class LeftHomeReasonComponent extends IntakeComponentBase implements OnInit {
-  public dropdownSettings: IDropdownSettings = enumMultiSelectSettings;
   public leftHomeReasonOptions: EnumOption[] = enumOptions(LeftHomeReason);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
@@ -40,7 +38,7 @@ export class LeftHomeReasonComponent extends IntakeComponentBase implements OnIn
       enumKeysToEnumOptions(this.candidateIntakeData?.leftHomeReasons, LeftHomeReason);
     this.form = this.fb.group({
       leftHomeReasons: [options],
-      leftHomeOther: [this.candidateIntakeData?.leftHomeOther]
+      leftHomeNotes: [this.candidateIntakeData?.leftHomeNotes]
     });
   }
 

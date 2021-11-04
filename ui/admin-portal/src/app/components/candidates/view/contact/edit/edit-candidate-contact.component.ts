@@ -18,10 +18,10 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from '../../../../../services/candidate.service';
-import {Candidate} from '../../../../../model/candidate';
-import {NationalityService} from '../../../../../services/nationality.service';
+import {Candidate, Gender} from '../../../../../model/candidate';
 import {CountryService} from '../../../../../services/country.service';
 import {generateYearArray} from '../../../../../util/year-helper';
+import {EnumOption, enumOptions} from "../../../../../util/enum";
 
 @Component({
   selector: 'app-edit-candidate-contact',
@@ -35,6 +35,7 @@ export class EditCandidateContactComponent implements OnInit {
 
   candidateForm: FormGroup;
 
+  genderOptions: EnumOption[] = enumOptions(Gender);
   nationalities = [];
   countries = [];
   years = [];
@@ -45,7 +46,6 @@ export class EditCandidateContactComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private candidateService: CandidateService,
-              private nationalityService: NationalityService,
               private countryService: CountryService ) {
   }
 
@@ -66,7 +66,7 @@ export class EditCandidateContactComponent implements OnInit {
     );
 
     /*load the nationalities */
-    this.nationalityService.listNationalities().subscribe(
+    this.countryService.listCountries().subscribe(
       (response) => {
         this.nationalities = response;
       },
@@ -83,6 +83,7 @@ export class EditCandidateContactComponent implements OnInit {
         gender: [candidate.gender],
         address1: [candidate.address1],
         city: [candidate.city],
+        state: [candidate.state],
         countryId: [candidate.country ? candidate.country.id : null, Validators.required],
         yearOfArrival: [candidate.yearOfArrival],
         phone: [candidate.phone],
@@ -90,6 +91,8 @@ export class EditCandidateContactComponent implements OnInit {
         email: [candidate.user.email],
         dob: [candidate.dob],
         nationalityId: [candidate.nationality ? candidate.nationality.id : null, Validators.required],
+        externalId: [candidate.externalId ? candidate.externalId : null],
+        externalIdSource: [candidate.externalIdSource ? candidate.externalIdSource : null],
       });
       this.loading = false;
     });

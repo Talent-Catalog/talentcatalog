@@ -16,25 +16,16 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
-import {
-  Candidate,
-  UpdateCandidateStatusInfo,
-  UpdateCandidateStatusRequest
-} from '../../../model/candidate';
+import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgbModal, NgbTabChangeEvent} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
 import {AuthService} from '../../../services/auth.service';
 import {User} from '../../../model/user';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {ListItem} from 'ng-multiselect-dropdown/multiselect.model';
-import {
-  IHasSetOfCandidates,
-  SavedList,
-  SearchSavedListRequest
-} from '../../../model/saved-list';
+import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
@@ -46,6 +37,7 @@ import {environment} from '../../../../environments/environment';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
 import {CandidateFieldService} from "../../../services/candidate-field.service";
+import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-view-candidate',
@@ -58,7 +50,9 @@ export class ViewCandidateComponent implements OnInit {
 
   activeTabId: string;
   loading: boolean;
+  savingList: boolean;
   loadingError: boolean;
+  selectDropdownText: boolean = true;
   error;
   candidate: Candidate;
   mainColWidth = 8;
@@ -71,15 +65,6 @@ export class ViewCandidateComponent implements OnInit {
   attachments: CandidateAttachment[];
   cvs: CandidateAttachment[];
   s3BucketUrl = environment.s3BucketUrl;
-
-  /* MULTI SELECT */
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: true,
-    singleSelection: false,
-    allowSearchFilter: true
-  };
 
   constructor(private candidateService: CandidateService,
               private savedListService: SavedListService,
@@ -131,6 +116,7 @@ export class ViewCandidateComponent implements OnInit {
     const request: SearchSavedListRequest = {
       owned: true,
       shared: true,
+      global: true,
       fixed: false
     };
 
@@ -149,8 +135,6 @@ export class ViewCandidateComponent implements OnInit {
       }
     );
   }
-
-
 
   deleteCandidate() {
     const modal = this.modalService.open(DeleteCandidateComponent);
@@ -220,85 +204,12 @@ export class ViewCandidateComponent implements OnInit {
       );
   }
 
-  onItemSelect($event: ListItem) {
-    const savedListId: number = +$event.id;
-    this.addCandidateToList(savedListId, false);
-  }
-
-  onItemDeSelect($event: ListItem) {
-    const savedListId: number = +$event.id;
-    this.removeCandidateFromList(savedListId);
-  }
-
-  onSelectAll($event: Array<ListItem>) {
-    this.setCandidateLists(this.lists);
-  }
-
-  onDeSelectAll($event: Array<ListItem>) {
-    this.setCandidateLists(null);
-  }
-
-  onNewList() {
-    const modal = this.modalService.open(CreateUpdateListComponent);
-    modal.result
-      .then((savedList: SavedList) => {
-        this.addCandidateToList(savedList.id, true);
-      })
-      .catch(() => { /* Isn't possible */
-      });
-  }
-
-  private addCandidateToList(savedListId: number, reload: boolean) {
-    const request: IHasSetOfCandidates = {
-      candidateIds: [this.candidate.id]
-    };
-    this.savedListCandidateService.merge(savedListId, request).subscribe(
-          () => {
-            if (reload) {
-              this.loadLists();
-            }
-          },
-          (error) => {
-            this.error = error;
-          }
-    );
-  }
-
-  private setCandidateLists(lists: SavedList[]) {
-    const ids: number[] = [];
-    if (lists !== null && lists.length > 0) {
-      for (const savedList of lists) {
-        ids.push(savedList.id);
-      }
-    }
-    this.candidateSavedListService.replace(this.candidate.id,
-      {savedListIds: ids})
-      .subscribe(
-        () => {},
-        (error) => {
-          this.error = error;
-        }
-      );
-  }
-
-  private removeCandidateFromList(savedListId: number) {
-    const request: IHasSetOfCandidates = {
-      candidateIds: [this.candidate.id]
-    };
-    this.savedListCandidateService.remove(savedListId, request).subscribe(
-          () => {},
-          (error) => {
-            this.error = error;
-          }
-    );
-  }
-
   private selectDefaultTab() {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
     this.activeTabId = defaultActiveTabID;
   }
 
-  onTabChanged(event: NgbTabChangeEvent) {
+  onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
   }
 
@@ -319,4 +230,102 @@ export class ViewCandidateComponent implements OnInit {
   isAnAdmin(): boolean {
     return this.candidateFieldService.isAnAdmin();
   }
+
+  /*
+    Methods for ng-select list selection
+   */
+  onItemSelect($event: ListItem) {
+    const savedListId: number = +$event.id;
+    this.addCandidateToList(savedListId, false);
+  }
+
+  onItemDeSelect($event: SavedList) {
+    const savedListId: number = +$event.id;
+    const deleteCandidateListModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteCandidateListModal.componentInstance.message =
+      'Are you sure you want to remove ' + this.candidate.user.firstName + ' ' + this.candidate.user.lastName +
+      ' from the list ' + $event.name + ' ?';
+
+    deleteCandidateListModal.result
+      .then((result) => {
+        this.removeCandidateFromList(savedListId);
+      })
+      .catch(() => { /* Isn't possible */ });
+
+  }
+
+  compareLists = (item, selected) => {
+    return item.id === selected.id;
+  };
+
+  onNewList() {
+    const modal = this.modalService.open(CreateUpdateListComponent);
+    modal.result
+      .then((savedList: SavedList) => {
+        this.addCandidateToList(savedList.id, true);
+      })
+      .catch(() => { /* Isn't possible */
+      });
+  }
+
+  private addCandidateToList(savedListId: number, reload: boolean) {
+    this.savingList = true;
+    const request: IHasSetOfCandidates = {
+      candidateIds: [this.candidate.id]
+    };
+    this.savedListCandidateService.merge(savedListId, request).subscribe(
+      () => {
+        this.savingList = false;
+        if (reload) {
+          this.loadLists();
+        }
+      },
+      (error) => {
+        this.savingList = false;
+        this.error = error;
+      }
+    );
+  }
+
+  private setCandidateLists(lists: SavedList[]) {
+    this.savingList = true;
+    const ids: number[] = [];
+    if (lists !== null && lists.length > 0) {
+      for (const savedList of lists) {
+        ids.push(savedList.id);
+      }
+    }
+    this.candidateSavedListService.replace(this.candidate.id,
+      {savedListIds: ids})
+      .subscribe(
+        () => {
+          this.savingList = false;
+        },
+        (error) => {
+          this.error = error;
+          this.savingList = false;
+        }
+      );
+  }
+
+  private removeCandidateFromList(savedListId: number) {
+    this.savingList = true;
+    const request: IHasSetOfCandidates = {
+      candidateIds: [this.candidate.id]
+    };
+    this.savedListCandidateService.remove(savedListId, request).subscribe(
+      () => {
+        this.selectedLists = this.selectedLists.filter(list => list.id !== savedListId)
+        this.savingList = false;
+      },
+      (error) => {
+        this.savingList = false;
+        this.error = error;
+      })
+  }
+
 }

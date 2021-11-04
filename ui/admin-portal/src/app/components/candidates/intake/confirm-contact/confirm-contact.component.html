@@ -15,7 +15,7 @@
   -->
 
 <div class="row">
-  <div class="col-4">
+  <div class="col-3">
     <app-fixed-input
       [question]="'Full name'"
       [answer]="candidate.user?.firstName + ' ' + candidate.user?.lastName">
@@ -29,9 +29,9 @@
       [answer]="date">
     </app-fixed-input>
   </div>
-  <div class="col-4">
+  <div class="col-3">
     <app-fixed-input
-      [question]="'Nationality'"
+      [question]="'Country of Nationality'"
       [answer]="candidate.nationality?.name">
     </app-fixed-input>
     <app-fixed-input
@@ -43,7 +43,21 @@
       [answer]="candidate.whatsapp">
     </app-fixed-input>
   </div>
-  <div class="col-4">
+  <div class="col-3">
+    <app-fixed-input
+      [question]="'UNHCR Registered'"
+      [answer]="candidate?.unhcrRegistered">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'UNHCR Number'"
+      [answer]="candidate?.unhcrNumber">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'UNHCR Consent'"
+      [answer]="candidate?.unhcrConsent">
+    </app-fixed-input>
+  </div>
+  <div class="col-3">
     <app-fixed-input
       [question]="'Email'"
       [answer]="candidate.user?.email">

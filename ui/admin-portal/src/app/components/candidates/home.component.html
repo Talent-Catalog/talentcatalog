@@ -14,26 +14,23 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<ngb-tabset [activeId]="activeTabId" (tabChange)="onTabChanged($event)">
+<nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
   <ng-container *ngFor="let typeInfo of savedSearchTypeInfos">
-    <ngb-tab [id]="'type:' + SavedSearchType[typeInfo.savedSearchType]" [title]="typeInfo.title">
-      <ng-template ngbTabContent>
+    <ng-container ngbNavItem="type:{{SavedSearchType[typeInfo.savedSearchType]}}">
+      <a ngbNavLink>{{typeInfo.title}}</a>
+
+      <ng-template ngbNavContent>
 
         <!-- Saved Searches with subtypes -->
         <div *ngIf="savedSearchTypeSubInfos" class="no-gutters">
-          <form [formGroup]="categoryForm" class="col-sm-4 pt-3">
-<!--            <label for="savedSearchSubtype">Category</label>-->
-            <select class="form-control" id="savedSearchSubtype" formControlName="savedSearchSubtype"
-                    (change)="onSavedSearchSubtypeChange($event)">
-              <option *ngFor="let subtypeInfo of savedSearchTypeSubInfos" [value]="subtypeInfo.savedSearchSubtype">{{subtypeInfo.title}}</option>
-            </select>
-          </form>
           <app-browse-candidate-sources
             [sourceType]="CandidateSourceType.SavedSearch"
             [searchBy]="SearchBy.type"
             [savedSearchType]="typeInfo.savedSearchType"
             [savedSearchSubtype]="selectedSavedSearchSubtype"
+            [savedSearchTypeSubInfos]="savedSearchTypeSubInfos"
+            (subtypeChange)="onSavedSearchSubtypeChange($event)"
           >
           </app-browse-candidate-sources>
         </div>
@@ -49,60 +46,77 @@
           </app-browse-candidate-sources>
         </div>
       </ng-template>
-    </ngb-tab>
+    </ng-container>
   </ng-container>
 
-  <ngb-tab id="AllSearches" title="All">
-    <ng-template ngbTabContent>
+  <ng-container ngbNavItem="AllSearches">
+    <a ngbNavLink>All</a>
+    <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedSearch"
         [searchBy]="SearchBy.all">
       </app-browse-candidate-sources>
     </ng-template>
-  </ngb-tab>
+  </ng-container>
 
-  <ngb-tab id="MyWatchedSearches" title="My Watches">
-    <ng-template ngbTabContent>
+  <ng-container ngbNavItem="MyWatchedSearches">
+    <a ngbNavLink>My Watches</a>
+    <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedSearch"
         [searchBy]="SearchBy.watched" >
       </app-browse-candidate-sources>
     </ng-template>
-  </ngb-tab>
+  </ng-container>
 
-  <ngb-tab id="MySearches" title="My Searches">
-    <ng-template ngbTabContent>
+  <ng-container ngbNavItem="MySearches">
+    <a ngbNavLink>My Searches</a>
+    <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedSearch"
         [searchBy]="SearchBy.mine" >
       </app-browse-candidate-sources>
     </ng-template>
-  </ngb-tab>
+  </ng-container>
 
-  <ngb-tab id="SearchesSharedWithMe" title="Searches Shared With Me">
-    <ng-template ngbTabContent>
+  <ng-container ngbNavItem="SearchesSharedWithMe">
+    <a ngbNavLink>Searches Shared With Me</a>
+    <ng-template ngbNavContent>
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedSearch"
           [searchBy]="SearchBy.sharedWithMe">
         </app-browse-candidate-sources>
     </ng-template>
-  </ngb-tab>
+  </ng-container>
 
-  <ngb-tab id="MyLists" title="My Lists">
-    <ng-template ngbTabContent>
+  <ng-container ngbNavItem="MyLists">
+    <a ngbNavLink>My Lists</a>
+    <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedList"
         [searchBy]="SearchBy.mine" >
       </app-browse-candidate-sources>
     </ng-template>
-  </ngb-tab>
+  </ng-container>
 
-  <ngb-tab id="ListsSharedWithMe" title="Lists Shared With Me">
-    <ng-template ngbTabContent>
+  <ng-container ngbNavItem="ListsSharedWithMe">
+    <a ngbNavLink>Lists Shared With Me</a>
+    <ng-template ngbNavContent>
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedList"
           [searchBy]="SearchBy.sharedWithMe">
         </app-browse-candidate-sources>
     </ng-template>
-  </ngb-tab>
-</ngb-tabset>
+  </ng-container>
+
+  <ng-container ngbNavItem="PublicLists">
+    <a ngbNavLink>Lists With External Links</a>
+    <ng-template ngbNavContent>
+        <app-browse-candidate-sources
+          [sourceType]="CandidateSourceType.SavedList"
+          [searchBy]="SearchBy.externalLink">
+        </app-browse-candidate-sources>
+    </ng-template>
+  </ng-container>
+</nav>
+<div [ngbNavOutlet]="nav" class="mt-2"></div>

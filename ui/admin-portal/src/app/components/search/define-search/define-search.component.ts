@@ -16,12 +16,10 @@
 
 import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 
-import {Candidate, CandidateStatus} from '../../../model/candidate';
+import {Candidate, CandidateStatus, Gender} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
-import {Nationality} from '../../../model/nationality';
-import {NationalityService} from '../../../services/nationality.service';
 import {Language} from '../../../model/language';
 import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
@@ -31,7 +29,6 @@ import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {forkJoin, Subscription} from 'rxjs';
 import {JoinSavedSearchComponent} from '../join-search/join-saved-search.component';
 import {EducationLevel} from '../../../model/education-level';
@@ -62,12 +59,12 @@ import {canEditSource} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
-import {
-  enumKeysToEnumOptions,
-  enumMultiSelectSettings,
-  EnumOption,
-  enumOptions
-} from "../../../util/enum";
+import {enumKeysToEnumOptions, EnumOption, enumOptions} from "../../../util/enum";
+import {SearchCandidateRequest} from "../../../model/search-candidate-request";
+import {SurveyTypeService} from "../../../services/survey-type.service";
+import {SurveyType} from "../../../model/survey-type";
+import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
+import {SavedListService} from "../../../services/saved-list.service";
 
 @Component({
   selector: 'app-define-search',
@@ -99,38 +96,22 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   sortField = 'id';
   sortDirection = 'DESC';
 
-  /* MULTI SELECT */
-  multiSelectSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    singleSelection: false,
-    selectAllText: 'Select All',
-    unSelectAllText: 'Deselect All',
-    allowSearchFilter: true
-  };
-
-  /* Education Level Select */
-  educationLevelSettings: IDropdownSettings = {
-    idField: 'level',
-    textField: 'name',
-    singleSelection: true,
-    allowSearchFilter: true
-  };
-
-  /* DATA */
-  nationalities: Nationality[];
+  /* DATA - these are all drop down options for each select field*/
+  nationalities: Country[];
   countries: Country[];
   languages: Language[];
+  lists: SavedList[] = [];
   educationLevels: EducationLevel[];
   educationMajors: EducationMajor[];
   verifiedOccupations: Occupation[];
   candidateOccupations: Occupation[];
   languageLevels: LanguageLevel[];
+  surveyTypes: SurveyType[];
 
   notElastic;
 
-  statusDropdownSettings: IDropdownSettings = enumMultiSelectSettings;
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
+  genderOptions: EnumOption[] = enumOptions(Gender);
 
   selectedCandidate: Candidate;
   englishLanguageModel: LanguageLevelFormControlModel;
@@ -142,18 +123,19 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(private http: HttpClient, private fb: FormBuilder,
               private candidateService: CandidateService,
-              private nationalityService: NationalityService,
               private countryService: CountryService,
               private languageService: LanguageService,
               private savedSearchService: SavedSearchService,
               private educationLevelService: EducationLevelService,
               private educationMajorService: EducationMajorService,
               private candidateOccupationService: CandidateOccupationService,
+              private surveyTypeService: SurveyTypeService,
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
               private route: ActivatedRoute,
               private router: Router,
+              private savedListService: SavedListService,
               private authService: AuthService) {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
@@ -182,8 +164,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       timezone: moment.tz.guess(),
       minAge: [null],
       maxAge: [null],
-      minEducationLevelObj: [[]],
+      minEducationLevel: [],
       educationMajorIds: [[]],
+      surveyTypeIds: [[]],
       searchJoinRequests: this.fb.array([]),
       //for display purposes
       occupations: [[]],
@@ -192,6 +175,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       educationMajors: [[]],
       nationalities: [[]],
       statusesDisplay: [[]],
+      surveyTypes: [[]],
+      exclusionListId: [null],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
 
@@ -202,16 +187,21 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.notElastic = {
       readonly: this.elastic()
     }
+    this.loading = true;
+    this.error = null;
 
+    const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
     forkJoin({
-      'nationalities': this.nationalityService.listNationalities(),
+      'lists': this.savedListService.search(request),
+      'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
       'languages': this.languageService.listLanguages(),
       'languageLevels': this.languageLevelService.listLanguageLevels(),
       'educationLevels': this.educationLevelService.listEducationLevels(),
       'majors': this.educationMajorService.listMajors(),
       'verifiedOccupation': this.candidateOccupationService.listVerifiedOccupations(),
-      'occupations': this.candidateOccupationService.listOccupations()
+      'occupations': this.candidateOccupationService.listOccupations(),
+      'surveyTypes': this.surveyTypeService.listSurveyTypes()
     }).subscribe(results => {
       this.loading = false;
       this.nationalities = results['nationalities'];
@@ -222,6 +212,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       this.educationMajors = results['majors'];
       this.verifiedOccupations = results['verifiedOccupation'];
       this.candidateOccupations = results['occupations'];
+      this.surveyTypes = results['surveyTypes'];
+      this.lists = results['lists'];
 
       const englishLanguageObj = this.languages.find(l => l.name.toLowerCase() === 'english');
       this.englishLanguageModel = Object.assign(emptyLanguageLevelFormControlModel, {languageId: englishLanguageObj.id || null});
@@ -301,8 +293,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     const request: SearchCandidateRequestPaged =
       this.getIdsMultiSelect(this.searchForm.value)
 
-    request.reviewStatusFilter = null;
-
     //A new search request has to clear page number. Old page number no longer
     //relevant with new search.
     request.pageNumber = 0;
@@ -332,12 +322,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       delete request.occupations;
     }
 
-    if (request.minEducationLevelObj != null
-      && request.minEducationLevelObj.length > 0) {
-      request.minEducationLevel = request.minEducationLevelObj[0].level;
-      delete request.minEducationLevelObj;
-    }
-
     if (request.educationMajors != null) {
       request.educationMajorIds = request.educationMajors.map(o => o.id);
       delete request.educationMajors;
@@ -346,6 +330,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     if (request.statusesDisplay != null) {
       request.statuses = request.statusesDisplay.map(s => s.value);
       delete request.statusesDisplay;
+    }
+
+    if (request.surveyTypes != null) {
+      request.surveyTypeIds = request.surveyTypes.map(s => s.id);
+      delete request.surveyTypes;
     }
 
     return request;
@@ -380,7 +369,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedBaseJoin = null;
 
     this.savedSearchService.load(id).subscribe(
-      //todo This is really a SearchCandidateRequest but typing it causes errors. What is it?
       (request) => {
         this.populateFormWithSavedSearch(request);
         this.loading = false;
@@ -464,14 +452,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       .catch(() => { });
   }
 
-  //todo This request is really a SearchCandidateRequest - but typing it introduces errors. What is it?
-  populateFormWithSavedSearch(request) {
+  populateFormWithSavedSearch(request: SearchCandidateRequest) {
     /* Do a blanket patch of all form fields */
     Object.keys(this.searchForm.controls).forEach(name => {
       this.searchForm.controls[name].patchValue(request[name]);
     });
 
-    // For the multiselects we have to set the corresponding id/name object
+    // For the multiselects we have to set the corresponding id/name object by searching for the
+    // values in the given search request in the complete set of drop down options for that field.
 
     /* STATUSES */
 
@@ -529,6 +517,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
         .filter(c => request.educationMajorIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['educationMajors'].patchValue(educationMajors);
+
+    /* SURVEY TYPES */
+    let surveyTypes = [];
+    if (request.surveyTypeIds && this.surveyTypes) {
+      surveyTypes = this.surveyTypes
+        .filter(c => request.surveyTypeIds.indexOf(c.id) !== -1);
+    }
+    this.searchForm.controls['surveyTypes'].patchValue(surveyTypes);
 
     /* OTHER LANGUAGE */
     this.otherLanguagePicker.patchModel({
@@ -640,5 +636,26 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   canChangeSearchRequest(): boolean {
     return canEditSource(this.savedSearch, this.authService)
+  }
+
+  public onSelectAll(options: any, formControl: any) {
+    this.searchForm.controls[formControl].patchValue(options);
+  }
+
+  public onClearAll(formControl: string) {
+    this.searchForm.controls[formControl].patchValue(null);
+  }
+
+  public getTooltip(formControlName: string) {
+    let tooltip: string = '';
+    const control = this.searchForm.controls[formControlName];
+    const item = control.value[0];
+    //If enum get the display text from value, else get name.
+    if (("value" in item && "displayText" in item)) {
+      control.value.forEach(i => tooltip += i.displayText + ', ');
+    } else {
+      control.value.forEach(i => tooltip += i.name + ', ');
+    }
+    return tooltip.slice(0, -2);
   }
 }

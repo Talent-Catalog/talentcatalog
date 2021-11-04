@@ -18,19 +18,15 @@ package org.tbbtalent.server.api.admin;
 
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.impl.SavedListServiceImpl;
+import org.tbbtalent.server.security.AuthService;
 
-@SpringBootTest
+//@SpringBootTest
 class SavedListAdminApiTest {
 
     @Autowired
@@ -44,17 +40,18 @@ class SavedListAdminApiTest {
     
     private SavedListAdminApi savedListAdminApi;
 
-    @BeforeEach
+//    @BeforeEach
     void initUseCase() {
         User testUser = userRepository.findByUsernameIgnoreCase("camerojo"); 
         
-        UserContext userContext = Mockito.mock(UserContext.class);
-        when(userContext.getLoggedInUser().orElse(null)).thenReturn(testUser);
+        AuthService authService = Mockito.mock(AuthService.class);
+        when(authService.getLoggedInUser().orElse(null)).thenReturn(testUser);
         
-        SavedListService savedListService = new SavedListServiceImpl(
-                candidateRepository, savedListRepository, null, null, userRepository, 
-                userContext);
-        savedListAdminApi = new SavedListAdminApi(savedListService, null, null);
+//        SavedListService savedListService = new SavedListServiceImpl(
+//                candidateRepository, null, savedListRepository, null, null, null,
+//            null, null, userRepository,
+//                authService);
+//        savedListAdminApi = new SavedListAdminApi(savedListService, null, null);
     }
 
 }

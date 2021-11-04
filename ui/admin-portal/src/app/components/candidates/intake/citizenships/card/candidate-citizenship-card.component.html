@@ -24,7 +24,7 @@
     <form [formGroup]="form">
       <div class="form-group">
         <div class="citizenship d-flex align-items-baseline justify-content-between">
-          <label [for]="'nationality'+myRecordIndex">Nationality</label>
+          <label [for]="'nationality'+myRecordIndex">Country of Citizenship</label>
           <div class="float-right d-flex align-items-center">
             <app-autosave-status
               [saving]="saving"
@@ -34,25 +34,20 @@
                 <i class="fas fa-trash"></i>
             </button>
           </div>
-
         </div>
-
-        <select class="form-control" [id]="'nationality'+myRecordIndex"
-                [formControlName]="'citizenNationalityId'">
-          <option *ngFor="let nationality of filteredNationalities" [value]="nationality.id">
-            {{nationality.name}}</option>
-        </select>
+        <ng-select [id]="'nationality'+myRecordIndex" [formControlName]="'citizenNationalityId'"
+                   [clearOnBackspace]="false" placeholder="Select">
+          <ng-option *ngFor="let nationality of filteredNationalities" [value]="nationality.id">
+            {{nationality.name}}</ng-option>
+        </ng-select>
       </div>
 
       <ng-container *ngIf="hasSelectedNationality">
         <div class="form-group">
           <label [for]="'hasPassport'+myRecordIndex">Passport?</label>
-          <select class="form-control"
-                  [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'">
-            <option *ngFor="let opt of hasPassportOptions" [value]="opt.value">
-              {{opt.displayText}}
-            </option>
-          </select>
+          <ng-select [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'" (clear)="setNoResponse('citizenHasPassport')"
+                     [items]="hasPassportOptions" [clearOnBackspace]="false"
+                     placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
         </div>
         <div *ngIf="hasPassport === 'ValidPassport'">
           <div class="form-group">

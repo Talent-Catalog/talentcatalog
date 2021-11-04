@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {UnhcrStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {NotRegisteredStatus, UnhcrStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -31,8 +31,9 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
   @Input() showAll: boolean = true;
 
   public unhcrRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
+  public unhcrConsentOptions: EnumOption[] = enumOptions(YesNo);
   public unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
-  public unhcrPermissionOptions: EnumOption[] = enumOptions(YesNo);
+  public NotRegisteredStatusOptions: EnumOption[] = enumOptions(NotRegisteredStatus);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -42,11 +43,11 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
     this.form = this.fb.group({
       unhcrRegistered: [this.candidateIntakeData?.unhcrRegistered],
       unhcrStatus: [this.candidateIntakeData?.unhcrStatus],
-      unhcrOldStatus: [this.candidateIntakeData?.unhcrOldStatus],
       unhcrNumber: [this.candidateIntakeData?.unhcrNumber],
       unhcrFile: [this.candidateIntakeData?.unhcrFile],
+      unhcrNotRegStatus: [this.candidateIntakeData?.unhcrNotRegStatus],
+      unhcrConsent: [this.candidateIntakeData?.unhcrConsent],
       unhcrNotes: [this.candidateIntakeData?.unhcrNotes],
-      unhcrPermission: [this.candidateIntakeData?.unhcrPermission],
     });
   }
 
@@ -58,13 +59,11 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
     return this.form.value?.unhcrRegistered;
   }
 
-  showUnhcrNumber(): boolean {
-    if (this.unhcrStatus === 'MandateRefugee' ||
-        this.unhcrStatus === 'RegisteredAsylum' ||
-        this.unhcrStatus === 'RegisteredStateless') {
-      return true;
-    } else {
+  get hasNotes(): boolean {
+    if (this.unhcrRegistered == null || this.unhcrRegistered === 'NoResponse') {
       return false;
+    } else {
+      return true;
     }
   }
 

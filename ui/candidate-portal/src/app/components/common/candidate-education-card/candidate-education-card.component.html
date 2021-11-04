@@ -19,9 +19,9 @@
           [disabled]="disabled"
           (click)="delete()">&times;</button>
 
-  <button class="btn btn-primary btn-card"
+  <button class="btn btn-primary btn-card pb-1"
           [disabled]="disabled"
-          (click)="edit()"><fa-icon icon="edit"></fa-icon></button>
+          (click)="edit()"><fa-icon icon="edit" size="xs"></fa-icon></button>
 </div>
 
 <p>{{'EDUCATIONTYPE.'+candidateEducation.educationType  | uppercase | translate}}</p>

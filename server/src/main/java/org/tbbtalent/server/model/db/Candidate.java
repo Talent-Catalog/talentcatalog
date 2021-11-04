@@ -5,17 +5,20 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.model.db;
 
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
@@ -24,9 +27,12 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 import javax.persistence.*;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -35,21 +41,37 @@ import java.util.Set;
 public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     private String candidateNumber;
-    
+
     @Transient
-    private Long contextSavedListId; 
-    
+    private Long contextSavedListId;
+
     private String phone;
     private String whatsapp;
+
     @Enumerated(EnumType.STRING)
+    @Nullable
     private Gender gender;
     private LocalDate dob;
     private String address1;
     private String city;
+    private String state;
     private Integer yearOfArrival;
     private String additionalInfo;
     private String candidateMessage;
     private String linkedInLink;
+
+    @Nullable
+    private String shareableNotes;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shareable_cv_attachment_id")
+    private CandidateAttachment shareableCv;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shareable_doc_attachment_id")
+    private CandidateAttachment shareableDoc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_type_id")
@@ -62,16 +84,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     /**
      * ID of corresponding candidate record in Elasticsearch
-     * @see CandidateEs#getId() 
+     * @see CandidateEs#getId()
      */
     private String textSearchId;
 
     /**
-     * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that 
+     * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that
      * removing from the candidateSavedLists collection would automatically
-     * cascade down to delete the corresponding entry in the 
+     * cascade down to delete the corresponding entry in the
      * candidate_saved_list table.
-     * However we get Hibernate errors with that set up which it seems can only 
+     * However we get Hibernate errors with that set up which it seems can only
      * be fixed by setting CascadeType.MERGE.
      * <p/>
      * See
@@ -79,7 +101,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * <p/>
      * This means that we have to manually manage all deletions. That has been
      * moved into {@link CandidateSavedListService} which is used to manage all
-     * those deletions, also making sure that the corresponding 
+     * those deletions, also making sure that the corresponding
      * candidateSavedLists collections are kept up to date.
      */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
@@ -95,7 +117,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nationality_id")
-    private Nationality nationality;
+    private Country nationality;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -105,15 +127,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateOccupation> candidateOccupations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OrderBy("yearCompleted DESC")
     private List<CandidateEducation> candidateEducations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateLanguage> candidateLanguages;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OrderBy("startDate DESC")
     private List<CandidateJobExperience> candidateJobExperiences;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OrderBy("dateCompleted DESC")
     private List<CandidateCertification> candidateCertifications;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
@@ -133,13 +158,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String migrationNationality;
 
     /**
-     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
      */
     @Nullable
     private String folderlink;
 
     /**
-     * Url link to corresponding Salesforce Contact record, if one exists. 
+     * Url link to corresponding Salesforce Contact record, if one exists.
      */
     @Nullable
     private String sflink;
@@ -154,13 +179,30 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * This can be set based on a user's selection associated with a saved
      * search, as recorded in the associated selection list for that user
      * and saved search.
-     * @see SavedSearchAdminApi#selectCandidate   
+     * @see SavedSearchAdminApi#selectCandidate
      */
     @Transient
     private boolean selected = false;
 
+    /**
+     * Url link to a Candidate opportunity for this candidate.
+     * Retrieved from Salesforce when candidate is displayed as a member of a Saved List associated
+     * with a job opportunity. This is the candidate's opportunity associated with that job.
+     */
+    @Transient
+    @Nullable
+    private String sfOpportunityLink;
+
+    /**
+     * Candidate opportunity stage. Retrieved from Salesforce when candidate is displayed as
+     * a member of a Saved List associated with a job opportunity.
+     */
+    @Transient
+    @Nullable
+    private String stage;
+
     /*
-              Intake Fields    
+              Intake Fields
      */
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
@@ -177,7 +219,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateVisaCheck> candidateVisaChecks;
-    
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure returnedHome;
@@ -191,7 +233,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure visaIssues;
-    
+
     @Nullable
     private String visaIssuesNotes;
 
@@ -242,15 +284,21 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNoUnsure workPermitDesired;
 
+    @Nullable
+    private String workPermitDesiredNotes;
+
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNoUnemployed workDesired;
+    private YesNoUnemployedOther workDesired;
 
     @Nullable
     private String workDesiredNotes;
 
     @Nullable
     private Long hostEntryYear;
+
+    @Nullable
+    private String hostEntryYearNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -260,33 +308,36 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private UnhcrStatus unhcrStatus;
 
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private UnhcrStatus unhcrOldStatus;
-
     @Nullable
     private String unhcrNumber;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo unhcrConsent;
+
     @Nullable
     private Long unhcrFile;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private NotRegisteredStatus unhcrNotRegStatus;
 
     @Nullable
     private String unhcrNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo unhcrPermission;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
     private YesNoUnsure unrwaRegistered;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private UnrwaStatus unrwaStatus;
 
     @Nullable
     private String unrwaNumber;
+
+    @Nullable
+    private Long unrwaFile;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private NotRegisteredStatus unrwaNotRegStatus;
 
     @Nullable
     private String unrwaNotes;
@@ -303,13 +354,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private String destLimitNotes;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private YesNo destJob;
-
-    @Nullable
-    private String destJobNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -336,13 +380,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNo workAbroad;
 
-    @Convert(converter = ModelConverter.class)
-    @Nullable
-    private List<Long> workAbroadCountryIds;
-
-    @Nullable
-    private Long workAbroadYrs;
-
     @Nullable
     private String workAbroadNotes;
 
@@ -358,7 +395,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<LeftHomeReason> leftHomeReasons;
 
     @Nullable
-    private String leftHomeOther;
+    private String leftHomeNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -380,6 +417,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private MaritalStatus maritalStatus;
+
+    @Nullable
+    private String maritalStatusNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -419,9 +459,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private IeltsStatus partnerIelts;
 
-    @Enumerated(EnumType.STRING)
     @Nullable
-    private IeltsScore partnerIeltsScore;
+    private String partnerIeltsScore;
 
     @Nullable
     private Long partnerIeltsYr;
@@ -429,7 +468,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_citizenship_id")
     @Nullable
-    private Nationality partnerCitizenship;
+    private Country partnerCitizenship;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -457,10 +496,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo hostBorn;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
     private YesNo canDrive;
 
     @Enumerated(EnumType.STRING)
@@ -478,26 +513,84 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String langAssessment;
 
-    @Enumerated(EnumType.STRING)
     @Nullable
-    private IeltsScore langAssessmentScore;
+    private String langAssessmentScore;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "birth_country_id")
     @Nullable
     private Country birthCountry;
 
+    @Nullable
+    private BigDecimal ieltsScore;
+
+    @Formula("(SELECT COUNT(cd.id) FROM candidate c inner join candidate_dependant cd on c.id = cd.candidate_id where c.id = id group by c.id)")
+    private Long numberDependants;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo healthIssues;
+
+    @Nullable
+    private String healthIssuesNotes;
+
+    @Nullable
+    private String externalId;
+
+    @Nullable
+    private String externalIdSource;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo covidVaccinated;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private VaccinationStatus covidVaccinatedStatus;
+
+    @Nullable
+    private LocalDate covidVaccinatedDate;
+
+    @Nullable
+    private String covidVaccineName;
+
+    @Nullable
+    private String covidVaccineNotes;
+
     public Candidate() {
     }
 
     //todo The "caller" is the user used to set the createdBy and updatedBy fields
     //Seems to always be the same as user - so not sure if it has any point.
+
     public Candidate(User user, String phone, String whatsapp, User caller) {
         super(caller);
         this.user = user;
         this.phone = phone;
         this.whatsapp = whatsapp;
         this.status = CandidateStatus.draft;
+    }
+
+    @Nullable
+    public Object extractField(String exportField)
+        throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Object obj;
+        try {
+            obj = PropertyUtils.getProperty(this, exportField);
+        } catch (NestedNullException ex) {
+            //Return null if any value in nested reference is null.
+            //For example user.email should return null if user is null.
+            obj = null;
+        }
+        if (obj instanceof User) {
+            obj = ((User) obj).getDisplayName();
+        } else if (obj != null && "candidateNumber".equals(exportField)) {
+            //Convert candidateNumber to a number
+            obj = Long.parseLong((String) obj);
+        } else if (obj instanceof Enum) {
+            obj = ((Enum<?>) obj).name();
+        }
+        return obj;
     }
 
     public String getCandidateNumber() {
@@ -531,20 +624,139 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return contextNote;
     }
 
+    @Transient
+    @Nullable
+    public CandidateAttachment getListShareableCv() {
+        CandidateAttachment listShareableCv = null;
+        if (contextSavedListId != null) {
+            for (CandidateSavedList csl : candidateSavedLists) {
+                if (contextSavedListId.equals(csl.getSavedList().getId())) {
+                    listShareableCv = csl.getShareableCv();
+                    break;
+                }
+            }
+        }
+        return listShareableCv;
+    }
+
+    @Transient
+    @Nullable
+    public CandidateAttachment getListShareableDoc() {
+        CandidateAttachment listShareableDoc = null;
+        if (contextSavedListId != null) {
+            for (CandidateSavedList csl : candidateSavedLists) {
+                if (contextSavedListId.equals(csl.getSavedList().getId())) {
+                    listShareableDoc = csl.getShareableDoc();
+                    break;
+                }
+            }
+        }
+        return listShareableDoc;
+    }
+
     /**
-     * Candidates can have special values associated with a particular 
+     * Used alongside @Formula for updating the elasticsearch record of number of
+     * dependants.
+     * @return Long of total up-to-date number of dependants belonging to Candidate.
+     */
+    @Transient
+    public Long getNumberDependants() {
+        if (candidateDependants != null && !candidateDependants.isEmpty()) {
+            Long numberDeps = 0L;
+            for (CandidateDependant cd : candidateDependants) {
+                numberDeps ++;
+            }
+            return numberDeps;
+        }
+        return null;
+    }
+
+    public String getOccupationSummary() {
+        StringBuilder s = new StringBuilder();
+        for (CandidateOccupation occupation : candidateOccupations) {
+            if (s.length() > 0) {
+                s.append(", ");
+            }
+            s.append(occupation.getOccupation().getName());
+        }
+        return s.toString();
+    }
+
+    public String getEnglishExamsSummary() {
+        StringBuilder s = new StringBuilder();
+        for (CandidateExam exam : candidateExams) {
+            if (s.length() > 0) {
+                s.append(", ");
+            }
+            String examType = exam.getExam().equals(Exam.Other) ? exam.getOtherExam() : exam.getExam().toString();
+            String examString;
+            if (examType != null) {
+                if (exam.getScore() != null) {
+                    examString = examType + ": " + exam.getScore();
+                } else {
+                    examString = examType;
+                }
+                s.append(examString);
+            }
+        }
+        return s.toString();
+    }
+
+    public String getEducationsSummary() {
+        StringBuilder s = new StringBuilder();
+        for (CandidateEducation edu : candidateEducations) {
+            if (s.length() > 0) {
+                s.append(", ");
+            }
+            String eduString;
+            if (edu.getEducationType() != null) {
+                if (edu.getEducationMajor() != null) {
+                    eduString = edu.getEducationType().toString() + " in " + edu.getEducationMajor().getName();
+                } else {
+                    if (edu.getCourseName() != null) {
+                        eduString = edu.getEducationType().toString() + " in " + edu.getCourseName();
+                    } else {
+                        eduString = edu.getEducationType().toString();
+                    }
+                }
+            } else {
+                eduString = edu.getEducationMajor().getName() != null ? edu.getEducationMajor().getName() : edu.getCourseName();
+            }
+            s.append(eduString);
+        }
+        return s.toString();
+    }
+
+    public String getCertificationsSummary() {
+        StringBuilder s = new StringBuilder();
+        for (CandidateCertification cert : candidateCertifications) {
+            if (s.length() > 0) {
+                s.append(", ");
+            }
+            String certString = cert.getName() + ": " + cert.getInstitution() + " " + cert.getDateCompleted().getYear();
+            s.append(certString);
+        }
+        return s.toString();
+    }
+
+    public String getTcLink() {
+        return "https://tbbtalent.org/admin-portal/candidate/" + candidateNumber;
+    }
+
+    /**
+     * Candidates can have special values associated with a particular
      * savedList.
      * These values are stored in {@link CandidateSavedList}.
      * Setting this value to refer to a particular SavedList will result in
-     * this Candidate object returning attritbutes correspondint that list.
+     * this Candidate object returning attributes corresponding to that list.
      * <p/>
      * For example, see {@link #getContextNote()}
-     * 
+     *
      * @param contextSavedListId The id of the SavedList whose context we want
      */
     @Transient
     public void setContextSavedListId(@Nullable Long contextSavedListId) {
-        this.contextSavedListId = contextSavedListId; 
+        this.contextSavedListId = contextSavedListId;
     }
 
     public String getPhone() {
@@ -563,11 +775,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.whatsapp = whatsapp;
     }
 
-    public Gender getGender() {
+    public @Nullable Gender getGender() {
         return gender;
     }
 
-    public void setGender(Gender gender) {
+    public void setGender(@Nullable Gender gender) {
         this.gender = gender;
     }
 
@@ -587,13 +799,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.address1 = address1;
     }
 
-    public String getCity() {
-        return city;
-    }
+    public String getCity() {return city;}
 
     public void setCity(String city) {
         this.city = city;
     }
+
+    public String getState() {return state;}
+
+    public void setState(String state) {this.state = state;}
 
     public Integer getYearOfArrival() {
         return yearOfArrival;
@@ -661,11 +875,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.country = country;
     }
 
-    public Nationality getNationality() {
+    public Country getNationality() {
         return nationality;
     }
 
-    public void setNationality(Nationality nationality) {
+    public void setNationality(Country nationality) {
         this.nationality = nationality;
     }
 
@@ -895,9 +1109,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkPermitDesired(@Nullable YesNoUnsure workPermitDesired) { this.workPermitDesired = workPermitDesired; }
 
     @Nullable
-    public YesNoUnemployed getWorkDesired() { return workDesired; }
+    public String getWorkPermitDesiredNotes() { return workPermitDesiredNotes; }
 
-    public void setWorkDesired(@Nullable YesNoUnemployed workDesired) { this.workDesired = workDesired; }
+    public void setWorkPermitDesiredNotes(@Nullable String workPermitDesiredNotes) { this.workPermitDesiredNotes = workPermitDesiredNotes; }
+
+    @Nullable
+    public YesNoUnemployedOther getWorkDesired() { return workDesired; }
+
+    public void setWorkDesired(@Nullable YesNoUnemployedOther workDesired) { this.workDesired = workDesired; }
 
     @Nullable
     public String getWorkDesiredNotes() { return workDesiredNotes; }
@@ -910,6 +1129,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setHostEntryYear(@Nullable Long hostEntryYear) { this.hostEntryYear = hostEntryYear; }
 
     @Nullable
+    public String getHostEntryYearNotes() { return hostEntryYearNotes; }
+
+    public void setHostEntryYearNotes(@Nullable String hostEntryYearNotes) { this.hostEntryYearNotes = hostEntryYearNotes; }
+
+    @Nullable
     public YesNoUnsure getUnhcrRegistered() { return unhcrRegistered; }
 
     public void setUnhcrRegistered(@Nullable YesNoUnsure unhcrRegistered) { this.unhcrRegistered = unhcrRegistered; }
@@ -920,14 +1144,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnhcrStatus(@Nullable UnhcrStatus unhcrStatus) { this.unhcrStatus = unhcrStatus; }
 
     @Nullable
-    public UnhcrStatus getUnhcrOldStatus() { return unhcrOldStatus; }
-
-    public void setUnhcrOldStatus(@Nullable UnhcrStatus unhcrOldStatus) { this.unhcrOldStatus = unhcrOldStatus; }
-
-    @Nullable
     public String getUnhcrNumber() { return unhcrNumber; }
 
     public void setUnhcrNumber(@Nullable String unhcrNumber) { this.unhcrNumber = unhcrNumber; }
+
+    @Nullable
+    public YesNo getUnhcrConsent() {return unhcrConsent;}
+
+    public void setUnhcrConsent(@Nullable YesNo unhcrConsent) {
+        this.unhcrConsent = unhcrConsent;
+    }
 
     @Nullable
     public Long getUnhcrFile() { return unhcrFile; }
@@ -935,14 +1161,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnhcrFile(@Nullable Long unhcrFile) { this.unhcrFile = unhcrFile; }
 
     @Nullable
+    public NotRegisteredStatus getUnhcrNotRegStatus() { return unhcrNotRegStatus; }
+
+    public void setUnhcrNotRegStatus(@Nullable NotRegisteredStatus unhcrNotRegStatus) { this.unhcrNotRegStatus = unhcrNotRegStatus; }
+
+    @Nullable
     public String getUnhcrNotes() { return unhcrNotes; }
 
     public void setUnhcrNotes(@Nullable String unhcrNotes) { this.unhcrNotes = unhcrNotes; }
-
-    @Nullable
-    public YesNo getUnhcrPermission() { return unhcrPermission; }
-
-    public void setUnhcrPermission(@Nullable YesNo unhcrPermission) { this.unhcrPermission = unhcrPermission; }
 
     @Nullable
     public YesNoUnsure getUnrwaRegistered() { return unrwaRegistered; }
@@ -950,14 +1176,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnrwaRegistered(@Nullable YesNoUnsure unrwaRegistered) { this.unrwaRegistered = unrwaRegistered; }
 
     @Nullable
-    public UnrwaStatus getUnrwaStatus() { return unrwaStatus; }
-
-    public void setUnrwaStatus(@Nullable UnrwaStatus unrwaStatus) { this.unrwaStatus = unrwaStatus; }
-
-    @Nullable
     public String getUnrwaNumber() { return unrwaNumber; }
 
     public void setUnrwaNumber(@Nullable String unrwaNumber) { this.unrwaNumber = unrwaNumber; }
+
+    @Nullable
+    public Long getUnrwaFile() { return unrwaFile; }
+
+    public void setUnrwaFile(@Nullable Long unrwaFile) { this.unrwaFile = unrwaFile; }
+
+    @Nullable
+    public NotRegisteredStatus getUnrwaNotRegStatus() { return unrwaNotRegStatus; }
+
+    public void setUnrwaNotRegStatus(@Nullable NotRegisteredStatus unrwaNotRegStatus) { this.unrwaNotRegStatus = unrwaNotRegStatus; }
 
     @Nullable
     public String getUnrwaNotes() { return unrwaNotes; }
@@ -997,20 +1228,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setDestLimitNotes(@Nullable String destLimitNotes) { this.destLimitNotes = destLimitNotes; }
 
     @Nullable
-    public YesNo getDestJob() { return destJob; }
-
-    public void setDestJob(@Nullable YesNo destJob) { this.destJob = destJob; }
-
-    @Nullable
-    public String getDestJobNotes() {
-        return destJobNotes;
-    }
-
-    public void setDestJobNotes(@Nullable String destJobNotes) {
-        this.destJobNotes = destJobNotes;
-    }
-
-    @Nullable
     public YesNoUnsure getCrimeConvict() { return crimeConvict; }
 
     public void setCrimeConvict(@Nullable YesNoUnsure crime) { this.crimeConvict = crime; }
@@ -1046,16 +1263,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkAbroad(@Nullable YesNo workAbroad) { this.workAbroad = workAbroad; }
 
     @Nullable
-    public List<Long> getWorkAbroadCountryIds() { return workAbroadCountryIds; }
-
-    public void setWorkAbroadCountryIds(@Nullable List<Long> workAbroadCountryIds) { this.workAbroadCountryIds = workAbroadCountryIds; }
-
-    @Nullable
-    public Long getWorkAbroadYrs() { return workAbroadYrs; }
-
-    public void setWorkAbroadYrs(@Nullable Long workAbroadYrs) { this.workAbroadYrs = workAbroadYrs; }
-
-    @Nullable
     public String getWorkAbroadNotes() { return workAbroadNotes; }
 
     public void setWorkAbroadNotes(@Nullable String workAbroadNotes) { this.workAbroadNotes = workAbroadNotes; }
@@ -1076,9 +1283,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setLeftHomeReasons(@Nullable List<LeftHomeReason> leftHomeReasons) { this.leftHomeReasons = leftHomeReasons; }
 
     @Nullable
-    public String getLeftHomeOther() { return leftHomeOther; }
+    public String getLeftHomeNotes() { return leftHomeNotes; }
 
-    public void setLeftHomeOther(@Nullable String leftHomeOther) { this.leftHomeOther = leftHomeOther; }
+    public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
 
     @Nullable
     public YesNoUnsure getReturnHomeFuture() { return returnHomeFuture; }
@@ -1109,6 +1316,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public MaritalStatus getMaritalStatus() { return maritalStatus; }
 
     public void setMaritalStatus(@Nullable MaritalStatus maritalStatus) { this.maritalStatus = maritalStatus; }
+
+    @Nullable
+    public String getMaritalStatusNotes() { return maritalStatusNotes; }
+
+    public void setMaritalStatusNotes(@Nullable String maritalStatusNotes) { this.maritalStatusNotes = maritalStatusNotes; }
 
     @Nullable
     public YesNoUnsure getPartnerRegistered() { return partnerRegistered; }
@@ -1156,9 +1368,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setPartnerIelts(@Nullable IeltsStatus partnerIelts) { this.partnerIelts = partnerIelts; }
 
     @Nullable
-    public IeltsScore getPartnerIeltsScore() { return partnerIeltsScore; }
+    public String getPartnerIeltsScore() { return partnerIeltsScore; }
 
-    public void setPartnerIeltsScore(@Nullable IeltsScore partnerIeltsScore) { this.partnerIeltsScore = partnerIeltsScore; }
+    public void setPartnerIeltsScore(@Nullable String partnerIeltsScore) { this.partnerIeltsScore = partnerIeltsScore; }
 
     @Nullable
     public Long getPartnerIeltsYr() { return partnerIeltsYr; }
@@ -1166,9 +1378,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setPartnerIeltsYr(@Nullable Long partnerIeltsYr) { this.partnerIeltsYr = partnerIeltsYr; }
 
     @Nullable
-    public Nationality getPartnerCitizenship() { return partnerCitizenship; }
+    public Country getPartnerCitizenship() { return partnerCitizenship; }
 
-    public void setPartnerCitizenship(@Nullable Nationality partnerCitizenship) { this.partnerCitizenship = partnerCitizenship; }
+    public void setPartnerCitizenship(@Nullable Country partnerCitizenship) { this.partnerCitizenship = partnerCitizenship; }
 
     @Nullable
     public YesNo getMilitaryService() { return militaryService; }
@@ -1206,11 +1418,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setVisaRejectNotes(@Nullable String visaRejectNotes) { this.visaRejectNotes = visaRejectNotes; }
 
     @Nullable
-    public YesNo getHostBorn() { return hostBorn; }
-
-    public void setHostBorn(@Nullable YesNo hostBorn) { this.hostBorn = hostBorn; }
-
-    @Nullable
     public YesNo getCanDrive() { return canDrive; }
 
     public void setCanDrive(@Nullable YesNo canDrive) { this.canDrive = canDrive; }
@@ -1236,14 +1443,66 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setLangAssessment(@Nullable String langAssessment) { this.langAssessment = langAssessment; }
 
     @Nullable
-    public IeltsScore getLangAssessmentScore() { return langAssessmentScore; }
+    public String getLangAssessmentScore() { return langAssessmentScore; }
 
-    public void setLangAssessmentScore(@Nullable IeltsScore langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
+    public void setLangAssessmentScore(@Nullable String langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
+
+    @Nullable
+    public BigDecimal getIeltsScore() {
+        return ieltsScore;
+    }
+
+    public void setIeltsScore(@Nullable BigDecimal ieltsScore) {this.ieltsScore = ieltsScore;}
 
     @Nullable
     public Country getBirthCountry() { return birthCountry; }
 
     public void setBirthCountry(@Nullable Country birthCountry) { this.birthCountry = birthCountry; }
+
+    @Nullable
+    public YesNo getHealthIssues() {return healthIssues;}
+
+    public void setHealthIssues(@Nullable YesNo healthIssues) {this.healthIssues = healthIssues;}
+
+    @Nullable
+    public String getHealthIssuesNotes() {return healthIssuesNotes;}
+
+    public void setHealthIssuesNotes(@Nullable String healthIssuesNotes) {this.healthIssuesNotes = healthIssuesNotes;}
+
+    @Nullable
+    public String getExternalId() {return externalId;}
+
+    public void setExternalId(@Nullable String externalId) {this.externalId = externalId;}
+
+    @Nullable
+    public String getExternalIdSource() {return externalIdSource;}
+
+    public void setExternalIdSource(@Nullable String externalIdSource) {this.externalIdSource = externalIdSource;}
+
+    @Nullable
+    public YesNo getCovidVaccinated() {return covidVaccinated;}
+
+    public void setCovidVaccinated(@Nullable YesNo covidVaccinated) {this.covidVaccinated = covidVaccinated;}
+
+    @Nullable
+    public VaccinationStatus getCovidVaccinatedStatus() {return covidVaccinatedStatus;}
+
+    public void setCovidVaccinatedStatus(@Nullable VaccinationStatus covidVaccinatedStatus) {this.covidVaccinatedStatus = covidVaccinatedStatus;}
+
+    @Nullable
+    public LocalDate getCovidVaccinatedDate() {return covidVaccinatedDate;}
+
+    public void setCovidVaccinatedDate(@Nullable LocalDate covidVaccinatedDate) {this.covidVaccinatedDate = covidVaccinatedDate;}
+
+    @Nullable
+    public String getCovidVaccineName() {return covidVaccineName;}
+
+    public void setCovidVaccineName(@Nullable String covidVaccineName) {this.covidVaccineName = covidVaccineName;}
+
+    @Nullable
+    public String getCovidVaccineNotes() {return covidVaccineNotes;}
+
+    public void setCovidVaccineNotes(@Nullable String covidVaccineNotes) {this.covidVaccineNotes = covidVaccineNotes;}
 
     public boolean isSelected() {
         return selected;
@@ -1266,7 +1525,52 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getSfId() {
         return SalesforceServiceImpl.extractIdFromSfUrl(sflink);
     }
-    
+
+    @Nullable
+    public String getShareableNotes() {
+        return shareableNotes;
+    }
+
+    public void setShareableNotes(@Nullable String shareableNotes) {
+        this.shareableNotes = shareableNotes;
+    }
+
+    @Nullable
+    public CandidateAttachment getShareableCv() {
+        return shareableCv;
+    }
+
+    public void setShareableCv(@Nullable CandidateAttachment shareableCv) {
+        this.shareableCv = shareableCv;
+    }
+
+    @Nullable
+    public CandidateAttachment getShareableDoc() {
+        return shareableDoc;
+    }
+
+    public void setShareableDoc(@Nullable CandidateAttachment shareableDoc) {
+        this.shareableDoc = shareableDoc;
+    }
+
+    @Nullable
+    public String getSfOpportunityLink() {
+        return sfOpportunityLink;
+    }
+
+    public void setSfOpportunityLink(@Nullable String sfOpportunityLink) {
+        this.sfOpportunityLink = sfOpportunityLink;
+    }
+
+    @Nullable
+    public String getStage() {
+        return stage;
+    }
+
+    public void setStage(@Nullable String stage) {
+        this.stage = stage;
+    }
+
     @Nullable
     public String getVideolink() {
         return videolink;
@@ -1300,7 +1604,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public void addSavedList(SavedList savedList) {
-        final CandidateSavedList csl = 
+        final CandidateSavedList csl =
                 new CandidateSavedList(this, savedList);
         candidateSavedLists.add(csl);
         savedList.getCandidateSavedLists().add(csl);
@@ -1311,7 +1615,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                                    @Nullable EducationLevel partnerEduLevel,
                                    @Nullable Occupation partnerOccupation,
                                    @Nullable LanguageLevel partnerEnglishLevel,
-                                   @Nullable Nationality partnerCitizenship,
+                                   @Nullable Country partnerCitizenship,
                                    @Nullable Country drivingLicenseCountry,
                                    @Nullable Country birthCountry) {
         if (data.getAsylumYear() != null) {
@@ -1341,6 +1645,21 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getConflictNotes() != null) {
             setConflictNotes(data.getConflictNotes());
         }
+        if (data.getCovidVaccinated() != null) {
+            setCovidVaccinated(data.getCovidVaccinated());
+        }
+        if (data.getCovidVaccinatedStatus() != null) {
+            setCovidVaccinatedStatus(data.getCovidVaccinatedStatus());
+        }
+        if (data.getCovidVaccinatedDate() != null) {
+            setCovidVaccinatedDate(data.getCovidVaccinatedDate());
+        }
+        if (data.getCovidVaccineName() != null) {
+            setCovidVaccineName(data.getCovidVaccineName());
+        }
+        if (data.getCovidVaccineNotes() != null) {
+            setCovidVaccineNotes(data.getCovidVaccineNotes());
+        }
         if (data.getCrimeConvict() != null) {
             setCrimeConvict(data.getCrimeConvict());
         }
@@ -1352,12 +1671,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getDestLimitNotes() != null) {
             setDestLimitNotes(data.getDestLimitNotes());
-        }
-        if (data.getDestJob() != null) {
-            setDestJob(data.getDestJob());
-        }
-        if (data.getDestJobNotes() != null) {
-            setDestJobNotes(data.getDestJobNotes());
         }
         if (data.getDrivingLicense() != null) {
             setDrivingLicense(data.getDrivingLicense());
@@ -1374,17 +1687,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getFamilyMoveNotes() != null) {
             setFamilyMoveNotes(data.getFamilyMoveNotes());
         }
+        if (data.getHealthIssues() != null) {
+            setHealthIssues(data.getHealthIssues());
+        }
+        if (data.getHealthIssuesNotes() != null) {
+            setHealthIssuesNotes(data.getHealthIssuesNotes());
+        }
         if (data.getHomeLocation() != null) {
             setHomeLocation(data.getHomeLocation());
         }
         if (data.getHostChallenges() != null) {
             setHostChallenges(data.getHostChallenges());
         }
-        if (data.getHostBorn() != null) {
-            setHostBorn(data.getHostBorn());
-        }
         if (data.getHostEntryYear() != null) {
             setHostEntryYear(data.getHostEntryYear());
+        }
+        if (data.getHostEntryYearNotes() != null) {
+            setHostEntryYearNotes(data.getHostEntryYearNotes());
         }
         if (data.getHostEntryLegally() != null) {
             setHostEntryLegally(data.getHostEntryLegally());
@@ -1407,14 +1726,24 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getLangAssessment() != null) {
             setLangAssessment(data.getLangAssessment());
         }
+
         if (data.getLangAssessmentScore() != null) {
-            setLangAssessmentScore(data.getLangAssessmentScore());
+            BigDecimal score;
+            // If the LangAssessmentScore is NoResponse set to null in database.
+            if (data.getLangAssessmentScore().equals("NoResponse")) {
+                setLangAssessmentScore(null);
+                score = null;
+            } else {
+                setLangAssessmentScore(data.getLangAssessmentScore());
+            }
+            computeIeltsScore();
         }
+
         if (data.getLeftHomeReasons() != null) {
             setLeftHomeReasons(data.getLeftHomeReasons());
         }
-        if (data.getLeftHomeOther() != null) {
-            setLeftHomeOther(data.getLeftHomeOther());
+        if (data.getLeftHomeNotes() != null) {
+            setLeftHomeNotes(data.getLeftHomeNotes());
         }
         if (data.getMilitaryService() != null) {
             setMilitaryService(data.getMilitaryService());
@@ -1433,6 +1762,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getMaritalStatus() != null) {
             setMaritalStatus(data.getMaritalStatus());
+        }
+        if (data.getMaritalStatusNotes() != null) {
+            setMaritalStatusNotes(data.getMaritalStatusNotes());
         }
         if (data.getPartnerRegistered() != null) {
             setPartnerRegistered(data.getPartnerRegistered());
@@ -1506,8 +1838,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getUnhcrStatus() != null) {
             setUnhcrStatus(data.getUnhcrStatus());
         }
-        if (data.getUnhcrOldStatus() != null) {
-            setUnhcrOldStatus(data.getUnhcrOldStatus());
+        if (data.getUnhcrNotRegStatus() != null) {
+            setUnhcrNotRegStatus(data.getUnhcrNotRegStatus());
         }
         if (data.getUnhcrNumber() != null) {
             setUnhcrNumber(data.getUnhcrNumber());
@@ -1515,20 +1847,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getUnhcrFile() != null) {
             setUnhcrFile(data.getUnhcrFile());
         }
+        if (data.getUnhcrConsent() != null) {
+            setUnhcrConsent(data.getUnhcrConsent());
+        }
         if (data.getUnhcrNotes() != null) {
             setUnhcrNotes(data.getUnhcrNotes());
-        }
-        if (data.getUnhcrPermission() != null) {
-            setUnhcrPermission(data.getUnhcrPermission());
         }
         if (data.getUnrwaRegistered() != null) {
             setUnrwaRegistered(data.getUnrwaRegistered());
         }
-        if (data.getUnrwaStatus() != null) {
-            setUnrwaStatus(data.getUnrwaStatus());
-        }
         if (data.getUnrwaNumber() != null) {
             setUnrwaNumber(data.getUnrwaNumber());
+        }
+        if (data.getUnrwaFile() != null) {
+            setUnrwaFile(data.getUnrwaFile());
+        }
+        if (data.getUnrwaNotRegStatus() != null) {
+            setUnrwaNotRegStatus(data.getUnrwaNotRegStatus());
         }
         if (data.getUnrwaNotes() != null) {
             setUnrwaNotes(data.getUnrwaNotes());
@@ -1548,12 +1883,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getWorkAbroad() != null) {
             setWorkAbroad(data.getWorkAbroad());
         }
-        if (data.getWorkAbroadCountryIds() != null) {
-            setWorkAbroadCountryIds(data.getWorkAbroadCountryIds());
-        }
-        if (data.getWorkAbroadYrs() != null) {
-            setWorkAbroadYrs(data.getWorkAbroadYrs());
-        }
         if (data.getWorkAbroadNotes() != null) {
             setWorkAbroadNotes(data.getWorkAbroadNotes());
         }
@@ -1563,6 +1892,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getWorkPermitDesired() != null) {
             setWorkPermitDesired(data.getWorkPermitDesired());
         }
+        if (data.getWorkPermitDesiredNotes() != null) {
+            setWorkPermitDesiredNotes(data.getWorkPermitDesiredNotes());
+        }
         if (data.getWorkDesired() != null) {
             setWorkDesired(data.getWorkDesired());
         }
@@ -1570,5 +1902,28 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             setWorkDesiredNotes(data.getWorkDesiredNotes());
         }
 
+    }
+
+    public void computeIeltsScore() {
+        CandidateExam ieltsGen = candidateExams.stream()
+                .filter(ce -> Objects.nonNull(ce.getExam()) && ce.getExam().equals(Exam.IELTSGen))
+                .findAny().orElse(null);
+
+        CandidateExam ieltsAca = candidateExams.stream()
+                .filter(ce -> Objects.nonNull(ce.getExam()) && ce.getExam().equals(Exam.IELTSAca))
+                .findAny().orElse(null);
+
+        BigDecimal score;
+        // Setting Ielts Score in order of Ielts General, Ielts Academic, Ielts Estimated.
+        if (ieltsGen != null && ieltsGen.getScore() != null) {
+            score = new BigDecimal(ieltsGen.getScore());
+        } else if (ieltsAca != null && ieltsAca.getScore() != null) {
+            score = new BigDecimal(ieltsAca.getScore());
+        } else if (langAssessmentScore != null) {
+            score = new BigDecimal(langAssessmentScore);
+        } else {
+            score = null;
+        }
+        setIeltsScore(score);
     }
 }

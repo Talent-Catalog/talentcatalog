@@ -16,32 +16,9 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.FileList;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,20 +30,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.model.db.AttachmentType;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.EducationType;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.NoteType;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
+import org.tbbtalent.server.repository.db.CandidateNoteRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.SalesforceService;
@@ -75,9 +46,19 @@ import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.FileList;
+import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.sql.Date;
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -85,12 +66,13 @@ public class SystemAdminApi {
 
     private static final Logger log = LoggerFactory.getLogger(SystemAdminApi.class);
 
-    private final UserContext userContext;
+    private final AuthService authService;
     final static String DATE_FORMAT = "dd-MM-yyyy";
     
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
@@ -99,8 +81,8 @@ public class SystemAdminApi {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     private final Map<Integer, Integer> countryForGeneralCountry;
-
-    private Drive googleDriveService;
+    
+    private final GoogleDriveConfig googleDriveConfig;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -120,57 +102,24 @@ public class SystemAdminApi {
     @Autowired
     public SystemAdminApi(
             DataSharingService dataSharingService,
-            UserContext userContext,
+            AuthService authService,
             CandidateAttachmentRepository candidateAttachmentRepository,
+            CandidateNoteRepository candidateNoteRepository,
             CandidateRepository candidateRepository,
-            Drive googleDriveService,
             PopulateElasticsearchService populateElasticsearchService,
             SalesforceService salesforceService,
-            S3ResourceHelper s3ResourceHelper) {
+            S3ResourceHelper s3ResourceHelper,
+            GoogleDriveConfig googleDriveConfig) {
         this.dataSharingService = dataSharingService;
-        this.userContext = userContext;
+        this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
-        this.googleDriveService = googleDriveService;
+        this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.s3ResourceHelper = s3ResourceHelper;
+        this.googleDriveConfig = googleDriveConfig;
         countryForGeneralCountry = getExtraCountryMappings();
-    }
-
-    /**
-     * Returns info (including "name") about the Salesforce opportunity 
-     * corresponding to the given url - or null if the url does not refer
-     * to a Salesforce opportunity.
-     * @param sfUrl A url
-     * @return Map containing "name" attribute, or null if not an opportunity.
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     */
-    @GetMapping("sfjobname")
-    @Nullable
-    public Map<String, Object> findSfJobName(
-            @RequestParam(value = "url") String sfUrl) 
-            throws GeneralSecurityException {
-
-        Opportunity opp = null;
-
-        //Make sure that it is referring to a Salesforce Opportunity record
-        String objectType = SalesforceServiceImpl.extractObjectTypeFromSfUrl(sfUrl);
-        if ("Opportunity".equals(objectType)) {
-            String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfUrl);
-            if (sfId != null) {
-                opp = salesforceService.findOpportunity(sfId);
-            }
-        }
-        return opportunityDto().build(opp);
-    }
-
-    private DtoBuilder opportunityDto() {
-        return new DtoBuilder()
-                .add("name")
-                ;
     }
 
     @GetMapping("updatesflinks")
@@ -259,14 +208,53 @@ public class SystemAdminApi {
         return "done";
     }
 
+    // Removed after running. One off method. Login as System Admin user.
+    //@GetMapping("update-statuses")
+    public String updateStatusesIneligible() {
+        List<CandidateStatus> statuses = new ArrayList<>(EnumSet.of(CandidateStatus.pending, CandidateStatus.incomplete));
+        List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
+        log.info("Have all pending and incomplete candidates. There is a total of: " + candidates.size());
+        User loggedInUser = authService.getLoggedInUser().orElse(null);
+        int count = 0;
+        int success = 0;
+        for(Candidate candidate : candidates) {
+            try {
+                if (candidate.getCountry() != null && candidate.getCountry() == candidate.getNationality()) {
+                    candidate.setStatus(CandidateStatus.ineligible);
+                    candidateRepository.save(candidate);
+                    try {
+                        CandidateNote candidateNote = new CandidateNote();
+                        candidateNote.setCandidate(candidate);
+                        candidateNote.setTitle("Status change from pending to ineligible");
+                        candidateNote.setComment("TBB criteria not met: Country located is same as country of nationality.");
+                        candidateNote.setNoteType(NoteType.admin);
+                        candidateNote.setAuditFields(loggedInUser);
+                        candidateNoteRepository.save(candidateNote);
+                    } catch (Exception e) {
+                        log.warn("Error creating note for candidate with candidate number: " + candidate.getCandidateNumber(), e);
+                    }
+                }
+                success++;
+            } catch (Exception e) {
+                log.warn("Error changing status for candidate with candidate number: " + candidate.getCandidateNumber(), e);
+            }
+            count++;
+            if (count%100 == 0) {
+                log.info("Processed " + count);
+            }
+        }
+        log.info("Finished processing. Success total of: " + success + " out of " + count);
+        return "Done. Now run esload to update elasticsearch.";
+    }
+
     @GetMapping("google")
-    public String migrateGoogleDriveFolders() throws IOException {
+    public String migrateGoogleDriveFolders() throws IOException, GeneralSecurityException {
         log.info("Starting google folder re-linking. About to get folders.");
         String nextPageToken = null;
         int count = 0;
         do {
             // Getting folders
-            FileList result = googleDriveService.files().list()
+            FileList result = googleDriveConfig.getGoogleDriveService().files().list()
                     .setQ("'" + candidateRootFolderId + "' in parents" +
                             " and mimeType='application/vnd.google-apps.folder'")
                     .setSupportsAllDrives(true)
@@ -332,14 +320,14 @@ public class SystemAdminApi {
     public String migrateStatus() {
         try {
             Long userId = 1L;
-            if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser().orElse(null);
+            if (authService != null) {
+                User loggedInUser = authService.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
             }
 
-            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
+            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://...", "", "");
             Statement sourceStmt = sourceConn.createStatement();
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
@@ -391,8 +379,8 @@ public class SystemAdminApi {
     public String migrateExtract() {
         TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
         Long userId = 1L;
-        if (userContext != null) {
-            User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        if (authService != null) {
+            User loggedInUser = authService.getLoggedInUser().orElse(null);
             if (loggedInUser != null){
                 userId = loggedInUser.getId();
             }
@@ -402,6 +390,12 @@ public class SystemAdminApi {
         extractTextFromMigratedFiles(textExtractHelper, types);
         extractTextFromNewFiles(textExtractHelper, types);
         return "done";
+    }
+
+    @GetMapping("es-to-db/unhcr-status")
+    public String migrateUnhcrStatus() {
+        populateElasticsearchService.populateCandidateFromElastic();
+        return "started";
     }
 
     private void extractTextFromMigratedFiles(TextExtractHelper textExtractHelper, List<String> types) {
@@ -458,14 +452,14 @@ public class SystemAdminApi {
     public String migrateSurvey() {
         try {
             Long userId = 1L;
-            if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser().orElse(null);
+            if (authService != null) {
+                User loggedInUser = authService.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
             }
             
-            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
+            Connection sourceConn = DriverManager.getConnection("jdbc:mysql:", "", "");
             Statement sourceStmt = sourceConn.createStatement();
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
@@ -537,14 +531,14 @@ public class SystemAdminApi {
     public String migrate() {
         try {
             Long userId = 1L; 
-            if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser().orElse(null);
+            if (authService != null) {
+                User loggedInUser = authService.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
             }
 
-            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
+            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://", "", "");
             Statement sourceStmt = sourceConn.createStatement();
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);

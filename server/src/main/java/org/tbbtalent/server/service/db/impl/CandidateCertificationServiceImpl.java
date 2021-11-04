@@ -16,21 +16,25 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateCertification;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateCertificationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
 import org.tbbtalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateCertificationService;
 import org.tbbtalent.server.service.db.CandidateService;
+
+import java.util.List;
+
+import static org.tbbtalent.server.util.audit.AuditHelper.setAuditFieldsFromUser;
 
 @Service
 public class CandidateCertificationServiceImpl implements CandidateCertificationService {
@@ -38,23 +42,30 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
     private final CandidateCertificationRepository candidateCertificationRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public CandidateCertificationServiceImpl(CandidateCertificationRepository candidateCertificationRepository,
                                              CandidateRepository candidateRepository,
                                              CandidateService candidateService,
-                                             UserContext userContext) {
+                                             AuthService authService) {
         this.candidateCertificationRepository = candidateCertificationRepository;
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
+    @Override
+    public List<CandidateCertification> list(long id) {
+        return candidateCertificationRepository.findByCandidateId(id);
+    }
 
     @Override
     public CandidateCertification createCandidateCertification(CreateCandidateCertificationRequest request) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        User loggedInUser = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Candidate candidate = candidateService.getCandidateFromRequest(request.getCandidateId());
 
         // Create a new candidateOccupation object to insert into the database
         CandidateCertification candidateCertification = new CandidateCertification();
@@ -67,7 +78,31 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         // Save the candidateOccupation
         candidateCertification = candidateCertificationRepository.save(candidateCertification);
 
-        candidate.setAuditFields(candidate.getUser());
+        setAuditFieldsFromUser(candidate, loggedInUser);
+        candidateService.save(candidate, true);
+
+        return candidateCertification;
+    }
+
+    @Override
+    public CandidateCertification updateCandidateCertification(UpdateCandidateCertificationRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        CandidateCertification candidateCertification = this.candidateCertificationRepository.findByIdLoadCandidate(request.getId())
+                .orElseThrow(() -> new NoSuchObjectException(CandidateCertification.class, request.getId()));
+
+        // Update certification object to insert into the database
+        candidateCertification.setName(request.getName());
+        candidateCertification.setInstitution(request.getInstitution());
+        candidateCertification.setDateCompleted(request.getDateCompleted());
+
+        Candidate candidate = candidateCertification.getCandidate();
+
+        // Save the candidate certification
+        candidateCertification = candidateCertificationRepository.save(candidateCertification);
+
+        setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate, true);
 
         return candidateCertification;
@@ -75,63 +110,23 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
 
     @Override
     public void deleteCandidateCertification(Long id) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        User loggedInUser = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         CandidateCertification candidateCertification = candidateCertificationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateCertification.class, id));
 
-        // Check that the user is deleting their own candidateOccupation
+        Candidate candidate = candidateCertification.getCandidate();
+
+        // Check that the user is deleting their own candidate certification
         if (!candidate.getId().equals(candidateCertification.getCandidate().getId())) {
             throw new InvalidCredentialsException("You do not have permission to perform that action");
         }
 
         candidateCertificationRepository.delete(candidateCertification);
 
-        candidate.setAuditFields(candidate.getUser());
+        setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate, true);
-
-    }
-
-    @Override
-    public List<CandidateCertification> list(long id) {
-        return candidateCertificationRepository.findByCandidateId(id);
-    }
-
-    @Override
-    public CandidateCertification createCandidateCertificationAdmin(long candidateId, CreateCandidateCertificationRequest request) {
-        Candidate candidate = this.candidateRepository.findById(candidateId)
-                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
-
-        // Create a new candidateOccupation object to insert into the database
-        CandidateCertification candidateCertification = new CandidateCertification();
-        candidateCertification.setCandidate(candidate);
-        candidateCertification.setName(request.getName());
-        candidateCertification.setInstitution(request.getInstitution());
-        candidateCertification.setDateCompleted(request.getDateCompleted());
-
-        // Save the candidateOccupation
-        candidateCertification =  candidateCertificationRepository.save(candidateCertification);
-
-        candidate.setAuditFields(candidate.getUser());
-        candidateService.save(candidate, true);
-
-        return candidateCertification;
-    }
-
-    @Override
-    public CandidateCertification updateCandidateCertificationAdmin(long id, UpdateCandidateCertificationRequest request) {
-
-        CandidateCertification candidateCertification = this.candidateCertificationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(CandidateCertification.class, id));
-
-        // Update education object to insert into the database
-        candidateCertification.setInstitution(request.getInstitution());
-        candidateCertification.setName(request.getName());
-        candidateCertification.setDateCompleted(request.getDateCompleted());
-
-        candidateService.save(candidateCertification.getCandidate(), true);
-
-        // Save the candidateOccupation
-        return candidateCertificationRepository.save(candidateCertification);
 
     }
 }

@@ -39,9 +39,6 @@ import {LocalStorageModule} from 'angular-2-local-storage';
 import {LoginComponent} from './components/login/login.component';
 import {SettingsComponent} from './components/settings/settings.component';
 import {SearchUsersComponent} from './components/settings/users/search-users.component';
-import {SearchNationalitiesComponent} from './components/settings/nationalities/search-nationalities.component';
-import {CreateNationalityComponent} from './components/settings/nationalities/create/create-nationality.component';
-import {EditNationalityComponent} from './components/settings/nationalities/edit/edit-nationality.component';
 import {ConfirmationComponent} from './components/util/confirm/confirmation.component';
 import {SearchCountriesComponent} from './components/settings/countries/search-countries.component';
 import {CreateCountryComponent} from './components/settings/countries/create/create-country.component';
@@ -119,8 +116,8 @@ import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view
 import {ViewCandidateSkillComponent} from './components/candidates/view/skill/view-candidate-skill.component';
 import {BrowseCandidateSourcesComponent} from './components/candidates/show/browse/browse-candidate-sources.component';
 import {ChartsModule} from 'ng2-charts';
-import {InfographicComponent} from './components/infograhics/infographic.component';
-import {ChartComponent} from './components/infograhics/chart/chart.component';
+import {InfographicComponent} from './components/infographics/infographic.component';
+import {ChartComponent} from './components/infographics/chart/chart.component';
 import {MonthPickerComponent} from './components/util/month-picker/month-picker.component';
 import {CandidateSourceResultsComponent} from './components/candidates/show/returns/candidate-source-results.component';
 import {DefineSearchComponent} from './components/search/define-search/define-search.component';
@@ -155,7 +152,7 @@ import {ReturnHomeSafeComponent} from './components/candidates/intake/return-hom
 import {WorkPermitComponent} from './components/candidates/intake/work-permit/work-permit.component';
 import {WorkLegallyComponent} from './components/candidates/intake/work-legally/work-legally.component';
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
-import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
+import {HostEntryComponent} from './components/candidates/intake/host-entry/host-entry.component';
 import {CandidateVisaTabComponent} from './components/candidates/view/tab/candidate-visa-tab/candidate-visa-tab.component';
 import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
 import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
@@ -224,7 +221,23 @@ import {HealthIssuesComponent} from './components/candidates/intake/health-issue
 import {VisaJobPutForwardComponent} from './components/candidates/visa/visa-job-assessments/put-forward/visa-job-put-forward.component';
 import {VisaJobNotesComponent} from './components/candidates/visa/visa-job-assessments/visa-job-notes/visa-job-notes.component';
 import {VisaJobCheckAuComponent} from './components/candidates/view/tab/candidate-visa-tab/au/job/visa-job-check-au.component';
-import { CandidateStatusSelectorComponent } from './components/util/candidate-status-selector/candidate-status-selector.component';
+import {CandidateStatusSelectorComponent} from './components/util/candidate-status-selector/candidate-status-selector.component';
+import {FinalAgreementComponent} from './components/candidates/intake/final-agreement/final-agreement.component';
+import {NgSelectModule} from "@ng-select/ng-select";
+import {CreateCandidateLanguageComponent} from './components/candidates/view/language/create/create-candidate-language.component';
+import {SalesforceStageComponent} from './components/util/salesforce-stage/salesforce-stage.component';
+import {IeltsScoreValidationComponent} from './components/util/ielts-score-validation/ielts-score-validation.component';
+import {FileSelectorComponent} from './components/util/file-selector/file-selector.component';
+import {NewJobComponent} from './components/job/new-job/new-job.component';
+import {OldIntakeInputComponent} from './components/util/old-intake-input-modal/old-intake-input.component';
+import {CandidateShareableNotesComponent} from './components/util/candidate-shareable-notes/candidate-shareable-notes.component';
+import {ShareableDocsComponent} from './components/candidates/view/shareable-docs/shareable-docs.component';
+import {PublishedDocColumnSelectorComponent} from "./components/util/published-doc-column-selector/published-doc-column-selector.component";
+import {CandidateSourceDescriptionComponent} from './components/util/candidate-source-description/candidate-source-description.component';
+import {SearchExternalLinksComponent} from './components/settings/external-links/search-external-links.component';
+import {CreateExternalLinkComponent} from './components/settings/external-links/create/create-external-link.component';
+import {EditExternalLinkComponent} from './components/settings/external-links/edit/edit-external-link.component';
+import {CovidVaccinationComponent} from './components/candidates/intake/vaccination/covid-vaccination.component';
 
 @NgModule({
   declarations: [
@@ -238,16 +251,12 @@ import { CandidateStatusSelectorComponent } from './components/util/candidate-st
     DeleteCandidateComponent,
     SettingsComponent,
     SearchUsersComponent,
-    SearchNationalitiesComponent,
-    EditNationalityComponent,
-    CreateNationalityComponent,
     SearchCountriesComponent,
     CreateCountryComponent,
     EditCountryComponent,
     SearchLanguagesComponent,
     CreateLanguageComponent,
     EditLanguageComponent,
-    CreateNationalityComponent,
     SearchSavedSearchesComponent,
     CreateUpdateSearchComponent,
     CandidateSearchCardComponent,
@@ -356,7 +365,7 @@ import { CandidateStatusSelectorComponent } from './components/util/candidate-st
     WorkPermitComponent,
     WorkLegallyComponent,
     WorkStatusComponent,
-    HostEntryYearComponent,
+    HostEntryComponent,
     CandidateVisaTabComponent,
     RegistrationUnhcrComponent,
     RegistrationUnrwaComponent,
@@ -427,7 +436,23 @@ import { CandidateStatusSelectorComponent } from './components/util/candidate-st
     VisaJobPutForwardComponent,
     VisaJobNotesComponent,
     VisaJobCheckAuComponent,
-    CandidateStatusSelectorComponent
+    CandidateStatusSelectorComponent,
+    FinalAgreementComponent,
+    CreateCandidateLanguageComponent,
+    SalesforceStageComponent,
+    IeltsScoreValidationComponent,
+    FileSelectorComponent,
+    NewJobComponent,
+    OldIntakeInputComponent,
+    CandidateShareableNotesComponent,
+    ShareableDocsComponent,
+    CandidateShareableNotesComponent,
+    PublishedDocColumnSelectorComponent,
+    CandidateSourceDescriptionComponent,
+    SearchExternalLinksComponent,
+    CreateExternalLinkComponent,
+    EditExternalLinkComponent,
+    CovidVaccinationComponent
   ],
   imports: [
     BrowserModule,
@@ -441,6 +466,7 @@ import { CandidateStatusSelectorComponent } from './components/util/candidate-st
     NgMultiSelectDropDownModule.forRoot(),
     ChartsModule,
     NgxWigModule,
+    NgSelectModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'

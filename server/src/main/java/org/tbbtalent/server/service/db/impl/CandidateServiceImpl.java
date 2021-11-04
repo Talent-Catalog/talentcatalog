@@ -43,6 +43,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.es.CandidateEs;
@@ -53,12 +54,13 @@ import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.PasswordHelper;
-import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
-import org.tbbtalent.server.util.filesystem.FileSystemFolder;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -67,9 +69,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -78,22 +83,37 @@ public class CandidateServiceImpl implements CandidateService {
 
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
+    /**
+     * These are the default candidate statuses to included in searches when no statuses are 
+     * specified.
+     * Basically all "inactive" statuses such as draft, deleted, employed and ineligible.
+     */
+    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>( 
+        EnumSet.complementOf(EnumSet.of(
+            CandidateStatus.autonomousEmployment,
+            CandidateStatus.deleted,
+            CandidateStatus.draft, 
+            CandidateStatus.employed, 
+            CandidateStatus.ineligible,
+            CandidateStatus.withdrawn
+        )));
+    
     private final UserRepository userRepository;
-    private final SavedListRepository savedListRepository;
+    private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final ElasticsearchOperations elasticsearchOperations;
-    private final GoogleFileSystemService fileSystemService;
+    private final FileSystemService fileSystemService;
+    private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
     private final CountryRepository countryRepository;
     private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
-    private final NationalityRepository nationalityRepository;
-    private final NationalityService nationalityService;
+    private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final PasswordHelper passwordHelper;
-    private final UserContext userContext;
+    private final AuthService authService;
     private final SavedSearchService savedSearchService;
     private final CandidateNoteService candidateNoteService;
     private final CandidateCitizenshipService candidateCitizenshipService;
@@ -102,55 +122,59 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateDependantService candidateDependantService;
     private final CandidateDestinationService candidateDestinationService;
     private final CandidateExamService candidateExamService;
+    private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final SurveyTypeRepository surveyTypeRepository;
     private final OccupationRepository occupationRepository;
     private final LanguageLevelRepository languageLevelRepository;
+    private final CandidateExamRepository candidateExamRepository;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
-                                SavedListRepository savedListRepository,
-                                SavedSearchRepository savedSearchRepository,
-                                CandidateRepository candidateRepository,
-                                CandidateEsRepository candidateEsRepository,
-                                CandidateSavedListService candidateSavedListService,
-                                ElasticsearchOperations elasticsearchOperations,
-                                GoogleFileSystemService fileSystemService,
-                                SalesforceService salesforceService,
-                                CountryRepository countryRepository,
-                                CountryService countryService,
-                                EducationLevelRepository educationLevelRepository,
-                                NationalityRepository nationalityRepository,
-                                NationalityService nationalityService,
-                                PasswordHelper passwordHelper,
-                                UserContext userContext,
-                                SavedSearchService savedSearchService,
-                                CandidateNoteService candidateNoteService,
-                                CandidateCitizenshipService candidateCitizenshipService, 
-                                CandidateDependantService candidateDependantService,
-                                CandidateDestinationService candidateDestinationService,
-                                CandidateVisaService candidateVisaService,
-                                CandidateVisaJobCheckService candidateVisaJobCheckService,
-                                CandidateExamService candidateExamService,
-                                SurveyTypeRepository surveyTypeRepository,
-                                OccupationRepository occupationRepository,
-                                LanguageLevelRepository languageLevelRepository,
-                                EmailHelper emailHelper, PdfHelper pdfHelper) {
+        SavedListService savedListService,
+        SavedSearchRepository savedSearchRepository,
+        CandidateRepository candidateRepository,
+        CandidateEsRepository candidateEsRepository,
+        CandidateSavedListService candidateSavedListService,
+        ElasticsearchOperations elasticsearchOperations,
+        FileSystemService fileSystemService,
+        GoogleDriveConfig googleDriveConfig,
+        SalesforceService salesforceService,
+        CountryRepository countryRepository,
+        CountryService countryService,
+        EducationLevelRepository educationLevelRepository,
+        CandidateAttachmentRepository candidateAttachmentRepository,
+        PasswordHelper passwordHelper,
+        AuthService authService,
+        SavedSearchService savedSearchService,
+        CandidateNoteService candidateNoteService,
+        CandidateCitizenshipService candidateCitizenshipService,
+        CandidateDependantService candidateDependantService,
+        CandidateDestinationService candidateDestinationService,
+        CandidateVisaService candidateVisaService,
+        CandidateVisaJobCheckService candidateVisaJobCheckService,
+        CandidateExamService candidateExamService,
+        CandidateReviewStatusRepository candidateReviewStatusRepository,
+        SurveyTypeRepository surveyTypeRepository,
+        OccupationRepository occupationRepository,
+        LanguageLevelRepository languageLevelRepository,
+        CandidateExamRepository candidateExamRepository,
+        EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
-        this.savedListRepository = savedListRepository;
+        this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
         this.candidateRepository = candidateRepository;
         this.candidateEsRepository = candidateEsRepository;
         this.candidateSavedListService = candidateSavedListService;
         this.elasticsearchOperations = elasticsearchOperations;
+        this.googleDriveConfig = googleDriveConfig;
         this.countryRepository = countryRepository;
         this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
-        this.nationalityRepository = nationalityRepository;
-        this.nationalityService = nationalityService;
+        this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.passwordHelper = passwordHelper;
-        this.userContext = userContext;
+        this.authService = authService;
         this.savedSearchService = savedSearchService;
         this.candidateNoteService = candidateNoteService;
         this.candidateCitizenshipService = candidateCitizenshipService;
@@ -159,9 +183,11 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateVisaService = candidateVisaService;
         this.candidateVisaJobCheckService = candidateVisaJobCheckService;
         this.candidateExamService = candidateExamService;
+        this.candidateReviewStatusRepository = candidateReviewStatusRepository;
         this.surveyTypeRepository = surveyTypeRepository;
         this.occupationRepository = occupationRepository;
         this.languageLevelRepository = languageLevelRepository;
+        this.candidateExamRepository = candidateExamRepository;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
         this.fileSystemService = fileSystemService;
@@ -194,6 +220,44 @@ public class CandidateServiceImpl implements CandidateService {
                     updateElasticProxy(candidate);
                 }
 
+                count++;
+            } catch (Exception ex) {
+                log.warn("Could not load candidate " + candidate.getId(), ex);
+            }
+        }
+
+        return count;
+    }
+
+    @Transactional
+    @Override
+    public int populateCandidatesFromElastic(Pageable pageable) {
+        Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
+
+        int count = 0;
+        for (Candidate candidate : candidates) {
+            try {
+                CandidateEs twin;
+                String textSearchId = candidate.getTextSearchId();
+                if (textSearchId != null) {
+                    twin = candidateEsRepository.findById(textSearchId)
+                            .orElse(null);
+                    if (twin != null) {
+                        //Get the desired field from twin and save to candidate
+                        if (twin.getUnhcrStatus() == UnhcrStatus.NotRegistered) {
+                            candidate.setUnhcrRegistered(YesNoUnsure.No);
+                            candidate.setUnhcrStatus(twin.getUnhcrStatus());
+                            save(candidate, false);
+                            log.warn("Updated candidate " + candidate.getId() + " with Not Registered status to Not Registered and UnhcrRegistered is No!");
+                        } else if (twin.getUnhcrStatus() == UnhcrStatus.RegisteredAsylum) {
+                            candidate.setUnhcrRegistered(YesNoUnsure.Yes);
+                            save(candidate, false);
+                            log.warn("Updated candidate " + candidate.getId() + " with Registered Asylum status to UnhcrRegistered is Yes!");
+                        }
+                    } else {
+                        log.warn("Could not find twin in database");
+                    }
+                }
                 count++;
             } catch (Exception ex) {
                 log.warn("Could not load candidate " + candidate.getId(), ex);
@@ -264,11 +328,7 @@ public class CandidateServiceImpl implements CandidateService {
         Set<Long> savedListIds = request.getSavedListIds();
         if (savedListIds != null) {
             for (Long savedListId : savedListIds) {
-                SavedList savedList = savedListRepository.findById(savedListId)
-                        .orElse(null);
-                if (savedList == null) {
-                    throw new NoSuchObjectException(SavedList.class, savedListId);
-                }
+                SavedList savedList = savedListService.get(savedListId);
                 savedLists.add(savedList);
             }
         }
@@ -281,14 +341,15 @@ public class CandidateServiceImpl implements CandidateService {
      * @param candidate Entity to save
      */
     private void saveIt(Candidate candidate) {
-        candidate.setAuditFields(userContext.getLoggedInUser().orElse(null));
+        candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
         save(candidate, true);
     }
 
-    //todo this is horrible cloned code duplicated from SavedSearchServiceImpl - factor it out.
+    //todo this is horrible cloned code duplicated from SavedSearchServiceImpl.convertToSearchCandidateRequest - factor it out.
     private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch savedSearch) {
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(savedSearch.getId());
+        searchCandidateRequest.setSimpleQueryString(savedSearch.getSimpleQueryString());
         searchCandidateRequest.setKeyword(savedSearch.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(savedSearch.getStatuses()));
         searchCandidateRequest.setGender(savedSearch.getGender());
@@ -300,6 +361,7 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(savedSearch.getNationalitySearchType());
         searchCandidateRequest.setCountryIds(getIdsFromString(savedSearch.getCountryIds()));
+        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(savedSearch.getSurveyTypeIds()));
         searchCandidateRequest.setEnglishMinSpokenLevel(savedSearch.getEnglishMinSpokenLevel());
         searchCandidateRequest.setEnglishMinWrittenLevel(savedSearch.getEnglishMinWrittenLevel());
         searchCandidateRequest.setOtherLanguageId(savedSearch.getOtherLanguage() != null ? savedSearch.getOtherLanguage().getId() : null);
@@ -360,7 +422,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     private BoolQueryBuilder addElasticTermFilter(
             BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
-            List<String> values) {
+            List<Object> values) {
         final int nValues = values.size();
         if (nValues > 0) {
             QueryBuilder queryBuilder;
@@ -382,7 +444,7 @@ public class CandidateServiceImpl implements CandidateService {
             //Check for selection list to set the selected attribute on returned
             // candidates.
             SavedList selectionList = null;
-            User user = userContext.getLoggedInUser().orElse(null);
+            User user = authService.getLoggedInUser().orElse(null);
             if (user != null) {
                 selectionList = savedSearchService
                         .getSelectionList(savedSearchId, user.getId());
@@ -400,10 +462,11 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    private Specification<Candidate> computeQuery(SearchCandidateRequest request) {
+    private Specification<Candidate> computeQuery(
+        SearchCandidateRequest request, @Nullable Collection<Candidate> excludedCandidates) {
         //There may be no logged in user if the search is called by the
         //overnight Watcher process.
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
 
         //This list is initialized with the main saved search id, but can be
         //added to by addQuery below when the search is built on other
@@ -415,7 +478,8 @@ public class CandidateServiceImpl implements CandidateService {
             searchIds.add(request.getSavedSearchId());
         }
 
-        Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request, user);
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, user, excludedCandidates);
         if (CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
             for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
                 query = addQuery(query, searchJoinRequest, searchIds);
@@ -427,11 +491,32 @@ public class CandidateServiceImpl implements CandidateService {
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest request) {
 
         Page<Candidate> candidates;
+
+        Set<Candidate> excludedCandidates = new HashSet<>();
+
+        final Long exclusionListId = request.getExclusionListId();
+        if (exclusionListId != null) {
+            SavedList exclusionList = savedListService.get(exclusionListId);
+            excludedCandidates.addAll(exclusionList.getCandidates());
+        }
+        if (CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
+            //Compute excluded candidates based on review statuses
+            excludedCandidates.addAll(candidateReviewStatusRepository
+                .findCandidatesExcludedFromSearch(request.getSavedSearchId(), 
+                    request.getReviewStatusFilter()));
+        }
+        
+        //Modify request, defaulting blank statuses
+        List<CandidateStatus> requestedStatuses = request.getStatuses();
+        if (requestedStatuses == null || requestedStatuses.isEmpty()) {
+            request.setStatuses(defaultSearchStatuses);
+        }
+
         String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             //This is an elastic search request
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(request,
-                simpleQueryString);
+                simpleQueryString, excludedCandidates);
 
             //Define sort from request 
             PageRequest req = CandidateEs.convertToElasticSortField(request);
@@ -468,9 +553,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidates = new PageImpl<>(candidateList, request.getPageRequest(),
                     hits.getTotalHits());
         } else {
-
-            Specification<Candidate> query = computeQuery(request);
-
+            Specification<Candidate> query = computeQuery(request, excludedCandidates);
             candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
         }
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
@@ -478,7 +561,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private BoolQueryBuilder computeElasticQuery(SearchCandidateRequest request,
-        String simpleQueryString) {
+        String simpleQueryString, @Nullable Collection <Candidate> excludedCandidates) {
     /*
        Constructing a filtered simple query that looks like this:
        
@@ -532,11 +615,19 @@ public class CandidateServiceImpl implements CandidateService {
                             minWrittenLevel, null);
         }
 
+        //Exclude given candidates
+        if (excludedCandidates != null && excludedCandidates.size() > 0) {
+            List<Object> candidateIds = excludedCandidates.stream()
+                .map(Candidate::getId).collect(Collectors.toList());
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                    SearchType.not,"masterId", candidateIds);
+        }
+        
         //Countries
         final List<Long> countryIds = request.getCountryIds();
         if (countryIds != null) {
             //Look up country names from ids.
-            List<String> reqCountries = new ArrayList<>();
+            List<Object> reqCountries = new ArrayList<>();
             for (Long countryId : countryIds) {
                 final Country country = countryService.getCountry(countryId);
                 reqCountries.add(country.getName());
@@ -550,9 +641,9 @@ public class CandidateServiceImpl implements CandidateService {
         final List<Long> nationalityIds = request.getNationalityIds();
         if (nationalityIds != null) {
             //Look up names from ids.
-            List<String> reqNationalities = new ArrayList<>();
+            List<Object> reqNationalities = new ArrayList<>();
             for (Long id : nationalityIds) {
-                final Nationality nationality = nationalityService.getNationality(id);
+                final Country nationality = countryService.getCountry(id);
                 reqNationalities.add(nationality.getName());
             }
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
@@ -564,7 +655,7 @@ public class CandidateServiceImpl implements CandidateService {
         List<CandidateStatus> statuses = request.getStatuses();
         if (statuses != null) {
             //Extract names from enums
-            List<String> reqStatuses = new ArrayList<>();
+            List<Object> reqStatuses = new ArrayList<>();
             for (CandidateStatus status : statuses) {
                 reqStatuses.add(status.name());
             }
@@ -615,7 +706,7 @@ public class CandidateServiceImpl implements CandidateService {
             //This is an elastic search request.
             
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
-                simpleQueryString);
+                simpleQueryString, null);
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
@@ -630,7 +721,7 @@ public class CandidateServiceImpl implements CandidateService {
             }
         } else {
             //Compute the normal query
-            final Specification<Candidate> query = computeQuery(searchRequest);
+            final Specification<Candidate> query = computeQuery(searchRequest, null);
 
             List<Candidate> candidates = candidateRepository.findAll(query);
 
@@ -647,7 +738,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates;
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         if (user == null) {
             candidates = doSearchCandidates(request);
         } else {
@@ -680,7 +771,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
             Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -697,9 +788,39 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Page<Candidate> searchCandidates(CandidateEmailOrPhoneSearchRequest request) {
+        String s = request.getCandidateEmailOrPhone();
+        User loggedInUser = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Page<Candidate> candidates = candidateRepository.searchCandidateEmailOrPhone(
+                '%' + s + '%', sourceCountries,
+                        request.getPageRequestWithoutSort());
+
+//        if (searchForNumber) {
+//            candidates = candidateRepository.searchCandidateNumber(
+//                    s +'%', sourceCountries,
+//                    request.getPageRequestWithoutSort());
+//        } else {
+//            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+//                candidates = candidateRepository.searchCandidateName(
+//                        '%' + s + '%', sourceCountries,
+//                        request.getPageRequestWithoutSort());
+//            } else {
+//                return null;
+//            }
+//        }
+
+        log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        return candidates;
+    }
+
+    @Override
     public Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request) {
         String s = request.getCandidateNumberOrName();
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
@@ -725,17 +846,17 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
-        String s = request.getCandidatePhone();
-        User loggedInUser = userContext.getLoggedInUser()
+    public Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request) {
+        String s = request.getExternalId();
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin){
             Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
             Page<Candidate> candidates;
 
-            candidates = candidateRepository.searchCandidatePhone(
-                    '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
+            candidates = candidateRepository.searchCandidateExternalId(
+                    s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
             log.info("Found " + candidates.getTotalElements() + " candidates in search");
             return candidates;
@@ -748,12 +869,12 @@ public class CandidateServiceImpl implements CandidateService {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         //add id to list as do not want circular references
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
         SearchCandidateRequest request = savedSearchService.loadSavedSearch(searchJoinRequest.getSavedSearchId());
-        Specification<Candidate> joinQuery = CandidateSpecification.buildSearchQuery(request, user);
+        Specification<Candidate> joinQuery = CandidateSpecification.buildSearchQuery(request, user, null);
         if (searchJoinRequest.getSearchType().equals(SearchType.and)) {
             query = Specification.where(query.and(joinQuery));
         } else {
@@ -825,9 +946,12 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
-        //set country and nationality to unknown on create as required for search
+        //set some fields to unknown on create as required for search
+        //see CandidateSpecification. It works better if these attributes are not null, but instead
+        //point to an "Unknown" value.
         candidate.setCountry(countryRepository.getOne(0L));
-        candidate.setNationality(nationalityRepository.getOne(0L));
+        candidate.setNationality(countryRepository.getOne(0L));
+        candidate.setMaxEducationLevel(educationLevelRepository.getOne(0L));
 
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);
@@ -845,7 +969,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Transactional
     public void updateCandidateStatus(UpdateCandidateStatusRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -901,7 +1025,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -917,7 +1041,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -932,8 +1056,8 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
         // Load the country from the database - throw an exception if not found
-        Nationality nationality = nationalityRepository.findById(request.getNationalityId())
-                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationalityId()));
+        Country nationality = countryRepository.findById(request.getNationalityId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationalityId()));
 
         User user = candidate.getUser();
         user.setFirstName(request.getFirstName());
@@ -948,9 +1072,12 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setWhatsapp(request.getWhatsapp());
         candidate.setAddress1(request.getAddress1());
         candidate.setCity(request.getCity());
+        candidate.setState(request.getState());
         candidate.setCountry(country);
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
+        candidate.setExternalId(request.getExternalId());
+        candidate.setExternalIdSource(request.getExternalIdSource());
         candidate.setUnhcrStatus(request.getUnhcrStatus());
         candidate.setUnhcrNumber(request.getUnhcrNumber());
         return save(candidate, true);
@@ -958,7 +1085,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -970,8 +1097,57 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        candidate.setShareableNotes(request.getShareableNotes());
+        return save(candidate, true);
+    }
+
+    @Override
+    public Candidate updateShareableDocs(long id, UpdateCandidateShareableDocsRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        CandidateAttachment cv = null;
+        if (request.getShareableCvAttachmentId() != null) {
+            cv = this.candidateAttachmentRepository.findById(request.getShareableCvAttachmentId())
+                    .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getShareableCvAttachmentId()));
+        }
+
+        CandidateAttachment doc = null;
+        if (request.getShareableDocAttachmentId() != null) {
+            doc = this.candidateAttachmentRepository.findById(request.getShareableDocAttachmentId())
+                    .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getShareableDocAttachmentId()));
+        }
+        if (request.getSavedListId() != null) {
+            this.candidateSavedListService.updateCandidateShareableDocs(id, request.getSavedListId(), cv, doc);
+            // If the candidate's shareable docs are null, set them with the list's shareable docs.
+            if (candidate.getShareableCv() == null) {
+                candidate.setShareableCv(cv);
+            }
+            if (candidate.getShareableDoc() == null) {
+                candidate.setShareableDoc(doc);
+            }
+        } else {
+            candidate.setShareableCv(cv);
+            candidate.setShareableDoc(doc);
+        }
+        return save(candidate, true);
+    }
+
+    @Override
     public Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -1054,7 +1230,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // Check update request for a duplicate email or phone number
@@ -1078,27 +1254,58 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
         // Load the nationality from the database - throw an exception if not found
-        Nationality nationality = nationalityRepository.findById(request.getNationality())
-                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationality()));
+        Country nationality = countryRepository.findById(request.getNationalityId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationalityId()));
 
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user = userRepository.save(user);
         Candidate candidate = candidateRepository.findByUserId(user.getId());
+
+        String newStatus = checkStatusValidity(request.getCountryId(), request.getNationalityId(), candidate);
+
         if (candidate != null) {
             candidate.setGender(request.getGender());
             candidate.setDob(request.getDob());
             candidate.setCountry(country);
             candidate.setCity(request.getCity());
+            candidate.setState(request.getState());
             candidate.setYearOfArrival(request.getYearOfArrival());
             candidate.setNationality(nationality);
+            candidate.setExternalId(request.getExternalId());
+            candidate.setExternalIdSource(request.getExternalIdSource());
+            candidate.setUnhcrRegistered(request.getUnhcrRegistered());
+            candidate.setUnhcrNumber(request.getUnhcrNumber());
+            candidate.setUnhcrConsent(request.getUnhcrConsent());
 
             candidate.setAuditFields(user);
         }
-        return save(candidate, true);
+
+        candidate = save(candidate, true);
+
+        // Change status if required, and create note.
+        if (newStatus.equals("ineligible")) {
+            // Create note and change status to ineligible
+            final UpdateCandidateStatusRequest statusRequest =
+                    new UpdateCandidateStatusRequest(candidate.getId());
+            UpdateCandidateStatusInfo info = statusRequest.getInfo();
+            info.setStatus(CandidateStatus.ineligible);
+            info.setComment("TBB criteria not met: Country located is same as country of nationality.");
+            updateCandidateStatus(statusRequest);
+        } else if (newStatus.equals("pending")) {
+            // Create note and change status to pending
+            final UpdateCandidateStatusRequest statusRequest =
+                    new UpdateCandidateStatusRequest(candidate.getId());
+            UpdateCandidateStatusInfo info = statusRequest.getInfo();
+            info.setStatus(CandidateStatus.pending);
+            info.setComment("TBB criteria met: Country located different to country of nationality.");
+            updateCandidateStatus(statusRequest);
+        }
+
+        return candidate;
     }
 
     @Override
@@ -1141,7 +1348,18 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        candidate.setLinkedInLink(request.getLinkedInLink());
+        if (request.getLinkedInLink() != null && !request.getLinkedInLink().isEmpty()) {
+            String linkedInRegex = "^http[s]?:/\\/www\\.linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
+            Pattern p = Pattern.compile(linkedInRegex);
+            Matcher m = p.matcher(request.getLinkedInLink());
+            if (m.find()) {
+                candidate.setLinkedInLink(request.getLinkedInLink());
+            } else {
+                throw new InvalidRequestException("This is not a valid LinkedIn link.");
+            }
+        } else {
+            candidate.setLinkedInLink(null);
+        }
         candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
     }
@@ -1152,13 +1370,22 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         // Don't update status to pending if status is already pending
         if (!candidate.getStatus().equals(CandidateStatus.pending)) {
-            final UpdateCandidateStatusRequest request = 
-                new UpdateCandidateStatusRequest(candidate.getId());
-            UpdateCandidateStatusInfo info = request.getInfo();
-            info.setStatus(CandidateStatus.pending);
-            info.setComment("Candidate submitted");
-            
-            updateCandidateStatus(request);
+            if (candidate.getNationality() != candidate.getCountry() ||
+                    candidate.getCountry().getId() == 6180 && candidate.getNationality().getId() == 6180) {
+                final UpdateCandidateStatusRequest request =
+                        new UpdateCandidateStatusRequest(candidate.getId());
+                UpdateCandidateStatusInfo info = request.getInfo();
+                info.setStatus(CandidateStatus.pending);
+                info.setComment("Candidate submitted");
+                updateCandidateStatus(request);
+            } else {
+                final UpdateCandidateStatusRequest request =
+                        new UpdateCandidateStatusRequest(candidate.getId());
+                UpdateCandidateStatusInfo info = request.getInfo();
+                info.setStatus(CandidateStatus.ineligible);
+                info.setComment("TBB criteria not met: Country located is same as country of nationality.");
+                updateCandidateStatus(request);
+            }
         }
         candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
@@ -1166,7 +1393,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Optional<Candidate> getLoggedInCandidateLoadCandidateOccupations() {
-        Long candidateId = userContext.getLoggedInCandidateId();
+        Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
             return Optional.empty();
         } else {
@@ -1178,7 +1405,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Optional<Candidate> getLoggedInCandidateLoadCertifications() {
-        Long candidateId = userContext.getLoggedInCandidateId();
+        Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
             return Optional.empty();
         } else {
@@ -1190,7 +1417,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Optional<Candidate> getLoggedInCandidateLoadCandidateLanguages() {
-        Long candidateId = userContext.getLoggedInCandidateId();
+        Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
             return Optional.empty();
         } else {
@@ -1202,7 +1429,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Optional<Candidate> getLoggedInCandidate() {
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         if (user == null) {
             return Optional.empty();
         }
@@ -1212,7 +1439,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate findByCandidateNumber(String candidateNumber) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -1414,6 +1641,22 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countByStatusOrderByCount(
+                        genderStr(gender), countryStr(country),
+                        sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countByStatusOrderByCount(
+                        genderStr(gender), countryStr(country),
+                        sourceCountryIds, dateFrom, dateTo, candidateIds));
+    }
+
+    @Override
     public Resource generateCv(Candidate candidate) {
        return pdfHelper.generatePdf(candidate);
     }
@@ -1496,7 +1739,7 @@ public class CandidateServiceImpl implements CandidateService {
      */
     @Override
     public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         SavedList selectionList = null;
         if (user != null) {
             selectionList = savedSearchService
@@ -1516,7 +1759,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String[] getExportTitles() {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Role role = loggedInUser.getRole();
@@ -1539,7 +1782,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String[] getExportCandidateStrings(Candidate candidate) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Role role = loggedInUser.getRole();
@@ -1661,7 +1904,12 @@ public class CandidateServiceImpl implements CandidateService {
             log.info("Notify watchers: running " + searches.size() + " searches");
             
             int count = 0;
+
+            OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
             
+            //Look through all watched searches looking for any that have candidates that were
+            //created since yesterday.
+            //Those are the searches that need to notify their watchers.
             for (SavedSearch savedSearch : searches) {
 
                 count++;
@@ -1670,14 +1918,25 @@ public class CandidateServiceImpl implements CandidateService {
                 
                 SearchCandidateRequest searchCandidateRequest =
                         convertToSearchCandidateRequest(savedSearch);
+                
+                //Set up paging
+                searchCandidateRequest.setPageNumber(0);
+                //Short page is all we need - we are only going to look at first element
+                searchCandidateRequest.setPageSize(1);
 
-                LocalDate date = LocalDate.now().minusDays(1);
-                searchCandidateRequest.setFromDate(date);
                 Page<Candidate> candidates =
                         doSearchCandidates(searchCandidateRequest);
 
+                boolean newCandidates = false;
                 if (candidates.getNumberOfElements() > 0) {
-                    //Query has results. Need to let watchers know
+                    //Get first (latest) candidate
+                    Candidate candidate = candidates.getContent().get(0);
+                    OffsetDateTime createdDate = candidate.getCreatedDate();
+                    newCandidates = createdDate.isAfter(yesterday);
+                }
+                
+                if (newCandidates) {
+                    //Query has new results. Need to let watchers know
                     Set<Long> watcherUserIds = savedSearch.getWatcherUserIds();
                     for (Long watcherUserId : watcherUserIds) {
                         Set<SavedSearch> userWatches = userNotifications
@@ -1791,13 +2050,16 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate createCandidateFolder(long id) 
             throws NoSuchObjectException, IOException {
         Candidate candidate = getCandidate(id);
-        
+
+        GoogleFileSystemDrive candidateDrive = googleDriveConfig.getCandidateDataDrive();
+        GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
+
         String candidateNumber = candidate.getCandidateNumber();
         
-        FileSystemFolder folder = fileSystemService.findAFolder(candidateNumber);
-        
+        GoogleFileSystemFolder folder = fileSystemService.findAFolder(
+            candidateDrive, candidateRoot, candidateNumber);
         if (folder == null) {
-            folder = fileSystemService.createFolder(candidateNumber);
+            folder = fileSystemService.createFolder(candidateDrive, candidateRoot, candidateNumber);
         }
         candidate.setFolderlink(folder.getUrl());
         save(candidate, false);
@@ -1815,6 +2077,53 @@ public class CandidateServiceImpl implements CandidateService {
 
         save(candidate, false);
         return candidate;
+    }
+
+    @Override
+    public void createUpdateSalesforce(UpdateCandidateOppsRequest request)
+        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+
+        List<Candidate> candidates = candidateRepository.findByIds(request.getCandidateIds());
+        
+        createUpdateSalesforce(candidates, request.getSfJobLink(), request.getSalesforceOppParams());
+    }
+
+    @Override
+    public void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
+        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+        SavedList savedList = savedListService.get(request.getSavedListId());
+        String sfJobLink = savedList.getSfJoblink();
+        createUpdateSalesforce(savedList.getCandidates(), sfJobLink, request.getSalesforceOppParams());
+    }
+
+    private void createUpdateSalesforce(Collection<Candidate> candidates, 
+        @Nullable String sfJoblink,
+        @Nullable SalesforceOppParams salesforceOppParams)
+        throws GeneralSecurityException, WebClientException {
+
+        //Need ordered list so that can match with returned contacts.
+        List<Candidate> orderedCandidates = new ArrayList<>(candidates);
+        
+        //Update Salesforce contacts
+        List<Contact> contacts =
+            salesforceService.createOrUpdateContacts(orderedCandidates);
+
+        //Update the sfLink in all candidate records.
+        int nCandidates = orderedCandidates.size();
+        for (int i = 0; i < nCandidates; i++) {
+            Contact contact = contacts.get(i);
+            if (contact.getId() != null) {
+                Candidate candidate = orderedCandidates.get(i);
+                candidate.setSflink(contact.getUrl());
+                candidateRepository.save(candidate);
+            }
+        }
+        
+        //If we have a Salesforce job opportunity, we can also update associated candidate opps.
+        if (sfJoblink != null && sfJoblink.length() > 0) {
+            salesforceService.createOrUpdateCandidateOpportunities(
+                orderedCandidates, salesforceOppParams, sfJoblink);
+        }
     }
 
     @Override
@@ -1897,9 +2206,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         final Long partnerCitizenshipId = data.getPartnerCitizenshipId();
-        Nationality partnerCitizenship = null;
+        Country partnerCitizenship = null;
         if (partnerCitizenshipId != null) {
-            partnerCitizenship = nationalityRepository.findById(partnerCitizenshipId).orElse(null);
+            partnerCitizenship = countryRepository.findById(partnerCitizenshipId).orElse(null);
         }
 
         final Long drivingLicenseCountryId = data.getDrivingLicenseCountryId();
@@ -1919,5 +2228,72 @@ public class CandidateServiceImpl implements CandidateService {
 
         save(candidate, true);
 
+    }
+
+    /**
+     * Depending on where the request comes from (candidate or admin portal) need to get the candidate differently.
+     * @param requestCandidateId If from admin portal, id will be present from the request.
+     *                    If null, it will come from candidate portal and candidate will be loggedInCandidate.
+     * @return The candidate that is being populated/updated.
+     */
+    @Override
+    public Candidate getCandidateFromRequest(@Nullable Long requestCandidateId) {
+        User loggedInUser = authService.getLoggedInUser().orElse(null);
+        Candidate candidate;
+        if (requestCandidateId != null && loggedInUser.getRole() != Role.user) {
+            // Coming from Admin Portal
+            candidate = candidateRepository.findById(requestCandidateId)
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, requestCandidateId));
+        } else {
+            // Coming from Candidate Portal
+            candidate = authService.getLoggedInCandidate();
+            if (candidate == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
+        }
+        return candidate;
+    }
+
+    @Override
+    public boolean deleteCandidateExam(long examId)
+            throws EntityReferencedException, InvalidRequestException {
+        CandidateExam ce = candidateExamRepository.findByIdLoadCandidate(examId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, examId));
+
+        boolean ieltsExamGen = false;
+        if (ce.getExam() != null) {
+            ieltsExamGen = ce.getExam().equals(Exam.IELTSGen);
+        }
+
+        Candidate candidate = ce.getCandidate();
+
+        candidateExamRepository.deleteById(examId);
+
+        candidate.computeIeltsScore();
+        save(candidate, true);
+        return true;
+    }
+
+    private String checkStatusValidity(long countryReq, long nationalityReq, Candidate candidate) {
+        String newStatus = "";
+        // If candidate pending, but they updating country & nationality as same. Change to ineligible.
+        // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN
+        if (candidate.getStatus() == CandidateStatus.pending) {
+            if (countryReq == nationalityReq && countryReq != 6180) {
+                newStatus = "ineligible";
+            }
+        // If candidate ineligible & it has country & nationality the same (causing the status) BUT the request
+        // has nationality & country as different. We can change ineligible status to pending. This determines
+        // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
+        } else if (candidate.getStatus() == CandidateStatus.ineligible) {
+            if (candidate.getCountry() == candidate.getNationality() && countryReq != nationalityReq) {
+                newStatus = "pending";
+            }
+            // EXCEPTION: IF AFGHAN IN AFGHANISTAN SET PENDING
+            if (countryReq == 6180 && nationalityReq == 6180) {
+                newStatus = "pending";
+            }
+        }
+        return newStatus;
     }
 }

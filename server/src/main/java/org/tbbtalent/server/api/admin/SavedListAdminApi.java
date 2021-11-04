@@ -16,25 +16,17 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.List;
-import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
-import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
+import org.tbbtalent.server.request.link.UpdateShortNameRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
@@ -42,6 +34,13 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.List;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/saved-list")
@@ -66,8 +65,11 @@ public class SavedListAdminApi implements
      */
     
     /**
-     * Creates a new SavedList.
-     * @param request Request defining new list.
+     * Creates a new SavedList unless it is a registered list and a registered list for that
+     * job, as defined by {@link SavedList#getSfJoblink()} already exists, in which case
+     * nothing new is created, and the existing list is returned.
+     * @param request Request defining new list (including whether it is a registered list
+     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
      * @return The details about the list.  
      * @throws EntityExistsException if a list with this name already exists.
      */
@@ -180,6 +182,14 @@ public class SavedListAdminApi implements
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(targetList);
     }
+    
+    @PutMapping("{id}/create-folder")
+    public Map<String, Object> createListFolder(@PathVariable("id") long id)
+        throws IOException {
+        SavedList savedList = this.savedListService.createListFolder(id);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(savedList);
+    }
 
     @PutMapping("/shared-add/{id}")
     public Map<String, Object> addSharedUser(
@@ -199,6 +209,40 @@ public class SavedListAdminApi implements
         return builder.build(savedList);
     }
 
+    /**
+     * Imports potential employer feedback from the currently published doc associated with a list.
+     * <p/>
+     * Does nothing if the list has not been published.
+     * @param savedListId ID of published list
+     * @return PublishedDocImportReport containing details of the import
+     * @throws GeneralSecurityException if there are security problems accessing document storage
+     * @throws IOException if there are problems creating the document 
+     * @throws NoSuchObjectException  if there is no saved list with this id or if published doc
+     * is not found (maybe it has been manually deleted).
+     */
+    @PutMapping(value = "{id}/feedback")
+    public PublishedDocImportReport importEmployerFeedback(@PathVariable("id") long savedListId)
+        throws IOException, GeneralSecurityException, NoSuchObjectException {
+        PublishedDocImportReport report = savedListService.importEmployerFeedback(savedListId);
+        return report;
+    }
+
+    /**
+     * Create a published external document from the data of candidates in the given list. 
+     * @param savedListId Id of saved list
+     * @param request Request containing details of what is to be published 
+     * @return SavedList containing a link to the published doc as well as to the possibly updated 
+     * published column keys in exportColumns.  
+     */
+    @PutMapping(value = "{id}/publish")
+    public Map<String, Object> publish(
+        @PathVariable("id") long savedListId, @Valid @RequestBody PublishListRequest request)
+        throws IOException, GeneralSecurityException, ReflectiveOperationException {
+        SavedList savedList = savedListService.publish(savedListId, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(savedList);
+    }
+
     @PutMapping("/context/{id}")
     public void updateContextNote(
             @PathVariable("id") long id,
@@ -206,11 +250,23 @@ public class SavedListAdminApi implements
         candidateSavedListService.updateCandidateContextNote(id, request);
     }
 
+    @PutMapping("/description/{id}")
+    public void updateDescription(
+            @PathVariable("id") long id,
+            @RequestBody UpdateCandidateSourceDescriptionRequest request) {
+        savedListService.updateDescription(id, request);
+    }
+
     @PutMapping("/displayed-fields/{id}")
     public void updateDisplayedFieldPaths(
             @PathVariable("id") long id,
             @RequestBody UpdateDisplayedFieldPathsRequest request) {
         savedListService.updateDisplayedFieldPaths(id, request);
+    }
+
+    @PutMapping("/short-name")
+    public void updateTbbShortName(@RequestBody UpdateShortNameRequest request) {
+        savedListService.updateTbbShortName(request);
     }
     
 }

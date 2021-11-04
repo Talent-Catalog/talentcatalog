@@ -1,0 +1,65 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="covidVaccinated">Are you vaccinated against Covid 19?</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <ng-select id="covidVaccinated" [formControlName]="'covidVaccinated'" (clear)="setNoResponse('covidVaccinated')"
+               [items]="vaccinationOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+  </div>
+
+  <div *ngIf="covidVaccinated === 'Yes'">
+    <div class="form-group">
+      <label for="covidVaccinatedStatus">Are you fully vaccinated or partially vaccinated (1st dose only)?</label>
+      <ng-select id="covidVaccinatedStatus" [formControlName]="'covidVaccinatedStatus'" (clear)="setNoResponse('covidVaccinatedStatus')"
+                 [items]="vaccinationStatusOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+    </div>
+
+    <div class="form-group">
+      <label for="covidVaccinatedDate">
+        What was the date of your last vaccine?
+      </label>
+      <app-date-picker id="covidVaccinatedDate" [control]="form.controls.covidVaccinatedDate"></app-date-picker>
+    </div>
+
+    <div class="form-group">
+      <label for="covidVaccineName">What is the name of the vaccine you received?</label>
+      <input type="text" class="form-control"
+             id="covidVaccineName" [formControlName]="'covidVaccineName'">
+    </div>
+  </div>
+  <div *ngIf="this.covidVaccinated === 'Yes' || this.covidVaccinated === 'No'">
+    <div class="form-group">
+      <label for="covidVaccineNotes">Additional Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="covidVaccineNotes" [formControlName]="'covidVaccineNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+</form>
+
+

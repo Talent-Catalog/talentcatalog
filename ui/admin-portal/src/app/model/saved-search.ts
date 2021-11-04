@@ -77,7 +77,6 @@ export interface SavedSearchRef extends HasId {
 export interface SavedSearch extends CandidateSource, SearchCandidateRequest, SavedSearchRef {
   defaultSearch: boolean;
   reviewable: boolean;
-  global: boolean;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
 }

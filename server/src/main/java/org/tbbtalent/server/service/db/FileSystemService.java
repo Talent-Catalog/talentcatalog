@@ -16,17 +16,18 @@
 
 package org.tbbtalent.server.service.db;
 
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.util.filesystem.FileSystemFile;
-import org.tbbtalent.server.util.filesystem.FileSystemFolder;
-
 /**
- * Standard interface to any filesystem - tailored to Talent Catalog's use for
+ * Standard interface to Google filesystem - tailored to Talent Catalog's use for
  * storing candidate data - in particular uploaded files (eg CVs)
  *
  * @author John Cameron
@@ -42,8 +43,24 @@ public interface FileSystemService {
      * @throws IOException If problem accessing file system
      */
     @Nullable
-    FileSystemFolder findAFolder(String folderName) throws IOException;
-
+    GoogleFileSystemFolder findAFolder(
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        throws IOException;
+    
+    /**
+     * Creates a file with the given name.
+     * Does not check if file with that name already exists - may create
+     * create a duplicate file with the same name if the file system allows it. 
+     * @param fileName Name of folder to be created
+     * @param mimeType Type of file - see https://developers.google.com/drive/api/v3/mime-types
+     * @return File created
+     * @throws IOException If there was a problem creating the file
+     */
+    @NonNull
+    GoogleFileSystemFile createFile(
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String fileName, 
+        String mimeType) throws IOException;
+    
     /**
      * Creates a folder with the given name.
      * Does not check if folder with that name already exists - may create
@@ -53,14 +70,16 @@ public interface FileSystemService {
      * @throws IOException If there was a problem creating the folder
      */
     @NonNull
-    FileSystemFolder createFolder(String folderName) throws IOException;
+    GoogleFileSystemFolder createFolder(
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        throws IOException;
 
     /**
      * Deletes the given file
      * @param file Describes file to be deleted
      * @throws IOException If there was a problem deleting the file
      */
-    void deleteFile(FileSystemFile file) throws IOException;
+    void deleteFile(GoogleFileSystemFile file) throws IOException;
 
     /**
      * Downloads the given file into the given OutputStream
@@ -68,7 +87,7 @@ public interface FileSystemService {
      * @param out Stream to write the contents of the file to
      * @throws IOException If there was a problem uploading the file.
      */
-    void downloadFile(@NonNull FileSystemFile file, @NonNull OutputStream out)
+    void downloadFile(@NonNull GoogleFileSystemFile file, @NonNull OutputStream out)
             throws IOException;
 
     /**
@@ -76,7 +95,7 @@ public interface FileSystemService {
      * @param file Description of file, including id or url, plus its new name
      * @throws IOException If there was a problem renaming the file
      */
-    void renameFile(@NonNull FileSystemFile file) throws IOException;
+    void renameFile(@NonNull GoogleFileSystemFile file) throws IOException;
     
     /**
      * Uploads the given local file.
@@ -88,8 +107,19 @@ public interface FileSystemService {
      * @throws IOException If there was a problem uploading the file.
      */
     @NonNull
-    FileSystemFile uploadFile(
-            @Nullable FileSystemFolder parentFolder, String fileName, File file) 
+    GoogleFileSystemFile uploadFile(GoogleFileSystemDrive drive,
+        @Nullable GoogleFileSystemFolder parentFolder, String fileName, File file) 
             throws IOException;
-    
+
+    /**
+     * This creates a copy of a Google document and places it in the parent folder
+     * under the provided copy title.
+     * @param parentFolder - this is the folder where the new copy will belong.
+     * @param name - this is the name for the new copy.
+     * @param sourceFile - this is the file to be copied.
+     * @throws IOException If there was a problem copying the file.
+     */
+    GoogleFileSystemFile copyFile(
+        GoogleFileSystemFolder parentFolder, String name, GoogleFileSystemFile sourceFile) 
+        throws IOException;
 }

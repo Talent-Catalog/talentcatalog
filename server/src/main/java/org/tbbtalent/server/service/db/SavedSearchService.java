@@ -28,6 +28,7 @@ import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
@@ -177,6 +178,15 @@ public interface SavedSearchService {
             long id, UpdateCandidateContextNoteRequest request);
 
     /**
+     * Updates the description of the given saved search.
+     * @param id Id of saved search
+     * @param request Request containing the updated description
+     * @throws NoSuchObjectException  if there is no saved search with this id
+     */
+    void updateDescription(long id, UpdateCandidateSourceDescriptionRequest request)
+        throws  NoSuchObjectException;
+
+    /**
      * Updates the fields that are displayed for each candidate in the results 
      * of the given saved search.
      * @param id Id of saved search
@@ -186,5 +196,4 @@ public interface SavedSearchService {
     void updateDisplayedFieldPaths(
             long id, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException;
-
 }

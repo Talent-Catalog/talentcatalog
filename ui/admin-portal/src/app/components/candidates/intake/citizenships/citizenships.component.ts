@@ -14,10 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Candidate, CandidateIntakeData} from "../../../../model/candidate";
-import {Nationality} from "../../../../model/nationality";
-import {CandidateCitizenshipService} from "../../../../services/candidate-citizenship.service";
+import {
+  CandidateCitizenshipService,
+  CreateCandidateCitizenshipRequest
+} from "../../../../services/candidate-citizenship.service";
+import {Subject} from "rxjs/index";
+import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {Country} from "../../../../model/country";
 
 @Component({
   selector: 'app-citizenships',
@@ -28,21 +33,52 @@ export class CitizenshipsComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   error: boolean;
-  @Input() nationalities: Nationality[];
+  @Input() nationalities: Country[];
+  open: boolean;
   saving: boolean;
+  activeIds: string;
+
+  @Input() toggleAll: Subject<any>;
+
+  @ViewChild(NgbAccordion) acc: NgbAccordion;
 
   constructor(
     private candidateCitizenshipService: CandidateCitizenshipService
   ) {}
 
   ngOnInit(): void {
+    this.activeIds = 'intake-citizenships';
+    this.open = true;
+    // called when the toggleAll method is called in the parent component
+    this.toggleAll.subscribe(isOpen => {
+      this.open = isOpen;
+      this.setActiveIds();
+    })
+  }
+
+  toggleOpen() {
+    this.open = !this.open
+    this.setActiveIds();
+  }
+
+  setActiveIds(){
+    if (this.open) {
+      this.acc.expandAll();
+      this.activeIds = 'intake-citizenships';
+    } else {
+      this.acc.collapseAll();
+      this.activeIds = '';
+    }
   }
 
   addRecord() {
     this.saving = true;
-    this.candidateCitizenshipService.create(this.candidate.id, {}).subscribe(
+    this.open = true;
+    this.setActiveIds();
+    const request: CreateCandidateCitizenshipRequest = {};
+    this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
       (citizenship) => {
-        this.candidateIntakeData.candidateCitizenships.push(citizenship)
+        this.candidateIntakeData.candidateCitizenships.unshift(citizenship)
         this.saving = false;
       },
       (error) => {

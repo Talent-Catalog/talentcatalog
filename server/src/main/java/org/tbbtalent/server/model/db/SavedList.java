@@ -16,24 +16,16 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * There are two kinds of SavedList:
@@ -60,6 +52,43 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
 public class SavedList extends AbstractCandidateSource {
     private static final Logger log = LoggerFactory.getLogger(SavedList.class);
 
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     */
+    @Nullable
+    private String folderlink;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     */
+    @Nullable
+    private String foldercvlink;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     */
+    @Nullable
+    private String folderjdlink;
+
+    /**
+     * Url link to published list doc, if one exists. 
+     */
+    @Nullable
+    private String publishedDocLink;
+
+    /**
+     * Url link to published list doc, if one exists.
+     */
+    @Nullable
+    private String tbbShortName;
+
+    /**
+     * If true, this list is associated with a "registered" job. See the Angular "New Job" menu
+     * item. A link to the job record on Salesforce is in {@link #getSfJoblink()}.
+     * There should only be one list registered to a particular job, as defined by its sfJoblink.
+     */
+    private Boolean registeredJob = false;
+    
     /**
      * Non null if this is the selection list for the given saved search.
      * <p/>
@@ -90,7 +119,7 @@ public class SavedList extends AbstractCandidateSource {
      * SavedList. There is one of these for each candidate in the list.
      * @see #getCandidates() 
      * <p/>
-     * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that 
+     * We would prefer CascadeType.ALL with 'orphanRemoval' so that 
      * removing from the candidateSavedLists collection would automatically
      * cascade down to delete the corresponding entry in the 
      * candidate_saved_list table.
@@ -100,6 +129,11 @@ public class SavedList extends AbstractCandidateSource {
      * See
      * https://stackoverflow.com/questions/16246675/hibernate-error-a-different-object-with-the-same-identifier-value-was-already-a
      * <p/>
+     * A very good simple explanation of why JPA does not automatically delete the previous
+     * contents of a collection is here:
+     * https://stackoverflow.com/a/2011546/929968
+     * <p/>
+     * 
      * This means that we have to manually manage all deletions. That has been
      * moved into {@link CandidateSavedListService} which is used to manage all
      * those deletions, also making sure that the corresponding 
@@ -113,6 +147,72 @@ public class SavedList extends AbstractCandidateSource {
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedLists", cascade = CascadeType.MERGE)
     private Set<User> users = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedList", cascade = CascadeType.MERGE)
+    @OrderBy("index ASC")
+    private List<ExportColumn> exportColumns;
+
+    @Nullable
+    public List<ExportColumn> getExportColumns() {
+        return exportColumns;
+    }
+
+    public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
+        modifyColumnIndices(exportColumns);
+        this.exportColumns = exportColumns;
+    }
+
+    @Nullable
+    public String getFolderlink() {
+        return folderlink;
+    }
+
+    public void setFolderlink(@Nullable String folderlink) {
+        this.folderlink = folderlink;
+    }
+
+    @Nullable
+    public String getFoldercvlink() {
+        return foldercvlink;
+    }
+
+    public void setFoldercvlink(@Nullable String foldercvlink) {
+        this.foldercvlink = foldercvlink;
+    }
+
+    @Nullable
+    public String getFolderjdlink() {
+        return folderjdlink;
+    }
+
+    public void setFolderjdlink(@Nullable String folderjdlink) {
+        this.folderjdlink = folderjdlink;
+    }
+
+    @Nullable
+    public String getPublishedDocLink() {
+        return publishedDocLink;
+    }
+
+    public void setPublishedDocLink(@Nullable String publishedDocLink) {
+        this.publishedDocLink = publishedDocLink;
+    }
+
+    @Nullable
+    public String getTbbShortName() {return tbbShortName;}
+
+    public void setTbbShortName(@Nullable String tbbShortName) {this.tbbShortName = tbbShortName;}
+
+    @NonNull
+    public Boolean getRegisteredJob() {
+        return registeredJob;
+    }
+
+    public void setRegisteredJob(Boolean registeredJob) {
+        if (registeredJob != null) {
+            this.registeredJob = registeredJob;
+        }
+    }
 
     @Nullable
     public SavedSearch getSavedSearch() {

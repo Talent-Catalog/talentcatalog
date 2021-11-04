@@ -18,10 +18,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../../util/intake/IntakeComponentTabBase';
 import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from '../../../../../../model/candidate';
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {Nationality} from "../../../../../../model/nationality";
 import {CandidateService} from "../../../../../../services/candidate.service";
 import {CountryService} from "../../../../../../services/country.service";
-import {NationalityService} from "../../../../../../services/nationality.service";
 import {EducationLevelService} from "../../../../../../services/education-level.service";
 import {OccupationService} from "../../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../../services/language-level.service";
@@ -34,6 +32,7 @@ import {
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CreateVisaJobAssessementComponent} from "../../../../visa/visa-job-assessments/modal/create-visa-job-assessement.component";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
+import {Country} from "../../../../../../model/country";
 
 @Component({
   selector: 'app-visa-check-au',
@@ -47,7 +46,7 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
   @Input() visaRecord: CandidateVisa;
   loading: boolean;
   form: FormGroup;
-  @Input() nationalities: Nationality[];
+  @Input() nationalities: Country[];
   saving: boolean;
   jobIndex: number;
   selectedJobCheck: CandidateVisaJobCheck;
@@ -56,7 +55,6 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
 
   constructor(candidateService: CandidateService,
               countryService: CountryService,
-              nationalityService: NationalityService,
               educationLevelService: EducationLevelService,
               occupationService: OccupationService,
               languageLevelService: LanguageLevelService,
@@ -65,7 +63,7 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
               private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
               private fb: FormBuilder) {
-    super(candidateService, countryService, nationalityService, educationLevelService, occupationService, languageLevelService, noteService, authService)
+    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 
   onDataLoaded(init: boolean) {

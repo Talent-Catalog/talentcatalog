@@ -16,5 +16,5 @@
 
 <div class="mb-1">
   <label class="question">{{question}}: </label>
-  <span class="answer">{{answer}}</span>
+  <span *ngIf="answer" class="answer">{{answer}}</span>
 </div>

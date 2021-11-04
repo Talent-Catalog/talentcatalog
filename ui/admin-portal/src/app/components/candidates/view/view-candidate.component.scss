@@ -14,6 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import "~src/scss/variables";
+
 .admin-panel {
   display: flex;
   justify-content: space-between;
@@ -21,4 +23,13 @@
   background-color: #efefef;
   padding: 1em;
   border-radius: 0.25rem;
+}
+
+.dropdown-text {
+  font-size: 15px;
+}
+
+#status {
+  background-color: #ffffff;
+  font-size: 13px;
 }

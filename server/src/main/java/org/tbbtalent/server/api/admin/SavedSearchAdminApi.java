@@ -44,6 +44,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.search.ClearSelectionRequest;
 import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
@@ -67,6 +68,9 @@ public class SavedSearchAdminApi implements
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
+    private final ExportColumnsBuilderSelector exportColumnsBuilderSelector
+        = new ExportColumnsBuilderSelector();
+
 
     @Autowired
     public SavedSearchAdminApi(SavedSearchService savedSearchService,
@@ -321,6 +325,13 @@ public class SavedSearchAdminApi implements
         savedSearchService.updateCandidateContextNote(id, request);
     }
 
+    @PutMapping("/description/{id}")
+    public void updateDescription(
+        @PathVariable("id") long id,
+        @RequestBody UpdateCandidateSourceDescriptionRequest request) {
+        savedSearchService.updateDescription(id, request);
+    }
+
     @PutMapping("/displayed-fields/{id}")
     public void updateDisplayedFieldPaths(
             @PathVariable("id") long id,
@@ -337,8 +348,10 @@ public class SavedSearchAdminApi implements
     private DtoBuilder savedSearchDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
+                .add("exportColumns", exportColumnsBuilderSelector.selectBuilder())
                 .add("name")
                 .add("savedSearchType")
                 .add("savedSearchSubtype")

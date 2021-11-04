@@ -83,6 +83,24 @@
         </div>
       </ng-container>
 
+      <!-- INELIGIBLE - show reason and ability to resubmit?? -->
+      <ng-container *ngSwitchCase="'ineligible'">
+        <p>
+          {{ 'HOME.INELIGIBLE.EXPLANATION' | translate }}
+        </p>
+
+        <p class="alert alert-warning" *ngIf="candidate.candidateMessage">
+          {{candidate.candidateMessage}}
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.INELIGIBLE.BUTTON' | translate }}</a>
+          <a class="btn btn-secondary" [href]="lang == 'en' ? 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility'
+                                     : 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility-ar'" target="_blank">
+            <fa-icon icon="external-link-alt"></fa-icon> {{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}</a>
+        </div>
+      </ng-container>
+
       <!-- default -->
       <ng-container *ngSwitchDefault>
         <p>

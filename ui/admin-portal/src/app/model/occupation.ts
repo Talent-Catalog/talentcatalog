@@ -17,5 +17,6 @@
 export interface Occupation {
   id: number;
   name: string;
+  isco08Code: string;
   status: string;
 }

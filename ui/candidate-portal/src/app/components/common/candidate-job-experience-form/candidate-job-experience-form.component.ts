@@ -82,7 +82,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
     this.form = this.fb.group({
       id: [this.candidateJobExperience ? this.candidateJobExperience.id : null],
       companyName: [this.candidateJobExperience ? this.candidateJobExperience.companyName : '', Validators.required],
-      country: [this.candidateJobExperience ? this.candidateJobExperience.countryId : '', Validators.required],
+      country: [this.candidateJobExperience ? this.candidateJobExperience.countryId : null, Validators.required],
       candidateOccupationId: [this.candidateJobExperience ? this.candidateJobExperience.candidateOccupationId : '', Validators.required],
       role: [this.candidateJobExperience ? this.candidateJobExperience.role : '', Validators.required],
       startDate: [this.candidateJobExperience ? this.candidateJobExperience.startDate : null, Validators.required],
@@ -90,7 +90,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       fullTime: [this.candidateJobExperience ? this.candidateJobExperience.fullTime : null, Validators.required],
       paid: [this.candidateJobExperience ? this.candidateJobExperience.paid : null, Validators.required],
       description: [this.candidateJobExperience ? this.candidateJobExperience.description : '', Validators.required]
-    },{validator: this.startDateBeforeEndDate('startDate', 'endDate')});
+    }, {validator: this.startDateBeforeEndDate('startDate', 'endDate')});
 
     this.form.controls['paid'].valueChanges.subscribe(
       (val) => {

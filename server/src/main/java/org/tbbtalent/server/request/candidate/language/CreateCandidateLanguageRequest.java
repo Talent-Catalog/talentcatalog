@@ -15,16 +15,29 @@
  */
 
 package org.tbbtalent.server.request.candidate.language;
+import org.springframework.lang.Nullable;
 
 public class CreateCandidateLanguageRequest {
+    //todo make subclass? But then need two different methods in service taking in two different requests
+    /**
+     * Only required from Admin portal.
+     * No candidateId needed when coming from candidate portal (as candidate is the logged in candidate).
+     */
+    @Nullable
+    private Long candidateId;
 
-    private Long id;
+    private Long languageId;
     private Long writtenLevelId;
     private Long spokenLevelId;
 
-    public Long getId() { return id; }
+    @Nullable
+    public Long getCandidateId() { return candidateId; }
 
-    public void setId(Long languageId) { this.id = languageId; }
+    public void setCandidateId(@Nullable Long candidateId) { this.candidateId = candidateId; }
+
+    public Long getLanguageId() { return languageId; }
+
+    public void setLanguageId(Long languageId) { this.languageId = languageId; }
 
     public Long getWrittenLevelId() { return writtenLevelId; }
 

@@ -16,20 +16,28 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.security.GeneralSecurityException;
-import java.util.List;
 import org.springframework.data.domain.Page;
-import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.web.multipart.MultipartFile;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.request.candidate.PublishListRequest;
+import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
+import org.tbbtalent.server.request.link.UpdateShortNameRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.List;
 
 /**
  * Saved List Service
@@ -37,6 +45,19 @@ import org.tbbtalent.server.request.search.UpdateSharingRequest;
  * @author John Cameron
  */
 public interface SavedListService {
+
+    /**
+     * If the given list is associated with a Salesforce job opportunity, the given candidates 
+     * are populated with their candidate opportunity stages associated with that job opportunity.
+     * <p/>
+     * Does nothing if the list is not associated with a job opportunity.
+     * @param candidates Candidates to check
+     * @param savedListId ID of list
+     * @throws NoSuchObjectException if there is no saved list with this id
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
+        throws NoSuchObjectException, SalesforceException;
 
     /**
      * Clear the contents of the SavedList with the given ID
@@ -94,13 +115,48 @@ public interface SavedListService {
     void copyContents(UpdateExplicitSavedListContentsRequest request, SavedList destination);
 
     /**
-     * Create a new SavedList 
-     * @param request Create request
+     * Creates a folder for the given list on Google Drive with two subfolders, one for CVs and
+     * the other for Job Description (JD) docs.
+     * <p/>
+     * If a folder already exists for the list, does nothing.
+     *
+     * @param id ID of list
+     * @return Updated saved list object, containing link to folder (created or
+     * existing) in {@link SavedList#getFolderlink()} and also links to the subfolders
+     * in {@link SavedList#getFoldercvlink()} and {@link SavedList#getFolderjdlink()}
+     * @throws NoSuchObjectException if no list is found with that id
+     * @throws IOException           if there is a problem creating the folder.
+     */
+    SavedList createListFolder(long id)
+        throws NoSuchObjectException, IOException;     
+
+    /**
+     * Creates a new SavedList unless it is a registered list and a registered list for that
+     * job, as defined by {@link SavedList#getSfJoblink()} already exists, in which case
+     * nothing new is created, and the existing list is returned.
+     * @param request Request defining new list (including whether it is a registered list
+     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
      * @return Created saved list
      * @throws EntityExistsException if a list with this name already exists.
+     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
      */
     SavedList createSavedList(UpdateSavedListInfoRequest request) 
-            throws EntityExistsException;
+            throws EntityExistsException, RegisteredListException;
+
+    /**
+     /**
+     * Creates a new SavedList unless it is a registered list and a registered list for that
+     * job, as defined by {@link SavedList#getSfJoblink()} already exists, in which case
+     * nothing new is created, and the existing list is returned.
+     * @param user User to be recorded as creator of saved list
+     * @param request Request defining new list (including whether it is a registered list
+     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
+     * @return Created saved list
+     * @throws EntityExistsException if a list with this name already exists.
+     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
+     */
+    SavedList createSavedList(User user, UpdateSavedListInfoRequest request) 
+            throws EntityExistsException, RegisteredListException;
 
     /**
      * Delete the SavedList with the given ID
@@ -116,7 +172,17 @@ public interface SavedListService {
      * @return Saved list
      * @throws NoSuchObjectException if there is no saved list with this id. 
      */
+    @NonNull
     SavedList get(long savedListId) throws NoSuchObjectException;
+
+    /**
+     * Get the SavedList, if any, with the given name (ignoring case), owned by the given user.
+     * @param user Owner of list
+     * @param listName Name of list (case insensitive - eg "test" will match "Test")
+     * @return Saved list or null if not found
+     */
+    @Nullable
+    SavedList get(@NonNull User user, String listName);
 
     /**
      * Return all SavedList's associated with the given candidate that match 
@@ -146,18 +212,32 @@ public interface SavedListService {
      * candidates indicated in the given request.
      * @param savedListId ID of saved list to be updated
      * @param request Request containing the contents to be merged into the list
-     * @return False if no saved list with that id was found, otherwise true.
+     * @throws NoSuchObjectException if there is no saved list with this id
      */
-    boolean mergeSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request);  
+    void mergeSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request)
+        throws NoSuchObjectException;
+
+    /**
+     * Merge the contents of the SavedList with the given id with the 
+     * candidates whose candidate numbers (NOT ids) appear in the given file.
+     * @param savedListId ID of saved list to be updated
+     * @param file File containing candidate numbers, one to a line
+     * @throws NoSuchObjectException if there is no saved list with this id
+     * or if any of the candidate numbers are not numeric or do not correspond to a candidate
+     * @throws IOException If there is a problem reading the file
+     */
+    void mergeSavedListFromFile(long savedListId, MultipartFile file)
+        throws NoSuchObjectException, IOException;
 
     /**
      * Remove the candidates indicated in the given request from the SavedList 
      * with the given id.
      * @param savedListId ID of saved list to be updated
      * @param request Request containing the new list contents
-     * @return False if no saved list with that id was found, otherwise true.
+     * @throws NoSuchObjectException if there is no saved list with this id
      */
-    boolean removeFromSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request); 
+    void removeFromSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request)
+        throws NoSuchObjectException;
 
     /**
      * Return a page of SavedList's that match the given request, ordered by
@@ -169,6 +249,17 @@ public interface SavedListService {
      * @return Matching SavedList's
      */
     Page<SavedList> searchSavedLists(SearchSavedListRequest request);
+
+    /**
+     * Mark the given Candidate objects with the given list context.
+     * This means that context fields (ie ContextNote) associated with the 
+     * list will be returned through {@link Candidate#getContextNote()}
+     * @param savedListId ID of saved list
+     * @param candidates Candidate objects to be marked with the list context. Note that this 
+     *                   is a transient property only found on the given objects (ie it is not
+     *                   stored in the database).
+     */
+    void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
 
     /**
      * Update the info associated with the SavedList with the given id 
@@ -211,22 +302,29 @@ public interface SavedListService {
             throws NoSuchObjectException;
 
     /**
-     * Creates/updates Salesforce records corresponding to the given list.
-     * <p/>
-     * This could involve creating or updating contact records and/or
-     * creating (but not updating) opportunity records.
-     * <p/>
-     * Salesforce links may be created and stored in candidate records.
-     *
-     * @param id id of Saved List
+     * Updates the description of the given saved list.
+     * @param savedListId Id of saved list
+     * @param request Request containing the updated description
      * @throws NoSuchObjectException  if there is no saved list with this id
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
-     * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    void createUpdateSalesforce(long id)
-            throws NoSuchObjectException, GeneralSecurityException,
-            WebClientException;
+    void updateDescription(long savedListId, UpdateCandidateSourceDescriptionRequest request)
+        throws  NoSuchObjectException;
+
+    /**
+     * Updates the tbb short name used for redirecting to external links (google sheet).
+     * @param request Request containing the updated short name and the saved list id which it belongs to.
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     */
+    SavedList updateTbbShortName(UpdateShortNameRequest request)
+        throws  NoSuchObjectException;
+
+    /**
+     * Updates the tbb short name used for redirecting to external links (google sheet).
+     * @param shortName Request containing the updated short name and the saved list id which it belongs to.
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     */
+    SavedList findByShortName(String shortName)
+        throws  NoSuchObjectException;
     
     /**
      * Updates the fields that are displayed for each candidate in the given 
@@ -238,4 +336,31 @@ public interface SavedListService {
     void updateDisplayedFieldPaths(
             long savedListId, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException;
+
+    /**
+     * Create a published external document from the data of candidates in the given list. 
+     * @param savedListId Id of saved list
+     * @param request Request containing details of what is to be published 
+     * @return SavedList containing a link to the published doc
+     * @throws GeneralSecurityException if there are security problems accessing document storage
+     * @throws IOException if there are problems creating the document 
+     * @throws ReflectiveOperationException if the publish request contains unknown fields
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     */
+    SavedList publish(long savedListId, PublishListRequest request)
+        throws GeneralSecurityException, IOException, NoSuchObjectException, ReflectiveOperationException;
+
+    /**
+     * Imports potential employer feedback from the currently published doc associated with a list.
+     * <p/>
+     * Does nothing if the list has not been published.
+     * @param savedListId ID of published list
+     * @return PublishedDocImportReport containing details of the import
+     * @throws GeneralSecurityException if there are security problems accessing document storage
+     * @throws IOException if there are problems creating the document 
+     * @throws NoSuchObjectException  if there is no saved list with this id or if published doc
+     * is not found (maybe it has been manually deleted).
+     */
+    PublishedDocImportReport importEmployerFeedback(long savedListId) 
+        throws GeneralSecurityException, NoSuchObjectException, IOException;
 }

@@ -24,263 +24,385 @@
 <div *ngIf="!loading" id="FullIntakeForm">
   <div class="d-flex justify-content-between mb-2 ml-2">
     <div class="d-flex flex-column">
-      <button class="btn btn-sm btn-primary mb-3" (click)="exportAsPdf('FullIntakeForm')" [disabled]="saving">
-        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-        Export PDF
-      </button>
+      <div class="d-flex">
+        <button class="btn btn-sm btn-primary mb-3" (click)="exportAsPdf('FullIntakeForm')" [disabled]="saving">
+          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+          Export PDF
+        </button>
+
+        <div class="btn-group-sm ml-2">
+          <button (click)="togglePanels(false)" class="btn btn-outline-primary btn-sm mr-2">Close All Tabs</button>
+          <button (click)="togglePanels(true)" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
+        </div>
+      </div>
       <h5>Full Intake</h5>
     </div>
-    <div class="d-flex align-items-end flex-column justify-content-between">
-      <div class="d-flex float-right">
-        <button class="btn btn-sm btn-outline-success mr-1" (click)="createIntakeNote('Full Intake', false, $event.target)" [disabled]="saving">
-          Start Intake
-        </button>
-        <button class="btn btn-sm btn-outline-secondary ml-1" (click)="createIntakeNote('Full Intake', true, $event.target)" [disabled]="saving">
-          Update Intake
-        </button>
+
+    <div class="d-flex flex-column justify-content-between">
+
+      <div class="btn-group">
+          <button class="btn btn-sm btn-primary border border-white" (click)="inputOldIntakeNote('Full Intake', $event.target)" [disabled]="saving">
+            <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+            Input Original Intake
+          </button>
+          <button class="btn btn-sm btn-success border border-white" (click)="createIntakeNote('Full Intake', 'start', $event.target)" [disabled]="saving || clickedOldIntake">
+            Start New Intake
+          </button>
+          <button class="btn btn-sm btn-secondary border border-white" (click)="createIntakeNote('Full Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
+            Update Intake
+          </button>
       </div>
       <div>
-        <div class="text-muted small text-right">Before starting or updating the interview, please click appropriate button.</div>
-        <div class="text-muted small text-right">This will create a note on the right to help track changes.</div>
+        <div class="text-muted small font-italic">- Before starting or updating the interview, please click appropriate button.</div>
+        <div class="text-muted small font-italic">- If entering an old intake click Input Original Intake and ignore other buttons.</div>
+        <div class="text-muted small font-italic">- This will create a note on the right to help track changes. Only click once per intake.</div>
       </div>
 
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-header">
-      Confirm General Information
-    </div>
-    <div class="card-body">
-      <app-confirm-contact
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-confirm-contact>
-    </div>
-  </div>
+  <div>
+    <ngb-accordion #confirm="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <ngb-panel id="intake-confirm">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            Confirm General Information
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="confirm.activeIds.includes('intake-confirm')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!confirm.activeIds.includes('intake-confirm')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-confirm-contact
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-confirm-contact>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
 
-  <hr/>
+    <hr/>
 
-  <div class="card">
-    <div class="card-header">
-      Interest in International Recruitment
-    </div>
-    <div class="card-body">
-      <app-int-recruitment
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-int-recruitment>
-      <app-rural
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-rural>
-    </div>
-  </div>
+    <ngb-accordion #recruit="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <ngb-panel id="intake-int-recruit">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            Interest in International Recruitment
+            <button ngbPanelToggle class="btn btn-link">
+                <ng-container *ngIf="recruit.activeIds.includes('intake-int-recruit')"
+                ><i class="d-flex fas fa-chevron-up"></i></ng-container
+                >
+                <ng-container *ngIf="!recruit.activeIds.includes('intake-int-recruit')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
+              </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-int-recruitment
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-int-recruitment>
+          <app-rural
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-rural>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
 
-  <hr/>
+    <hr/>
 
-  <app-citizenships
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-    [nationalities]="nationalities">
-  </app-citizenships>
-
-  <hr/>
-
-  <app-exams
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-  >
-  </app-exams>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      English Assessment
-      <span class="small ml-2">
-        Only complete if never taken IELTS or TOEFL.
-      </span>
-    </div>
-    <div class="card-body">
-      <app-lang-assessment
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-lang-assessment>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Residency and Work Status
-    </div>
-    <div class="card-body">
-      <app-residence-status
+    <app-citizenships
       [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData">
-      </app-residence-status>
-      <app-work-permit
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-work-permit>
-      <app-work-status
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-work-status>
-      <app-work-abroad
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [countries]="countries">
-      </app-work-abroad>
-    </div>
+      [candidateIntakeData]="candidateIntakeData"
+      [nationalities]="nationalities"
+      [toggleAll]="toggleAll">
+    </app-citizenships>
+
+    <hr/>
+
+    <app-exams
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [toggleAll]="toggleAll">
+    </app-exams>
+
+    <hr/>
+
+    <app-view-candidate-language
+      [candidate]="candidate"
+      [editable]="false"
+      [accordion]="true"
+      [toggleAll]="toggleAll">
+    </app-view-candidate-language>
+
+    <hr/>
+
+    <ngb-accordion #english="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <ngb-panel id="intake-english-assessment">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            English Assessment
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="english.activeIds.includes('intake-english-assessment')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!english.activeIds.includes('intake-english-assessment')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-lang-assessment
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-lang-assessment>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+
+    <hr/>
+
+    <ngb-accordion #residency="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <ngb-panel id="intake-residency">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            Residency and Work Status
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="residency.activeIds.includes('intake-residency')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!residency.activeIds.includes('intake-residency')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-residence-status
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-residence-status>
+          <app-work-permit
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-work-permit>
+          <app-work-status
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-work-status>
+          <app-work-abroad
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-work-abroad>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+
+    <hr/>
+
+    <ngb-accordion #host="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <ngb-panel id="intake-host-country">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            Host Country Status
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="host.activeIds.includes('intake-host-country')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!host.activeIds.includes('intake-host-country')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-host-entry
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [countries]="countries">
+          </app-host-entry>
+          <app-home-location
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-home-location>
+          <app-resettlement-third
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-resettlement-third>
+          <app-host-challenges
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-host-challenges>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+
+    <hr/>
+
+    <ngb-accordion #registration="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <ngb-panel id="intake-registration">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            Registration
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="registration.activeIds.includes('intake-registration')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!registration.activeIds.includes('intake-registration')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <div class="card-title h6">
+            UNHCR
+          </div>
+          <app-registration-unhcr
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-registration-unhcr>
+          <div class="card-title h6">
+            UNRWA
+          </div>
+          <app-registration-unrwa
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-registration-unrwa>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+
+    <hr/>
+
+    <ngb-accordion #partner="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <ngb-panel id="intake-partner-info">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            Partner Information
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="partner.activeIds.includes('intake-partner-info')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!partner.activeIds.includes('intake-partner-info')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelHeader let-opened="opened">
+          <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+
+            <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+              <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
+              <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-marital-status
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [educationLevels]="educationLevels"
+            [occupations]="occupations"
+            [languageLevels]="languageLevels"
+            [nationalities]="nationalities">
+          </app-marital-status>
+          <app-family
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-family>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+
+    <hr/>
+
+    <app-dependants
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [toggleAll]="toggleAll">
+    </app-dependants>
+
+    <hr/>
+
+    <ngb-accordion #eligibility="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <ngb-panel id="intake-additional-eligibility">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            Additional Eligibility
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="eligibility.activeIds.includes('intake-additional-eligibility')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!eligibility.activeIds.includes('intake-additional-eligibility')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-crime
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-crime>
+          <app-military-service
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-military-service>
+          <app-conflict
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-conflict>
+          <app-visa-reject
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-visa-reject>
+          <app-health-issues
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-health-issues>
+          <app-visa-issues
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-visa-issues>
+          <app-driving-license
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [countries]="countries">
+          </app-driving-license>
+          <app-covid-vaccination
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-covid-vaccination>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+
+    <hr/>
+
+    <ngb-accordion #agreement="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <ngb-panel id="intake-final-agreement">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            End of Intake
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="residency.activeIds.includes('intake-final-agreement')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!residency.activeIds.includes('intake-final-agreement')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-final-agreement>
+          </app-final-agreement>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
   </div>
 
-  <hr/>
+</div>
 
-  <div class="card">
-    <div class="card-header">
-      Host Country Status
-    </div>
-    <div class="card-body">
-      <app-host-entry-year
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [countries]="countries">
-      </app-host-entry-year>
-      <app-host-entry-legally
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-host-entry-legally>
-      <app-returned-home
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-returned-home>
-      <app-home-location
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-home-location>
-      <app-return-home-safe
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-return-home-safe>
-      <app-left-home-reason
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-left-home-reason>
-      <app-return-home-future
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-return-home-future>
-      <app-resettlement-third
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-resettlement-third>
-      <app-host-challenges
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-host-challenges>
-    </div>
+<div class="d-flex align-items-end flex-column justify-content-between">
+  <div class="d-flex float-right">
+    <button class="btn btn-sm btn-outline-dark mr-1 mt-3 mb-2" (click)="createIntakeNote('Full Intake', 'complete', $event.target)" [disabled]="saving">
+      Complete Intake
+    </button>
   </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Registration
-    </div>
-    <div class="card-body">
-      <div class="card-title h6">
-        UNHCR
-      </div>
-      <app-registration-unhcr
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-registration-unhcr>
-      <div class="card-title h6">
-        UNRWA
-      </div>
-      <app-registration-unrwa
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-registration-unrwa>
-    </div>
+  <div>
+    <div class="text-muted small font-italic">- No need to click if inputting an original intake.</div>
   </div>
-
-  <hr/>
-
-  <app-view-candidate-language
-  [candidate]="candidate"
-  [editable]="false">
-  </app-view-candidate-language>
-
-  <hr/>
-
-  <app-dependants
-  [candidate]="candidate"
-  [candidateIntakeData]="candidateIntakeData">
-  </app-dependants>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Partner Information
-    </div>
-    <div class="card-body">
-      <app-marital-status
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [educationLevels]="educationLevels"
-        [occupations]="occupations"
-        [languageLevels]="languageLevels"
-        [nationalities]="nationalities">
-      </app-marital-status>
-      <app-family
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-family>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Additional Eligibility
-    </div>
-    <div class="card-body">
-      <app-crime
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-crime>
-      <app-military-service
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-military-service>
-      <app-conflict
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-conflict>
-      <app-visa-reject
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-visa-reject>
-      <app-health-issues
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-health-issues>
-      <app-visa-issues
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-visa-issues>
-      <app-driving-license
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [countries]="countries">
-      </app-driving-license>
-    </div>
-  </div>
-
 </div>

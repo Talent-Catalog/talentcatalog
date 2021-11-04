@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.util.Collection;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -26,13 +27,30 @@ import org.tbbtalent.server.model.sf.Opportunity;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
+import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
+import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 
 /**
  * Access to Salesforce.
+ * <p/>
+ * Note that our Salesforce configuration supports different types of opportunity, including
+ * Employer opportunities and Candidate opportunities. However, they are all just different
+ * versions (defined by the Salesforce "RecordType") of the standard Salesforce Opportunity record.
  *
  * @author John Cameron
  */
 public interface SalesforceService {
+
+    /**
+     * Updates the given candidates with their candidate opportunity stages associated with the
+     * given Salesforce job opportunity.
+     * @param candidates Candidates to check
+     * @param sfJoblink url link to a Salesfroce job opportunity
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */ 
+    void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfJoblink)
+        throws SalesforceException;
 
     /**
      * Searches Salesforce for all Contact records relating to TBB 
@@ -71,8 +89,8 @@ public interface SalesforceService {
             throws GeneralSecurityException, WebClientException;
 
     /**
-     * Searches for a Salesforce Opportunity record corresponding to the given 
-     * Salesforce id
+     * Searches for a Salesforce Opportunity record (Employer or Candidate opportunity) 
+     * corresponding to the given Salesforce id
      * @param sfId Salesforce id
      * @return Salesforce opportunity, null if none
      * @throws GeneralSecurityException If there are errors relating to keys
@@ -105,19 +123,7 @@ public interface SalesforceService {
     <T> T findRecordFieldsFromId(
             String objectType, String id, String fields, Class<T> cl)
             throws GeneralSecurityException, WebClientException;
-    
-    /**
-     * Creates a Salesforce Contact record corresponding to the given candidate.
-     * @param candidate Candidate - candidate number maps to TBBid in Salesforce
-     * @return Created Salesforce contact
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data
-     */
-    @NonNull
-    Contact createContact(@NonNull Candidate candidate)
-            throws GeneralSecurityException, WebClientException, SalesforceException;
+
     /**
      * Creates or updates the Salesforce Contact record corresponding to the 
      * given candidate.
@@ -144,26 +150,28 @@ public interface SalesforceService {
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     @NonNull
-    List<Contact> createOrUpdateContacts(@NonNull List<Candidate> candidates)
+    List<Contact> createOrUpdateContacts(@NonNull Collection<Candidate> candidates)
             throws GeneralSecurityException, WebClientException, SalesforceException;
 
     /**
-     * Creates or updates the Salesforce Opportunity records corresponding to the 
-     * given candidates for the given job opportunity.
+     * Creates or updates the Salesforce Candidate Opportunity records corresponding to the 
+     * given candidates for the given Employer job opportunity.
      * <p/>
      * Note the candidate job opportunities are identified by the unique
      * external id TBBCandidateExternalId__c
      * 
      * @param candidates Candidates
-     * @param sfJoblink url link to Job opportunity on Salesforce
+     * @param salesforceOppParams Optional Salesforce fields to set on all given candidates' 
+     *                            opportunities           
+     * @param sfJoblink url link to Employer job opportunity on Salesforce
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data,
-     * including if sfJoblink is not a valid link to a Salesforce job opportunity.
+     * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
      */
-    void createOrUpdateJobOpportunities(
-            List<Candidate> candidates, String sfJoblink)
+    void createOrUpdateCandidateOpportunities(List<Candidate> candidates, 
+        @Nullable SalesforceOppParams salesforceOppParams, String sfJoblink)
             throws GeneralSecurityException, WebClientException, SalesforceException;
     
     /**
@@ -175,4 +183,34 @@ public interface SalesforceService {
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     void updateContact(Candidate candidate) throws GeneralSecurityException;
+    
+    /**
+     * Updates the Salesforce Employer opportunity record corresponding to the sfJoblink in the 
+     * given request.
+     * 
+     * @param request Contains a link to the opportunity to be updated, plus the data to update.
+     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request) throws GeneralSecurityException;
+
+    /**
+     * Updates the Salesforce Candidate Opportunity records based on the given employer feedback
+     * on each candidate. 
+     * <p/>
+     * Note the candidate job opportunities are identified by the unique
+     * external id TBBCandidateExternalId__c
+     *
+     * @param feedbacks Employer feedback on candidates
+     * @param sfJoblink url link to Employer job opportunity on Salesforce
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data,
+     * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
+     */
+    void updateCandidateOpportunities(List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink)
+        throws GeneralSecurityException, WebClientException, SalesforceException;
+        
 }

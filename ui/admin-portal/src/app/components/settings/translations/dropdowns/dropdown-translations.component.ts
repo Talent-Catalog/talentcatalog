@@ -16,13 +16,13 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../services/language.service";
 import {CountryService} from "../../../../services/country.service";
 import {TranslationService} from "../../../../services/translation.service";
-import {TranslationItem} from '../../../../model/translation-item';
+import {TranslatedObject} from '../../../../model/translated-object';
 import {SystemLanguage} from '../../../../model/language';
 import {User} from "../../../../model/user";
 
@@ -40,11 +40,12 @@ export class DropdownTranslationsComponent implements OnInit {
   error: any;
   pageNumber: number;
   pageSize: number;
-  results: SearchResults<TranslationItem>;
+  results: SearchResults<TranslatedObject>;
   systemLanguages: SystemLanguage[];
   types: SearchResults<any>;
 
   topLevelForm: FormGroup;
+  translations: FormArray;
 
 
   constructor(private fb: FormBuilder,
@@ -59,8 +60,8 @@ export class DropdownTranslationsComponent implements OnInit {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
       keyword: [''],
-      type: ['', Validators.required],
-      language: ['', Validators.required],
+      type: [null, Validators.required],
+      language: [null, Validators.required],
     });
     this.pageNumber = 1;
     this.pageSize = 50;
@@ -94,7 +95,7 @@ export class DropdownTranslationsComponent implements OnInit {
       )
       .subscribe(res => {
         //reset page number as changing types
-        this.pageNumber = 1;
+        // this.pageNumber = 1;
         this.search();
       });
     this.search();
@@ -102,28 +103,26 @@ export class DropdownTranslationsComponent implements OnInit {
 
   /* SEARCH FORM */
   search() {
-    let request = this.searchForm.value;
+    this.loading = true;
+    const request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
 
     if (this.searchForm.valid) {
-      let type = this.searchForm.controls['type'].value;
-      let language = this.searchForm.controls['language'].value;
-      this.loading = true;
-      this.results = null;
-      this.error = null;
+      const type = this.searchForm.controls['type'].value;
+      const language = this.searchForm.controls['language'].value;
       this.translationService.search(request.type, request).subscribe(results => {
           this.results = results;
-
+          this.loading = false;
           //form for editing
           this.topLevelForm = this.fb.group({
             translations: this.fb.array(
               this.results.content.map(t => this.fb.group({
-                id: [t.id, [Validators.required]],
-                type: [type, [Validators.required]],
+                translatedId: [t.translatedId],
+                objectId: [t.id, [Validators.required]],
+                objectType: [type, [Validators.required]],
                 language: [language, [Validators.required]],
-                translatedId: [t.translatedId, [Validators.required]],
-                translatedName: [t.translatedName, [Validators.required, Validators.minLength(2)]]
+                value: [t.translatedName, [Validators.required, Validators.minLength(2)]]
               }))
             )
           });
@@ -140,8 +139,8 @@ export class DropdownTranslationsComponent implements OnInit {
   }
 
   updateTranslation(index) {
-    let translationForm = this.topLevelForm.get(`translations.${index}`) as FormGroup;
-    let request = translationForm.value;
+    const translationForm = this.topLevelForm.get(`translations.${index}`) as FormGroup;
+    const request = translationForm.value;
     if (request.translatedId) {
       //update
       this.translationService.update(request.translatedId, request).subscribe(results => {

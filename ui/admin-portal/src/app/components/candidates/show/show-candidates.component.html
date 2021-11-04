@@ -34,6 +34,13 @@
     {{error}}
   </div>
 
+  <div>
+    <app-candidate-source-description
+      [candidateSource]="candidateSource"
+    >
+    </app-candidate-source-description>
+  </div>
+
   <div class="results-area">
 
     <!-- loading -->
@@ -52,7 +59,7 @@
       </ngb-pagination>
 
       <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()">
-        <i class="fas fa-link" title="Get shareable link"></i>
+        <i class="fas fa-link" title="Copy shareable link"></i>
       </button>
       <button class="btn" *ngIf="hasSavedSearchSource()" (click)="doShowSearch()">
         <i class="fas fa-search" title="Show Search"></i>
@@ -72,6 +79,12 @@
           <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
         </a>
       </div>
+      <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">
+        <i class="fab fa-google-drive" title="Create/show Google folder"></i>
+      </button>
+      <button class="btn" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
+        <i class="fas fa-globe" title="Show published sheet"></i>
+      </button>
       <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
         <i class="fas fa-sync" title="Refresh search"></i>
       </button>
@@ -107,7 +120,7 @@
               (click)="updateStatusOfSelection()" title="Update Statuses of Selection">
         <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
         <i class="fas fa-user-check"></i>
-        Update statuses
+        Status change
       </button>
 
       <button class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
@@ -116,10 +129,41 @@
         Clear <i class="fas fa-user-check"></i>
       </button>
 
-      <button class="btn btn-sm btn-secondary" (click)="exportCandidates()"
+      <button *ngIf="isSwapSelectionSupported()" class="btn btn-sm btn-secondary"
+              (click)="swapSelection()"
+              title="Swap Selection. Selected becomes unselected and vice versa.">
+        <i class="fas fa-sync"></i><i class="fas fa-user-check"></i>
+      </button>
+
+      <button class="btn btn-sm btn-secondary" *ngIf="isSavedList()" [disabled]="!isSelection()"
+              (click)="removeSelectedCandidatesFromList()"
+              title="Remove Selection">
+        Remove <i class="fas fa-user-check"></i>
+      </button>
+
+      <button  *ngIf="isImportable()" class="btn btn-sm btn-secondary" (click)="importCandidates()"
+              title="Import candidates">
+        <i class="fas fa-spinner fa-spin" *ngIf=importing></i>
+        Import <i class="fas fa-file-excel"></i>
+      </button>
+
+      <button *ngIf="!isSavedList()" class="btn btn-sm btn-secondary" (click)="exportCandidates()"
               title="Export candidates">
         <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
         Export <i class="fas fa-file-excel"></i>
+      </button>
+
+      <button *ngIf="isPublishable()" class="btn btn-sm btn-secondary" (click)="modifyExportColumns()"
+              title="Publish candidates to be shared externally - eg with employers">
+        <i class="fas fa-spinner fa-spin" *ngIf=publishing></i>
+        Publish <i class="fas fa-globe"></i>
+      </button>
+
+      <button  *ngIf="hasPublishedDoc() && candidateSource?.sfJoblink"
+               class="btn btn-sm btn-secondary" (click)="importEmployerFeedback()"
+              title="Import employer feedback from published list">
+        <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
+        Feedback <i class="fas fa-globe"></i>
       </button>
 
       <button *ngIf="isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
@@ -127,7 +171,7 @@
               title="Create or update candidates in Salesforce"
       >
         <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
-        Create/update <i class="fab fa-salesforce"></i>
+        Update <i class="fab fa-salesforce"></i>
       </button>
 
 
@@ -171,18 +215,17 @@
 
       <!-- REVIEW STATUS FILTER -->
       <div *ngIf="isReviewable()" class="form-group col-12">
-        <ng-multiselect-dropdown
+        <ng-select
           id="reviewStatus"
-          class="custom-primary"
+          [items]="statuses"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          [multiple]="true"
+          (ngModelChange)="onReviewStatusFilterChange()"
           [placeholder]="'Review status: Empty displays everything'"
-          [settings]="dropdownSettings"
-          [data]="statuses"
-          formControlName="statusesDisplay"
-          (onSelect)="onItemSelect()"
-          (onDeSelect)="onItemDeSelect()"
-          (onSelectAll)="onSelectAll()"
-          (onDeSelectAll)="onDeSelectAll()">
-        </ng-multiselect-dropdown>
+          bindLabel="name"
+          formControlName="statusesDisplay">
+        </ng-select>
       </div>
     </form>
 
@@ -196,6 +239,9 @@
             <th class="candidate-number-row" (click)="toggleSort('id')">
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
+            </th>
+            <th *ngIf="isShowStage()">
+              <i class="fab fa-salesforce"></i>
             </th>
             <th>
               <i class="far fa-hand-pointer"></i>
@@ -236,14 +282,22 @@
                 [candidate]="candidate">
               </app-cv-icon>
             </td>
+            <td *ngIf="isShowStage()">
+              <a *ngIf="candidate.stage" [href]="candidate.sfOpportunityLink" target="_blank"
+              title="Stage that this candidate is at - linking to their SF candidate opportunity">
+                {{candidate.stage}}
+              </a>
+            </td>
             <td>
               <input type="checkbox" class="custom-checkbox" id="selected" data-onstyle="primary"
                      (ngModelChange)="onSelectionChange(candidate, $event)"
-                     [ngModel]="candidate.selected"
-                     [checked]="candidate.selected">
+                     [ngModel]="isSelected(candidate)"
+                     [checked]="isSelected(candidate)">
             </td>
             <td *ngFor="let field of selectedFields">
-              {{field.getValue(candidate)}}
+              <span>
+                {{field.getValue(candidate)}}
+              </span>
             </td>
             <td>
               <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
@@ -257,7 +311,7 @@
                   <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
                     in new tab</a></li>
                   <li class="dropdown-divider"></li>
-                  <li *ngIf="isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Delete from list</li>
+                  <li *ngIf="isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Remove from list</li>
                 </ul>
               </div>
             </td>

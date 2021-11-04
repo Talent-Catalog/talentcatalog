@@ -28,16 +28,14 @@ import {
 
 import {
   Candidate,
+  SalesforceOppParams,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {
-  CreateFromDefaultSavedSearchRequest,
-  SavedSearchService
-} from '../../../services/saved-search.service';
+import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
@@ -60,6 +58,7 @@ import {
   CandidateSource,
   canEditSource,
   defaultReviewStatusFilter,
+  indexOfHasId,
   isMine,
   isSharedWithMe,
   ReviewStatus
@@ -69,7 +68,6 @@ import {
   CandidateSourceResultsCacheService
 } from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
@@ -79,6 +77,9 @@ import {
   CopySourceContentsRequest,
   IHasSetOfCandidates,
   isSavedList,
+  PublishedDocColumnConfig, PublishedDocImportReport,
+  PublishListRequest,
+  SavedList,
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
@@ -97,6 +98,10 @@ import {CandidateColumnSelectorComponent} from '../../util/candidate-column-sele
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
+import {SalesforceStageComponent} from "../../util/salesforce-stage/salesforce-stage.component";
+import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
+import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
+import {PublishedDocColumnSelectorComponent} from "../../util/published-doc-column-selector/published-doc-column-selector.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -130,6 +135,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   loading: boolean;
   searching: boolean;
   exporting: boolean;
+  importing: boolean;
+  importingFeedback: boolean;
+  publishing: boolean;
   updating: boolean;
   updatingStatuses: boolean;
   savingSelection: boolean;
@@ -147,16 +155,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   /* MULTI SELECT */
   statuses: string[];
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'text',
-    singleSelection: false,
-    selectAllText: 'Select All',
-    unSelectAllText: 'Deselect All',
-    itemsShowLimit: 3,
-    closeDropDownOnSelection: true,
-    allowSearchFilter: true
-  };
 
   currentCandidate: Candidate;
   private selectedCandidates: Candidate[];
@@ -185,7 +183,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private router: Router,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateFieldService: CandidateFieldService,
-              private authService: AuthService
+              private authService: AuthService,
+              private publishedDocColumnService: PublishedDocColumnService
 
   ) {
     this.searchForm = this.fb.group({
@@ -253,17 +252,29 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
         }
       }
-    } else {
-      if (changes.searchRequest) {
-        if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
-          if (this.searchRequest) {
-            this.updatedSearch();
-          }
+    }
+    if (changes.searchRequest) {
+      if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
+        if (this.searchRequest) {
+          this.updatedSearch();
         }
       }
     }
   }
 
+  isSelected(candidate: Candidate): boolean {
+    let selected: boolean;
+    if (isSavedSearch(this.candidateSource)) {
+      selected = candidate.selected;
+    } else {
+      selected = indexOfHasId(candidate.id, this.selectedCandidates) >= 0;
+    }
+    return selected;
+  }
+
+  /**
+   * True if any candidates are currently selected.
+   */
   isSelection(): boolean {
     let isSelection: boolean;
     if (isSavedSearch(this.candidateSource)) {
@@ -292,6 +303,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.error = null;
     this.searching = true;
     const request = this.searchRequest;
+
+    //Search passed in externally will not have current reviewStatusFilter applied
+    //because that is only managed by this component. So fill it in.
+    if (this.isReviewable()) {
+      request.reviewStatusFilter = this.reviewStatusFilter;
+    }
+
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
@@ -434,6 +452,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   private isCacheable(): boolean {
     return !this.isReviewable() ||
+      //If reviewable, the only results that are cached are for the default review filter
       this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString();
   }
 
@@ -463,6 +482,51 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.doSearch(true);
   }
 
+  importCandidates() {
+
+    if (isSavedList(this.candidateSource)) {
+
+      const fileSelectorModal = this.modalService.open(FileSelectorComponent, {
+        centered: true,
+        backdrop: 'static'
+      })
+
+      fileSelectorModal.componentInstance.validExtensions = ['csv', 'txt'];
+      fileSelectorModal.componentInstance.maxFiles = 1;
+      fileSelectorModal.componentInstance.closeButtonLabel = "Import";
+      fileSelectorModal.componentInstance.title = "Select file containing candidate numbers";
+      fileSelectorModal.componentInstance.instructions = "Select a file with one of the above " +
+        "extensions which contains a candidate number at the start of each line. " +
+        "This will work for a spreadsheet that has been exported in csv format as long as " +
+        "candidate numbers are in the first column of the spreadsheet. " +
+        "Other data in the spreadsheet will be ignored. Any header line will also be ignored.";
+
+      fileSelectorModal.result
+      .then((selectedFiles: File[]) => {
+        this.doImport(selectedFiles);
+      })
+      .catch(() => { /* Isn't possible */ });
+    }
+  }
+
+  private doImport(files: File[]) {
+    const formData: FormData = new FormData();
+    formData.append('file', files[0]);
+
+    this.error = null;
+    this.importing = true;
+    this.savedListCandidateService.mergeFromFile(this.candidateSource.id, formData).subscribe(
+      result => {
+        this.importing = false;
+        this.doSearch(true);
+      },
+      error => {
+        this.error = error;
+        this.importing = false;
+      }
+    )
+  }
+
   exportCandidates() {
     this.exporting = true;
 
@@ -473,16 +537,16 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       request = new SavedListGetRequest();
     }
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize = this.pageSize;
+
+    //Note: The page number and size are ignored in this call (all records are exported).
+    //Only the sort fields are processed.
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
     if (request instanceof SavedSearchGetRequest) {
       request.reviewStatusFilter = this.reviewStatusFilter;
     }
 
-    this.candidateSourceCandidateService.export(
-      this.candidateSource, request).subscribe(
+    this.candidateSourceCandidateService.export(this.candidateSource, request).subscribe(
       result => {
         const options = {type: 'text/csv;charset=utf-8;'};
         const filename = 'candidates.csv';
@@ -507,6 +571,83 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.exporting = false;
       }
     );
+  }
+
+  private publishCandidates(exportColumns: PublishedDocColumnConfig[]) {
+    this.publishing = true;
+    this.error = null;
+
+    //Construct the request
+    const request: PublishListRequest = new PublishListRequest();
+    request.columns = exportColumns;
+
+    this.savedListService.publish(this.candidateSource.id, request).subscribe(
+      (result: SavedList) => {
+        if (isSavedList(this.candidateSource)) {
+          //Update the list's published doc link and the export columns
+          this.candidateSource.publishedDocLink = result.publishedDocLink;
+        }
+        this.candidateSource.exportColumns = result.exportColumns;
+        this.publishing = false;
+      },
+      error => {
+        this.error = error;
+        this.publishing = false;
+      }
+    );
+  }
+
+  importEmployerFeedback() {
+    this.importingFeedback = true;
+    this.error = null;
+
+    this.savedListService.importEmployerFeedback(this.candidateSource.id).subscribe(
+      (result) => {
+        this.importingFeedback = false;
+        //Refresh to display any changed salesforce stages
+        this.doSearch(true);
+        this.displayImportFeedbackReport(result);
+      },
+      error => {
+        this.error = error;
+        this.importingFeedback = false;
+      }
+    );
+  }
+
+  private displayImportFeedbackReport(report: PublishedDocImportReport) {
+    const showReport = this.modalService.open(ConfirmationComponent, {
+      centered: true, backdrop: 'static'});
+    showReport.componentInstance.title = "Feedback Import Report";
+    showReport.componentInstance.showCancel = false;
+    let mess = report.message + ".";
+    if (report.numEmployerFeedbacks > 0) {
+      mess += " Stored employer feedback for " + report.numEmployerFeedbacks + " candidates on Salesforce.";
+    }
+    if (report.numJobOffers > 0) {
+      mess += " Recorded job offers for " + report.numJobOffers + " candidates.";
+    }
+    if (report.numNoJobOffers > 0) {
+      mess += " Closed job opportunities for " + report.numNoJobOffers + " candidates.";
+    }
+
+    showReport.componentInstance.message = mess;
+  }
+
+  modifyExportColumns() {
+    const modal = this.modalService.open(PublishedDocColumnSelectorComponent, {size: "lg"});
+
+    modal.componentInstance.availableColumns = this.publishedDocColumnService.getColumnConfigFromAllColumns();
+    modal.componentInstance.selectedColumns =  this.publishedDocColumnService.getColumnConfigFromExportColumns(this.candidateSource.exportColumns);
+
+    modal.result
+      .then((request: PublishedDocColumnConfig[]) => {
+          this.publishCandidates(request);
+
+        },
+        error => this.error = error
+      )
+      .catch();
   }
 
   createAndDownloadBlobFile(body, options, filename) {
@@ -553,7 +694,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return breadcrumb;
   }
 
-  private onReviewStatusFilterChange() {
+  onReviewStatusFilterChange() {
 
     this.reviewStatusFilter = this.searchForm.value.statusesDisplay;
 
@@ -561,23 +702,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //completely change the number of results.
     //Ignoring the page number will allow the cache to supply pageNumber
     //if it has something cached.
+    //Note also that a refresh will still need to be done if the review filter is not
+    //the default review filter - because that is all that is cached. This is handled in doSearch.
     this.doSearch(false, false);
-  }
-
-  onItemSelect() {
-    this.onReviewStatusFilterChange();
-  }
-
-  onItemDeSelect() {
-    this.onReviewStatusFilterChange();
-  }
-
-  onSelectAll() {
-    this.onReviewStatusFilterChange();
-  }
-
-  onDeSelectAll() {
-    this.onReviewStatusFilterChange();
   }
 
   addToSharedWithMe() {
@@ -621,6 +748,16 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return !isSavedSearch(this.candidateSource);
   }
 
+  isSavedList(): boolean {
+    return !isSavedSearch(this.candidateSource);
+  }
+
+  isSwapSelectionSupported(): boolean {
+    //Not supported for saved searches because swapping an empty selection on a search could
+    //potentially end up selecting huge numbers of candidates - up to the whole database.
+    return !isSavedSearch(this.candidateSource);
+  }
+
   sourceType(): string {
     return isSavedSearch(this.candidateSource) ? 'savedSearch' : 'list';
   }
@@ -639,15 +776,23 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isGlobal(): boolean {
-    let global: boolean = false;
-    if (isSavedSearch(this.candidateSource)) {
-      global = this.candidateSource.global;
-    }
-    return global;
+    return this.candidateSource.global;
+  }
+
+  isImportable(): boolean {
+    return isSavedList(this.candidateSource);
+  }
+
+  isPublishable(): boolean {
+    return isSavedList(this.candidateSource);
   }
 
   isSharedWithMe(): boolean {
     return isSharedWithMe(this.candidateSource, this.authService);
+  }
+
+  isShowStage(): boolean {
+    return isSavedList(this.candidateSource) && this.candidateSource.sfJoblink != null;
   }
 
   isEditable(): boolean {
@@ -751,6 +896,54 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.requestSaveSelection();
       }
     }
+  }
+
+  /**
+   * Selected becomes unselected and vice versa.
+   * <p/>
+   * Note that this only works for saved lists. Html should prevent
+   * this from being called - but if it is, it will do nothing.
+   */
+  swapSelection() {
+    if (isSavedList(this.candidateSource)) {
+
+      //First of all, get all candidates in this list from the server.
+      this.searching = true;
+      this.error = null;
+      this.candidateSourceCandidateService.list(this.candidateSource).subscribe(
+        (candidates: Candidate[]) => {
+          //Now do the actual swap
+          this.doSwapSelection(candidates)
+          this.searching = false;
+        },
+        error => {
+          this.error = error;
+          this.searching = false;
+        });
+    }
+  }
+
+  /**
+   * Selected becomes unselected and vice versa.
+   * <p/>
+   * Note: only works for saved lists - not saved sources.
+   * @param candidates All candidates
+   */
+  private doSwapSelection(candidates: Candidate[]) {
+    //This will contain the new selection
+    const newSelectedCandidates: Candidate[] = [];
+
+    //Invert the selection by looking at all candidates, and if they are not currently selected
+    //add them to newSelectedCandidates.
+    for (const candidate of candidates) {
+      //Look for this candidate's id in the currently selected candidates
+      if (indexOfHasId(candidate.id, this.selectedCandidates) < 0) {
+        //Not in currently selected - so add to new selected.
+        newSelectedCandidates.push(candidate);
+      }
+    }
+    //Switch to new selection
+    this.selectedCandidates = newSelectedCandidates;
   }
 
   private requestSaveSelection() {
@@ -944,10 +1137,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   clearSelection() {
-    const request: ClearSelectionRequest = {
-      userId: this.loggedInUser.id,
-    };
     if (isSavedSearch(this.candidateSource)) {
+      const request: ClearSelectionRequest = {
+        userId: this.loggedInUser.id,
+      };
       this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
         () => {
           this.doSearch(true);
@@ -956,6 +1149,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.error = err;
         });
     } else {
+      //For saved lists, the candidate data - including whether or not they have been selected
+      //is not saved anywhere, so just doing a refresh will clear all displayed selections
       this.doSearch(true);
     }
     this.selectedCandidates = [];
@@ -1017,6 +1212,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   doCopyLink() {
     copyToClipboard(getCandidateSourceExternalHref(
       this.router, this.location, this.candidateSource));
+    const showReport = this.modalService.open(ConfirmationComponent, {
+      centered: true, backdrop: 'static'});
+    showReport.componentInstance.title = "Copied link to clipboard";
+    showReport.componentInstance.showCancel = false;
+    showReport.componentInstance.message = "Paste the link where you want";
+
   }
 
   addCandidateToList(candidate: Candidate) {
@@ -1034,9 +1235,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  removeCandidateFromList(candidate: Candidate) {
+  private removeFromList(candidates: Candidate[]) {
+
+    //Need to deselect any candidates being removed.
+    this.selectedCandidates = this.selectedCandidates.filter(c => !candidates.includes(c));
+
     const request: IHasSetOfCandidates = {
-      candidateIds: [candidate.id]
+      candidateIds: candidates.map(c => c.id)
     };
     this.savedListCandidateService.remove(this.candidateSource.id, request).subscribe(
       () => {
@@ -1046,7 +1251,14 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.error = error;
       }
     );
+  }
 
+  removeCandidateFromList(candidate: Candidate) {
+    this.removeFromList([candidate]);
+  }
+
+  removeSelectedCandidatesFromList() {
+    this.removeFromList(this.selectedCandidates);
   }
 
   renderCandidateRow(candidate: Candidate) {
@@ -1065,20 +1277,73 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
+  /**
+   * Updates/creates candidate related records on Salesforce.
+   * <p/>
+   * Only works with saved lists (a bit dangerous with saved searches which could involve
+   * very large numbers of candidates - even all candidates on database!).
+   * Should be disabled in html for saved searches, but if it does get called for a search, it
+   * will do nothing.
+   */
   createUpdateSalesforce() {
+    if (isSavedList(this.candidateSource)) {
+      const nSelections = this.selectedCandidates.length;
+      if (nSelections === 0) {
+        //No candidates are selected, check whether the user wants to apply to the whole list.
+        const applyToWholeListQuery = this.modalService.open(ConfirmationComponent, {
+          centered: true, backdrop: 'static'});
+        applyToWholeListQuery.componentInstance.message =
+          'There are no candidates selected. Would you like to apply to everyone in the list?';
+        applyToWholeListQuery.result
+        .then((confirmed) => {if (confirmed === true) {
+          this.doCreateUpdateSalesforceOnList(false);
+          }})
+        .catch(() => { });
+      } else {
+        this.doCreateUpdateSalesforceOnList(true);
+      }
+    }
+  }
+
+  private doCreateUpdateSalesforceOnList(selectedCandidatesOnly: boolean) {
+    if (!this.candidateSource.sfJoblink) {
+      //If we do not have a job opportunity, there will be no candidate opp info.
+      this.doCreateUpdateSalesforceOnList2(null, selectedCandidatesOnly);
+    } else {
+      const applyToWholeListQuery = this.modalService.open(SalesforceStageComponent);
+      applyToWholeListQuery.result
+      .then((info: SalesforceOppParams) => {
+        this.doCreateUpdateSalesforceOnList2(info, selectedCandidatesOnly);
+      })
+      .catch(() => { });
+    }
+}
+
+  private doCreateUpdateSalesforceOnList2(info: SalesforceOppParams, selectedCandidatesOnly: boolean) {
     this.error = null;
     this.updating = true;
-    this.candidateSourceCandidateService.createUpdateSalesforce(
-      this.candidateSource).subscribe(
-      result => {
-        this.doSearch(true);
-        this.updating = false;
-      },
-      err => {
-        this.error = err;
-        this.updating = false;
-      }
-    );
+
+    if (selectedCandidatesOnly) {
+      const sfJobLink: string = this.candidateSource.sfJoblink;
+      const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
+      this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobLink, info)
+      .subscribe(result => {
+          //Refresh to display any changed stages
+          this.doSearch(true);
+          this.updating = false;
+        },
+        err => {this.error = err; this.updating = false; }
+      );
+    } else {
+      this.candidateService.createUpdateSalesforceFromList(this.candidateSource, info)
+      .subscribe(result => {
+          //Refresh to display any changed salesforce stages
+          this.doSearch(true);
+          this.updating = false;
+        },
+        err => {this.error = err; this.updating = false; }
+      );
+    }
   }
 
   doEditSource() {
@@ -1103,6 +1368,43 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   hasSavedSearchSource(): boolean {
     return this.getSavedSearchSource() != null;
+  }
+
+  hasPublishedDoc() {
+    return isSavedList(this.candidateSource) && this.candidateSource.publishedDocLink != null;
+  }
+
+  doShowPublishedDoc() {
+    if (isSavedList(this.candidateSource)) {
+      const folderlink = this.candidateSource.publishedDocLink;
+      if (folderlink) {
+        //Open link in new window
+        window.open(folderlink, "_blank");
+      }
+    }
+  }
+
+  doShowListFolder() {
+    if (isSavedList(this.candidateSource)) {
+      const folderlink = this.candidateSource.folderlink;
+      if (folderlink) {
+        //Open link in new window
+        window.open(folderlink, "_blank");
+      } else {
+        this.error = null;
+        this.searching = true;
+        this.savedListService.createFolder(this.candidateSource.id).subscribe(
+          savedList => {
+            this.candidateSource = savedList;
+            this.searching = false;
+            window.open(savedList.folderlink, "_blank");
+          },
+          error => {
+            this.error = error;
+            this.searching = false;
+          });
+      }
+    }
   }
 
   doShowSearch() {

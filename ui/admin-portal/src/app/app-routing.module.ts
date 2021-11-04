@@ -21,11 +21,12 @@ import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
 import {SettingsComponent} from "./components/settings/settings.component";
 import {HomeComponent} from "./components/candidates/home.component";
-import {InfographicComponent} from "./components/infograhics/infographic.component";
+import {InfographicComponent} from "./components/infographics/infographic.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {RoleGuardService} from "./services/role-guard.service";
 import {CandidatesSearchComponent} from "./components/candidates/candidates-search/candidates-search.component";
 import {CandidatesListComponent} from "./components/candidates/candidates-list/candidates-list.component";
+import {NewJobComponent} from "./components/job/new-job/new-job.component";
 
 const routes: Routes = [
   {
@@ -64,6 +65,11 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'job',
+        component: NewJobComponent,
+        data: {title: 'TBB Job'}
+      },
+      {
         path: 'list',
         children: [
           {
@@ -93,7 +99,7 @@ const routes: Routes = [
         path: 'settings',
         canActivate: [RoleGuardService],
         data: {
-          expectedRole: 'admin'
+          expectedRoles: ['admin', 'sourcepartneradmin']
         },
         children: [
           {

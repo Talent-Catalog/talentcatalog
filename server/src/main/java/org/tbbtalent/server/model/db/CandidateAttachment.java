@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.model.db;
 
+import org.springframework.lang.Nullable;
+
 import javax.persistence.*;
 
 @Entity
@@ -51,8 +53,22 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     private boolean cv;
     private String textExtract;
 
+    @Transient
+    @Nullable
+    private String url;
+
     public CandidateAttachment() {
     }
+
+    public String getUrl() {
+        if (type == AttachmentType.file) {
+            url = "https://s3.us-east-1.amazonaws.com/files.tbbtalent.org/candidate/" + (migrated ? "migrated" : candidate.getCandidateNumber()) + '/' + location;
+        } else {
+            url = location;
+        }
+        return url;
+    }
+
 
     public Candidate getCandidate() {
         return candidate;

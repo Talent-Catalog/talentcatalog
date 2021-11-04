@@ -17,7 +17,6 @@
 import {CandidateOccupation} from "./candidate-occupation";
 import {CandidateEducation} from "./candidate-education";
 import {Country} from "./country";
-import {Nationality} from "./nationality";
 import {CandidateJobExperience} from "./candidate-job-experience";
 import {CandidateCertification} from "./candidate-certification";
 import {CandidateLanguage} from "./candidate-language";
@@ -35,10 +34,15 @@ export interface Candidate {
   dob: string;
   candidateOccupations: CandidateOccupation[];
   country: Country;
+  state: string;
   city: string;
   yearOfArrival: number;
-  nationality: Nationality;
-  registeredWithUN: boolean;
+  nationality: Country;
+  externalId: string;
+  externalIdSource: string;
+  unhcrRegistered: YesNoUnsure;
+  unhcrNumber: string;
+  unhcrConsent: YesNo;
   candidateJobExperiences: CandidateJobExperience[];
   candidateCertifications: CandidateCertification[];
   candidateLanguages: CandidateLanguage[];
@@ -54,14 +58,27 @@ export interface Candidate {
 }
 
 export enum CandidateStatus {
-  active = 'active',
-  deleted = 'deleted',
-  draft = 'draft',
-  employed = 'employed',
-  incomplete = 'incomplete',
-  ineligible = 'ineligible',
-  pending = 'pending',
-  unreachable = 'unreachable',
+  active = "active",
+  autonomousEmployment = "autonomous employment (inactive)",
+  deleted = "deleted (inactive)",
+  draft = "draft (inactive)",
+  employed = "employed (inactive)",
+  incomplete = "incomplete",
+  ineligible = "ineligible (inactive)",
+  pending = "pending",
+  unreachable = "unreachable",
+  withdrawn = "withdrawn (inactive)"
+}
+
+export enum YesNo {
+  Yes = "Yes",
+  No = "No",
+}
+
+export enum YesNoUnsure {
+  Yes = "Yes",
+  No = "No",
+  Unsure = "Unsure"
 }
 
 export class BaseCandidateContactRequest {

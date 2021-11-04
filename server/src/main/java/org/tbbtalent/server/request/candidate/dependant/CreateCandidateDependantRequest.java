@@ -21,6 +21,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.DependantRelations;
+import org.tbbtalent.server.model.db.Registration;
 import org.tbbtalent.server.model.db.YesNo;
 
 import java.time.LocalDate;
@@ -29,16 +30,22 @@ import java.time.LocalDate;
 @Setter
 @ToString
 public class CreateCandidateDependantRequest {
-
     @Nullable
     private DependantRelations relation;
-
+    @Nullable
+    private String relationOther;
     @Nullable
     private LocalDate dob;
-
+    @Nullable
+    private String name;
+    @Nullable
+    private Registration registered;
+    @Nullable
+    private String registeredNumber;
+    @Nullable
+    private String registeredNotes;
     @Nullable
     private YesNo healthConcern;
-
     @Nullable
-    private String notes;
+    private String healthNotes;
 }

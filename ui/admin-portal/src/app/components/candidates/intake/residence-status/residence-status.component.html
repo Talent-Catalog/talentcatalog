@@ -28,14 +28,11 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="residenceStatus" [formControlName]="'residenceStatus'">
-      <option *ngFor="let opt of residenceStatusOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="residenceStatus" [formControlName]="'residenceStatus'" (clear)="setNoResponse('residenceStatus')"
+               [items]="residenceStatusOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
-  <div *ngIf="hasStatus">
+  <div *ngIf="hasNotes">
     <div class="form-group">
       <label for="residenceStatusNotes">Please explain more</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"

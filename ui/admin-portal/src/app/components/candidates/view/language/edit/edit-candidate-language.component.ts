@@ -21,7 +21,10 @@ import {LanguageService} from '../../../../../services/language.service';
 import {CandidateLanguage} from '../../../../../model/candidate-language';
 import {CountryService} from '../../../../../services/country.service';
 import {LanguageLevelService} from '../../../../../services/language-level.service';
-import {CandidateLanguageService} from '../../../../../services/candidate-language.service';
+import {
+  CandidateLanguageService,
+  UpdateCandidateLanguageRequest
+} from '../../../../../services/candidate-language.service';
 
 @Component({
   selector: 'app-edit-candidate-language',
@@ -86,7 +89,13 @@ export class EditCandidateLanguageComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.candidateLanguageService.update(this.candidateLanguage.id, this.candidateForm.value).subscribe(
+    const request: UpdateCandidateLanguageRequest = {
+      id: this.candidateLanguage.id,
+      languageId: this.candidateForm.value.languageId,
+      spokenLevelId: this.candidateForm.value.spokenLevelId,
+      writtenLevelId: this.candidateForm.value.writtenLevelId,
+    }
+    this.candidateLanguageService.update(request).subscribe(
       (candidateLanguage) => {
         this.closeModal(candidateLanguage);
         this.saving = false;

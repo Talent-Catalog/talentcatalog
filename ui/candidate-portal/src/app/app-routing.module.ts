@@ -29,11 +29,7 @@ import {RedirectGuard} from './services/redirect.guard';
 const routes: Routes = [
   {
     path: '',
-    canActivate: [RedirectGuard],
-    component: RedirectGuard,
-    data: {
-      externalUrl: 'https://www.talentbeyondboundaries.org/talentcatalog/'
-    }
+    component: LandingComponent,
   },
   {
     path: 'reset-password',
@@ -74,7 +70,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

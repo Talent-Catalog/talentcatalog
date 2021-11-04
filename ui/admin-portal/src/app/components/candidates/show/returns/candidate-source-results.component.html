@@ -101,7 +101,9 @@
         </td>
 
         <td *ngFor="let field of selectedFields">
-          {{field.getValue(candidate)}}
+          <span>
+            {{field.getValue(candidate)}}
+          </span>
         </td>
       </tr>
 

@@ -22,11 +22,19 @@ import {TranslateLoader} from '@ngx-translate/core';
 
 /**
  * This is an ngx-translate custom loader. We use it to fetch translations
- * from the server (which are actually stored up on Amazon AWS).
+ * from the server. Those translations are stored as JSON files up on Amazon AWS S3
+ * in files.tbbtalent.org/translations.
  * <p/>
- * This is configured in app.module.ts - the import of TranslateModule there.
+ * This custom loader is configured in app.module.ts - the import of TranslateModule there.
  * <p/>
  * See also https://github.com/ngx-translate/core#write--use-your-own-loader
+ * <p/>
+ * Note that the normal approach is to store the json translation files in the Angular code
+ * base in the assets/i18n directory of the candidate portal code.
+ * See https://github.com/ngx-translate/core#configuration.
+ * <p/>
+ * The advantage of our approach is that admin backend users can easily change translations
+ * instantly from the Settings|Translations menu without making a new system release.
  */
 @Injectable({
   providedIn: 'root'

@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateDependant;
 import org.tbbtalent.server.request.candidate.dependant.CreateCandidateDependantRequest;
 import org.tbbtalent.server.service.db.CandidateDependantService;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.Valid;
@@ -35,11 +37,13 @@ import java.util.Map;
 public class CandidateDependantAdminApi
         implements IJoinedTableApi<CreateCandidateDependantRequest,
         CreateCandidateDependantRequest,CreateCandidateDependantRequest> {
-    private final CandidateDependantService candidateDependantService;
 
-    public CandidateDependantAdminApi(
-            CandidateDependantService candidateDependantService) {
+    private final CandidateDependantService candidateDependantService;
+    private final CandidateService candidateService;
+
+    public CandidateDependantAdminApi(CandidateDependantService candidateDependantService, CandidateService candidateService) {
         this.candidateDependantService = candidateDependantService;
+        this.candidateService = candidateService;
     }
 
     /**
@@ -55,9 +59,9 @@ public class CandidateDependantAdminApi
     public @NotNull Map<String, Object> create(
             long candidateId, @Valid CreateCandidateDependantRequest request)
             throws NoSuchObjectException {
-        CandidateDependant candidateDependant =
-                this.candidateDependantService
-                        .createDependant(candidateId, request);
+        CandidateDependant candidateDependant = this.candidateDependantService.createDependant(candidateId, request);
+        // Need to save the Candidate as we set the number of dependants value on the candidate object when creating dependant.
+        this.candidateService.save(candidateDependant.getCandidate(), true);
         return candidateDependantDto().build(candidateDependant);
     }
 
@@ -72,16 +76,24 @@ public class CandidateDependantAdminApi
     @Override
     public boolean delete(long id)
             throws EntityReferencedException, InvalidRequestException {
-        return candidateDependantService.deleteDependant(id);
+        Candidate ownerOfDependant = candidateDependantService.deleteDependant(id);
+        // Need to save the Candidate as we set the number of dependants value on the candidate object when deleting dependant.
+        this.candidateService.save(ownerOfDependant, true);
+        return true;
     }
 
     private DtoBuilder candidateDependantDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("relation")
+                .add("relationOther")
                 .add("dob")
                 .add("healthConcern")
-                .add("notes")
+                .add("healthNotes")
+                .add("name")
+                .add("registered")
+                .add("registeredNumber")
+                .add("registeredNotes")
                 ;
     }
 

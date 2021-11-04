@@ -16,13 +16,13 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {UpdateUserRequest, User} from "../../../../model/user";
+import {AdminRole, User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {AuthService} from "../../../../services/auth.service";
 import {CountryService} from "../../../../services/country.service";
 import {Country} from "../../../../model/country";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
+import {EnumOption, enumOptions} from "../../../../util/enum";
 
 @Component({
   selector: 'app-edit-user',
@@ -37,15 +37,7 @@ export class EditUserComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
-  /* MULTI SELECT */
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: false,
-    singleSelection: false,
-    allowSearchFilter: true
-  };
-
+  roleOptions: EnumOption[] = enumOptions(AdminRole);
   countries: Country[];
 
   constructor(private activeModal: NgbActiveModal,
@@ -58,7 +50,6 @@ export class EditUserComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.userService.get(this.userId).subscribe(user => {
-
       this.userForm = this.fb.group({
         email: [user.email, [Validators.required, Validators.email]],
         username: [user.username, Validators.required],
@@ -73,7 +64,7 @@ export class EditUserComponent implements OnInit {
       this.loading = false;
     });
 
-    this.countryService.listCountries().subscribe(
+    this.countryService.listCountriesRestricted().subscribe(
       (response) => {
         this.countries = response;
       },
@@ -82,6 +73,10 @@ export class EditUserComponent implements OnInit {
         this.loading = false;
       }
     );
+
+    if (this.authService.getLoggedInUser().role === "sourcepartneradmin") {
+      this.roleOptions = this.roleOptions.filter(r => r.value !== "admin" && r.value !== "sourcepartneradmin" );
+    }
 
   }
 
@@ -104,13 +99,6 @@ export class EditUserComponent implements OnInit {
 
   dismiss() {
     this.activeModal.dismiss(false);
-  }
-
-  /* MULTI SELECT METHODS */
-  onItemSelect(item: any) {
-  }
-
-  onItemDeSelect(item: any) {
   }
 
 }

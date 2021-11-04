@@ -39,6 +39,7 @@ export class CandidateEducationFormComponent implements OnInit {
   @Input() countries: Country[];
 
   @Output() saved = new EventEmitter<CandidateEducation>();
+  @Output() closed = new EventEmitter<CandidateEducation>();
 
   error: any;
   _loading = {
@@ -149,5 +150,9 @@ export class CandidateEducationFormComponent implements OnInit {
         }
       );
     }
+  }
+
+  cancel() {
+    this.closed.emit();
   }
 }

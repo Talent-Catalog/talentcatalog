@@ -45,4 +45,17 @@ export class CrimeComponent extends IntakeComponentBase implements OnInit {
     return this.form.value?.crimeConvict;
   }
 
+  get hasNotes(): boolean {
+    let found: boolean = false;
+    if (this.crime) {
+      if (this.crime === 'Yes') {
+        found = true
+      }
+      if (this.crime === 'Unsure') {
+        found = true
+      }
+    }
+    return found;
+  }
+
 }

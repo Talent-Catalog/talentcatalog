@@ -26,16 +26,13 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
@@ -45,7 +42,6 @@ import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.model.db.CandidateJobExperience;
 import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.CandidateReviewStatusItem;
 import org.tbbtalent.server.model.db.CandidateSkill;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationLevel;
@@ -53,25 +49,31 @@ import org.tbbtalent.server.model.db.EducationMajor;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.ReviewStatus;
-import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SearchType;
+import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 public class CandidateSpecification {
 
     public static Specification<Candidate> buildSearchQuery(
-            final SearchCandidateRequest request, @Nullable User loggedInUser) {
+            final SearchCandidateRequest request, @Nullable User loggedInUser, 
+            final @Nullable Collection<Candidate> excludedCandidates) {
         return (candidate, query, builder) -> {
             
             //To better understand this code, look at the simpler but similar
             //GetSavedListCandidatesQuery. JC - The Programmer's Friend.
             
             Predicate conjunction = builder.conjunction();
+            
+            //These joins are only created as needed - depending on the query.
+            //eg candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
+            //Some joins are always needed - eg the user one, and the joins needed to support
+            //sorting.
             Join<Object, Object> user = null;
             Join<Object, Object> nationality = null;
             Join<Object, Object> country = null;
+            Join<Object, Object> maxEducationLevel = null;
             Join<Candidate, CandidateEducation> candidateEducations = null;
             Join<Candidate, CandidateOccupation> candidateOccupations = null;
             Join<CandidateOccupation, Occupation> occupation = null;
@@ -79,23 +81,9 @@ public class CandidateSpecification {
             Join<Candidate, CandidateSkill> candidateSkills = null;
             Join<Candidate, CandidateAttachment> candidateAttachments = null;
 
-            //CreatedBy date > from date is only set in the watcher notification code.
-            if (request.getFromDate() != null) {
-                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(
-                        candidate.get("createdDate"), 
-                        getOffsetDateTime(
-                                request.getFromDate(),LocalTime.MIN, request.getTimezone()))
-                );
-            }
-
             query.distinct(true);
 
             /*
-              My theory on the reason for this - JC
-              
-              The main purpose is do the fetches which means that the returned
-              results contain the user, nationality and country entities.
-              
               Those fetches are performed by a join, which can also be reused 
               to do the sorting and other filters.
 
@@ -116,9 +104,12 @@ public class CandidateSpecification {
 
                 Fetch<Object, Object> countryFetch = candidate.fetch("country");
                 country = (Join<Object, Object>) countryFetch;
+                
+                Fetch<Object, Object> educationLevelFetch = candidate.fetch("maxEducationLevel");
+                maxEducationLevel = (Join<Object, Object>) educationLevelFetch;
 
-                List<Order> orders = getOrderByOrders(request, candidate, builder, 
-                        user, nationality, country);
+                List<Order> orders = getOrderByOrders(request, candidate, builder,
+                        user, nationality, country, maxEducationLevel);
 
                 query.orderBy(orders);
 
@@ -127,56 +118,9 @@ public class CandidateSpecification {
                 user = candidate.join("user");
                 nationality = candidate.join("nationality");
                 country = candidate.join("country");
+                maxEducationLevel = candidate.join("maxEducationLevel");
             }
             
-            //Review status
-            //Only saved searches support review status - ie has this candidate 
-            //been reviewed as belonging in this saved search.
-            //We want candidates whose MOST RECENT review status for this search id is in filtered statuses.
-            if (request.getSavedSearchId() != null) {
-                if (CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
-                    Predicate pendingPredicate = null;
-                    if (request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
-                        Subquery<Candidate> sq = query.subquery(Candidate.class);
-                        Root<Candidate> subCandidate = sq.from(Candidate.class);
-                        /*
-                        select Candidate from Candidate join 
-                        candidateReviewStatusItems join 
-                        SavedSearch where savedSearchid = requestid
-                         pendingPredicate = candidate id not in the result of the query
-                         
-                         Is this just defaulting everything else as pending? 
-                         */
-                        Join<Object, Object> subReviewStatus = subCandidate.join("candidateReviewStatusItems");
-                        Join<Object, Object> subSavedSearch = subReviewStatus.join("savedSearch");
-                        sq.select(subCandidate).where(builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()));
-                        pendingPredicate = builder.not(builder.in(candidate.get("id")).value(sq));
-                    }
-
-                    Subquery<Candidate> sq = query.subquery(Candidate.class);
-                    Root<Candidate> subCandidate = sq.from(Candidate.class);
-                    Join<Object, Object> subReviewStatus = subCandidate.join("candidateReviewStatusItems");
-                    Join<Object, Object> subSavedSearch = subReviewStatus.join("savedSearch");
-                    sq.select(subCandidate).where(
-                            builder.and(
-                                    builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()), 
-                                    subReviewStatus.get("reviewStatus").in(request.getReviewStatusFilter())
-                            )
-                    );
-                    
-                    Predicate statusPredicate = builder.in(candidate.get("id")).value(sq);
-
-                    if (pendingPredicate != null) {
-                        conjunction.getExpressions().add(builder.and(builder.or(pendingPredicate, statusPredicate)));
-                    } else {
-                        conjunction.getExpressions().add(statusPredicate);
-                    }
-                } else if (query.getResultType().equals(Candidate.class)) {
-                    Fetch<Candidate, CandidateReviewStatusItem> candidateReviewStatusItem = candidate.fetch("candidateReviewStatusItems", JoinType.LEFT);
-                    Fetch<CandidateReviewStatusItem, SavedSearch> savedSearch = candidateReviewStatusItem.fetch("savedSearch", JoinType.LEFT);
-                }
-            }
-
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())) {
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
@@ -229,13 +173,6 @@ public class CandidateSpecification {
                 List<CandidateStatus> statuses = request.getStatuses();
                 conjunction.getExpressions().add(
                     builder.isTrue(candidate.get("status").in(statuses)));
-            } else {
-                //Empty statuses implies excluding draft and deleted
-                List<CandidateStatus> defaultExclusions = new ArrayList(
-                    Arrays.asList(CandidateStatus.draft, CandidateStatus.deleted) );
-                conjunction.getExpressions().add(
-                    candidate.get("status").in(defaultExclusions).not()
-                );
             }
 
             // Occupations SEARCH
@@ -263,6 +200,12 @@ public class CandidateSpecification {
                 }
             }
 
+            // EXCLUDED CANDIDATES (eg from Review Status)
+            if (excludedCandidates != null && excludedCandidates.size() > 0) {
+                conjunction.getExpressions().add(candidate.in(excludedCandidates).not()
+                    );
+            }
+
             // NATIONALITY SEARCH
             if (!Collections.isEmpty(request.getNationalityIds())) {
                 if (request.getNationalitySearchType() == null || SearchType.or.equals(request.getNationalitySearchType())) {
@@ -276,14 +219,50 @@ public class CandidateSpecification {
             }
 
             // COUNTRY SEARCH
+            // If request ids is NOT EMPTY (these will only be selected if allowed source countries)
             if (!Collections.isEmpty(request.getCountryIds())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(request.getCountryIds()))
                 );
+                // If request ids IS EMPTY only show source countries
             } else if (loggedInUser != null &&
                     !Collections.isEmpty(loggedInUser.getSourceCountries())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(loggedInUser.getSourceCountries()))
+                );
+            }
+
+            // REMOVE US AFGHANS FROM ALL SEARCHES.
+            // This is a temporary hack for the us-afghan parolee push.
+            // We want US-afghans out of the searches w/ source countries or not BUT if candidate is US SOURCE COUNTRY then in the searches.
+            //if source countries is not null, check that it's not US
+            if (loggedInUser != null && !Collections.isEmpty(loggedInUser.getSourceCountries())) {
+                boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == 6178);
+                if (!us) {
+                    //This is not a US user, so don't show US Afghans
+                  Join<Candidate, SurveyType> surveyType 
+                      = candidate.join("surveyType", JoinType.LEFT);
+                  conjunction.getExpressions()
+                      .add(builder.or(
+                          builder.isNull(candidate.get("surveyType")),
+                          builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
+                      ));
+                }
+            } else {
+                // if source countries is null, remove us afghans
+              Join<Candidate, SurveyType> surveyType
+                  = candidate.join("surveyType", JoinType.LEFT);
+                conjunction.getExpressions()
+                    .add(builder.or(
+                        builder.isNull(candidate.get("surveyType")),
+                        builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
+                    ));
+            }
+
+            // SURVEY TYPE SEARCH
+            if (!Collections.isEmpty(request.getSurveyTypeIds())) {
+                conjunction.getExpressions().add(
+                        builder.isTrue(candidate.get("surveyType").in(request.getSurveyTypeIds()))
                 );
             }
 

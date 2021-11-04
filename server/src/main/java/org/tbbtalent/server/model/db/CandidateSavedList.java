@@ -16,17 +16,13 @@
 
 package org.tbbtalent.server.model.db;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.Table;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.Nullable;
+
+import javax.persistence.*;
 
 /**
  * A candidate can appear in multiple saved lists.
@@ -72,6 +68,16 @@ public class CandidateSavedList {
     private SavedList savedList;
 
     private String contextNote;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shareable_cv_attachment_id")
+    private CandidateAttachment shareableCv;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shareable_doc_attachment_id")
+    private CandidateAttachment shareableDoc;
 
     public CandidateSavedList() {
     }

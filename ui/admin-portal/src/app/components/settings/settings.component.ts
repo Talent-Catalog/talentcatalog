@@ -14,12 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {User} from "../../model/user";
-import {FormBuilder} from "@angular/forms";
-import {UserService} from "../../services/user.service";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthService} from "../../services/auth.service";
+import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {LocalStorageService} from "angular-2-local-storage";
 
 
 @Component({
@@ -27,15 +26,43 @@ import {AuthService} from "../../services/auth.service";
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, AfterViewChecked {
 
   loggedInUser: User;
+  activeTabId: string;
+  private lastTabKey: string = 'SettingsLastTab';
 
-  constructor(private authService: AuthService) { }
+  //Get reference to the nav element
+  @ViewChild(NgbNav)
+  nav: NgbNav;
+
+  constructor(
+    private authService: AuthService,
+    private localStorageService: LocalStorageService
+  ) { }
 
   ngOnInit(){
     /* GET LOGGED IN USER ROLE FROM LOCAL STORAGE */
     this.loggedInUser = this.authService.getLoggedInUser();
+  }
+
+  ngAfterViewChecked(): void {
+    //This is called in order for the navigation tabs, this.nav, to be set.
+    this.selectDefaultTab()
+  }
+
+  onTabChanged(event: NgbNavChangeEvent) {
+    this.setActiveTabId(event.nextId);
+  }
+
+  private setActiveTabId(id: string) {
+    this.nav?.select(id);
+    this.localStorageService.set(this.lastTabKey, id);
+  }
+
+  private selectDefaultTab() {
+    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
+    this.setActiveTabId(defaultActiveTabID == null ? "users" : defaultActiveTabID);
   }
 
 }

@@ -16,11 +16,12 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.util.List;
-
 import org.tbbtalent.server.model.db.SurveyType;
 
+import java.util.List;
+
 public interface SurveyTypeService {
+    List<SurveyType> listActiveSurveyTypes();
     List<SurveyType> listSurveyTypes();
 }
 

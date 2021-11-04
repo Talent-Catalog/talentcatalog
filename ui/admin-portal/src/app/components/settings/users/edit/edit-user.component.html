@@ -50,33 +50,37 @@
       </div>
       <div class="form-group">
         <label for="status">Status</label>
-        <select class="form-control" id="status" formControlName="status">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
+        <ng-select id="status" [formControlName]="'status'" placeholder="Select">
+          <ng-option value="active">Active</ng-option>
+          <ng-option value="inactive">Inactive</ng-option>
+        </ng-select>
       </div>
       <div class="form-group">
         <label for="role">Role</label>
-        <select class="form-control" id="role" formControlName="role">
-          <option value="admin">Full Admin</option>
-          <option value="sourcepartneradmin">Source Partner Admin</option>
-          <option value="semilimited">Semi Limited</option>
-          <option value="limited">Limited</option>
-        </select>
+        <ng-select
+          id="role"
+          [items]="roleOptions"
+          [formControlName]="'role'"
+          [clearable]="false"
+          placeholder="Select"
+          bindValue="value"
+          bindLabel="displayText">
+        </ng-select>
       </div>
 
       <!-- SOURCE COUNTRIES  -->
       <div class="form-group">
         <label>Source Country</label>
-        <ng-multiselect-dropdown
+        <ng-select
           id="sourceCountry"
-          class="custom-primary"
-          [settings]="dropdownSettings"
-          [data]="countries"
-          formControlName="sourceCountries"
-          (onSelect)="onItemSelect($event)"
-          (onDeSelect)="onItemDeSelect($event)">
-        </ng-multiselect-dropdown>
+          [items]="countries"
+          [multiple]="true"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          [formControlName]="'sourceCountries'">
+        </ng-select>
         <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
       </div>
 

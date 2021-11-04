@@ -32,4 +32,8 @@ public class CreateCandidateExamRequest {
     private String otherExam;
     @Nullable
     private String score;
+    @Nullable
+    private Long year;
+    @Nullable
+    private String notes;
 }

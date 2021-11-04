@@ -15,12 +15,22 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Candidate, CandidateIntakeData, UpdateCandidateStatusRequest} from '../model/candidate';
+import {
+  Candidate,
+  CandidateIntakeData,
+  SalesforceOppParams,
+  UpdateCandidateListOppsRequest,
+  UpdateCandidateOppsRequest,
+  UpdateCandidateShareableDocsRequest,
+  UpdateCandidateShareableNotesRequest,
+  UpdateCandidateStatusRequest
+} from '../model/candidate';
 import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
+import {CandidateSource} from "../model/base";
 
 @Injectable({providedIn: 'root'})
 export class CandidateService {
@@ -37,12 +47,16 @@ export class CandidateService {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemail`, request);
   }
 
+  findByCandidateEmailOrPhone(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemailorphone`, request);
+  }
+
   findByCandidateNumberOrName(request): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbynumberorname`, request);
   }
 
-  findByCandidatePhone(request): Observable<SearchResults<Candidate>> {
-    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyphone`, request);
+  findByExternalId(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyexternalid`, request);
   }
 
   getByNumber(number: string): Observable<Candidate> {
@@ -63,6 +77,16 @@ export class CandidateService {
 
   updateLinks(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/links`, details);
+  }
+
+  updateShareableNotes(
+    id: number, request: UpdateCandidateShareableNotesRequest): Observable<Candidate> {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/shareable-notes`, request);
+  }
+
+  updateShareableDocs(
+    id: number, request: UpdateCandidateShareableDocsRequest): Observable<Candidate> {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/shareable-docs`, request);
   }
 
   updateStatus(details: UpdateCandidateStatusRequest): Observable<void>  {
@@ -108,6 +132,28 @@ export class CandidateService {
   createUpdateSalesforce(candidateId: number): Observable<Candidate> {
     return this.http.put<Candidate>(
       `${this.apiUrl}/${candidateId}/update-sf`, null);
+  }
+
+  createUpdateSalesforceFromList(source: CandidateSource,
+                                 salesforceOppParams: SalesforceOppParams): Observable<void> {
+
+    const request: UpdateCandidateListOppsRequest = {
+      savedListId: source.id,
+      salesforceOppParams: salesforceOppParams
+    }
+    return this.http.put<void>(`${this.apiUrl}/update-sf-by-list`, request);
+  }
+
+  createUpdateSalesforceFromCandidates(
+    candidateIds: number[], sfJobLink: string, salesforceOppParams: SalesforceOppParams): Observable<void> {
+
+    const request: UpdateCandidateOppsRequest = {
+      candidateIds: candidateIds,
+      sfJobLink: sfJobLink,
+      salesforceOppParams: salesforceOppParams
+    }
+
+    return this.http.put<void>(`${this.apiUrl}/update-sf`, request);
   }
 
   /**

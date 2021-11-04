@@ -14,97 +14,101 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<!--<ul class="nav nav-tabs">-->
-<!--  <li class="nav-item" *ngFor="let tab of tabs">-->
-<!--    <a class="nav-link active" (click)="setSelectedTab(tab)">{{tab.label}}</a>-->
-<!--  </li>-->
-<!--</ul>-->
-<!--<ng-container *ngComponentOutlet="selectedTab.component">-->
-<!--</ng-container>-->
-
-
-<ngb-tabset>
+<nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
   <!-- Admin Users -->
-  <ngb-tab [title]="'Admin Users'">
-    <ng-template ngbTabContent>
+  <ng-container ngbNavItem="users">
+    <a ngbNavLink>Admin Users</a>
+    <ng-template ngbNavContent>
       <app-search-users [loggedInUser]="loggedInUser">
       </app-search-users>
     </ng-template>
-  </ngb-tab>
+  </ng-container>
 
-  <!-- Countries -->
-  <ngb-tab [title]="'Countries'">
-    <ng-template ngbTabContent>
-      <app-search-countries [loggedInUser]="loggedInUser">
-      </app-search-countries>
-    </ng-template>
-  </ngb-tab>
+  <ng-container *ngIf="loggedInUser.role == 'admin'">
+    <!-- Countries -->
+    <ng-container ngbNavItem="countries">
+      <a ngbNavLink>Countries</a>
+      <ng-template ngbNavContent>
+        <app-search-countries [loggedInUser]="loggedInUser">
+        </app-search-countries>
+      </ng-template>
+    </ng-container>
 
-  <!-- Nationalities -->
-  <ngb-tab [title]="'Nationalities'">
-    <ng-template ngbTabContent>
-      <app-search-nationalities [loggedInUser]="loggedInUser">
-      </app-search-nationalities>
-    </ng-template>
-  </ngb-tab>
+    <!-- Languages -->
+    <ng-container ngbNavItem="languages">
+      <a ngbNavLink>Languages</a>
+      <ng-template ngbNavContent>
+        <app-search-languages [loggedInUser]="loggedInUser">
+        </app-search-languages>
+      </ng-template>
+    </ng-container>
 
-  <!-- Languages -->
-  <ngb-tab [title]="'Languages'">
-    <ng-template ngbTabContent>
-      <app-search-languages [loggedInUser]="loggedInUser">
-      </app-search-languages>
-    </ng-template>
-  </ngb-tab>
+    <!-- Language Levels -->
+    <ng-container ngbNavItem="langlevels">
+      <a ngbNavLink>Language Levels</a>
+      <ng-template ngbNavContent>
+        <app-search-language-levels [loggedInUser]="loggedInUser">
+        </app-search-language-levels>
+      </ng-template>
+    </ng-container>
 
-  <!-- Language Levels -->
-  <ngb-tab [title]="'Language Levels'">
-    <ng-template ngbTabContent>
-      <app-search-language-levels [loggedInUser]="loggedInUser">
-      </app-search-language-levels>
-    </ng-template>
-  </ngb-tab>
+    <!-- Occupations -->
+    <ng-container ngbNavItem="occupations">
+      <a ngbNavLink>Occupations</a>
+      <ng-template ngbNavContent>
+        <app-search-occupations [loggedInUser]="loggedInUser">
+        </app-search-occupations>
+      </ng-template>
+    </ng-container>
 
-  <!-- Occupations -->
-  <ngb-tab [title]="'Occupations'">
-    <ng-template ngbTabContent>
-      <app-search-occupations [loggedInUser]="loggedInUser">
-      </app-search-occupations>
-    </ng-template>
-  </ngb-tab>
+    <!-- Education -->
+    <ng-container ngbNavItem="edulevels">
+      <a ngbNavLink>Education Levels</a>
+      <ng-template ngbNavContent>
+        <app-search-education-levels [loggedInUser]="loggedInUser">
+        </app-search-education-levels>
+      </ng-template>
+    </ng-container>
 
-  <!-- Education -->
-  <ngb-tab [title]="'Education Levels'">
-    <ng-template ngbTabContent>
-      <app-search-education-levels [loggedInUser]="loggedInUser">
-      </app-search-education-levels>
-    </ng-template>
-  </ngb-tab>
+    <!-- Education Majors -->
+    <ng-container ngbNavItem="majors">
+      <a ngbNavLink>Education Majors</a>
+      <ng-template ngbNavContent>
+        <app-search-education-majors [loggedInUser]="loggedInUser">
+        </app-search-education-majors>
+      </ng-template>
+    </ng-container>
 
-  <!-- Education Majors -->
-  <ngb-tab [title]="'Education Majors'">
-    <ng-template ngbTabContent>
-      <app-search-education-majors [loggedInUser]="loggedInUser">
-      </app-search-education-majors>
-    </ng-template>
-  </ngb-tab>
+    <!-- Translations -->
+    <ng-container ngbNavItem="translations-general">
+      <a ngbNavLink>Translations (general)</a>
+      <ng-template ngbNavContent>
+        <app-general-translations [loggedInUser]="loggedInUser">
+        </app-general-translations>
+      </ng-template>
+    </ng-container>
 
-  <!-- Translations -->
-  <ngb-tab [title]="'Translations (general)'">
-    <ng-template ngbTabContent>
-      <app-general-translations [loggedInUser]="loggedInUser">
-      </app-general-translations>
-    </ng-template>
-  </ngb-tab>
+    <!-- Translations -->
+    <ng-container ngbNavItem="translations-dropdowns">
+      <a ngbNavLink>Translations (dropdowns)</a>
+      <ng-template ngbNavContent>
+        <app-dropdown-translations [loggedInUser]="loggedInUser">
+        </app-dropdown-translations>
+      </ng-template>
+    </ng-container>
 
-  <!-- Translations -->
-  <ngb-tab [title]="'Translations (dropdowns)'">
-    <ng-template ngbTabContent>
-      <app-dropdown-translations [loggedInUser]="loggedInUser">
-      </app-dropdown-translations>
-    </ng-template>
-  </ngb-tab>
+    <!-- External Links -->
+    <ng-container ngbNavItem="links">
+      <a ngbNavLink>External Links</a>
+      <ng-template ngbNavContent>
+        <app-search-external-links [loggedInUser]="loggedInUser">
+        </app-search-external-links>
+      </ng-template>
+    </ng-container>
+  </ng-container>
 
-</ngb-tabset>
+</nav>
+<div [ngbNavOutlet]="nav" class="mt-2"></div>
 
 

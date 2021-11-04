@@ -28,12 +28,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="maritalStatus" [formControlName]="'maritalStatus'">
-      <option *ngFor="let opt of maritalStatusOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="maritalStatus" [formControlName]="'maritalStatus'" (clear)="setNoResponse('maritalStatus')"
+               [items]="maritalStatusOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     <p class="small">
       Note: If you are planning on immigrating with your spouse, his or her professional information is also critical
       to your application. If you are eligible and decide to move forward with this process,
@@ -45,17 +42,14 @@
       <label for="partnerRegistered">
         Is your partner registered with TBB?
       </label>
-      <select class="form-control"
-              id="partnerRegistered" [formControlName]="'partnerRegistered'">
-        <option *ngFor="let opt of partnerRegisteredOptions" [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
+      <ng-select id="partnerRegistered" [formControlName]="'partnerRegistered'" (clear)="setNoResponse('partnerRegistered')"
+                 [items]="partnerRegisteredOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     </div>
     <div *ngIf="partnerRegistered === 'Yes'">
       <div class="form-group">
         <label>
-          What is your partner's candidate number?
+          If yes, please select your partner from the dropdown. <small>(Start typing name or number to find)</small>
         </label>
         <app-candidate-name-num-search
           [handleSelect]="'displayOnly'"
@@ -70,18 +64,14 @@
       <label for="partnerEduLevelId">
         What is your partner’s highest level of education?
       </label>
-      <select class="form-control"
-              id="partnerEduLevelId" [formControlName]="'partnerEduLevelId'">
-        <option value="0"></option>
-        <option *ngFor="let opt of educationLevels" [value]="opt.id">
-          {{opt.name}}
-        </option>
-      </select>
+      <ng-select id="partnerEduLevelId" [formControlName]="'partnerEduLevelId'" [items]="educationLevels"
+                 [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
     <div *ngIf="eduLevelSelected">
       <div class="form-group">
         <label for="partnerEduLevelNotes">
-          Notes
+          Additional notes about partner's education level
         </label>
         <textarea type="text" class="md-textarea-auto form-control" rows="4"
                   id="partnerEduLevelNotes" [formControlName]="'partnerEduLevelNotes'"
@@ -90,20 +80,16 @@
     </div>
     <div class="form-group">
       <label for="partnerOccupationId">
-        What is your partner’s profession?
+        What is your partner’s occupation?
       </label>
-      <select class="form-control"
-              id="partnerOccupationId" [formControlName]="'partnerOccupationId'">
-        <option *ngFor="let opt of occupations" [value]="opt.id">
-          {{opt.name}}
-        </option>
-        <option value="0">Other</option>
-      </select>
+      <ng-select id="partnerOccupationId" [formControlName]="'partnerOccupationId'" [closeOnSelect]="true"
+                 [items]="occupations" [clearOnBackspace]="false" placeholder="Select" bindLabel="name" bindValue="id">
+      </ng-select>
     </div>
     <div *ngIf="occupationSelected">
       <div class="form-group">
         <label for="partnerOccupationNotes">
-          Notes
+          Additional notes about partner's occupation
         </label>
         <textarea type="text" class="md-textarea-auto form-control" rows="4"
                   id="partnerOccupationNotes" [formControlName]="'partnerOccupationNotes'"
@@ -114,72 +100,67 @@
       <label for="partnerEnglish">
         Does your partner speak English?
       </label>
-      <select class="form-control"
-              id="partnerEnglish" [formControlName]="'partnerEnglish'">
-        <option *ngFor="let opt of partnerEnglishOptions" [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
+      <ng-select id="partnerEnglish" [formControlName]="'partnerEnglish'" (clear)="setNoResponse('partnerEnglish')"
+                 [items]="partnerEnglishOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     </div>
     <div *ngIf="partnerEnglish === 'Yes'">
       <div class="form-group">
         <label for="partnerEnglishLevelId">
           What level of English does your partner speak?
         </label>
-        <select class="form-control"
-                id="partnerEnglishLevelId" [formControlName]="'partnerEnglishLevelId'">
-          <option *ngFor="let opt of languageLevels" [value]="opt.id">
-            {{opt.name}}
-          </option>
-        </select>
+        <ng-select id="partnerEnglishLevelId" [formControlName]="'partnerEnglishLevelId'" (clear)="setNoResponse('partnerEnglishLevelId')"
+                   [items]="languageLevels" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
       </div>
       <div class="form-group">
         <label for="partnerIelts">
           Has your partner completed IELTS?
         </label>
-        <select class="form-control"
-                id="partnerIelts" [formControlName]="'partnerIelts'">
-          <option *ngFor="let opt of partnerIeltsOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
+        <ng-select id="partnerIelts" [formControlName]="'partnerIelts'" (clear)="setNoResponse('partnerIelts')"
+                   [items]="partnerIeltsOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
       <div *ngIf="takenIelts">
         <div class="form-group">
           <label for="partnerIeltsScore">
             What was your partner's score?
           </label>
-          <select class="form-control"
-                  id="partnerIeltsScore" [formControlName]="'partnerIeltsScore'">
-            <option *ngFor="let opt of partnerIeltsScoreOptions" [value]="opt.value">
-              {{opt.displayText}}
-            </option>
-          </select>
+          <app-ielts-score-validation
+            id="partnerIeltsScore"
+            [control]="form.controls.partnerIeltsScore">
+          </app-ielts-score-validation>
         </div>
         <div class="form-group">
           <label for="partnerIeltsYr">
             In what year did your partner take the test?
           </label>
-          <select id="partnerIeltsYr" class="form-control" [formControlName]="'partnerIeltsYr'">
-            <option value=""></option>
-            <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
-          </select>
+          <ng-select id="partnerIeltsYr" [formControlName]="'partnerIeltsYr'" [items]="years" [closeOnSelect]="true"
+                     [clearOnBackspace]="false" placeholder="Select"></ng-select>
         </div>
       </div>
     </div>
 
     <div class="form-group">
       <label for="partnerCitizenshipId">
-        What is your partners current citizenship?
+        What is your partners current country of citizenship?
       </label>
-      <select class="form-control"
-              id="partnerCitizenshipId" [formControlName]="'partnerCitizenshipId'">
-        <option *ngFor="let opt of nationalities" [value]="opt.id">
-          {{opt.name}}
-        </option>
-      </select>
+      <ng-select id="partnerCitizenshipId" [formControlName]="'partnerCitizenshipId'"
+                 [items]="nationalities" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
 
+  </div>
+
+  <div *ngIf="hasNotes">
+    <div class="form-group">
+      <label for="maritalStatusNotes">
+        Additional notes about marital status
+      </label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="maritalStatusNotes" [formControlName]="'maritalStatusNotes'"
+                placeholder="" ></textarea>
+    </div>
   </div>
 
 </form>

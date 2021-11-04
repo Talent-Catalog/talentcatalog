@@ -16,9 +16,13 @@
 
 package org.tbbtalent.server.request.candidate.education;
 
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.EducationType;
 
 public class CreateCandidateEducationRequest {
+
+    @Nullable
+    private Long candidateId;
 
     private EducationType educationType;
     private Long countryId;
@@ -28,6 +32,10 @@ public class CreateCandidateEducationRequest {
     private String courseName;
     private Integer yearCompleted;
     private Boolean incomplete;
+
+    public Long getCandidateId() { return candidateId; }
+
+    public void setCandidateId(Long candidateId) { this.candidateId = candidateId; }
 
     public EducationType getEducationType() {
         return educationType;

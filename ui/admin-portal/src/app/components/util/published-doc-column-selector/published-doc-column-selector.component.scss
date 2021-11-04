@@ -1,0 +1,37 @@
+@import "src/scss/_variables.scss";
+
+.field {
+  background-color: $color-secondary-lighter;
+  list-style: none;
+  padding: 8px;
+  color: $color-text-primary;
+  margin-bottom: 0.5em;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.container:not(:last-child) {
+  margin-right: 4em;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.gu-mirror {
+  background-color: $color-secondary-light;
+}
+
+.edit-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.width-100 {
+  width: 100%;
+}
+
+label {
+  font-weight: 300;
+}

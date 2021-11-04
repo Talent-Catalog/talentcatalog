@@ -39,6 +39,8 @@ export class CreateUpdateSearchComponent implements OnInit {
   savedSearchTypeInfos: SavedSearchTypeInfo[];
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   sfJoblink: string;
+  copy: boolean = false;
+  newSavedSearch: SavedSearch;
 
 
   /**
@@ -51,9 +53,20 @@ export class CreateUpdateSearchComponent implements OnInit {
     return this.savedSearch?.defaultSearch || this.savedSearch?.id === 0
   }
 
+  get copyCreate(): boolean {
+    return this.copy;
+  }
+
   get title(): string {
-    return this.create ? "Make New Saved Search"
-      : "Update Existing Saved Search";
+    let title;
+    if (this.create) {
+      title = "Make New Saved Search"
+    } else if (this.copyCreate) {
+      title = "Copy Search"
+    } else {
+      title = "Update Existing Saved Search";
+    }
+    return title;
   }
 
   get nameControl(): AbstractControl {
@@ -111,7 +124,7 @@ export class CreateUpdateSearchComponent implements OnInit {
       //If there are subtypes associated with the currently selected type,
       //as indicated by a non null savedSearchTypeSubInfos, the subtype control
       //is required, ie must have a non empty value.
-      return this.savedSearchTypeSubInfos && (control.value === undefined) ?
+      return this.savedSearchTypeSubInfos && (control.value == null) ?
         { 'subtypeRequired': true } : null;
     };
   };
@@ -125,6 +138,8 @@ export class CreateUpdateSearchComponent implements OnInit {
 
     if (this.create) {
       this.doCreate()
+    } else if (this.copyCreate) {
+      this.doCopyAndCreate()
     } else {
       this.doUpdate();
     }
@@ -132,7 +147,7 @@ export class CreateUpdateSearchComponent implements OnInit {
 
   doCreate() {
     const formValues = this.form.value;
-    this.savedSearch = {
+    this.newSavedSearch = {
       id: 0,
       name: this.nameControl.value,
       savedSearchType: this.savedSearchType,
@@ -146,7 +161,7 @@ export class CreateUpdateSearchComponent implements OnInit {
 
     //And create a SavedSearchRequest from the SavedSearch and the search request
     this.savedSearchService.create(
-      convertToSavedSearchRequest(this.savedSearch, this.searchCandidateRequest)
+      convertToSavedSearchRequest(this.newSavedSearch, this.searchCandidateRequest)
     ).subscribe(
       (savedSearch) => {
         this.activeModal.close(savedSearch);
@@ -156,6 +171,17 @@ export class CreateUpdateSearchComponent implements OnInit {
         this.error = error;
         this.saving = false;
       });
+  }
+
+  doCopyAndCreate() {
+    this.savedSearchService.load(this.savedSearch.id).subscribe(
+      (request: SearchCandidateRequest) => {
+        this.searchCandidateRequest = request;
+        this.doCreate();
+      }, (error) => {
+        this.error = error;
+      }
+    )
   }
 
   doUpdate() {

@@ -16,11 +16,6 @@
 
 package org.tbbtalent.server.repository.db;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,7 +25,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Country;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * See notes on "join fetch" in the doc for {@link #findByIdLoadCandidateOccupations}
@@ -101,6 +102,10 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     )
     Page<Candidate> findCandidatesWhereStatusNotDeleted(Pageable pageable);
 
+    @Query(" select c from Candidate c "
+            + " where c.status in (:statuses)")
+    List<Candidate> findByStatuses(@Param("statuses") List<CandidateStatus> statuses);
+
     @Transactional
     @Modifying
     @Query("update Candidate c set c.textSearchId = null")
@@ -144,12 +149,21 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                           @Param("userSourceCountries") Set<Country> userSourceCountries,
                                           Pageable pageable);
 
-    @Query(" select distinct c from Candidate c "
-            + " where lower(c.phone) like lower(:candidatePhone) "
+    @Query(" select distinct c from Candidate c left join c.user u "
+            + " where lower(u.email) like lower(:emailOrPhone) "
+            + " or lower(c.phone) like lower(:emailOrPhone) "
+            + excludeDeleted
             + sourceCountryRestriction)
-    Page<Candidate> searchCandidatePhone(@Param("candidatePhone") String candidatePhone,
-                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                         Pageable pageable);
+    Page<Candidate> searchCandidateEmailOrPhone(@Param("emailOrPhone") String emailOrPhone,
+                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                          Pageable pageable);
+
+    @Query(" select distinct c from Candidate c "
+            + " where lower(c.externalId) like lower(:externalId) "
+            + sourceCountryRestriction)
+    Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
+                                              @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                              Pageable pageable);
 
     @Query(" select distinct c from Candidate c left join c.user u "
             + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)"
@@ -187,13 +201,21 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      */
 
     String candidatesCondition = " and c.id in (:candidateIds)";
-    String countingStandardFilter = "u.status = 'active' and c.status != 'draft'";
+    String notTestCandidateCondition = 
+        " and c.id NOT IN (select candidate_id from candidate_saved_list" +
+        " where saved_list_id = (select id from saved_list where name = 'TestCandidates' and global = true))";
+    String countingStandardFilter = 
+        "u.status = 'active' and c.status != 'draft'" + notTestCandidateCondition;
     String dateConditionFilter = " and u.created_date >= (:dateFrom) and u.created_date <= (:dateTo)";
+    
+    //Stats that are not based on predefined candidate ids, should exclude ineligible.
+    //(With candidate ids, it is up to the associated list or search to decide whether or not to 
+    // exclude ineligible)
+    String excludeIneligible = " and c.status != 'ineligible'";
     
     //Note that I have been forced to go to native queries for these more 
     //complex queries. The non native queries seem a bit buggy.
     //Anyway - I couldn't get them working. Simpler to use normal SQL. JC.
-
 
     /***************************************************************************
      Count By Birth Year
@@ -207,7 +229,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                     " and gender like :gender" +
                     " and dob is not null and extract(year from dob) > 1940 ";
     String countByBirthYearGroupBySQL = " group by year order by year asc";
-    @Query(value = countByBirthYearSelectSQL +
+    @Query(value = countByBirthYearSelectSQL + excludeIneligible +
             countByBirthYearGroupBySQL, nativeQuery = true)
     List<Object[]> countByBirthYearOrderByYear(@Param("gender") String gender,
                                                @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -231,7 +253,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "where c.country_id in (:sourceCountryIds) " + dateConditionFilter;
     String countByCreatedDateGroupBySQL = "group by DATE(u.created_date) " +
             "order by DATE(u.created_date) asc;";
-    @Query(value = countByCreatedDateSelectSQL +
+    @Query(value = countByCreatedDateSelectSQL + excludeIneligible +
             countByCreatedDateGroupBySQL, nativeQuery = true)
     List<Object[]> countByCreatedDateOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                   @Param("dateFrom") LocalDate dateFrom,
@@ -256,7 +278,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     String countByGenderGroupBySQL =
                     " group by gender order by PeopleCount desc";
     
-    @Query(value = countByGenderSelectSQL +
+    @Query(value = countByGenderSelectSQL + excludeIneligible +
             countByGenderGroupBySQL, nativeQuery = true)
     List<Object[]> countByGenderOrderByCount(
             @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -283,7 +305,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and " + countingStandardFilter + dateConditionFilter +
             " and gender like :gender";
     String countByLanguageGroupBySQL = " group by l.name order by PeopleCount desc";
-    @Query(value = countByLanguageSelectSQL +
+    @Query(value = countByLanguageSelectSQL + excludeIneligible +
             countByLanguageGroupBySQL, nativeQuery = true)
     List<Object[]> countByLanguageOrderByCount(@Param("gender") String gender,
                                                @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -311,7 +333,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and gender like :gender ";
     String countByMaxEducationGroupBySQL = "group by EducationLevel " +
             "order by PeopleCount desc;";
-    @Query(value = countByMaxEducationSelectSQL +
+    @Query(value = countByMaxEducationSelectSQL + excludeIneligible +
             countByMaxEducationGroupBySQL, nativeQuery = true)
     List<Object[]> countByMaxEducationLevelOrderByCount(@Param("gender") String gender,
                                                         @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -345,7 +367,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      * @param gender Gender filter or % if all genders
      * @return List of occupation name and count
      */
-    @Query(value = countByMostCommonOccupationSelectSQL +
+    @Query(value = countByMostCommonOccupationSelectSQL + excludeIneligible +
             countByMostCommonOccupationGroupBySQL, nativeQuery = true)
     List<Object[]> countByMostCommonOccupationOrderByCount(@Param("gender") String gender,
                                                            @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -364,14 +386,14 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      **************************************************************************/
     String countByNationalitySelectSQL = "select n.name, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
-            " left join nationality n on c.nationality_id = n.id " +
+            " left join country n on c.nationality_id = n.id " +
             " left join country on c.country_id = country.id " +
             " where c.country_id in (:sourceCountryIds) " +
             " and " + countingStandardFilter + dateConditionFilter +
             " and gender like :gender" +
             " and lower(country.name) like :country";
     String countByNationalityGroupBySQL = " group by n.name order by PeopleCount desc";
-    @Query(value = countByNationalitySelectSQL +
+    @Query(value = countByNationalitySelectSQL + excludeIneligible +
             countByNationalityGroupBySQL, nativeQuery = true)
     List<Object[]> countByNationalityOrderByCount(@Param("gender") String gender,
                                                   @Param("country") String country,
@@ -402,7 +424,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and gender like :gender ";
     String countByOccupationGenderGroupBySQL = "group by o.name " +
             "order by PeopleCount desc;";
-    @Query(value = countByOccupationGenderSelectSQL +
+    @Query(value = countByOccupationGenderSelectSQL + excludeIneligible +
             countByOccupationGenderGroupBySQL, nativeQuery = true)
     List<Object[]> countByOccupationOrderByCount(@Param("gender") String gender,
                                                  @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -430,7 +452,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and " + countingStandardFilter + dateConditionFilter;
     String countByOccupationGroupBySQL = " group by o.name " +
             "order by PeopleCount desc;";
-    @Query(value = countByOccupationSelectSQL +
+    @Query(value = countByOccupationSelectSQL + excludeIneligible +
             countByOccupationGroupBySQL, nativeQuery = true)
     List<Object[]> countByOccupationOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                  @Param("dateFrom") LocalDate dateFrom,
@@ -456,7 +478,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and gender like :gender" +
             " and lower(l.name) = lower(:language)";
     String countBySpokenLanguageGroupBySQL = " group by ll.name order by PeopleCount desc";
-    @Query(value = countBySpokenLanguageSelectSQL +
+    @Query(value = countBySpokenLanguageSelectSQL + excludeIneligible +
             countBySpokenLanguageGroupBySQL, nativeQuery = true)
     List<Object[]> countBySpokenLanguageLevelByCount(@Param("gender") String gender,
                                                      @Param("language") String language,
@@ -485,7 +507,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and gender like :gender" +
             " and lower(country.name) like :country";
     String countBySurveyGroupBySQL = " group by s.name order by PeopleCount desc";
-    @Query(value = countBySurveySelectSQL +
+    @Query(value = countBySurveySelectSQL + excludeIneligible +
             countBySurveyGroupBySQL, nativeQuery = true)
     List<Object[]> countBySurveyOrderByCount(@Param("gender") String gender,
                                              @Param("country") String country,
@@ -499,5 +521,32 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                              @Param("sourceCountryIds") List<Long> sourceCountryIds,
         @Param("dateFrom") LocalDate dateFrom,
         @Param("dateTo") LocalDate dateTo,
+                                             @Param("candidateIds") Set<Long> candidateIds);
+
+    /***************************************************************************
+     Count By Status
+     **************************************************************************/
+    String countByStatusSelectSQL = "select c.status, count(distinct c) as PeopleCount" +
+            " from candidate c left join users u on c.user_id = u.id" +
+            " left join country on c.country_id = country.id " +
+            " where c.country_id in (:sourceCountryIds)" +
+            " and " + countingStandardFilter + dateConditionFilter +
+            " and gender like :gender" +
+            " and lower(country.name) like :country";
+    String countByStatusGroupBySQL = " group by c.status order by PeopleCount desc";
+    @Query(value = countByStatusSelectSQL + excludeIneligible +
+            countByStatusGroupBySQL, nativeQuery = true)
+    List<Object[]> countByStatusOrderByCount(@Param("gender") String gender,
+                                             @Param("country") String country,
+                                             @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                             @Param("dateFrom") LocalDate dateFrom,
+                                             @Param("dateTo") LocalDate dateTo);
+    @Query(value = countByStatusSelectSQL + candidatesCondition +
+            countByStatusGroupBySQL, nativeQuery = true)
+    List<Object[]> countByStatusOrderByCount(@Param("gender") String gender,
+                                             @Param("country") String country,
+                                             @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                             @Param("dateFrom") LocalDate dateFrom,
+                                             @Param("dateTo") LocalDate dateTo,
                                              @Param("candidateIds") Set<Long> candidateIds);
 }

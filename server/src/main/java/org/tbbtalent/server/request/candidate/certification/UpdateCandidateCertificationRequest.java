@@ -20,9 +20,14 @@ import java.time.LocalDate;
 
 public class UpdateCandidateCertificationRequest {
 
+    private Long id;
     private String name;
     private String institution;
     private LocalDate dateCompleted;
+
+    public Long getId() { return id; }
+
+    public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
 

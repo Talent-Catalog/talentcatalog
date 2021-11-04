@@ -38,7 +38,10 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
     private Integer yearOfArrival;
     private String address1;
     private String city;
+    private String state;
     private LocalDate dob;
+    private String externalId;
+    private String externalIdSource;
     private UnhcrStatus unhcrStatus;
     private String unhcrNumber;
 
@@ -106,6 +109,10 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
         this.city = city;
     }
 
+    public String getState() {return state;}
+
+    public void setState(String state) {this.state = state;}
+
     public LocalDate getDob() {
         return dob;
     }
@@ -113,6 +120,14 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
     public void setDob(LocalDate dob) {
         this.dob = dob;
     }
+
+    public String getExternalId() {return externalId;}
+
+    public void setExternalId(String externalId) {this.externalId = externalId;}
+
+    public String getExternalIdSource() {return externalIdSource;}
+
+    public void setExternalIdSource(String externalIdSource) {this.externalIdSource = externalIdSource;}
 
     public UnhcrStatus getUnhcrStatus() {
         return unhcrStatus;

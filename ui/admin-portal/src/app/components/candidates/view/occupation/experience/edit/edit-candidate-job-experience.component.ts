@@ -40,6 +40,16 @@ export class EditCandidateJobExperienceComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
+  fullTime = [
+    { displayText: 'Full Time', value: true },
+    { displayText: 'Part Time', value: false },
+  ];
+
+  paid = [
+    { displayText: 'Paid', value: true },
+    { displayText: 'Voluntary', value: false },
+  ];
+
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private candidateJobExperienceService: CandidateJobExperienceService,
@@ -62,13 +72,13 @@ export class EditCandidateJobExperienceComponent implements OnInit {
 
     this.candidateForm = this.fb.group({
       countryId: [this.candidateJobExperience.country ? this.candidateJobExperience.country.id : null, Validators.required],
-      companyName: [this.candidateJobExperience.companyName, Validators.required],
-      role: [this.candidateJobExperience.role, Validators.required],
-      startDate: [this.candidateJobExperience.startDate, Validators.required],
+      companyName: [this.candidateJobExperience.companyName],
+      role: [this.candidateJobExperience.role],
+      startDate: [this.candidateJobExperience.startDate],
       endDate: [this.candidateJobExperience.endDate],
-      fullTime: [this.candidateJobExperience.fullTime, Validators.required],
-      paid: [this.candidateJobExperience.paid, Validators.required],
-      description: [this.candidateJobExperience.description, Validators.required],
+      fullTime: [this.candidateJobExperience.fullTime],
+      paid: [this.candidateJobExperience.paid],
+      description: [this.candidateJobExperience.description],
     });
     this.loading = false;
   }

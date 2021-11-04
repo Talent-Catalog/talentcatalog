@@ -11,12 +11,8 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="visaSecurityRisk" formControlName="visaSecurityRisk">
-      <option *ngFor="let opt of securityRiskOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="visaSecurityRisk" [formControlName]="'visaSecurityRisk'" [items]="securityRiskOptions"
+               placeholder="Select" bindValue="value" bindLabel="displayText"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="form-group">
     <label for="visaSecurityRiskNotes">Notes</label>
