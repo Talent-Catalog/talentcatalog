@@ -106,6 +106,8 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
       .subscribe(
         (jobCheck) => {
           this.visaRecord?.candidateVisaJobChecks?.push(jobCheck);
+          this.form.controls['jobIndex'].patchValue(this.visaRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
+          this.changeJobOpp(null);
           this.selectedJobCheck = jobCheck;
           this.loading = false;
         },

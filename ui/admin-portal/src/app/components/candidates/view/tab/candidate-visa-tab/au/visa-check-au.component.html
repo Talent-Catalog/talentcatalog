@@ -93,10 +93,9 @@ Downside == upside : standard appearance of same question
         <div *ngIf="candidateIntakeData.candidateDependants.length == 0">
           <p>No dependants entered</p>
         </div>
-        <ul>
-          <div *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
-              <li><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}<span *ngIf="dependant.notes">,</span> {{dependant.notes}}</p></li>
-          </div>
+        <ul *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
+          <li *ngIf="dependant?.relation"><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}
+            <span *ngIf="dependant.healthNotes">,</span>{{dependant.healthNotes}}</p></li>
         </ul>
       </div>
     </div>
@@ -231,7 +230,7 @@ Downside == upside : standard appearance of same question
       <!--  Some clever code to add/delete/select current job -->
 
       <!--  Generate all job entries - but only one is enabled at a time-->
-      <div *ngFor="let job of visaRecord.candidateVisaJobChecks;">
+      <div *ngFor="let job of visaRecord.candidateVisaJobChecks; let i = index;">
         <app-visa-job-check-au *ngIf="job == selectedJobCheck"
                                [selectedJobCheck]="job"
                                [candidate]="candidate"
