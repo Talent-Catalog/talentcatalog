@@ -41,6 +41,8 @@ export class LanguageService {
 
   loading: boolean;
 
+  usAfghan: boolean = false;
+
   constructor(private http: HttpClient,
               private localStorage: LocalStorageService) {
     this.languageSelectionEnabled = (this.localStorage.get('languageSelectionEnabled') as boolean);
@@ -51,13 +53,17 @@ export class LanguageService {
     return this.languageSelectionEnabled;
   }
 
-  isUsAfghan(): boolean {
-    return !this.languageSelectionEnabled;
-  }
-
-  setUsAfghan(enabled: boolean) {
+  setLanguageSelectionEnabled(enabled: boolean) {
     this.localStorage.set('languageSelectionEnabled', enabled);
     this.languageSelectionEnabled = enabled;
+  }
+
+  isUsAfghan(): boolean {
+    return this.usAfghan;
+  }
+
+  setUsAfghan(usAfghan: boolean) {
+    this.usAfghan = usAfghan;
   }
 
   listLanguages(): Observable<Language[]> {
@@ -82,7 +88,8 @@ export class LanguageService {
   }
 
   isSelectedLanguageRtl(): boolean {
-    return this.selectedLanguage === 'ar';
+    const rtl: boolean =  ['ar', 'fa'].indexOf(this.selectedLanguage) >= 0;
+    return rtl;
   }
 
   setSelectedLanguage(selectedLanguage: string) {
