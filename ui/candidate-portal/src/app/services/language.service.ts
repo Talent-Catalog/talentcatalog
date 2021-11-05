@@ -33,7 +33,7 @@ export class LanguageService {
   private languageChangedSource = new Subject<string>();
   languageChanged$ = this.languageChangedSource.asObservable();
 
-  private languageSelectionEnabled: boolean = true;
+  private languageSelectionDisabled: boolean = false;
 
   translations: Translation[];
 
@@ -45,17 +45,17 @@ export class LanguageService {
 
   constructor(private http: HttpClient,
               private localStorage: LocalStorageService) {
-    this.languageSelectionEnabled = (this.localStorage.get('languageSelectionEnabled') as boolean);
+    this.languageSelectionDisabled = (this.localStorage.get('languageSelectionDisabled') as boolean);
     this.selectedLanguage = (this.localStorage.get('language') as string) || 'en';
   }
 
-  isLanguageSelectionEnabled(): boolean {
-    return this.languageSelectionEnabled;
+  isLanguageSelectionDisabled(): boolean {
+    return this.languageSelectionDisabled;
   }
 
-  setLanguageSelectionEnabled(enabled: boolean) {
-    this.localStorage.set('languageSelectionEnabled', enabled);
-    this.languageSelectionEnabled = enabled;
+  setLanguageSelectionDisabled(disabled: boolean) {
+    this.localStorage.set('languageSelectionDisabled', disabled);
+    this.languageSelectionDisabled = disabled;
   }
 
   isUsAfghan(): boolean {
