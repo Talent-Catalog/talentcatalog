@@ -33,7 +33,7 @@
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
 
       <!-- TRANSLATION -->
-      <ul class="navbar-nav" *ngIf="languageService.isLanguageSelectionEnabled()">
+      <ul class="navbar-nav" *ngIf="!languageService.isLanguageSelectionDisabled()">
         <div class="nav-item dropdown" ngbDropdown>
           <a class="dropdown-toggle translation-toggle" ngbDropdownToggle>
             {{selectedLanguage}}
