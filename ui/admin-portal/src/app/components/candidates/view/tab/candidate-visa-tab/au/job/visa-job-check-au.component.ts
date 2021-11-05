@@ -86,7 +86,7 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
   }
 
   get familyInAus(): string {
-    let answer: string = 'No Family'
+    let answer: string = 'No family entered'
     if (this.ausDest?.family) {
       if (this.ausDest?.location) {
         answer = this.ausDest?.family + ' in ' + this.ausDest?.location;
@@ -94,15 +94,21 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
         answer = this.ausDest?.family;
       }
       return answer;
-    } else {
-
     }
+    return answer;
   }
 
   get selectedOccupations(): CandidateOccupation {
     if (this.candOccupations) {
       this.yrsExp = this.candOccupations?.find(occ => occ.occupation.id === this.selectedJobCheck?.occupation?.id);
       return this.yrsExp;
+    }
+  }
+
+  get candidateAge(): number {
+    if (this.candidate?.dob) {
+      const timeDiff = Math.abs(Date.now() - new Date(this.candidate?.dob).getTime());
+      return Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25);
     }
   }
 
