@@ -43,8 +43,10 @@ public interface TranslationRepository extends JpaRepository<Translation, Long>,
 
     @Query("select t from Translation t "
             + " where t.objectId = (:objectId)"
-            + " and t.objectType = (:objectType)")
-    Optional<Translation> findByObjectIdType(@Param("objectId") Long objectId,
-                                         @Param("objectType") String objectType);
+            + " and t.objectType = (:objectType)"
+            + " and t.language = (:lang)")
+    Optional<Translation> findByObjectIdTypeLang(@Param("objectId") Long objectId,
+                                                 @Param("objectType") String objectType,
+                                                 @Param("lang") String lang);
 
 }
