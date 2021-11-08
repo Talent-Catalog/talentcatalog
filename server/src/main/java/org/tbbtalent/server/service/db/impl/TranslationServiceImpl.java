@@ -99,7 +99,7 @@ public class TranslationServiceImpl implements TranslationService {
 
         Translation translation = new Translation(user, request.getObjectId(), request.getObjectType(),
                 request.getLanguage(), request.getValue());
-        Translation existing = translationRepository.findByObjectIdType(request.getObjectId(), request.getObjectType()).orElse(null);
+        Translation existing = translationRepository.findByObjectIdTypeLang(request.getObjectId(), request.getObjectType(), request.getLanguage()).orElse(null);
         if (existing != null){
             throw new EntityExistsException("translation");
         }
