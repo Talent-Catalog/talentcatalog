@@ -39,9 +39,8 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
 
     private String interestNotes;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qualification_id")
-    private EducationLevel qualification;
+    @Enumerated(EnumType.STRING)
+    private EducationType qualification;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "occupation_id")

@@ -285,7 +285,7 @@ export interface CandidateVisaJobCheck {
   name?: string;
   sfJobLink?: string;
   occupation?: Occupation;
-  qualification?: Qualification;
+  qualification?: EducationType;
   salaryTsmit?: YesNo;
   regional?: YesNo;
   interest?: YesNo;
@@ -585,13 +585,12 @@ export enum OtherVisas {
   PointsIndep = "189/190 points tested independant stream",
 }
 
-export enum Qualification {
-  HighSchool = "High School",
-  Associates = "Associates",
-  Bachelors = "Bachelors",
+export enum EducationType {
+  Associate = "Associates",
+  Vocational = "Vocational",
+  Bachelor = "Bachelors",
   Masters = "Masters",
-  PHD = "PHD",
-  Other = "Other"
+  Doctoral = "Doctoral",
 }
 
 export enum Gender {
