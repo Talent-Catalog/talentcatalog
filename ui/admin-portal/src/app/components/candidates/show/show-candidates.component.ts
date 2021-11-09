@@ -77,7 +77,8 @@ import {
   CopySourceContentsRequest,
   IHasSetOfCandidates,
   isSavedList,
-  PublishedDocColumnConfig, PublishedDocImportReport,
+  PublishedDocColumnConfig,
+  PublishedDocImportReport,
   PublishListRequest,
   SavedList,
   SavedListGetRequest,
@@ -1423,7 +1424,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   doSelectColumns() {
     //Initialize with current configuration
     //Output is new configuration
-    const modal = this.modalService.open(CandidateColumnSelectorComponent);
+    const modal = this.modalService.open(CandidateColumnSelectorComponent, {scrollable: true});
     modal.componentInstance.setSourceAndFormat(this.candidateSource, true);
 
     modal.result

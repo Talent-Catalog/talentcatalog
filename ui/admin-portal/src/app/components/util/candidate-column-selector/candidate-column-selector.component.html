@@ -36,13 +36,13 @@
   <div class="flex mb-3">
     <div class="container">
       <p class="text-center h6">Optional Fields</p>
-      <div [dragula]="dragulaGroupName" [(dragulaModel)]="availableFields">
+      <div [dragula]="dragulaGroupName" [(dragulaModel)]="availableFields" class="dragula-container">
         <div id="field" class="field" *ngFor="let field of availableFields">{{ field.displayName }}</div>
       </div>
     </div>
     <div class="container">
       <p class="text-center h6">Selected Fields</p>
-      <div [dragula]="dragulaGroupName" [(dragulaModel)]="selectedFields">
+      <div [dragula]="dragulaGroupName" [(dragulaModel)]="selectedFields" class="dragula-container">
         <div class="field" *ngFor="let field of selectedFields">{{ field.displayName }}</div>
       </div>
     </div>
