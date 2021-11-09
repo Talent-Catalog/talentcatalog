@@ -31,6 +31,9 @@ import javax.persistence.Table;
  *         Use tool like Phrase to generate translations. Export file as Nested JSON
  *     </li>
  *     <li>
+ *         Upload JSON file to Amazon S3 named as [two character language code].json
+ *     </li>
+ *     <li>
  *         Add new entity (table entry) for the new language to this table.
  *     </li>
  *     <li>
