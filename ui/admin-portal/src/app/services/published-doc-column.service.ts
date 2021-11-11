@@ -55,6 +55,8 @@ export class PublishedDocColumnService {
       new PublishedDocFieldSource("contextNote"))
     .width = PublishedDocColumnWidth.Wide;
 
+    this.addColumn("dob", "DOB", new PublishedDocFieldSource("dob"));
+
     this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
 
     //These are special employer feedback fields (ie not display only fields, which are the default type)
