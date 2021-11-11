@@ -30,6 +30,8 @@ import javax.persistence.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -587,6 +589,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         } else if (obj != null && "candidateNumber".equals(exportField)) {
             //Convert candidateNumber to a number
             obj = Long.parseLong((String) obj);
+        } else if (obj != null && "dob".equals(exportField)) {
+            //Convert candidateNumber to a number
+            obj = ((LocalDate) obj).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
         } else if (obj instanceof Enum) {
             obj = ((Enum<?>) obj).name();
         }
