@@ -263,6 +263,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("tbbEligibility")
                 .add("notes")
                 .add("occupation", occupationDto())
+                .add("occupationNotes")
                 ;
     }
 
