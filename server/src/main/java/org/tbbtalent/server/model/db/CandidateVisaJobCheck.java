@@ -43,6 +43,9 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobQualification() != null) {
             setQualification(data.getVisaJobQualification());
         }
+        if (data.getVisaJobQualificationNotes() != null) {
+            setQualificationNotes(data.getVisaJobQualificationNotes());
+        }
         if (data.getVisaJobSalaryTsmit() != null) {
             setSalaryTsmit(data.getVisaJobSalaryTsmit());
         }

@@ -177,6 +177,8 @@ public class CandidateIntakeDataUpdate {
     private Long visaCountryId;
     private YesNo visaProtection;
     private String visaProtectionGrounds;
+    private YesNo visaEnglishThreshold;
+    private String visaEnglishThresholdNotes;
     private YesNo visaHealthAssessment;
     private String visaHealthAssessmentNotes;
     private YesNo visaCharacterAssessment;
@@ -194,6 +196,7 @@ public class CandidateIntakeDataUpdate {
     private Long visaJobOccupationId;
     private String visaJobOccupationNotes;
     private EducationType visaJobQualification;
+    private String visaJobQualificationNotes;
     private YesNo visaJobInterest;
     private String visaJobInterestNotes;
     private YesNo visaJobSalaryTsmit;

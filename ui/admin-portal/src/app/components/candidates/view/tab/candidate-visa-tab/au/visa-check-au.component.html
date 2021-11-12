@@ -80,6 +80,33 @@ Downside == upside : standard appearance of same question
 
   <div class="card">
     <div class="card-header">
+      English Threshold
+    </div>
+    <div class="card-body intake-data">
+      <div class="card-title">English exams</div>
+      <div *ngIf="candidateIntakeData.candidateExams.length == 0">
+        <p>No exams entered</p>
+      </div>
+      <ul *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
+        <li *ngIf="ce?.exam">
+          <p class="mb-0">{{ce?.exam}}<span *ngIf="ce.otherExam">, </span>{{ce.otherExam}}: {{ce?.score}}<span *ngIf="ce.year"> ({{ce?.year}})</span>
+          </p>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body">
+      <app-english-threshold
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaRecord">
+      </app-english-threshold>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
       Health Assessment
     </div>
     <div class="card-body intake-data">

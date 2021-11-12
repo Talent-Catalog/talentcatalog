@@ -24,6 +24,7 @@ export class QualificationRelevantComponent extends IntakeComponentBase implemen
     this.form = this.fb.group({
       visaJobId: [this.selectedJobCheck?.id],
       visaJobQualification: [this.selectedJobCheck?.qualification],
+      visaJobQualificationNotes: [this.selectedJobCheck?.qualificationNotes],
     });
   }
 
