@@ -16,7 +16,13 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../../util/intake/IntakeComponentTabBase';
-import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from '../../../../../../model/candidate';
+import {
+  Candidate,
+  CandidateIntakeData,
+  CandidateVisa,
+  CandidateVisaJobCheck,
+  getIeltsScoreTypeString
+} from '../../../../../../model/candidate';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {CandidateService} from "../../../../../../services/candidate.service";
 import {CountryService} from "../../../../../../services/country.service";
@@ -160,5 +166,7 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
     return this.visaRecord?.country?.name;
   }
 
-
+  get ieltsScoreType(): string {
+    return getIeltsScoreTypeString(this.candidate);
+  }
 }

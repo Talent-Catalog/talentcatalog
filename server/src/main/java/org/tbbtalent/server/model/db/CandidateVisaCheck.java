@@ -44,6 +44,12 @@ public class CandidateVisaCheck extends CandidateVisaCheckBase {
         if (data.getVisaProtectionGrounds() != null) {
             setProtectionGrounds(data.getVisaProtectionGrounds());
         }
+        if (data.getVisaEnglishThreshold() != null) {
+            setEnglishThreshold(data.getVisaEnglishThreshold());
+        }
+        if (data.getVisaEnglishThresholdNotes() != null) {
+            setEnglishThresholdNotes(data.getVisaEnglishThresholdNotes());
+        }
         if (data.getVisaHealthAssessment() != null) {
             setHealthAssessment(data.getVisaHealthAssessment());
         }

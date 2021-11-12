@@ -3,7 +3,8 @@ import {
   CandidateDestination,
   CandidateIntakeData,
   CandidateVisa,
-  CandidateVisaJobCheck
+  CandidateVisaJobCheck,
+  getIeltsScoreTypeString
 } from "../../../../../../../model/candidate";
 import {IntakeComponentTabBase} from "../../../../../../util/intake/IntakeComponentTabBase";
 import {CandidateService} from "../../../../../../../services/candidate.service";
@@ -110,6 +111,10 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
       const timeDiff = Math.abs(Date.now() - new Date(this.candidate?.dob).getTime());
       return Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25);
     }
+  }
+
+  get ieltsScoreType(): string {
+    return getIeltsScoreTypeString(this.candidate);
   }
 
 }

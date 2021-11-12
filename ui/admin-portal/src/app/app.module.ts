@@ -238,6 +238,7 @@ import {SearchExternalLinksComponent} from './components/settings/external-links
 import {CreateExternalLinkComponent} from './components/settings/external-links/create/create-external-link.component';
 import {EditExternalLinkComponent} from './components/settings/external-links/edit/edit-external-link.component';
 import {CovidVaccinationComponent} from './components/candidates/intake/vaccination/covid-vaccination.component';
+import {EnglishThresholdComponent} from './components/candidates/visa/english-threshold/english-threshold.component';
 
 @NgModule({
   declarations: [
@@ -452,7 +453,8 @@ import {CovidVaccinationComponent} from './components/candidates/intake/vaccinat
     SearchExternalLinksComponent,
     CreateExternalLinkComponent,
     EditExternalLinkComponent,
-    CovidVaccinationComponent
+    CovidVaccinationComponent,
+    EnglishThresholdComponent
   ],
   imports: [
     BrowserModule,

@@ -24,6 +24,7 @@ export class JobOccupationComponent extends IntakeComponentBase implements OnIni
     this.form = this.fb.group({
       visaJobId: [this.selectedJobCheck?.id],
       visaJobOccupationId: [this.selectedJobCheck?.occupation?.id],
+      visaJobOccupationNotes: [this.selectedJobCheck?.occupationNotes],
     });
 
     this.form.controls['visaJobOccupationId']?.valueChanges.subscribe(
