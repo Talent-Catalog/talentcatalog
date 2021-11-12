@@ -16,7 +16,7 @@
 
 <div class="modal-header">
 
-  <h4 class="modal-title">Select columns to publish</h4>
+  <h4 class="modal-title">Select fields to publish</h4>
 
   <button type="button" class="close" aria-label="Close" (click)="cancel()">
     <span aria-hidden="true">&times;</span>
@@ -37,7 +37,7 @@
     <div class="container">
       <p class="text-center h6 mb-1">Available Fields</p>
       <div class="small mb-3 text-muted text-center">
-        Drag and drop into the selected fields column.
+        Drag and drop into empty area under selected fields.
       </div>
       <div class="dragula-container">
         <div id="availableColumns" [dragula]="dragulaGroupName" [(dragulaModel)]="availableColumns">
