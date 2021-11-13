@@ -16,7 +16,7 @@
 
 <div class="modal-header">
 
-  <h4 class="modal-title">Select columns to publish</h4>
+  <h4 class="modal-title">Select fields to publish</h4>
 
   <button type="button" class="close" aria-label="Close" (click)="cancel()">
     <span aria-hidden="true">&times;</span>
@@ -37,13 +37,15 @@
     <div class="container">
       <p class="text-center h6 mb-1">Available Fields</p>
       <div class="small mb-3 text-muted text-center">
-        Drag and drop into the selected fields column.
+        Drag and drop into empty area under selected fields.
       </div>
-      <div id="availableColumns" [dragula]="dragulaGroupName" [(dragulaModel)]="availableColumns">
-        <div *ngFor="let field of availableColumns; last as isLast" [ngClass]="{'mt-4': isLast}">
-          <div class="d-flex">
-            <div id="field" class="field width-100" >
-              {{ field.columnDef.header }}
+      <div class="dragula-container">
+        <div id="availableColumns" [dragula]="dragulaGroupName" [(dragulaModel)]="availableColumns">
+          <div *ngFor="let field of availableColumns; last as isLast" [ngClass]="{'mt-4': isLast}">
+            <div class="d-flex">
+              <div id="field" class="field width-100" >
+                {{ field.columnDef.header }}
+              </div>
             </div>
           </div>
         </div>
@@ -54,43 +56,38 @@
       <div class="small mb-3 text-muted text-center">
         Drag away from column to remove.
       </div>
-        <div *ngIf="selectedColumns.length">
-          <div id="selectedColumns" [dragula]="dragulaGroupName" [(dragulaModel)]="selectedColumns">
-              <div *ngFor="let field of selectedColumns; let i = index">
-                <div ngbDropdown #dropdown=ngbDropdown class="d-flex">
-                  <button id="dropdownForm" class="btn field width-100" ngbDropdownToggle>
-                    <span *ngIf="field.columnProps.header != null; else defaultHeader">{{field.columnProps.header}}</span>
-                    <ng-template #defaultHeader>
-                      <span>{{field.columnDef.header}}</span>
-                    </ng-template>
-                    <i class="fa fa-pencil"></i>
-                  </button>
-                  <div ngbDropdownMenu aria-labelledby="dropdownForm">
-                    <div class="px-4 py-3">
-                      <h6 class="py-1">{{field.columnDef.header}}</h6>
-                      <div class="form-group">
-                        <label [for]="'header'+ i">New Header Name</label>
-                        <input type="text" class="form-control" [id]="'header'+ i" [(ngModel)]="field.columnProps.header">
-                      </div>
-                      <div *ngIf="!hasFieldName(field)" class="form-group">
-                        <label [for]="'constant'+ i">Constant Name</label>
-                        <input type="text" class="form-control" [id]="'constant'+ i" [(ngModel)]="field.columnProps.constant">
-                      </div>
-                      <div class="d-flex justify-content-between">
-                        <button type="submit" (click)="update(field); dropdown.close()" class="btn btn-primary btn-sm">Update</button>
-                        <button type="submit" (click)="reset(field); dropdown.close()" class="btn btn-secondary btn-sm">Reset</button>
-                      </div>
-                    </div>
-                  </div>
+      <div [dragula]="dragulaGroupName" [(dragulaModel)]="selectedColumns" class="dragula-container">
+        <div *ngIf="!selectedColumns.length" class="text-center small mt-3">No Columns Selected</div>
+        <div *ngFor="let field of selectedColumns; let i = index">
+          <div ngbDropdown #dropdown=ngbDropdown class="d-flex">
+            <button id="dropdownForm" class="btn field width-100" ngbDropdownToggle>
+              <span *ngIf="field.columnProps.header != null; else defaultHeader">{{field.columnProps.header}}</span>
+              <ng-template #defaultHeader>
+                <span>{{field.columnDef.header}}</span>
+              </ng-template>
+              <i class="fa fa-pencil"></i>
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownForm">
+              <div class="px-4 py-3">
+                <h6 class="py-1">{{field.columnDef.header}}</h6>
+                <div class="form-group">
+                  <label [for]="'header'+ i">New Header Name</label>
+                  <input type="text" class="form-control" [id]="'header'+ i" [(ngModel)]="field.columnProps.header">
+                </div>
+                <div *ngIf="!hasFieldName(field)" class="form-group">
+                  <label [for]="'constant'+ i">Constant Name</label>
+                  <input type="text" class="form-control" [id]="'constant'+ i" [(ngModel)]="field.columnProps.constant">
+                </div>
+                <div class="d-flex justify-content-between">
+                  <button type="submit" (click)="update(field); dropdown.close()" class="btn btn-primary btn-sm">Update</button>
+                  <button type="submit" (click)="reset(field); dropdown.close()" class="btn btn-secondary btn-sm">Reset</button>
                 </div>
               </div>
             </div>
           </div>
-        <div *ngIf="!selectedColumns.length">
-          <div [dragula]="dragulaGroupName" [(dragulaModel)]="selectedColumns">
-            <div class="text-center small mt-3">No Columns Selected</div>
-          </div>
         </div>
+      </div>
+
       </div>
     </div>
   <button type="button" class="btn btn-primary" (click)="default()">

@@ -223,6 +223,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("country", countryDto())
                 .add("protection")
                 .add("protectionGrounds")
+                .add("englishThreshold")
+                .add("englishThresholdNotes")
                 .add("healthAssessment")
                 .add("healthAssessmentNotes")
                 .add("characterAssessment")
@@ -263,6 +265,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("tbbEligibility")
                 .add("notes")
                 .add("occupation", occupationDto())
+                .add("occupationNotes")
+                .add("qualificationNotes")
                 ;
     }
 

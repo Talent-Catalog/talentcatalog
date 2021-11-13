@@ -261,6 +261,8 @@ export interface CandidateVisa {
   protection?: YesNo;
   protectionGrounds?: string;
   tbbEligibilityAssessment?: TBBEligibilityAssessment;
+  englishThreshold?: YesNo;
+  englishThresholdNotes?: string;
   healthAssessment: YesNo;
   healthAssessmentNotes: string;
   characterAssessment: YesNo;
@@ -285,7 +287,9 @@ export interface CandidateVisaJobCheck {
   name?: string;
   sfJobLink?: string;
   occupation?: Occupation;
+  occupationNotes?: string;
   qualification?: EducationType;
+  qualificationNotes?: string;
   salaryTsmit?: YesNo;
   regional?: YesNo;
   interest?: YesNo;
@@ -629,5 +633,16 @@ export function checkIeltsScoreType(candidate: Candidate): string {
     } else {
       return null;
     }
+  }
+}
+
+export function getIeltsScoreTypeString(candidate: Candidate): string {
+  const type = checkIeltsScoreType(candidate);
+  if (type === "IELTSGen") {
+    return 'General';
+  } else if (type === "IELTSAca") {
+    return 'Academic';
+  } else {
+    return 'Estimated'
   }
 }

@@ -67,43 +67,37 @@
   </div>
   <div class="card-body intake-data">
 
-    <div class="d-flex justify-content-between">
-      <!-- Display Age   -->
-      <div class="display">
+    <!-- Display Age   -->
+    <div>
+      <div class="display d-flex align-items-baseline">
         <app-fixed-input
           [question]="'Age'"
           [answer]="candidateAge">
         </app-fixed-input>
-        <small>50 year cutoff for 494; 55 for 186.</small>
+        <small class="ml-2">(50 year cutoff for 494; 55 for 186.)</small>
       </div>
-
-      <!--  Display Estimated IELTS Assessment   -->
-      <div *ngIf="this.candidateIntakeData?.langAssessmentScore" class="display">
-        <app-fixed-input
-          [question]="'Estimated IELTS Assessment'"
-          [answer]="this.candidateIntakeData?.langAssessmentScore">
-        </app-fixed-input>
-      </div>
-
-      <!--  Display English Exams  -->
-      <div class="display">
-        <div *ngFor="let e of this.candidateIntakeData?.candidateExams">
-          <app-fixed-input
-            [question]="e.exam"
-            [answer]="e.score">
-          </app-fixed-input>
-        </div>
-      </div>
-
-      <!-- Display Years Experience in Occupation   -->
-      <div *ngIf="selectedOccupations" class="display">
-        <app-fixed-input
-          [question]="'Experience as ' + selectedOccupations.occupation.name"
-          [answer]="selectedOccupations.yearsExperience + ' years'">
-        </app-fixed-input>
-      </div>
-
     </div>
+
+    <!--  Display English Exams   -->
+    <div>
+      <div *ngIf="this.candidate.ieltsScore" class="display">
+        <app-fixed-input
+          [question]="'IELTS Score'"
+          [answer]="this.candidate.ieltsScore + ' - ' + ieltsScoreType">
+        </app-fixed-input>
+      </div>
+
+<!--      &lt;!&ndash;  Display English Exams  &ndash;&gt;-->
+<!--      <div class="display">-->
+<!--        <div *ngFor="let e of this.candidateIntakeData?.candidateExams">-->
+<!--          <app-fixed-input-->
+<!--            [question]="e.exam"-->
+<!--            [answer]="e.score">-->
+<!--          </app-fixed-input>-->
+<!--        </div>-->
+<!--      </div>-->
+    </div>
+
   </div>
 </div>
 
@@ -114,23 +108,51 @@
     Qualifications
   </div>
   <div class="card-body intake-data">
-    <!-- Display All Candidate Qualifications   -->
-    <div *ngIf="candQualifications?.length > 0">
-      <div class="display" *ngFor="let edu of candQualifications" >
-        <app-fixed-input
-          *ngIf="edu.educationMajor"
-          [question]="edu.educationMajor?.name + ' ' + edu.courseName"
-          [answer]="edu.educationType">
-        </app-fixed-input>
-        <app-fixed-input
-          *ngIf="edu.educationMajor == null && edu.courseName"
-          [question]="edu.courseName"
-          [answer]="edu.educationType">
-        </app-fixed-input>
+    <div>
+      <div class="card-title">Education</div>
+      <!-- Display All Candidate Qualifications   -->
+      <div *ngIf="candQualifications?.length > 0">
+        <ul>
+          <li class="display" *ngFor="let edu of candQualifications">
+            <app-fixed-input
+              *ngIf="edu.educationMajor"
+              [question]="edu.educationMajor?.name + ' ' + edu.courseName"
+              [answer]="edu.educationType">
+            </app-fixed-input>
+            <app-fixed-input
+              *ngIf="edu.educationMajor == null && edu.courseName"
+              [question]="edu.courseName"
+              [answer]="edu.educationType">
+            </app-fixed-input>
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="candQualifications?.length == 0">
+        <p>No qualifications entered</p>
       </div>
     </div>
-    <div *ngIf="candQualifications?.length == 0">
-      <p>No qualifications entered</p>
+    <div>
+      <div class="card-title">Experience</div>
+      <!-- Display All Candidate Experience   -->
+      <div *ngIf="candOccupations?.length > 0">
+        <ul>
+          <li class="display" *ngFor="let co of candOccupations" >
+            <app-fixed-input
+              *ngIf="co.occupation"
+              [question]="co.occupation?.name"
+              [answer]="co.yearsExperience">
+            </app-fixed-input>
+            <app-fixed-input
+              *ngIf="co.occupation == null && co.migrationOccupation"
+              [question]="co.migrationOccupation"
+              [answer]="co.yearsExperience">
+            </app-fixed-input>
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="candOccupations?.length == 0">
+        <p>No experience entered</p>
+      </div>
     </div>
   </div>
   <div class="card-body">

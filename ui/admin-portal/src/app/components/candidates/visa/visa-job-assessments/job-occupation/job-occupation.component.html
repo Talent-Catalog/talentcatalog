@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div *ngIf="editable" class="form-group">
-    <label for="visaJobOccupationId">What occupation is the job on the list?</label>
+    <label for="visaJobOccupationId">What occupation is the job on the TBB list?</label>
     <div class="float-right">
       <app-autosave-status
         [saving]="saving"
@@ -12,5 +12,11 @@
     </div>
     <ng-select id="visaJobOccupationId" [formControlName]="'visaJobOccupationId'" [items]="occupations"
                placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+  </div>
+  <div *ngIf="editable" class="form-group">
+    <label for="visaJobOccupationNotes">Notes on occupation (eg. regional code) </label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="2"
+              id="visaJobOccupationNotes" formControlName="visaJobOccupationNotes"
+              placeholder="" ></textarea>
   </div>
 </form>

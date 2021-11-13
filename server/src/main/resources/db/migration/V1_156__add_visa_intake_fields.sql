@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,39 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "src/scss/_variables.scss";
+alter table candidate_visa_job_check add column qualification_notes text;
 
-.flex {
-  display: flex;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.4);
-}
-
-.field {
-  background-color: $color-secondary-lighter;
-  list-style: none;
-  padding: 8px;
-  color: $color-text-primary;
-  margin-bottom: 0.5em;
-  border-radius: 3px;
-  text-align: center;
-}
-
-.container {
-  flex: 1;
-}
-.container:not(:last-child) {
-  margin-right: 8px;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-.gu-mirror {
-  background-color: $color-secondary-light;
-}
-
-.dragula-container {
-  height: 100%;
-}
+alter table candidate_visa_check add column english_threshold text;
+alter table candidate_visa_check add column english_threshold_notes text;

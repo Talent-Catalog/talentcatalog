@@ -1,0 +1,24 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="visaEnglishThreshold">Meets English threshold?</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <ng-select id="visaEnglishThreshold" [formControlName]="'visaEnglishThreshold'" (clear)="setNoResponse('visaEnglishThreshold')"
+               [items]="englishThresholdOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+  </div>
+  <div *ngIf="hasNotes" class="form-group">
+    <label for="visaEnglishThresholdNotes">Notes</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="2"
+              id="visaEnglishThresholdNotes" [formControlName]="'visaEnglishThresholdNotes'"
+              placeholder="" ></textarea>
+  </div>
+</form>

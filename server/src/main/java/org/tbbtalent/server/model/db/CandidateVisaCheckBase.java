@@ -42,6 +42,11 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
     private String protectionGrounds;
 
     @Enumerated(EnumType.STRING)
+    private YesNo englishThreshold;
+
+    private String englishThresholdNotes;
+
+    @Enumerated(EnumType.STRING)
     private YesNo healthAssessment;
 
     private String healthAssessmentNotes;

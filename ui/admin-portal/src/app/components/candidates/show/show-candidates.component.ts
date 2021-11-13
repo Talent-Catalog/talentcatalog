@@ -77,7 +77,8 @@ import {
   CopySourceContentsRequest,
   IHasSetOfCandidates,
   isSavedList,
-  PublishedDocColumnConfig, PublishedDocImportReport,
+  PublishedDocColumnConfig,
+  PublishedDocImportReport,
   PublishListRequest,
   SavedList,
   SavedListGetRequest,
@@ -635,7 +636,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   modifyExportColumns() {
-    const modal = this.modalService.open(PublishedDocColumnSelectorComponent, {size: "lg"});
+    const modal = this.modalService.open(PublishedDocColumnSelectorComponent, {size: "lg", scrollable: true});
 
     modal.componentInstance.availableColumns = this.publishedDocColumnService.getColumnConfigFromAllColumns();
     modal.componentInstance.selectedColumns =  this.publishedDocColumnService.getColumnConfigFromExportColumns(this.candidateSource.exportColumns);
@@ -1423,7 +1424,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   doSelectColumns() {
     //Initialize with current configuration
     //Output is new configuration
-    const modal = this.modalService.open(CandidateColumnSelectorComponent);
+    const modal = this.modalService.open(CandidateColumnSelectorComponent, {scrollable: true});
     modal.componentInstance.setSourceAndFormat(this.candidateSource, true);
 
     modal.result
