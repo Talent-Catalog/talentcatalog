@@ -40,8 +40,9 @@ problems installing Node using brew.
 It is also probably easier to install Java directly rather than using brew.
 
 
-- Java JDK8
-   - See [this post](https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac)
+- Java 11
+   - At least Java 11 is required because we use the Locale object to provide translations of 
+  countries and languages and that support is not complete in Java 8, for example. 
     
 
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
