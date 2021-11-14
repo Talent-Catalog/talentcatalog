@@ -37,7 +37,8 @@ However, Flyway and Postgres don't install with Homebrew, and the book
 can also have problems. Googling you can still see lots of people having
 problems installing Node using brew.
 
-It is also probably easier to install Java directly rather than using brew.
+It is also probably easier to install Java directly (or use the Java delivered with your 
+development IDE - see below) rather than using brew.
 
 
 - Java 11
