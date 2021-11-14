@@ -42,7 +42,9 @@ It is also probably easier to install Java directly rather than using brew.
 
 - Java 11
    - At least Java 11 is required because we use the Locale object to provide translations of 
-  countries and languages and that support is not complete in Java 8, for example. 
+  countries and languages and that support is not complete in Java 8, for example.
+   - If you are using a recent version of Intellij as your development environment the Java that 
+  comes with Intellij will be fine.
     
 
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
