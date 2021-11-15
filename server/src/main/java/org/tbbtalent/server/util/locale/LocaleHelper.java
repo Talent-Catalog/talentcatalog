@@ -91,6 +91,22 @@ public class LocaleHelper {
     }
 
     /**
+     * Returns the display name of a language in its own language.
+     * <p/>
+     * For example, "Francais" for the language "fr"
+     * @param langCode Language code
+     * @return Display name or null if langCode is null.
+     */
+    public static String getOwnLanguageDisplayName(@Nullable String langCode) {
+        String name = null;
+        if (langCode != null) {
+            Locale languageLocale = new Locale(langCode);
+            name = languageLocale.getDisplayLanguage(languageLocale);
+        }
+        return name;
+    }
+
+    /**
      * Checks whether the given language code is known.
      * @param langCode language code - eg 'fr' for French
      * @return True if code is known. False if null

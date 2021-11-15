@@ -16,8 +16,10 @@
 
 package org.tbbtalent.server.util.locale;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -78,5 +80,21 @@ class LocaleHelperTest {
 
         rtl = LocaleHelper.isRtlLanguage("ar");
         assertTrue(rtl);
+    }
+
+    @Test
+    void getOwnLanguageDisplayName() {
+        String name;
+
+        name = LocaleHelper.getOwnLanguageDisplayName(null);
+        assertNull(name);
+
+        name = LocaleHelper.getOwnLanguageDisplayName("en");
+        assertNotNull(name);
+        assertEquals("english", name.toLowerCase());
+
+        name = LocaleHelper.getOwnLanguageDisplayName("fr");
+        assertNotNull(name);
+        assertEquals("français", name.toLowerCase());
     }
 }

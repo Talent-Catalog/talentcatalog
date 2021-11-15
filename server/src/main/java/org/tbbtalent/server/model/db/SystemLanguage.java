@@ -65,6 +65,15 @@ public class SystemLanguage extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    public SystemLanguage() {
+    }
+
+    public SystemLanguage(String language) {
+        this.language = language;
+        this.status = Status.active;
+        this.label = LocaleHelper.getOwnLanguageDisplayName(language);
+    }
+
     public boolean isRtl() {
         return LocaleHelper.isRtlLanguage(language);
     }

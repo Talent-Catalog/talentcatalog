@@ -82,6 +82,9 @@ public class LanguageServiceImpl implements LanguageService {
             throw new EntityExistsException("SystemLanguage");
         }
 
+        SystemLanguage sl = new SystemLanguage(langCode);
+        systemLanguageRepository.save(sl);
+
         //TODO JC Implement addSystemLanguage
         throw new UnsupportedOperationException("addSystemLanguage not implemented");
     }
