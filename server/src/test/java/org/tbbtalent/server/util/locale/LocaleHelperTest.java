@@ -16,7 +16,9 @@
 
 package org.tbbtalent.server.util.locale;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -47,5 +49,30 @@ class LocaleHelperTest {
     void getLanguageNameTranslations() {
         List<CodeTranslation> cts = helper.getLanguageNameTranslations("fa");
         assertNotNull(cts);
+    }
+
+    @Test
+    void isKnownLanguageCode() {
+        boolean known;
+
+        known = helper.isKnownLanguageCode("??");
+        assertFalse(known);
+
+        known = helper.isKnownLanguageCode("ar");
+        assertTrue(known);
+    }
+
+    @Test
+    void isRtlLanguage() {
+        boolean rtl;
+
+        rtl = helper.isRtlLanguage("??");
+        assertFalse(rtl);
+
+        rtl = helper.isRtlLanguage("fr");
+        assertFalse(rtl);
+
+        rtl = helper.isRtlLanguage("ar");
+        assertTrue(rtl);
     }
 }
