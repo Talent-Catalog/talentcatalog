@@ -38,8 +38,16 @@ public class LocaleHelper {
     @ToString
     @AllArgsConstructor
     public static class CodeTranslation {
-      private String code;
-      private String translation;
+
+        /**
+         * Standard code of translated item - eg ISO language code or country code
+         */
+        private String code;
+
+        /**
+         * Translated display name.
+         */
+        private String translation;
     }
 
     /**
