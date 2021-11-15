@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -18,6 +18,7 @@ package org.tbbtalent.server.service.db.impl;
 
 import java.util.List;
 
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import org.tbbtalent.server.service.db.LanguageService;
 import org.tbbtalent.server.service.db.TranslationService;
 
 import io.jsonwebtoken.lang.Collections;
+import org.tbbtalent.server.util.locale.LocaleHelper;
 
 @Service
 public class LanguageServiceImpl implements LanguageService {
@@ -56,13 +58,32 @@ public class LanguageServiceImpl implements LanguageService {
 
     @Autowired
     public LanguageServiceImpl(CandidateLanguageRepository candidateLanguageRepository,
-                               LanguageRepository languageRepository,
-                               SystemLanguageRepository systemLanguageRepository,
-                               TranslationService translationService) {
+        LanguageRepository languageRepository,
+        SystemLanguageRepository systemLanguageRepository,
+        TranslationService translationService) {
         this.candidateLanguageRepository = candidateLanguageRepository;
         this.languageRepository = languageRepository;
         this.systemLanguageRepository = systemLanguageRepository;
         this.translationService = translationService;
+    }
+
+    @Override
+    public SystemLanguage addSystemLanguage(String langCode)
+        throws EntityExistsException, NoSuchObjectException {
+        if (!LocaleHelper.isKnownLanguageCode(langCode)) {
+            throw new NoSuchObjectException("Unknown language code: " + langCode);
+        }
+
+        List<SystemLanguage> existing = listSystemLanguages();
+        final Optional<SystemLanguage> found = existing.stream()
+            .filter(s -> s.getLanguage().equals(langCode))
+            .findAny();
+        if (found.isEmpty()) {
+            throw new EntityExistsException("SystemLanguage");
+        }
+
+        //TODO JC Implement addSystemLanguage
+        throw new UnsupportedOperationException("addSystemLanguage not implemented");
     }
 
     @Override
@@ -71,7 +92,7 @@ public class LanguageServiceImpl implements LanguageService {
         translationService.translate(languages, "language");
         return languages;
     }
-    
+
     @Override
     public List<SystemLanguage> listSystemLanguages() {
         return systemLanguageRepository.findByStatus(Status.active);
@@ -139,7 +160,7 @@ public class LanguageServiceImpl implements LanguageService {
 
     private void checkDuplicates(Long id, String name) {
         Language existing = languageRepository.findByNameIgnoreCase(name);
-        if (existing != null && !existing.getId().equals(id) || (existing != null && id == null)){
+        if (existing != null && !existing.getId().equals(id)){
             throw new EntityExistsException("country");
         }
     }

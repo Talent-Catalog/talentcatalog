@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -55,7 +55,7 @@ public class LanguagePortalApi {
         Language language = languageService.getLanguage(languageName);
         return languageDto().build(language);
     }
-    
+
     @GetMapping(value = "system")
     public List<Map<String, Object>> getSystemLanguages() {
         List<SystemLanguage> languages = languageService.listSystemLanguages();
@@ -73,12 +73,13 @@ public class LanguagePortalApi {
                 .add("name")
                 ;
     }
-    
+
     private DtoBuilder systemLanguageDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("language")
                 .add("label")
+                .add("rtl")
                 ;
     }
 
