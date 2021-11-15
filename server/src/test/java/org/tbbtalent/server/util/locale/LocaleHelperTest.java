@@ -22,19 +22,22 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.tbbtalent.server.util.locale.LocaleHelper.CodeTranslation;
 
 class LocaleHelperTest {
 
     @Test
     void getCountryNameTranslations() {
-        List<CodeTranslation> cts;
+        Map<String, String> cts;
 
         cts = LocaleHelper.getCountryNameTranslations(null);
         assertNotNull(cts);
         assertTrue(cts.isEmpty());
+
+        cts = LocaleHelper.getCountryNameTranslations("en");
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
 
         cts = LocaleHelper.getCountryNameTranslations("fa");
         assertNotNull(cts);
@@ -43,11 +46,15 @@ class LocaleHelperTest {
 
     @Test
     void getLanguageNameTranslations() {
-        List<CodeTranslation> cts;
+        Map<String, String> cts;
 
-        cts = LocaleHelper.getCountryNameTranslations(null);
+        cts = LocaleHelper.getLanguageNameTranslations(null);
         assertNotNull(cts);
         assertTrue(cts.isEmpty());
+
+        cts = LocaleHelper.getLanguageNameTranslations("en");
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
 
         cts = LocaleHelper.getLanguageNameTranslations("fa");
         assertNotNull(cts);

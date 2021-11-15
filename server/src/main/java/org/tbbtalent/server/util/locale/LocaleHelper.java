@@ -17,15 +17,11 @@
 package org.tbbtalent.server.util.locale;
 
 import java.awt.ComponentOrientation;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.springframework.lang.Nullable;
 
 /**
@@ -35,37 +31,20 @@ import org.springframework.lang.Nullable;
  */
 public class LocaleHelper {
 
-    @Getter
-    @Setter
-    @ToString
-    @AllArgsConstructor
-    public static class CodeTranslation {
-
-        /**
-         * Standard code of translated item - eg ISO language code or country code
-         */
-        private String code;
-
-        /**
-         * Translated display name.
-         */
-        private String translation;
-    }
-
     /**
      * Returns translations of all known countries in the given language
      * @param langCode Code of language - eg fr for French
-     * @return Translations together with the country codes - may be empty
+     * @return Map of country code to translation - may be empty
      */
-    public static @NotNull List<CodeTranslation> getCountryNameTranslations(@Nullable String langCode) {
-        List<CodeTranslation> cts = new ArrayList<>();
+    public static @NotNull Map<String, String> getCountryNameTranslations(@Nullable String langCode) {
+        Map<String, String> cts = new HashMap<>();
         if (langCode != null && isKnownLanguageCode(langCode)) {
             Locale translationLocale = new Locale(langCode);
             String[] countryCodes = Locale.getISOCountries();
             for (String countryCode : countryCodes) {
                 Locale countryLocale = new Locale("", countryCode);
                 String name = countryLocale.getDisplayCountry(translationLocale);
-                cts.add(new CodeTranslation(countryCode, name));
+                cts.put(countryCode, name);
             }
         }
         return cts;
@@ -74,17 +53,17 @@ public class LocaleHelper {
     /**
      * Returns translations of all known languages in the given language
      * @param langCode Code of language - eg fr for French
-     * @return Translations together with the language codes - may be empty
+     * @return Map of language code to translation - may be empty
      */
-    public static @NotNull List<CodeTranslation> getLanguageNameTranslations(@Nullable String langCode) {
-        List<CodeTranslation> cts = new ArrayList<>();
+    public static @NotNull Map<String, String> getLanguageNameTranslations(@Nullable String langCode) {
+        Map<String, String> cts = new HashMap<>();
         if (langCode != null && isKnownLanguageCode(langCode)) {
             Locale translationLocale = new Locale(langCode);
             String[] languageCodes = Locale.getISOLanguages();
             for (String languageCode : languageCodes) {
                 Locale languageLocale = new Locale(languageCode);
                 String name = languageLocale.getDisplayLanguage(translationLocale);
-                cts.add(new CodeTranslation(languageCode, name));
+                cts.put(languageCode, name);
             }
         }
         return cts;

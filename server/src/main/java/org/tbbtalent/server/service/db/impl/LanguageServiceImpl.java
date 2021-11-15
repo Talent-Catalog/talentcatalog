@@ -16,8 +16,9 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import io.jsonwebtoken.lang.Collections;
 import java.util.List;
-
+import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.SystemLanguage;
@@ -40,10 +42,10 @@ import org.tbbtalent.server.repository.db.SystemLanguageRepository;
 import org.tbbtalent.server.request.language.CreateLanguageRequest;
 import org.tbbtalent.server.request.language.SearchLanguageRequest;
 import org.tbbtalent.server.request.language.UpdateLanguageRequest;
+import org.tbbtalent.server.request.translation.CreateTranslationRequest;
+import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.LanguageService;
 import org.tbbtalent.server.service.db.TranslationService;
-
-import io.jsonwebtoken.lang.Collections;
 import org.tbbtalent.server.util.locale.LocaleHelper;
 
 @Service
@@ -53,16 +55,19 @@ public class LanguageServiceImpl implements LanguageService {
 
     private final LanguageRepository languageRepository;
     private final CandidateLanguageRepository candidateLanguageRepository;
+    private final CountryService countryService;
     private final SystemLanguageRepository systemLanguageRepository;
     private final TranslationService translationService;
 
     @Autowired
     public LanguageServiceImpl(CandidateLanguageRepository candidateLanguageRepository,
         LanguageRepository languageRepository,
+        CountryService countryService,
         SystemLanguageRepository systemLanguageRepository,
         TranslationService translationService) {
         this.candidateLanguageRepository = candidateLanguageRepository;
         this.languageRepository = languageRepository;
+        this.countryService = countryService;
         this.systemLanguageRepository = systemLanguageRepository;
         this.translationService = translationService;
     }
@@ -82,11 +87,50 @@ public class LanguageServiceImpl implements LanguageService {
             throw new EntityExistsException("SystemLanguage");
         }
 
+        //Generate the country translations
+        Map<String, String> xlCountry = LocaleHelper.getCountryNameTranslations(langCode);
+
+        CreateTranslationRequest request = new CreateTranslationRequest();
+        request.setLanguage(langCode);
+        request.setObjectType("country");
+
+        List<Country> countries = countryService.listCountries(false);
+        for (Country country : countries) {
+            String value = xlCountry.get(country.getIsoCode());
+            if (value == null) {
+                log.warn("Missing translation for country " + country);
+            } else {
+                request.setObjectId(country.getId());
+                request.setValue(value);
+                translationService.createTranslation(null, request);
+            }
+        }
+
+        //Generate the language translations
+        Map<String, String> xlLang = LocaleHelper.getLanguageNameTranslations(langCode);
+
+        request = new CreateTranslationRequest();
+        request.setLanguage(langCode);
+        request.setObjectType("language");
+
+        List<Language> languages = listLanguages();
+        for (Language language : languages) {
+            String value = xlLang.get(language.getIsoCode());
+            if (value == null) {
+                log.warn("Missing translation for language " + language);
+            } else {
+                request.setObjectId(language.getId());
+                request.setValue(value);
+                translationService.createTranslation(null, request);
+            }
+        }
+
+
+        //Create the new system language
         SystemLanguage sl = new SystemLanguage(langCode);
         systemLanguageRepository.save(sl);
 
-        //TODO JC Implement addSystemLanguage
-        throw new UnsupportedOperationException("addSystemLanguage not implemented");
+        return sl;
     }
 
     @Override

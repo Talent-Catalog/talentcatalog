@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -18,13 +18,20 @@ package org.tbbtalent.server.service.db.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.ServiceException;
 import org.tbbtalent.server.model.db.AbstractTranslatableDomainObject;
@@ -36,15 +43,6 @@ import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.TranslationService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class TranslationServiceImpl implements TranslationService {
@@ -92,13 +90,9 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    @Transactional
-    public Translation createTranslation(CreateTranslationRequest request) throws EntityExistsException {
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
+    public Translation createTranslation(User user, CreateTranslationRequest request) {
         Translation translation = new Translation(user, request.getObjectId(), request.getObjectType(),
-                request.getLanguage(), request.getValue());
+            request.getLanguage(), request.getValue());
         Translation existing = translationRepository.findByObjectIdTypeLang(request.getObjectId(), request.getObjectType(), request.getLanguage()).orElse(null);
         if (existing != null){
             throw new EntityExistsException("translation");
@@ -106,6 +100,11 @@ public class TranslationServiceImpl implements TranslationService {
         return this.translationRepository.save(translation);
     }
 
+    @Override
+    @Transactional
+    public Translation createTranslation(CreateTranslationRequest request) throws EntityExistsException {
+        return createTranslation(null, request);
+    }
 
     @Override
     @Transactional
