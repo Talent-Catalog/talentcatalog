@@ -73,6 +73,8 @@ export class CandidateFieldService {
       this.getDisplayEnum, null),
     new CandidateFieldInfo("Dependants", "numberDependants",
       null, null),
+    new CandidateFieldInfo("State", "state",
+      null, this.isCountryViewable),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
