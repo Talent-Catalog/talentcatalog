@@ -5,19 +5,34 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.springframework.data.jpa.domain.Specification.where;
+
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,31 +44,53 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
-import org.tbbtalent.server.repository.db.*;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.RegisteredListException;
+import org.tbbtalent.server.exception.SalesforceException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.ExportColumn;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.ExportColumnRepository;
+import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
+import org.tbbtalent.server.repository.db.GetSavedListsQuery;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
+import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
+import org.tbbtalent.server.request.candidate.PublishListRequest;
+import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
+import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
+import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.link.UpdateShortNameRequest;
-import org.tbbtalent.server.request.list.*;
+import org.tbbtalent.server.request.list.ContentUpdateType;
+import org.tbbtalent.server.request.list.IHasSetOfCandidates;
+import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.DocPublisherService;
+import org.tbbtalent.server.service.db.ExportColumnsService;
+import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.util.*;
-
-import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Saved List service
@@ -122,7 +159,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public SavedList copy(long id, CopySourceContentsRequest request) 
+    public SavedList copy(long id, CopySourceContentsRequest request)
             throws EntityExistsException, NoSuchObjectException {
         SavedList sourceList = savedListRepository.findByIdLoadCandidates(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
@@ -185,7 +222,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public void copyContents(UpdateExplicitSavedListContentsRequest request,
         SavedList destination) {
-        
+
         if (request.getUpdateType() == ContentUpdateType.replace) {
             clearSavedList(destination.getId());
         }
@@ -204,7 +241,7 @@ public class SavedListServiceImpl implements SavedListService {
         //Retrieve candidates
         Set<Candidate> candidates = fetchCandidates(request);
 
-        //Add candidates to created list, together with any context if source 
+        //Add candidates to created list, together with any context if source
         //list was supplied.
         destination.addCandidates(candidates, sourceList);
 
@@ -218,7 +255,7 @@ public class SavedListServiceImpl implements SavedListService {
      * @throws NoSuchObjectException if no list is found with that id
      * @throws IOException           if there is a problem creating the folder.
      */
-    private void findOrCreateListFolder(long id) 
+    private void findOrCreateListFolder(long id)
         throws NoSuchObjectException, IOException {
         SavedList savedList = get(id);
 
@@ -246,8 +283,8 @@ public class SavedListServiceImpl implements SavedListService {
             String joiFileName = "JobOpportunityIntake - " + savedList.getName();
             fileSystemService.copyFile(jdfolder, joiFileName, jobOppIntakeTemplate);
         }
-    } 
-    
+    }
+
     @Override
     public SavedList createListFolder(long id) throws NoSuchObjectException, IOException {
         SavedList savedList = get(id);
@@ -287,7 +324,7 @@ public class SavedListServiceImpl implements SavedListService {
                 checkDuplicates(null, request.getName(), user);
             }
         }
-        
+
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
 
@@ -298,7 +335,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     @Transactional
-    public SavedList createSavedList(UpdateSavedListInfoRequest request) 
+    public SavedList createSavedList(UpdateSavedListInfoRequest request)
             throws EntityExistsException {
         final User loggedInUser = authService.getLoggedInUser().orElse(null);
         return createSavedList(loggedInUser, request);
@@ -317,15 +354,15 @@ public class SavedListServiceImpl implements SavedListService {
             if(savedList.getCreatedBy().getId().equals(loggedInUser.getId())) {
 
                 //Need to clear out many to many relationships before deleting
-                //the list otherwise we will have other entities pointing to 
+                //the list otherwise we will have other entities pointing to
                 //this list.
                 clearSavedList(savedList.getId());
                 savedList.setWatcherIds(null);
                 savedList.setUsers(null);
-                
+
                 //Delete list
                 savedListRepository.delete(savedList);
-                
+
                 return true;
             } else {
                 throw new InvalidRequestException("You can't delete other user's saved lists.");
@@ -345,7 +382,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     @Nullable
     public SavedList get(@NonNull User user, String listName) {
-        return listName == null ? null : 
+        return listName == null ? null :
             savedListRepository.findByNameIgnoreCase(listName, user.getId()).orElse(null);
     }
 
@@ -366,14 +403,14 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public void mergeSavedListFromFile(long savedListId, MultipartFile file)
+    public void mergeSavedListFromInputStream(long savedListId, InputStream is)
         throws NoSuchObjectException, IOException {
 
         Set<Long> candidateIds = new HashSet<>();
 
         //Extract candidate numbers from file, look up the id and add to candidateIds
         //We need candidateIds to pass to other methods.
-        CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()));
+        CSVReader reader = new CSVReader(new InputStreamReader(is));
         String [] tokens;
         try {
             boolean possibleHeader = true;
@@ -409,7 +446,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public void removeFromSavedList(long savedListId, 
+    public void removeFromSavedList(long savedListId,
         UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
                 .orElse(null);
@@ -431,13 +468,13 @@ public class SavedListServiceImpl implements SavedListService {
         GetSavedListsQuery getSavedListsQuery =
                 new GetSavedListsQuery(request, userWithSharedSearches);
 
-        GetCandidateSavedListsQuery getCandidateSavedListsQuery = 
+        GetCandidateSavedListsQuery getCandidateSavedListsQuery =
                 new GetCandidateSavedListsQuery(candidateId);
-        
+
         //Set standard sort to ascending by name.
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        return savedListRepository.findAll( 
-                where(getSavedListsQuery).and(getCandidateSavedListsQuery), 
+        return savedListRepository.findAll(
+                where(getSavedListsQuery).and(getCandidateSavedListsQuery),
                 sort);
     }
 
@@ -447,9 +484,9 @@ public class SavedListServiceImpl implements SavedListService {
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
                         loggedInUser.getId());
-        GetSavedListsQuery getSavedListsQuery = 
+        GetSavedListsQuery getSavedListsQuery =
                 new GetSavedListsQuery(request, userWithSharedSearches);
-        
+
         //The request is not required to provide paging or sorting info and
         //we ignore any such info if present because we don't pass a PageRequest
         //to the repository findAll call.
@@ -464,14 +501,14 @@ public class SavedListServiceImpl implements SavedListService {
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
                         loggedInUser.getId());
-        GetSavedListsQuery getSavedListsQuery = 
+        GetSavedListsQuery getSavedListsQuery =
                 new GetSavedListsQuery(request, userWithSharedSearches);
-        
+
         //The incoming request will have paging info but no sorting.
         //So set standard ascending sort by name.
         request.setSortDirection(Sort.Direction.ASC);
         request.setSortFields(new String[] {"name"});
-        
+
         PageRequest pageRequest = request.getPageRequest();
         return savedListRepository.findAll(getSavedListsQuery, pageRequest);
     }
@@ -484,7 +521,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request) 
+    public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request)
             throws NoSuchObjectException, EntityExistsException {
         final User loggedInUser = authService.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
@@ -496,7 +533,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public void updateDescription(long savedListId, 
+    public void updateDescription(long savedListId,
         UpdateCandidateSourceDescriptionRequest request)
         throws  NoSuchObjectException {
         SavedList savedList = get(savedListId);
@@ -526,7 +563,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public void updateDisplayedFieldPaths(
-            long savedListId, UpdateDisplayedFieldPathsRequest request) 
+            long savedListId, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException {
         SavedList savedList = get(savedListId);
         if (request.getDisplayedFieldsLong() != null) {
@@ -542,7 +579,7 @@ public class SavedListServiceImpl implements SavedListService {
     public void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
         throws NoSuchObjectException, SalesforceException {
         SavedList savedList = get(savedListId);
-        
+
         //There will only be candidate opportunities if list has a job opp
         final String joblink = savedList.getSfJoblink();
         if (joblink != null) {
@@ -552,7 +589,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     @Transactional
-    public SavedList addSharedUser(long id, UpdateSharingRequest request) 
+    public SavedList addSharedUser(long id, UpdateSharingRequest request)
             throws NoSuchObjectException {
         SavedList savedList = savedListRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
@@ -568,7 +605,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     @Transactional
-    public SavedList removeSharedUser(long id, UpdateSharingRequest request) 
+    public SavedList removeSharedUser(long id, UpdateSharingRequest request)
             throws NoSuchObjectException {
         SavedList savedList = savedListRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
@@ -586,22 +623,22 @@ public class SavedListServiceImpl implements SavedListService {
     public PublishedDocImportReport importEmployerFeedback(long savedListId)
         throws NoSuchObjectException, GeneralSecurityException, IOException {
         SavedList savedList = get(savedListId);
-        
+
         PublishedDocImportReport report = new PublishedDocImportReport();
-        
+
         String link = savedList.getPublishedDocLink();
         if (link == null) {
             report.setMessage("No Salesforce job opportunity associated with list");
         } else {
             //Read data from linked sheet
-            Map<String, List<Object>> feedback = docPublisherService.readPublishedDocColumns(link, 
-                Arrays.asList(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME, 
+            Map<String, List<Object>> feedback = docPublisherService.readPublishedDocColumns(link,
+                Arrays.asList(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME,
                     PublishedDocColumnType.EmployerCandidateNotes.toString(),
                     PublishedDocColumnType.EmployerCandidateDecision.toString()
                     ));
 
             List<Object> candidateNumberColumnData = feedback.get(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME);
-            int nCandidates = candidateNumberColumnData == null ? 0 : candidateNumberColumnData.size(); 
+            int nCandidates = candidateNumberColumnData == null ? 0 : candidateNumberColumnData.size();
             report.setNumCandidates(nCandidates);
 
             List<EmployerCandidateFeedbackData> feedbacks = new ArrayList<>();
@@ -610,7 +647,7 @@ public class SavedListServiceImpl implements SavedListService {
             } else {
                 List<Object> notesData = feedback.get(PublishedDocColumnType.EmployerCandidateNotes.toString());
                 List<Object> decisionData = feedback.get(PublishedDocColumnType.EmployerCandidateDecision.toString());
-                
+
                 //Use data to update Salesforce
                 int index = 0;
                 for (Object candidateNumber : candidateNumberColumnData) {
@@ -623,14 +660,14 @@ public class SavedListServiceImpl implements SavedListService {
                             throw new NoSuchObjectException(Candidate.class, (String) candidateNumber);
                         }
 
-                        EmployerCandidateFeedbackData feedbackData = 
+                        EmployerCandidateFeedbackData feedbackData =
                             new EmployerCandidateFeedbackData(candidate);
                         feedbacks.add(feedbackData);
-                        
+
                         //Notes
                         String notes = (String) fetchColumnValueByIndex(notesData, index);
                         feedbackData.setEmployerCandidateNotes(notes);
-                        
+
                         //Decision
                         String val = (String) fetchColumnValueByIndex(decisionData, index);
                         if (val != null) {
@@ -660,11 +697,11 @@ public class SavedListServiceImpl implements SavedListService {
                         }
                     }
                 }
-                
+
                 report.setNumEmployerFeedbacks(nFeedbacks);
                 report.setNumJobOffers(nJobOffers);
                 report.setNumNoJobOffers(nNoJobOffers);
-                
+
                 if (nFeedbacks + nJobOffers + nNoJobOffers > 0) {
                     salesforceService.updateCandidateOpportunities(feedbacks, savedList.getSfJoblink());
                     report.setMessage("Import complete");
@@ -673,7 +710,7 @@ public class SavedListServiceImpl implements SavedListService {
                 }
             }
         }
-        
+
         return report;
     }
 
@@ -693,17 +730,17 @@ public class SavedListServiceImpl implements SavedListService {
 
         //Get list, creating list folder if necessary
         SavedList savedList = createListFolder(id);
-        
+
         //Fetch candidates in list
         Set<Candidate> candidates = savedList.getCandidates();
 
         //Set list context on candidates so that Candidate field contextNote can be accessed.
         setCandidateContext(savedList.getId(), candidates);
 
-        List<PublishedDocColumnDef> columnInfos = request.getConfiguredColumns(); 
+        List<PublishedDocColumnDef> columnInfos = request.getConfiguredColumns();
 
         PublishedDocBuilder builder = new PublishedDocBuilder();
-        
+
         //This is what will be used to create the published doc
         List<List<Object>> publishedData = new ArrayList<>();
 
@@ -720,7 +757,7 @@ public class SavedListServiceImpl implements SavedListService {
         //Create the doc in the list folder.
         GoogleFileSystemDrive drive = googleDriveConfig.getListFoldersDrive();
         GoogleFileSystemFolder listFolder = new GoogleFileSystemFolder(savedList.getFolderlink());
-        
+
         //Set other data to publish.
         Map<String, Object> props = new HashMap<>();
         props.put("listDescription", savedList.getDescription());
@@ -743,11 +780,11 @@ public class SavedListServiceImpl implements SavedListService {
             if (def.getType().equals(PublishedDocColumnType.EmployerCandidateDecision)) {
                 columnSetUp.setDropDowns(EmployerCandidateDecision.getDisplayTextValues());
             }
-            
+
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {
                 columnSetUp.setRangeName(def.getType().toString());
             }
-            
+
             //Check for a candidate number column. We set up a range name for that column as well
             //as for non display columns.
             if (!foundCandidateNumber) {
@@ -757,9 +794,9 @@ public class SavedListServiceImpl implements SavedListService {
                     if (foundCandidateNumber) {
                         columnSetUp.setRangeName(PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME);
                     }
-                } 
+                }
             }
-            
+
             switch(def.getWidth()) {
                 case Narrow:
                     columnSetUp.setColumnSize(googleDriveConfig.getPublishedSheetNarrowColumn());
@@ -772,9 +809,9 @@ public class SavedListServiceImpl implements SavedListService {
             }
             columnCount++;
         }
-        
+
         String publishedSheetDataRangeName = googleDriveConfig.getPublishedSheetDataRangeName();
-        String link = docPublisherService.createPublishedDoc(drive, listFolder, savedList.getName(), 
+        String link = docPublisherService.createPublishedDoc(drive, listFolder, savedList.getName(),
                 publishedSheetDataRangeName, publishedData, props, columnSetUpMap);
 
         /*
@@ -786,19 +823,19 @@ public class SavedListServiceImpl implements SavedListService {
         savedList.setExportColumns(cols);
         savedList.setPublishedDocLink(link);
         saveIt(savedList);
-        
+
         return savedList;
     }
 
     /**
      * Checks against a user having more than one list with the same name.
-     * @param savedListId If not null, this must be the id of the list with the given name. 
+     * @param savedListId If not null, this must be the id of the list with the given name.
      * @param name Name of list
      * @param user Owner of list
      * @throws EntityExistsException If a list exists already with that name, and the list is not
      * the list with the given id.
      */
-    private void checkDuplicates(Long savedListId, String name, @NonNull User user) 
+    private void checkDuplicates(Long savedListId, String name, @NonNull User user)
             throws EntityExistsException {
         SavedList existing = get(user, name);
         if (existing != null && existing.getStatus() != Status.deleted) {
@@ -810,7 +847,7 @@ public class SavedListServiceImpl implements SavedListService {
         }
     }
 
-    private @NotNull Set<Candidate> fetchCandidates(IHasSetOfCandidates request) 
+    private @NotNull Set<Candidate> fetchCandidates(IHasSetOfCandidates request)
             throws NoSuchObjectException {
 
         Set<Candidate> candidates = new HashSet<>();
@@ -831,7 +868,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Nullable
-    private SavedList fetchSourceList(UpdateSavedListContentsRequest request) 
+    private SavedList fetchSourceList(UpdateSavedListContentsRequest request)
             throws NoSuchObjectException {
         SavedList sourceList = null;
         Long sourceListId = request.getSourceListId();
@@ -851,5 +888,5 @@ public class SavedListServiceImpl implements SavedListService {
         savedList.setAuditFields(authService.getLoggedInUser().orElse(null));
         return savedListRepository.save(savedList);
     }
-    
+
 }
