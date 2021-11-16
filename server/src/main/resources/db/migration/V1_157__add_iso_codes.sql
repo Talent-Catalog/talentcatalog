@@ -14,15 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export interface Language {
-  id: number;
-  name: string;
-  status: string;
-}
-
-export interface SystemLanguage {
-  id: number;
-  label: string;
-  language: string;
-  rtl: boolean;
-}
+alter table country add column iso_code text;
+alter table language add column iso_code text;
