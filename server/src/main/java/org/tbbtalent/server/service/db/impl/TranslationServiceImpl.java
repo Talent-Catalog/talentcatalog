@@ -107,6 +107,11 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
+    public void deleteTranslations(String langCode, String objectType) {
+        translationRepository.deleteTranslations(langCode, objectType);
+    }
+
+    @Override
     @Transactional
     public Translation updateTranslation(long id, UpdateTranslationRequest request) throws EntityExistsException {
         Translation translation = this.translationRepository.findById(id)

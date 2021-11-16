@@ -16,8 +16,9 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
@@ -39,6 +40,29 @@ public interface LanguageService {
      */
     SystemLanguage addSystemLanguage(String langCode)
         throws EntityExistsException, NoSuchObjectException;
+
+    /**
+     * Adds translations of values from the given table.
+     * <p/>
+     * Replaces any existing translations for the given langCode and tableName.
+     * <p/>
+     * The translations are in an input stream of comma separated data with the following format:
+     * <p/>
+     * [id],[translated value]
+     * <p/>
+     * where [id] is the id in the given table of the value being translated and [translated value]
+     * is the translation.
+     * @param langCode Language being translated to
+     * @param tableName Name of table whose values are being translated - eg 'occupation'
+     * @param translations Input stream containing translations
+     * @return SystemLanguage of translated data
+     * @throws NoSuchObjectException If no system language for the given langCode has been set up.
+     * @throws IOException if there is a problem reading the translations, or they are badly
+     * formatted.
+     */
+    SystemLanguage addSystemLanguageTranslations(
+        String langCode, String tableName, InputStream translations)
+        throws IOException, NoSuchObjectException;
 
     List<Language> listLanguages();
 

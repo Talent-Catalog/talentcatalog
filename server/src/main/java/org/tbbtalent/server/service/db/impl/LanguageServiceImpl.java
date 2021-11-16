@@ -16,7 +16,12 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import io.jsonwebtoken.lang.Collections;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,6 +138,53 @@ public class LanguageServiceImpl implements LanguageService {
         systemLanguageRepository.save(sl);
 
         return sl;
+    }
+
+    @Override
+    public SystemLanguage addSystemLanguageTranslations(String langCode, String tableName,
+        InputStream translations) throws IOException, NoSuchObjectException {
+
+        List<SystemLanguage> systemLanguages = listSystemLanguages();
+        Optional<SystemLanguage> systemLanguage =
+            systemLanguages.stream().filter(s->s.getLanguage().equals(langCode)).findAny();
+
+        if (systemLanguage.isEmpty()) {
+            throw new NoSuchObjectException("No system language set for " + langCode);
+        }
+
+        //Remove any existing translations for this langCode and tableName
+        translationService.deleteTranslations(langCode, tableName);
+
+        //Now read new translations from input stream
+        CSVReader reader = new CSVReader(new InputStreamReader(translations));
+        String [] tokens;
+        try {
+            CreateTranslationRequest request = new CreateTranslationRequest();
+            request.setLanguage(langCode);
+            request.setObjectType(tableName);
+
+            while ((tokens = reader.readNext()) != null) {
+                //tokens[] is an array of values from the line
+                if (tokens.length == 2) {
+                    long id = Long.parseLong(tokens[0]);
+                    String value = tokens[1];
+
+                    //Add new translation
+                    request.setObjectId(id);
+                    request.setValue(value);
+                    translationService.createTranslation(null, request);
+
+                } else if (tokens.length != 0) {
+                    throw new IOException("Bad file format. Found " + tokens.length + " tokens");
+                }
+            }
+        } catch (NumberFormatException ex) {
+            throw new IOException("Bad file format. Non numeric id " + ex.getMessage());
+        } catch (CsvValidationException ex) {
+            throw new IOException("Bad file format: " + ex.getMessage());
+        }
+
+        return systemLanguage.get();
     }
 
     @Override

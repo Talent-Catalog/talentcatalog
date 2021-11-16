@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -27,12 +27,14 @@ import java.util.Optional;
 
 public interface TranslationRepository extends JpaRepository<Translation, Long>, JpaSpecificationExecutor<Translation> {
 
+
+
     @Query("select t from Translation t "
             + " where t.objectType = :type "
             + " and t.language = :selectedLanguage ")
     List<Translation> findByTypeLanguage(@Param("type") String type,
                                          @Param("selectedLanguage") String selectedLanguage);
-    
+
     @Query("select t from Translation t "
             + " where t.objectId in (:countryIds) "
             + " and t.objectType = :type "
@@ -49,4 +51,8 @@ public interface TranslationRepository extends JpaRepository<Translation, Long>,
                                                  @Param("objectType") String objectType,
                                                  @Param("lang") String lang);
 
+    @Query("delete from Translation t where"
+        + " t.objectType = (:objectType)"
+        + " and t.language = (:langCode)")
+    void deleteTranslations(@Param("langCode") String langCode, @Param("objectType") String objectType);
 }

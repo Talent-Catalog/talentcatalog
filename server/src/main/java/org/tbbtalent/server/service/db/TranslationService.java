@@ -39,4 +39,6 @@ public interface TranslationService {
     void updateTranslationFile(String language, Map translations);
 
     Map<String, Object> getTranslationFile(String language);
+
+    void deleteTranslations(String langCode, String objectType);
 }
