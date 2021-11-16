@@ -5,45 +5,41 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.api.admin;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.FileList;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateNoteRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.DataSharingService;
+import org.tbbtalent.server.service.db.LanguageService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
-import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
-import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 import java.io.File;
@@ -68,12 +64,14 @@ public class SystemAdminApi {
 
     private final AuthService authService;
     final static String DATE_FORMAT = "dd-MM-yyyy";
-    
+
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
+    private final CountryService countryService;
+    private final LanguageService languageService;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
     private final S3ResourceHelper s3ResourceHelper;
@@ -81,15 +79,15 @@ public class SystemAdminApi {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     private final Map<Integer, Integer> countryForGeneralCountry;
-    
+
     private final GoogleDriveConfig googleDriveConfig;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
-    
+
     @Value("${spring.datasource.username}")
     private String targetUser;
-    
+
     @Value("${spring.datasource.password}")
     private String targetPwd;
 
@@ -98,23 +96,27 @@ public class SystemAdminApi {
 
     @Value("${google.drive.candidateRootFolderId}")
     private String candidateRootFolderId;
-    
+
     @Autowired
     public SystemAdminApi(
-            DataSharingService dataSharingService,
-            AuthService authService,
-            CandidateAttachmentRepository candidateAttachmentRepository,
-            CandidateNoteRepository candidateNoteRepository,
-            CandidateRepository candidateRepository,
-            PopulateElasticsearchService populateElasticsearchService,
-            SalesforceService salesforceService,
-            S3ResourceHelper s3ResourceHelper,
-            GoogleDriveConfig googleDriveConfig) {
+        DataSharingService dataSharingService,
+        AuthService authService,
+        CandidateAttachmentRepository candidateAttachmentRepository,
+        CandidateNoteRepository candidateNoteRepository,
+        CandidateRepository candidateRepository,
+        CountryService countryService,
+        LanguageService languageService,
+        PopulateElasticsearchService populateElasticsearchService,
+        SalesforceService salesforceService,
+        S3ResourceHelper s3ResourceHelper,
+        GoogleDriveConfig googleDriveConfig) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
+        this.countryService = countryService;
+        this.languageService = languageService;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.s3ResourceHelper = s3ResourceHelper;
@@ -169,7 +171,7 @@ public class SystemAdminApi {
                     try {
                         salesforceService.updateContact(candidate);
                     } catch (Exception ex) {
-                        log.warn("Problem updating candidate " 
+                        log.warn("Problem updating candidate "
                                 + candidateNumber + ": " + ex.getMessage());
                     }
                 }
@@ -206,6 +208,18 @@ public class SystemAdminApi {
         }
         log.info("Finished processing. Success total of: " + success + " out of " + count);
         return "done";
+    }
+
+    //Remove after running. One off method. Login as System Admin user.
+    @GetMapping("update-isocodes")
+    public String updateIsoCodes() {
+
+        String sb = "Countries: "
+            + countryService.updateIsoCodes()
+            + "\nLanguages: "
+            + languageService.updateIsoCodes();
+
+        return "Done: " + sb;
     }
 
     // Removed after running. One off method. Login as System Admin user.
@@ -315,7 +329,7 @@ public class SystemAdminApi {
         dataSharingService.dbCopy();
         return "done";
     }
-    
+
 //    @GetMapping("migrate/status")
     public String migrateStatus() {
         try {
@@ -458,7 +472,7 @@ public class SystemAdminApi {
                     userId = loggedInUser.getId();
                 }
             }
-            
+
             Connection sourceConn = DriverManager.getConnection("jdbc:mysql:", "", "");
             Statement sourceStmt = sourceConn.createStatement();
 
@@ -468,7 +482,7 @@ public class SystemAdminApi {
 
             String updateSql = "update candidate set survey_type_id = ?, " +
                     " survey_comment = ? where candidate_number = ?";
-            
+
             String selectSql = "select u.id as userID, `option` as optionID, " +
                     "       option_information_session, option_community_center, " +
                     "       option_facebook_page, option_other, option_ngo, option_outreach " +
@@ -482,9 +496,9 @@ public class SystemAdminApi {
                 String candidateNumber = result.getString("userID");
                 int optionID = result.getInt("optionID");
                 int targetID = optionID == 0 ? 8 : optionID - 8770;
-                
+
                 String text = "";
-                
+
                 String s;
                 s = result.getString("option_information_session");
                 text += s == null ? "" : s;
@@ -504,7 +518,7 @@ public class SystemAdminApi {
                 update.setInt(i++, targetID);
                 update.setString(i++, text);
                 update.setString(i++, candidateNumber);
-                
+
 //                log.info("Update candidate " + candidateNumber + " " + targetID + ": " + text);
                 update.addBatch();
 
@@ -530,7 +544,7 @@ public class SystemAdminApi {
 //    @GetMapping("migrate")
     public String migrate() {
         try {
-            Long userId = 1L; 
+            Long userId = 1L;
             if (authService != null) {
                 User loggedInUser = authService.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
@@ -542,10 +556,10 @@ public class SystemAdminApi {
             Statement sourceStmt = sourceConn.createStatement();
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
-            
+
             log.info("Preparing translations insert");
             PreparedStatement translationInsert = targetConn.prepareStatement("insert into translation (object_id, object_type, language, value, created_by, created_date) values (?, ?, ?, ?, ?, ?)");
-            
+
             migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "country", "country", false);
             migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "education_level", "education_level", true);
             migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "education_major", "major", false);
@@ -558,9 +572,9 @@ public class SystemAdminApi {
 
             migrateUsers(targetConn, sourceStmt);
             migrateAdmins(targetConn, sourceStmt);
-               
+
             migrateCandidates(targetConn, sourceStmt);
-            
+
             log.info("loading candidate ids");
             Map<Long, Long> candidateIdsByUserId = loadCandidateIds(targetConn);
 
@@ -579,7 +593,7 @@ public class SystemAdminApi {
 
         return "done";
     }
-    
+
     private void migrateFormOption(Connection targetConn,
                                    Statement sourceStmt,
                                    PreparedStatement translationInsert,
@@ -597,10 +611,10 @@ public class SystemAdminApi {
             insertSql = "insert into " + tableName + " (id, name, level, status) values (?, ?, ?, ?) on conflict (id) do nothing";
             selectSql = "select id, name, name_ar, `order` from frm_options where type = '" + optionType + "'";
         } else {
-            insertSql = "insert into " + tableName + " (id, name, status) values (?, ?, ?) on conflict (id) do nothing"; 
+            insertSql = "insert into " + tableName + " (id, name, status) values (?, ?, ?) on conflict (id) do nothing";
             selectSql = "select id, name, name_ar from frm_options where type = '" + optionType + "'";
         }
-        
+
         PreparedStatement optionInsert = targetConn.prepareStatement(insertSql);
         ResultSet result = sourceStmt.executeQuery(selectSql);
         int count = 0;
@@ -623,15 +637,15 @@ public class SystemAdminApi {
                 }
             }
             optionInsert.addBatch();
-            
+
             addTranslation(translationInsert, id, tableName, "ar", result.getString("name_ar"), userId);
-            
+
             if (count%100 == 0) {
                 optionInsert.executeBatch();
                 translationInsert.executeBatch();
                 log.info(tableName + " - saving batch " + count);
             }
-            
+
             count++;
         }
         optionInsert.executeBatch();
@@ -641,7 +655,7 @@ public class SystemAdminApi {
 
 
     }
-    
+
     private void addTranslation(PreparedStatement translationInsert,
                                 Long objectId,
                                 String objectType,
@@ -657,7 +671,7 @@ public class SystemAdminApi {
         translationInsert.setTimestamp(6, Timestamp.valueOf(OffsetDateTime.now().toLocalDateTime()));
         translationInsert.addBatch();
     }
-    
+
     private void migrateUsers(Connection targetConn,
                               Statement sourceStmt) throws SQLException {
         log.info("Migration data for users from user");
@@ -681,22 +695,22 @@ public class SystemAdminApi {
             insert.setTimestamp(i++, convertToTimestamp(result.getLong("created_at")));
             insert.setTimestamp(i++, convertToTimestamp(result.getLong("updated_at")));
             insert.addBatch();
-            
+
             if (count%100 == 0) {
                 insert.executeBatch();
                 log.info("users - saving batch " + count);
             }
-            
+
             count++;
         }
         insert.executeBatch();
         log.info("users - saving batch " + count);
     }
-    
+
     private void migrateAdmins(Connection targetConn,
                               Statement sourceStmt) throws SQLException {
         log.info("Migration data for users from admin");
-        
+
         String insertSql = "insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, username, email, status, password_hash, created_at, updated_at from admin;";
         PreparedStatement insert = targetConn.prepareStatement(insertSql);
@@ -716,22 +730,22 @@ public class SystemAdminApi {
             insert.setTimestamp(i++, convertToTimestamp(result.getLong("created_at")));
             insert.setTimestamp(i++, convertToTimestamp(result.getLong("updated_at")));
             insert.addBatch();
-            
+
             if (count%100 == 0) {
                 insert.executeBatch();
                 log.info("admins - saving batch " + count);
             }
-            
+
             count++;
         }
         insert.executeBatch();
         log.info("admins - saving batch " + count);
     }
-    
+
     private void migrateCandidates(Connection targetConn,
                                    Statement sourceStmt) throws SQLException {
         log.info("Migration data for candidates");
-        
+
         log.info("loading reference data");
         Set<Long> countryIds = loadReferenceIds(targetConn, "country");
         Set<Long> nationalityIds = loadReferenceIds(targetConn, "nationality");
@@ -741,7 +755,7 @@ public class SystemAdminApi {
 
         // load other options
         Map<Long, String> otherNationalities = loadOtherReferenceIds(sourceStmt, "nationality");
-        
+
         String insertSql = "insert into candidate (user_id, candidate_number, gender, dob, phone, whatsapp, status, country_id, "
                 + " city, nationality_id, additional_info, max_education_level_id, created_by, created_date, updated_date, un_registered, "
                 + " un_registration_number, migration_education_major_id) "
@@ -784,12 +798,12 @@ public class SystemAdminApi {
             insert.setString(i++, result.getString("unhcr_number"));
             setRefIdOrNull(result, insert, "major", eduMajorIds, i++);
             insert.addBatch();
-            
+
             if (count%100 == 0) {
                 insert.executeBatch();
                 log.info("candidates - saving batch  " + count);
             }
-            
+
             count++;
         }
         insert.executeBatch();
@@ -825,12 +839,12 @@ public class SystemAdminApi {
                     insert.setNull(i++, Types.DATE);
                 }
                 insert.addBatch();
-                
+
                 if (count%100 == 0) {
                     insert.executeBatch();
                     log.info("certificates - saving batch " + count);
                 }
-                
+
                 count++;
             } else {
                 log.warn("skipping record - certifications: no candidate found for userId " + userId);
@@ -839,12 +853,12 @@ public class SystemAdminApi {
         insert.executeBatch();
         log.info("certificates - saving batch " + count);
     }
-    
+
     private void migrateCandidateLanguages(Connection targetConn,
                                            Statement sourceStmt,
                                            Map<Long, Long> candidateIdsByUserId) throws SQLException {
         log.info("Migration data for candidate languages");
-        
+
         Set<Long> languageIds = loadReferenceIds(targetConn, "language");
         Set<Long> languageLevelIds = loadReferenceIds(targetConn, "language_level");
         Map<Long, String> otherLanguages = loadOtherReferenceIds(sourceStmt, "language_other");
@@ -865,12 +879,12 @@ public class SystemAdminApi {
                 i = setRefIdOrNull(result, insert, "level", languageLevelIds, i);
                 i = setRefIdOrNull(result, insert, "level_reading", languageLevelIds, i);
                 insert.addBatch();
-                
+
                 if (count%100 == 0) {
                     insert.executeBatch();
                     log.info("languages - saving batch " + count);
                 }
-                
+
                 count++;
             } else {
                 log.warn("skipping record - languages: no candidate found for userId " + userId );
@@ -879,14 +893,14 @@ public class SystemAdminApi {
         insert.executeBatch();
         log.info("languages - saving batch " + count);
     }
-    
+
     private void migrateCandidateEducations(Connection targetConn,
                                             Statement sourceStmt,
                                             Map<Long, Long> candidateIdsByUserId) throws SQLException {
         log.info("Migration data for candidate educations");
-        
+
         Set<Long> countryIds = loadReferenceIds(targetConn, "country");
-        
+
         String insertSql = "insert into candidate_education (id, candidate_id, country_id, institution, year_completed, education_type, course_name) values (?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select j.id, user_id, country, f.name as university_school, graduation_year, degree, specification_emphasis from user_jobseeker_education  j "
                 + " left join frm_options f on f.id = j.university_school order by user_id";
@@ -911,12 +925,12 @@ public class SystemAdminApi {
                 insert.setString(i++, getEducationLevel(result.getInt("degree")));
                 insert.setString(i++,  result.getString("specification_emphasis"));
                 insert.addBatch();
-                
+
                 if (count%100 == 0) {
                     insert.executeBatch();
                     log.info("educations - saving batch " + count);
                 }
-                
+
                 count++;
             } else if (candidateId == null) {
                 log.warn("skipping record - educations: no candidate found for userId " + userId );
@@ -932,11 +946,11 @@ public class SystemAdminApi {
                                              Statement sourceStmt,
                                              Map<Long, Long> candidateIdsByUserId) throws SQLException {
         log.info("Migration data for candidate occupations");
-        
+
         Set<Long> occupationIds = loadReferenceIds(targetConn, "occupation");
         Map<Long, String> otherOccupations = loadOtherReferenceIds(sourceStmt, "job_occupation");
 
-        String insertSql = "insert into candidate_occupation (candidate_id, occupation_id, years_experience, verified, migration_occupation) values (?, ?, ?, ?, ?) on conflict (candidate_id, occupation_id) do nothing";  
+        String insertSql = "insert into candidate_occupation (candidate_id, occupation_id, years_experience, verified, migration_occupation) values (?, ?, ?, ?, ?) on conflict (candidate_id, occupation_id) do nothing";
         String selectSql = "select j.user_id, job_occupation, sum(timestampdiff(YEAR, ifnull(start_date, sysdate()), ifnull(end_date, sysdate()))) as years, case when u.status = 10 or u.status = 11 then 1 else 0 end as verified "
                         + " from user_jobseeker_experience j join user u on u.id = j.user_id group by j.user_id, job_occupation";
         PreparedStatement insert = targetConn.prepareStatement(insertSql);
@@ -956,12 +970,12 @@ public class SystemAdminApi {
                 insert.setInt(i++, years);
                 insert.setBoolean(i++, result.getBoolean("verified"));
                 insert.addBatch();
-                
+
                 if (count%100 == 0) {
                     insert.executeBatch();
                     log.info("occupations - saving batch " + count);
                 }
-                
+
                 count++;
             } else {
                 log.warn("skipping record - occupations: no candidate found for userId " + userId);
@@ -970,18 +984,18 @@ public class SystemAdminApi {
         insert.executeBatch();
         log.info("occupations - saving batch " + count);
     }
-    
+
     private void migrateCandidateExperiences(Connection targetConn,
                                              Statement sourceStmt,
                                              Map<Long, Long> candidateIdsByUserId) throws SQLException {
         log.info("Migration data for candidate experiences");
-        
+
         Set<Long> countryIds = loadReferenceIds(targetConn, "country");
         Set<Long> occupationIds = loadReferenceIds(targetConn, "occupation");
         // candidateId~occupationId -> candidateOccupationId
         Map<String, Long> candidateOccupations = loadCandidateOccupations(targetConn);
-        
-        String insertSql = "insert into candidate_job_experience (id, candidate_id, candidate_occupation_id, company_name, country_id, role, start_date, end_date, full_time, paid, description) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"; 
+
+        String insertSql = "insert into candidate_job_experience (id, candidate_id, candidate_occupation_id, company_name, country_id, role, start_date, end_date, full_time, paid, description) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, user_id, job_occupation, company_name, location, position_title, start_date, end_date, fulltime, paid, description from user_jobseeker_experience";
         PreparedStatement insert = targetConn.prepareStatement(insertSql);
         ResultSet result = sourceStmt.executeQuery(selectSql);
@@ -1027,12 +1041,12 @@ public class SystemAdminApi {
                 insert.setString(i++,  description);
 
                 insert.addBatch();
-                
+
                 if (count%100 == 0) {
                     insert.executeBatch();
                     log.info("experiences - saving batch " + count);
                 }
-                
+
                 count++;
             } else if (candidateId == null) {
                 log.warn("skipping record - experiences: no candidate found for userId " + userId);
@@ -1048,9 +1062,9 @@ public class SystemAdminApi {
                                             Statement sourceStmt,
                                             Map<Long, Long> candidateIdsByUserId) throws SQLException {
         log.info("Migration data for candidate admin notes");
-        
+
         Set<Long> adminIds = loadAdminIds(targetConn);
-        
+
         String insertSql = "insert into candidate_note (id, candidate_id, note_type, title, comment, created_date, created_by, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, user_id, profile_id, subject, comments, created_at, updated_at from admin_user_notes";
         PreparedStatement insert = targetConn.prepareStatement(insertSql);
@@ -1075,12 +1089,12 @@ public class SystemAdminApi {
                 }
                 insert.setTimestamp(i++, convertToTimestamp(result.getLong("updated_at")));
                 insert.addBatch();
-                
+
                 if (count%100 == 0) {
                     insert.executeBatch();
                     log.info("admin notes - saving batch " + count);
                 }
-                
+
                 count++;
             } else {
                 log.warn("skipping record - admin notes: no candidate found for userId " + userId);
@@ -1176,7 +1190,7 @@ public class SystemAdminApi {
                                         Statement sourceStmt,
                                         Map<Long, Long> candidateIdsByUserId) throws SQLException {
         log.info("Migration data for candidate skills");
-        
+
         String insertSql = "insert into candidate_skill (id, candidate_id, skill, time_period) values (?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, user_id, skill, time_period from user_jobseeker_skills";
         PreparedStatement insert = targetConn.prepareStatement(insertSql);
@@ -1192,12 +1206,12 @@ public class SystemAdminApi {
                 insert.setString(i++, result.getString("skill"));
                 insert.setString(i++, getSkillTimePeriod(result.getInt("time_period")));
                 insert.addBatch();
-                
+
                 if (count%100 == 0) {
                     insert.executeBatch();
                     log.info("skills - saving batch " + count);
                 }
-                
+
                 count++;
             } else {
                 log.warn("skipping record - skills: no candidate found for userId " + userId);
@@ -1242,7 +1256,7 @@ public class SystemAdminApi {
         }
         return colIndex + 1;
     }
-    
+
     private Long getCandidateId(Long userId,
                                   Map<Long, Long> candidateIdsByUserId) {
         return candidateIdsByUserId.get(userId);
@@ -1259,7 +1273,7 @@ public class SystemAdminApi {
         log.info("loaded " + referenceIds.size() + " reference ids for " + tableName);
         return referenceIds;
     }
-    
+
     private Map<Long, String> loadOtherReferenceIds(Statement sourceStmt,
                                                     String type) throws SQLException {
         Map<Long, String> referenceIds = new HashMap<>();
@@ -1270,7 +1284,7 @@ public class SystemAdminApi {
         log.info("loaded " + referenceIds.size() + " other references for " + type);
         return referenceIds;
     }
-    
+
     private Map<String, Long> loadCandidateOccupations(Connection targetConn) throws SQLException {
         Map<String, Long> candidateOccupations = new HashMap<>();
         Statement stmt = targetConn.createStatement();
@@ -1281,7 +1295,7 @@ public class SystemAdminApi {
         log.info("loaded " + candidateOccupations.size() + " candidateOccupationIds");
         return candidateOccupations;
     }
-    
+
     private Map<Long, Long> loadCandidateIds(Connection targetConn) throws SQLException {
         Map<Long, Long> referenceMap = new HashMap<>();
         Statement stmt = targetConn.createStatement();
@@ -1292,7 +1306,7 @@ public class SystemAdminApi {
         log.info("loaded " + referenceMap.size() + " candidate ids");
         return referenceMap;
     }
-    
+
     private Set<Long> loadAdminIds(Connection targetConn) throws SQLException {
         Set<Long> referenceMap = new HashSet<>();
         Statement stmt = targetConn.createStatement();
@@ -1303,7 +1317,7 @@ public class SystemAdminApi {
         log.info("loaded " + referenceMap.size() + " admin ids");
         return referenceMap;
     }
-    
+
     private Long checkReference(int value,
                                 Set<Long> referenceIds) {
         // null values coming from source db are converted to integer 0 which would be incorrectly linked to "unknown", so treat as null
@@ -1376,7 +1390,7 @@ public class SystemAdminApi {
         }
         return CandidateStatus.deleted.name();
     }
-    
+
     private String getGender(String gender) {
         if (StringUtils.isNotEmpty(gender)) {
             switch (gender) {
@@ -1386,12 +1400,12 @@ public class SystemAdminApi {
         }
         return null;
     }
-    
+
     private boolean getUNStatus(int value) {
         // 1=UNHCR, 2=UNRWA, 3=not registered
         return (value == 1 ||  value == 2);
     }
-    
+
     private String getEducationLevel(Integer value) {
         /*
         | 6864 | degree | Bachelor's Degree  |
@@ -1399,7 +1413,7 @@ public class SystemAdminApi {
         | 6867 | degree | Doctoral Degree    |
         | 6868 | degree | Associate Degree   |
         | 9442 | degree | Vocational Degree  |
-        |    0 | 
+        |    0 |
 
         */
         if (value > 0) {
@@ -1435,7 +1449,7 @@ public class SystemAdminApi {
         */
         return (paidValue == 9557);
     }
-    
+
     private boolean getFullTime(int fullTimeValue) {
         /*
         | 9561 | fulltime | Full time |
@@ -1443,7 +1457,7 @@ public class SystemAdminApi {
         */
         return (fullTimeValue == 9561);
     }
-    
+
     private String getSkillTimePeriod(int period) {
         /*
         | 336 | time_period | 1 year or less   |
@@ -1465,13 +1479,13 @@ public class SystemAdminApi {
         }
         return null;
     }
-    
+
     private Long whackyExtraCountryLookup(Integer origCountryId) {
         Integer val = countryForGeneralCountry.get(origCountryId);
-        if (val != null) return new Long(val); 
+        if (val != null) return new Long(val);
         return null;
     }
-    
+
     private Date getDate(ResultSet result,
                          String columnName,
                          Long candidateId) {
@@ -1521,14 +1535,14 @@ public class SystemAdminApi {
                 java.util.Date date = sdf.parse(isoDateStr);
                 return new Date(date.getTime());
             } catch (Exception e) {
-                log.warn("invalid DOB " + isoDateStr); 
+                log.warn("invalid DOB " + isoDateStr);
             }
         }
         return null;
     }
 
     private Map<Integer, Integer> getExtraCountryMappings() {
-        
+
         /*
         +------+------+---------+---------+
         | id   | id   | name    | name    |

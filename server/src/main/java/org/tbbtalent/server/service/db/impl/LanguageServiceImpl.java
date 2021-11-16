@@ -17,8 +17,10 @@
 package org.tbbtalent.server.service.db.impl;
 
 import io.jsonwebtoken.lang.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -203,6 +205,39 @@ public class LanguageServiceImpl implements LanguageService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String updateIsoCodes() {
+        StringBuilder sb = new StringBuilder();
+
+        List<Language> languages = listLanguages();
+
+        Map<String, String> xlLang = LocaleHelper.getLanguageNameTranslations("en");
+        //Create reverse map - English name to code.
+
+        Map<String, String> nameToCode = new HashMap<>();
+        for (Entry<String, String> codeNameEntry : xlLang.entrySet()) {
+            nameToCode.put(codeNameEntry.getValue(), codeNameEntry.getKey());
+        }
+
+        //Now go through languages, using name to look up code
+        for (Language language : languages) {
+            final String name = language.getName().trim();
+            String code = nameToCode.get(name);
+            if (code == null) {
+                if (sb.length() > 0) {
+                    sb.append(",");
+                }
+                sb.append(name);
+            } else {
+                //Update iso code of language.
+                language.setIsoCode(code);
+                languageRepository.save(language);
+            }
+        }
+
+        return sb.toString();
     }
 
     private void checkDuplicates(Long id, String name) {

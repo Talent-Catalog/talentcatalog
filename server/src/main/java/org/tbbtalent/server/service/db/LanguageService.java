@@ -55,4 +55,12 @@ public interface LanguageService {
     List<SystemLanguage> listSystemLanguages();
 
     Language getLanguage(String languageName);
+
+    /**
+     * Sets the language ISO codes of all countries with names matching the English language names
+     * returned by Java's Locale class.
+     * @return String containing names of languages in the data base which did not find a match
+     * among the names returned by Locale - and which, therefore, did not have their ISO code set.
+     */
+    String updateIsoCodes();
 }
