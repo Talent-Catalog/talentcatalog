@@ -20,6 +20,7 @@ import {HttpClient} from "@angular/common/http";
 import {LanguageLevel} from "../model/language-level";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
+import {SystemLanguage} from "../model/language";
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,12 @@ export class LanguageLevelService {
   private apiUrl: string = environment.apiUrl + '/language-level';
 
   constructor(private http: HttpClient) { }
+
+  addSystemLanguageTranslations(langCode: string, file: File): Observable<SystemLanguage> {
+    const formData: FormData = new FormData();
+    formData.append('file', file);
+    return this.http.post<SystemLanguage>(`${this.apiUrl}/system/${langCode}`, formData);
+  }
 
   listLanguageLevels(): Observable<LanguageLevel[]> {
     return this.http.get<LanguageLevel[]>(`${this.apiUrl}`);
