@@ -29,11 +29,23 @@ export class CustomDatepickerI18n extends NgbDatepickerI18n {
     super();
   }
 
+  /**
+   * Avoid null pointer crash if we have added a new language but haven't filled in translations here.
+   * This will default to English if it can't find anything else - rather than crashing.
+   */
+  private safeGetValues() {
+    let values = I18N_VALUES[this.languageService.selectedLanguage];
+    if (!values) {
+      values = I18N_VALUES['en'];
+    }
+    return values;
+  }
+
   getWeekdayShortName(weekday: number): string {
-    return I18N_VALUES[this.languageService.selectedLanguage].weekdays[weekday - 1];
+    return this.safeGetValues().weekdays[weekday - 1];
   }
   getMonthShortName(month: number): string {
-    return I18N_VALUES[this.languageService.selectedLanguage].months[month - 1];
+    return this.safeGetValues().months[month - 1];
   }
   getMonthFullName(month: number): string {
     return this.getMonthShortName(month);
@@ -47,6 +59,9 @@ export class CustomDatepickerI18n extends NgbDatepickerI18n {
 /*
   Potential other option to look at, using CLDR data https://www.npmjs.com/package/cldr-data. Can import calendar data
   for a particular language eg. Arabic: https://github.com/unicode-cldr/cldr-dates-full/blob/master/main/ar/ca-gregorian.json
+ */
+/* todo
+JC - We can probably up load these values from server taken from Locale
  */
 const I18N_VALUES = {
   'ar': {
