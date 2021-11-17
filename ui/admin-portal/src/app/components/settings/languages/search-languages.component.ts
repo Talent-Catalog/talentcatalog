@@ -21,7 +21,7 @@ import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {Language} from "../../../model/language";
+import {Language, SystemLanguage} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
 import {CreateLanguageComponent} from "./create/create-language.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -45,7 +45,7 @@ export class SearchLanguagesComponent implements OnInit {
   error: any;
   pageNumber: number;
   pageSize: number;
-  results: SearchResults<Language>;
+  results: SystemLanguage[];
 
 
   constructor(private fb: FormBuilder,
@@ -83,10 +83,7 @@ export class SearchLanguagesComponent implements OnInit {
   /* SEARCH FORM */
   search() {
     this.loading = true;
-    let request = this.searchForm.value;
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize = this.pageSize;
-    this.languageService.search(request).subscribe(results => {
+    this.languageService.listSystemLanguages().subscribe(results => {
       this.results = results;
       this.loading = false;
     });
