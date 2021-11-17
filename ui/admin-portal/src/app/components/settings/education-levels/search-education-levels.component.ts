@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {EducationLevel} from "../../../model/education-level";
 import {EducationLevelService} from "../../../services/education-level.service";
@@ -30,6 +30,7 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
 import {isAdminUser} from "../../../model/base";
+import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
 @Component({
   selector: 'app-search-education-levels',
@@ -40,6 +41,7 @@ export class SearchEducationLevelsComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
+  importForm: FormGroup;
   searchForm: FormGroup;
   loading: boolean;
   error: any;
@@ -55,6 +57,9 @@ export class SearchEducationLevelsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.importForm = this.fb.group({
+      langCode: [null, Validators.required]
+    });
 
     /* SET UP FORM */
     this.searchForm = this.fb.group({
@@ -65,6 +70,10 @@ export class SearchEducationLevelsComponent implements OnInit {
     this.pageSize = 50;
 
     this.onChanges();
+  }
+
+  get langCode(): string {
+    return this.importForm.value?.langCode;
   }
 
   onChanges(): void {
@@ -147,4 +156,42 @@ export class SearchEducationLevelsComponent implements OnInit {
   isAnAdmin(): boolean {
     return isAdminUser(this.authService);
   }
+
+
+  importTranslations() {
+    const fileSelectorModal = this.modalService.open(FileSelectorComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
+
+    fileSelectorModal.componentInstance.validExtensions = ['csv', 'txt'];
+    fileSelectorModal.componentInstance.maxFiles = 1;
+    fileSelectorModal.componentInstance.closeButtonLabel = "Import";
+    fileSelectorModal.componentInstance.title = "Select file containing " + this.langCode + " translations";
+    fileSelectorModal.componentInstance.instructions = "Select a file with one of the above " +
+      "extensions where each line is CSV format with two fields, a numeric id followed by a translation.";
+
+    fileSelectorModal.result
+    .then((selectedFiles: File[]) => {
+      this.doImport(selectedFiles);
+    })
+    .catch(() => { /* Isn't possible */ });
+
+  }
+
+  private doImport(files: File[]) {
+    this.error = null;
+    this.loading = true;
+    this.educationLevelService.addSystemLanguageTranslations(this.langCode, files[0]).subscribe(
+      result => {
+        this.loading = false;
+        this.search();
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      }
+    )
+  }
+
 }
