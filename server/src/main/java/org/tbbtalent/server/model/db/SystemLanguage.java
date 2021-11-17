@@ -21,6 +21,10 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import lombok.Getter;
+import lombok.Setter;
+import org.tbbtalent.server.util.locale.LocaleHelper;
 
 /**
  * These are the various languages that are supported by the candidate portal (front end).
@@ -45,6 +49,8 @@ import javax.persistence.Table;
  *     </li>
  * </ul>
  */
+@Getter
+@Setter
 @Entity
 @Table(name = "system_language")
 @SequenceGenerator(name = "seq_gen", sequenceName = "system_language_id_seq", allocationSize = 1)
@@ -53,31 +59,22 @@ public class SystemLanguage extends AbstractAuditableDomainObject<Long> {
     private String language;
     private String label;
 
+    @Transient
+    private boolean rtl;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public String getLanguage() {
-        return language;
+    public SystemLanguage() {
     }
 
-    public void setLanguage(String language) {
+    public SystemLanguage(String language) {
         this.language = language;
+        this.status = Status.active;
+        this.label = LocaleHelper.getOwnLanguageDisplayName(language);
     }
 
-    public String getLabel() {
-        return label;
+    public boolean isRtl() {
+        return LocaleHelper.isRtlLanguage(language);
     }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
 }

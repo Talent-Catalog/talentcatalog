@@ -16,36 +16,92 @@
 
 package org.tbbtalent.server.util.locale;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.tbbtalent.server.util.locale.LocaleHelper.CodeTranslation;
 
 class LocaleHelperTest {
-    LocaleHelper helper;
-
-    @BeforeEach
-    void setUp() {
-        helper = new LocaleHelper();
-    }
-
-    @AfterEach
-    void tearDown() {
-        helper = null;
-    }
 
     @Test
     void getCountryNameTranslations() {
-        List<CodeTranslation> cts = helper.getCountryNameTranslations("fa");
+        Map<String, String> cts;
+
+        cts = LocaleHelper.getCountryNameTranslations(null);
         assertNotNull(cts);
+        assertTrue(cts.isEmpty());
+
+        cts = LocaleHelper.getCountryNameTranslations("en");
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+
+        cts = LocaleHelper.getCountryNameTranslations("fa");
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
     }
 
     @Test
     void getLanguageNameTranslations() {
-        List<CodeTranslation> cts = helper.getLanguageNameTranslations("fa");
+        Map<String, String> cts;
+
+        cts = LocaleHelper.getLanguageNameTranslations(null);
         assertNotNull(cts);
+        assertTrue(cts.isEmpty());
+
+        cts = LocaleHelper.getLanguageNameTranslations("en");
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+
+        cts = LocaleHelper.getLanguageNameTranslations("fa");
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+    }
+
+    @Test
+    void isKnownLanguageCode() {
+        boolean known;
+
+        known = LocaleHelper.isKnownLanguageCode(null);
+        assertFalse(known);
+
+        known = LocaleHelper.isKnownLanguageCode("??");
+        assertFalse(known);
+
+        known = LocaleHelper.isKnownLanguageCode("ar");
+        assertTrue(known);
+    }
+
+    @Test
+    void isRtlLanguage() {
+        boolean rtl;
+
+        rtl = LocaleHelper.isRtlLanguage("??");
+        assertFalse(rtl);
+
+        rtl = LocaleHelper.isRtlLanguage("fr");
+        assertFalse(rtl);
+
+        rtl = LocaleHelper.isRtlLanguage("ar");
+        assertTrue(rtl);
+    }
+
+    @Test
+    void getOwnLanguageDisplayName() {
+        String name;
+
+        name = LocaleHelper.getOwnLanguageDisplayName(null);
+        assertNull(name);
+
+        name = LocaleHelper.getOwnLanguageDisplayName("en");
+        assertNotNull(name);
+        assertEquals("english", name.toLowerCase());
+
+        name = LocaleHelper.getOwnLanguageDisplayName("fr");
+        assertNotNull(name);
+        assertEquals("français", name.toLowerCase());
     }
 }

@@ -23,4 +23,5 @@ export interface SystemLanguage {
   id: number;
   label: string;
   language: string;
+  rtl: boolean;
 }

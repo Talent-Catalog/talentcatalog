@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -60,17 +60,17 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
  *     search criteria) belonging to a saved list</li>
  * </ul>
  * <p/>
- * For actually modifying candidate details - see {@link CandidateAdminApi}, 
- * or for modifying saved list details see {@link SavedListAdminApi}. 
- * <p/> 
+ * For actually modifying candidate details - see {@link CandidateAdminApi},
+ * or for modifying saved list details see {@link SavedListAdminApi}.
+ * <p/>
  * See also {@link CandidateSavedListAdminApi} which is the mirror image,
  * managing the reverse association between a Candidate and its associated
  * SavedList's (that it belongs to).
- * 
+ *
  */
 @RestController()
 @RequestMapping("/api/admin/saved-list-candidate")
-public class SavedListCandidateAdminApi implements 
+public class SavedListCandidateAdminApi implements
     IManyToManyApi<SavedListGetRequest, UpdateExplicitSavedListContentsRequest> {
 
     private final CandidateService candidateService;
@@ -95,13 +95,13 @@ public class SavedListCandidateAdminApi implements
     }
 
     @Override
-    public void merge(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request) 
+    public void merge(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request)
             throws NoSuchObjectException {
         savedListService.mergeSavedList(savedListId, request);
     }
 
     /**
-     * Merge the contents of the SavedList with the given id with the 
+     * Merge the contents of the SavedList with the given id with the
      * candidates whose candidate numbers (NOT ids) appear in the given file.
      * @param savedListId ID of saved list to be updated
      * @param file File containing candidate numbers, one to a line
@@ -112,17 +112,17 @@ public class SavedListCandidateAdminApi implements
     @PutMapping("{id}/merge-from-file")
     public void mergeFromFile(@PathVariable("id") long savedListId,
         @RequestParam("file") MultipartFile file) throws NoSuchObjectException, IOException {
-        savedListService.mergeSavedListFromFile(savedListId, file);
+        savedListService.mergeSavedListFromInputStream(savedListId, file.getInputStream());
     }
 
     @Override
-    public void remove(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request) 
+    public void remove(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request)
             throws NoSuchObjectException {
         savedListService.removeFromSavedList(savedListId, request);
     }
 
     @Override
-    public void replace(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request) 
+    public void replace(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request)
             throws NoSuchObjectException {
         savedListService.clearSavedList(savedListId);
         savedListService.mergeSavedList(savedListId, request);
@@ -133,11 +133,11 @@ public class SavedListCandidateAdminApi implements
             long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
         Page<Candidate> candidates = this.candidateService
                 .getSavedListCandidates(savedListId, request);
-        
+
         this.savedListService.setCandidateContext(savedListId, candidates);
-        
+
         this.savedListService.addOpportunityStages(savedListId, candidates);
-        
+
         DtoBuilder builder = candidateBuilderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
@@ -150,7 +150,7 @@ public class SavedListCandidateAdminApi implements
      *   initialized as empty.
      * </p>
      * @param request Request defining new list plus optional initial contents.
-     * @return The details about the list - but not the contents.  
+     * @return The details about the list - but not the contents.
      * @throws EntityExistsException if a list with this name already exists.
      */
     @PostMapping
@@ -168,7 +168,7 @@ public class SavedListCandidateAdminApi implements
         }
 
         DtoBuilder builder = savedListBuilderSelector.selectBuilder();
-        
+
         return builder.build(savedList);
     }
 
@@ -181,7 +181,7 @@ public class SavedListCandidateAdminApi implements
         response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(savedListId, request, response.getWriter());
     }
-    
+
     /**
      * Adds or replaces the given candidates to a given existing list.
      * <p/>
@@ -191,18 +191,18 @@ public class SavedListCandidateAdminApi implements
      * @throws NoSuchObjectException If no list is specified or the list does not exist.
      */
     @PutMapping(value = "{id}/save-selection")
-    public void saveSelection(@PathVariable("id") long savedListId, 
+    public void saveSelection(@PathVariable("id") long savedListId,
         @Valid @RequestBody UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
-        
+
         if (request.getUpdateType() == ContentUpdateType.replace) {
             savedListService.clearSavedList(savedListId);
         }
         savedListService.mergeSavedList(savedListId, request);
 
-        final UpdateCandidateStatusInfo statusUpdateInfo = 
+        final UpdateCandidateStatusInfo statusUpdateInfo =
             request.getStatusUpdateInfo();
         if (statusUpdateInfo != null) {
-            UpdateCandidateStatusRequest ucsr = 
+            UpdateCandidateStatusRequest ucsr =
                 new UpdateCandidateStatusRequest(request.getCandidateIds());
             ucsr.setInfo(statusUpdateInfo);
             candidateService.updateCandidateStatus(ucsr);

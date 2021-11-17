@@ -5,18 +5,19 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.service.db.impl;
 
 import io.jsonwebtoken.lang.Collections;
+import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.tbbtalent.server.util.locale.LocaleHelper;
 
 @Service
 public class CountryServiceImpl implements CountryService, InitializingBean {
@@ -140,7 +142,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
         }
         return countries;
     }
-    
+
     @Override
     public Country getCountry(long id) {
         loadCache();
@@ -191,9 +193,42 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
         return false;
     }
 
+    @Override
+    public String updateIsoCodes() {
+        StringBuilder sb = new StringBuilder();
+
+        List<Country> countries = listCountries(false);
+
+        Map<String, String> xlLang = LocaleHelper.getCountryNameTranslations("en");
+        //Create reverse map - English name to code.
+
+        Map<String, String> nameToCode = new HashMap<>();
+        for (Entry<String, String> codeNameEntry : xlLang.entrySet()) {
+            nameToCode.put(codeNameEntry.getValue(), codeNameEntry.getKey());
+        }
+
+        //Now go through countries, using name to look up code
+        for (Country country : countries) {
+            final String name = country.getName().trim();
+            String code = nameToCode.get(name);
+            if (code == null) {
+                if (sb.length() > 0) {
+                   sb.append(",");
+                }
+                sb.append(name);
+            } else {
+                //Update iso code of country.
+                country.setIsoCode(code);
+                countryRepository.save(country);
+            }
+        }
+
+        return sb.toString();
+    }
+
     private void checkDuplicates(Long id, String name) {
         Country existing = countryRepository.findByNameIgnoreCase(name);
-        if (existing != null && !existing.getId().equals(id) || (existing != null && id == null)){
+        if (existing != null && !existing.getId().equals(id)){
             throw new EntityExistsException("country");
         }
     }

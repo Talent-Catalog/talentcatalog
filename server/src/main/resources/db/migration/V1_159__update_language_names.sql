@@ -14,15 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export interface Language {
-  id: number;
-  name: string;
-  status: string;
-}
-
-export interface SystemLanguage {
-  id: number;
-  label: string;
-  language: string;
-  rtl: boolean;
-}
+update language set iso_code = 'fa' where name = 'Dari';
