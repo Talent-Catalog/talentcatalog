@@ -60,7 +60,6 @@ export class LanguageService {
   }
 
   isUsAfghan(): boolean {
-    console.log(this.usAfghan);
     return this.usAfghan;
   }
 
