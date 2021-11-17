@@ -132,10 +132,10 @@
       </div>
     </div>
 
-    <hr class="col-12">
+    <hr *ngIf="!languageService.isUsAfghan()" class="col-12">
 
     <!-- UNHCR REGISTRATION -->
-    <div class="col-12 col-md-6">
+    <div *ngIf="!languageService.isUsAfghan()" class="col-12 col-md-6">
       <div class="form-group">
         <label for="unhcrRegistered">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }} <sup>*</sup></label>
         <ng-select id="unhcrRegistered" class="custom" [formControlName]="'unhcrRegistered'" [clearable]="false" [searchable]="false"
@@ -151,7 +151,7 @@
     </div>
 
     <!-- REGISTRATION NUMBER -->
-    <div class="col-12 col-md-6" *ngIf="hasUnhcr">
+    <div *ngIf="hasUnhcr && !languageService.isUsAfghan()" class="col-12 col-md-6" >
       <div class="form-group">
         <label for="unhcrNumber">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>
         <input type="text" class="form-control" id="unhcrNumber" placeholder="" [formControlName]="'unhcrNumber'">
@@ -159,7 +159,7 @@
     </div>
 
     <!-- UNHCR REGISTRATION -->
-    <div class="col-12" *ngIf="hasUnhcr">
+    <div *ngIf="hasUnhcr && !languageService.isUsAfghan()" class="col-12" >
       <div class="form-group">
         <label for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></label>
         <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'" [clearable]="false" [searchable]="false"

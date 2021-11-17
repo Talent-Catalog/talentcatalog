@@ -46,6 +46,7 @@ export class LanguageService {
   constructor(private http: HttpClient,
               private localStorage: LocalStorageService) {
     this.languageSelectionDisabled = (this.localStorage.get('languageSelectionDisabled') as boolean);
+    this.usAfghan = (this.localStorage.get('usAfghan') as boolean);
     this.selectedLanguage = (this.localStorage.get('language') as string) || 'en';
   }
 
@@ -63,6 +64,7 @@ export class LanguageService {
   }
 
   setUsAfghan(usAfghan: boolean) {
+    this.localStorage.set('usAfghan', usAfghan);
     this.usAfghan = usAfghan;
   }
 
