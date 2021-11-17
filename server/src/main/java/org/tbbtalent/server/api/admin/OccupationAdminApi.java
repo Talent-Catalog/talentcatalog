@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -30,13 +31,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.SystemLanguage;
 import org.tbbtalent.server.request.occupation.CreateOccupationRequest;
 import org.tbbtalent.server.request.occupation.SearchOccupationRequest;
 import org.tbbtalent.server.request.occupation.UpdateOccupationRequest;
+import org.tbbtalent.server.service.db.LanguageService;
 import org.tbbtalent.server.service.db.OccupationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -45,10 +51,25 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 public class OccupationAdminApi {
 
     private final OccupationService occupationService;
+    private final LanguageService languageService;
+    private final DtoBuilder systemLanguageDtoBuilder = new SystemLanguageDtoBuilder();
 
     @Autowired
-    public OccupationAdminApi(OccupationService occupationService) {
+    public OccupationAdminApi(OccupationService occupationService,
+        LanguageService languageService) {
         this.occupationService = occupationService;
+        this.languageService = languageService;
+    }
+
+    @PostMapping("system/{langCode}")
+    public Map<String, Object> addSystemLanguageTranslations(
+        @PathVariable("langCode") String langCode, @RequestParam("file") MultipartFile file)
+        throws EntityExistsException, IOException, NoSuchObjectException {
+        SystemLanguage systemLanguage =
+            this.languageService.addSystemLanguageTranslations(
+                langCode, "occupation", file.getInputStream());
+
+        return systemLanguageDtoBuilder.build(systemLanguage);
     }
 
     @GetMapping()

@@ -43,8 +43,8 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 @RestController()
 @RequestMapping("/api/admin/language")
 public class LanguageAdminApi {
-
     private final LanguageService languageService;
+    private final DtoBuilder systemLanguageDtoBuilder = new SystemLanguageDtoBuilder();
 
     @Autowired
     public LanguageAdminApi(LanguageService languageService) {
@@ -60,7 +60,7 @@ public class LanguageAdminApi {
     @GetMapping(value = "system")
     public List<Map<String, Object>> getSystemLanguages() {
         List<SystemLanguage> languages = languageService.listSystemLanguages();
-        return systemLanguageDto().buildList(languages);
+        return systemLanguageDtoBuilder.buildList(languages);
     }
 
     @PostMapping("search")
@@ -79,7 +79,7 @@ public class LanguageAdminApi {
     public Map<String, Object> addSystemLanguage(@PathVariable("langCode") String langCode)
         throws EntityExistsException, NoSuchObjectException {
         SystemLanguage systemLanguage = this.languageService.addSystemLanguage(langCode);
-        return systemLanguageDto().build(systemLanguage);
+        return systemLanguageDtoBuilder.build(systemLanguage);
     }
 
     @PostMapping
@@ -108,15 +108,5 @@ public class LanguageAdminApi {
                 .add("status")
                 ;
     }
-
-    private DtoBuilder systemLanguageDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("language")
-                .add("label")
-                .add("rtl")
-                ;
-    }
-
 
 }
