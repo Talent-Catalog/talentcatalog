@@ -26,14 +26,6 @@
   </ng-container>
 
   <ng-container *ngIf="loggedInUser.role == 'admin'">
-    <!-- Countries -->
-    <ng-container ngbNavItem="countries">
-      <a ngbNavLink>Countries</a>
-      <ng-template ngbNavContent>
-        <app-search-countries [loggedInUser]="loggedInUser">
-        </app-search-countries>
-      </ng-template>
-    </ng-container>
 
     <!-- Languages -->
     <ng-container ngbNavItem="languages">
