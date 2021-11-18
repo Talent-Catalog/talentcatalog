@@ -42,9 +42,7 @@
     <thead>
     <tr>
       <th>Name</th>
-      <th>Status</th>
-      <th>Translation count</th>
-      <th></th>
+      <th>Language code</th>
     </tr>
     </thead>
 
@@ -52,15 +50,6 @@
     <tr *ngFor="let language of results">
       <td>{{language.label}}</td>
       <td>{{language.language}}</td>
-      <td></td>
-      <td>
-        <div class="btn-group" *ngIf="(!loggedInUser.readOnly)">
-          <button type="button" class="btn btn-default" (click)="editLanguage(language)"><i
-            class="fas fa-edit"></i></button>
-          <button type="button" class="btn btn-default" (click)="deleteLanguage(language)"><i
-            class="fas fa-trash"></i></button>
-        </div>
-      </td>
     </tr>
 
     <!-- loading -->
