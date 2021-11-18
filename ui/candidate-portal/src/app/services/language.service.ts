@@ -90,7 +90,8 @@ export class LanguageService {
   }
 
   isSelectedLanguageRtl(): boolean {
-    const rtl: boolean =  ['ar', 'fa'].indexOf(this.selectedLanguage) >= 0;
+    //todo rtl languages need to be uploaded
+    const rtl: boolean =  ['ar', 'fa', 'ps'].indexOf(this.selectedLanguage) >= 0;
     return rtl;
   }
 
