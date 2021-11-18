@@ -15,6 +15,18 @@
   -->
 
 <div>
+  <div>
+    <form [formGroup]="importForm">
+      <div class="form-group col-4">
+        <label for="langCode">Importing language?</label>
+        <input type="text" class="form-control" placeholder="Language code..."
+               formControlName="langCode" id="langCode">
+      </div>
+    </form>
+
+    <button *ngIf="isAnAdmin() && !loggedInUser.readOnly && importForm.valid" class="btn btn-primary"
+            (click)="importTranslations()">Import Translation File</button>
+  </div>
   <div class="section">
     <div>
       <div class="float-right">

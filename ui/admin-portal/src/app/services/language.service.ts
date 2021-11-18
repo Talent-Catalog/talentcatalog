@@ -51,6 +51,10 @@ export class LanguageService {
     return this.http.post<Language>(`${this.apiUrl}`, details);
   }
 
+  addSystemLanguage(langCode: string): Observable<SystemLanguage>  {
+    return this.http.post<SystemLanguage>(`${this.apiUrl}/system/${langCode}`, null);
+  }
+
   update(id: number, details): Observable<Language>  {
     return this.http.put<Language>(`${this.apiUrl}/${id}`, details);
   }

@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Language} from "../../../../model/language";
+import {Language, SystemLanguage} from "../../../../model/language";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../services/language.service";
 
@@ -39,14 +39,13 @@ export class CreateLanguageComponent implements OnInit {
 
   ngOnInit() {
     this.languageForm = this.fb.group({
-      name: [null, Validators.required],
-      status: [null, Validators.required],
+      langCode: [null, Validators.required],
     });
   }
 
   onSave() {
     this.saving = true;
-    this.languageService.create(this.languageForm.value).subscribe(
+    this.languageService.addSystemLanguage(this.languageForm.value.langCode).subscribe(
       (language) => {
         this.closeModal(language)
         this.saving = false;
@@ -57,7 +56,7 @@ export class CreateLanguageComponent implements OnInit {
       });
   }
 
-  closeModal(language: Language) {
+  closeModal(language: SystemLanguage) {
     this.activeModal.close(language);
   }
 

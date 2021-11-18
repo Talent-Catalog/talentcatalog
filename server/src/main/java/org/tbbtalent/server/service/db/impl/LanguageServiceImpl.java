@@ -90,7 +90,7 @@ public class LanguageServiceImpl implements LanguageService {
         final Optional<SystemLanguage> found = existing.stream()
             .filter(s -> s.getLanguage().equals(langCode))
             .findAny();
-        if (found.isEmpty()) {
+        if (found.isPresent()) {
             throw new EntityExistsException("SystemLanguage");
         }
 
@@ -295,7 +295,7 @@ public class LanguageServiceImpl implements LanguageService {
     private void checkDuplicates(Long id, String name) {
         Language existing = languageRepository.findByNameIgnoreCase(name);
         if (existing != null && !existing.getId().equals(id)){
-            throw new EntityExistsException("country");
+            throw new EntityExistsException("language");
         }
     }
 }

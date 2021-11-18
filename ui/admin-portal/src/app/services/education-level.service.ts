@@ -22,6 +22,7 @@ import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {User} from "../model/user";
 import {Candidate} from "../model/candidate";
+import {SystemLanguage} from "../model/language";
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +55,12 @@ export class EducationLevelService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  addSystemLanguageTranslations(langCode: string, file: File): Observable<SystemLanguage> {
+    const formData: FormData = new FormData();
+    formData.append('file', file);
+    return this.http.post<SystemLanguage>(`${this.apiUrl}/system/${langCode}`, formData);
   }
 
 }
