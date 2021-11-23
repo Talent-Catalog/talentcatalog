@@ -20,6 +20,7 @@ import {HttpClient} from "@angular/common/http";
 import {EducationMajor} from "../model/education-major";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
+import {SystemLanguage} from "../model/language";
 
 @Injectable({
   providedIn: 'root'
@@ -52,6 +53,12 @@ export class EducationMajorService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  addSystemLanguageTranslations(langCode: string, file: File): Observable<SystemLanguage> {
+    const formData: FormData = new FormData();
+    formData.append('file', file);
+    return this.http.post<SystemLanguage>(`${this.apiUrl}/system/${langCode}`, formData);
   }
 
 }

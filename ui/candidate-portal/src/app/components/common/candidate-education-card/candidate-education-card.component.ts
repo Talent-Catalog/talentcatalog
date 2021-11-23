@@ -16,6 +16,8 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CandidateEducation} from "../../../model/candidate-education";
+import {Country} from "../../../model/country";
+import {EducationMajor} from "../../../model/education-major";
 
 @Component({
   selector: 'app-candidate-education-card',
@@ -27,6 +29,8 @@ export class CandidateEducationCardComponent implements OnInit {
   @Input() preview: boolean = false;
   @Input() disabled: boolean = false;
   @Input() candidateEducation: CandidateEducation;
+  @Input() countries: Country[];
+  @Input() majors: EducationMajor[];
 
   @Output() onDelete = new EventEmitter();
   @Output() onEdit = new EventEmitter<CandidateEducation>();
@@ -42,5 +46,13 @@ export class CandidateEducationCardComponent implements OnInit {
 
   edit() {
     this.onEdit.emit(this.candidateEducation);
+  }
+
+  getCountryName(country: Country) {
+    return this.countries?.find(c => c.id === country.id)?.name;
+  }
+
+  getMajorName(major: EducationMajor) {
+    return this.majors?.find(m => m.id === major.id)?.name;
   }
 }

@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {LanguageLevel} from "../../../model/language-level";
 import {LanguageLevelService} from "../../../services/language-level.service";
@@ -30,6 +30,8 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
 import {isAdminUser} from "../../../model/base";
 import {AuthService} from "../../../services/auth.service";
+import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
+import {LanguageService} from "../../../services/language.service";
 
 @Component({
   selector: 'app-search-language-levels',
@@ -40,13 +42,13 @@ export class SearchLanguageLevelsComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
+  importForm: FormGroup;
   searchForm: FormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
   pageSize: number;
   results: SearchResults<LanguageLevel>;
-
 
   constructor(private fb: FormBuilder,
               private languageLevelService: LanguageLevelService,
@@ -56,7 +58,11 @@ export class SearchLanguageLevelsComponent implements OnInit {
 
   ngOnInit() {
 
-    /* SET UP FORM */
+    /* SET UP FORMS */
+    this.importForm = this.fb.group({
+      langCode: [null, Validators.required]
+    });
+
     this.searchForm = this.fb.group({
       keyword: [''],
       status: ['active'],
@@ -65,6 +71,10 @@ export class SearchLanguageLevelsComponent implements OnInit {
     this.pageSize = 50;
 
     this.onChanges();
+  }
+
+  get langCode(): string {
+    return this.importForm.value?.langCode;
   }
 
   onChanges(): void {
@@ -83,7 +93,7 @@ export class SearchLanguageLevelsComponent implements OnInit {
   /* SEARCH FORM */
   search() {
     this.loading = true;
-    let request = this.searchForm.value;
+    const request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     this.languageLevelService.search(request).subscribe(results => {
@@ -112,7 +122,7 @@ export class SearchLanguageLevelsComponent implements OnInit {
     editLanguageLevelModal.componentInstance.languageLevelId = languageLevel.id;
 
     editLanguageLevelModal.result
-      .then((languageLevel) => this.search())
+      .then(() => this.search())
       .catch(() => { /* Isn't possible */ });
   }
 
@@ -122,14 +132,14 @@ export class SearchLanguageLevelsComponent implements OnInit {
       backdrop: 'static'
     });
 
-    deleteLanguageLevelModal.componentInstance.message = 'Are you sure you want to delete '+languageLevel.level;
+    deleteLanguageLevelModal.componentInstance.message = 'Are you sure you want to delete ' + languageLevel.level;
 
     deleteLanguageLevelModal.result
       .then((result) => {
         // console.log(result);
         if (result === true) {
           this.languageLevelService.delete(languageLevel.id).subscribe(
-            (languageLevel) => {
+            () => {
               this.loading = false;
               this.search();
             },
@@ -147,4 +157,41 @@ export class SearchLanguageLevelsComponent implements OnInit {
   isAnAdmin(): boolean {
     return isAdminUser(this.authService);
   }
+
+  importTranslations() {
+    const fileSelectorModal = this.modalService.open(FileSelectorComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
+
+    fileSelectorModal.componentInstance.validExtensions = ['csv', 'txt'];
+    fileSelectorModal.componentInstance.maxFiles = 1;
+    fileSelectorModal.componentInstance.closeButtonLabel = "Import";
+    fileSelectorModal.componentInstance.title = "Select file containing " + this.langCode + " translations";
+    fileSelectorModal.componentInstance.instructions = "Select a file with one of the above " +
+        "extensions where each line is CSV format with two fields, a numeric id followed by a translation.";
+
+    fileSelectorModal.result
+    .then((selectedFiles: File[]) => {
+      this.doImport(selectedFiles);
+    })
+    .catch(() => { /* Isn't possible */ });
+
+  }
+
+  private doImport(files: File[]) {
+    this.error = null;
+    this.loading = true;
+    this.languageLevelService.addSystemLanguageTranslations(this.langCode, files[0]).subscribe(
+        result => {
+          this.loading = false;
+          this.search();
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+    )
+  }
+
 }

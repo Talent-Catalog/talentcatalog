@@ -18,9 +18,7 @@ package org.tbbtalent.server.api.admin;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.SystemLanguage;
 import org.tbbtalent.server.request.language.CreateLanguageRequest;
@@ -44,8 +43,8 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 @RestController()
 @RequestMapping("/api/admin/language")
 public class LanguageAdminApi {
-
     private final LanguageService languageService;
+    private final DtoBuilder systemLanguageDtoBuilder = new SystemLanguageDtoBuilder();
 
     @Autowired
     public LanguageAdminApi(LanguageService languageService) {
@@ -61,7 +60,7 @@ public class LanguageAdminApi {
     @GetMapping(value = "system")
     public List<Map<String, Object>> getSystemLanguages() {
         List<SystemLanguage> languages = languageService.listSystemLanguages();
-        return systemLanguageDto().buildList(languages);
+        return systemLanguageDtoBuilder.buildList(languages);
     }
 
     @PostMapping("search")
@@ -74,6 +73,13 @@ public class LanguageAdminApi {
     public Map<String, Object> get(@PathVariable("id") long id) {
         Language language = this.languageService.getLanguage(id);
         return languageDto().build(language);
+    }
+
+    @PostMapping("system/{langCode}")
+    public Map<String, Object> addSystemLanguage(@PathVariable("langCode") String langCode)
+        throws EntityExistsException, NoSuchObjectException {
+        SystemLanguage systemLanguage = this.languageService.addSystemLanguage(langCode);
+        return systemLanguageDtoBuilder.build(systemLanguage);
     }
 
     @PostMapping
@@ -102,15 +108,5 @@ public class LanguageAdminApi {
                 .add("status")
                 ;
     }
-
-    private DtoBuilder systemLanguageDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("language")
-                .add("label")
-                .add("rtl")
-                ;
-    }
-
 
 }

@@ -27,14 +27,14 @@
   </ng-select>
 
   <p class="m-0" *ngIf="preview">
-    {{language.language.name | translate }}
+    {{getLanguageName(language)}}
   </p>
 </div>
 
 <!-- HOW WELL DO YOU SPEAK -->
 <div class="form-group">
   <label translate dir="auto">
-    {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language.languageId)} }}
+    {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language)} }}
   </label>
 
   <ng-select [(ngModel)]="language.spokenLevelId" *ngIf="!preview" [items]="languageLevels"
@@ -42,14 +42,14 @@
   </ng-select>
 
   <p class="m-0" *ngIf="preview">
-    {{language.spokenLevel.name | translate }}
+    {{getLangLevel(language.spokenLevel)}}
   </p>
 </div>
 
 <!-- HOW WELL DO YOU READ AND WRITE -->
 <div class="form-group">
-  <label translate dir="auto" [translateParams]="{languageName: getLanguageName(language.languageId)}">
-    {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language.languageId)} }}
+  <label translate dir="auto" [translateParams]="{languageName: getLanguageName(language)}">
+    {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language)} }}
   </label>
 
   <ng-select [(ngModel)]="language.writtenLevelId" *ngIf="!preview" [items]="languageLevels"
@@ -57,6 +57,6 @@
   </ng-select>
 
   <p class="m-0" *ngIf="preview">
-    {{language.writtenLevel.name | translate}}
+    {{getLangLevel(language.writtenLevel)}}
   </p>
 </div>

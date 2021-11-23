@@ -107,6 +107,7 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
+    @Transactional
     public void deleteTranslations(String langCode, String objectType) {
         translationRepository.deleteTranslations(langCode, objectType);
     }

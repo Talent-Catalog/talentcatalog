@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.api.admin.SystemLanguageDtoBuilder;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.SystemLanguage;
 import org.tbbtalent.server.service.db.LanguageService;
@@ -36,6 +37,7 @@ public class LanguagePortalApi {
 
     private final LanguageService languageService;
     private final TranslationService translationService;
+    private final DtoBuilder systemLanguageDtoBuilder = new SystemLanguageDtoBuilder();
 
 
     @Autowired
@@ -59,7 +61,7 @@ public class LanguagePortalApi {
     @GetMapping(value = "system")
     public List<Map<String, Object>> getSystemLanguages() {
         List<SystemLanguage> languages = languageService.listSystemLanguages();
-        return systemLanguageDto().buildList(languages);
+        return systemLanguageDtoBuilder.buildList(languages);
     }
 
     @GetMapping("translations/file/{language}")
@@ -71,15 +73,6 @@ public class LanguagePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
-                ;
-    }
-
-    private DtoBuilder systemLanguageDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("language")
-                .add("label")
-                .add("rtl")
                 ;
     }
 

@@ -138,7 +138,7 @@
             <div class="form-group">
               <label>{{ 'PROFILE.PERSONAL.COUNTRY' | translate }}</label>
               <p *ngIf="candidate?.country">
-                {{candidate?.country.name | translate }}
+                {{getCountryName(candidate.country) || ''}}
               </p>
             </div>
           </div>
@@ -176,7 +176,7 @@
             <div class="form-group">
               <label>{{ 'PROFILE.PERSONAL.NATIONALITY' | translate }}</label>
               <p>
-                {{candidate?.nationality.name | translate }}
+                {{getCountryName(candidate?.nationality) || '' }}
               </p>
             </div>
           </div>
@@ -185,7 +185,7 @@
             <div class="form-group">
               <label>{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</label>
               <p>
-                {{candidate?.externalId | translate }}
+                {{candidate?.externalId || '' }}
               </p>
             </div>
           </div>
@@ -195,9 +195,9 @@
           <div *ngIf="!usAfghan" class="col-12 col-md-6">
             <div class="form-group">
               <label>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }}</label>
-              <p>
-                {{candidate?.unhcrRegistered | translate }}
-              </p>
+              <p *ngIf="candidate?.unhcrRegistered === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</p>
+              <p *ngIf="candidate?.unhcrRegistered === 'No'">{{ 'CONFIRMATION.NO' | translate }}</p>
+              <p *ngIf="candidate?.unhcrRegistered === 'Unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</p>
             </div>
           </div>
 
@@ -205,7 +205,7 @@
             <div class="form-group">
               <label>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>
               <p>
-                {{candidate?.unhcrNumber | translate }}
+                {{candidate?.unhcrNumber || '' }}
               </p>
             </div>
           </div>
@@ -213,9 +213,8 @@
           <div *ngIf="!usAfghan" class="col-12">
             <div class="form-group">
               <label>{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }}</label>
-              <p>
-                {{candidate?.unhcrConsent | translate }}
-              </p>
+              <p *ngIf="candidate?.unhcrConsent === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</p>
+              <p *ngIf="candidate?.unhcrConsent === 'No'">{{ 'CONFIRMATION.NO' | translate }}</p>
             </div>
           </div>
 
@@ -243,6 +242,7 @@
         <ng-container *ngFor="let occupation of candidate.candidateOccupations; let i = index;">
 
           <app-candidate-occupation-card [candidateOccupation]="occupation"
+                                         [occupations]="occupations"
                                          [preview]="true">
           </app-candidate-occupation-card>
 
@@ -272,6 +272,7 @@
 
         <ng-container *ngFor="let experience of candidate.candidateJobExperiences; let i = index;">
           <app-candidate-job-experience-card [experience]="experience"
+                                             [countries]="countries"
                                              [preview]="true">
           </app-candidate-job-experience-card>
 
@@ -301,6 +302,8 @@
 
         <ng-container *ngFor="let education of candidate.candidateEducations; let i = index;">
           <app-candidate-education-card [candidateEducation]="education"
+                                        [countries]="countries"
+                                        [majors]="majors"
                                         [preview]="true">
           </app-candidate-education-card>
 
@@ -357,6 +360,8 @@
 
         <ng-container *ngFor="let language of candidate.candidateLanguages; let i = index;">
           <app-candidate-language-card [language]="language"
+                                       [languages]="languages"
+                                       [languageLevels]="languageLevels"
                                        [preview]="true">
           </app-candidate-language-card>
 
@@ -410,8 +415,8 @@
           <div class="col-12 col-md-6">
             <div class="form-group">
               <label>{{ 'PROFILE.OTHER.SURVEY' | translate }}</label>
-              <p>
-                {{candidate?.surveyType?.name || ''}}
+              <p *ngIf="this.candidate?.surveyType?.name">
+                {{getSurveyTypeName() || ''}}
               </p>
             </div>
           </div>

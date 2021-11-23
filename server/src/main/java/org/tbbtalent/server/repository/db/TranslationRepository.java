@@ -18,6 +18,7 @@ package org.tbbtalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.Translation;
@@ -51,6 +52,7 @@ public interface TranslationRepository extends JpaRepository<Translation, Long>,
                                                  @Param("objectType") String objectType,
                                                  @Param("lang") String lang);
 
+    @Modifying
     @Query("delete from Translation t where"
         + " t.objectType = (:objectType)"
         + " and t.language = (:langCode)")

@@ -157,7 +157,7 @@ export class RegistrationLanguageComponent implements OnInit, OnDestroy {
           }) || [];
         } else {
           // Patch the form with the english language id
-            this.form.patchValue({languageId: this.english.id});
+            this.form.patchValue({languageId: this.english?.id});
             this.addingLanguage = true;
 
         }

@@ -18,7 +18,8 @@
   <div class="section">
     <div>
       <div class="float-right">
-        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="addLanguage()">Add</button>
+        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary"
+                (click)="addLanguage()">Add</button>
       </div>
     </div>
     <div class="alert alert-danger" *ngIf="error">
@@ -32,29 +33,8 @@
           <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
                  id="keyword">
         </div>
-
-        <div class="form-group col-4">
-          <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
-            <ng-option value="active">Active</ng-option>
-            <ng-option value="inactive">Inactive</ng-option>
-          </ng-select>
-        </div>
-
       </div>
     </form>
-  </div>
-
-  <div class="text-muted mb-2 align-middle">
-
-    <ngb-pagination class="float-right"
-                    [boundaryLinks]="true"
-                    [pageSize]="pageSize"
-                    [collectionSize]="results?.totalElements"
-                    [(page)]="pageNumber"
-                    (pageChange)="search()">
-    </ngb-pagination>
-
-    Found {{results?.totalElements}} languages
   </div>
 
   <table class="table">
@@ -62,25 +42,14 @@
     <thead>
     <tr>
       <th>Name</th>
-      <th>Status</th>
-      <th>Translation count</th>
-      <th></th>
+      <th>Language code</th>
     </tr>
     </thead>
 
     <tbody>
-    <tr *ngFor="let language of results?.content">
-      <td>{{language.name}}</td>
-      <td>{{language.status}}</td>
-      <td></td>
-      <td>
-        <div class="btn-group" *ngIf="(!loggedInUser.readOnly)">
-          <button type="button" class="btn btn-default" (click)="editLanguage(language)"><i
-            class="fas fa-edit"></i></button>
-          <button type="button" class="btn btn-default" (click)="deleteLanguage(language)"><i
-            class="fas fa-trash"></i></button>
-        </div>
-      </td>
+    <tr *ngFor="let language of results">
+      <td>{{language.label}}</td>
+      <td>{{language.language}}</td>
     </tr>
 
     <!-- loading -->
@@ -91,7 +60,7 @@
     </tr>
 
     <!-- no results -->
-    <tr *ngIf="!loading && !results?.totalElements">
+    <tr *ngIf="!loading && !results?.length">
       <td colspan="42">
         <span class="text-muted">(no matching languages)</span>
       </td>

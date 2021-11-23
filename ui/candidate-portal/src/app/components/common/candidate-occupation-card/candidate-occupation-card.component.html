@@ -29,7 +29,7 @@
     </ng-select>
 
     <p class="m-0" *ngIf="preview">
-      {{candidateOccupation.occupation.name | translate }}
+      {{getOccupationName(candidateOccupation.occupation)}}
     </p>
   </div>
 
