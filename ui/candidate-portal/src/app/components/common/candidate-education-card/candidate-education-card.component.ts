@@ -49,10 +49,10 @@ export class CandidateEducationCardComponent implements OnInit {
   }
 
   getCountryName(country: Country) {
-    return this.countries.find(c => c.id === country.id)?.name;
+    return this.countries?.find(c => c.id === country.id)?.name;
   }
 
   getMajorName(major: EducationMajor) {
-    return this.majors.find(m => m.id === major.id)?.name;
+    return this.majors?.find(m => m.id === major.id)?.name;
   }
 }
