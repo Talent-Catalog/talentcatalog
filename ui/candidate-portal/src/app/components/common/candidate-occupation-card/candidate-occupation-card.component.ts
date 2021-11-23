@@ -76,4 +76,8 @@ export class CandidateOccupationCardComponent implements OnChanges {
   delete() {
     this.onDelete.emit();
   }
+
+  getOccupationName(occupation: Occupation) {
+    return this.occupations.find(o => o.id === occupation.id)?.name;
+  }
 }

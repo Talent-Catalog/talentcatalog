@@ -42,6 +42,7 @@ export class CandidateLanguageCardComponent {
     this.onDelete.emit();
   }
 
+  // No long need this method? Replaced with getLangName in order for translations to work.
   getLanguageName(id?: number) {
     const l = this.language;
     if (l && l.language && l.language.name) {
@@ -50,6 +51,14 @@ export class CandidateLanguageCardComponent {
       return this.languages.find(lang => lang.id == id).name;
     }
     return '';
+  }
+
+  getLangName(language: Language) {
+    return this.languages.find(l => l.id === language.id)?.name;
+  }
+
+  getLangLevel(level: LanguageLevel) {
+    return this.languageLevels.find(ll => ll.id === level.id)?.name;
   }
 
   isEnglish(id?: number) {
