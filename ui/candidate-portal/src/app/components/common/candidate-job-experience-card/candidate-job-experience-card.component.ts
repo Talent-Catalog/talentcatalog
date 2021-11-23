@@ -16,6 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CandidateJobExperience} from "../../../model/candidate-job-experience";
+import {Country} from "../../../model/country";
 
 @Component({
   selector: 'app-candidate-job-experience-card',
@@ -26,6 +27,7 @@ export class CandidateJobExperienceCardComponent implements OnInit {
 
   @Input() preview: boolean = false;
   @Input() experience: CandidateJobExperience;
+  @Input() countries: Country[];
   @Input() disabled: boolean;
 
   @Output() onEdit = new EventEmitter<CandidateJobExperience>();
@@ -43,6 +45,10 @@ export class CandidateJobExperienceCardComponent implements OnInit {
 
   delete() {
     this.onDelete.emit(this.experience);
+  }
+
+  getCountryName(country: Country) {
+    return this.countries.find(c => c.id === country.id)?.name;
   }
 
 }

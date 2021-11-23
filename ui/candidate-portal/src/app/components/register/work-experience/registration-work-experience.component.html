@@ -42,6 +42,7 @@
         <ng-container *ngFor="let experience of experiencesByCandidateOccupation[occupation.id]; let i = index;">
           <div class="card">
             <app-candidate-job-experience-card [experience]="experience"
+                                               [countries]="countries"
                                                 (onDelete)="handleDelete($event)"
                                                 (onEdit)="handleEdit($event)">
             </app-candidate-job-experience-card>
