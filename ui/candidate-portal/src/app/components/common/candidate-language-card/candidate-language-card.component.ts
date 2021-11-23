@@ -54,11 +54,11 @@ export class CandidateLanguageCardComponent {
   }
 
   getLangName(language: Language) {
-    return this.languages.find(l => l.id === language.id)?.name;
+    return this.languages?.find(l => l.id === language.id)?.name;
   }
 
   getLangLevel(level: LanguageLevel) {
-    return this.languageLevels.find(ll => ll.id === level.id)?.name;
+    return this.languageLevels?.find(ll => ll.id === level.id)?.name;
   }
 
   isEnglish(id?: number) {

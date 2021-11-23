@@ -78,6 +78,6 @@ export class CandidateOccupationCardComponent implements OnChanges {
   }
 
   getOccupationName(occupation: Occupation) {
-    return this.occupations.find(o => o.id === occupation.id)?.name;
+    return this.occupations?.find(o => o.id === occupation.id)?.name;
   }
 }

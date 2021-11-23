@@ -170,11 +170,11 @@ export class CandidateProfileComponent implements OnInit {
   }
 
   getSurveyTypeName() {
-    return this.surveyTypes.find(s => s.id === this.candidate.surveyType.id)?.name;
+    return this.surveyTypes?.find(s => s.id === this.candidate?.surveyType?.id)?.name;
   }
 
   getCountryName(country: Country) {
-    return this.countries.find(c => c.id === country.id)?.name;
+    return this.countries?.find(c => c.id === country.id)?.name;
   }
 
 }
