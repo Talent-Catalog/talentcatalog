@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,25 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.body-dark {
-  background-color: #efefef;
-}
+import {User} from "./user";
+import {Candidate} from "./candidate";
 
-.intake-data {
-  backdrop-filter: contrast(100%);
-  filter: contrast(0.9);
-  //background-color: #a7e2f41f;
-  border-bottom: 1px solid #ced4da;
-  pointer-events: none;
-  .form-control {
-    border: 2px solid red;
-  }
+export interface CandidateTodo {
+  id: number;
+  candidate: Candidate;
+  type: number;
+  completed: boolean;
+  createdBy: User;
+  createdDate: number;
+  updatedBy: User;
+  updatedDate: number;
 }
-
-.btn-checked {
-  background-color: #0cd5e4 !important;
-}
-
-//:host-context(.visa-intake) .card-body {
-//  background-color: pink;
-//}

@@ -39,6 +39,8 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CreateVisaJobAssessementComponent} from "../../../../visa/visa-job-assessments/modal/create-visa-job-assessement.component";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
 import {Country} from "../../../../../../model/country";
+import {CandidateTodoService, CreateCandidateTodoRequest} from "../../../../../../services/candidate-todo.service";
+import {CandidateTodo} from "../../../../../../model/candidate-todo";
 
 @Component({
   selector: 'app-visa-check-au',
@@ -58,6 +60,9 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
   selectedJobCheck: CandidateVisaJobCheck;
   currentYear: string;
   birthYear: string;
+  visaTodo: CandidateTodo;
+  visaTodoCompleted: boolean = false;
+  candidateTodos: CandidateTodo[];
 
   constructor(candidateService: CandidateService,
               countryService: CountryService,
@@ -66,6 +71,7 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
               languageLevelService: LanguageLevelService,
               noteService: CandidateNoteService,
               authService: AuthService,
+              private candidateTodoService: CandidateTodoService,
               private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
               private fb: FormBuilder) {
@@ -74,6 +80,12 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
 
   onDataLoaded(init: boolean) {
     if (init) {
+      this.candidateTodoService.get(this.candidate.id).subscribe(
+        (results) => {
+          this.candidateTodos = results;
+          console.log(this.candidateTodos);
+        }
+      )
       if (this.visaRecord) {
         this.currentYear = new Date().getFullYear().toString();
         this.birthYear = this.candidate?.dob?.toString().slice(0, 4);
@@ -168,5 +180,21 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
 
   get ieltsScoreType(): string {
     return getIeltsScoreTypeString(this.candidate);
+  }
+
+  updateTodo() {
+    const request: CreateCandidateTodoRequest = {
+      type: 'VisaCheck',
+      name: 'VisaCheckAu',
+      completed: this.visaTodoCompleted,
+    }
+    this.candidateTodoService.create(this.candidate.id, request).subscribe(
+      (response) => {
+        this.visaTodo = response;
+      },
+      (error) => {
+
+      }
+    )
   }
 }

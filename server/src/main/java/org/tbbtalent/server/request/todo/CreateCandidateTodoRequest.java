@@ -16,23 +16,29 @@
 
 package org.tbbtalent.server.request.todo;
 
+import org.tbbtalent.server.model.db.TodoType;
+
 import javax.validation.constraints.NotNull;
 
 public class CreateCandidateTodoRequest {
     @NotNull
     private Long candidateId;
+    private TodoType type;
     @NotNull
-    private String type;
-
+    private String name;
     private boolean completed;
 
     public Long getCandidateId() {return candidateId;}
 
     public void setCandidateId(Long candidateId) {this.candidateId = candidateId;}
 
-    public String getType() {return type;}
+    public TodoType getType() {return type;}
 
-    public void setType(String type) {this.type = type;}
+    public void setType(TodoType type) {this.type = type;}
+
+    public String getName() {return name;}
+
+    public void setName(String name) {this.name = name;}
 
     public boolean isCompleted() {return completed;}
 

@@ -48,7 +48,7 @@ public class CandidateTodoAdminApi {
     @PostMapping("{id}")
     public Map<String, Object> create(@Valid @PathVariable("id") Long candidateId,
                                       @Valid @RequestBody CreateCandidateTodoRequest request) {
-        //request.setCandidateId(candidateId);
+        request.setCandidateId(candidateId);
         CandidateTodo candidateTodo = candidateTodoService.createCandidateTodo(request);
         return candidateTodoDto().build(candidateTodo);
     }
@@ -71,7 +71,9 @@ public class CandidateTodoAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("type")
+                .add("name")
                 .add("completed")
+                .add("admin")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

@@ -27,23 +27,51 @@ public class CandidateTodo extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
-    private String type;
+    /**
+     * An enum to determine the category of candidateTodo eg. Visa Check, Visa Job Check, Getting Documents or 'Custom'.
+     * This helps group candidateTodos and build lists of todos.
+     */
+    @Enumerated(EnumType.STRING)
+    private TodoType type;
 
     /**
+     * The name of the candidateTodo more specific than the type.
+     * This is a unique value per candidate, to help avoid double ups and allow for changes to be made to completed (switch true to false for example).
+     * Eg. only ONE with name VisaCheckAu, or in terms of Visa Job Check types there will only be ONE for each job name.
+     */
+    private String name;
+
+    /**
+     * This tracks the status of the candidateTodo defaulting to false.
      * Use boolean rather than Boolean so that default value is false, not null.
      * Null is not allowed in Db definition
      */
     private boolean completed;
 
+    /**
+     * If admin is true, this is a candidateTodo to be completed by admin and not the candidate (e.g. Intakes)
+     * Use boolean rather than Boolean so that default value is false, not null.
+     * Null is not allowed in Db definition
+     */
+    private boolean admin;
+
     public Candidate getCandidate() {return candidate;}
 
     public void setCandidate(Candidate candidate) {this.candidate = candidate;}
 
-    public String getType() {return type;}
+    public TodoType getType() {return type;}
 
-    public void setType(String type) {this.type = type;}
+    public void setType(TodoType type) {this.type = type;}
+
+    public String getName() {return name;}
+
+    public void setName(String name) {this.name = name;}
 
     public boolean isCompleted() {return completed;}
 
     public void setCompleted(boolean completed) {this.completed = completed;}
+
+    public boolean isAdmin() {return admin;}
+
+    public void setAdmin(boolean admin) {this.admin = admin;}
 }

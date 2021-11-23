@@ -219,6 +219,16 @@ Downside == upside : standard appearance of same question
     </div>
   </div>
 
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" [ngModel]="visaTodoCompleted" (click)="updateTodo()">
+    <label class="form-check-label" for="flexCheckDefault">
+      Completed Visa Check for AU eligibility
+    </label>
+  </div>
+<!--  <button type="button" class="btn btn-primary btn-sm" [ngClass]="{'btn-checked' : visaTodoCompleted}" (click)="completedTodo('candidateVisaCheck')">-->
+<!--    Completed-->
+<!--  </button>-->
+
   <hr style="border-top: 5px solid #13b1dd; margin-top: 3em; margin-bottom: 3em;"/>
 
   <div class="card">
