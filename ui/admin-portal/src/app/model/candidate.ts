@@ -216,7 +216,7 @@ export interface CandidateIntakeData {
 
 export interface CandidateCitizenship {
   id?: number;
-  nationality?: {id};
+  nationality?: Country;
   hasPassport?: HasPassport;
   passportExp?: string;
   notes?: string;

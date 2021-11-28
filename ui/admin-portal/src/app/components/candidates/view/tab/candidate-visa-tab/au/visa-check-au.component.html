@@ -218,6 +218,16 @@ Downside == upside : standard appearance of same question
     <div class="card-header">
       Travel Document
     </div>
+    <div class="card-body intake-data">
+      <ul *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;">
+        <li *ngIf="citizenship?.nationality">
+          {{citizenship?.nationality.name}}:
+          <span>{{citizenship?.hasPassport}}</span>
+          <span *ngIf="citizenship.passportExp">, expiry {{citizenship.passportExp}}</span>.
+          <span *ngIf="citizenship.notes">Notes: {{citizenship.notes}}.</span>
+        </li>
+      </ul>
+    </div>
     <div class="card-body">
       <app-travel-document
         [candidate]="candidate"
