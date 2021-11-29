@@ -34,6 +34,7 @@ export class CitizenshipsComponent implements OnInit {
   @Input() candidateIntakeData: CandidateIntakeData;
   error: boolean;
   @Input() nationalities: Country[];
+  @Input() editable: boolean;
   open: boolean;
   saving: boolean;
   activeIds: string;

@@ -37,10 +37,10 @@ Downside == upside : standard appearance of same question
       Confirmation Details
     </div>
     <div class="card-body intake-data">
-      <app-confirm-visa-contact
+      <app-confirm-contact
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
-      </app-confirm-visa-contact>
+      </app-confirm-contact>
     </div>
   </div>
 
@@ -87,12 +87,14 @@ Downside == upside : standard appearance of same question
       <div *ngIf="candidateIntakeData.candidateExams.length == 0">
         <p>No exams entered</p>
       </div>
-      <ul *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
-        <li *ngIf="ce?.exam">
+      <ul>
+        <li *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
           <p class="mb-0">{{ce?.exam}}<span *ngIf="ce.otherExam">, </span>{{ce.otherExam}}: {{ce?.score}}<span *ngIf="ce.year"> ({{ce?.year}})</span>
           </p>
         </li>
       </ul>
+      <div class="card-title">Estimated IELTS Score: <span>{{candidateIntakeData.langAssessmentScore}}</span></div>
+      <div class="card-title">Partner IELTS Score: <span>{{candidateIntakeData.partnerIeltsScore}}</span></div>
     </div>
     <div class="card-body">
       <app-english-threshold
@@ -209,6 +211,16 @@ Downside == upside : standard appearance of same question
   <div class="card">
     <div class="card-header">
       Travel Document
+    </div>
+    <div class="card-body intake-data">
+      <ul *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;">
+        <li *ngIf="citizenship?.nationality">
+          {{citizenship?.nationality.name}}:
+          <span>{{citizenship?.hasPassport}}</span>
+          <span *ngIf="citizenship.passportExp">, expiry {{citizenship.passportExp}}</span>.
+          <span *ngIf="citizenship.notes">Notes: {{citizenship.notes}}.</span>
+        </li>
+      </ul>
     </div>
     <div class="card-body">
       <app-travel-document

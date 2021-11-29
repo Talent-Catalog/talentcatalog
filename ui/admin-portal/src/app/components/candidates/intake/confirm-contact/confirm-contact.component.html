@@ -15,7 +15,7 @@
   -->
 
 <div class="row">
-  <div class="col-3">
+  <div class="col-4">
     <app-fixed-input
       [question]="'Full name'"
       [answer]="candidate.user?.firstName + ' ' + candidate.user?.lastName">
@@ -28,11 +28,19 @@
       [question]="'Date of birth'"
       [answer]="date">
     </app-fixed-input>
+    <app-fixed-input
+      [question]="'Email'"
+      [answer]="candidate.user?.email">
+    </app-fixed-input>
   </div>
-  <div class="col-3">
+  <div class="col-4">
     <app-fixed-input
       [question]="'Country of Nationality'"
       [answer]="candidate.nationality?.name">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'Country Located'"
+      [answer]="candidate.country?.name">
     </app-fixed-input>
     <app-fixed-input
       [question]="'Phone'"
@@ -43,7 +51,7 @@
       [answer]="candidate.whatsapp">
     </app-fixed-input>
   </div>
-  <div class="col-3">
+  <div class="col-4">
     <app-fixed-input
       [question]="'UNHCR Registered'"
       [answer]="candidate?.unhcrRegistered">
@@ -55,12 +63,6 @@
     <app-fixed-input
       [question]="'UNHCR Consent'"
       [answer]="candidate?.unhcrConsent">
-    </app-fixed-input>
-  </div>
-  <div class="col-3">
-    <app-fixed-input
-      [question]="'Email'"
-      [answer]="candidate.user?.email">
     </app-fixed-input>
     <app-fixed-input
       [question]="'How did you hear about us'"

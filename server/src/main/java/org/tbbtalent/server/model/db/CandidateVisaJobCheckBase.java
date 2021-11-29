@@ -40,7 +40,7 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     private String interestNotes;
 
     @Enumerated(EnumType.STRING)
-    private EducationType qualification;
+    private YesNo qualification;
 
     private String qualificationNotes;
 
