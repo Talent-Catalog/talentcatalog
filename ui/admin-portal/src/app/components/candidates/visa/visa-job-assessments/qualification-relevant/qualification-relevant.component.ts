@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {CandidateVisaJobCheck, EducationType} from '../../../../../model/candidate';
+import {CandidateVisaJobCheck, YesNo} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
@@ -14,7 +14,7 @@ export class QualificationRelevantComponent extends IntakeComponentBase implemen
 
   @Input() selectedIndex: number;
   @Input() selectedJobCheck: CandidateVisaJobCheck;
-  public relevantQualificationOptions: EnumOption[] = enumOptions(EducationType);
+  public relevantQualificationOptions: EnumOption[] = enumOptions(YesNo);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
