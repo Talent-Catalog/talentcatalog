@@ -137,4 +137,8 @@ export class CandidateService {
   setCandNumberStorage(candidateNumber: string) {
     this.localStorage.set('candidateNumber', candidateNumber);
   }
+
+  clearCandNumberStorage() {
+    this.localStorage.remove('candidateNumber');
+  }
 }
