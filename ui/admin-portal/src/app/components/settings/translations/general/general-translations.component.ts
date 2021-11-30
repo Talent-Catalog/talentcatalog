@@ -165,7 +165,11 @@ const ALL_FIELDS = {
       "HEADING3": null,
       "PARA3": null,
       "HEADING4": null,
-      "PARA4": null
+      "PARA4": null,
+      "USAFGHAN": {
+        "HEADING1": null,
+        "HEADING2": null
+      }
     },
     "HOME": {
       "TITLE": null,
