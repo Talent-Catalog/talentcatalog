@@ -45,9 +45,9 @@ export class CandidateLanguageCardComponent {
   getLanguageName(language) {
     const l = this.language;
     if (language?.language?.id) {
-      return this.languages.find(lang => lang.id === l.language?.id)?.name;
+      return this.languages?.find(lang => lang.id === l.language?.id)?.name;
     } else if (language?.languageId) {
-      return this.languages.find(lang => lang.id === language.languageId)?.name;
+      return this.languages?.find(lang => lang.id === language.languageId)?.name;
     }
     return '';
   }
@@ -58,7 +58,7 @@ export class CandidateLanguageCardComponent {
 
   isEnglish(id?: number) {
     if (id) {
-      return id == this.english.id;
+      return id == this.english?.id;
     }
     return false;
   }
