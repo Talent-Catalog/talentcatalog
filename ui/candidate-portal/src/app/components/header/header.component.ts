@@ -19,6 +19,7 @@ import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
 import {SystemLanguage} from '../../model/language';
 import {LanguageService} from '../../services/language.service';
+import {CandidateService} from "../../services/candidate.service";
 
 @Component({
   selector: 'app-header',
@@ -35,6 +36,7 @@ export class HeaderComponent implements OnInit {
   error: any;
 
   constructor(public authService: AuthService,
+              public candidateService: CandidateService,
               private router: Router,
               public languageService: LanguageService) { }
 
