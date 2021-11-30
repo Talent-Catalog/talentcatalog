@@ -115,6 +115,9 @@ const ALL_FIELDS = {
           "FILE": null,
           "PHOTO": null
         }
+      },
+      "LANG": {
+        "SELECT": null,
       }
     },
     "LOADING": null,
