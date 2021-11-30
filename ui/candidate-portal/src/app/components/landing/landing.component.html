@@ -24,10 +24,21 @@
 
         <app-login></app-login>
 
-        <hr>
-
-        <div class="text-center">
+        <div class="text-center my-3">
           <a class="btn btn-outline-primary w-75" [routerLink]="'/register'">{{ 'LANDING.REGISTER' | translate }}</a>
+        </div>
+        <hr/>
+
+        <div class="text-center mt-1">
+          <div class="small">
+            Afghan evacuees already in the United States, please register below:
+          </div>
+          <a class="btn btn-outline-secondary small-btn my-2" [routerLink]="'/register'" [queryParams]="{lang: 'en', source: 'us-afghan'}">
+            {{ 'LANDING.REGISTER' | translate }}
+          </a>
+          <div class="small mt-2">
+            You will be added to our <a href="https://www.afghantalent.us/">AfghanTalent.us</a> program.
+          </div>
         </div>
 
       </div>
