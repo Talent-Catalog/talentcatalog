@@ -50,6 +50,8 @@ export class HeaderComponent implements OnInit {
   logout() {
     this.authService.logout().subscribe(
       () => {
+        // Clear candidate number in local storage (used to display in header)
+        this.candidateService.clearCandNumberStorage();
         this.isNavbarCollapsed = true;
         this.router.navigate(['']);
       }
