@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -46,8 +46,8 @@ import org.tbbtalent.server.service.db.util.PartnerDatabaseDefinition;
 import org.tbbtalent.server.service.db.util.PartnerTableDefinition;
 
 /**
- * Data is shared with destination partners by copying to their own databases, 
- * as configured in an XML configuration file stored in resources who path is 
+ * Data is shared with destination partners by copying to their own databases,
+ * as configured in an XML configuration file stored in resources whose path is
  * specified in tbb.partner-dbcopy-config in application.yml.
  * <p/>
  * The configuration file contains a different configuration for each partner
@@ -56,12 +56,12 @@ import org.tbbtalent.server.service.db.util.PartnerTableDefinition;
  * Each destination configuration defines the structure of destination tables
  * which are populated from the TBB database.
  * <p/>
- * In this implementation data is copied in two stages. First a local 
+ * In this implementation data is copied in two stages. First a local
  * "in memory" copy of the destination database is created on this server
- * (using an H2 in memory database). This involves reading a subset of data from 
- * the normal TBB data base (as defined in the "populate" elements of the xml 
- * configuration) and inserting it into the appropriate fields of the 
- * destination tables (as defined in the "fields" elements for each destination 
+ * (using an H2 in memory database). This involves reading a subset of data from
+ * the normal TBB data base (as defined in the "populate" elements of the xml
+ * configuration) and inserting it into the appropriate fields of the
+ * destination tables (as defined in the "fields" elements for each destination
  * table in the xml configuration).
  * <p/>
  * Once the first stage is completed, there is an exact copy of the tables
@@ -86,15 +86,15 @@ public class DataSharingServiceImpl implements DataSharingService {
 
     @Value("${spring.datasource.password}")
     private String masterPwd;
-    
+
     @Value("${tbb.partner-dbcopy-config}")
     private String partnerDbcopyConfig = "data.sharing/tbbCopies.xml";
 
-    private static final String DB_LOCAL_COPY_URL = "jdbc:h2:mem:"; 
+    private static final String DB_LOCAL_COPY_URL = "jdbc:h2:mem:";
 
     private Connection tbbMaster;
     private Connection tbbLocalCopy;
-    
+
     private final EmailSender emailSender;
 
     @Autowired
@@ -113,10 +113,10 @@ public class DataSharingServiceImpl implements DataSharingService {
         performCopies();
     }
 
-    private boolean performCopies() throws Exception {
+    private boolean performCopies() {
 
         boolean ok = true;
-        
+
         try {
             //Connect to TBB database and local copy
             connect();
@@ -150,10 +150,10 @@ public class DataSharingServiceImpl implements DataSharingService {
             }
         } catch (Exception ex) {
             reportError("Exception performing data sharing", ex);
-        } 
-        
+        }
+
         disconnect();
-        
+
         return ok;
     }
 
@@ -234,7 +234,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                     }
                 }
                 System.out.println();
-            } 
+            }
         } catch (Exception ex) {
             reportError("Exception copying " + def.getTableName(), ex);
         }
@@ -264,6 +264,8 @@ public class DataSharingServiceImpl implements DataSharingService {
             exportSt.execute(s);
             try (final Statement importSt = tbbRemoteCopy.createStatement()) {
                 //Create a new table
+                //Delete if already exists
+                importSt.executeUpdate(def.getDropTableSQLAsNew());
                 importSt.executeUpdate(def.getCreateTableSQLAsNew());
                 //Create index if we have one
                 String createIndexSQL = def.getCreateTableIndexSQLAsNew();
@@ -276,10 +278,12 @@ public class DataSharingServiceImpl implements DataSharingService {
                         "' INTO TABLE " + def.getNewTableName() +
                         " FIELDS TERMINATED BY ',' ENCLOSED BY '\"' " +
                         " LINES TERMINATED BY '\n' IGNORE 1 LINES");
-                
+
+                //Create dummy table if one does not exist so that following rename doesn't fail
+                importSt.executeUpdate(def.getCreateTableSQL());
                 //Rename current to old, and new to current
                 importSt.executeUpdate(def.getRenameSQL());
-                
+
                 //Finally drop the old table
                 importSt.executeUpdate(def.getDropTableSQLAsOld());
             }

@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -26,7 +26,7 @@ public class PartnerTableDefinition {
     private final String sqlTableFields;
     private final String indexField;
     private final String tableName;
-    
+
     private static final String OLD_PREFIX = "_old_";
 
     public PartnerTableDefinition(
@@ -42,13 +42,13 @@ public class PartnerTableDefinition {
 
     public String getCreateTableIndexSQL() {
         return  indexField == null ? null :
-                "CREATE UNIQUE INDEX " + 
-                tableName + "_" + indexField + "_uindex ON " + 
+                "CREATE UNIQUE INDEX " +
+                tableName + "_" + indexField + "_uindex ON " +
                 tableName + " (" + indexField + ")";
     }
 
     public String getCreateTableSQL() {
-        return "CREATE TABLE " + tableName + "(" + sqlTableFields + ")";
+        return "CREATE TABLE IF NOT EXISTS " + tableName + "(" + sqlTableFields + ")";
     }
 
     public String getDropTableSQL() {
@@ -63,6 +63,10 @@ public class PartnerTableDefinition {
         }
         insertSQL.append(")");
         return insertSQL.toString();
+    }
+
+    public String getDropTableSQLAsNew() {
+        return "DROP TABLE IF EXISTS " + getNewTableName();
     }
 
     public String getCreateTableSQLAsNew() {
@@ -91,8 +95,8 @@ public class PartnerTableDefinition {
     }
 
     public String getRenameSQL() {
-        return "RENAME TABLE " + 
-                tableName + " TO " + OLD_PREFIX + tableName + ", " + 
+        return "RENAME TABLE " +
+                tableName + " TO " + OLD_PREFIX + tableName + ", " +
                 getNewTableName() + " TO " + tableName;
     }
 
@@ -109,5 +113,4 @@ public class PartnerTableDefinition {
     public String getTableName() {
         return tableName;
     }
-
 }

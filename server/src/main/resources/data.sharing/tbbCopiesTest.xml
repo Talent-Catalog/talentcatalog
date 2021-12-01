@@ -6,29 +6,29 @@
   ~ the terms of the GNU Affero General Public License as published by the Free
   ~ Software Foundation, either version 3 of the License, or any later version.
   ~
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT 
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
   ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
   ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
   ~ for more details.
   ~
-  ~ You should have received a copy of the GNU Affero General Public License 
+  ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
 <destinations>
     <!--
-       Once a day a filtered copy of a subset of the master TBB candidate 
+       Once a day a filtered copy of a subset of the master TBB candidate
        data is sent to databases in various employer destinations.
        For example, to the Refugee Talent database in Australia.
-       
+
        The data is anonymous - so only a refugee's id is provide - no name or
        contact details.
-       
-       The data is filtered according to the destination. 
+
+       The data is filtered according to the destination.
        For example Australia only receives data written in English, for
        refugees currently located in Jordan or Lebanon, and who are not
        Palestinian nationality.
-       
+
        Any existing data in the destination database is deleted, and replace by
        the new data.
     -->
@@ -36,14 +36,13 @@
         <country>au</country>
         <database>
 
-            <!--            todo Need to remove these credentials into env variables-->
-            <url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</url>
-            <user>GlobalTalentUser</user>
-            <password>d26OKew37IkE</password>
+            <url>jdbc:mysql://localhost:3306/GlobalTalentDb?allowLoadLocalInfile=true</url>
+            <user>root</user>
+            <password>BusterLofty2</password>
 
             <!--
                 This filter is added as an AND condition to the WHERE clause
-                of the populate SQL 
+                of the populate SQL
             -->
             <filter>
                 <!--Exclude test users-->
