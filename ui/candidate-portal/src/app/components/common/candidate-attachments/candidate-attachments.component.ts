@@ -185,20 +185,6 @@ export class CandidateAttachmentsComponent implements OnInit {
       });
   }
 
-  // downloadCandidateAttachment(attachment: CandidateAttachment) {
-  //   this.error = null;
-  //   this.downloading = true;
-  //   this.candidateAttachmentService.downloadAttachment(attachment.id).subscribe(
-  //     (resp: Blob) => {
-  //       saveBlob(resp, attachment.name);
-  //       this.downloading = false;
-  //     },
-  //     (error) => {
-  //       this.error = error;
-  //       this.downloading = false;
-  //     });
-  // }
-
   editCandidateAttachment(attachment: CandidateAttachment) {
     if (this.editTarget) {
       this.editTarget = null;

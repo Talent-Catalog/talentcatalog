@@ -56,11 +56,6 @@ export class CandidateAttachmentService {
     return this.http.delete<CandidateAttachment>(`${this.apiUrl}/${id}`);
   }
 
-  // downloadAttachment(id: number) {
-  //   return this.http.get(`${this.apiUrl}/${id}/download`,
-  //     { responseType: 'blob' });
-  // }
-
   downloadAttachment(id: number, name: string) {
     return this.http.get(`${this.apiUrl}/${id}/download`,
       { responseType: 'blob' }).pipe(
