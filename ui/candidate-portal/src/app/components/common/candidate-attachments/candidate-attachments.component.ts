@@ -26,7 +26,6 @@ import {CandidateService} from '../../../services/candidate.service';
 import {forkJoin, Observable} from 'rxjs';
 import {UserService} from '../../../services/user.service';
 import {User} from '../../../model/user';
-import {saveBlob} from "../../../util/file";
 
 @Component({
   selector: 'app-candidate-attachments',
@@ -176,9 +175,8 @@ export class CandidateAttachmentsComponent implements OnInit {
   downloadCandidateAttachment(attachment: CandidateAttachment) {
     this.error = null;
     this.downloading = true;
-    this.candidateAttachmentService.downloadAttachment(attachment.id).subscribe(
-      (resp: Blob) => {
-        saveBlob(resp, attachment.name);
+    this.candidateAttachmentService.downloadAttachment(attachment.id, attachment.name).subscribe(
+      () => {
         this.downloading = false;
       },
       (error) => {
@@ -186,6 +184,20 @@ export class CandidateAttachmentsComponent implements OnInit {
         this.downloading = false;
       });
   }
+
+  // downloadCandidateAttachment(attachment: CandidateAttachment) {
+  //   this.error = null;
+  //   this.downloading = true;
+  //   this.candidateAttachmentService.downloadAttachment(attachment.id).subscribe(
+  //     (resp: Blob) => {
+  //       saveBlob(resp, attachment.name);
+  //       this.downloading = false;
+  //     },
+  //     (error) => {
+  //       this.error = error;
+  //       this.downloading = false;
+  //     });
+  // }
 
   editCandidateAttachment(attachment: CandidateAttachment) {
     if (this.editTarget) {
