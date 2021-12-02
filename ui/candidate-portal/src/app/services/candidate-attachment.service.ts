@@ -17,9 +17,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
-import {Observable} from "rxjs";
+import {Observable, throwError} from "rxjs";
 import {CandidateAttachment} from "../model/candidate-attachment";
 import {SearchResults} from "../model/search-results";
+import {saveBlob} from "../util/file";
+import {catchError, map} from "rxjs/operators";
 
 //todo use this for other requests
 export interface UpdateCandidateAttachmentRequest {
@@ -54,9 +56,18 @@ export class CandidateAttachmentService {
     return this.http.delete<CandidateAttachment>(`${this.apiUrl}/${id}`);
   }
 
-  downloadAttachment(id: number) {
+  downloadAttachment(id: number, name: string) {
     return this.http.get(`${this.apiUrl}/${id}/download`,
-      { responseType: 'blob' });
+      { responseType: 'blob' }).pipe(
+      map((resp: Blob) => {
+          saveBlob(resp, name);
+        }, catchError(e => {
+            console.log('error', e);
+            return throwError(e);
+          }
+        )
+      )
+    )
   }
 
   uploadAttachment(cv: boolean, formData: FormData): Observable<CandidateAttachment> {
