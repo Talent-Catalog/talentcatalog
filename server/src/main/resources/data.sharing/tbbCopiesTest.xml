@@ -39,6 +39,9 @@
             <url>jdbc:mysql://localhost:3306/GlobalTalentDb?allowLoadLocalInfile=true</url>
             <user>root</user>
             <password>BusterLofty2</password>
+<!--            <url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</url>-->
+<!--            <user>GlobalTalentUser</user>-->
+<!--            <password>d26OKew37IkE</password>-->
 
             <!--
                 This filter is added as an AND condition to the WHERE clause
@@ -168,6 +171,25 @@
                     </fields>
                 </table>
                 <table>
+                    <name>test_jobseeker_languages</name>
+                    <populate>
+                        SELECT
+                        CAST(candidate_number AS int) AS user_id,
+                        language_id,
+                        spoken_level_id,
+                        written_level_id
+                        FROM candidate
+                        JOIN users ON candidate.user_id = users.id
+                        JOIN candidate_language on candidate.id = candidate_language.candidate_id
+                    </populate>
+                    <fields>
+                        user_id INT(11) NOT NULL,
+                        language_id INT(11),
+                        spoken_level_id INT(11),
+                        written_level_id INT(11)
+                    </fields>
+                </table>
+                <table>
                     <name>test_jobseeker_skills</name>
                     <populate>
                         SELECT
@@ -229,9 +251,22 @@
                     </index>
                 </table>
                 <table>
-                    <name>test_nationality</name>
+                    <name>test_language</name>
                     <populate>
-                        SELECT id, name FROM nationality WHERE status = 'active'
+                        SELECT id, name FROM language WHERE status = 'active'
+                    </populate>
+                    <fields>
+                        id INT(11) NOT NULL,
+                        name TEXT NOT NULL
+                    </fields>
+                    <index>
+                        id
+                    </index>
+                </table>
+                <table>
+                    <name>test_language_level</name>
+                    <populate>
+                        SELECT id, name FROM language_level WHERE status = 'active'
                     </populate>
                     <fields>
                         id INT(11) NOT NULL,
