@@ -5,17 +5,22 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.configuration;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,14 +41,54 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.tbbtalent.server.security.*;
+import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
+import org.tbbtalent.server.security.JwtAuthenticationFilter;
+import org.tbbtalent.server.security.LanguageFilter;
+import org.tbbtalent.server.security.TbbAuthenticationProvider;
+import org.tbbtalent.server.security.TbbUserDetailsService;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.springframework.security.config.Customizer.withDefaults;
-
+/**
+ * Talent Catalog security configuration.
+ * <p/>
+ * See https://docs.spring.io/spring-security/site/docs/3.2.0.RC2/reference/htmlsingle/#jc
+ * also
+ * https://www.marcobehler.com/guides/spring-security
+ * <p/>
+ * Summary of TBB Talent Catalog security:
+ *
+ * <ul>
+ *     <li>
+ *         We manage our own users and passwords, stored in the users table of the database
+ *     </li>
+ *     <li>
+ *         At login we issue JSON Web Tokens (JWTs) which appear on each HTTP request in the
+ *         Authorization header as a Bearer token.
+ *         See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
+ *         and https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes.
+ *         This is OAUTH 2.0 with us acting as the Authorization server -
+ *         see https://www.marcobehler.com/guides/spring-security-oauth2
+ *     </li>
+ * </ul>
+ * The following classes support the above:
+ * <ul>
+ *     <li>
+ *         {@link org.tbbtalent.server.security.JwtTokenProvider} generates JWT tokens
+ *     </li>
+ *     <li>
+ *         {@link JwtAuthenticationFilter} is a filter which checks incoming JWT tokens, validating
+ *         them.
+ *     </li>
+ *     <li>
+ *         {@link TbbUserDetailsService} implements UserDetailsService providing access to the user
+ *         table in our database
+ *     </li>
+ *     <li>
+ *         {@link TbbAuthenticationProvider} implements AuthenticationProvider passing in our
+ *         wired in instance of the above TbbUserDetailsService, and the PasswordEncoder defined
+ *         below in {@link #passwordEncoder()}.
+ *     </li>
+ * </ul>
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -65,7 +110,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             //Default is to use a Bean called corsConfigurationSource - defined
-            //below.    
+            //below.
             .cors(withDefaults())
             .exceptionHandling()
                 .authenticationEntryPoint(unauthorizedHandler)
@@ -272,7 +317,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     //See https://docs.spring.io/spring-security/site/docs/current/reference/html5/#cors
-    //and https://stackoverflow.com/a/65503296/929968 
+    //and https://stackoverflow.com/a/65503296/929968
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
