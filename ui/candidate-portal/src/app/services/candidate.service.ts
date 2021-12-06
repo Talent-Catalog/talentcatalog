@@ -20,6 +20,7 @@ import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {Candidate} from '../model/candidate';
 import {map} from 'rxjs/operators';
+import {LocalStorageService} from "angular-2-local-storage";
 
 export interface UpdateCandidateAdditionalInfo extends UpdateCandidateSurvey {
   additionalInfo?: string,
@@ -38,7 +39,8 @@ export class CandidateService {
 
   apiUrl: string = environment.apiUrl + '/candidate';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private localStorage: LocalStorageService) {
   }
 
   /* Contact */
@@ -126,5 +128,17 @@ export class CandidateService {
 
   submitRegistration(): Observable<Candidate> {
     return this.http.post<Candidate>(`${this.apiUrl}/submit`, null);
+  }
+
+  getCandNumberStorage(): string {
+    return this.localStorage.get('candidateNumber');
+  }
+
+  setCandNumberStorage(candidateNumber: string) {
+    this.localStorage.set('candidateNumber', candidateNumber);
+  }
+
+  clearCandNumberStorage() {
+    this.localStorage.remove('candidateNumber');
   }
 }

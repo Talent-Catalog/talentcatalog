@@ -35,10 +35,10 @@
 <div class="d-lg-none">
   <div  *ngIf="!uploading" class="d-flex justify-content-between">
     <div class="file-input">
-      <input #inputFile type="file" id="file" class="file" accept="image/*" (change)="handleFileChanged($event, 'file')">
+      <input #inputFile type="file" id="file" class="file" (change)="handleFileChanged($event, 'file')">
       <span>
       <button class="btn btn-primary" [disabled]="uploading" (click)="inputFile.click()">
-        <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE.IMAGE' | translate }}</ng-container>
+        <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE.FILE' | translate }}</ng-container>
       </button>
     </span>
     </div>

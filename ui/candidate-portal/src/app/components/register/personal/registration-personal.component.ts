@@ -117,6 +117,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           unhcrConsent: response.unhcrConsent,
 
         });
+        this.candidateService.setCandNumberStorage(response.candidateNumber);
         // If afghan parolee set default nationality to Afghanistan
         if (this.languageService.isUsAfghan()) {
           if (this.form.value.nationalityId == null) {

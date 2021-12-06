@@ -20,6 +20,7 @@ import {AuthService} from "../../../services/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ReCaptchaV3Service} from "ng-recaptcha";
 import {LoginRequest} from "../../../model/candidate";
+import {CandidateService} from "../../../services/candidate.service";
 
 @Component({
   selector: 'app-login',
@@ -35,6 +36,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private builder: FormBuilder,
               private authService: AuthService,
+              private candidateService: CandidateService,
               private reCaptchaV3Service: ReCaptchaV3Service,
               private route: ActivatedRoute,
               private router: Router) {
@@ -85,6 +87,12 @@ export class LoginComponent implements OnInit {
     this.authService.login(req)
       .subscribe(() => {
         this.loading = false;
+        // Get candidate number to save in storage to display in the header
+        this.candidateService.getCandidateNumber().subscribe(
+          (candidate) => {
+            this.candidateService.setCandNumberStorage(candidate.candidateNumber);
+          }
+        )
         this.router.navigateByUrl(this.returnUrl);
       }, error => {
         console.log(error);

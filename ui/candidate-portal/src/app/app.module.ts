@@ -29,7 +29,7 @@ import {
   NgbModule
 } from '@ng-bootstrap/ng-bootstrap';
 import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import { PhraseAppCompiler } from 'ngx-translate-phraseapp';
+import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
@@ -78,7 +78,8 @@ import {
   faChevronUp,
   faEdit,
   faEllipsisH,
-  faExternalLinkAlt
+  faExternalLinkAlt,
+  faGlobe
 } from '@fortawesome/free-solid-svg-icons';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
@@ -200,7 +201,8 @@ export class AppModule {
       faChevronUp,
       faEllipsisH,
       faCalendar,
-      faExternalLinkAlt
+      faExternalLinkAlt,
+      faGlobe
     );
   }
 }
