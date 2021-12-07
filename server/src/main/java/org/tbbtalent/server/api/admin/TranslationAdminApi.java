@@ -16,44 +16,27 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.EducationLevel;
-import org.tbbtalent.server.model.db.EducationMajor;
-import org.tbbtalent.server.model.db.Language;
-import org.tbbtalent.server.model.db.LanguageLevel;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.Translation;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.request.country.SearchCountryRequest;
 import org.tbbtalent.server.request.education.level.SearchEducationLevelRequest;
 import org.tbbtalent.server.request.education.major.SearchEducationMajorRequest;
 import org.tbbtalent.server.request.language.SearchLanguageRequest;
 import org.tbbtalent.server.request.language.level.SearchLanguageLevelRequest;
 import org.tbbtalent.server.request.occupation.SearchOccupationRequest;
+import org.tbbtalent.server.request.survey.SearchSurveyTypeRequest;
 import org.tbbtalent.server.request.translation.CreateTranslationRequest;
 import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.CountryService;
-import org.tbbtalent.server.service.db.EducationLevelService;
-import org.tbbtalent.server.service.db.EducationMajorService;
-import org.tbbtalent.server.service.db.LanguageLevelService;
-import org.tbbtalent.server.service.db.LanguageService;
-import org.tbbtalent.server.service.db.OccupationService;
-import org.tbbtalent.server.service.db.TranslationService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/translation")
@@ -67,13 +50,14 @@ public class TranslationAdminApi {
     private final OccupationService occpuationService;
     private final EducationLevelService educationLevelService;
     private final EducationMajorService educationMajorService;
+    private final SurveyTypeService surveyTypeService;
 
     @Autowired
     public TranslationAdminApi(TranslationService translationService,
-        AuthService authService, CountryService countryService,
-        LanguageService languageService, LanguageLevelService languagelLevelService,
-        OccupationService occpuationService, EducationLevelService educationLevelService,
-        EducationMajorService educationMajorService) {
+                               AuthService authService, CountryService countryService,
+                               LanguageService languageService, LanguageLevelService languagelLevelService,
+                               OccupationService occpuationService, EducationLevelService educationLevelService,
+                               EducationMajorService educationMajorService, SurveyTypeService surveyTypeService) {
         this.translationService = translationService;
         this.authService = authService;
         this.countryService = countryService;
@@ -82,6 +66,7 @@ public class TranslationAdminApi {
         this.occpuationService = occpuationService;
         this.educationLevelService = educationLevelService;
         this.educationMajorService = educationMajorService;
+        this.surveyTypeService = surveyTypeService;
     }
 
     @PostMapping("country")
@@ -124,6 +109,12 @@ public class TranslationAdminApi {
     public Map<String, Object> searchEducationMajors(@RequestBody SearchEducationMajorRequest request) {
         Page<EducationMajor> educationMajors = this.educationMajorService.searchEducationMajors(request);
         return translatedObjectDto().buildPage(educationMajors);
+    }
+
+    @PostMapping("survey_type")
+    public Map<String, Object> searchSurveyTypes(@RequestBody SearchSurveyTypeRequest request) {
+        Page<SurveyType> surveyTypes = this.surveyTypeService.searchActiveSurveyTypes(request);
+        return translatedObjectDto().buildPage(surveyTypes);
     }
 
     @PostMapping
