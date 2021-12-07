@@ -1,0 +1,91 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+package org.tbbtalent.server.api.admin;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.tbbtalent.server.model.db.TodoTask;
+import org.tbbtalent.server.request.todo.CreateCandidateTodoRequest;
+import org.tbbtalent.server.request.todo.UpdateCandidateTodoRequest;
+import org.tbbtalent.server.service.db.TodoTaskService;
+import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
+
+@RestController()
+@RequestMapping("/api/admin/todo-task")
+public class TodoTaskAdminApi {
+    private final TodoTaskService todoTaskService;
+
+    @Autowired
+    public TodoTaskAdminApi(TodoTaskService todoTaskService) {
+        this.todoTaskService = todoTaskService;
+    }
+
+    @GetMapping("{id}/list")
+    public List<Map<String, Object>> get(@PathVariable("id") long candidateId) {
+        List<TodoTask> candidateTodos = this.todoTaskService.listTodoTasks(candidateId);
+        return todoTaskDto().buildList(candidateTodos);
+    }
+
+    @PostMapping("{id}")
+    public Map<String, Object> create(@Valid @PathVariable("id") Long candidateId,
+                                      @Valid @RequestBody CreateCandidateTodoRequest request) {
+        request.setCandidateId(candidateId);
+        TodoTask candidateTodo = todoTaskService.createTodoTask(request);
+        return todoTaskDto().build(candidateTodo);
+    }
+
+    @PutMapping("{id}")
+    public Map<String, Object> update(@PathVariable("id") long id,
+                                      @RequestBody UpdateCandidateTodoRequest request) {
+        request.setId(id);
+        TodoTask candidateTodo = this.todoTaskService.updateTodoTask(request);
+        return todoTaskDto().build(candidateTodo);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id) {
+        todoTaskService.deleteTodoTask(id);
+        return ResponseEntity.ok().build();
+    }
+
+    private DtoBuilder todoTaskDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("type")
+                .add("name")
+                .add("completed")
+                .add("admin")
+                .add("createdBy", userDto())
+                .add("createdDate")
+                .add("updatedBy", userDto())
+                .add("updatedDate")
+                ;
+    }
+
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("firstName")
+                .add("lastName")
+                ;
+    }
+}
