@@ -56,6 +56,7 @@ public class SurveyTypeServiceImpl implements SurveyTypeService {
 
     @Override
     public Page<SurveyType> searchActiveSurveyTypes(SearchSurveyTypeRequest request) {
+        request.setStatus(Status.active);
         Page<SurveyType> surveyTypes = surveyTypeRepository.findAll(
                 SurveyTypeSpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + surveyTypes.getTotalElements() + " survey types in search");
