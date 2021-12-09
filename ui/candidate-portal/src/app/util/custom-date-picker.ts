@@ -76,8 +76,12 @@ const I18N_VALUES = {
     weekdays: ["دو شنبی", "سه شنبی", "چهار شنبی", "پنجشنبی", "جمعه", "شنبي",  " یکشنبی" ],
     months: [ "جنوری", "فبروی", "مارچ", "اپریل", "می", "جون", "جولای", "آګست", "سپټمبر", "اکټوبر", "نوامبر", "دیسمبر" ],
   },
+  'tr': {
+    weekdays: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
+    months: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+  },
   'en': {
     weekdays: ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'],
-    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
   }
 };
