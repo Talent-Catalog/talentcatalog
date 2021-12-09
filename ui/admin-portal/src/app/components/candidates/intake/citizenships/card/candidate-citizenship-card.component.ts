@@ -67,7 +67,7 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
     this.form.controls['citizenNationalityId']?.valueChanges.subscribe(
       change => {
         //Update my existingRecord
-        this.myRecord.nationality = {id: +change};
+        this.myRecord.nationality.id = +change;
       }
     );
   }

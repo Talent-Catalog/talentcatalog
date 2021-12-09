@@ -41,6 +41,8 @@
       <app-candidate-education-card *ngIf="editTarget?.id !== item.id"
                                     [candidateEducation]="item"
                                     [disabled]="saving"
+                                    [countries]="countries"
+                                    [majors]="majors"
                                     (onDelete)="deleteCandidateEducation(i)"
                                     (onEdit)="editCandidateEducation($event)">
       </app-candidate-education-card>

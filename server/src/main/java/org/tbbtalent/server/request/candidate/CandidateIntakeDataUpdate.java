@@ -195,7 +195,7 @@ public class CandidateIntakeDataUpdate {
     private Long visaJobId;
     private Long visaJobOccupationId;
     private String visaJobOccupationNotes;
-    private EducationType visaJobQualification;
+    private YesNo visaJobQualification;
     private String visaJobQualificationNotes;
     private YesNo visaJobInterest;
     private String visaJobInterestNotes;

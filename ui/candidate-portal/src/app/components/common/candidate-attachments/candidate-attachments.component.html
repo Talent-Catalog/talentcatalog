@@ -19,7 +19,7 @@
 </p>
 
 <!-- If CV & Mobile device don't display by adding bootstrap classes d-none & d-lg-block if CV is true -->
-<div [class.d-none]="cv" [class.d-lg-block]="cv">
+<div>
   <app-file-upload *ngIf="!preview && !loading" [uploading]="uploading" (uploadStarted)="startServerUpload($event)"></app-file-upload>
 </div>
 

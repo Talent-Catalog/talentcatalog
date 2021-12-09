@@ -16,13 +16,17 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.repository.db.SurveyTypeRepository;
+import org.tbbtalent.server.repository.db.SurveyTypeSpecification;
+import org.tbbtalent.server.request.survey.SearchSurveyTypeRequest;
 import org.tbbtalent.server.service.db.SurveyTypeService;
 import org.tbbtalent.server.service.db.TranslationService;
 
@@ -47,6 +51,18 @@ public class SurveyTypeServiceImpl implements SurveyTypeService {
     public List<SurveyType> listActiveSurveyTypes() {
         List<SurveyType> surveyTypes = surveyTypeRepository.findByStatus(Status.active);
         translationService.translate(surveyTypes, "survey_type");
+        return surveyTypes;
+    }
+
+    @Override
+    public Page<SurveyType> searchActiveSurveyTypes(SearchSurveyTypeRequest request) {
+        request.setStatus(Status.active);
+        Page<SurveyType> surveyTypes = surveyTypeRepository.findAll(
+                SurveyTypeSpecification.buildSearchQuery(request), request.getPageRequest());
+        log.info("Found " + surveyTypes.getTotalElements() + " survey types in search");
+        if (!StringUtils.isBlank(request.getLanguage())){
+            translationService.translate(surveyTypes.getContent(), "survey_type", request.getLanguage());
+        }
         return surveyTypes;
     }
 

@@ -195,7 +195,6 @@ import {DependantsCardComponent} from './components/candidates/intake/dependants
 import {LangAssessmentComponent} from './components/candidates/intake/lang-assessment/lang-assessment.component';
 import {ExtendDatePipe} from './util/date-adapter/extend-date-pipe';
 import {DatePickerComponent} from './components/util/date-picker/date-picker.component';
-import {ConfirmVisaContactComponent} from "./components/candidates/intake/confirm-visa-contact/confirm-visa-contact.component";
 import {IntProtectionComponent} from "./components/candidates/visa/int-protection/int-protection.component";
 import {CharacterAssessmentComponent} from "./components/candidates/visa/character-assessment/character-assessment.component";
 import {SecurityRiskComponent} from "./components/candidates/visa/security-risk/security-risk.component";
@@ -410,7 +409,6 @@ import {EnglishThresholdComponent} from './components/candidates/visa/english-th
     LangAssessmentComponent,
     ExtendDatePipe,
     DatePickerComponent,
-    ConfirmVisaContactComponent,
     IntProtectionComponent,
     HealthAssessmentComponent,
     CharacterAssessmentComponent,

@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,12 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
-  padding: 20px 0;
-}
-
-.small-btn {
-  font-size: 14px;
-  padding: 4px 1em;
-}
+update candidate_visa_job_check set qualification = 'Yes' where qualification is not null;

@@ -28,9 +28,9 @@
 
 <h5>{{candidateEducation.courseName}}</h5>
 
-<p>{{candidateEducation.institution}} | {{candidateEducation.country.name  | translate }}</p>
+<p>{{candidateEducation.institution}} | {{getCountryName(candidateEducation.country)}}</p>
 
 <p *ngIf="candidateEducation.educationMajor">
-  {{ 'CARD.EDUCATION.MAJOR' | translate: { major: candidateEducation.educationMajor.name | translate } }}
+  {{ 'CARD.EDUCATION.MAJOR' | translate: { major: getMajorName(candidateEducation.educationMajor) } }}
 </p>
 

@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,12 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
-  padding: 20px 0;
-}
-
-.small-btn {
-  font-size: 14px;
-  padding: 4px 1em;
-}
+insert into survey_type (name) values ('Al Ghurair Foundation');
+insert into survey_type (name) values ('ULYP');

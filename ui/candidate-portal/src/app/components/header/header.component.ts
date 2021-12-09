@@ -19,6 +19,7 @@ import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
 import {SystemLanguage} from '../../model/language';
 import {LanguageService} from '../../services/language.service';
+import {CandidateService} from "../../services/candidate.service";
 
 @Component({
   selector: 'app-header',
@@ -35,6 +36,7 @@ export class HeaderComponent implements OnInit {
   error: any;
 
   constructor(public authService: AuthService,
+              public candidateService: CandidateService,
               private router: Router,
               public languageService: LanguageService) { }
 
@@ -48,6 +50,8 @@ export class HeaderComponent implements OnInit {
   logout() {
     this.authService.logout().subscribe(
       () => {
+        // Clear candidate number in local storage (used to display in header)
+        this.candidateService.clearCandNumberStorage();
         this.isNavbarCollapsed = true;
         this.router.navigate(['']);
       }
@@ -62,7 +66,7 @@ export class HeaderComponent implements OnInit {
   get selectedLanguage() {
     let language = null;
     if (this.languages) {
-      language = this.languages.find(lang => lang.language !== this.languageService.getSelectedLanguage());
+      language = this.languages.find(lang => lang.language === this.languageService.getSelectedLanguage());
     }
     return language ? language.label : 'Language';
   }
