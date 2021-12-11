@@ -19,23 +19,36 @@ package org.tbbtalent.server.api.portal;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.BrandingInfo;
+import org.tbbtalent.server.service.db.BrandingService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+/**
+ * Access to branding information for the candidate portal.
+ */
 @RestController()
 @RequestMapping("/api/portal/branding")
 public class BrandingPortalApi {
 
+    private final BrandingService brandingService;
+
     @Autowired
-    public BrandingPortalApi() {
+    public BrandingPortalApi(BrandingService brandingService) {
+        this.brandingService = brandingService;
     }
 
+    /**
+     * Retrieve the branding information for the candidate portal.
+     * @return branding information
+     */
     @GetMapping()
-    public Map<String, Object> getBrandingInfo() {
-        BrandingInfo info = new BrandingInfo();
-        info.setLogo("assets/images/unhcrLogo.png");
+    public Map<String, Object> getBrandingInfo(
+        @RequestHeader(name="Host", required=false) final String host) {
+        //If logged in, use the host associated with the login, otherwise use the incoming host
+        BrandingInfo info = brandingService.getBrandingInfo(host);
         return brandingInfoDto().build(info);
     }
 

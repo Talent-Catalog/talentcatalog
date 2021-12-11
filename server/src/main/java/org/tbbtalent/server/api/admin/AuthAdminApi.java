@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
@@ -49,15 +50,16 @@ public class AuthAdminApi {
     }
 
     @PostMapping("login")
-    public Map<String, Object> login(@RequestBody LoginRequest request)
+    public Map<String, Object> login(@RequestBody LoginRequest request,
+        @RequestHeader(name="Host", required=false) final String host)
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
             InvalidPasswordFormatException {
 
-        JwtAuthenticationResponse response = this.userService.login(request);
+        JwtAuthenticationResponse response = this.userService.login(request, host);
 
         //If we are using mfa don't worry about Captcha stuff
         //It is sometimes not reliable (especially in test from localhost) - and unnecessary with MFA
-        User user = response.getUser(); 
+        User user = response.getUser();
         if (user.getUsingMfa()) {
             //If they are not yet configured we skip verification but they will be required
             //to set up mfa as soon as they log in.
@@ -83,10 +85,10 @@ public class AuthAdminApi {
     }
 
     /**
-     * Sets up Multi Factor Authentication (MFA) in the form of a 
+     * Sets up Multi Factor Authentication (MFA) in the form of a
      * Time based One Time Password (TOTP).
      * <p/>
-     * Generates a new secret key (hence POST rather than GET) and returns a Base64 encoded 
+     * Generates a new secret key (hence POST rather than GET) and returns a Base64 encoded
      * QRCode image which can be displayed as described here:
      * https://www.w3docs.com/snippets/html/how-to-display-base64-images-in-html.html
      * @return EncodedQrImage

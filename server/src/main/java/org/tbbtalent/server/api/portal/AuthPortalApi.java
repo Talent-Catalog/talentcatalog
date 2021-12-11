@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.configuration.TranslationConfig;
@@ -70,7 +71,8 @@ public class AuthPortalApi {
     }
 
     @PostMapping("login")
-    public Map<String, Object> login(@RequestBody LoginRequest request)
+    public Map<String, Object> login(@RequestBody LoginRequest request,
+        @RequestHeader(name="Host", required=false) final String host)
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
             InvalidPasswordFormatException, UserDeactivatedException,
             ReCaptchaInvalidException {
@@ -79,7 +81,7 @@ public class AuthPortalApi {
         //automated.
         captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "login");
 
-        JwtAuthenticationResponse response = userService.login(request);
+        JwtAuthenticationResponse response = userService.login(request, host);
         return jwtDto().build(response);
     }
 
@@ -91,7 +93,8 @@ public class AuthPortalApi {
 
     @PostMapping("register")
     public Map<String, Object> register(
-            @Valid @RequestBody RegisterCandidateRequest request)
+            @Valid @RequestBody RegisterCandidateRequest request,
+        @RequestHeader(name="Host", required=false) final String host)
             throws AccountLockedException, ReCaptchaInvalidException {
 
         //Do check for automated registrations. Throws exception if it looks
@@ -99,7 +102,7 @@ public class AuthPortalApi {
         captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "registration");
 
         LoginRequest loginRequest = candidateService.register(request);
-        JwtAuthenticationResponse jwt = userService.login(loginRequest);
+        JwtAuthenticationResponse jwt = userService.login(loginRequest, host);
         return jwtDto().build(jwt);
     }
 
