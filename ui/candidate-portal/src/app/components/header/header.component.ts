@@ -20,6 +20,7 @@ import {Router} from '@angular/router';
 import {SystemLanguage} from '../../model/language';
 import {LanguageService} from '../../services/language.service';
 import {CandidateService} from "../../services/candidate.service";
+import {BrandingInfo, BrandingService} from "../../services/branding.service";
 
 @Component({
   selector: 'app-header',
@@ -33,9 +34,11 @@ export class HeaderComponent implements OnInit {
   isNavbarCollapsed = true;
 
   languages: SystemLanguage[];
+  logo: string;
   error: any;
 
   constructor(public authService: AuthService,
+              private brandingService: BrandingService,
               public candidateService: CandidateService,
               private router: Router,
               public languageService: LanguageService) { }
@@ -43,6 +46,11 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     this.languageService.listSystemLanguages().subscribe(
       (response) => this.languages = response,
+      (error) => this.error = error
+    );
+
+    this.brandingService.getBrandingInfo().subscribe(
+      (response: BrandingInfo) => this.logo = response.logo,
       (error) => this.error = error
     );
   }
