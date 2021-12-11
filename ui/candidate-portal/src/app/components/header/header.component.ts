@@ -33,7 +33,7 @@ export class HeaderComponent implements OnInit {
   isNavbarCollapsed = true;
 
   languages: SystemLanguage[];
-  logo: string = "assets/images/logo.png"; //todo Should come from branding service
+  logo: string = "assets/images/tbbLogo.png"; //todo Should come from branding service
   error: any;
 
   constructor(public authService: AuthService,

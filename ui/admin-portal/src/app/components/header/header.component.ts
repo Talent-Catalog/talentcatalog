@@ -38,7 +38,7 @@ export class HeaderComponent implements OnInit {
   searching: boolean;
   error;
   loggedInUser: User;
-  logo: string = "assets/images/logo.png"; //todo Should come from branding service
+  logo: string = "assets/images/tbbLogo.png"; //todo Should come from branding service
 
 
   constructor(private authService: AuthService,
