@@ -22,6 +22,7 @@ import {Candidate} from "../../model/candidate";
 import {Observable, of} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {User} from "../../model/user";
+import {BrandingInfo, BrandingService} from "../../services/branding.service";
 
 @Component({
   selector: 'app-header',
@@ -38,14 +39,20 @@ export class HeaderComponent implements OnInit {
   searching: boolean;
   error;
   loggedInUser: User;
-  logo: string = "assets/images/tbbLogo.png"; //todo Should come from branding service
+  logo: string;
 
 
   constructor(private authService: AuthService,
+              private brandingService: BrandingService,
               private candidateService: CandidateService,
               private router: Router) { }
 
   ngOnInit() {
+
+    this.brandingService.getBrandingInfo().subscribe(
+      (response: BrandingInfo) => this.logo = response.logo,
+      (error) => this.error = error
+    );
 
     this.doNumberOrNameSearch = (text$: Observable<string>) =>
       text$.pipe(
