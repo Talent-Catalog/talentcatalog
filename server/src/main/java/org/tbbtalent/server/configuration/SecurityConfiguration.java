@@ -122,6 +122,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/backend/jobseeker").permitAll()
                 .antMatchers("/api/portal/auth").permitAll()
                 .antMatchers("/api/portal/auth/**").permitAll()
+                .antMatchers("/api/portal/branding").permitAll()
                 .antMatchers("/api/portal/user/reset-password-email").permitAll()
                 .antMatchers("/api/portal/user/check-token").permitAll()
                 .antMatchers("/api/portal/user/reset-password").permitAll()
@@ -130,6 +131,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/portal/**").hasAnyRole("USER")
                 .antMatchers("/api/admin/auth").permitAll()
                 .antMatchers("/api/admin/auth/**").permitAll()
+                .antMatchers("/api/admin/branding").permitAll()
                 .antMatchers("/published/**").permitAll()
 
                 // DELETE: DELETE SAVE SEARCHES
