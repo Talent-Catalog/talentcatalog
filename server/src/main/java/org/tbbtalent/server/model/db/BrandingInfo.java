@@ -21,7 +21,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * TODO JC Doc
+ * Partner branding information.
  *
  * @author John Cameron
  */
@@ -30,4 +30,6 @@ import lombok.ToString;
 @ToString
 public class BrandingInfo {
     private String logo;
+
+    // TODO: 11/12/21 Need to add extra params - eg landing page.
 }
