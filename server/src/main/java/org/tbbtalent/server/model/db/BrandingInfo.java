@@ -29,6 +29,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class BrandingInfo {
+    private String hostDomain;
     private String logo;
 
     // TODO: 11/12/21 Need to add extra params - eg landing page.

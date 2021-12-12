@@ -45,7 +45,7 @@ public class RootRedirectAdminApi {
         BrandingInfo info = brandingService.getBrandingInfo(host);
 
         String redirectUrl;
-        if (info.getLogo().equals("tbbtalent.org")) {
+        if (info.getHostDomain().equals("tbbtalent.org")) {
             //Hard code existing TBB redirect
             // TODO: 12/12/21 This should eventually come from BrandingInfo
             redirectUrl = "https://www.talentbeyondboundaries.org/talentcatalog/";
