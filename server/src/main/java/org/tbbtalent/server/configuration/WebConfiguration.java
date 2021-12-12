@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -28,8 +28,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
 /**
- * This defines some redirections and also where the Angular jars 
- * (admin-portal.jar and candidate-portal.jar) are served from on the server. 
+ * This defines some redirections and also where the Angular jars
+ * (admin-portal.jar and candidate-portal.jar) are served from on the server.
  * <p/>
  * Note that in development (rather than when running in production) the Angular code is
  * not served up from this Spring server, but rather from "ng serve" servers - one for
@@ -44,10 +44,10 @@ public class WebConfiguration implements WebMvcConfigurer {
      * We need to redirect for two reasons:
      * <ul>
      *   <li>
-     *     When people type tbbtalent.org in a browser we want to assume that they are a 
+     *     When people type tbbtalent.org in a browser we want to assume that they are a
      *     candidate (front end user) rather than a TBB admin (back end user).
-     *     This means we want them to redirect to tbbtalent.org/candidate-portal/ 
-     *     (rather than tbbtalent.org/admin-portal/) 
+     *     This means we want them to redirect to tbbtalent.org/candidate-portal/
+     *     (rather than tbbtalent.org/admin-portal/)
      *   </li>
      *   <li>
      *     Rather than going direct to the tbbtalent.org website, we would prefer that they go
@@ -62,14 +62,12 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController(
-            "/", "https://www.talentbeyondboundaries.org/talentcatalog/");
-        registry.addRedirectViewController(
             "/us", "https://www.talentbeyondboundaries.org/talentcatalog/us-afghan");
     }
 
     /**
-     * This defines the location of the compiled Angular for the candidate (front end,  
-     * candidate-portal) code and admin (back end, admin-portal) code. 
+     * This defines the location of the compiled Angular for the candidate (front end,
+     * candidate-portal) code and admin (back end, admin-portal) code.
      * @param registry Used to add resource handlers
      */
     @Override

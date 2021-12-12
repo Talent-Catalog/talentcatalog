@@ -132,6 +132,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/auth").permitAll()
                 .antMatchers("/api/admin/auth/**").permitAll()
                 .antMatchers("/api/admin/branding").permitAll()
+                .antMatchers("/").permitAll()
                 .antMatchers("/published/**").permitAll()
 
                 // DELETE: DELETE SAVE SEARCHES
