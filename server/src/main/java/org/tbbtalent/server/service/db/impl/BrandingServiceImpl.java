@@ -59,6 +59,11 @@ public class BrandingServiceImpl implements BrandingService {
         info.setHostDomain("unhcrtalent.org");
         info.setLogo("assets/images/unhcrLogo.png");
         domainToBrandingMap.put(info.getHostDomain(), info);
+
+        info = new BrandingInfo();
+        info.setHostDomain("iomtalent.org");
+        info.setLogo("assets/images/iomLogo.png");
+        domainToBrandingMap.put(info.getHostDomain(), info);
     }
 
     @Override
