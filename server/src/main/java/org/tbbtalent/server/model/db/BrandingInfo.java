@@ -19,6 +19,8 @@ package org.tbbtalent.server.model.db;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * Partner branding information.
@@ -29,7 +31,28 @@ import lombok.ToString;
 @Setter
 @ToString
 public class BrandingInfo {
+
+    /**
+     * Host domain associated with this branding - eg tbbtalent.org or unhcrtalent.org
+     */
+    @NonNull
     private String hostDomain;
+
+    /**
+     * Optional landing page associated with branding - eg for tbbtalent.org we redirect to
+     * https://www.talentbeyondboundaries.org/talentcatalog/.
+     * <p/>
+     * If no landing page is configured, the default is to automatically go to candidate-portal
+     */
+    @Nullable
+    private String landingPage;
+
+    /**
+     * Optional path to logo to display with branding.
+     * <p/>
+     * If no logo is supplied, a default is displayed (eg the TBB logo)
+     */
+    @Nullable
     private String logo;
 
     // TODO: 11/12/21 Need to add extra params - eg landing page.
