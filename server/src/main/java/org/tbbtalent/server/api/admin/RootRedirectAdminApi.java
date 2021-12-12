@@ -27,6 +27,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.service.db.BrandingService;
 
+/**
+ * Handle redirections when user just types in a domain - eg just tbbtalent.org
+ */
 @RestController()
 @RequestMapping("/")
 public class RootRedirectAdminApi {
@@ -38,20 +41,23 @@ public class RootRedirectAdminApi {
         this.brandingService = brandingService;
     }
 
+    /**
+     * Logic is to go to landing page associated with branding if one has been configured.
+     * Otherwise just go to candidate-portal.
+     * @param host Host domain of request.
+     * @return Redirected url
+     */
     @GetMapping()
     public ResponseEntity<Void> redirect(
         @RequestHeader(name="Host", required=false) final String host) {
 
         BrandingInfo info = brandingService.getBrandingInfo(host);
 
-        String redirectUrl;
-        if (info.getHostDomain().equals("tbbtalent.org")) {
-            //Hard code existing TBB redirect
-            // TODO: 12/12/21 This should eventually come from BrandingInfo
-            redirectUrl = "https://www.talentbeyondboundaries.org/talentcatalog/";
-        } else {
-            redirectUrl = "/candidate-portal/";
-        }
+        String landingPage = info.getLandingPage();
+
+        //If we have a landing page, go there, otherwise go straight to candidate-portal.
+        String redirectUrl = landingPage != null ? landingPage : "/candidate-portal/";
+
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
     }
 }

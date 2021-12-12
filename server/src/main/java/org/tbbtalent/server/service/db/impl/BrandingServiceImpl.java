@@ -52,11 +52,17 @@ public class BrandingServiceImpl implements BrandingService {
         info = new BrandingInfo();
         info.setHostDomain(DEFAULT_BRANDING_DOMAIN);
         info.setLogo("assets/images/tbbLogo.png");
+        info.setLandingPage("https://www.talentbeyondboundaries.org/talentcatalog/");
         domainToBrandingMap.put(info.getHostDomain(), info);
 
         info = new BrandingInfo();
         info.setHostDomain("unhcrtalent.org");
         info.setLogo("assets/images/unhcrLogo.png");
+        domainToBrandingMap.put(info.getHostDomain(), info);
+
+        info = new BrandingInfo();
+        info.setHostDomain("iomtalent.org");
+        info.setLogo("assets/images/iomLogo.png");
         domainToBrandingMap.put(info.getHostDomain(), info);
     }
 
