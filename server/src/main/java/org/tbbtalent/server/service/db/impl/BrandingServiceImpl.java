@@ -61,6 +61,11 @@ public class BrandingServiceImpl implements BrandingService {
         domainToBrandingMap.put(info.getHostDomain(), info);
 
         info = new BrandingInfo();
+        info.setHostDomain("hiastalent.org");
+        info.setLogo("assets/images/hiasLogo.png");
+        domainToBrandingMap.put(info.getHostDomain(), info);
+
+        info = new BrandingInfo();
         info.setHostDomain("iomtalent.org");
         info.setLogo("assets/images/iomLogo.png");
         domainToBrandingMap.put(info.getHostDomain(), info);
