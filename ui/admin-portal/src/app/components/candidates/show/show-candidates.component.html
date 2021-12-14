@@ -174,6 +174,9 @@
         Update <i class="fab fa-salesforce"></i>
       </button>
 
+      <div id="filterAll">
+        <input type="text" class="form-control" name="searchString" placeholder="Search (name/number)..." [(ngModel)]="searchString">
+      </div>
 
       <div *ngIf="isContentModifiable()">
         <input id="quickNumberOrNameSearch"
@@ -183,7 +186,7 @@
                [inputFormatter]="renderCandidateRow"
                [editable]="false"
                (selectItem)="selectSearchResult($event, input)"
-               placeholder="Add by name/number..."/>
+               placeholder="Add (name/number)..."/>
         <ng-template #rt let-r="result" let-t="term">
           <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
         </ng-template>
@@ -256,8 +259,7 @@
           </thead>
 
           <tbody *ngIf="!searching">
-          <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)"
-              [ngClass]="{'selected': currentCandidate?.id == candidate.id, 'selected-row': candidate.selected}">
+          <tr *ngFor="let candidate of results?.content | filterAll: searchString" (click)="viewCandidate(candidate)" [ngClass]="{'selected': currentCandidate?.id == candidate.id, 'selected-row': candidate.selected}">
             <td>
               <a [routerLink]="['/candidate',candidate.candidateNumber]">
                 {{candidate.candidateNumber}}

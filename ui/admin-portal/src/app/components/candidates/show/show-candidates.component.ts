@@ -169,6 +169,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   private noCandidatesMessage = "No candidates are selected";
 
+  public searchString: string;
+
   constructor(private http: HttpClient,
               private fb: FormBuilder,
               private candidateService: CandidateService,
