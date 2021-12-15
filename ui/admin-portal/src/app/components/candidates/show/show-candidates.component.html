@@ -175,9 +175,9 @@
       </button>
 
       <div *ngIf="isSavedList()">
-        <form [formGroup]="searchForm" (ngSubmit)="doSearch(true)">
+        <form [formGroup]="searchForm">
           <div class="form-group mb-0">
-            <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
+            <input type="text" class="form-control" placeholder="Search (name/number)..." aria-label="Search" formControlName="keyword"
                    id="keyword">
           </div>
         </form>

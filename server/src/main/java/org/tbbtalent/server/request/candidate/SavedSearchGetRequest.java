@@ -29,5 +29,4 @@ import java.util.List;
 @ToString(callSuper = true)
 public class SavedSearchGetRequest extends PagedSearchRequest {
     private List<ReviewStatus> reviewStatusFilter;
-    private String keyword;
 }
