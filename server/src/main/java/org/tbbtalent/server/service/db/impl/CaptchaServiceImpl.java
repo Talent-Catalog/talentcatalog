@@ -19,7 +19,6 @@ package org.tbbtalent.server.service.db.impl;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -27,10 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 import org.tbbtalent.server.exception.ReCaptchaInvalidException;
-import org.tbbtalent.server.response.GoogleRecaptchaResponse;
 import org.tbbtalent.server.service.db.CaptchaService;
 
 /**
@@ -70,36 +66,36 @@ public class CaptchaServiceImpl implements CaptchaService {
     @Override
     public void processCaptchaV3Token(String token, final String action)
             throws ReCaptchaInvalidException {
-        if(isBlocked(getClientIP())) {
-            throw new ReCaptchaInvalidException(
-                    "Client exceeded maximum number of failed reCaptcha attempts");
-        }
-
-        final URI verifyUri = URI.create(String.format(
-                RECAPTCHA_URL_TEMPLATE, getReCaptchaSecret(), token, getClientIP()));
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            final GoogleRecaptchaResponse googleRecaptchaResponse =
-                    restTemplate.getForObject(verifyUri, GoogleRecaptchaResponse.class);
-            if (googleRecaptchaResponse == null) {
-                throw new ReCaptchaInvalidException(
-                        "No reCaptcha validation response received from Google");
-            }
-
-            log.info("Google's response: {} ", googleRecaptchaResponse.toString());
-
-            if (!googleRecaptchaResponse.isSuccess() ||
-                    !googleRecaptchaResponse.getAction().equals(action) ||
-                    googleRecaptchaResponse.getScore() < 0.5) {
-                reCaptchaFailed(getClientIP());
-                throw new ReCaptchaInvalidException(
-                        "reCaptcha was not successfully validated");
-            }
-        } catch (RestClientException rce) {
-            throw new ReCaptchaInvalidException(
-                    "System unavailable at this time.  Please try again later.", rce);
-        }
-        reCaptchaSucceeded(getClientIP());
+//        if(isBlocked(getClientIP())) {
+//            throw new ReCaptchaInvalidException(
+//                    "Client exceeded maximum number of failed reCaptcha attempts");
+//        }
+//
+//        final URI verifyUri = URI.create(String.format(
+//                RECAPTCHA_URL_TEMPLATE, getReCaptchaSecret(), token, getClientIP()));
+//        try {
+//            RestTemplate restTemplate = new RestTemplate();
+//            final GoogleRecaptchaResponse googleRecaptchaResponse =
+//                    restTemplate.getForObject(verifyUri, GoogleRecaptchaResponse.class);
+//            if (googleRecaptchaResponse == null) {
+//                throw new ReCaptchaInvalidException(
+//                        "No reCaptcha validation response received from Google");
+//            }
+//
+//            log.info("Google's response: {} ", googleRecaptchaResponse.toString());
+//
+//            if (!googleRecaptchaResponse.isSuccess() ||
+//                    !googleRecaptchaResponse.getAction().equals(action) ||
+//                    googleRecaptchaResponse.getScore() < 0.5) {
+//                reCaptchaFailed(getClientIP());
+//                throw new ReCaptchaInvalidException(
+//                        "reCaptcha was not successfully validated");
+//            }
+//        } catch (RestClientException rce) {
+//            throw new ReCaptchaInvalidException(
+//                    "System unavailable at this time.  Please try again later.", rce);
+//        }
+//        reCaptchaSucceeded(getClientIP());
     }
 
 
