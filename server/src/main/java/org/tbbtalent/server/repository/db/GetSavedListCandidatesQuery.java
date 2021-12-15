@@ -17,6 +17,7 @@
 package org.tbbtalent.server.repository.db;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.Candidate;
@@ -86,12 +87,32 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
         select candidate from candidate 
         where candidate in  
             (select candidate from candidateSavedList 
-                where savedList.id = savedListID)  
+                where savedList.id = savedListID)
          */
         Subquery<Candidate> sq = query.subquery(Candidate.class);
         Root<CandidateSavedList> csl = sq.from(CandidateSavedList.class);
-        sq.select(csl.get("candidate")).where(cb.equal(csl.get("savedList").get("id"), savedListId));
-        
+
+        // KEYWORD SEARCH
+        if (!StringUtils.isBlank(request.getKeyword())){
+            String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
+            String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
+            sq.select(csl.get("candidate")).where(cb.and(
+                    cb.equal(csl.get("savedList").get("id"), savedListId),
+                    cb.or(
+                        cb.like(cb.lower(candidate.get("candidateNumber")), likeMatchTerm),
+                        cb.like(cb.lower(candidate.get("user").get("firstName")), likeMatchTerm),
+                        cb.like(cb.lower(candidate.get("user").get("lastName")), likeMatchTerm),
+                        cb.like(cb.lower(
+                                    cb.concat(
+                                        cb.concat(candidate.get("user").get("firstName"), " "),
+                                        candidate.get("user").get("lastName")
+                                    )), likeMatchTerm)
+                    )
+            ));
+        } else {
+            sq.select(csl.get("candidate")).where(cb.equal(csl.get("savedList").get("id"), savedListId));
+        }
+
         return cb.in(candidate).value(sq);
     }
 }
