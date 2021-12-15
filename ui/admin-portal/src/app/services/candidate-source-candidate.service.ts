@@ -19,8 +19,8 @@ import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from "../model/search-results";
-import {Candidate, SalesforceOppParams} from "../model/candidate";
-import {CandidateSource, PagedSearchRequest} from "../model/base";
+import {Candidate} from "../model/candidate";
+import {CandidateSource, PagedSearchRequest, SearchCandidateSourcesRequest} from "../model/base";
 import {isSavedSearch} from "../model/saved-search";
 
 @Injectable({providedIn: 'root'})
@@ -37,7 +37,7 @@ export class CandidateSourceCandidateService {
     return this.http.get<Candidate[]>(`${apiUrl}/${source.id}/list`);
   }
 
-  searchPaged(source: CandidateSource, request: PagedSearchRequest):
+  searchPaged(source: CandidateSource, request: SearchCandidateSourcesRequest):
     Observable<SearchResults<Candidate>> {
 
     const apiUrl = isSavedSearch(source) ?

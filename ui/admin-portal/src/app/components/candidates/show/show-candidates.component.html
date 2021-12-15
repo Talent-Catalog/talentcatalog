@@ -174,8 +174,13 @@
         Update <i class="fab fa-salesforce"></i>
       </button>
 
-      <div id="filterAll">
-        <input type="text" class="form-control" name="searchString" placeholder="Search (name/number)..." [(ngModel)]="searchString">
+      <div *ngIf="isSavedList()">
+        <form [formGroup]="searchForm" (ngSubmit)="doSearch(true)">
+          <div class="form-group mb-0">
+            <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                   id="keyword">
+          </div>
+        </form>
       </div>
 
       <div *ngIf="isContentModifiable()">
@@ -259,7 +264,7 @@
           </thead>
 
           <tbody *ngIf="!searching">
-          <tr *ngFor="let candidate of results?.content | filterAll: searchString" (click)="viewCandidate(candidate)" [ngClass]="{'selected': currentCandidate?.id == candidate.id, 'selected-row': candidate.selected}">
+          <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)" [ngClass]="{'selected': currentCandidate?.id == candidate.id, 'selected-row': candidate.selected}">
             <td>
               <a [routerLink]="['/candidate',candidate.candidateNumber]">
                 {{candidate.candidateNumber}}

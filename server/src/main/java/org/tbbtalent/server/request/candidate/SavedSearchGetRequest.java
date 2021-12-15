@@ -16,18 +16,18 @@
 
 package org.tbbtalent.server.request.candidate;
 
-import java.util.List;
-
-import org.tbbtalent.server.model.db.ReviewStatus;
-import org.tbbtalent.server.request.PagedSearchRequest;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tbbtalent.server.model.db.ReviewStatus;
+import org.tbbtalent.server.request.PagedSearchRequest;
+
+import java.util.List;
 
 @Getter
 @Setter
 @ToString(callSuper = true)
 public class SavedSearchGetRequest extends PagedSearchRequest {
     private List<ReviewStatus> reviewStatusFilter;
+    private String keyword;
 }

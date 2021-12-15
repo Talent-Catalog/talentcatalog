@@ -16,7 +16,12 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
+@Getter
+@Setter
 public class SavedListGetRequest extends PagedSearchRequest {
+    private String keyword;
 }

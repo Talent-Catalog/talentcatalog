@@ -169,7 +169,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   private noCandidatesMessage = "No candidates are selected";
 
-  public searchString: string;
+  public filterSearch: boolean = false;
 
   constructor(private http: HttpClient,
               private fb: FormBuilder,
@@ -208,6 +208,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
 
+    this.searchForm = this.fb.group({
+      keyword: ['']
+    });
+    this.subscribeToFilterChanges();
+
     this.doNumberOrNameSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
@@ -231,6 +236,22 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   get pluralType() {
      return isSavedSearch(this.candidateSource) ? "searches" : "lists";
+  }
+
+  get keyword(): string {
+    return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  subscribeToFilterChanges(): void {
+    this.searchForm.valueChanges
+      .pipe(
+        debounceTime(800),
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+        this.filterSearch = true;
+        this.doSearch(true);
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -411,6 +432,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         } else {
           request = new SavedListGetRequest();
         }
+        request.keyword = this.keyword;
         request.pageNumber = this.pageNumber - 1;
         request.pageSize = this.pageSize;
         request.sortFields = [this.sortField];
@@ -438,8 +460,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private cacheResults() {
     this.timestamp = Date.now();
 
-    //We only cache certain results
-    if (this.isCacheable()) {
+    //We only cache certain results, and we don't cache filter keyword searches
+    if (this.isCacheable() && !this.filterSearch) {
       this.candidateSourceResultsCacheService.cache(this.candidateSource,
         {
         id: this.candidateSource.id,
