@@ -97,10 +97,6 @@ $candidate-card-width: 375px;
     flex: 1 1 auto;
     overflow-x: auto;
 
-    .candidate-number-row {
-      max-width: 50px;
-    }
-
     tbody {
       tr {
         cursor: pointer;
