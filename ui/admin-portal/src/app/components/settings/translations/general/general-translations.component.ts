@@ -19,6 +19,8 @@ import {TranslationService} from '../../../../services/translation.service';
 import {User} from '../../../../model/user';
 import {isAdminUser} from "../../../../model/base";
 import {AuthService} from "../../../../services/auth.service";
+import {LanguageService} from "../../../../services/language.service";
+import {SystemLanguage} from "../../../../model/language";
 
 @Component({
   selector: 'app-general-translations',
@@ -30,29 +32,48 @@ export class GeneralTranslationsComponent implements OnInit {
   @Input() loggedInUser: User;
 
   loading: boolean;
-  languages = ['en', 'ar'];
-  language: string;
+  languages: SystemLanguage[];
+  systemLanguage: SystemLanguage;
   fields;
 
   saving: boolean;
   saveError: any;
+  error: any;
 
   constructor(private translationService: TranslationService,
+              private languageService: LanguageService,
               private authService: AuthService) {
   }
 
   ngOnInit() {
-    this.setLanguage(this.languages[0]);
+
+    this.loading = true;
+    this.languageService.listSystemLanguages().subscribe(
+      (result) => {
+        this.languages = result;
+        this.loading = false;
+        this.setLanguage(this.languages[0]);
+      },
+      (error) => {
+        this.error = error;
+      }
+    )
   }
 
-  setLanguage(language: string) {
-    this.language = language;
+  setLanguage(language: SystemLanguage) {
+    this.error = null;
     this.loading = true;
-    this.translationService.loadTranslationsFile(this.language).subscribe(translations => {
-      this.loading = false;
-      this.fields = [];
-      this.getFields(this.fields, null, ALL_FIELDS, translations);
-    });
+    this.translationService.loadTranslationsFile(language.language).subscribe(
+      (translations) => {
+        this.loading = false;
+        this.systemLanguage = language;
+        this.fields = [];
+        this.getFields(this.fields, null, ALL_FIELDS, translations);
+    }, (error) => {
+        this.loading = false;
+        this.error = error;
+      }
+    );
   }
 
   getFields(results: {path, value}[], path, fieldsToFill, data) {
@@ -84,7 +105,7 @@ export class GeneralTranslationsComponent implements OnInit {
 
     this.saving = true;
     this.saveError = null;
-    this.translationService.updateTranslationFile(this.language, result).subscribe(
+    this.translationService.updateTranslationFile(this.systemLanguage.language, result).subscribe(
       result => {
         this.saving = false;
       },
@@ -165,7 +186,11 @@ const ALL_FIELDS = {
       "HEADING3": null,
       "PARA3": null,
       "HEADING4": null,
-      "PARA4": null
+      "PARA4": null,
+      "USAFGHAN": {
+        "HEADING1": null,
+        "HEADING2": null
+      }
     },
     "HOME": {
       "TITLE": null,

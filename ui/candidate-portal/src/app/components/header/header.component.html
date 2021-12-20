@@ -20,7 +20,7 @@
 
     <!-- LOGO -->
     <a [routerLink]="'/'">
-      <img class="logo" src="assets/images/logo.png" alt="Logo">
+      <img class="logo" [src]="logo" alt="Logo">
     </a>
 
     <!-- MOBILE NAV TOGGLE -->
@@ -33,7 +33,7 @@
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
 
       <!-- TRANSLATION -->
-      <ul class="navbar-nav" *ngIf="!languageService.isLanguageSelectionDisabled()">
+      <div class="navbar-nav" *ngIf="!languageService.isLanguageSelectionDisabled()">
         <div class="nav-item dropdown" ngbDropdown>
           <a class="dropdown-toggle translation-toggle" ngbDropdownToggle>
             <fa-icon icon="globe"></fa-icon> {{selectedLanguage}}
@@ -46,7 +46,7 @@
             <a class="dropdown-item text-center" *ngFor="let lang of languages" (click)="setLanguage(lang.language)">{{lang.label}}</a>
           </div>
         </div>
-      </ul>
+      </div>
 
       <!-- ACCOUNT -->
       <ul class="navbar-nav" *ngIf="(authService.user$ | async)">

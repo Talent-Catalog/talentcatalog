@@ -16,12 +16,15 @@
 
 package org.tbbtalent.server.service.db;
 
+import org.springframework.data.domain.Page;
 import org.tbbtalent.server.model.db.SurveyType;
+import org.tbbtalent.server.request.survey.SearchSurveyTypeRequest;
 
 import java.util.List;
 
 public interface SurveyTypeService {
     List<SurveyType> listActiveSurveyTypes();
+    Page<SurveyType> searchActiveSurveyTypes(SearchSurveyTypeRequest request);
     List<SurveyType> listSurveyTypes();
 }
 

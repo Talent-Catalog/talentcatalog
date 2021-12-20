@@ -31,12 +31,17 @@
       </div>
     </div>
 
+    <div class="alert alert-danger mt-2" *ngIf="error">
+      Sorry, there was an error loading this file:
+      <div>
+        {{error | json}}
+      </div>
+    </div>
+
     <div class="filter">
       <div class="row">
         <div class="col-sm-6">
-          <ng-select [ngModel]="language" placeholder="Select" (change)="setLanguage($event)" [clearable]="false">
-            <ng-option value="en">English</ng-option>
-            <ng-option value="ar">Arabic</ng-option>
+          <ng-select [items]="languages" (change)="setLanguage($event)" [clearable]="false" [ngModel]="systemLanguage">
           </ng-select>
         </div>
       </div>

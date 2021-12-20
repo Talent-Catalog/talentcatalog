@@ -404,7 +404,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException {
+    public JwtAuthenticationResponse login(LoginRequest request, String hostDomain) throws AccountLockedException {
         try {
             String loggedInName = request.getUsername();
             if (loggedInName.contains("@")) {
@@ -435,6 +435,7 @@ public class UserServiceImpl implements UserService {
             }
 
             user.setLastLogin(OffsetDateTime.now());
+            user.setHostDomain(hostDomain);
             user = userRepository.save(user);
 
             SecurityContextHolder.getContext().setAuthentication(auth);

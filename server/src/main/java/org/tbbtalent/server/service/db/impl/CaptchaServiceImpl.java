@@ -5,35 +5,29 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.net.URI;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-import org.tbbtalent.server.exception.ReCaptchaInvalidException;
-import org.tbbtalent.server.response.GoogleRecaptchaResponse;
-import org.tbbtalent.server.service.db.CaptchaService;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.util.concurrent.TimeUnit;
+import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.ReCaptchaInvalidException;
+import org.tbbtalent.server.service.db.CaptchaService;
 
 /**
  * Captcha service implementation
@@ -41,6 +35,9 @@ import com.google.common.cache.LoadingCache;
  * See https://developers.google.com/recaptcha/docs/v3
  * and
  * https://www.baeldung.com/spring-security-registration-captcha
+ * <p/>
+ * Our reCaptcha is under the john@cameronfoundation.org Google account
+ * at https://www.google.com/recaptcha/admin
  * @author John Cameron
  */
 @Service
@@ -49,7 +46,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     private final static Logger log = LoggerFactory.getLogger(CaptchaServiceImpl.class);
 
-    protected static final String RECAPTCHA_URL_TEMPLATE = 
+    protected static final String RECAPTCHA_URL_TEMPLATE =
             "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s&remoteip=%s";
 
     @Autowired
@@ -57,48 +54,48 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     public CaptchaServiceImpl() {
         attemptsCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(4, TimeUnit.HOURS)
+                .expireAfterWrite(10, TimeUnit.MINUTES)
                 .build(new CacheLoader<String, Integer>() {
             @Override
-            public Integer load(final String key) {
+            public Integer load(final @NonNull String key) {
                 return 0;
             }
         });
     }
 
     @Override
-    public void processCaptchaV3Token(String token, final String action) 
+    public void processCaptchaV3Token(String token, final String action)
             throws ReCaptchaInvalidException {
-        if(isBlocked(getClientIP())) {
-            throw new ReCaptchaInvalidException(
-                    "Client exceeded maximum number of failed reCaptcha attempts");
-        }
-
-        final URI verifyUri = URI.create(String.format(
-                RECAPTCHA_URL_TEMPLATE, getReCaptchaSecret(), token, getClientIP()));
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            final GoogleRecaptchaResponse googleRecaptchaResponse = 
-                    restTemplate.getForObject(verifyUri, GoogleRecaptchaResponse.class);
-            if (googleRecaptchaResponse == null) {
-                throw new ReCaptchaInvalidException(
-                        "No reCaptcha validation response received from Google");
-            }
-            
-            log.info("Google's response: {} ", googleRecaptchaResponse.toString());
-
-            if (!googleRecaptchaResponse.isSuccess() || 
-                    !googleRecaptchaResponse.getAction().equals(action) || 
-                    googleRecaptchaResponse.getScore() < 0.5) {
-                reCaptchaFailed(getClientIP());
-                throw new ReCaptchaInvalidException(
-                        "reCaptcha was not successfully validated");
-            }
-        } catch (RestClientException rce) {
-            throw new ReCaptchaInvalidException(
-                    "System unavailable at this time.  Please try again later.", rce);
-        }
-        reCaptchaSucceeded(getClientIP());
+//        if(isBlocked(getClientIP())) {
+//            throw new ReCaptchaInvalidException(
+//                    "Client exceeded maximum number of failed reCaptcha attempts");
+//        }
+//
+//        final URI verifyUri = URI.create(String.format(
+//                RECAPTCHA_URL_TEMPLATE, getReCaptchaSecret(), token, getClientIP()));
+//        try {
+//            RestTemplate restTemplate = new RestTemplate();
+//            final GoogleRecaptchaResponse googleRecaptchaResponse =
+//                    restTemplate.getForObject(verifyUri, GoogleRecaptchaResponse.class);
+//            if (googleRecaptchaResponse == null) {
+//                throw new ReCaptchaInvalidException(
+//                        "No reCaptcha validation response received from Google");
+//            }
+//
+//            log.info("Google's response: {} ", googleRecaptchaResponse.toString());
+//
+//            if (!googleRecaptchaResponse.isSuccess() ||
+//                    !googleRecaptchaResponse.getAction().equals(action) ||
+//                    googleRecaptchaResponse.getScore() < 0.5) {
+//                reCaptchaFailed(getClientIP());
+//                throw new ReCaptchaInvalidException(
+//                        "reCaptcha was not successfully validated");
+//            }
+//        } catch (RestClientException rce) {
+//            throw new ReCaptchaInvalidException(
+//                    "System unavailable at this time.  Please try again later.", rce);
+//        }
+//        reCaptchaSucceeded(getClientIP());
     }
 
 
