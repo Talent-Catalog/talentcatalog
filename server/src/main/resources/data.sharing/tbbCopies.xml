@@ -6,39 +6,35 @@
   ~ the terms of the GNU Affero General Public License as published by the Free
   ~ Software Foundation, either version 3 of the License, or any later version.
   ~
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT 
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
   ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
   ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
   ~ for more details.
   ~
-  ~ You should have received a copy of the GNU Affero General Public License 
+  ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
 <destinations>
     <!--
-       Once a day a filtered copy of a subset of the master TBB candidate 
+       Once a day a filtered copy of a subset of the master TBB candidate
        data is sent to databases in various employer destinations.
        For example, to the Refugee Talent database in Australia.
-       
+
        The data is anonymous - so only a refugee's id is provide - no name or
        contact details.
-       
-       The data is filtered according to the destination. 
+
+       The data is filtered according to the destination.
        For example Australia only receives data written in English, for
        refugees currently located in Jordan or Lebanon, and who are not
        Palestinian nationality.
-       
+
        Any existing data in the destination database is deleted, and replace by
        the new data.
     -->
     <destination>
         <country>au</country>
         <database>
-            <!--            <url>jdbc:mysql://tbb-database.cicadkawaz3y.ap-southeast-2.rds.amazonaws.com:3306/TBBDatabase</url>-->
-            <!--            <user>admin</user>-->
-            <!--            <password>1212s1212ss</password>-->
-
 <!--            todo Need to remove these credentials into env variables-->
             <url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</url>
             <user>GlobalTalentUser</user>
@@ -46,7 +42,7 @@
 
             <!--
                 This filter is added as an AND condition to the WHERE clause
-                of the populate SQL 
+                of the populate SQL
             -->
             <filter>
                 <!--Exclude test users-->
@@ -60,7 +56,7 @@
                 AND
                 <!--Exclude candidates in TestCandidates list-->
                 candidate.id NOT IN
-                (select candidate_id from candidate_saved_list where saved_list_id 
+                (select candidate_id from candidate_saved_list where saved_list_id
                    = (select id from saved_list where name = 'TestCandidates' and global = true));
             </filter>
             <tables>
@@ -172,6 +168,25 @@
                     </fields>
                 </table>
                 <table>
+                    <name>jobseeker_languages</name>
+                    <populate>
+                        SELECT
+                        CAST(candidate_number AS int) AS user_id,
+                        language_id,
+                        spoken_level_id,
+                        written_level_id
+                        FROM candidate
+                        JOIN users ON candidate.user_id = users.id
+                        JOIN candidate_language on candidate.id = candidate_language.candidate_id
+                    </populate>
+                    <fields>
+                        user_id INT(11) NOT NULL,
+                        language_id INT(11),
+                        spoken_level_id INT(11),
+                        written_level_id INT(11)
+                    </fields>
+                </table>
+                <table>
                     <name>jobseeker_skills</name>
                     <populate>
                         SELECT
@@ -233,9 +248,22 @@
                     </index>
                 </table>
                 <table>
-                    <name>nationality</name>
+                    <name>language</name>
                     <populate>
-                        SELECT id, name FROM nationality WHERE status = 'active'
+                        SELECT id, name FROM language WHERE status = 'active'
+                    </populate>
+                    <fields>
+                        id INT(11) NOT NULL,
+                        name TEXT NOT NULL
+                    </fields>
+                    <index>
+                        id
+                    </index>
+                </table>
+                <table>
+                    <name>language_level</name>
+                    <populate>
+                        SELECT id, name FROM language_level WHERE status = 'active'
                     </populate>
                     <fields>
                         id INT(11) NOT NULL,
