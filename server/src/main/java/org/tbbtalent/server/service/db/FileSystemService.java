@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -44,13 +44,13 @@ public interface FileSystemService {
      */
     @Nullable
     GoogleFileSystemFolder findAFolder(
-        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName)
         throws IOException;
-    
+
     /**
      * Creates a file with the given name.
      * Does not check if file with that name already exists - may create
-     * create a duplicate file with the same name if the file system allows it. 
+     * create a duplicate file with the same name if the file system allows it.
      * @param fileName Name of folder to be created
      * @param mimeType Type of file - see https://developers.google.com/drive/api/v3/mime-types
      * @return File created
@@ -58,20 +58,20 @@ public interface FileSystemService {
      */
     @NonNull
     GoogleFileSystemFile createFile(
-        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String fileName, 
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String fileName,
         String mimeType) throws IOException;
-    
+
     /**
      * Creates a folder with the given name.
      * Does not check if folder with that name already exists - may create
-     * create a duplicate folder with the same name if the file system allows it. 
+     * create a duplicate folder with the same name if the file system allows it.
      * @param folderName Name of folder to be created
      * @return Folder created
      * @throws IOException If there was a problem creating the folder
      */
     @NonNull
     GoogleFileSystemFolder createFolder(
-        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName)
         throws IOException;
 
     /**
@@ -91,24 +91,31 @@ public interface FileSystemService {
             throws IOException;
 
     /**
-     * Renames the given file 
+     * Makes the given file viewable by anyone.
+     * @param file Describes file to be published
+     * @throws IOException If there was a problem changing the file's accessibility.
+     */
+    void publishFile(@NonNull GoogleFileSystemFile file) throws IOException;
+
+    /**
+     * Renames the given file
      * @param file Description of file, including id or url, plus its new name
      * @throws IOException If there was a problem renaming the file
      */
     void renameFile(@NonNull GoogleFileSystemFile file) throws IOException;
-    
+
     /**
      * Uploads the given local file.
-     * @param parentFolder Folder that file should be uploaded to. If null, 
+     * @param parentFolder Folder that file should be uploaded to. If null,
      *                     file is uploaded to root.
      * @param fileName Name assigned to uploaded file
      * @param file Local file to be uploaded
-     * @return Info about uploaded file on the remote file system 
+     * @return Info about uploaded file on the remote file system
      * @throws IOException If there was a problem uploading the file.
      */
     @NonNull
     GoogleFileSystemFile uploadFile(GoogleFileSystemDrive drive,
-        @Nullable GoogleFileSystemFolder parentFolder, String fileName, File file) 
+        @Nullable GoogleFileSystemFolder parentFolder, String fileName, File file)
             throws IOException;
 
     /**
@@ -120,6 +127,6 @@ public interface FileSystemService {
      * @throws IOException If there was a problem copying the file.
      */
     GoogleFileSystemFile copyFile(
-        GoogleFileSystemFolder parentFolder, String name, GoogleFileSystemFile sourceFile) 
+        GoogleFileSystemFolder parentFolder, String name, GoogleFileSystemFile sourceFile)
         throws IOException;
 }
