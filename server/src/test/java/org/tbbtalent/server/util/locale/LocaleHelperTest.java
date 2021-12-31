@@ -22,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.DayOfWeek;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +43,68 @@ class LocaleHelperTest {
         assertFalse(cts.isEmpty());
 
         cts = LocaleHelper.getCountryNameTranslations("fa");
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+    }
+
+    @Test
+    void getDayOfWeekTranslations() {
+        Map<DayOfWeek, String> cts;
+        TextStyle textStyle;
+
+
+        textStyle = TextStyle.NARROW_STANDALONE;
+
+        cts = LocaleHelper.getDayOfWeekTranslations(null, textStyle);
+        assertNotNull(cts);
+        assertTrue(cts.isEmpty());
+
+        cts = LocaleHelper.getDayOfWeekTranslations("en", textStyle);
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+
+        cts = LocaleHelper.getDayOfWeekTranslations("fr", textStyle);
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+
+        cts = LocaleHelper.getDayOfWeekTranslations("es", textStyle);
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+
+        cts = LocaleHelper.getDayOfWeekTranslations("ar", textStyle);
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+
+        cts = LocaleHelper.getDayOfWeekTranslations("tr", textStyle);
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+    }
+
+    @Test
+    void getMonthTranslations() {
+        Map<Month, String> cts;
+        TextStyle textStyle;
+
+
+        textStyle = TextStyle.SHORT_STANDALONE;
+
+        cts = LocaleHelper.getMonthTranslations(null, textStyle);
+        assertNotNull(cts);
+        assertTrue(cts.isEmpty());
+
+        cts = LocaleHelper.getMonthTranslations("en", textStyle);
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+
+        cts = LocaleHelper.getMonthTranslations("fr", textStyle);
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+
+        cts = LocaleHelper.getMonthTranslations("ar", textStyle);
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+
+        cts = LocaleHelper.getMonthTranslations("tr", textStyle);
         assertNotNull(cts);
         assertFalse(cts.isEmpty());
     }

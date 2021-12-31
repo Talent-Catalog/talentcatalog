@@ -17,6 +17,9 @@
 package org.tbbtalent.server.util.locale;
 
 import java.awt.ComponentOrientation;
+import java.time.DayOfWeek;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -45,6 +48,46 @@ public class LocaleHelper {
                 Locale countryLocale = new Locale("", countryCode);
                 String name = countryLocale.getDisplayCountry(translationLocale);
                 cts.put(countryCode, name);
+            }
+        }
+        return cts;
+    }
+
+    /**
+     * Returns translations of days of the week (Sunday, Monday etc) in the given language.
+     * Translations may be abbreviated as requested by the TextStyle parameter.
+     * @param langCode Code of language - eg fr for French
+     * @param textStyle Type of abbreviation, if any
+     * @return Map of DayOfWeek to translation - may be empty
+     */
+    public static @NotNull Map<DayOfWeek, String> getDayOfWeekTranslations(
+        @Nullable String langCode, @NotNull TextStyle textStyle) {
+        Map<DayOfWeek, String> cts = new HashMap<>();
+        if (langCode != null && isKnownLanguageCode(langCode)) {
+            Locale translationLocale = new Locale(langCode);
+            for (DayOfWeek dw : DayOfWeek.values()) {
+                String name = dw.getDisplayName(textStyle, translationLocale);
+                cts.put(dw, name);
+            }
+        }
+        return cts;
+    }
+
+    /**
+     * Returns translations of months (January, February etc) in the given language.
+     * Translations may be abbreviated as requested by the TextStyle parameter.
+     * @param langCode Code of language - eg fr for French
+     * @param textStyle Type of abbreviation, if any
+     * @return Map of Month to translation - may be empty
+     */
+    public static @NotNull Map<Month, String> getMonthTranslations(
+        @Nullable String langCode, @NotNull TextStyle textStyle) {
+        Map<Month, String> cts = new HashMap<>();
+        if (langCode != null && isKnownLanguageCode(langCode)) {
+            Locale translationLocale = new Locale(langCode);
+            for (Month month : Month.values()) {
+                String name = month.getDisplayName(textStyle, translationLocale);
+                cts.put(month, name);
             }
         }
         return cts;

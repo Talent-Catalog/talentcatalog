@@ -61,7 +61,7 @@ export class CustomDatepickerI18n extends NgbDatepickerI18n {
   for a particular language eg. Arabic: https://github.com/unicode-cldr/cldr-dates-full/blob/master/main/ar/ca-gregorian.json
  */
 /* todo
-JC - We can probably up load these values from server taken from Locale
+JC - Fetch these from Language service
  */
 const I18N_VALUES = {
   'ar': {
@@ -81,7 +81,7 @@ const I18N_VALUES = {
     months: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
   },
   'en': {
-    weekdays: ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'],
+    weekdays: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
     months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
   }
 };
