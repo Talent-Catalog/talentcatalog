@@ -63,10 +63,21 @@ public interface TaskAssignment {
 
     /**
      * Candidate may provide optional notes related to any task.
+     * <p/>
+     * For example, if a candidate wants to give more details to a yes/no question, or explain
+     * why they are having trouble with a task, they can do so here.
      * @return Optional notes
      */
     @Nullable
     String getCandidateNotes();
+
+    /**
+     * Candidate's response to question tasks is stored here.
+     * @return Candidate response. Null if there is no response, or if the task is not a question
+     * and therefore does not require a response.
+     */
+    @Nullable
+    String getCandidateResponse();
 
     /**
      * Time when task was completed - initially null.
