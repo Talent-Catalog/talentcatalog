@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>org.tbbtalent.server.model.db.task</OriginalElement>
+  <nodes>
+    <node x="448.0" y="0.0">org.tbbtalent.server.model.db.task.TaskAssignment</node>
+    <node x="99.0" y="212.0">org.tbbtalent.server.model.db.task.Task</node>
+    <node x="86.5" y="395.0">org.tbbtalent.server.model.db.task.Auditable</node>
+    <node x="0.0" y="117.0">org.tbbtalent.server.model.db.task.UploadTask</node>
+    <node x="222.0" y="95.0">org.tbbtalent.server.model.db.task.QuestionTask</node>
+    <node x="197.0" y="0.0">org.tbbtalent.server.model.db.task.YesNoQuestionTask</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="org.tbbtalent.server.model.db.task.YesNoQuestionTask" target="org.tbbtalent.server.model.db.task.QuestionTask" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-0.0" />
+      <point x="0.0" y="-0.0" />
+    </edge>
+    <edge source="org.tbbtalent.server.model.db.task.Task" target="org.tbbtalent.server.model.db.task.Auditable" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-0.0" />
+      <point x="0.0" y="-0.0" />
+    </edge>
+    <edge source="org.tbbtalent.server.model.db.task.UploadTask" target="org.tbbtalent.server.model.db.task.Task" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-0.0" />
+      <point x="91.0" y="192.0" />
+      <point x="201.5" y="192.0" />
+      <point x="0.0" y="-0.0" />
+    </edge>
+    <edge source="org.tbbtalent.server.model.db.task.QuestionTask" target="org.tbbtalent.server.model.db.task.Task" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-0.0" />
+      <point x="300.0" y="192.0" />
+      <point x="201.5" y="192.0" />
+      <point x="0.0" y="-0.0" />
+    </edge>
+  </edges>
+  <settings layout="Generic" zoom="1.0" showDependencies="true" x="353.5" y="258.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
