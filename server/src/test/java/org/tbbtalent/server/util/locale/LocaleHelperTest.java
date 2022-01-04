@@ -63,6 +63,17 @@ class LocaleHelperTest {
         assertNotNull(cts);
         assertFalse(cts.isEmpty());
 
+        cts = LocaleHelper.getDayOfWeekTranslations("ps", textStyle);
+        assertNotNull(cts);
+        assertFalse(cts.isEmpty());
+
+        //In the current Java version we are using (11), there is no Pashto narrow standalone
+        //translation for days of week - it defaults to the English (eg "M" for Monday).
+        //When this gets fixed - in future Java versions - this test will fail. That will be good
+        //news signifying that we now have Pashto translations for this, and we can remove the test.
+        assertEquals("M", cts.get(DayOfWeek.MONDAY),
+            "Pashto is currently not expected to have translations for this textStyle of day of weeks");
+
         cts = LocaleHelper.getDayOfWeekTranslations("fr", textStyle);
         assertNotNull(cts);
         assertFalse(cts.isEmpty());
