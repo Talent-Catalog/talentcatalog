@@ -27,15 +27,10 @@ public interface YesNoQuestionTask extends QuestionTask {
 
     /**
      * Candidate's answer to the question.
-     * @return True if answer is yes, False if no. Null if not answered.
+     * @return True if answer is yes or no.
      */
-    @Nullable
-    Boolean getAnswer();
-
-    /**
-     * Candidate may provide optional notes explaining their answer.
-     * @return Optional notes
-     */
-    @Nullable
-    String getNotes();
+    @Override
+    default boolean validateAnswer(@Nullable String answer) {
+        return "yes".equalsIgnoreCase(answer) || "no".equalsIgnoreCase(answer);
+    }
 }

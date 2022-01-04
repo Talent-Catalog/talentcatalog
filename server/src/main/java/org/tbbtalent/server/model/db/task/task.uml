@@ -3,39 +3,40 @@
   <ID>JAVA</ID>
   <OriginalElement>org.tbbtalent.server.model.db.task</OriginalElement>
   <nodes>
-    <node x="448.0" y="0.0">org.tbbtalent.server.model.db.task.TaskAssignment</node>
-    <node x="99.0" y="212.0">org.tbbtalent.server.model.db.task.Task</node>
-    <node x="86.5" y="395.0">org.tbbtalent.server.model.db.task.Auditable</node>
-    <node x="0.0" y="117.0">org.tbbtalent.server.model.db.task.UploadTask</node>
-    <node x="222.0" y="95.0">org.tbbtalent.server.model.db.task.QuestionTask</node>
-    <node x="197.0" y="0.0">org.tbbtalent.server.model.db.task.YesNoQuestionTask</node>
+    <node x="498.0" y="0.0">org.tbbtalent.server.model.db.task.TaskAssignment</node>
+    <node x="141.25" y="171.0">org.tbbtalent.server.model.db.task.Task</node>
+    <node x="128.75" y="0.0">org.tbbtalent.server.model.db.task.Auditable</node>
+    <node x="271.0" y="397.5">org.tbbtalent.server.model.db.task.UploadTask</node>
+    <node x="0.0" y="386.0">org.tbbtalent.server.model.db.task.QuestionTask</node>
+    <node x="0.0" y="514.0">org.tbbtalent.server.model.db.task.YesNoQuestionTask</node>
   </nodes>
   <notes />
   <edges>
     <edge source="org.tbbtalent.server.model.db.task.YesNoQuestionTask" target="org.tbbtalent.server.model.db.task.QuestionTask" relationship="INTERFACE_GENERALIZATION">
-      <point x="0.0" y="-0.0" />
-      <point x="0.0" y="-0.0" />
+      <point x="0.0" y="-27.5" />
+      <point x="0.0" y="39.0" />
     </edge>
     <edge source="org.tbbtalent.server.model.db.task.Task" target="org.tbbtalent.server.model.db.task.Auditable" relationship="INTERFACE_GENERALIZATION">
-      <point x="0.0" y="-0.0" />
-      <point x="0.0" y="-0.0" />
+      <point x="0.0" y="-82.5" />
+      <point x="0.0" y="60.5" />
     </edge>
     <edge source="org.tbbtalent.server.model.db.task.UploadTask" target="org.tbbtalent.server.model.db.task.Task" relationship="INTERFACE_GENERALIZATION">
-      <point x="0.0" y="-0.0" />
-      <point x="91.0" y="192.0" />
-      <point x="201.5" y="192.0" />
-      <point x="0.0" y="-0.0" />
+      <point x="0.0" y="-27.5" />
+      <point x="362.0" y="361.0" />
+      <point x="243.75" y="361.0" />
+      <point x="0.0" y="82.5" />
     </edge>
     <edge source="org.tbbtalent.server.model.db.task.QuestionTask" target="org.tbbtalent.server.model.db.task.Task" relationship="INTERFACE_GENERALIZATION">
-      <point x="0.0" y="-0.0" />
-      <point x="300.0" y="192.0" />
-      <point x="201.5" y="192.0" />
-      <point x="0.0" y="-0.0" />
+      <point x="0.0" y="-39.0" />
+      <point x="125.5" y="361.0" />
+      <point x="243.75" y="361.0" />
+      <point x="0.0" y="82.5" />
     </edge>
   </edges>
-  <settings layout="Generic" zoom="1.0" showDependencies="true" x="353.5" y="258.0" />
+  <settings layout="Hierarchic" zoom="0.7538200339558573" showDependencies="false" x="378.5" y="284.50000000000006" />
   <SelectedNodes />
   <Categories>
+    <Category>Methods</Category>
     <Category>Properties</Category>
   </Categories>
   <SCOPE>All</SCOPE>

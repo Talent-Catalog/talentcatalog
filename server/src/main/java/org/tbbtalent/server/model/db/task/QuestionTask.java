@@ -34,11 +34,16 @@ public interface QuestionTask extends Task {
     String getQuestion();
 
     /**
-     * Initially null, this provides the candidate's answer to the question.
-     * @return Answer to question - different subclasses code for different kinds of answers
-     * - for example {@link YesNoQuestionTask} is for questions where the answer is a simple
-     * yes or no.
+     * Validates the candidate's answer (a String) to the question.
+     * <p/>
+     * Default validation is always true if the answer is not null, but subclasses can add
+     * extra validation.
+     * @param answer Candidate's answer to question
+     * @return True if answer is valid. This can be overridden in different subclasses code
+     * for different kinds of answers - for example {@link YesNoQuestionTask} is for questions
+     * where the answer must be a simple yes or no.
      */
-    @Nullable
-    Object getAnswer();
+     default boolean validateAnswer(@Nullable String answer) {
+         return answer != null;
+     }
 }

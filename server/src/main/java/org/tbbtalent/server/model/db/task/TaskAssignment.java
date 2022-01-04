@@ -62,6 +62,13 @@ public interface TaskAssignment {
     Candidate getCandidate();
 
     /**
+     * Candidate may provide optional notes related to any task.
+     * @return Optional notes
+     */
+    @Nullable
+    String getCandidateNotes();
+
+    /**
      * Time when task was completed - initially null.
      * @return Task completion time, null if not completed.
      */
