@@ -28,6 +28,7 @@ import org.tbbtalent.server.model.db.SystemLanguage;
 import org.tbbtalent.server.request.language.CreateLanguageRequest;
 import org.tbbtalent.server.request.language.SearchLanguageRequest;
 import org.tbbtalent.server.request.language.UpdateLanguageRequest;
+import org.tbbtalent.server.response.DatePickerNames;
 
 public interface LanguageService {
 
@@ -67,6 +68,14 @@ public interface LanguageService {
     List<Language> listLanguages();
 
     Page<Language> searchLanguages(SearchLanguageRequest request);
+
+    /**
+     * Retrieve the abbreviated day and month names as used in the Angular date picker component
+     * appropriate for the given language.
+     * @param lang Language code - eg 'en' for English.
+     * @return Language sensitive abbreviated names for date picker component.
+     */
+    DatePickerNames getDatePickerNames(String lang);
 
     Language getLanguage(long id);
 

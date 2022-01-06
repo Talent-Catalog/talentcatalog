@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -60,6 +60,7 @@ import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 import javax.validation.constraints.NotNull;
@@ -84,20 +85,20 @@ public class CandidateServiceImpl implements CandidateService {
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     /**
-     * These are the default candidate statuses to included in searches when no statuses are 
+     * These are the default candidate statuses to included in searches when no statuses are
      * specified.
      * Basically all "inactive" statuses such as draft, deleted, employed and ineligible.
      */
-    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>( 
+    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>(
         EnumSet.complementOf(EnumSet.of(
             CandidateStatus.autonomousEmployment,
             CandidateStatus.deleted,
-            CandidateStatus.draft, 
-            CandidateStatus.employed, 
+            CandidateStatus.draft,
+            CandidateStatus.employed,
             CandidateStatus.ineligible,
             CandidateStatus.withdrawn
         )));
-    
+
     private final UserRepository userRepository;
     private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
@@ -291,7 +292,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public boolean mergeCandidateSavedLists(long candidateId, IHasSetOfSavedLists request) {
         Candidate candidate = candidateRepository.findByIdLoadSavedLists(candidateId);
-        
+
         boolean done = true;
         if (candidate == null) {
             done = false;
@@ -320,7 +321,7 @@ public class CandidateServiceImpl implements CandidateService {
         return done;
     }
 
-    private @NotNull Set<SavedList> fetchSavedLists(IHasSetOfSavedLists request) 
+    private @NotNull Set<SavedList> fetchSavedLists(IHasSetOfSavedLists request)
             throws NoSuchObjectException {
 
         Set<SavedList> savedLists = new HashSet<>();
@@ -502,10 +503,10 @@ public class CandidateServiceImpl implements CandidateService {
         if (CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
             //Compute excluded candidates based on review statuses
             excludedCandidates.addAll(candidateReviewStatusRepository
-                .findCandidatesExcludedFromSearch(request.getSavedSearchId(), 
+                .findCandidatesExcludedFromSearch(request.getSavedSearchId(),
                     request.getReviewStatusFilter()));
         }
-        
+
         //Modify request, defaulting blank statuses
         List<CandidateStatus> requestedStatuses = request.getStatuses();
         if (requestedStatuses == null || requestedStatuses.isEmpty()) {
@@ -518,7 +519,7 @@ public class CandidateServiceImpl implements CandidateService {
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(request,
                 simpleQueryString, excludedCandidates);
 
-            //Define sort from request 
+            //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(request);
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
@@ -564,7 +565,7 @@ public class CandidateServiceImpl implements CandidateService {
         String simpleQueryString, @Nullable Collection <Candidate> excludedCandidates) {
     /*
        Constructing a filtered simple query that looks like this:
-       
+
        GET /candidates/_search
         {
           "query": {
@@ -581,7 +582,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
      */
 
-        //Create a simple query string builder from the given string 
+        //Create a simple query string builder from the given string
         SimpleQueryStringBuilder simpleQueryStringBuilder =
                 QueryBuilders.simpleQueryStringQuery(simpleQueryString);
 
@@ -595,7 +596,7 @@ public class CandidateServiceImpl implements CandidateService {
         //they don't affect the Elasticsearch score)
 
         //Add a TermsQuery filter for each multiselect request - eg
-        //countries and nationalities. A match against any one of the 
+        //countries and nationalities. A match against any one of the
         //multiselected values will result in the filter returning true.
         //There is also a TermQuery which takes only one value.
 
@@ -622,7 +623,7 @@ public class CandidateServiceImpl implements CandidateService {
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
                     SearchType.not,"masterId", candidateIds);
         }
-        
+
         //Countries
         final List<Long> countryIds = request.getCountryIds();
         if (countryIds != null) {
@@ -682,7 +683,7 @@ public class CandidateServiceImpl implements CandidateService {
                 this.savedSearchService.loadSavedSearch(savedSearchId);
 
         //Merge the SavedSearchGetRequest - notably the page request - in to
-        //the standard saved search request. 
+        //the standard saved search request.
         searchRequest.merge(request);
 
         //Do the search
@@ -704,7 +705,7 @@ public class CandidateServiceImpl implements CandidateService {
         String simpleQueryString = searchRequest.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             //This is an elastic search request.
-            
+
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
                 simpleQueryString, null);
 
@@ -715,7 +716,7 @@ public class CandidateServiceImpl implements CandidateService {
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
                 query, CandidateEs.class, IndexCoordinates.of("candidates"));
 
-            //Get candidate ids from the returned results            
+            //Get candidate ids from the returned results
             for (SearchHit<CandidateEs> hit : hits) {
                 candidateIds.add(hit.getContent().getMasterId());
             }
@@ -764,7 +765,7 @@ public class CandidateServiceImpl implements CandidateService {
             //Add in any selections
             markUserSelectedCandidates(savedSearchId, candidates);
         }
-        
+
         return candidates;
     }
 
@@ -913,7 +914,7 @@ public class CandidateServiceImpl implements CandidateService {
                 addedDestinations = true;
             }
         }
-        
+
         if (addedDestinations) {
             candidate = save(candidate, false);
         }
@@ -959,7 +960,7 @@ public class CandidateServiceImpl implements CandidateService {
         //Use id to generate candidate number
         String candidateNumber = String.format("%04d", candidate.getId());
         candidate.setCandidateNumber(candidateNumber);
-        
+
         //Now save again with candidateNumber, updating Elasticsearch
         candidate = save(candidate, true);
 
@@ -975,7 +976,7 @@ public class CandidateServiceImpl implements CandidateService {
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
 
         UpdateCandidateStatusInfo info = request.getInfo();
-        
+
         //Update status for all given ids
         Collection<Long> ids = request.getCandidateIds();
         for (Long id : ids) {
@@ -1110,7 +1111,8 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate updateShareableDocs(long id, UpdateCandidateShareableDocsRequest request) {
+    public Candidate updateShareableDocs(long id, UpdateCandidateShareableDocsRequest request)
+        throws UnauthorisedActionException {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
@@ -1129,8 +1131,15 @@ public class CandidateServiceImpl implements CandidateService {
             doc = this.candidateAttachmentRepository.findById(request.getShareableDocAttachmentId())
                     .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getShareableDocAttachmentId()));
         }
+
+        //Publish these docs (if not null) - ie make them viewable by anyone.
+        publishDoc(cv);
+        publishDoc(doc);
+
         if (request.getSavedListId() != null) {
+            //Request is to update the shareable docs associated with a candidate and list
             this.candidateSavedListService.updateCandidateShareableDocs(id, request.getSavedListId(), cv, doc);
+
             // If the candidate's shareable docs are null, set them with the list's shareable docs.
             if (candidate.getShareableCv() == null) {
                 candidate.setShareableCv(cv);
@@ -1139,10 +1148,28 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate.setShareableDoc(doc);
             }
         } else {
+            //Request is just to update the candidate's shareable doc
             candidate.setShareableCv(cv);
             candidate.setShareableDoc(doc);
         }
         return save(candidate, true);
+    }
+
+    /**
+     * Changes the permissions of the given document to viewable by anyone.
+     * @param doc Document to be published
+     * @throws UnauthorisedActionException if the changing of the file permissions failed.
+     */
+    private void publishDoc(@Nullable CandidateAttachment doc)
+        throws UnauthorisedActionException {
+        if (doc != null && doc.getType() == AttachmentType.googlefile) {
+            GoogleFileSystemFile file = new GoogleFileSystemFile(doc.getUrl());
+            try {
+                fileSystemService.publishFile(file);
+            } catch (IOException e) {
+                throw new UnauthorisedActionException("file permission");
+            }
+        }
     }
 
     @Override
@@ -1433,7 +1460,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (user == null) {
             return Optional.empty();
         }
-        Candidate candidate = candidateRepository.findByUserId(user.getId()); 
+        Candidate candidate = candidateRepository.findByUserId(user.getId());
         return candidate == null ? Optional.empty() : Optional.of(candidate);
     }
 
@@ -1473,7 +1500,7 @@ public class CandidateServiceImpl implements CandidateService {
     private static List<DataRow> toRows(List<Object[]> objects) {
         List<DataRow> dataRows = new ArrayList<>(objects.size());
         for (Object[] row: objects) {
-            String label = row[0] == null ? "undefined" : row[0].toString(); 
+            String label = row[0] == null ? "undefined" : row[0].toString();
             DataRow dataRow = new DataRow(label, (BigInteger)row[1]);
             dataRows.add(dataRow);
         }
@@ -1664,7 +1691,7 @@ public class CandidateServiceImpl implements CandidateService {
     // List export
     @Override
     public void exportToCsv(
-            long savedListId, SavedListGetRequest request, PrintWriter writer) 
+            long savedListId, SavedListGetRequest request, PrintWriter writer)
             throws ExportFailedException {
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
             csvWriter.writeNext(getExportTitles());
@@ -1693,19 +1720,19 @@ public class CandidateServiceImpl implements CandidateService {
     // Search export
     @Override
     public void exportToCsv(
-            long savedSearchId, SavedSearchGetRequest request, PrintWriter writer) 
+            long savedSearchId, SavedSearchGetRequest request, PrintWriter writer)
             throws ExportFailedException {
         SearchCandidateRequest searchRequest =
                 this.savedSearchService.loadSavedSearch(savedSearchId);
 
         //Merge the SavedSearchGetRequest - notably the page request - in to
-        //the standard saved search request. 
+        //the standard saved search request.
         searchRequest.merge(request);
         exportToCsv(searchRequest, writer);
     }
 
     @Override
-    public void exportToCsv(SearchCandidateRequest request, PrintWriter writer) 
+    public void exportToCsv(SearchCandidateRequest request, PrintWriter writer)
             throws ExportFailedException {
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
             csvWriter.writeNext(getExportTitles());
@@ -1902,11 +1929,11 @@ public class CandidateServiceImpl implements CandidateService {
             Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
 
             log.info("Notify watchers: running " + searches.size() + " searches");
-            
+
             int count = 0;
 
             OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
-            
+
             //Look through all watched searches looking for any that have candidates that were
             //created since yesterday.
             //Those are the searches that need to notify their watchers.
@@ -1915,10 +1942,10 @@ public class CandidateServiceImpl implements CandidateService {
                 count++;
                 currentSearch = savedSearch.getName();
                 log.info("Running search " + count + ": " + currentSearch);
-                
+
                 SearchCandidateRequest searchCandidateRequest =
                         convertToSearchCandidateRequest(savedSearch);
-                
+
                 //Set up paging
                 searchCandidateRequest.setPageNumber(0);
                 //Short page is all we need - we are only going to look at first element
@@ -1934,7 +1961,7 @@ public class CandidateServiceImpl implements CandidateService {
                     OffsetDateTime createdDate = candidate.getCreatedDate();
                     newCandidates = createdDate.isAfter(yesterday);
                 }
-                
+
                 if (newCandidates) {
                     //Query has new results. Need to let watchers know
                     Set<Long> watcherUserIds = savedSearch.getWatcherUserIds();
@@ -1985,7 +2012,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate save(Candidate candidate, boolean updateCandidateEs) {
         candidate = candidateRepository.save(candidate);
-        
+
         if (updateCandidateEs) {
             candidate = updateElasticProxy(candidate);
         }
@@ -1993,7 +2020,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     /**
-     * Does whatever is needed to bring the Elastic proxy into sync with 
+     * Does whatever is needed to bring the Elastic proxy into sync with
      * its parent candidate on the normal database.
      * <p>
      *     Handles the following cases:
@@ -2001,7 +2028,7 @@ public class CandidateServiceImpl implements CandidateService {
      * <ul>
      *     <li>Normal case: updates proxy indicated by textSearchId of master</li>
      *     <li>Master has no linked proxy (no textSearchId) - create one </li>
-     *     <li>Master has a textSearchId, but no such proxy is found, 
+     *     <li>Master has a textSearchId, but no such proxy is found,
      *     log warning but create a proxy</li>
      * </ul>
      * @param candidate Candidate entity (the master) from thr normal database
@@ -2025,7 +2052,7 @@ public class CandidateServiceImpl implements CandidateService {
                 //Create new twin
                 twin = new CandidateEs(candidate);
 
-                //Shouldn't really happen (except during a complete reload) 
+                //Shouldn't really happen (except during a complete reload)
                 // so log warning
                 log.warn("Candidate " + candidate.getId() +
                         " refers to non existent Elasticsearch id "
@@ -2045,9 +2072,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
         return candidate;
     }
-    
+
     @Override
-    public Candidate createCandidateFolder(long id) 
+    public Candidate createCandidateFolder(long id)
             throws NoSuchObjectException, IOException {
         Candidate candidate = getCandidate(id);
 
@@ -2055,7 +2082,7 @@ public class CandidateServiceImpl implements CandidateService {
         GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
 
         String candidateNumber = candidate.getCandidateNumber();
-        
+
         GoogleFileSystemFolder folder = fileSystemService.findAFolder(
             candidateDrive, candidateRoot, candidateNumber);
         if (folder == null) {
@@ -2067,11 +2094,11 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate createUpdateSalesforce(long id) 
-            throws NoSuchObjectException, GeneralSecurityException, 
+    public Candidate createUpdateSalesforce(long id)
+            throws NoSuchObjectException, GeneralSecurityException,
             WebClientException {
         Candidate candidate = getCandidate(id);
-        
+
         Contact candidateSf = salesforceService.createOrUpdateContact(candidate);
         candidate.setSflink(candidateSf.getUrl());
 
@@ -2084,7 +2111,7 @@ public class CandidateServiceImpl implements CandidateService {
         throws NoSuchObjectException, GeneralSecurityException, WebClientException {
 
         List<Candidate> candidates = candidateRepository.findByIds(request.getCandidateIds());
-        
+
         createUpdateSalesforce(candidates, request.getSfJobLink(), request.getSalesforceOppParams());
     }
 
@@ -2096,14 +2123,14 @@ public class CandidateServiceImpl implements CandidateService {
         createUpdateSalesforce(savedList.getCandidates(), sfJobLink, request.getSalesforceOppParams());
     }
 
-    private void createUpdateSalesforce(Collection<Candidate> candidates, 
+    private void createUpdateSalesforce(Collection<Candidate> candidates,
         @Nullable String sfJoblink,
         @Nullable SalesforceOppParams salesforceOppParams)
         throws GeneralSecurityException, WebClientException {
 
         //Need ordered list so that can match with returned contacts.
         List<Candidate> orderedCandidates = new ArrayList<>(candidates);
-        
+
         //Update Salesforce contacts
         List<Contact> contacts =
             salesforceService.createOrUpdateContacts(orderedCandidates);
@@ -2118,7 +2145,7 @@ public class CandidateServiceImpl implements CandidateService {
                 candidateRepository.save(candidate);
             }
         }
-        
+
         //If we have a Salesforce job opportunity, we can also update associated candidate opps.
         if (sfJoblink != null && sfJoblink.length() > 0) {
             salesforceService.createOrUpdateCandidateOpportunities(
@@ -2127,7 +2154,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public void updateIntakeData(long id, CandidateIntakeDataUpdate data) 
+    public void updateIntakeData(long id, CandidateIntakeDataUpdate data)
             throws NoSuchObjectException {
         Candidate candidate = getCandidate(id);
 

@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -20,6 +20,12 @@ import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.Permission;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,19 +38,13 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
-
 
 @Service
 public class GoogleFileSystemServiceImpl implements FileSystemService {
     private static final Logger log = LoggerFactory.getLogger(GoogleFileSystemServiceImpl.class);
-    
+
     private static final String FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
-    
+
     private final Drive googleDriveService;
 
     @Autowired
@@ -55,7 +55,7 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
 
     @Override
     public GoogleFileSystemFolder findAFolder(
-        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName)
         throws IOException {
         //See https://developers.google.com/drive/api/v3/search-files
         // and https://developers.google.com/drive/api/v3/enable-shareddrives
@@ -66,7 +66,7 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
                 .setCorpora("drive")
                 .setDriveId(drive.getId())
                 .setQ("name='" + folderName + "'" +
-                      " and '" + parentFolder.getId() + "' in parents" +        
+                      " and '" + parentFolder.getId() + "' in parents" +
                       " and mimeType='" + FOLDER_MIME_TYPE + "'")
                 .setPageSize(10)
                 .setFields("nextPageToken, files(id,name,webViewLink)")
@@ -85,7 +85,7 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
     private File createFileInternal(GoogleFileSystemDrive drive,
         GoogleFileSystemFolder parentFolder, String fileName, String mimeType) throws IOException {
         //See https://developers.google.com/drive/api/v3/folder
-        //and https://developers.google.com/drive/api/v3/enable-shareddrives 
+        //and https://developers.google.com/drive/api/v3/enable-shareddrives
         File fileMetadata = new File();
         fileMetadata.setDriveId(drive.getId());
         fileMetadata.setParents(Collections.singletonList(parentFolder.getId()));
@@ -95,10 +95,10 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
             .setSupportsAllDrives(true)
             .setFields("id,webViewLink")
             .execute();
-    }    
-    
+    }
+
     @Override
-    public @NonNull 
+    public @NonNull
     GoogleFileSystemFile createFile(GoogleFileSystemDrive drive,
         GoogleFileSystemFolder parentFolder, String fileName, String mimeType) throws IOException {
         File file = createFileInternal(drive, parentFolder, fileName, mimeType);
@@ -112,7 +112,7 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
     @Override
     public @NonNull
     GoogleFileSystemFolder createFolder(
-        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName)
         throws IOException {
         File file = createFileInternal(drive, parentFolder, folderName, FOLDER_MIME_TYPE);
 
@@ -125,14 +125,14 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
     @Override
     public void deleteFile(GoogleFileSystemFile file) throws IOException {
         String id = file.getId();
-        
+
         googleDriveService.files().delete(id)
                 .setSupportsAllDrives(true)
                 .execute();
     }
 
     @Override
-    public void downloadFile(@NonNull GoogleFileSystemFile file, 
+    public void downloadFile(@NonNull GoogleFileSystemFile file,
                              @NonNull OutputStream out) throws IOException {
         String id = file.getId();
 
@@ -143,7 +143,20 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
     }
 
     @Override
-    public void renameFile(@NonNull GoogleFileSystemFile file) 
+    public void publishFile(@NonNull GoogleFileSystemFile file) throws IOException {
+        String id = file.getId();
+
+        Permission anyoneReadPermission = new Permission()
+            .setType("anyone")
+            .setRole("reader");
+
+        googleDriveService.permissions().create(id, anyoneReadPermission)
+            .setSupportsAllDrives(true)
+            .execute();
+    }
+
+    @Override
+    public void renameFile(@NonNull GoogleFileSystemFile file)
             throws IOException {
         String id = file.getId();
 
@@ -158,8 +171,8 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
     @Override
     public @NonNull
     GoogleFileSystemFile uploadFile(GoogleFileSystemDrive drive,
-            @Nullable GoogleFileSystemFolder parentFolder, 
-            String fileName, java.io.File file) 
+            @Nullable GoogleFileSystemFolder parentFolder,
+            String fileName, java.io.File file)
             throws IOException {
 
         File fileMetadata = new File();
@@ -172,29 +185,29 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
             parent = Collections.singletonList(parentFolder.getId());
         }
         fileMetadata.setParents(parent);
-        
+
         fileMetadata.setName(fileName);
 
         FileContent mediaContent = new FileContent(null, file);
-        
+
         //Upload file to Google.
         File uploadedfile = googleDriveService.files()
                 .create(fileMetadata, mediaContent)
                 .setSupportsAllDrives(true)
                 .setFields("id,webViewLink")
                 .execute();
-        
+
         //Return an object representing the uploaded file
         GoogleFileSystemFile fsf = new GoogleFileSystemFile(uploadedfile.getWebViewLink());
         fsf.setId(uploadedfile.getId());
         fsf.setName(fileName);
-        
+
         return fsf;
     }
 
     @Override
     public GoogleFileSystemFile copyFile(
-        GoogleFileSystemFolder parentFolder, String name, GoogleFileSystemFile sourceFile) 
+        GoogleFileSystemFolder parentFolder, String name, GoogleFileSystemFile sourceFile)
         throws IOException {
         List<String> parent = Collections.singletonList(parentFolder.getId());
         File copyMetadata = new File();
@@ -212,5 +225,5 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         fsf.setName(name);
         return fsf;
     }
-    
+
 }

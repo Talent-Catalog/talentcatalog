@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.api.admin.SystemLanguageDtoBuilder;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.SystemLanguage;
+import org.tbbtalent.server.response.DatePickerNames;
 import org.tbbtalent.server.service.db.LanguageService;
 import org.tbbtalent.server.service.db.TranslationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -56,6 +57,11 @@ public class LanguagePortalApi {
     public Map<String, Object> getLanguage(@PathVariable("language") String languageName) {
         Language language = languageService.getLanguage(languageName);
         return languageDto().build(language);
+    }
+
+    @GetMapping("/datepickernames/{lang}")
+    public DatePickerNames getDatePickerNames(@PathVariable("lang") String lang) {
+        return languageService.getDatePickerNames(lang);
     }
 
     @GetMapping(value = "system")

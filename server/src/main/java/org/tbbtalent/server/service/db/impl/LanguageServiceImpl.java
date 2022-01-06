@@ -22,6 +22,9 @@ import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.DayOfWeek;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +53,7 @@ import org.tbbtalent.server.request.language.CreateLanguageRequest;
 import org.tbbtalent.server.request.language.SearchLanguageRequest;
 import org.tbbtalent.server.request.language.UpdateLanguageRequest;
 import org.tbbtalent.server.request.translation.CreateTranslationRequest;
+import org.tbbtalent.server.response.DatePickerNames;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.LanguageService;
 import org.tbbtalent.server.service.db.TranslationService;
@@ -202,6 +206,25 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     public Language getLanguage(String languageName) {
         return languageRepository.findByNameIgnoreCase(languageName);
+    }
+
+    @Override
+    public DatePickerNames getDatePickerNames(String lang) {
+        DatePickerNames dpn = new DatePickerNames();
+
+        Map<Month, String> monthMap =
+            LocaleHelper.getMonthTranslations(lang, TextStyle.SHORT_STANDALONE);
+        for (Month month: Month.values()) {
+          dpn.getMonthNames().add(monthMap.get(month));
+        }
+
+        Map<DayOfWeek, String> weekdayMap =
+            LocaleHelper.getDayOfWeekTranslations(lang, TextStyle.NARROW_STANDALONE);
+        for (DayOfWeek dayOfWeek: DayOfWeek.values()) {
+          dpn.getWeekdayNames().add(weekdayMap.get(dayOfWeek));
+        }
+
+        return dpn;
     }
 
     @Override

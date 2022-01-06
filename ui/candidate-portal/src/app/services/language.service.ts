@@ -19,9 +19,13 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Language, SystemLanguage} from '../model/language';
 import {Observable, Subject, throwError} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
-import {Translation} from '../model/translation';
+import {catchError, map, tap} from 'rxjs/operators';
 import {LocalStorageService} from 'angular-2-local-storage';
+
+export class DataPickerNames {
+  monthNames: string[];
+  weekdayNames: string[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -30,14 +34,14 @@ export class LanguageService {
 
   private apiUrl: string = environment.apiUrl + '/language';
 
+  private datePickerNames: DataPickerNames = null;
+
   private languageChangedSource = new Subject<string>();
   languageChanged$ = this.languageChangedSource.asObservable();
 
   private languageSelectionDisabled: boolean = false;
 
-  translations: Translation[];
-
-  selectedLanguage: string;
+  private selectedLanguage: string;
 
   loading: boolean;
 
@@ -47,7 +51,7 @@ export class LanguageService {
               private localStorage: LocalStorageService) {
     this.languageSelectionDisabled = (this.localStorage.get('languageSelectionDisabled') as boolean);
     this.usAfghan = (this.localStorage.get('usAfghan') as boolean);
-    this.selectedLanguage = (this.localStorage.get('language') as string) || 'en';
+    this.setSelectedLanguage((this.localStorage.get('language') as string) || 'en');
   }
 
   isLanguageSelectionDisabled(): boolean {
@@ -77,6 +81,8 @@ export class LanguageService {
     );
   }
 
+  //todo This is only ever called with hardcoded 'english'. What is the point of it?
+  //I think it is just used to default English as language in drop down
   getLanguage(language){
     return this.http.get<Language>(`${this.apiUrl}/${language}`)
   }
@@ -95,10 +101,6 @@ export class LanguageService {
     return rtl;
   }
 
-  setSelectedLanguage(selectedLanguage: string) {
-    this.selectedLanguage = selectedLanguage;
-  }
-
   changeLanguage(lang) {
     if (lang) {
       this.localStorage.set('language', lang);
@@ -107,5 +109,38 @@ export class LanguageService {
       lang = this.selectedLanguage;
     }
     this.languageChangedSource.next(lang);
+  }
+
+  getDatePickerMonthName(month: number): string {
+    let name: string = "";
+    if (this.datePickerNames) {
+      name = this.datePickerNames.monthNames[month - 1];
+    }
+    return name;
+  }
+
+  getDatePickerWeekdayName(weekday: number) {
+    let name: string = "";
+    if (this.datePickerNames) {
+      name = this.datePickerNames.weekdayNames[weekday - 1];
+    }
+    return name;
+  }
+
+  /**
+   * Callers just need to subscribe. They don't need to process the returned data. It is stored
+   * locally - see the tap below.
+   */
+  public loadDatePickerLanguageData(): Observable<DataPickerNames> {
+    return this.http.get<DataPickerNames>(
+      `${this.apiUrl}/datepickernames/${this.selectedLanguage}`)
+    .pipe(
+      //Save the data locally
+      tap(data => {this.datePickerNames = data})
+    );
+  }
+
+  private setSelectedLanguage(selectedLanguage: string) {
+    this.selectedLanguage = selectedLanguage;
   }
 }

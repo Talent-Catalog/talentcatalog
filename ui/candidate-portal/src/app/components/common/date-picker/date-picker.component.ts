@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormControl} from "@angular/forms";
 import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {LanguageService} from "../../../services/language.service";
 
 @Component({
   selector: 'app-date-picker',
@@ -16,7 +17,7 @@ export class DatePickerComponent implements OnInit {
   maxDate: NgbDateStruct;
   minDate: NgbDateStruct;
 
-  constructor() { }
+  constructor(public languageService: LanguageService) { }
 
   ngOnInit(): void {
     this.date = this.control.value;
@@ -27,6 +28,12 @@ export class DatePickerComponent implements OnInit {
     } else {
       this.maxDate = {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate()};
     }
+
+    //Load the day and month translations suitable for the currently selected language.
+    //Note that we just need to subscribe - there is no need to process the returned data
+    //- that is stored locally in the language service.
+    this.languageService.loadDatePickerLanguageData().subscribe();
+
   }
 
   update() {

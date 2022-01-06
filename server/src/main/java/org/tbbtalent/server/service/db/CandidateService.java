@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -164,10 +164,19 @@ public interface CandidateService {
 
     Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request);
 
-    Candidate updateShareableDocs(long id, UpdateCandidateShareableDocsRequest request);
+    /**
+     * Update a candidate's shareable docs according to the given request.
+     * @param id Id of candidate
+     * @param request Request specific the docs to be shared.
+     * @return Updated candidate object
+     * @throws UnauthorisedActionException if there was a problem changing the sharing permissions
+     * of the docs to be shared.
+     */
+    Candidate updateShareableDocs(long id, UpdateCandidateShareableDocsRequest request)
+        throws UnauthorisedActionException;
 
     Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request);
-    
+
     void updateCandidateStatus(UpdateCandidateStatusRequest request);
 
     void updateCandidateStatus(SavedList savedList, UpdateCandidateStatusInfo info);
@@ -201,7 +210,7 @@ public interface CandidateService {
      * candidate occupations.
      * <p/>
      * See doc for {@link #getLoggedInCandidate()}
-     * @return candidate entity preloaded with candidate occupations. 
+     * @return candidate entity preloaded with candidate occupations.
      * Returned as Optional - can be empty if nobody is logged in.
      */
     Optional<Candidate> getLoggedInCandidateLoadCandidateOccupations();
@@ -211,7 +220,7 @@ public interface CandidateService {
      * candidate certifications.
      * <p/>
      * See doc for {@link #getLoggedInCandidate()}
-     * @return candidate entity preloaded with candidate certifications. 
+     * @return candidate entity preloaded with candidate certifications.
      * Returned as Optional - can be empty if nobody is logged in.
      */
     Optional<Candidate> getLoggedInCandidateLoadCertifications();
@@ -221,7 +230,7 @@ public interface CandidateService {
      * candidate languages.
      * <p/>
      * See doc for {@link #getLoggedInCandidate()}
-     * @return candidate entity preloaded with candidate languages. 
+     * @return candidate entity preloaded with candidate languages.
      * Returned as Optional - can be empty if nobody is logged in.
      */
     Optional<Candidate> getLoggedInCandidateLoadCandidateLanguages();
@@ -231,7 +240,7 @@ public interface CandidateService {
      * <p/>
      * Note that the Candidate entity only lazily loads associated attributes.
      * So, for example, attributes like <code>candidateOccupations</code>
-     * will not be populated. They will only be populated as needed, eg when 
+     * will not be populated. They will only be populated as needed, eg when
      * accessed through a method like {@link Candidate#getCandidateOccupations()}.
      * <p/>
      * In that case, assuming that the JPA "persistence context" is still active
@@ -240,16 +249,16 @@ public interface CandidateService {
      * occupations.
      * (See https://www.baeldung.com/jpa-hibernate-persistence-context)
      * <p/>
-     * Note that our DTO builder class {@link DtoBuilder} will also trigger 
+     * Note that our DTO builder class {@link DtoBuilder} will also trigger
      * loading of the requested attributes from the database.
      * <p/>
-     * Note: In order to avoid unnecessary database accesses, there are some 
-     * special methods such as {@link #getLoggedInCandidateLoadCandidateOccupations()} 
+     * Note: In order to avoid unnecessary database accesses, there are some
+     * special methods such as {@link #getLoggedInCandidateLoadCandidateOccupations()}
      * which load specific attributes at the same time as the Candidate entity
-     * is fetched. This is achieved by using "join fetch" in the repository 
+     * is fetched. This is achieved by using "join fetch" in the repository
      * query.
-     * See, for example, {@link CandidateRepository#findByIdLoadCandidateOccupations}. 
-     * @return Lazily loaded entity corresponding to currently logged in 
+     * See, for example, {@link CandidateRepository#findByIdLoadCandidateOccupations}.
+     * @return Lazily loaded entity corresponding to currently logged in
      * candidate. Returned as Optional - can be empty if nobody is logged in.
      */
     Optional<Candidate> getLoggedInCandidate();
@@ -341,7 +350,7 @@ public interface CandidateService {
      * The link to Salesforce record (sflink) is established and stored.
      *
      * @param id ID of candidate
-     * @return Updated candidate object, containing link to corresponding 
+     * @return Updated candidate object, containing link to corresponding
      * Salesforce Contact record (created or
      * existing) in {@link Candidate#getSflink()}
      * @throws NoSuchObjectException if no candidate is found with that id
@@ -360,8 +369,8 @@ public interface CandidateService {
      * <p/>
      * Salesforce links may be created and stored in candidate records.
      *
-     * @param request Identifies candidates as well as optional Salesforce fields to set on 
-     *                candidate opportunities           
+     * @param request Identifies candidates as well as optional Salesforce fields to set on
+     *                candidate opportunities
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
@@ -377,8 +386,8 @@ public interface CandidateService {
      * <p/>
      * Salesforce links may be created and stored in candidate records.
      *
-     * @param request Identifies list of candidates as well as optional Salesforce fields to set on 
-     *                candidate opportunities           
+     * @param request Identifies list of candidates as well as optional Salesforce fields to set on
+     *                candidate opportunities
      * @throws NoSuchObjectException  if there is no saved list with this id
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
@@ -399,7 +408,7 @@ public interface CandidateService {
 
     /**
      * Checks all candidate data related to TBB destinations and checks that
-     * the data matches the currently configured TBB destinations 
+     * the data matches the currently configured TBB destinations
      * (eg Australia, Canada etc). It adds any missing destination records
      * if necessary and returns the updated Candidate record.
      * <p/>
@@ -411,7 +420,7 @@ public interface CandidateService {
      * candidate data each time a new TBB destination is added.
      * <p/>
      * Note that TBB destinations are configured in application.yml
-     * (tbb.destinations). 
+     * (tbb.destinations).
      * @param candidate Candidate to be checked
      * @return Updated candidate record.
      */
