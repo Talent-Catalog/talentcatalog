@@ -50,6 +50,8 @@ public class CandidateEs {
     private static final String[] sortingFields = {
             "masterId",
             "country",
+            "state",
+            "city",
             "gender",
             "firstName",
             "lastName",
@@ -78,6 +80,12 @@ public class CandidateEs {
 
     @Field(type = FieldType.Keyword)
     private String country;
+
+    @Field(type = FieldType.Keyword)
+    private String state;
+
+    @Field(type = FieldType.Keyword)
+    private String city;
 
     @Field(type = FieldType.Text)
     private List<String> cvs;
@@ -175,6 +183,8 @@ public class CandidateEs {
         this.gender = candidate.getGender();
         this.country = candidate.getCountry() == null ? null 
                 : candidate.getCountry().getName();
+        this.state = candidate.getState();
+        this.city = candidate.getCity();
         this.lastName = candidate.getUser() == null ? null 
                 : candidate.getUser().getLastName();
         this.masterId = candidate.getId();
