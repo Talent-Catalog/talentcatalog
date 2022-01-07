@@ -34,33 +34,35 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 public interface DocPublisherService {
 
   /**
-   * Creates an external document with the given name from the given data 
+   * Creates an external document with the given name from the given data.
+   * <p/>
+   * The document is made viewable by anyone with a link to it.
    *
    * @param drive Drive where doc is created
    * @param folder Folder where doc is created
    * @param name Name of created document
-   * @param dataRangeName Name of range for candidate data             
+   * @param dataRangeName Name of range for candidate data
    * @param data Data which comprises the published document
-   * @param props Extra properties to send to sheet. Each property key should correspond to 
+   * @param props Extra properties to send to sheet. Each property key should correspond to
    *              a named cell reference in the document template, and the value is the value
    *              to appear in that cell.
-   * @param columnSetUpMap Defines how columns are formatted. In the map each key is a column number 
+   * @param columnSetUpMap Defines how columns are formatted. In the map each key is a column number
    *                       (starting at 0).
    * @return A link to the created document
    */
   String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
       String name, String dataRangeName, List<List<Object>> data, Map<String, Object> props,
-      Map<Integer, PublishedDocColumnSetUp> columnSetUpMap) 
+      Map<Integer, PublishedDocColumnSetUp> columnSetUpMap)
       throws GeneralSecurityException, IOException;
 
   /**
    * Looks for data from a number of given columns in an already published doc.
    * Reads the data for those columns that appear in the doc.
    * @param docUrl Url of published document
-   * @param columnNamedRanges List of named ranges of columns to be read if present in doc 
+   * @param columnNamedRanges List of named ranges of columns to be read if present in doc
    * @return Map of lists of column values read. The key of the map is the name of the column found.
    * @throws GeneralSecurityException if there are security problems accessing the document
-   * @throws IOException if there are problems reading the document 
+   * @throws IOException if there are problems reading the document
    */
   Map<String, List<Object>> readPublishedDocColumns(String docUrl, List<String> columnNamedRanges)
       throws GeneralSecurityException, IOException;
