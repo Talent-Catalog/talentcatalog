@@ -36,12 +36,12 @@
         <country>au</country>
         <database>
 
-            <url>jdbc:mysql://localhost:3306/GlobalTalentDb?allowLoadLocalInfile=true</url>
-            <user>root</user>
-            <password>BusterLofty2</password>
-<!--            <url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</url>-->
-<!--            <user>GlobalTalentUser</user>-->
-<!--            <password>d26OKew37IkE</password>-->
+<!--            <url>jdbc:mysql://localhost:3306/GlobalTalentDb?allowLoadLocalInfile=true&amp;useSSL=false&amp;verifyServerCertificate=false</url>-->
+<!--            <user>root</user>-->
+<!--            <password>buster</password>-->
+            <url>jdbc:mysql://prod-db-mysql-1.refugeetalent.com:3306/GlobalTalentDb?allowLoadLocalInfile=true&amp;useSSL=false&amp;verifyServerCertificate=false</url>
+            <user>GlobalTalentUser</user>
+            <password>d26OKew37IkE</password>
 
             <!--
                 This filter is added as an AND condition to the WHERE clause

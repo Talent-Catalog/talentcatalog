@@ -35,7 +35,10 @@
     <destination>
         <country>au</country>
         <database>
+<!--            todo Update to match new test-->
 <!--            todo Need to remove these credentials into env variables-->
+
+<!--            todo this changes-->
             <url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</url>
             <user>GlobalTalentUser</user>
             <password>d26OKew37IkE</password>
@@ -60,6 +63,8 @@
                    = (select id from saved_list where name = 'TestCandidates' and global = true));
             </filter>
             <tables>
+
+<!--                todo Could also add table with shareable CV-->
                 <table>
                     <name>jobseekers</name>
                     <populate>
@@ -99,6 +104,8 @@
                         AND
                         candidate_certification.institution = regexp_replace(candidate_certification.institution, '[^[:ascii:]]', '', 'g')
                     </populate>
+
+<!--                    todo Also move from Varchar to Text - see Trello-->
                     <fields>
                         user_id INT(11),
                         certification VARCHAR(255),
