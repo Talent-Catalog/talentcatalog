@@ -35,11 +35,8 @@
     <destination>
         <country>au</country>
         <database>
-<!--            todo Update to match new test-->
 <!--            todo Need to remove these credentials into env variables-->
-
-<!--            todo this changes-->
-            <url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</url>
+            <url>jdbc:mysql://prod-db-mysql-1.refugeetalent.com:3306/GlobalTalentDb?allowLoadLocalInfile=true&amp;useSSL=false&amp;verifyServerCertificate=false</url>
             <user>GlobalTalentUser</user>
             <password>d26OKew37IkE</password>
 
@@ -63,8 +60,6 @@
                    = (select id from saved_list where name = 'TestCandidates' and global = true));
             </filter>
             <tables>
-
-<!--                todo Could also add table with shareable CV-->
                 <table>
                     <name>jobseekers</name>
                     <populate>
@@ -72,7 +67,9 @@
                         CAST(candidate_number AS int) AS user_id,
                         EXTRACT(year FROM dob) AS birth_year,
                         country_id,
-                        nationality_id
+                        nationality_id,
+                        (SELECT location FROM candidate_attachment ca
+                        WHERE ca.id = candidate.shareable_cv_attachment_id) as cv_url
                         FROM candidate
                         JOIN users ON candidate.user_id = users.id
                         WHERE true
@@ -81,7 +78,8 @@
                         user_id INT(11) NOT NULL,
                         birth_year INT(11),
                         country_id INT(11),
-                        nationality_id INT(11)
+                        nationality_id INT(11),
+                        cv_url TEXT
                     </fields>
                     <index>
                         user_id
@@ -104,12 +102,10 @@
                         AND
                         candidate_certification.institution = regexp_replace(candidate_certification.institution, '[^[:ascii:]]', '', 'g')
                     </populate>
-
-<!--                    todo Also move from Varchar to Text - see Trello-->
                     <fields>
                         user_id INT(11),
-                        certification VARCHAR(255),
-                        institution VARCHAR(255),
+                        certification TEXT,
+                        institution TEXT,
                         date DATE
                     </fields>
                 </table>
@@ -134,12 +130,12 @@
                     </populate>
                     <fields>
                         user_id INT(11) NOT NULL,
-                        education_type VARCHAR(255),
-                        course_name VARCHAR(255),
-                        major VARCHAR(255),
+                        education_type TEXT,
+                        course_name TEXT,
+                        major TEXT,
                         graduation INT(11),
                         country_id INT(11),
-                        institution VARCHAR(255)
+                        institution TEXT
                     </fields>
                 </table>
                 <table>
@@ -165,8 +161,8 @@
                     </populate>
                     <fields>
                         user_id INT(11) NOT NULL,
-                        position_title VARCHAR(1023),
-                        company_name VARCHAR(1023),
+                        position_title TEXT,
+                        company_name TEXT,
                         start_date DATE,
                         end_date DATE,
                         description TEXT,
@@ -209,8 +205,8 @@
                     </populate>
                     <fields>
                         user_id INT(11) NOT NULL,
-                        skill VARCHAR(255),
-                        time_period VARCHAR(255)
+                        skill TEXT,
+                        time_period TEXT
                     </fields>
                 </table>
             </tables>
@@ -360,8 +356,8 @@
     <!--                    </populate>-->
     <!--                    <fields>-->
     <!--                        user_id INT(11),-->
-    <!--                        certification VARCHAR(60),-->
-    <!--                        institution VARCHAR(60),-->
+    <!--                        certification TEXT,-->
+    <!--                        institution TEXT,-->
     <!--                        date DATE-->
     <!--                    </fields>-->
     <!--                </table>-->
@@ -383,7 +379,7 @@
     <!--                    </populate>-->
     <!--                    <fields>-->
     <!--                        user_id INT(11) NOT NULL,-->
-    <!--                        major VARCHAR(60),-->
+    <!--                        major TEXT,-->
     <!--                        graduation INT(11),-->
     <!--                        country_id INT(11),-->
     <!--                        degree_id INT(11),-->
@@ -411,8 +407,8 @@
     <!--                    </populate>-->
     <!--                    <fields>-->
     <!--                        user_id INT(11) NOT NULL,-->
-    <!--                        position_title VARCHAR(60),-->
-    <!--                        company_name VARCHAR(60),-->
+    <!--                        position_title TEXT,-->
+    <!--                        company_name TEXT,-->
     <!--                        start_date DATE,-->
     <!--                        end_date DATE,-->
     <!--                        description TEXT,-->
@@ -434,7 +430,7 @@
     <!--                    </populate>-->
     <!--                    <fields>-->
     <!--                        user_id INT(11) NOT NULL,-->
-    <!--                        skill VARCHAR(60) NOT NULL,-->
+    <!--                        skill TEXT NOT NULL,-->
     <!--                        time_period_id INT(11)-->
     <!--                    </fields>-->
     <!--                </table>-->
