@@ -90,6 +90,12 @@ development IDE - see below) rather than using brew.
 
 - Git - [see Git website](https://git-scm.com/downloads)
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
+- MySQL - We use MySQL to do daily uploads to the RefugeeTalent database. We are locked into an old
+  (pre the Oracle purchase of MySQL) version, 5.7, of MySQL. The best way to install this on a Mac 
+is using brew. 
+See [Installing MySQL 5.7 using Homebrew](https://medium.com/macoclock/installing-mysql-5-7-using-homebrew-974cc2d42509).
+Note the brew instructions at the end of the install, particularly
+the export to the path and the brew services restart.
 - IntelliJ IDEA (or the IDE of your choice) - [Intellij website](https://www.jetbrains.com/idea/download/)
 
 ### Setup your local database ###
