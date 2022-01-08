@@ -81,7 +81,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
   }
 
   @Override
-  public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder, 
+  public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
       String name, String dataRangeName, List<List<Object>> mainData, Map<String, Object> props,
       Map<Integer, PublishedDocColumnSetUp> columnSetUpMap)
       throws GeneralSecurityException, IOException {
@@ -90,8 +90,8 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     GoogleFileSystemFile file = fileSystemService.copyFile(
         folder, name, googleDriveConfig.getPublishedSheetTemplate());
     final String spreadsheetId = file.getId();
-    
-    //Now write to sheet - see https://developers.google.com/sheets/api/guides/values#writing 
+
+    //Now write to sheet - see https://developers.google.com/sheets/api/guides/values#writing
     final Sheets service = googleDriveConfig.getGoogleSheetsService();
     List<ValueRange> data = new ArrayList<>();
 
@@ -121,12 +121,12 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         break;
       }
     }
-    
+
     DataInSheet dataInSheet = new DataInSheet(mainSheetId, dataRange, mainData);
 
-    
+
     //   NOW START POPULATING SHEET
-    
+
     //Add main data - the rows for each candidate, plus the column headers in the first row.
     data.add(new ValueRange().setRange(dataRangeName).setValues(mainData));
 
@@ -141,12 +141,12 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         .setData(data);
     BatchUpdateValuesResponse res = service.spreadsheets().values().batchUpdate(spreadsheetId, body).execute();
     log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
-    
+
     //Now batch various other update requests which involve configuring drop down data entry and
     //protecting parts of the sheet.
     List<Request> requests = new ArrayList<>();
     Request req;
-    
+
     //Add column formatting
     for (Entry<Integer, PublishedDocColumnSetUp> entry : columnSetUpMap.entrySet()) {
       GridRange range = dataInSheet.getColumnRange(entry.getKey());
@@ -168,7 +168,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         requests.add(req);
       }
     }
-    
+
     //Now protect the sheets other than the Main one (eg the Data sheet)
     //Users should normally only be able to change the main sheet - not the other tabs
     //See https://developers.google.com/sheets/api/samples/ranges
@@ -183,13 +183,16 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         requests.add(req);
       }
     }
-    
-    BatchUpdateSpreadsheetRequest content = 
+
+    BatchUpdateSpreadsheetRequest content =
         new BatchUpdateSpreadsheetRequest().setRequests(requests);
-    BatchUpdateSpreadsheetResponse res2 = 
+    BatchUpdateSpreadsheetResponse res2 =
         service.spreadsheets().batchUpdate(spreadsheetId, content).execute();
 
     log.info(res2.getReplies().size() + " batch update responses received");
+
+    //Make file public - ie viewable by anyone with the link.
+    fileSystemService.publishFile(file);
 
     return file.getUrl();
   }
@@ -290,7 +293,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
                 .setType("ONE_OF_LIST")
                 .setValues(optionValues))
             .setStrict(true)
-            
+
             //This causes the drop down to display
             .setShowCustomUi(true)
         )
@@ -310,7 +313,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     }
     return rangeNames;
   }
-  
+
   /**
    * Returns all the named ranges.
    */
@@ -320,7 +323,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     Sheets.Spreadsheets.Get request = service.spreadsheets().get(spreadsheetId);
     return request.execute().getNamedRanges();
   }
-  
+
   /**
    * Returns the properties of all sheets (tabs).
    */
@@ -339,7 +342,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
   /**
    * Represents a region of data located at a certain position in a sheet.
    * <p/>
-   * Used to convert a column of the data into the corresponding GridRange within the sheet. 
+   * Used to convert a column of the data into the corresponding GridRange within the sheet.
    */
   private static class DataInSheet {
 
@@ -364,7 +367,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     /**
      * Returns the sheet range of the given column of the data (excluding the header)
      * @param columnInData Column in data (index 0)
-     * @return A sheet range describing the location of that column of data within the sheet 
+     * @return A sheet range describing the location of that column of data within the sheet
      */
     GridRange getColumnRange(int columnInData) {
       //Skip header row
@@ -379,5 +382,5 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
           .setEndColumnIndex(startColumn+1);
     }
   }
-  
+
 }
