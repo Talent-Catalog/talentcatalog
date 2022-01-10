@@ -66,14 +66,16 @@ tr.selected-row {
 
 }
 
-.filter-results {
-  display: flex;
-  justify-content: space-between;
-  padding: 1em;
-
-  ::ng-deep ul.pagination {
-    margin-bottom: 0;
+.buttons-spacing {
+  button {
+    margin-right: 2%;
+    margin-bottom: 0.5em;
+    min-width: 100px;
   }
+}
+
+.space-evenly {
+  justify-content: space-evenly;
 }
 
 .candidate-number {
