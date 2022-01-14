@@ -79,6 +79,8 @@ export class PublishedDocColumnService {
     this.addColumn("ieltsScore", "IELTS Score", new PublishedDocFieldSource("ieltsScore"));
     this.addColumn("lastName", "Last Name", new PublishedDocFieldSource("user.lastName"));
     this.addColumn("location", "Location", new PublishedDocFieldSource("country.name"));
+    this.addColumn("city", "City", new PublishedDocFieldSource("city"));
+    this.addColumn("state", "State", new PublishedDocFieldSource("state"));
     this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
     this.addColumn("nationality", "Nationality", new PublishedDocFieldSource("nationality.name"));
 
