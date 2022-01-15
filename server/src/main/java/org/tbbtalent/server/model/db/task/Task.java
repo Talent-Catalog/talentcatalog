@@ -36,6 +36,14 @@ public interface Task extends Auditable {
     boolean isAdmin();
 
     /**
+     * Number of days estimated needed to complete this task.
+     * Used to default the due date for associated {@link TaskAssignment}.
+     * @return Number of days. May be 0 for optional tasks.
+     */
+    @Nullable
+    Integer getDaysToComplete();
+
+    /**
      * Link which refers to help for a candidate on what they need to do to complete this task.
      * @return Typically a link to a document or web page.
      */
@@ -50,23 +58,15 @@ public interface Task extends Auditable {
     String getName();
 
     /**
+     * Optional tasks do not trigger alerts if they are overdue.
+     * @return True if optional
+     */
+    boolean isOptional();
+
+    /**
      * Subtasks - this task involves carrying out these sub tasks.
      * @return May be null - in which case this is a simple task, rather than a list of sub tasks.
      */
     @Nullable
     List<Task> getSubtasks();
-
-    /**
-     * Number of days estimated needed to complete this task.
-     * Used to default the due date for associated {@link TaskAssignment}.
-     * @return Number of days. May be 0 for optional tasks.
-     */
-    @Nullable
-    Integer getDaysToComplete();
-
-    /**
-     * Optional tasks do not trigger alerts if they are overdue.
-     * @return True if optional
-     */
-    boolean isOptional();
 }
