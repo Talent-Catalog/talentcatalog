@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-//TODO JC This request and CreateUploadTaskRequest have a lot in common (name, description,
+//TODO Note for Caroline: This request and CreateUploadTaskRequest have a lot in common (name, description,
 // timeframe, adminOnly) - so you should use inheritance. Both should subclass, say CreateTask,
 // which has all those attributes - then the sub tasks just add what makes them different
 // eg question and answer.

@@ -35,9 +35,9 @@ import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
 
 
-// TODO: 15/1/22 The problem with SpringBootTest is that it starts up the whole of Spring which
-//is very slow. Where possible tests should be fast and not require Spring.
-//You only want SpringBootTests when you want to test the intergration with Spring.
+// TODO Note for Caroline: The problem with SpringBootTest is that it starts up the whole of Spring
+//  which is very slow. Where possible tests should be fast and not require Spring.
+// You only want SpringBootTests when you want to test the integration with Spring.
 @SpringBootTest
 class TaskServiceImplTest {
 
