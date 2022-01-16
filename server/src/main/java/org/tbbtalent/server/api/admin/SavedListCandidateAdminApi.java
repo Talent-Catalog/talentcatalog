@@ -138,6 +138,10 @@ public class SavedListCandidateAdminApi implements
 
         this.savedListService.addOpportunityStages(savedListId, candidates);
 
+        // TODO This a temporary hack to allow us start working on the display of candidate
+        //task assignments on the Angular back end.
+        this.candidateService.addFakeTasks(candidates);
+
         DtoBuilder builder = candidateBuilderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }

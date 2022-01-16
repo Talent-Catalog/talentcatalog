@@ -78,6 +78,18 @@ export interface Candidate extends HasId {
   sfOpportunityLink: string;
   stage: string;
   candidateAttachments?: CandidateAttachment[];
+  taskAssignments?: TaskAssignment[];
+}
+
+export interface TaskAssignment {
+  completedDate: Date;
+  dueDate: Date;
+  task: Task;
+}
+
+export interface Task {
+  name: string;
+  optional: boolean;
 }
 
 export interface CandidateIntakeData {

@@ -21,6 +21,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
+import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
@@ -46,6 +47,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Transient
     private Long contextSavedListId;
+
+    //TODO JC For now this is just a transient attribute until we have all the database/JPA stuff
+    //for task assignments figured out.
+    @Transient
+    private List<TaskAssignment> taskAssignments;
 
     private String phone;
     private String whatsapp;
@@ -1591,6 +1597,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateSavedLists(Set<CandidateSavedList> candidateSavedLists) {
         this.candidateSavedLists = candidateSavedLists;
+    }
+
+    public List<TaskAssignment> getTaskAssignments() {
+        return taskAssignments;
+    }
+
+    public void setTaskAssignments(
+        List<TaskAssignment> taskAssignments) {
+        this.taskAssignments = taskAssignments;
     }
 
     @Transient

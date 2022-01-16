@@ -17,10 +17,38 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,40 +72,113 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.exception.CircularReferencedException;
+import org.tbbtalent.server.exception.CountryRestrictionException;
+import org.tbbtalent.server.exception.EntityReferencedException;
+import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.UnauthorisedActionException;
+import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateDestination;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateExam;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.DataRow;
+import org.tbbtalent.server.model.db.DependantRelations;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.Exam;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SearchJoin;
+import org.tbbtalent.server.model.db.SearchType;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.SurveyType;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.UnhcrStatus;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.YesNoUnsure;
+import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
+import org.tbbtalent.server.repository.db.CandidateExamRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CandidateReviewStatusRepository;
+import org.tbbtalent.server.repository.db.CandidateSpecification;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.EducationLevelRepository;
+import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
+import org.tbbtalent.server.repository.db.LanguageLevelRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
+import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.repository.db.SurveyTypeRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateExternalIdSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
+import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.request.candidate.SavedListGetRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.SearchJoinRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateShareableDocsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.PasswordHelper;
-import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.CandidateCitizenshipService;
+import org.tbbtalent.server.service.db.CandidateDependantService;
+import org.tbbtalent.server.service.db.CandidateDestinationService;
+import org.tbbtalent.server.service.db.CandidateExamService;
+import org.tbbtalent.server.service.db.CandidateNoteService;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
+import org.tbbtalent.server.service.db.CandidateVisaService;
+import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -2322,5 +2423,85 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
         return newStatus;
+    }
+
+    /**
+     * Generates a task assigment which is optional or not, completed or not, overdue or not
+     * based on the input parameters.
+     * <p/>
+     * Used for testing.
+     * @return Generated task assignment
+     */
+    private TaskAssignment makeFakeTaskAssignment
+        (boolean optional, boolean completed, boolean overdue) {
+
+        OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
+        OffsetDateTime tomorrow =  OffsetDateTime.now().plusDays(1);
+
+        TaskImpl task = new TaskImpl();
+        String name = (optional ? "Optional" : "Required") + " " +
+            (completed ? "Complete" : "Incomplete") + " " +
+            (overdue ? "Overdue" : "Not overdue") + " task";
+        task.setName(name);
+        task.setOptional(optional);
+        TaskAssignmentImpl ta = new TaskAssignmentImpl();
+        ta.setTask(task);
+        ta.setDueDate(overdue ? yesterday : tomorrow);
+        ta.setCompletedDate(completed ? yesterday : null);
+
+        return ta;
+    }
+
+    //TODO JC These addFakeTasks methods might eventually be moved out of CandidateService and
+    //into the unit testing code. Useful to have them here now to support temporary hack
+    //allowing us to send up had coded task assignments to the Angular code.
+    @Override
+    public void addFakeTasks(Iterable<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            addFakeTasks(candidate);
+        }
+    }
+
+    @Override
+    public void addFakeTasks(Candidate candidate) {
+        List<TaskAssignment> taskAssignments = new ArrayList<>();
+
+        //Generate a different combination of task assignments based on the last digit of the
+        //candidate number.
+        long candidateNumber = Long.parseLong(candidate.getCandidateNumber());
+        int lastDigit = (int) candidateNumber % 10;
+
+        //Depending on the last digit of the candidate number generate task assignments which
+        //are all possible combinations of optional/completed/overdue.
+        //Useful for testing the way these different task assignments are displayed to the user.
+        switch (lastDigit) {
+            case 0:
+            case 1:
+            case 2:
+                taskAssignments.add(makeFakeTaskAssignment(false, false, false));
+                taskAssignments.add(makeFakeTaskAssignment(false, false, true));
+                break;
+            case 3:
+            case 4:
+            case 5:
+                taskAssignments.add(makeFakeTaskAssignment(false, true, false));
+                taskAssignments.add(makeFakeTaskAssignment(false, true, true));
+                taskAssignments.add(makeFakeTaskAssignment(true, false, false));
+                break;
+
+            case 6:
+            case 7:
+            case 8:
+                taskAssignments.add(makeFakeTaskAssignment(true, false, true));
+                taskAssignments.add(makeFakeTaskAssignment(true, true, false));
+                taskAssignments.add(makeFakeTaskAssignment(true, true, true));
+                break;
+
+            case 9:
+                //Candidate numbers ending in 9 have no tasks assigned
+                break;
+        }
+
+        candidate.setTaskAssignments(taskAssignments);
     }
 }
