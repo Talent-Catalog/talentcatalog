@@ -25,6 +25,9 @@ import org.springframework.lang.NonNull;
  */
 public interface UploadTask extends Task {
 
+
+    //todo Instead of this - store an upload type - which has a name, and directory name, also allowed file types
+    //todo Need an UploadConfig service which stores UploadConfig entries, indexed by type
     /**
      * Indicates where the uploaded file should be stored.
      * @return Directory where the file should be stored.

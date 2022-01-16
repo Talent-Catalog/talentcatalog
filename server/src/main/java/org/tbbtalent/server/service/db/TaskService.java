@@ -14,27 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.service.db.impl;
+package org.tbbtalent.server.service.db;
 
-import org.tbbtalent.server.model.db.QuestionTask;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.UploadTask;
 import org.tbbtalent.server.request.CreateTaskRequest;
-import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
 
+/**
+ * TODO JC Doc
+ *
+ * @author John Cameron
+ */
+public interface TaskService {
+    TaskImpl createTask(CreateTaskRequest request);
 
-// TODO: 15/1/22 Services should implement interfaces which define the operations of the service.
-public class TaskServiceImpl {
-    public TaskImpl createTask(CreateTaskRequest request) {
-        return null;
-    }
+    UploadTask createUploadTask(CreateUploadTaskRequest request);
 
-    public QuestionTask createQuestionTask(CreateQuestionTaskRequest request) {
-        return null;
-    }
-
-    public UploadTask createUploadTask(CreateUploadTaskRequest request) {
-        return null;
-    }
 }

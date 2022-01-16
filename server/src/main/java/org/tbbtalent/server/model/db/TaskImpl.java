@@ -17,16 +17,24 @@
 package org.tbbtalent.server.model.db;
 
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.tbbtalent.server.model.db.task.Task;
 
 @Getter
 @Setter
 // todo should be extending from the interface?
-public class Task {
+// YES - renaming to TaskImpl (Impl = "Implmentation of an interface")
+public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Task {
     private String name;
     private String description;
-    private String timeframe;
-    private boolean adminOnly;
-    private boolean isList;
+    private String timeframe; //todo What is this? It does not appear in the Task interface and has no documentation on it
+    private boolean admin;
+    private boolean isList; //todo What is this? It does not appear in the Task interface and has no documentation on it
+
+    private Integer daysToComplete;
+    private String helpLink;
+    private boolean optional;
+    private List<Task> subtasks;
 }

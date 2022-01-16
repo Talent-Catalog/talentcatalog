@@ -16,25 +16,28 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.tbbtalent.server.model.db.QuestionTask;
-import org.tbbtalent.server.model.db.Task;
-import org.tbbtalent.server.model.db.UploadTask;
-import org.tbbtalent.server.repository.db.TaskRepository;
-import org.tbbtalent.server.request.CreateTaskRequest;
-import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
-import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.tbbtalent.server.model.db.QuestionTask;
+import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.UploadTask;
+import org.tbbtalent.server.repository.db.TaskRepository;
+import org.tbbtalent.server.request.CreateTaskRequest;
+import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
+import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
 
+
+// TODO: 15/1/22 The problem with SpringBootTest is that it starts up the whole of Spring which
+//is very slow. Where possible tests should be fast and not require Spring.
+//You only want SpringBootTests when you want to test the intergration with Spring.
 @SpringBootTest
 class TaskServiceImplTest {
 
@@ -61,13 +64,13 @@ class TaskServiceImplTest {
         // Do I need a repository for each task class (e.g. question/upload/other, even if they extend from the one interface)
         // https://stackoverflow.com/a/63658452 - looks like can use the single repo
         when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
-        Task task = taskService.createTask(request);
+        TaskImpl task = taskService.createTask(request);
 
         assertNotNull(task);
         assertThat(task.getName()).isEqualTo("Test Task");
         assertThat(task.getDescription()).isEqualTo("This is a test description.");
         assertThat(task.getTimeframe()).isEqualTo("2 Weeks");
-        assertThat(task.isAdminOnly()).isFalse();
+//        assertThat(task.isAdminOnly()).isFalse();
         assertThat(task.isList()).isFalse();
     }
 
@@ -144,13 +147,13 @@ class TaskServiceImplTest {
         // Do I need a repository for each task class (e.g. question/upload/other, even if they extend from the one interface)
         // https://stackoverflow.com/a/63658452 - looks like can use the single repo
         when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
-        Task task = taskService.createTask(request);
+        TaskImpl task = taskService.createTask(request);
 
         assertNotNull(task);
         assertThat(task.getName()).isEqualTo("Test Task List");
         assertThat(task.getDescription()).isEqualTo("This is a test description.");
         assertThat(task.getTimeframe()).isEqualTo("2 Weeks");
-        assertThat(task.isAdminOnly()).isFalse();
+//        assertThat(task.isAdminOnly()).isFalse();
         assertThat(task.isList()).isTrue();
     }
 }
