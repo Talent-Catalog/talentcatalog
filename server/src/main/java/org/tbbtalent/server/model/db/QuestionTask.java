@@ -19,6 +19,13 @@ package org.tbbtalent.server.model.db;
 import lombok.Getter;
 import lombok.Setter;
 
+//todo Note for Caroline: This doesn't implement the UploadTask interface, and it duplicates
+// fields from TaskImpl. It should subclass it normally (reflecting how the QuestionTask interface
+//extends the Task interface). Let's go over this together.
+//
+//One issue we need to look into is how the way we implement inheritance using JPA affects
+//our class design.
+
 @Getter
 @Setter
 // todo this should be extending from the task interface?
