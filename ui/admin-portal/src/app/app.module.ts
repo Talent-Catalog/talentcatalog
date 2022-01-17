@@ -239,6 +239,7 @@ import {EditExternalLinkComponent} from './components/settings/external-links/ed
 import {CovidVaccinationComponent} from './components/candidates/intake/vaccination/covid-vaccination.component';
 import {EnglishThresholdComponent} from './components/candidates/visa/english-threshold/english-threshold.component';
 import {FilterPipe} from "./pipes/filter.pipe";
+import {CandidateTaskTabComponent} from './components/candidates/view/tab/candidate-task-tab/candidate-task-tab.component';
 
 @NgModule({
   declarations: [
@@ -454,7 +455,8 @@ import {FilterPipe} from "./pipes/filter.pipe";
     EditExternalLinkComponent,
     CovidVaccinationComponent,
     EnglishThresholdComponent,
-    FilterPipe
+    FilterPipe,
+    CandidateTaskTabComponent
   ],
   imports: [
     BrowserModule,

@@ -55,6 +55,18 @@ export interface Candidate {
   surveyType: SurveyType;
   surveyComment: string;
   status: CandidateStatus;
+  taskAssignments: TaskAssignment[];
+}
+
+export interface TaskAssignment {
+  completedDate: Date;
+  dueDate: Date;
+  task: Task;
+}
+
+export interface Task {
+  name: string;
+  optional: boolean;
 }
 
 export enum CandidateStatus {

@@ -150,6 +150,9 @@ public class CandidatePortalApi {
     public Map<String, Object> getCandidateProfile() {
         Candidate candidate = this.candidateService.getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        // TODO This a temporary hack to allow us start working on the display of candidate
+        //task assignments on the Angular back end.
+        this.candidateService.addFakeTasks(candidate);
         return candidateProfileDto().build(candidate);
     }
 
@@ -428,6 +431,24 @@ public class CandidatePortalApi {
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")
                 .add("linkedInLink")
+                .add("taskAssignments", taskAssignmentDto())
+                ;
+    }
+
+    private DtoBuilder taskAssignmentDto() {
+        return new DtoBuilder()
+                // TODO: other attributes
+                .add("completedDate")
+                .add("dueDate")
+                .add("task", taskDto())
+                ;
+    }
+
+    private DtoBuilder taskDto() {
+        return new DtoBuilder()
+                // TODO: other attributes
+                .add("name")
+                .add("optional")
                 ;
     }
 }

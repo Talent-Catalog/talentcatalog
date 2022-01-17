@@ -1,0 +1,88 @@
+<div class="container">
+
+  <app-error [error]="error"></app-error>
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading">
+    <div>
+      <div class="h4 mb-4">Your Tasks</div>
+      <table class="table bg-white">
+        <thead class="thead-light">
+        <tr>
+          <th>Task Details</th>
+          <th>Action</th>
+          <th class="text-center">Required</th>
+          <th>Due Date</th>
+          <th class="text-center">Add/Edit Comment</th>
+          <th class="text-center">Help Link</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr *ngFor="let ta of ongoingTasks">
+          <td [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta.dueDate)}"><div>{{ta.task.name}}</div></td>
+          <td><button class="btn btn-sm btn-primary">Upload</button></td>
+          <td class="text-center"><fa-icon *ngIf="!ta.task.optional" icon="check"></fa-icon></td>
+          <td class="font-weight-light" [ngClass]="{'text-danger': isOverdue(ta.dueDate)}">{{ta.dueDate | date: 'mediumDate'}}</td>
+          <td class="text-center"><button class="btn btn-sm btn-secondary"><fa-icon icon="edit"></fa-icon></button></td>
+          <td></td>
+        </tr>
+        <!-- loading -->
+        <tr *ngIf="loading">
+          <td colspan="42">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+          </td>
+        </tr>
+        <!-- no results -->
+        <tr *ngIf="!loading && !ongoingTasks?.length">
+          <td colspan="42" class="text-center">
+            <span class="text-muted">(no tasks to complete)</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="my-4">
+
+    <div>
+      <div class="h4 mb-4">Completed Tasks</div>
+      <table class="table bg-white">
+        <thead class="thead-light">
+        <tr>
+          <th>Task Details</th>
+          <th>Action</th>
+          <th class="text-center">Required</th>
+          <th>Due Date</th>
+          <th class="text-center">Add/Edit Comment</th>
+          <th class="text-center">Help Link</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr *ngFor="let ta of completedTasks">
+          <td><div>{{ta.task.name}}</div></td>
+          <td><button class="btn btn-sm btn-primary">Upload</button></td>
+          <td class="text-center"><fa-icon *ngIf="!ta.task.optional" icon="check"></fa-icon></td>
+          <td>{{ta.dueDate | date: 'mediumDate'}}</td>
+          <td class="text-center"><button class="btn btn-sm btn-secondary"><fa-icon icon="edit"></fa-icon></button></td>
+          <td></td>
+        </tr>
+        <!-- loading -->
+        <tr *ngIf="loading">
+          <td colspan="42">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+          </td>
+        </tr>
+        <!-- no results -->
+        <tr *ngIf="!loading && !completedTasks?.length">
+          <td colspan="42" class="text-center">
+            <span class="text-muted">(no completed tasks)</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

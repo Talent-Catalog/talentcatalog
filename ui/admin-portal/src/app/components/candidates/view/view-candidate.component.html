@@ -167,8 +167,7 @@
                 [candidate]="candidate"
                 [editable]="!loggedInUser.readOnly"
                 [loggedInUser]="loggedInUser"
-                (candidateChanged)="onCandidateChanged()"
-              >
+                (candidateChanged)="onCandidateChanged()">
               </app-candidate-additional-info-tab>
             </ng-template>
           </ng-container>
@@ -178,8 +177,7 @@
             <a ngbNavLink>Mini Intake</a>
             <ng-template ngbNavContent>
               <app-candidate-mini-intake-tab
-                [candidate]="candidate"
-              >
+                [candidate]="candidate">
               </app-candidate-mini-intake-tab>
             </ng-template>
           </ng-container>
@@ -189,8 +187,7 @@
             <a ngbNavLink>Full Intake</a>
             <ng-template ngbNavContent>
               <app-candidate-intake-tab
-                [candidate]="candidate"
-              >
+                [candidate]="candidate">
               </app-candidate-intake-tab>
             </ng-template>
           </ng-container>
@@ -200,9 +197,19 @@
             <a ngbNavLink>Visa</a>
             <ng-template ngbNavContent>
               <app-candidate-visa-tab
-                [candidate]="candidate"
-              >
+                [candidate]="candidate">
               </app-candidate-visa-tab>
+            </ng-template>
+          </ng-container>
+
+          <!-- TASKS -->
+          <ng-container ngbNavItem="Tasks" *ngIf="isAnAdmin()">
+            <a ngbNavLink>Tasks</a>
+            <ng-template ngbNavContent>
+              <app-candidate-task-tab
+                [candidate]="candidate"
+                [editable]="!loggedInUser.readOnly">
+              </app-candidate-task-tab>
             </ng-template>
           </ng-container>
 

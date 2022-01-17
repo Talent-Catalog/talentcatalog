@@ -21,10 +21,9 @@ import {HomeComponent} from './components/home/home.component';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
 import {RegisterComponent} from './components/register/register.component';
-import {CandidateProfileComponent} from './components/profile/view/candidate-profile.component';
 import {AuthGuard} from './services/auth.guard';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
-import {RedirectGuard} from './services/redirect.guard';
+import {ViewCandidateComponent} from "./components/profile/view/view-candidate.component";
 
 const routes: Routes = [
   {
@@ -54,7 +53,7 @@ const routes: Routes = [
   },
   {
     path: 'profile',
-    component: CandidateProfileComponent,
+    component: ViewCandidateComponent,
     canActivate: [AuthGuard]
   },
   {

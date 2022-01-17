@@ -1,0 +1,65 @@
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<div class="card" *ngIf="!loading">
+  <div class="card-header">
+    Candidate Tasks: Ongoing
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="ongoingTasks.length <= 0">
+      <p class="text-center text-muted small">No ongoing tasks</p>
+    </div>
+    <div *ngFor="let ta of ongoingTasks; let i = index;">
+      <div class="row">
+        <div class="col-4">
+          <p [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta.dueDate)}">{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
+        </div>
+        <div class="col-3">
+          <p [ngClass]="{'text-danger': isOverdue(ta.dueDate)}">Due Date: {{ta.dueDate | date: 'mediumDate'}}</p>
+        </div>
+        <div class="col-3">
+          <p>Comment: </p>
+        </div>
+        <div class="col-2 float-right text-right">
+          <button class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-edit"></i></button>
+        </div>
+      </div>
+      <hr>
+    </div>
+  </div>
+</div>
+
+<hr/>
+
+<div class="card" *ngIf="!loading">
+  <div class="card-header">
+    Candidate Tasks: Completed
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="completedTasks.length <= 0">
+      <p class="text-center text-muted small">No completed tasks</p>
+    </div>
+    <div *ngFor="let ta of completedTasks; let i = index;">
+      <div class="row">
+        <div class="col">
+          <p>{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
+        </div>
+        <div class="col">
+          <p>Completed Date: {{ta.completedDate | date: 'mediumDate'}}</p>
+        </div>
+        <div class="col float-right text-right">
+          <button class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-edit"></i></button>
+        </div>
+      </div>
+      <hr>
+    </div>
+  </div>
+</div>
