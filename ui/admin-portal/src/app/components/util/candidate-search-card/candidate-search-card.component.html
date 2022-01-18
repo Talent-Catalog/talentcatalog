@@ -124,6 +124,17 @@
         </ng-template>
       </ng-container>
 
+      <!-- TASKS -->
+      <ng-container ngbNavItem>
+        <a ngbNavLink>Tasks</a>
+        <ng-template ngbNavContent>
+          <app-candidate-task-tab
+            [candidate]="candidate"
+            [editable]="false">
+          </app-candidate-task-tab>
+        </ng-template>
+      </ng-container>
+
       <!-- NOTES -->
       <ng-container ngbNavItem>
         <a ngbNavLink>Notes</a>

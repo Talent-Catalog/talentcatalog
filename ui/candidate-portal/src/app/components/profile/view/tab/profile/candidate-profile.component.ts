@@ -173,7 +173,7 @@ export class CandidateProfileComponent implements OnInit {
   }
 
   getCountryName(country: Country) {
-    return this.countries?.find(c => c.id === country.id)?.name;
+    return this.countries?.find(c => c.id === country?.id)?.name;
   }
 
 }

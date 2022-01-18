@@ -21,8 +21,8 @@ export class CandidateTasksComponent implements OnInit {
     this.completedTasks = this.candidate.taskAssignments.filter(t => t.completedDate != null);
   }
 
-  isOverdue(dueDate: Date) {
-    return new Date(dueDate) < new Date();
+  isOverdue(ta: TaskAssignment) {
+    return (new Date(ta.dueDate) < new Date()) && !ta.task.optional;
   }
 
 }

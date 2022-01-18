@@ -2,3 +2,13 @@
   display: block;
   padding: 20px 0;
 }
+
+
+@media screen and (max-width: 480px) {
+  thead {
+    font-size: 0.85em;
+  }
+  tbody{
+    font-size: 0.85em;
+  }
+}

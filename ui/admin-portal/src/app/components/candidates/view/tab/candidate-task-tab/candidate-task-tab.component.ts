@@ -41,8 +41,8 @@ export class CandidateTaskTabComponent implements OnInit, OnChanges {
     }
   }
 
-  isOverdue(dueDate: Date) {
-    return new Date(dueDate) < this.today;
+  isOverdue(ta: TaskAssignment) {
+    return (new Date(ta.dueDate) < this.today) && !ta.task.optional;
   }
 
 

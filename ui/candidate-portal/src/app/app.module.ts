@@ -81,7 +81,8 @@ import {
   faEllipsisH,
   faExternalLinkAlt,
   faGlobe,
-  faQuestion
+  faQuestion,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
@@ -210,7 +211,8 @@ export class AppModule {
       faExternalLinkAlt,
       faGlobe,
       faCheck,
-      faQuestion
+      faQuestion,
+      faTimes
     );
   }
 }
