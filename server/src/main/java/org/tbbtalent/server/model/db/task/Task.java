@@ -51,6 +51,12 @@ public interface Task extends Auditable {
     String getHelpLink();
 
     /**
+     * Unique id identifying this task
+     * @return Task id
+     */
+    Long getId();
+
+    /**
      * Name describing the task.
      * @return Name of task.
      */
@@ -69,4 +75,14 @@ public interface Task extends Auditable {
      */
     @Nullable
     List<Task> getSubtasks();
+
+    /**
+     * Type of task - replacing class hierarchy.
+     * <p/>
+     * The type of the task determines which attributes are used for a particular instance -
+     * reflecting the various Task interfaces.
+     * @return Type of this task
+     */
+    @NonNull
+    TaskType getType();
 }

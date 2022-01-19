@@ -16,20 +16,14 @@
 
 package org.tbbtalent.server.model.db.task;
 
-import org.springframework.lang.NonNull;
-
 /**
- * Task where candidate is required to upload a file.
+ * TODO JC Doc
  *
  * @author John Cameron
  */
-public interface UploadTask extends Task {
-
-    /**
-     * Specifies information including where the upload will be made to, how it is named,
-     * and which file types are allowed.
-     * @return Information for managing an upload
-     */
-    @NonNull
-    UploadInfo getUploadInfo();
+public enum TaskType {
+    Question,
+    Simple,
+    Upload,
+    YesNoQuestion
 }

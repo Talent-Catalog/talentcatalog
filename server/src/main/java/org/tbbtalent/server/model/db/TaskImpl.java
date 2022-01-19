@@ -20,21 +20,37 @@ package org.tbbtalent.server.model.db;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.Task;
+import org.tbbtalent.server.model.db.task.TaskType;
+import org.tbbtalent.server.model.db.task.UploadInfo;
+import org.tbbtalent.server.model.db.task.UploadTask;
 
+/**
+ * Implementation of all Task interfaces - flattened out into a single implementation rather
+ * than subclasses. Necessary given our given code base and the need to stream lists of tasks
+ * to the Angular where each of task can be a different type - eg simple task, question task,
+ * upload task.
+ * <p/>
+ * What this means is that all special attributes - such as upload info for upload tasks, or
+ * questions for question tasks - are all always present (although they be null) in every task
+ * object - even though they may not be relevant.
+ * <p/>
+ * To replace a normal class hierarchy, the actual type of a task is determined by {@link #getType()}.
+ */
 @Getter
 @Setter
-// todo should be extending from the interface?
-// YES - renaming to TaskImpl (Impl = "Implmentation of an interface")
-public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Task {
-    private String name;
-    private String description;
-    private String timeframe; //todo What is this? It does not appear in the Task interface and has no documentation on it
+public class TaskImpl extends AbstractAuditableDomainObject<Long>
+    implements Task, QuestionTask, UploadTask {
     private boolean admin;
-    private boolean isList; //todo What is this? It does not appear in the Task interface and has no documentation on it
-
     private Integer daysToComplete;
+    private String description;
     private String helpLink;
+    private String name;
     private boolean optional;
+    private String question;
     private List<Task> subtasks;
+    private TaskType type;
+
+    private UploadInfo uploadInfo;
 }

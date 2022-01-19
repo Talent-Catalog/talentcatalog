@@ -112,6 +112,7 @@ import org.tbbtalent.server.model.db.UnhcrStatus;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.YesNoUnsure;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
+import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
@@ -2444,6 +2445,8 @@ public class CandidateServiceImpl implements CandidateService {
             (overdue ? "Overdue" : "Not overdue") + " task";
         task.setName(name);
         task.setOptional(optional);
+        task.setType(TaskType.Upload);
+
         TaskAssignmentImpl ta = new TaskAssignmentImpl();
         ta.setTask(task);
         ta.setDueDate(overdue ? yesterday : tomorrow);

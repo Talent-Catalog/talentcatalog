@@ -30,6 +30,7 @@ import org.tbbtalent.server.model.db.task.TaskAssignment;
  * @author John Cameron
  */
 public class TaskAssignmentImpl implements TaskAssignment {
+    String abandonReason;
     User activatedBy;
     OffsetDateTime activatedDate;
     Candidate candidate;

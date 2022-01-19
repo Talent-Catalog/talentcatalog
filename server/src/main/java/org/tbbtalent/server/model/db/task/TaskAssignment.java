@@ -32,6 +32,18 @@ import org.tbbtalent.server.model.db.User;
 public interface TaskAssignment {
 
     /**
+     * Indicates whether the task has been abandoned. Null if not, otherwise it is the reason
+     * given for abandoning this task assignment
+     * <p/>
+     * Required (ie non optional) tasks which are abandoned will be treated like required
+     * overdue tasks - in other words, there is a problem that needs to be addressed.
+     * @return If not null, indicates that the task has been abandoned, providing the reason.
+     * Null if the task has not been abandoned.
+     */
+    @Nullable
+    String getAbandonReason();
+
+    /**
      * The person who activated this assignment. This will be a TBB admin.
      * <p/>
      * This will also be the person who is responsible for the assignment, because tasks are
