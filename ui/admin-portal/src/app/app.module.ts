@@ -240,6 +240,7 @@ import {CovidVaccinationComponent} from './components/candidates/intake/vaccinat
 import {EnglishThresholdComponent} from './components/candidates/visa/english-threshold/english-threshold.component';
 import {FilterPipe} from "./pipes/filter.pipe";
 import {CandidateTaskTabComponent} from './components/candidates/view/tab/candidate-task-tab/candidate-task-tab.component';
+import {DownloadCvComponent} from './components/util/download-cv/download-cv.component';
 
 @NgModule({
   declarations: [
@@ -457,6 +458,8 @@ import {CandidateTaskTabComponent} from './components/candidates/view/tab/candid
     EnglishThresholdComponent,
     FilterPipe,
     CandidateTaskTabComponent
+    FilterPipe,
+    DownloadCvComponent
   ],
   imports: [
     BrowserModule,

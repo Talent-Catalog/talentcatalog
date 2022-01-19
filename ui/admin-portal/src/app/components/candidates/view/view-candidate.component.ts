@@ -38,6 +38,7 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
 import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 
 @Component({
   selector: 'app-view-candidate',
@@ -193,15 +194,18 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   downloadCV() {
-      const tab = window.open();
-      this.candidateService.downloadCv(this.candidate.id).subscribe(
-        result => {
-          tab.location.href = URL.createObjectURL(result);
-        },
-        error => {
-          this.error = error;
-        }
-      );
+    // Modal
+    const downloadCVModal = this.modalService.open(DownloadCvComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    downloadCVModal.componentInstance.candidateId = this.candidate.id;
+
+    downloadCVModal.result
+      .then((result) => {
+      })
+      .catch(() => { /* Isn't possible */ });
   }
 
   private selectDefaultTab() {

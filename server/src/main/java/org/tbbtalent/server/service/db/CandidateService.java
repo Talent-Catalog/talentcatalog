@@ -341,7 +341,7 @@ public interface CandidateService {
     List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    Resource generateCv(Candidate candidate);
+    Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact);
 
     /**
      * IMPORTANT: Use this instead of {@link CandidateRepository#save} Saves

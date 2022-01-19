@@ -173,7 +173,7 @@ public class CandidatePortalApi {
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=" + name + ".pdf");
 
-        Resource report = candidateService.generateCv(candidate);
+        Resource report = candidateService.generateCv(candidate, true, true);
         try (InputStream reportStream = report.getInputStream()) {
             IOUtils.copy(reportStream, response.getOutputStream());
             response.flushBuffer();
