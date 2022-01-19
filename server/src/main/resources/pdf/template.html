@@ -87,8 +87,8 @@
             <td class="large-break">
                 <div>
                     <strong>
-                        <span th:if="${experience.startDate}" th:text="${#temporals.format(experience.startDate, 'MMMyyyy')}"></span> to
-                        <span th:if="${experience.endDate}" th:text="${#temporals.format(experience.endDate, 'MMMyyyy')}"></span>
+                        <span th:if="${experience.startDate}" th:text="${#temporals.format(experience.startDate, 'MMM-yyyy')}"></span> to
+                        <span th:if="${experience.endDate}" th:text="${#temporals.format(experience.endDate, 'MMM-yyyy')}"></span>
                         <span th:if="${!experience.endDate}">present</span>
                     </strong>
                 </div>
@@ -113,10 +113,10 @@
         <tr th:each="education: ${candidate.candidateEducations}">
             <td>
                 <strong th:if="${education.educationType}"><span th:text="${education.educationType}"></span></strong>
-                <strong th:if="${education.courseName}"><span th:text="${education.courseName}"></span></strong>
-                <span th:if="${education.institution}" th:text="${education.institution}"></span>
-                <span th:if="${education.yearCompleted}" th:text="${education.yearCompleted}">
-                </span>
+                <strong th:if="${education.educationMajor}"><span th:text="${education.educationMajor.name}"></span></strong>
+                <strong th:if="${education.courseName}">: <span th:text="${education.courseName}"></span></strong>
+                <span th:if="${education.institution}" th:text="${education.institution}"></span>,
+                <span th:if="${education.yearCompleted}" th:text="${education.yearCompleted}"></span>
                 <span th:if="${!education.yearCompleted}">Incomplete
                 </span>
             </td>
@@ -131,10 +131,10 @@
     <table>
         <tr th:each="certification: ${candidate.candidateCertifications}">
             <td>
-                <span th:text="${certification.name}">-</span>
-                <span th:text="${certification.institution}"></span>
+                <i th:if="${certification.name}" th:text="${certification.name}"></i> -
+                <i th:if="${certification.institution}" th:text="${certification.institution}"></i>
                 <div th:if="${certification.dateCompleted}"
-                     th:text="${#temporals.format(certification.dateCompleted, 'MMMyyyy')}">
+                     th:text="${#temporals.format(certification.dateCompleted, 'MMM-yyyy')}">
                 </div>
             </td>
         </tr>
