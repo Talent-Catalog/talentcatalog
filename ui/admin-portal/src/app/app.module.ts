@@ -457,7 +457,7 @@ import {DownloadCvComponent} from './components/util/download-cv/download-cv.com
     CovidVaccinationComponent,
     EnglishThresholdComponent,
     FilterPipe,
-    CandidateTaskTabComponent
+    CandidateTaskTabComponent,
     FilterPipe,
     DownloadCvComponent
   ],
