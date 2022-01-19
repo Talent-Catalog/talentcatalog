@@ -32,6 +32,12 @@ import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
 import {CandidateSource} from "../model/base";
 
+export interface DownloadCVRequest {
+  candidateId: number,
+  showName: boolean,
+  showContact: boolean
+}
+
 @Injectable({providedIn: 'root'})
 export class CandidateService {
 
@@ -113,10 +119,9 @@ export class CandidateService {
     return this.http.post(`${this.apiUrl}/export/csv`, request, {responseType: 'blob'});
   }
 
-  downloadCv(candidateId: number) {
-    return this.http.get(
-      `${this.apiUrl}/${candidateId}/cv.pdf`,
-      {responseType: 'blob'})
+  downloadCv(request: DownloadCVRequest) {
+    return this.http.post(
+      `${this.apiUrl}/${request.candidateId}/cv.pdf`, request, {responseType: 'blob'})
       .pipe(
         map(res => {
           return new Blob([res], { type: 'application/pdf', });

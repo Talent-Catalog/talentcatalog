@@ -15,11 +15,12 @@
   -->
 
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="">
 
 <head>
-    <meta charset="UTF-8">
+    <meta content charset="UTF-8">
     <link rel="stylesheet" type="text/css" media="all" th:href="@{style.css}"/>
+    <title></title>
 </head>
 
 <body>
@@ -27,28 +28,52 @@
 <div class='footer' th:include="footer::footer"></div>
 
 <div class="center">
-    <h1><span th:text="${candidate.user.firstName}"></span> <span th:text="${candidate.user.lastName}"></h1>
-    <h4>User ID #TBB-<span th:text="${candidate.candidateNumber}"></span></h4>
+    <h1 th:if="${showName}"><span th:text="${candidate.user.firstName}"></span> <span th:text="${candidate.user.lastName}"></span></h1>
+    <strong class="subheader">User ID #TBB-<span th:text="${candidate.candidateNumber}"></span></strong>
+    <div th:if="${!showContact and candidate.country}">
+        <strong>Current Location: </strong>
+        <span th:text="${candidate.country.name}"></span>
+    </div>
 </div>
-<div class="left">
+<div th:if="${showContact}" class="left">
     <h4>Contact Information</h4>
+    <hr>
 </div>
-<hr>
-<table>
+<table th:if="${showContact}">
     <tr>
         <td>
-            <div th:if="${candidate.user.email}"><strong>Email: </strong><span th:text="${candidate.user.email}"></span>
+            <div th:if="${candidate.user.email}">
+                <strong>Email: </strong>
+                <span th:text="${candidate.user.email}">
+                </span>
             </div>
-            <div th:if="${candidate.phone}"><strong>Phone: </strong><span th:text="${candidate.phone}"></span></div>
-            <div th:if="${candidate.whatsapp}"><strong>Whats App: </strong><span th:text="${candidate.whatsapp}"></span>
+            <div th:if="${candidate.phone}">
+                <strong>Phone: </strong>
+                <span th:text="${candidate.phone}">
+                </span>
+            </div>
+            <div th:if="${candidate.whatsapp}">
+                <strong>Whats App: </strong>
+                <span th:text="${candidate.whatsapp}">
+                </span>
             </div>
         </td>
         <td>
-            <div th:if="${candidate.country}"><strong>Current Location: </strong><span
-                    th:text="${candidate.country.name}"></span></div>
-            <div th:if="${candidate.nationality}"><strong>Nationality: </strong><span
-                    th:text="${candidate.nationality.name}"></span></div>
-            <div th:if="${candidate.dob}"><strong>Dob: </strong><span th:text="${candidate.dob}"></span></div>
+            <div th:if="${candidate.country}">
+                <strong>Current Location: </strong>
+                <span th:text="${candidate.country.name}">
+                </span>
+            </div>
+            <div th:if="${candidate.nationality}">
+                <strong>Nationality: </strong>
+                <span th:text="${candidate.nationality.name}">
+                </span>
+            </div>
+            <div th:if="${candidate.dob}">
+                <strong>Dob: </strong>
+                <span th:text="${candidate.dob}">
+                </span>
+            </div>
         </td>
     </tr>
 </table>
@@ -59,27 +84,23 @@
     <hr>
     <table>
         <tr th:each="experience: ${candidate.candidateJobExperiences}">
-            <table>
-                <tr>
-                    <td>
-                        <strong><span th:text="${#temporals.format(experience.startDate, 'MMM-yyyy')}"/> to
-                            <span th:if="${experience.endDate}"
-                                  th:text="${#temporals.format(experience.endDate, 'MMM-yyyy')}"/>
-                            <span th:if="${!experience.endDate}">present</span></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <strong><span th:text="${experience.role}"/> at <span th:text="${experience.companyName}"/><span
-                                th:if="${experience.country}">, <span
-                                th:text="${experience.country.name}"></span></span></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td th:text="${experience.description}"/>
-                </tr>
-            </table>
-
+            <td class="large-break">
+                <div>
+                    <strong>
+                        <span th:if="${experience.startDate}" th:text="${#temporals.format(experience.startDate, 'MMMyyyy')}"></span> to
+                        <span th:if="${experience.endDate}" th:text="${#temporals.format(experience.endDate, 'MMMyyyy')}"></span>
+                        <span th:if="${!experience.endDate}">present</span>
+                    </strong>
+                </div>
+                <div class="small-break">
+                    <strong th:if="${experience.role}"><span th:text="${experience.role}"></span></strong>
+                    <div th:if="${experience.companyName or experience.country}">
+                        <em th:if="${experience.companyName}"><span th:text="${experience.companyName}"></span>, </em>
+                        <em th:if="${experience.country}"><span th:text="${experience.country.name}"></span></em>
+                    </div>
+                </div>
+                <div th:if="${experience.description}" th:text="${experience.description}"></div>
+            </td>
         </tr>
     </table>
 </div>
@@ -90,25 +111,15 @@
     <hr>
     <table>
         <tr th:each="education: ${candidate.candidateEducations}">
-            <table>
-                <tr>
-                    <td>
-                        <span th:text="${education.institution}"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span th:text="${education.courseName}"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span th:if="${education.yearCompleted}" th:text="${education.yearCompleted}"/>
-                        <span th:if="${!education.yearCompleted}">Incomplete</span>
-                    </td>
-                </tr>
-            </table>
-
+            <td>
+                <strong th:if="${education.educationType}"><span th:text="${education.educationType}"></span></strong>
+                <strong th:if="${education.courseName}"><span th:text="${education.courseName}"></span></strong>
+                <span th:if="${education.institution}" th:text="${education.institution}"></span>
+                <span th:if="${education.yearCompleted}" th:text="${education.yearCompleted}">
+                </span>
+                <span th:if="${!education.yearCompleted}">Incomplete
+                </span>
+            </td>
         </tr>
     </table>
 </div>
@@ -120,14 +131,12 @@
     <table>
         <tr th:each="certification: ${candidate.candidateCertifications}">
             <td>
-                <span th:text="${certification.name}"></span>
-            </td>
-            <td>
+                <span th:text="${certification.name}">-</span>
                 <span th:text="${certification.institution}"></span>
+                <div th:if="${certification.dateCompleted}"
+                     th:text="${#temporals.format(certification.dateCompleted, 'MMMyyyy')}">
+                </div>
             </td>
-            <td th:if="${certification.dateCompleted}"
-                th:text="${#temporals.format(certification.dateCompleted, 'MMM-yyyy')}"/>
-
         </tr>
     </table>
 </div>

@@ -62,11 +62,13 @@ public class PdfHelper {
         this.pdfTemplateEngine = pdfTemplateEngine;
     }
 
-    public Resource generatePdf(Candidate candidate){
+    public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
 
             Context context = new Context();
             context.setVariable("candidate", candidate);
+            context.setVariable("showName", showName);
+            context.setVariable("showContact", showContact);
 
             String renderedHtmlContent = pdfTemplateEngine.process("template", context);
             String xHtml = convertToXhtml(renderedHtmlContent);

@@ -191,17 +191,16 @@ public class CandidateAdminApi {
         candidateService.exportToCsv(request, response.getWriter());
     }
 
-    // todo: the name of this method seems strange?
-    @GetMapping(value = "{id}/cv.pdf")
-    public void downloadStudentListAsPdf(@PathVariable("id") long id, HttpServletResponse response)
+    @PostMapping(value = "{id}/cv.pdf")
+    public void downloadCandidateCVPdf(@RequestBody DownloadCvRequest request, HttpServletResponse response)
             throws IOException {
 
-        Candidate candidate = candidateService.getCandidate(id);
+        Candidate candidate = candidateService.getCandidate(request.getCandidateId());
         String name = candidate.getUser().getDisplayName()+"-"+ "CV";
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=" + name + ".pdf");
 
-        Resource report = candidateService.generateCv(candidate);
+        Resource report = candidateService.generateCv(candidate, request.getShowName(), request.getShowContact());
         try (InputStream reportStream = report.getInputStream()) {
             IOUtils.copy(reportStream, response.getOutputStream());
             response.flushBuffer();

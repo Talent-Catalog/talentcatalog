@@ -18,6 +18,7 @@
 body {
     font-family: sans-serif;
     font-size: 12px;
+    line-height: 1.5;
 }
 
 @page {
@@ -75,10 +76,17 @@ div.footer {
 h1 {
     font-size: 18px;
     margin-top: 40px;
+    padding-bottom: 0px;
 }
 
-p {
-    font-size: 12px;
+h4 {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    font-size: 15px;
+}
+
+.subheader {
+    font-size: 15px;
 }
 
 .footer {
@@ -113,10 +121,12 @@ table {
     width: 100%;
 }
 
-hr {
-    background-color: #000000;
-    border: dashed #000000 0.5px;
-    height: 1px;
+tr .large-break {
+    padding-top: 10px;
+}
+
+tr .small-break {
+    padding-bottom: 4px;
 }
 
 .page-break {

@@ -1684,8 +1684,8 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Resource generateCv(Candidate candidate) {
-       return pdfHelper.generatePdf(candidate);
+    public Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact) {
+       return pdfHelper.generatePdf(candidate, showName, showContact);
     }
 
     // List export
