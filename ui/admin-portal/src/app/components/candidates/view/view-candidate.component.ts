@@ -204,19 +204,8 @@ export class ViewCandidateComponent implements OnInit {
 
     downloadCVModal.result
       .then((result) => {
-        console.log('success')
       })
       .catch(() => { /* Isn't possible */ });
-
-      // const tab = window.open();
-      // this.candidateService.downloadCv(this.candidate.id).subscribe(
-      //   result => {
-      //     tab.location.href = URL.createObjectURL(result);
-      //   },
-      //   error => {
-      //     this.error = error;
-      //   }
-      // );
   }
 
   private selectDefaultTab() {
