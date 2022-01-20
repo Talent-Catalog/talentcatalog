@@ -1,0 +1,59 @@
+<div class="d-sm-flex justify-content-between">
+  <div>
+    <div class="h4">{{selectedTask?.task?.name}} <span class="font-weight-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">(Required)</span></div>
+    <p>Task description goes here.</p>
+    <ng-container *ngIf="!selectedTask?.completedDate">
+      <h5 [ngClass]="{'text-danger': isOverdue(selectedTask)}">Due Date: {{selectedTask?.dueDate | date: 'shortDate'}}
+        <span *ngIf="isOverdue(selectedTask)" class="text-danger"> - Overdue</span>
+      </h5>
+    </ng-container>
+    <ng-container *ngIf="selectedTask?.completedDate">
+      <h5 class="text-success">Completed Date: {{selectedTask?.completedDate | date: 'shortDate'}}</h5>
+    </ng-container>
+
+  </div>
+
+  <div class="mt-4 text-center">
+    <button class="btn btn-sm btn-secondary" (click)="goBack()">
+      <fa-icon icon="arrow-left"></fa-icon> Return to Tasks
+    </button>
+  </div>
+
+</div>
+
+<!-- ACTION -->
+<section>
+  <div class="section-heading">
+    <h5>Upload File</h5>
+  </div>
+  <div class="card">
+    <div>
+      <app-file-upload [uploading]="uploading" (uploadStarted)="startServerUpload($event)"></app-file-upload>
+    </div>
+  </div>
+</section>
+
+<!-- COMMENT -->
+<section>
+  <div class="section-heading">
+    <h5>Add/Edit Comment</h5>
+  </div>
+  <div class="card">
+    <form [formGroup]="form">
+
+      <div class="form-group">
+        <label class="font-weight-bold" for="comment">
+          Comment:
+        </label>
+        <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+                  [formControlName]="'comment'"></textarea>
+      </div>
+    </form>
+  </div>
+</section>
+
+
+
+
+
+

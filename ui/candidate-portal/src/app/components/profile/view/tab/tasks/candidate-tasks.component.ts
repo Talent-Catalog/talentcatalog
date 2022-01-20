@@ -13,6 +13,7 @@ export class CandidateTasksComponent implements OnInit {
   @Input() candidate: Candidate;
   ongoingTasks: TaskAssignment[];
   completedTasks: TaskAssignment[];
+  selectedTask: TaskAssignment;
 
   constructor() { }
 
@@ -23,6 +24,14 @@ export class CandidateTasksComponent implements OnInit {
 
   isOverdue(ta: TaskAssignment) {
     return (new Date(ta.dueDate) < new Date()) && !ta.task.optional;
+  }
+
+  selectTask(ta: TaskAssignment) {
+    this.selectedTask = ta;
+  }
+
+  unSelectTask() {
+    this.selectedTask = null;
   }
 
 }

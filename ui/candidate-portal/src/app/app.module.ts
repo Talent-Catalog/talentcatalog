@@ -73,6 +73,7 @@ import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {
+  faArrowLeft,
   faCalendar,
   faCheck,
   faChevronDown,
@@ -97,6 +98,7 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {ViewCandidateComponent} from './components/profile/view/view-candidate.component';
 import {CandidateTasksComponent} from './components/profile/view/tab/tasks/candidate-tasks.component';
+import {CandidateTaskComponent} from './components/profile/view/tab/tasks/task/candidate-task/candidate-task.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -150,6 +152,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     DatePickerComponent,
     ViewCandidateComponent,
     CandidateTasksComponent,
+    CandidateTaskComponent,
   ],
   imports: [
     BrowserModule,
@@ -212,7 +215,8 @@ export class AppModule {
       faGlobe,
       faCheck,
       faQuestion,
-      faTimes
+      faTimes,
+      faArrowLeft
     );
   }
 }

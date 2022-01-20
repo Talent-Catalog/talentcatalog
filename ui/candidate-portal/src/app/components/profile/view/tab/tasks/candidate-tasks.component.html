@@ -4,47 +4,37 @@
 
   <app-loading [loading]="loading"></app-loading>
 
-  <ng-container *ngIf="!loading">
+  <ng-container *ngIf="!loading && selectedTask">
+    <app-candidate-task
+      [selectedTask]="selectedTask"
+      (back)="unSelectTask()">
+    </app-candidate-task>
+  </ng-container>
+
+  <ng-container *ngIf="!loading && !selectedTask">
     <div>
-      <div class="h4 mb-4">Your Tasks</div>
+      <div class="mb-4">
+        <div class="h4">Your Tasks</div>
+        <p class="text-muted">Click on task to view details and complete action.</p>
+      </div>
       <div class="table-responsive-sm">
-        <table class="table bg-white">
+        <table class="table table-hover bg-white">
           <thead class="thead-light">
           <tr>
-            <th>Task Details</th>
-            <th class="d-none d-sm-table-cell">Action</th>
-            <th class="text-center">Req?</th>
-            <th>Due</th>
-            <th class="text-center d-none d-sm-table-cell">Add/Edit Comment</th>
-            <th class="text-center d-none d-sm-table-cell">Help Link</th>
-            <th class="d-sm-none"></th>
+            <th>Task Name</th>
+            <th class="text-center">Required?</th>
+            <th>Due Date</th>
           </tr>
           </thead>
 
           <tbody>
-          <tr *ngFor="let ta of ongoingTasks">
+          <tr *ngFor="let ta of ongoingTasks" (click)="selectTask(ta)">
             <td [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}"><div>{{ta.task.name}}</div></td>
-            <td class="d-none d-sm-table-cell"><button class="btn btn-sm btn-primary">Upload</button></td>
             <td class="text-center">
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
               <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
             </td>
             <td class="font-weight-light" [ngClass]="{'text-danger': isOverdue(ta)}">{{ta.dueDate | date: 'shortDate'}}</td>
-            <td class="text-center d-none d-sm-table-cell"><button class="btn btn-sm btn-secondary"><fa-icon icon="edit"></fa-icon></button></td>
-            <td class="d-none d-sm-table-cell"></td>
-            <td class="d-sm-none">
-              <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
-                <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
-                  <fa-icon icon="ellipsis-h"></fa-icon>
-                </button>
-                <ul ngbDropdownMenu>
-                  <li ngbDropdownItem>Upload File</li>
-                  <li class="dropdown-divider"></li>
-                  <li ngbDropdownItem>Add/Edit Comment</li>
-                  <li ngbDropdownItem>View Help Link</li>
-                </ul>
-              </div>
-            </td>
           </tr>
           <!-- loading -->
           <tr *ngIf="loading">
@@ -66,45 +56,28 @@
     <hr class="my-4">
 
     <div>
-      <div class="h4 mb-4">Completed Tasks</div>
+      <div class="mb-4">
+        <div class="h4">Completed Tasks</div>
+        <p class="text-muted">Click on task to view details.</p>
+      </div>
       <div class="table-responsive-sm">
-        <table class="table bg-white">
+        <table class="table table-hover bg-white">
           <thead class="thead-light">
           <tr>
-            <th>Task Details</th>
-            <th class="d-none d-sm-table-cell">Action</th>
-            <th class="text-center">Req?</th>
+            <th>Task Name</th>
+            <th class="text-center">Required?</th>
             <th>Completed</th>
-            <th class="text-center d-none d-sm-table-cell">Add/Edit Comment</th>
-            <th class="text-center d-none d-sm-table-cell">Help Link</th>
-            <th class="d-sm-none"></th>
           </tr>
           </thead>
 
           <tbody>
-          <tr *ngFor="let ta of completedTasks">
+          <tr *ngFor="let ta of completedTasks" (click)="selectTask(ta)">
             <td><div>{{ta.task.name}}</div></td>
-            <td class="d-none d-sm-table-cell"><button class="btn btn-sm btn-primary">Upload</button></td>
             <td class="text-center">
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
               <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
             </td>
             <td>{{ta.completedDate | date: 'shortDate'}}</td>
-            <td class="text-center d-none d-sm-table-cell"><button class="btn btn-sm btn-secondary"><fa-icon icon="edit"></fa-icon></button></td>
-            <td class="d-none d-sm-table-cell"></td>
-            <td class="d-sm-none">
-              <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
-                <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
-                  <fa-icon icon="ellipsis-h"></fa-icon>
-                </button>
-                <ul ngbDropdownMenu>
-                  <li ngbDropdownItem>Upload File</li>
-                  <li class="dropdown-divider"></li>
-                  <li ngbDropdownItem>Add/Edit Comment</li>
-                  <li ngbDropdownItem>View Help Link</li>
-                </ul>
-              </div>
-            </td>
           </tr>
           <!-- loading -->
           <tr *ngIf="loading">
