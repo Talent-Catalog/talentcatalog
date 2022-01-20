@@ -11,15 +11,30 @@ export class CandidateTasksComponent implements OnInit {
   error;
   loading;
   @Input() candidate: Candidate;
-  ongoingTasks: TaskAssignment[];
-  completedTasks: TaskAssignment[];
   selectedTask: TaskAssignment;
 
   constructor() { }
 
   ngOnInit(): void {
-    this.ongoingTasks = this.candidate.taskAssignments.filter(t => t.completedDate == null);
-    this.completedTasks = this.candidate.taskAssignments.filter(t => t.completedDate != null);
+    console.log(this.candidate);
+
+
+  }
+
+  filterOngoing(ta: TaskAssignment) {
+    return ta.completedDate == null;
+  }
+
+  filterCompleted(ta: TaskAssignment) {
+    return ta.completedDate != null;
+  }
+
+  get ongoingTasks() {
+    return this.candidate?.taskAssignments.filter(t => t.completedDate == null);
+  }
+
+  get completedTasks() {
+    return this.candidate?.taskAssignments.filter(t => t.completedDate != null);
   }
 
   isOverdue(ta: TaskAssignment) {

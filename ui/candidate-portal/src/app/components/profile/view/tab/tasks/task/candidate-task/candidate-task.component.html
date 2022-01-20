@@ -1,6 +1,6 @@
 <div class="d-sm-flex justify-content-between">
   <div>
-    <div class="h4">{{selectedTask?.task?.name}} <span class="font-weight-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">(Required)</span></div>
+    <h3>{{selectedTask?.task?.name}} <span class="font-weight-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">(Required)</span></h3>
     <p>Task description goes here.</p>
     <ng-container *ngIf="!selectedTask?.completedDate">
       <h5 [ngClass]="{'text-danger': isOverdue(selectedTask)}">Due Date: {{selectedTask?.dueDate | date: 'shortDate'}}
