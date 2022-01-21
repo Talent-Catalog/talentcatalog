@@ -24,8 +24,6 @@ import lombok.Setter;
 public class CreateUploadTaskRequest {
     private String name;
     private String description;
-    private String timeframe;
-    private boolean adminOnly;
-
-    private String fileType;
+    private Integer daysToComplete;
+    private boolean admin;
 }
