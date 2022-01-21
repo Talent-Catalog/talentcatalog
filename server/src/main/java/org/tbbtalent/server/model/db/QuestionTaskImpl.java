@@ -21,7 +21,7 @@ import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.TaskType;
 
 /**
- * TODO JC Doc
+ * Default Implementation
  *
  * @author John Cameron
  */

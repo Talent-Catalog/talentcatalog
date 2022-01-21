@@ -21,7 +21,7 @@ import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.model.db.task.YesNoQuestionTask;
 
 /**
- * TODO JC Doc
+ * Default Implementation
  *
  * @author John Cameron
  */
