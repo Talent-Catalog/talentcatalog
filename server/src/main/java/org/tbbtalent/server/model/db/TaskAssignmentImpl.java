@@ -22,14 +22,14 @@ import lombok.Setter;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 
-@Getter
-@Setter
 /**
  * Default implementation of {@link TaskAssignment}
  *
  * @author John Cameron
  */
-public class TaskAssignmentImpl implements TaskAssignment {
+@Getter
+@Setter
+public class TaskAssignmentImpl extends AbstractAuditableDomainObject<Long> implements TaskAssignment {
     OffsetDateTime abandonedDate;
     User activatedBy;
     OffsetDateTime activatedDate;

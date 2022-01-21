@@ -121,6 +121,12 @@ public interface TaskAssignment {
     OffsetDateTime getDueDate();
 
     /**
+     * Unique id identifying this task assignment
+     * @return Task assignment id
+     */
+    Long getId();
+
+    /**
      * List through which the candidate was assigned the task.
      * <p/>
      * Null if the candidate was assigned this task directly, rather than automatically through
