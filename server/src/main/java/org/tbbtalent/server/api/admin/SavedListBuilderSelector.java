@@ -57,6 +57,7 @@ public class SavedListBuilderSelector {
                 .add("updatedBy", userDto())
                 .add("updatedDate")
                 .add("users", userDto())
+                .add("tasks", taskDto())
         ;
     }
 
@@ -71,6 +72,15 @@ public class SavedListBuilderSelector {
                 .add("id")
                 .add("firstName")
                 .add("lastName")
+                ;
+    }
+
+    private DtoBuilder taskDto() {
+        return new DtoBuilder()
+                // TODO: other attributes
+                .add("name")
+                .add("optional")
+                .add("type")
                 ;
     }
 }

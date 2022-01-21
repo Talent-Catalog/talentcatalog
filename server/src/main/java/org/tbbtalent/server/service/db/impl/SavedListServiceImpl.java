@@ -16,23 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.springframework.data.jpa.domain.Specification.where;
-
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,52 +30,31 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.RegisteredListException;
-import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.ExportColumn;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.ExportColumnRepository;
-import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
-import org.tbbtalent.server.repository.db.GetSavedListsQuery;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
-import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
-import org.tbbtalent.server.request.candidate.PublishListRequest;
-import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
-import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
-import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.task.TaskType;
+import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.link.UpdateShortNameRequest;
-import org.tbbtalent.server.request.list.ContentUpdateType;
-import org.tbbtalent.server.request.list.IHasSetOfCandidates;
-import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.request.list.*;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.DocPublisherService;
-import org.tbbtalent.server.service.db.ExportColumnsService;
-import org.tbbtalent.server.service.db.FileSystemService;
-import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.util.*;
+
+import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Saved List service
@@ -887,6 +851,38 @@ public class SavedListServiceImpl implements SavedListService {
     private SavedList saveIt(SavedList savedList) {
         savedList.setAuditFields(authService.getLoggedInUser().orElse(null));
         return savedListRepository.save(savedList);
+    }
+
+    //TODO JC These addFakeTasks methods might eventually be moved out and
+    // into the unit testing code. Useful to have them here now to support temporary hack
+    // allowing us to send up had coded task assignments to the Angular code.
+    @Override
+    public void addFakeTasks(SavedList savedList) {
+        List<TaskImpl> tasks = new ArrayList<>();
+
+        TaskImpl task = new TaskImpl();
+        String name = "test task 1";
+        task.setName(name);
+        task.setOptional(false);
+        task.setType(TaskType.Upload);
+
+        TaskImpl task2 = new TaskImpl();
+        String name2 = "test task 2";
+        task2.setName(name2);
+        task2.setOptional(false);
+        task2.setType(TaskType.Upload);
+
+        TaskImpl task3 = new TaskImpl();
+        String name3 = "test task 3";
+        task3.setName(name3);
+        task3.setOptional(false);
+        task3.setType(TaskType.Upload);
+
+        tasks.add(task);
+        tasks.add(task2);
+        tasks.add(task3);
+
+        savedList.setTasks(tasks);
     }
 
 }

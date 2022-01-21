@@ -241,6 +241,7 @@ import {EnglishThresholdComponent} from './components/candidates/visa/english-th
 import {FilterPipe} from "./pipes/filter.pipe";
 import {CandidateTaskTabComponent} from './components/candidates/view/tab/candidate-task-tab/candidate-task-tab.component';
 import {DownloadCvComponent} from './components/util/download-cv/download-cv.component';
+import {AssignTasksListComponent} from './components/tasks/assign-tasks-list/assign-tasks-list.component';
 
 @NgModule({
   declarations: [
@@ -459,7 +460,8 @@ import {DownloadCvComponent} from './components/util/download-cv/download-cv.com
     FilterPipe,
     CandidateTaskTabComponent,
     FilterPipe,
-    DownloadCvComponent
+    DownloadCvComponent,
+    AssignTasksListComponent
   ],
   imports: [
     BrowserModule,

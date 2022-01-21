@@ -78,6 +78,9 @@
         <button class="btn" (click)="doSelectColumns()">
           <i class="fas fa-columns" title="Select columns to display"></i>
         </button>
+        <button class="btn" (click)="assignTasks()">
+          <i class="fas fa-tasks" title="Assign/show tasks"></i>
+        </button>
         <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()">
           <i class="fas fa-chart-bar" title="Run stats"></i>
         </button>

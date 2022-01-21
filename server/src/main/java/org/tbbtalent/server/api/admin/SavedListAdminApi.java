@@ -102,6 +102,8 @@ public class SavedListAdminApi implements
     @Override
     public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(id);
+        //todo create some dummy tasks (including one assigned already, and two not assigned)
+        this.savedListService.addFakeTasks(savedList);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
     }

@@ -16,18 +16,10 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.GeneralSecurityException;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.RegisteredListException;
-import org.tbbtalent.server.exception.SalesforceException;
+import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
@@ -41,6 +33,11 @@ import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.GeneralSecurityException;
+import java.util.List;
 
 /**
  * Saved List Service
@@ -366,4 +363,11 @@ public interface SavedListService {
      */
     PublishedDocImportReport importEmployerFeedback(long savedListId)
         throws GeneralSecurityException, NoSuchObjectException, IOException;
+
+    // TODO: 16/1/22 Will probably eventually pull out these methods.
+    /**
+     * Used for testing - adding test tasks to list
+     * @param savedList
+     */
+    void addFakeTasks(SavedList savedList);
 }
