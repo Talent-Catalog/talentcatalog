@@ -14,23 +14,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db.task;
+package org.tbbtalent.server.model.db;
 
-import org.springframework.lang.Nullable;
+import org.springframework.lang.NonNull;
+import org.tbbtalent.server.model.db.task.QuestionTask;
+import org.tbbtalent.server.model.db.task.TaskType;
 
 /**
- * Task where candidate is required to answer a yes/no question.
+ * TODO JC Doc
  *
  * @author John Cameron
  */
-public interface YesNoQuestionTask extends QuestionTask {
+public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
 
-    /**
-     * Validate an answer to the question.
-     * @return True if answer is yes or no.
-     */
+    @NonNull
     @Override
-    default boolean validateAnswer(@Nullable String answer) {
-        return "yes".equalsIgnoreCase(answer) || "no".equalsIgnoreCase(answer);
+    public TaskType getType() {
+        return TaskType.Question;
     }
+
 }

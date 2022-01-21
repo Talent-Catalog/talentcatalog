@@ -32,16 +32,17 @@ import org.tbbtalent.server.model.db.User;
 public interface TaskAssignment {
 
     /**
-     * Indicates whether the task has been abandoned. Null if not, otherwise it is the reason
-     * given for abandoning this task assignment
+     * If not null, indicates that the task has been abandoned - providing the time that happened.
+     * The reason for abandoning this task assignment must appear in the comment attribute
+     * - {@link #getCandidateNotes()}.
      * <p/>
      * Required (ie non optional) tasks which are abandoned will be treated like required
      * overdue tasks - in other words, there is a problem that needs to be addressed.
-     * @return If not null, indicates that the task has been abandoned, providing the reason.
+     * @return If not null, indicates that the task has been abandoned, providing the date/time.
      * Null if the task has not been abandoned.
      */
     @Nullable
-    String getAbandonReason();
+    OffsetDateTime getAbandonedDate();
 
     /**
      * The person who activated this assignment. This will be a TBB admin.
@@ -74,22 +75,16 @@ public interface TaskAssignment {
     Candidate getCandidate();
 
     /**
-     * Candidate may provide optional notes related to any task.
+     * Notes from candidate related to this task assigment. This will be displayed to admin staff.
+     * So it is a way for a candidate to provide feedback to admin staff.
      * <p/>
-     * For example, if a candidate wants to give more details to a yes/no question, or explain
-     * why they are having trouble with a task, they can do so here.
-     * @return Optional notes
+     * This is optional and normally null, except when a task has been abandoned by the candidate
+     * (see {@link #getAbandonedDate()}) in which case a note is required from the candidate
+     * giving their reason for abandoning the task.
+     * @return Notes from candidate relating to this task assignment
      */
     @Nullable
     String getCandidateNotes();
-
-    /**
-     * Candidate's response to question tasks is stored here.
-     * @return Candidate response. Null if there is no response, or if the task is not a question
-     * and therefore does not require a response.
-     */
-    @Nullable
-    String getCandidateResponse();
 
     /**
      * Time when task was completed - initially null.

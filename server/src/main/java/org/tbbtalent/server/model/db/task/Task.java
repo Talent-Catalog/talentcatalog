@@ -44,6 +44,13 @@ public interface Task extends Auditable {
     Integer getDaysToComplete();
 
     /**
+     * Optional description of task
+     * @return description of task
+     */
+    @Nullable
+    String getDescription();
+
+    /**
      * Link which refers to help for a candidate on what they need to do to complete this task.
      * @return Typically a link to a document or web page.
      */
@@ -57,8 +64,8 @@ public interface Task extends Auditable {
     Long getId();
 
     /**
-     * Name describing the task.
-     * @return Name of task.
+     * Name describing the task. For Question tasks, this is the question to be answered.
+     * @return Name of task (question for Question tasks).
      */
     @NonNull
     String getName();
@@ -75,14 +82,4 @@ public interface Task extends Auditable {
      */
     @Nullable
     List<Task> getSubtasks();
-
-    /**
-     * Type of task - replacing class hierarchy.
-     * <p/>
-     * The type of the task determines which attributes are used for a particular instance -
-     * reflecting the various Task interfaces.
-     * @return Type of this task
-     */
-    @NonNull
-    TaskType getType();
 }

@@ -14,23 +14,29 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db.task;
+package org.tbbtalent.server.model.db;
 
-import org.springframework.lang.Nullable;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.lang.NonNull;
+import org.tbbtalent.server.model.db.task.TaskType;
+import org.tbbtalent.server.model.db.task.UploadInfo;
+import org.tbbtalent.server.model.db.task.UploadTask;
 
 /**
- * Task where candidate is required to answer a yes/no question.
+ * TODO JC Doc
  *
  * @author John Cameron
  */
-public interface YesNoQuestionTask extends QuestionTask {
+@Getter
+@Setter
+public class UploadTaskImpl extends TaskImpl implements UploadTask {
 
-    /**
-     * Validate an answer to the question.
-     * @return True if answer is yes or no.
-     */
+    private UploadInfo uploadInfo;
+
+    @NonNull
     @Override
-    default boolean validateAnswer(@Nullable String answer) {
-        return "yes".equalsIgnoreCase(answer) || "no".equalsIgnoreCase(answer);
+    public TaskType getType() {
+        return TaskType.Upload;
     }
 }

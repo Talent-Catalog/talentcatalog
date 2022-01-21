@@ -20,37 +20,46 @@ package org.tbbtalent.server.model.db;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.tbbtalent.server.model.db.task.QuestionTask;
+import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskType;
-import org.tbbtalent.server.model.db.task.UploadInfo;
-import org.tbbtalent.server.model.db.task.UploadTask;
 
 /**
- * Implementation of all Task interfaces - flattened out into a single implementation rather
- * than subclasses. Necessary given our given code base and the need to stream lists of tasks
- * to the Angular where each of task can be a different type - eg simple task, question task,
- * upload task.
+ * Base implementation of all tasks.
  * <p/>
- * What this means is that all special attributes - such as upload info for upload tasks, or
- * questions for question tasks - are all always present (although they be null) in every task
- * object - even though they may not be relevant.
+ * Note our Angular code only sees these base attributes tasks. Angular doesn't see the attributes
+ * of subclasses. That is because our simple DTO processing and JSON loses that type specific
+ * information. It doesn't matter because these attributes are all our Angular code needs in order
+ * to work.
  * <p/>
- * To replace a normal class hierarchy, the actual type of a task is determined by {@link #getType()}.
+ * However the Angular code does need to distinguish between different types of tasks, because they
+ * will be processed differently. So for example, the Angular does need to know whether a task
+ * is an upload task. That task type information is encoded in {@link #getType()}.
  */
 @Getter
 @Setter
-public class TaskImpl extends AbstractAuditableDomainObject<Long>
-    implements Task, QuestionTask, UploadTask {
+public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Task {
     private boolean admin;
     private Integer daysToComplete;
     private String description;
     private String helpLink;
     private String name;
     private boolean optional;
-    private String question;
     private List<Task> subtasks;
-    private TaskType type;
 
-    private UploadInfo uploadInfo;
+    /**
+     * Type of task - this encodes the class type - so {@link TaskType#Simple} for a simple task,
+     * {@link TaskType#Upload} for an UploadTask etc.
+     * This allows the class type information of any task to be passed to Angular through JSON
+     * serialization. Otherwise, we lose that type information when tasks objects are returned
+     * through our REST Api to Angular.
+     * <p/>
+     * This method should be overridden by subclasses, to provide their related type.
+     * @return Type of this task
+     */
+    @NonNull
+    public TaskType getType() {
+        return TaskType.Simple;
+    }
+
 }

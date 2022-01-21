@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,7 +29,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tbbtalent.server.model.db.QuestionTask;
 import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.UploadTask;
+import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.repository.db.TaskRepository;
 import org.tbbtalent.server.request.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
@@ -69,9 +70,6 @@ class TaskServiceImplTest {
         assertNotNull(task);
         assertThat(task.getName()).isEqualTo("Test Task");
         assertThat(task.getDescription()).isEqualTo("This is a test description.");
-        assertThat(task.getTimeframe()).isEqualTo("2 Weeks");
-//        assertThat(task.isAdminOnly()).isFalse();
-        assertThat(task.isList()).isFalse();
     }
 
     /**
@@ -113,9 +111,8 @@ class TaskServiceImplTest {
         CreateUploadTaskRequest request = new CreateUploadTaskRequest();
         request.setName("Test Upload Task");
         request.setDescription("This is a test description.");
-        request.setTimeframe("2 Weeks");
-        request.setAdminOnly(false);
-        request.setFileType("Collaboration Agreement");
+        request.setDaysToComplete(14);
+        request.setAdmin(false);
 
         // Do I need a repository for each task class (e.g. question/upload/other, even if they extend from the one interface)
         // https://stackoverflow.com/a/63658452 - looks like can use the single repo
@@ -123,11 +120,10 @@ class TaskServiceImplTest {
         UploadTask uTask = taskService.createUploadTask(request);
 
         assertNotNull(uTask);
-        assertThat(uTask.getName()).isEqualTo("Test Upload Task");
-        assertThat(uTask.getDescription()).isEqualTo("This is a test description.");
-        assertThat(uTask.getTimeframe()).isEqualTo("2 Weeks");
-        assertThat(uTask.isAdminOnly()).isFalse();
-        assertThat(uTask.getFileType()).isEqualTo("Collaboration Agreement");
+        assertEquals("Test Upload Task", uTask.getName());
+        assertEquals("This is a test description.", uTask.getDescription());
+        assertEquals(14, uTask.getDaysToComplete());
+        assertThat(uTask.isAdmin()).isFalse();
     }
 
     /**
@@ -152,8 +148,5 @@ class TaskServiceImplTest {
         assertNotNull(task);
         assertThat(task.getName()).isEqualTo("Test Task List");
         assertThat(task.getDescription()).isEqualTo("This is a test description.");
-        assertThat(task.getTimeframe()).isEqualTo("2 Weeks");
-//        assertThat(task.isAdminOnly()).isFalse();
-        assertThat(task.isList()).isTrue();
     }
 }

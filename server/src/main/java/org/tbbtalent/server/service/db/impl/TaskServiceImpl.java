@@ -18,7 +18,7 @@ package org.tbbtalent.server.service.db.impl;
 
 import org.tbbtalent.server.model.db.QuestionTask;
 import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.UploadTask;
+import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.request.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;

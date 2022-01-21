@@ -16,29 +16,23 @@
 
 package org.tbbtalent.server.model.db.task;
 
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
  * Particular kind of task which simply involves the candidate answering a given question.
+ * <p/>
+ * The question to be answered is the name of the task.
  *
  * @author John Cameron
  */
 public interface QuestionTask extends Task {
 
     /**
-     * Question which the candidate is required to answer.
-     * @return Question to be answered.
-     */
-    @NonNull
-    String getQuestion();
-
-    /**
-     * Validates the candidate's answer (a String) to the question.
+     * Validates an answer (a String) to the question.
      * <p/>
      * Default validation is always true if the answer is not null, but subclasses can add
      * extra validation.
-     * @param answer Candidate's answer to question
+     * @param answer An answer to question
      * @return True if answer is valid. This can be overridden in different subclasses code
      * for different kinds of answers - for example {@link YesNoQuestionTask} is for questions
      * where the answer must be a simple yes or no.
