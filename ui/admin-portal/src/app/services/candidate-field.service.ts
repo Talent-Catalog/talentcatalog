@@ -235,7 +235,7 @@ export class CandidateFieldService {
   }
 
   getTasksStatus(value): string {
-    let status: string = 'On Time';
+    let status: string = null;
     for (const ta of value) {
       if (ta.completedDate) {
         status = 'Completed'

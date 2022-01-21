@@ -316,7 +316,9 @@
                        [checked]="isSelected(candidate)">
               </td>
               <td *ngFor="let field of selectedFields">
-                <span>
+                <span [ngClass]="{
+                'text-danger': field.getValue(candidate) === 'Overdue',
+                'text-success' : field.getValue(candidate) == 'Completed'}">
                   {{field.getValue(candidate)}}
                 </span>
               </td>
