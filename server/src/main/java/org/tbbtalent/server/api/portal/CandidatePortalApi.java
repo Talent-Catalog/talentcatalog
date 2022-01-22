@@ -435,7 +435,7 @@ public class CandidatePortalApi {
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")
                 .add("linkedInLink")
-                .add("taskAssignments", taskAssignmentService.getTaskAssignmnentDto())
+                .add("taskAssignments", taskAssignmentService.getTaskAssignmentDto())
                 ;
     }
 }

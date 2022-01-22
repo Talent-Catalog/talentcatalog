@@ -100,7 +100,7 @@ public interface TaskAssignmentService {
     void completeUploadTaskAssignment(TaskAssignment ta, MultipartFile file) throws IOException;
 
     // TODO: 22/1/22 Doc
-    DtoBuilder getTaskAssignmnentDto();
+    DtoBuilder getTaskAssignmentDto();
 
     // TODO: 22/1/22 Doc
     DtoBuilder getTaskDto();

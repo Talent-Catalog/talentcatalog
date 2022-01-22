@@ -84,7 +84,7 @@ public class TaskAssignmentPortalApi {
 
         taskAssignmentService.completeTaskAssignment(ta);
 
-        return taskAssignmentService.getTaskAssignmnentDto().build(ta);
+        return taskAssignmentService.getTaskAssignmentDto().build(ta);
     }
 
     /**
@@ -112,7 +112,7 @@ public class TaskAssignmentPortalApi {
 
         taskAssignmentService.completeUploadTaskAssignment(ta, file);
 
-        return taskAssignmentService.getTaskAssignmnentDto().build(ta);
+        return taskAssignmentService.getTaskAssignmentDto().build(ta);
     }
 
 }

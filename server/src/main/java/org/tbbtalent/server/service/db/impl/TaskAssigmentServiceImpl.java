@@ -116,9 +116,10 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     }
 
     @Override
-    public DtoBuilder getTaskAssignmnentDto() {
+    public DtoBuilder getTaskAssignmentDto() {
         return new DtoBuilder()
             // TODO: other attributes
+            //todo If we are going to be mapping everything, do we need a dto?
             .add("id")
             .add("abandonedDate")
             .add("candidateNotes")
