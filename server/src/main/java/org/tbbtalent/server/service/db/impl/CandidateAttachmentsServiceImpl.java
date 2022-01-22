@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -24,11 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.PagedSearchRequest;
@@ -241,7 +243,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // Update the candidate audit fields
         candidate.setAuditFields(candidate.getUser());
         candidateService.save(candidate, true);
-        
+
         //Try and delete associated file on file system
         AttachmentType attachmentType = candidateAttachment.getType();
         if (attachmentType != null) {
@@ -275,7 +277,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    public void downloadCandidateAttachment(Long id, OutputStream out) 
+    public void downloadCandidateAttachment(Long id, OutputStream out)
             throws IOException, NoSuchObjectException {
         CandidateAttachment attachment = getCandidateAttachment(id);
         downloadCandidateAttachment(attachment, out);
@@ -316,11 +318,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    public CandidateAttachment getCandidateAttachment(Long id) 
+    public CandidateAttachment getCandidateAttachment(Long id)
             throws NoSuchObjectException {
-        CandidateAttachment candidateAttachment = 
+        CandidateAttachment candidateAttachment =
                 candidateAttachmentRepository.findByIdLoadCandidate(id)
-                .orElseThrow(() -> 
+                .orElseThrow(() ->
                         new NoSuchObjectException(CandidateAttachment.class, id));
         return candidateAttachment;
     }
@@ -338,13 +340,13 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             if (!candidateAttachment.getName().equals(request.getName())) {
                 candidateAttachment.setName(request.getName());
                 if (attachmentType == AttachmentType.googlefile) {
-                    //For Google files we also rename the uploaded file 
+                    //For Google files we also rename the uploaded file
                     GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getLocation());
                     fsf.setName(request.getName());
                     fileSystemService.renameFile(fsf);
                 }
             }
-    
+
             //Only AWS/S3 files support this CV to not CV and vice versa
             //for CV to non CV and vice versa only applies to AWS/S3 files
             if (attachmentType == AttachmentType.file) {
@@ -393,15 +395,10 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         return candidateAttachment;
     }
 
-    @Override
-    @NonNull
-    public CandidateAttachment uploadAttachment( 
-            @NonNull Long candidateId, Boolean cv, MultipartFile file )
-            throws IOException, NoSuchObjectException {
+    public CandidateAttachment uploadAttachment(@NonNull Candidate candidate,
+        String uploadedFileName, @Nullable String subfolderName, MultipartFile file,
+        UploadType uploadType) throws IOException, NoSuchObjectException {
 
-        Candidate candidate = candidateRepository.findById(candidateId)
-                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
-        
         //Save to a temporary file
         InputStream is = file.getInputStream();
         File tempFile = File.createTempFile("tbb", ".tmp");
@@ -413,43 +410,41 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 outputStream.write(bytes, 0, read);
             }
         }
-       
 
-        //Name of file being uploaded (this is the name it had on the 
-        //originating computer).
-        String fileName = file.getOriginalFilename();
 
         //Get link to candidate folder if we have one.
         String folderLink = candidate.getFolderlink();
         if (folderLink == null || !folderLink.startsWith("http")) {
             //No candidate folder recorded, create one.
-            candidate = candidateService.createCandidateFolder(candidateId);
+            candidate = candidateService.createCandidateFolder(candidate.getId());
             folderLink = candidate.getFolderlink();
         }
 
-        //Create a folder object for the candidate folder (where the attachment 
+        //Create a folder object for the candidate folder (where the attachment
         //file will be uploaded to)
         GoogleFileSystemFolder parentFolder = new GoogleFileSystemFolder(folderLink);
-        
+
+        // TODO: 22/1/22 Subfolder if not null
+
         //Upload the file to its folder, with the correct name (not the temp
         //file name).
-        GoogleFileSystemFile uploadedFile = 
+        GoogleFileSystemFile uploadedFile =
             fileSystemService.uploadFile(googleDriveConfig.getCandidateDataDrive(),
-                parentFolder, fileName, tempFile);
+                parentFolder, uploadedFileName, tempFile);
 
-        final String fileType = getFileExtension((fileName));
-        
+        final String fileType = getFileExtension(uploadedFileName);
+
         //Do text extraction if CV - otherwise leave as null.
         String textExtract = null;
-        if(cv) {
+        if(uploadType == UploadType.Cv) {
             try {
                 textExtract = textExtractHelper
-                        .getTextExtractFromFile(tempFile, fileType);
+                    .getTextExtractFromFile(tempFile, fileType);
             } catch (Exception e) {
-                log.error("Could not extract text from uploaded cv file", e);
+                log.error("Could not extract text from uploaded file", e);
             }
         }
-        
+
         //Delete tempfile
         if (!tempFile.delete()) {
             log.error("Failed to delete temporary file " + tempFile);
@@ -457,33 +452,50 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         //Now create corresponding CandidateAttachment record.
         CreateCandidateAttachmentRequest req = new CreateCandidateAttachmentRequest();
-        req.setCandidateId(candidateId);
+        req.setCandidateId(candidate.getId());
         req.setType(AttachmentType.googlefile);
-        req.setName(fileName);
-        req.setFileType(fileType); 
+        req.setName(uploadedFileName);
+        req.setFileType(fileType);
         req.setLocation(uploadedFile.getUrl());
-        req.setCv(cv);
+        req.setCv(uploadType == UploadType.Cv);
         if(StringUtils.isNotBlank(textExtract)) {
             // Remove any null bytes to avoid PSQLException: ERROR: invalid byte sequence for encoding "UTF8"
             textExtract = Pattern.compile("\\x00").matcher(textExtract).replaceAll("?");
             req.setTextExtract(textExtract);
         }
-        
-        CandidateAttachment attachment = 
-                createCandidateAttachment(req);
+
+        CandidateAttachment attachment = createCandidateAttachment(req);
 
         return attachment;
+
     }
 
     @Override
     @NonNull
-    public CandidateAttachment uploadAttachment(Boolean cv, MultipartFile file) 
+    public CandidateAttachment uploadAttachment(
+            @NonNull Long candidateId, Boolean cv, MultipartFile file )
+            throws IOException, NoSuchObjectException {
+
+        Candidate candidate = candidateRepository.findById(candidateId)
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+
+        //Name of file being uploaded (this is the name it had on the
+        //originating computer).
+        String fileName = file.getOriginalFilename();
+
+        UploadType uploadType = cv ? UploadType.Cv : UploadType.Other;
+        return uploadAttachment(candidate, fileName, null, file, uploadType);
+    }
+
+    @Override
+    @NonNull
+    public CandidateAttachment uploadAttachment(Boolean cv, MultipartFile file)
             throws IOException, InvalidSessionException {
         Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
             throw new InvalidSessionException("Not logged in");
         }
-        
+
         return uploadAttachment(candidateId, cv, file);
     }
 

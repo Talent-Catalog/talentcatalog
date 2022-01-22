@@ -19,17 +19,34 @@ package org.tbbtalent.server.model.db.task;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
-@Getter
-@Setter
 /**
- * TODO JC Doc
  * Provides information about different types of upload.
  *
  * @author John Cameron
  */
+@Getter
+@Setter
 public class UploadInfo {
+
+    /**
+     * Type of file being uploaded
+     */
+    @NonNull
     private UploadType type;
-    private String directoryName;
+
+    /**
+     * Optional subfolder name to upload into. If null, no subfolder is used.
+     */
+    @Nullable
+    private String subFolderName;
+
+    /**
+     * Allowable file types (eg pdf, doc, jpg etc). If null, any file type is acceptable.
+     */
+    @Nullable
+    //todo This really needs to be known by Angular - maybe lose this. Or keep and throw Exception for bad suffixes
     private List<String> fileTypes;
 }

@@ -53,7 +53,8 @@ class TaskAssignmentServiceTest {
 
     @BeforeEach
     void setUp() {
-        taskAssignmentService = new TaskAssigmentServiceImpl();
+        // TODO: 22/1/22 Mock candidate attachment service
+        taskAssignmentService = new TaskAssigmentServiceImpl(null);
 
         task = new TaskImpl();
     }

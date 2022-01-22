@@ -16,13 +16,18 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.IOException;
 import java.util.List;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.web.multipart.MultipartFile;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 
 // TODO: Notes for Caroline: The methods and documentation are taken from your "TDD Operations Tasks"
 // design document - with a bit more detail added.
@@ -70,6 +75,15 @@ public interface TaskAssignmentService {
     void assignTaskToList(Task task, SavedList list);
 
     /**
+     * Get the TaskAssignment with the given id.
+     * @param taskAssignmentId ID of TaskAssignment to get
+     * @return TaskAssigment
+     * @throws NoSuchObjectException if there is no TaskAssignment with this id.
+     */
+    @NonNull
+    TaskAssignment get(long taskAssignmentId) throws NoSuchObjectException;
+
+    /**
      * Fetch task assignments for a given candidate by Status (eg active or inactive)
      *
      * @param candidate - Candidate whose task assignments we want
@@ -79,4 +93,15 @@ public interface TaskAssignmentService {
      */
     List<TaskAssignment> getCandidateTaskAssignments(Candidate candidate, @Nullable Status status);
 
+    // TODO: 22/1/22 Doc
+    void completeTaskAssignment(TaskAssignment ta);
+
+    // TODO: 22/1/22 Doc
+    void completeUploadTaskAssignment(TaskAssignment ta, MultipartFile file) throws IOException;
+
+    // TODO: 22/1/22 Doc
+    DtoBuilder getTaskAssignmnentDto();
+
+    // TODO: 22/1/22 Doc
+    DtoBuilder getTaskDto();
 }

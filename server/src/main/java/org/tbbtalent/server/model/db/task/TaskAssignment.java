@@ -155,4 +155,6 @@ public interface TaskAssignment {
      */
     @NonNull
     Task getTask();
+
+    void setCompletedDate(OffsetDateTime dateTime);
 }

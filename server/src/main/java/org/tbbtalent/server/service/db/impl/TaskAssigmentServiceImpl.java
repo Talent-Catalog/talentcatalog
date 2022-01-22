@@ -16,13 +16,24 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.List;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
+import org.tbbtalent.server.model.db.task.UploadInfo;
+import org.tbbtalent.server.model.db.task.UploadTask;
+import org.tbbtalent.server.model.db.task.UploadType;
+import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 
 // TODO: Note for Caroline:  that none of the methods are completed.
 // They are the default implementations that I have configured Intellij to provide when I do a
@@ -46,7 +57,14 @@ import org.tbbtalent.server.service.db.TaskAssignmentService;
  *
  * @author John Cameron
  */
+@Service
 public class TaskAssigmentServiceImpl implements TaskAssignmentService {
+    private final CandidateAttachmentService candidateAttachmentService;
+
+    public TaskAssigmentServiceImpl(
+        CandidateAttachmentService candidateAttachmentService) {
+        this.candidateAttachmentService = candidateAttachmentService;
+    }
 
     @Override
     public TaskAssignment assignTaskToCandidate(Task task, Candidate candidate) {
@@ -60,9 +78,64 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         throw new UnsupportedOperationException("assignTaskToList not implemented");
     }
 
+    @NonNull
+    @Override
+    public TaskAssignment get(long taskAssignmentId) throws NoSuchObjectException {
+        //TODO JC Implement get
+        throw new UnsupportedOperationException("get not implemented");
+    }
+
     @Override
     public List<TaskAssignment> getCandidateTaskAssignments(Candidate candidate, Status status) {
         //TODO JC Implement getCandidateTaskAssignments
         throw new UnsupportedOperationException("getCandidateTaskAssignments not implemented");
+    }
+
+    @Override
+    public void completeTaskAssignment(TaskAssignment ta) {
+        ta.setCompletedDate(OffsetDateTime.now());
+    }
+
+    private String computeUploadFileName
+        (Candidate candidate, UploadType uploadType, String baseFileName) {
+        return candidate.getCandidateNumber() + "-" + uploadType + "-" + baseFileName;
+    }
+
+    @Override
+    public void completeUploadTaskAssignment(TaskAssignment ta, MultipartFile file)
+        throws IOException {
+        UploadInfo uploadInfo = ((UploadTask) ta.getTask()).getUploadInfo();
+
+        Candidate candidate = ta.getCandidate();
+        UploadType uploadType = uploadInfo.getType();
+        String uploadedName = computeUploadFileName(candidate, uploadType, file.getOriginalFilename());
+        String subFolderName = uploadInfo.getSubFolderName();
+        candidateAttachmentService.uploadAttachment(candidate, uploadedName, subFolderName, file, uploadType);
+
+        completeTaskAssignment(ta);
+    }
+
+    @Override
+    public DtoBuilder getTaskAssignmnentDto() {
+        return new DtoBuilder()
+            // TODO: other attributes
+            .add("id")
+            .add("abandonedDate")
+            .add("candidateNotes")
+            .add("completedDate")
+            .add("dueDate")
+            .add("task", getTaskDto())
+            ;
+    }
+
+    @Override
+    public DtoBuilder getTaskDto() {
+        return new DtoBuilder()
+            // TODO: other attributes
+            .add("id")
+            .add("name")
+            .add("description")
+            .add("optional")
+            ;
     }
 }
