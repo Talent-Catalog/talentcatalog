@@ -37,7 +37,7 @@ import org.tbbtalent.server.service.db.UserService;
 @Component
 public class SystemAdminConfiguration {
 
-  private final static String SYSTEM_ADMIN_NAME = "SystemAdmin";
+  public final static String SYSTEM_ADMIN_NAME = "SystemAdmin";
   public final static String[] GLOBAL_LIST_NAMES = new String[] {
       "TestCandidates"
   };
