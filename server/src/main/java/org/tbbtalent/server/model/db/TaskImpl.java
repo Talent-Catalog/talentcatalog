@@ -20,7 +20,6 @@ package org.tbbtalent.server.model.db;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskType;
 
@@ -54,12 +53,8 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
      * serialization. Otherwise, we lose that type information when tasks objects are returned
      * through our REST Api to Angular.
      * <p/>
-     * This method should be overridden by subclasses, to provide their related type.
-     * @return Type of this task
+     * This value should be overridden by subclasses, to provide their related type.
      */
-    @NonNull
-    public TaskType getTaskType() {
-        return TaskType.Simple;
-    }
+    protected TaskType taskType = TaskType.Simple;
 
 }

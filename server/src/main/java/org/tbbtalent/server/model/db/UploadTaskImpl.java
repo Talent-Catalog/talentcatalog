@@ -18,7 +18,6 @@ package org.tbbtalent.server.model.db;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.model.db.task.UploadInfo;
 import org.tbbtalent.server.model.db.task.UploadTask;
@@ -32,11 +31,6 @@ import org.tbbtalent.server.model.db.task.UploadTask;
 @Setter
 public class UploadTaskImpl extends TaskImpl implements UploadTask {
 
+    protected TaskType taskType = TaskType.Upload;
     private UploadInfo uploadInfo;
-
-    @NonNull
-    @Override
-    public TaskType getTaskType() {
-        return TaskType.Upload;
-    }
 }

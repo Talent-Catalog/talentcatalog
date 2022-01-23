@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.model.db;
 
-import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.TaskType;
 
@@ -27,10 +26,6 @@ import org.tbbtalent.server.model.db.task.TaskType;
  */
 public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
 
-    @NonNull
-    @Override
-    public TaskType getTaskType() {
-        return TaskType.Question;
-    }
+    protected TaskType taskType = TaskType.Question;
 
 }

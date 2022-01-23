@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.model.db;
 
-import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.model.db.task.YesNoQuestionTask;
 
@@ -26,11 +25,5 @@ import org.tbbtalent.server.model.db.task.YesNoQuestionTask;
  * @author John Cameron
  */
 public class YesNoQuestionTaskImpl extends QuestionTaskImpl implements YesNoQuestionTask {
-
-    @NonNull
-    @Override
-    public TaskType getTaskType() {
-        return TaskType.YesNoQuestion;
-    }
-
+    protected TaskType taskType = TaskType.YesNoQuestion;
 }
