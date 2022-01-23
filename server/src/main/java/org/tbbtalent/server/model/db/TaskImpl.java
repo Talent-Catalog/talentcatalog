@@ -34,7 +34,7 @@ import org.tbbtalent.server.model.db.task.TaskType;
  * <p/>
  * However the Angular code does need to distinguish between different types of tasks, because they
  * will be processed differently. So for example, the Angular does need to know whether a task
- * is an upload task. That task type information is encoded in {@link #getType()}.
+ * is an upload task. That task type information is encoded in {@link #getTaskType()}.
  */
 @Getter
 @Setter
@@ -58,7 +58,7 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
      * @return Type of this task
      */
     @NonNull
-    public TaskType getType() {
+    public TaskType getTaskType() {
         return TaskType.Simple;
     }
 

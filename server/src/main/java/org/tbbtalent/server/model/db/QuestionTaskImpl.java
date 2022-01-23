@@ -29,7 +29,7 @@ public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
 
     @NonNull
     @Override
-    public TaskType getType() {
+    public TaskType getTaskType() {
         return TaskType.Question;
     }
 

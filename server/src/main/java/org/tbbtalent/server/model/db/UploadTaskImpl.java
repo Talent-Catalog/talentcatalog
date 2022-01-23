@@ -36,7 +36,7 @@ public class UploadTaskImpl extends TaskImpl implements UploadTask {
 
     @NonNull
     @Override
-    public TaskType getType() {
+    public TaskType getTaskType() {
         return TaskType.Upload;
     }
 }

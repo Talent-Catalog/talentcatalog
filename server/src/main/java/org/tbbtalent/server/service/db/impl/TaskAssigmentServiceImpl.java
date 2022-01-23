@@ -137,6 +137,7 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
             .add("name")
             .add("description")
             .add("optional")
+            .add("taskType")
             ;
     }
 }

@@ -29,7 +29,7 @@ public class YesNoQuestionTaskImpl extends QuestionTaskImpl implements YesNoQues
 
     @NonNull
     @Override
-    public TaskType getType() {
+    public TaskType getTaskType() {
         return TaskType.YesNoQuestion;
     }
 
