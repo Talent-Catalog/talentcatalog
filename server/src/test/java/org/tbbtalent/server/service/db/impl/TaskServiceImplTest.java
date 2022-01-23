@@ -19,9 +19,6 @@ package org.tbbtalent.server.service.db.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -64,7 +61,7 @@ class TaskServiceImplTest {
 
         // Do I need a repository for each task class (e.g. question/upload/other, even if they extend from the one interface)
         // https://stackoverflow.com/a/63658452 - looks like can use the single repo
-        when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
+//        when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
         TaskImpl task = taskService.createTask(request);
 
         assertNotNull(task);
@@ -89,7 +86,7 @@ class TaskServiceImplTest {
 
         // Do I need a repository for each task class (e.g. question/upload/other, even if they extend from the one interface)
         // https://stackoverflow.com/a/63658452 - looks like can use the single repo
-        when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
+//        when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
         QuestionTask qTask = taskService.createQuestionTask(request);
 
         assertNotNull(qTask);
@@ -116,7 +113,7 @@ class TaskServiceImplTest {
 
         // Do I need a repository for each task class (e.g. question/upload/other, even if they extend from the one interface)
         // https://stackoverflow.com/a/63658452 - looks like can use the single repo
-        when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
+//        when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
         UploadTask uTask = taskService.createUploadTask(request);
 
         assertNotNull(uTask);
@@ -142,7 +139,7 @@ class TaskServiceImplTest {
 
         // Do I need a repository for each task class (e.g. question/upload/other, even if they extend from the one interface)
         // https://stackoverflow.com/a/63658452 - looks like can use the single repo
-        when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
+//        when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
         TaskImpl task = taskService.createTask(request);
 
         assertNotNull(task);

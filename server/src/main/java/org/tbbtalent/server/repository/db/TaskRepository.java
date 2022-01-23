@@ -16,10 +16,9 @@
 
 package org.tbbtalent.server.repository.db;
 
-import org.tbbtalent.server.model.db.task.Task;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.tbbtalent.server.model.db.TaskImpl;
 
-public class TaskRepository {
-    public Object save(Task any) {
-        return any;
-    }
+public interface TaskRepository extends JpaRepository<TaskImpl, Long>, JpaSpecificationExecutor<TaskImpl> {
 }

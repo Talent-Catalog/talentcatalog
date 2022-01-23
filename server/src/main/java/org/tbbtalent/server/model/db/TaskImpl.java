@@ -28,6 +28,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.tbbtalent.server.model.db.task.Task;
@@ -46,6 +48,8 @@ import org.tbbtalent.server.model.db.task.TaskType;
  * is an upload task. That task type information is encoded in {@link #getTaskType()}.
  */
 @Entity(name="Task")
+@Table(name = "task")
+@SequenceGenerator(name = "seq_gen", sequenceName = "task_id_seq", allocationSize = 1)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "task_type")
 @DiscriminatorValue("Task")
