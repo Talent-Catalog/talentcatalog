@@ -16,7 +16,7 @@
 
 package org.tbbtalent.server.model.db.task;
 
-import java.util.List;
+import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -81,5 +81,5 @@ public interface Task extends Auditable {
      * @return May be null - in which case this is a simple task, rather than a list of sub tasks.
      */
     @Nullable
-    List<Task> getSubtasks();
+    Set<? extends Task> getSubtasks();
 }

@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.TaskType;
 
@@ -24,8 +26,12 @@ import org.tbbtalent.server.model.db.task.TaskType;
  *
  * @author John Cameron
  */
+@Entity(name="QuestionTask")
+@DiscriminatorValue("QuestionTask")
 public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
 
-    protected TaskType taskType = TaskType.Question;
+    public TaskType getTaskType() {
+        return TaskType.Question;
+    }
 
 }

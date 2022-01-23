@@ -16,6 +16,9 @@
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import org.tbbtalent.server.model.db.task.TaskType;
@@ -27,10 +30,18 @@ import org.tbbtalent.server.model.db.task.UploadTask;
  *
  * @author John Cameron
  */
+@Entity(name="UploadTask")
+@DiscriminatorValue("UploadTask")
 @Getter
 @Setter
 public class UploadTaskImpl extends TaskImpl implements UploadTask {
 
-    protected TaskType taskType = TaskType.Upload;
+    // TODO: 23/1/22 This needs to map to DB
+    @Transient
     private UploadInfo uploadInfo;
+
+    public TaskType getTaskType() {
+        return TaskType.Upload;
+    }
+
 }

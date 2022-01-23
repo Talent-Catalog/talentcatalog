@@ -17,7 +17,17 @@
 package org.tbbtalent.server.model.db;
 
 
-import java.util.List;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 import org.tbbtalent.server.model.db.task.Task;
@@ -35,6 +45,10 @@ import org.tbbtalent.server.model.db.task.TaskType;
  * will be processed differently. So for example, the Angular does need to know whether a task
  * is an upload task. That task type information is encoded in {@link #getTaskType()}.
  */
+@Entity(name="Task")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "task_type")
+@DiscriminatorValue("Task")
 @Getter
 @Setter
 public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Task {
@@ -44,7 +58,14 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
     private String helpLink;
     private String name;
     private boolean optional;
-    private List<Task> subtasks;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+        name = "task_list",
+        joinColumns = @JoinColumn(name="parent_task_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name="task_id", referencedColumnName = "id", unique = true)
+    )
+    private Set<TaskImpl> subtasks;
 
     /**
      * Type of task - this encodes the class type - so {@link TaskType#Simple} for a simple task,
@@ -53,8 +74,10 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
      * serialization. Otherwise, we lose that type information when tasks objects are returned
      * through our REST Api to Angular.
      * <p/>
-     * This value should be overridden by subclasses, to provide their related type.
+     * This method should be overridden by subclasses, to provide their related type.
      */
-    protected TaskType taskType = TaskType.Simple;
+    public TaskType getTaskType() {
+        return TaskType.Simple;
+    }
 
 }
