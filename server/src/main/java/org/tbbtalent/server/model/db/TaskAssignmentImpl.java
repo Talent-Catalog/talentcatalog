@@ -29,7 +29,7 @@ import org.tbbtalent.server.model.db.task.TaskAssignment;
  */
 @Getter
 @Setter
-public class TaskAssignmentImpl extends AbstractAuditableDomainObject<Long> implements TaskAssignment {
+public class TaskAssignmentImpl extends AbstractDomainObject<Long> implements TaskAssignment {
     OffsetDateTime abandonedDate;
     User activatedBy;
     OffsetDateTime activatedDate;
