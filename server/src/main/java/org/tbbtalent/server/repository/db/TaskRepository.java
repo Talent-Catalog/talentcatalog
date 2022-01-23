@@ -21,4 +21,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.tbbtalent.server.model.db.TaskImpl;
 
 public interface TaskRepository extends JpaRepository<TaskImpl, Long>, JpaSpecificationExecutor<TaskImpl> {
+    TaskImpl findByName(String name);
 }

@@ -63,7 +63,7 @@ class TaskRepositoryTest {
 
         task = new TaskImpl();
 
-        task.setName("Simple task");
+        task.setName("Sample Simple Task");
         task.setCreatedBy(owningUser);
         task.setCreatedDate(OffsetDateTime.now());
 
@@ -71,7 +71,7 @@ class TaskRepositoryTest {
 
         UploadTaskImpl utask = new UploadTaskImpl();
 
-        utask.setName("Upload task with atts");
+        utask.setName("Sample Upload Task");
         utask.setCreatedBy(owningUser);
         utask.setCreatedDate(OffsetDateTime.now());
         utask.setUploadType(UploadType.Cv);
@@ -84,7 +84,7 @@ class TaskRepositoryTest {
     @Transactional
     @Test
     void fetchTask() {
-        task = taskRepository.findById(6L).orElse(null);
+        task = taskRepository.findByName("Sample Upload Task");
         assertNotNull(task);
         String name = task.getName();
         assertEquals(TaskType.Upload, task.getTaskType());
@@ -94,7 +94,7 @@ class TaskRepositoryTest {
             assertEquals("CVsGoHere", uploadTask.getUploadSubfolderName());
         }
 
-        task = taskRepository.getOne(1L);
+        task = taskRepository.findByName("Sample Simple Task");
         assertEquals(TaskType.Simple, task.getTaskType());
     }
 }
