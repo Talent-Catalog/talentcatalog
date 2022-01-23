@@ -242,6 +242,7 @@ import {FilterPipe} from "./pipes/filter.pipe";
 import {CandidateTaskTabComponent} from './components/candidates/view/tab/candidate-task-tab/candidate-task-tab.component';
 import {DownloadCvComponent} from './components/util/download-cv/download-cv.component';
 import {AssignTasksListComponent} from './components/tasks/assign-tasks-list/assign-tasks-list.component';
+import {AssignTasksCandidateComponent} from './components/tasks/assign-tasks-candidate/assign-tasks-candidate.component';
 
 @NgModule({
   declarations: [
@@ -461,7 +462,8 @@ import {AssignTasksListComponent} from './components/tasks/assign-tasks-list/ass
     CandidateTaskTabComponent,
     FilterPipe,
     DownloadCvComponent,
-    AssignTasksListComponent
+    AssignTasksListComponent,
+    AssignTasksCandidateComponent
   ],
   imports: [
     BrowserModule,

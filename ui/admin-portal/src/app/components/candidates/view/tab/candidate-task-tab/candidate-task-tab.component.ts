@@ -1,6 +1,8 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Candidate, TaskAssignment} from "../../../../../model/candidate";
 import {CandidateService} from "../../../../../services/candidate.service";
+import {AssignTasksCandidateComponent} from "../../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-candidate-task-tab',
@@ -18,7 +20,8 @@ export class CandidateTaskTabComponent implements OnInit, OnChanges {
   completedTasks: TaskAssignment[];
   today: Date;
 
-  constructor(private candidateService: CandidateService) { }
+  constructor(private candidateService: CandidateService,
+              private modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.today = new Date();
@@ -45,5 +48,20 @@ export class CandidateTaskTabComponent implements OnInit, OnChanges {
     return (new Date(ta.dueDate) < this.today) && !ta.task.optional;
   }
 
+  assignTask() {
+    const assignTaskCandidateModal = this.modalService.open(AssignTasksCandidateComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    assignTaskCandidateModal.componentInstance.candidateId = this.candidate.id;
+
+    assignTaskCandidateModal.result
+      .then((taskAssignment) => {
+        this.candidate.taskAssignments.push(taskAssignment)
+      })
+      .catch(() => { /* Isn't possible */ });
+
+  }
 
 }

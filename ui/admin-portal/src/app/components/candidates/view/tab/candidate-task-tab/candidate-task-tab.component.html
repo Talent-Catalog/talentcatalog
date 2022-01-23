@@ -7,7 +7,12 @@
 
 <div class="card" *ngIf="!loading">
   <div class="card-header">
-    Candidate Tasks: Ongoing
+    <span>Candidate Tasks: Ongoing</span>
+    <div class="float-right" *ngIf="editable">
+      <button class="btn btn-primary btn-sm" (click)="assignTask()">
+        <i class="fas fa-plus"></i> Assign task
+      </button>
+    </div>
   </div>
 
   <div class="card-body">

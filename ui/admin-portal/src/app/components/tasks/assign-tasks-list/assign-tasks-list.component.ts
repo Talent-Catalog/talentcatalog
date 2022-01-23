@@ -37,7 +37,6 @@ export class AssignTasksListComponent implements OnInit {
     // todo a service call to fetch all available tasks, maybe async for search just a test sample provided
     for (let i = 0; i < 11; i++) {
       const task: Task = {name: 'Task ' + i, optional: false}
-      console.log(i);
       this.allTasks.push(task);
     }
     this.loading = false;
