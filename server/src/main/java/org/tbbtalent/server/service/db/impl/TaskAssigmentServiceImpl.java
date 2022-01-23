@@ -28,7 +28,6 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
-import org.tbbtalent.server.model.db.task.UploadInfo;
 import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
@@ -104,12 +103,12 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     @Override
     public void completeUploadTaskAssignment(TaskAssignment ta, MultipartFile file)
         throws IOException {
-        UploadInfo uploadInfo = ((UploadTask) ta.getTask()).getUploadInfo();
+        UploadTask uploadTask = (UploadTask) ta.getTask();
 
         Candidate candidate = ta.getCandidate();
-        UploadType uploadType = uploadInfo.getType();
+        UploadType uploadType = uploadTask.getUploadType();
         String uploadedName = computeUploadFileName(candidate, uploadType, file.getOriginalFilename());
-        String subFolderName = uploadInfo.getSubFolderName();
+        String subFolderName = uploadTask.getUploadSubfolderName();
         candidateAttachmentService.uploadAttachment(candidate, uploadedName, subFolderName, file, uploadType);
 
         completeTaskAssignment(ta);

@@ -31,6 +31,7 @@ import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.TaskType;
+import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.service.db.UserService;
 
 @SpringBootTest
@@ -68,24 +69,32 @@ class TaskRepositoryTest {
 
         taskRepository.save(task);
 
-        task = new UploadTaskImpl();
+        UploadTaskImpl utask = new UploadTaskImpl();
 
-        task.setName("Upload task");
-        task.setCreatedBy(owningUser);
-        task.setCreatedDate(OffsetDateTime.now());
+        utask.setName("Upload task with atts");
+        utask.setCreatedBy(owningUser);
+        utask.setCreatedDate(OffsetDateTime.now());
+        utask.setUploadType(UploadType.Cv);
+        utask.setUploadSubfolderName("CVsGoHere");
 
-        taskRepository.save(task);
+        taskRepository.save(utask);
 
     }
 
     @Transactional
     @Test
     void fetchTask() {
-        task = taskRepository.getOne(10027L);
+        task = taskRepository.findById(6L).orElse(null);
+        assertNotNull(task);
         String name = task.getName();
         assertEquals(TaskType.Upload, task.getTaskType());
+        if (task instanceof UploadTaskImpl) {
+            UploadTaskImpl uploadTask = (UploadTaskImpl)task;
+            assertEquals(UploadType.Cv, uploadTask.getUploadType());
+            assertEquals("CVsGoHere", uploadTask.getUploadSubfolderName());
+        }
 
-        task = taskRepository.getOne(10025L);
+        task = taskRepository.getOne(1L);
         assertEquals(TaskType.Simple, task.getTaskType());
     }
 }

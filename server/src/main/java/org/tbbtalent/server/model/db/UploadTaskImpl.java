@@ -16,14 +16,19 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.util.Set;
+import javax.persistence.Convert;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.task.TaskType;
-import org.tbbtalent.server.model.db.task.UploadInfo;
 import org.tbbtalent.server.model.db.task.UploadTask;
+import org.tbbtalent.server.model.db.task.UploadType;
 
 /**
  * Default Implementation
@@ -36,9 +41,26 @@ import org.tbbtalent.server.model.db.task.UploadTask;
 @Setter
 public class UploadTaskImpl extends TaskImpl implements UploadTask {
 
-    // TODO: 23/1/22 This needs to map to DB
-    @Transient
-    private UploadInfo uploadInfo;
+    /**
+     * Type of file being uploaded
+     */
+    @Enumerated(EnumType.STRING)
+    @NonNull
+    private UploadType uploadType;
+
+    /**
+     * Optional subfolder name to upload into. If null, no subfolder is used.
+     */
+    @Nullable
+    private String uploadSubfolderName;
+
+    /**
+     * Allowable file types (eg pdf, doc, jpg etc). If null, any file type is acceptable.
+     */
+    @Nullable
+    @Convert(converter = DelimitedStringsConverter.class)
+    private Set<String> uploadableFileTypes;
+
 
     public TaskType getTaskType() {
         return TaskType.Upload;
