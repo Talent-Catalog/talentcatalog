@@ -16,8 +16,9 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.util.List;
 import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.UploadTask;
+import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.request.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
 
@@ -29,6 +30,7 @@ import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
 public interface TaskService {
     TaskImpl createTask(CreateTaskRequest request);
 
-    UploadTask createUploadTask(CreateUploadTaskRequest request);
+    UploadTaskImpl createUploadTask(CreateUploadTaskRequest request);
 
+    List<TaskImpl> listTasks();
 }

@@ -16,16 +16,27 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.util.List;
+import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.QuestionTask;
 import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.task.UploadTask;
+import org.tbbtalent.server.model.db.UploadTaskImpl;
+import org.tbbtalent.server.repository.db.TaskRepository;
 import org.tbbtalent.server.request.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
+import org.tbbtalent.server.service.db.TaskService;
 
 
 // TODO: 15/1/22 Services should implement interfaces which define the operations of the service.
-public class TaskServiceImpl {
+@Service
+public class TaskServiceImpl implements TaskService {
+    private final TaskRepository taskRepository;
+
+    public TaskServiceImpl(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
+
     public TaskImpl createTask(CreateTaskRequest request) {
         return null;
     }
@@ -34,7 +45,12 @@ public class TaskServiceImpl {
         return null;
     }
 
-    public UploadTask createUploadTask(CreateUploadTaskRequest request) {
+    public UploadTaskImpl createUploadTask(CreateUploadTaskRequest request) {
         return null;
+    }
+
+    @Override
+    public List<TaskImpl> listTasks() {
+        return taskRepository.findAll();
     }
 }
