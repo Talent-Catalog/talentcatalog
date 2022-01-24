@@ -1029,6 +1029,14 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate getTestCandidate() {
+        //TODO JC Hack for the moment
+        long id = 32156L;
+        return candidateRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+    }
+
+    @Override
     @Transactional
     public Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException {
         User user = new User(

@@ -469,11 +469,17 @@ public interface CandidateService {
     boolean deleteCandidateExam(long examId)
             throws EntityReferencedException, InvalidRequestException;
 
-    // TODO: 16/1/22 Will probably eventually pull out these methods. 
+    // TODO: 16/1/22 Will probably eventually pull out these methods.
     /**
      * Used for testing - adding test task assignments
      * @param candidates
      */
     void addFakeTasks(Iterable<Candidate> candidates);
     void addFakeTasks(Candidate candidate);
+
+    /**
+     * Retrieve a dummy candidate who can be used for testing.
+     * @return a dummy test candidate
+     */
+    Candidate getTestCandidate();
 }
