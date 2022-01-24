@@ -36,7 +36,7 @@ import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
-import org.tbbtalent.server.service.db.UserService;
+import org.tbbtalent.server.service.db.TaskService;
 
 // TODO: Note for Caroline:  that none of the methods are completed.
 // They are the default implementations that I have configured Intellij to provide when I do a
@@ -64,15 +64,15 @@ import org.tbbtalent.server.service.db.UserService;
 public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final CandidateAttachmentService candidateAttachmentService;
     private final TaskAssignmentRepository taskAssignmentRepository;
-    private final UserService userService;
+    private final TaskService taskService;
 
     public TaskAssigmentServiceImpl(
         CandidateAttachmentService candidateAttachmentService,
         TaskAssignmentRepository taskAssignmentRepository,
-        UserService userService) {
+        TaskService taskService) {
         this.candidateAttachmentService = candidateAttachmentService;
         this.taskAssignmentRepository = taskAssignmentRepository;
-        this.userService = userService;
+        this.taskService = taskService;
     }
 
     @Override
@@ -95,8 +95,8 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     @NonNull
     @Override
     public TaskAssignment get(long taskAssignmentId) throws NoSuchObjectException {
-        //TODO JC Implement get
-        throw new UnsupportedOperationException("get not implemented");
+        return taskAssignmentRepository.findById(taskAssignmentId)
+            .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
     }
 
     @Override
@@ -108,6 +108,7 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     @Override
     public void completeTaskAssignment(TaskAssignment ta) {
         ta.setCompletedDate(OffsetDateTime.now());
+        taskAssignmentRepository.save((TaskAssignmentImpl) ta);
     }
 
     private String computeUploadFileName

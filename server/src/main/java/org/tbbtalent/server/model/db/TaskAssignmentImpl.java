@@ -69,7 +69,11 @@ public class TaskAssignmentImpl extends AbstractDomainObject<Long> implements Ta
     @Enumerated(EnumType.STRING)
     Status status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //We need an EAGER fetch for task, otherwise we don't always get the correct class returne
+    //We just get a Hibernate proxy which allows us to access all the TaskImpl attributes
+    //but not attributes of subclasses such as UploadTaskImpl - and there is no elegant way
+    //of casting to UploadImpl. We need an EAGER fetch to always return the full class. JC
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "task_id")
     TaskImpl task;
 
