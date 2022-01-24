@@ -99,7 +99,7 @@
                         <em th:if="${experience.country}"><span th:text="${experience.country.name}"></span></em>
                     </div>
                 </div>
-                <div th:if="${experience.description}" th:text="${experience.description}"></div>
+                <textarea class="white-space" th:if="${experience.description}" th:text="${experience.description}"></textarea>
             </td>
         </tr>
     </table>

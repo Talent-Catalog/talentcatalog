@@ -137,3 +137,8 @@ tr .small-break {
     page-break-before: always
 }
 
+textarea {
+    font-size: 12px;
+    white-space: pre;
+}
+
