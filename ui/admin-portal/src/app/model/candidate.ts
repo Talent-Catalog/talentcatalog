@@ -82,7 +82,7 @@ export interface Candidate extends HasId {
 }
 
 export interface TaskAssignment {
-  completedDate: Date;
+  completedDate: string;
   dueDate: string;
   task: Task;
 }

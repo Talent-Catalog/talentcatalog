@@ -24,15 +24,25 @@ export class EditTaskAssignmentComponent implements OnInit {
   ngOnInit(): void {
     this.loading = true;
     this.form = this.fb.group({
-      dueDate: [this.formatDueDate()]
+      dueDate: [this.formatDueDate(this.taskAssignment?.dueDate)],
+      completedDate: [this.formatDueDate(this.taskAssignment?.completedDate)],
+      complete: [this.isComplete]
     });
     this.loading = false;
   }
 
-  formatDueDate() {
-    this.date = new Date(this.taskAssignment.dueDate);
-    this.dueDate = this.taskAssignment.dueDate.slice(0, 10)
-    return this.dueDate;
+  formatDueDate(date: string) {
+    let d: string;
+    if (date != null) {
+      d = date.slice(0, 10)
+    } else {
+      d = null;
+    }
+    return d;
+  }
+
+  get isComplete() {
+    return this.taskAssignment.completedDate != null;
   }
 
   onSave() {

@@ -31,8 +31,10 @@
           <p>Comment: </p>
         </div>
         <div class="float-right text-right" *ngIf="editable">
-          <button class="btn btn-sm btn-outline-secondary" (click)="editTaskAssignment(ta)">
+          <button class="btn btn-default" (click)="editTaskAssignment(ta)">
             <i class="fas fa-edit"></i></button>
+          <button class="btn btn-default" (click)="deleteTaskAssignment(ta)">
+            <i class="fas fa-trash"></i></button>
         </div>
       </div>
       <hr>
@@ -60,7 +62,7 @@
           <p>Completed: {{ta.completedDate | date: 'mediumDate'}}</p>
         </div>
         <div *ngIf="editable" class=" float-right text-right">
-          <button class="btn btn-sm btn-outline-secondary">
+          <button class="btn btn-default" (click)="editTaskAssignment(ta)">
             <i class="fas fa-edit"></i></button>
         </div>
       </div>

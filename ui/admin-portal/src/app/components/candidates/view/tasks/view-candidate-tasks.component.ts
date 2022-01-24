@@ -4,6 +4,7 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AssignTasksCandidateComponent} from "../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component";
 import {EditTaskAssignmentComponent} from "./edit/edit-task-assignment.component";
+import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -78,4 +79,20 @@ export class ViewCandidateTasksComponent implements OnInit {
       .catch(() => { /* Isn't possible */ });
 
   }
+
+  deleteTaskAssignment(ta: TaskAssignment) {
+    const deleteTaskAssignmentModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteTaskAssignmentModal.componentInstance.message = "Are you sure you want to remove the candidate "
+      + this.candidate.user.firstName + " " + this.candidate.user.lastName + " from the task " + ta.task.name + "?"
+
+    deleteTaskAssignmentModal.result
+      .then((result) => {
+        if (result === true) {
+        }
+      })
+      .catch(() => { /* Isn't possible */ });}
 }

@@ -16,7 +16,7 @@
 
 <div class="modal-header">
 
-  <h4 class="modal-title">Edit Candidate</h4>
+  <h4 class="modal-title">Edit Task Assignment</h4>
 
   <button type="button" class="close" aria-label="Close" (click)="dismiss()">
     <span aria-hidden="true">&times;</span>
@@ -37,10 +37,33 @@
 
     <form [formGroup]="form">
 
-      <!-- DOB -->
+      <!-- DUE DATE -->
+      <div *ngIf="!isComplete">
+        <div class="form-group">
+          <label for="dueDate">Due date</label>
+          <app-date-picker id="dueDate" [control]="form.controls.dueDate" [allowPast]="false"></app-date-picker>
+        </div>
+      </div>
+
+
+
+      <!-- COMPLETED DATE -->
+      <div *ngIf="isComplete">
+        <div class="form-group">
+          <label for="completedDate">Completed date</label>
+          <app-date-picker id="completedDate" [control]="form.controls.completedDate" [allowPast]="false"></app-date-picker>
+        </div>
+      </div>
+
+      <!-- COMPLETED -->
       <div class="form-group">
-        <label for="dueDate">Due date</label>
-        <app-date-picker id="dueDate" [control]="form.controls.dueDate" [allowPast]="false"></app-date-picker>
+        <div class="form-inline">
+          <label for="complete">Is this task assignment completed?</label>
+          <input class="form-control" id="complete" [formControlName]="'complete'" type="checkbox">
+        </div>
+        <div>
+          <small class="text-muted">The completed date will be set from today's date. If unchecked, it will become active and use it's previous due date.</small>
+        </div>
       </div>
 
       <div class="modal-footer">
