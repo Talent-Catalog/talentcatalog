@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,17 +85,23 @@ class TaskRepositoryTest {
     @Transactional
     @Test
     void fetchTask() {
-        task = taskRepository.findByName("Sample Upload Task");
-        assertNotNull(task);
-        String name = task.getName();
-        assertEquals(TaskType.Upload, task.getTaskType());
-        if (task instanceof UploadTaskImpl) {
-            UploadTaskImpl uploadTask = (UploadTaskImpl)task;
-            assertEquals(UploadType.Cv, uploadTask.getUploadType());
-            assertEquals("CVsGoHere", uploadTask.getUploadSubfolderName());
+        List<TaskImpl> tasks;
+        tasks = taskRepository.findByName("Sample Upload Task");
+        assertNotNull(tasks);
+        if (tasks.size() > 0) {
+            task = tasks.get(0);
+            String name = task.getName();
+            assertEquals(TaskType.Upload, task.getTaskType());
+            if (task instanceof UploadTaskImpl) {
+                UploadTaskImpl uploadTask = (UploadTaskImpl) task;
+                assertEquals(UploadType.Cv, uploadTask.getUploadType());
+                assertEquals("CVsGoHere", uploadTask.getUploadSubfolderName());
+            }
         }
 
-        task = taskRepository.findByName("Sample Simple Task");
-        assertEquals(TaskType.Simple, task.getTaskType());
+        tasks = taskRepository.findByName("Sample Simple Task");
+        if (tasks.size() > 0) {
+            assertEquals(TaskType.Simple, tasks.get(0).getTaskType());
+        }
     }
 }
