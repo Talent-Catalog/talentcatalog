@@ -1,6 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {TaskAssignment} from "../../../../../../../model/candidate";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import {forkJoin, Observable} from "rxjs";
+import {CandidateAttachment} from "../../../../../../../model/candidate-attachment";
+import {TaskAssignmentService} from "../../../../../../../services/task-assignment.service";
 
 @Component({
   selector: 'app-candidate-task',
@@ -15,7 +18,8 @@ export class CandidateTaskComponent implements OnInit {
   uploading: boolean;
   error;
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder,
+              private taskAssignmentService: TaskAssignmentService) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -24,7 +28,27 @@ export class CandidateTaskComponent implements OnInit {
   }
 
   startServerUpload($event) {
-    console.log('uploading');
+    this.error = null;
+    this.uploading = true;
+
+    const uploads: Observable<TaskAssignment>[] = [];
+    for (const file of $event.files) {
+      const formData: FormData = new FormData();
+      // todo we want to name the file based on the file type uploaded
+      formData.append('file', file);
+
+      uploads.push(this.taskAssignmentService.completeUploadTask(this.selectedTask.id, formData));
+    }
+
+    forkJoin(...uploads).subscribe(
+      (results: CandidateAttachment[]) => {
+        this.uploading = false;
+      },
+      error => {
+        this.error = error;
+        this.uploading = false;
+      }
+    );
   }
 
   goBack() {

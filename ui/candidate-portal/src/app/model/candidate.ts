@@ -59,6 +59,7 @@ export interface Candidate {
 }
 
 export interface TaskAssignment {
+  id: number;
   completedDate: Date;
   dueDate: Date;
   task: Task;
