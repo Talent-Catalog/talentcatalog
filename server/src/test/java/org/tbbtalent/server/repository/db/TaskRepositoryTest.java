@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.User;
@@ -76,7 +75,6 @@ class TaskRepositoryTest {
 
     }
 
-    @Transactional
     @Test
     void fetchTask() {
         List<TaskImpl> tasks;
