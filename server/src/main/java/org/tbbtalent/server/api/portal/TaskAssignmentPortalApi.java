@@ -28,6 +28,7 @@ import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UnauthorisedActionException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
@@ -84,7 +85,7 @@ public class TaskAssignmentPortalApi {
 
         taskAssignmentService.completeTaskAssignment(ta);
 
-        return taskAssignmentService.getTaskAssignmentDto().build(ta);
+        return TaskDtoHelper.getTaskAssignmentDto().build(ta);
     }
 
     /**
@@ -112,7 +113,7 @@ public class TaskAssignmentPortalApi {
 
         taskAssignmentService.completeUploadTaskAssignment(ta, file);
 
-        return taskAssignmentService.getTaskAssignmentDto().build(ta);
+        return TaskDtoHelper.getTaskAssignmentDto().build(ta);
     }
 
 }

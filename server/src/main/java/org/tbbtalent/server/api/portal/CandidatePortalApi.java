@@ -22,6 +22,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
@@ -435,7 +436,7 @@ public class CandidatePortalApi {
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")
                 .add("linkedInLink")
-                .add("taskAssignments", taskAssignmentService.getTaskAssignmentDto())
+                .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                 ;
     }
 }

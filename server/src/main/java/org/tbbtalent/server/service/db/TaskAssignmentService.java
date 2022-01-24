@@ -27,7 +27,6 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
-import org.tbbtalent.server.util.dto.DtoBuilder;
 
 // TODO: Notes for Caroline: The methods and documentation are taken from your "TDD Operations Tasks"
 // design document - with a bit more detail added.
@@ -98,10 +97,4 @@ public interface TaskAssignmentService {
 
     // TODO: 22/1/22 Doc
     void completeUploadTaskAssignment(TaskAssignment ta, MultipartFile file) throws IOException;
-
-    // TODO: 22/1/22 Doc
-    DtoBuilder getTaskAssignmentDto();
-
-    // TODO: 22/1/22 Doc
-    DtoBuilder getTaskDto();
 }

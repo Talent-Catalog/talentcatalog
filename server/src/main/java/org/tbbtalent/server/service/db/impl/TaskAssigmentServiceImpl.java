@@ -32,7 +32,6 @@ import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
-import org.tbbtalent.server.util.dto.DtoBuilder;
 
 // TODO: Note for Caroline:  that none of the methods are completed.
 // They are the default implementations that I have configured Intellij to provide when I do a
@@ -112,31 +111,5 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         candidateAttachmentService.uploadAttachment(candidate, uploadedName, subFolderName, file, uploadType);
 
         completeTaskAssignment(ta);
-    }
-
-    @Override
-    public DtoBuilder getTaskAssignmentDto() {
-        return new DtoBuilder()
-            // TODO: other attributes
-            //todo If we are going to be mapping everything, do we need a dto?
-            .add("id")
-            .add("abandonedDate")
-            .add("candidateNotes")
-            .add("completedDate")
-            .add("dueDate")
-            .add("task", getTaskDto())
-            ;
-    }
-
-    @Override
-    public DtoBuilder getTaskDto() {
-        return new DtoBuilder()
-            // TODO: other attributes
-            .add("id")
-            .add("name")
-            .add("description")
-            .add("optional")
-            .add("taskType")
-            ;
     }
 }
