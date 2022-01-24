@@ -29,7 +29,6 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.service.db.impl.TaskAssigmentServiceImpl;
 
@@ -48,13 +47,14 @@ class TaskAssignmentServiceTest {
 
     private Candidate candidate;
     private SavedList list;
-    private Task task;
+    private TaskImpl task;
     private TaskAssignmentService taskAssignmentService;
 
     @BeforeEach
     void setUp() {
         // TODO: 22/1/22 Mock candidate attachment service
-        taskAssignmentService = new TaskAssigmentServiceImpl(null);
+        taskAssignmentService = new TaskAssigmentServiceImpl(
+            null, null, null);
 
         task = new TaskImpl();
     }
@@ -64,7 +64,7 @@ class TaskAssignmentServiceTest {
     void assignTaskToCandidate() {
 
         //Assign task to candidate, and remember the returned task assigment.
-        TaskAssignment ta = taskAssignmentService.assignTaskToCandidate(task, candidate);
+        TaskAssignment ta = taskAssignmentService.assignTaskToCandidate(null, task, candidate);
 
         assertNotNull(ta);
 

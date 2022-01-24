@@ -18,12 +18,14 @@ package org.tbbtalent.server.service.db.impl;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.QuestionTask;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.UploadTaskImpl;
+import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.repository.db.TaskRepository;
-import org.tbbtalent.server.request.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
+import org.tbbtalent.server.request.task.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
 
@@ -47,6 +49,12 @@ public class TaskServiceImpl implements TaskService {
 
     public UploadTaskImpl createUploadTask(CreateUploadTaskRequest request) {
         return null;
+    }
+
+    @Override
+    public TaskImpl get(long taskId) throws NoSuchObjectException {
+        return taskRepository.findById(taskId)
+            .orElseThrow(() -> new NoSuchObjectException(Task.class, taskId));
     }
 
     @Override

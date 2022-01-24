@@ -31,6 +31,7 @@ import org.tbbtalent.server.service.db.TaskService;
 @RestController()
 @RequestMapping("/api/admin/task")
 public class TaskAdminApi implements
+    //todo Need to add in proper task request objects here
         ITableApi<SearchCountryRequest, UpdateCountryRequest, UpdateCountryRequest> {
 
     private final TaskService taskService;

@@ -48,10 +48,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Transient
     private Long contextSavedListId;
 
-    //TODO JC For now this is just a transient attribute until we have all the database/JPA stuff
-    //for task assignments figured out.
-    @Transient
-    private List<TaskAssignment> taskAssignments;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<TaskAssignmentImpl> taskAssignments;
 
     private String phone;
     private String whatsapp;
@@ -1599,12 +1597,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.candidateSavedLists = candidateSavedLists;
     }
 
-    public List<TaskAssignment> getTaskAssignments() {
+    public Set<TaskAssignmentImpl> getTaskAssignments() {
         return taskAssignments;
     }
 
-    public void setTaskAssignments(
-        List<TaskAssignment> taskAssignments) {
+    public void setTaskAssignments(Set<TaskAssignmentImpl> taskAssignments) {
         this.taskAssignments = taskAssignments;
     }
 

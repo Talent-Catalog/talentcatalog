@@ -25,6 +25,9 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 
@@ -49,11 +52,12 @@ public interface TaskAssignmentService {
      * <p/>
      * Note that if the task is composed of subtasks, each subtask is assigned to the candidate.
      *
+     * @param user      - User who made assignment
      * @param task      - Task to be associated with the newly created TaskAssignment
      * @param candidate - Candidate associated with the newly created TaskAssignment
      * @return Newly created task assignment associated with candidate and task
      */
-    TaskAssignment assignTaskToCandidate(Task task, Candidate candidate);
+    TaskAssignmentImpl assignTaskToCandidate(User user, TaskImpl task, Candidate candidate);
 
     /**
      * A user may want to assign a task to a list of candidates. For example if there’s a list of

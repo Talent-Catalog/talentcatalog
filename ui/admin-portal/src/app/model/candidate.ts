@@ -82,14 +82,27 @@ export interface Candidate extends HasId {
 }
 
 export interface TaskAssignment {
-  completedDate: string;
-  dueDate: string;
+  id: number;
+  abandonedDate: Date;
+  candidateNotes: string;
+  completedDate: Date;
+  dueDate: Date;
   task: Task;
 }
 
 export interface Task {
+  id: number;
   name: string;
+  description: string;
   optional: boolean;
+  taskType: TaskType;
+}
+
+export enum TaskType {
+  Question = "Question",
+  Simple = "Simple",
+  Upload = "Upload",
+  YesNoQuestion = "YesNoQuestion"
 }
 
 export interface CandidateIntakeData {

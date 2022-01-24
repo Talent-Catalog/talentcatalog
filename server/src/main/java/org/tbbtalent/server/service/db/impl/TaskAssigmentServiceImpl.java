@@ -26,12 +26,17 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.model.db.task.UploadType;
+import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
+import org.tbbtalent.server.service.db.UserService;
 
 // TODO: Note for Caroline:  that none of the methods are completed.
 // They are the default implementations that I have configured Intellij to provide when I do a
@@ -58,16 +63,27 @@ import org.tbbtalent.server.service.db.TaskAssignmentService;
 @Service
 public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final CandidateAttachmentService candidateAttachmentService;
+    private final TaskAssignmentRepository taskAssignmentRepository;
+    private final UserService userService;
 
     public TaskAssigmentServiceImpl(
-        CandidateAttachmentService candidateAttachmentService) {
+        CandidateAttachmentService candidateAttachmentService,
+        TaskAssignmentRepository taskAssignmentRepository,
+        UserService userService) {
         this.candidateAttachmentService = candidateAttachmentService;
+        this.taskAssignmentRepository = taskAssignmentRepository;
+        this.userService = userService;
     }
 
     @Override
-    public TaskAssignment assignTaskToCandidate(Task task, Candidate candidate) {
-        //TODO JC Implement assignTaskToCandidate
-        throw new UnsupportedOperationException("assignTaskToCandidate not implemented");
+    public TaskAssignmentImpl assignTaskToCandidate(User user, TaskImpl task, Candidate candidate) {
+        TaskAssignmentImpl taskAssignment = new TaskAssignmentImpl();
+        taskAssignment.setTask(task);
+        taskAssignment.setActivatedBy(user);
+        taskAssignment.setActivatedDate(OffsetDateTime.now());
+        taskAssignment.setCandidate(candidate);
+        taskAssignment.setStatus(Status.active);
+        return taskAssignmentRepository.save(taskAssignment);
     }
 
     @Override

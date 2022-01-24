@@ -64,7 +64,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
     assignTaskCandidateModal.componentInstance.candidateId = this.candidate.id;
 
     assignTaskCandidateModal.result
-      .then((taskAssignment) => {
+      .then((taskAssignment: TaskAssignment) => {
         this.candidate.taskAssignments.push(taskAssignment)
       })
       .catch(() => { /* Isn't possible */ });

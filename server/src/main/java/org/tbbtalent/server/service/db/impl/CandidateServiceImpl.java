@@ -111,7 +111,6 @@ import org.tbbtalent.server.model.db.UnhcrStatus;
 import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.YesNoUnsure;
-import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
@@ -2440,7 +2439,7 @@ public class CandidateServiceImpl implements CandidateService {
      * Used for testing.
      * @return Generated task assignment
      */
-    private TaskAssignment makeFakeTaskAssignment
+    private TaskAssignmentImpl makeFakeTaskAssignment
         (boolean optional, boolean completed, boolean overdue) {
 
         OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
@@ -2472,7 +2471,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private void addFakeTasks(Candidate candidate) {
-        List<TaskAssignment> taskAssignments = new ArrayList<>();
+        Set<TaskAssignmentImpl> taskAssignments = new HashSet<>();
 
         //Generate a different combination of task assignments based on the last digit of the
         //candidate number.

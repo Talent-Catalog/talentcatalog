@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, LOCALE_ID, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {TaskAssignment} from "../../../../../model/candidate";
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-edit-task-assignment',
@@ -19,24 +20,24 @@ export class EditTaskAssignmentComponent implements OnInit {
   error;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder) { }
+              private fb: FormBuilder,
+              @Inject(LOCALE_ID) private locale: string) { }
 
   ngOnInit(): void {
     this.loading = true;
     this.form = this.fb.group({
-      dueDate: [this.formatDueDate(this.taskAssignment?.dueDate)],
-      completedDate: [this.formatDueDate(this.taskAssignment?.completedDate)],
+      abandonedDate: [this.formatTbbDate(this.taskAssignment?.abandonedDate)],
+      dueDate: [this.formatTbbDate(this.taskAssignment?.dueDate)],
+      completedDate: [this.formatTbbDate(this.taskAssignment?.completedDate)],
       complete: [this.isComplete]
     });
     this.loading = false;
   }
 
-  formatDueDate(date: string) {
-    let d: string;
-    if (date != null) {
-      d = date.slice(0, 10)
-    } else {
-      d = null;
+  formatTbbDate(date: Date): string {
+    let d = null;
+    if (date) {
+      d = formatDate(this.taskAssignment?.dueDate, "yyyy-MM-dd", this.locale);
     }
     return d;
   }

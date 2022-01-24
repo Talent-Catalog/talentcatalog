@@ -17,9 +17,11 @@
 package org.tbbtalent.server.service.db;
 
 import java.util.List;
+import org.springframework.lang.NonNull;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.UploadTaskImpl;
-import org.tbbtalent.server.request.CreateTaskRequest;
+import org.tbbtalent.server.request.task.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
 
 /**
@@ -31,6 +33,15 @@ public interface TaskService {
     TaskImpl createTask(CreateTaskRequest request);
 
     UploadTaskImpl createUploadTask(CreateUploadTaskRequest request);
+
+    /**
+     * Get the Task with the given id.
+     * @param taskId ID of TaskAssignment to get
+     * @return Task
+     * @throws NoSuchObjectException if there is no Task with this id.
+     */
+    @NonNull
+    TaskImpl get(long taskId) throws NoSuchObjectException;
 
     List<TaskImpl> listTasks();
 }

@@ -14,17 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request;
+package org.tbbtalent.server.request.task;
 
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Request to create a TaskAssignment by assigning a task to a candidate
+ *
+ * @author John Cameron
+ */
 @Getter
 @Setter
-public class CreateTaskRequest {
-    private String name;
-    private String description;
-    private String timeframe;
-    private boolean adminOnly;
-    private boolean list;
+public class CreateTaskAssignmentRequest {
+
+    /**
+     * Candidate to which task is being assigned
+     */
+    long candidateId;
+
+    /**
+     * Task to assign to candidate
+     */
+    long taskId;
 }
