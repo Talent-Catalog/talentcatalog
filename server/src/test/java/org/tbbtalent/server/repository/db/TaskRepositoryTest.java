@@ -26,8 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import org.tbbtalent.server.configuration.SystemAdminConfiguration;
-import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.User;
@@ -42,9 +40,6 @@ class TaskRepositoryTest {
     private TaskRepository taskRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private UserService userService;
 
     private TaskImpl task;
@@ -55,8 +50,7 @@ class TaskRepositoryTest {
     void setUp() {
         assertNotNull(taskRepository);
 
-        owningUser = userService
-            .findByUsernameAndRole(SystemAdminConfiguration.SYSTEM_ADMIN_NAME, Role.admin);
+        owningUser = userService.getSystemAdminUser();
     }
 
     @Test

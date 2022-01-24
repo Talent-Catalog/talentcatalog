@@ -48,6 +48,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tbbtalent.server.configuration.SystemAdminConfiguration;
 import org.tbbtalent.server.exception.EmailSendFailedException;
 import org.tbbtalent.server.exception.ExpiredTokenException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
@@ -262,7 +263,7 @@ public class UserServiceImpl implements UserService {
      * Source partner admins can also only create users that arent admins or source partner admins.
      * Source partner admins can only update users who they created.
      * @param user It is the user to be updated.
-     * @return
+     * @return True if authorised
      */
     private boolean authoriseAdminUser(User user) {
         boolean authSuccess;
@@ -474,12 +475,17 @@ public class UserServiceImpl implements UserService {
         return authService.getLoggedInUser().orElse(null);
     }
 
+    @Override
+    public User getSystemAdminUser() {
+        return findByUsernameAndRole(SystemAdminConfiguration.SYSTEM_ADMIN_NAME, Role.admin);
+    }
+
     /**
      * CANDIDATE PORTAL: Update a users password
-     * @param request
+     * @param request Request containing password
      */
     @Override
-    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void updatePassword(UpdateUserPasswordRequest request) {
         /* Check that the new passwords match */
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
@@ -504,11 +510,11 @@ public class UserServiceImpl implements UserService {
 
     /**
      * ADMIN PORTAL: Update an administrators user password
-     * @param id
-     * @param request
+     * @param id of user
+     * @param request Request containing password
      */
     @Override
-    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void updateUserPassword(long id, UpdateUserPasswordRequest request) throws InvalidRequestException {
         /* Get user */
         User user = this.userRepository.findById(id)
@@ -529,7 +535,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void generateResetPasswordToken(SendResetPasswordEmailRequest request) {
         User user = userRepository.findByEmailIgnoreCase(request.getEmail());
         if (user != null) {
@@ -563,7 +569,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void resetPassword(ResetPasswordRequest request) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
