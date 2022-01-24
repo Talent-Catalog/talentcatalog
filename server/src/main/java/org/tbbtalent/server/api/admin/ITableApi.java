@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -36,35 +36,39 @@ import org.tbbtalent.server.exception.NotImplementedException;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
- * <h1>Base table API</h1> 
+ * <h1>Base table API</h1>
  * Definition of standard web API controller methods for a normal table/entity.
  * <p/>
  * "id" refers to the id of a record in the base table.
  * <p/>
  * @see ITalentCatalogWebApi for overview of Talent Catalog Web APIs
  * <p/>
+ * The SEARCH, CREATE and UPDATE refer to the standard SEARCH, CREATE and UPDATE Java request
+ * classes which are processed by the API.
+ * These classes are constructed from the JSON request body of the HTTP calls - using
+ * the standard Spring framework support.
  * @author John Cameron
  */
 public interface ITableApi<SEARCH, CREATE, UPDATE> extends ITalentCatalogWebApi {
 
     /**
-     * Creates a new record from the data in the given request. 
+     * Creates a new record from the data in the given request.
      * @param request Request containing details from which the record is created.
      * @return Created record
-     * @throws EntityExistsException If an identical record (eg with the same 
-     * name) already exists 
+     * @throws EntityExistsException If an identical record (eg with the same
+     * name) already exists
      */
     @PostMapping
-    default @NotNull Map<String, Object> create(@Valid @RequestBody CREATE request) 
+    default @NotNull Map<String, Object> create(@Valid @RequestBody CREATE request)
             throws EntityExistsException {
         throw new NotImplementedException(this.getClass(), "create");
     }
 
     /**
-     * Delete the record with the given id.  
+     * Delete the record with the given id.
      * @param id ID of record to be deleted
      * @return True if record was deleted, false if it was not found.
-     * @throws EntityReferencedException if the object cannot be deleted because 
+     * @throws EntityReferencedException if the object cannot be deleted because
      * it is referenced by another object.
      * @throws InvalidRequestException if not authorized to delete this list.
      */
@@ -75,7 +79,7 @@ public interface ITableApi<SEARCH, CREATE, UPDATE> extends ITalentCatalogWebApi 
     }
 
     /**
-     * Get the record with the given id.  
+     * Get the record with the given id.
      * @param id ID of record to be returned
      * @return Requested record
      * @throws NoSuchObjectException if there is no such record with the given id
@@ -87,7 +91,7 @@ public interface ITableApi<SEARCH, CREATE, UPDATE> extends ITalentCatalogWebApi 
     }
 
     /**
-     * Get all records.  
+     * Get all records.
      * @return All records
      */
     @GetMapping()
@@ -96,10 +100,10 @@ public interface ITableApi<SEARCH, CREATE, UPDATE> extends ITalentCatalogWebApi 
     }
 
     /**
-     * Returns all records matching the given request. 
+     * Returns all records matching the given request.
      * <p/>
      * See also {@link #searchPaged}.
-     * @param request Defines which records should be returned. 
+     * @param request Defines which records should be returned.
      *                (Any paging fields in the request are ignored.)
      * @return All matching records
      */
@@ -110,38 +114,38 @@ public interface ITableApi<SEARCH, CREATE, UPDATE> extends ITalentCatalogWebApi 
     }
 
     /**
-     * Returns a page of records matching the given request. 
+     * Returns a page of records matching the given request.
      * <p/>
      * See also {@link #search}.
      * @param request Defines which records should be returned, including
      *                paging details.
-     * @return A paging record (see {@link DtoBuilder#buildPage}), 
-     * including a page of matching records in its content field. 
+     * @return A paging record (see {@link DtoBuilder#buildPage}),
+     * including a page of matching records in its content field.
      */
     @PostMapping("search-paged")
     default @NotNull Map<String, Object> searchPaged(
             @Valid @RequestBody SEARCH request) {
         throw new NotImplementedException(this.getClass(), "searchPaged");
     }
-    
+
     /**
      * Update the record with the given id from the data in the given request.
      * @param id ID of record to be updated
      * @param request Request containing details from which the record is updated.
      *                Details which are not specified in the request (ie are null)
-     *                cause no change to the record. Therefore, there is no way 
+     *                cause no change to the record. Therefore, there is no way
      *                to set a field of the record to null.
      * @return Updated record
-     * @throws EntityExistsException if the updated record would clash with an 
+     * @throws EntityExistsException if the updated record would clash with an
      * existing record - eg with the same name.
      * @throws InvalidRequestException if not authorized to update this record.
      * @throws NoSuchObjectException if there is no such record with the given id
      */
     @PutMapping("{id}")
     default @NotNull Map<String, Object> update(
-            @PathVariable("id") long id, @Valid @RequestBody UPDATE request) 
-            throws 
-            EntityExistsException, InvalidRequestException, NoSuchObjectException { 
+            @PathVariable("id") long id, @Valid @RequestBody UPDATE request)
+            throws
+            EntityExistsException, InvalidRequestException, NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "update");
     }
 
