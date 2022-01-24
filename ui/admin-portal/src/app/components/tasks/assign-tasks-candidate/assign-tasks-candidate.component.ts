@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Task} from "../../../model/candidate";
+import {TaskService} from "../../../services/task.service";
 
 @Component({
   selector: 'app-assign-tasks-candidate',
@@ -16,7 +17,8 @@ export class AssignTasksCandidateComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
-              private modalService: NgbModal) { }
+              private modalService: NgbModal,
+              private taskService: TaskService) { }
 
   ngOnInit(): void {
     this.loading = true;
@@ -29,13 +31,19 @@ export class AssignTasksCandidateComponent implements OnInit {
 
   getAllTasks() {
     this.allTasks = [];
-    // todo a service call to fetch all available tasks, maybe async for search just a test sample provided
-    for (let i = 0; i < 11; i++) {
-      const task: Task = {name: 'Task ' + i, optional: false}
-      this.allTasks.push(task);
-    }
+    this.loading = true;
+    this.error = null;
+    this.taskService.listTasks().subscribe(
+      (tasks: Task[]) => {
+        this.allTasks = tasks;
+      },
+
+      error => {
+        this.error = error;
+      }
+
+    );
     this.loading = false;
-    return this.allTasks
   }
 
   onSave() {
