@@ -17,9 +17,16 @@
 package org.tbbtalent.server.model.db;
 
 import java.time.OffsetDateTime;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 
 /**
@@ -27,21 +34,43 @@ import org.tbbtalent.server.model.db.task.TaskAssignment;
  *
  * @author John Cameron
  */
+@Entity(name="TaskAssignment")
+@Table(name = "task_assignment")
+@SequenceGenerator(name = "seq_gen", sequenceName = "task_assignment_id_seq", allocationSize = 1)
 @Getter
 @Setter
 public class TaskAssignmentImpl extends AbstractDomainObject<Long> implements TaskAssignment {
     OffsetDateTime abandonedDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activated_by")
     User activatedBy;
+
     OffsetDateTime activatedDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_id")
     Candidate candidate;
+
     String candidateNotes;
-    String candidateResponse;
     OffsetDateTime completedDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deactivated_by")
     User deactivatedBy;
+
     OffsetDateTime deactivatedDate;
     OffsetDateTime dueDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "related_list_id")
     SavedList relatedList;
+
+    @Enumerated(EnumType.STRING)
     Status status;
-    Task task;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id")
+    TaskImpl task;
 
 }
