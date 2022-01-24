@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Candidate, TaskAssignment} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -11,7 +11,7 @@ import {ConfirmationComponent} from "../../../util/confirm/confirmation.componen
   templateUrl: './view-candidate-tasks.component.html',
   styleUrls: ['./view-candidate-tasks.component.scss']
 })
-export class ViewCandidateTasksComponent implements OnInit {
+export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
@@ -94,5 +94,11 @@ export class ViewCandidateTasksComponent implements OnInit {
         if (result === true) {
         }
       })
-      .catch(() => { /* Isn't possible */ });}
+      .catch(() => { /* Isn't possible */
+      });
+  }
+
+  viewResponse(ta: TaskAssignment) {
+    // todo link to the uploaded file, or in future it might be the answer to a question.
+  }
 }
