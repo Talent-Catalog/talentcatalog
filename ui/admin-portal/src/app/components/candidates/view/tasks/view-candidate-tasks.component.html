@@ -1,0 +1,70 @@
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<div class="card" *ngIf="!loading">
+  <div class="card-header">
+    <span>Candidate Tasks: Ongoing</span>
+    <div class="float-right" *ngIf="editable">
+      <button class="btn btn-primary btn-sm" (click)="assignTask()">
+        <i class="fas fa-plus"></i> Assign task
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="ongoingTasks.length <= 0">
+      <p class="text-center text-muted small">No ongoing tasks</p>
+    </div>
+    <div *ngFor="let ta of ongoingTasks; let i = index;">
+      <div class="d-flex justify-content-between">
+        <div class="w-50">
+          <p [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
+        </div>
+        <div class="">
+          <p [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date: 'mediumDate'}}</p>
+        </div>
+        <div *ngIf="editable" class="">
+          <p>Comment: </p>
+        </div>
+        <div class="float-right text-right" *ngIf="editable">
+          <button class="btn btn-sm btn-outline-secondary" (click)="editTaskAssignment(ta)">
+            <i class="fas fa-edit"></i></button>
+        </div>
+      </div>
+      <hr>
+    </div>
+  </div>
+</div>
+
+<hr/>
+
+<div class="card" *ngIf="!loading">
+  <div class="card-header">
+    Candidate Tasks: Completed
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="completedTasks.length <= 0">
+      <p class="text-center text-muted small">No completed tasks</p>
+    </div>
+    <div *ngFor="let ta of completedTasks; let i = index;">
+      <div class="d-flex justify-content-between">
+        <div class="">
+          <p>{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
+        </div>
+        <div class="">
+          <p>Completed: {{ta.completedDate | date: 'mediumDate'}}</p>
+        </div>
+        <div *ngIf="editable" class=" float-right text-right">
+          <button class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-edit"></i></button>
+        </div>
+      </div>
+      <hr>
+    </div>
+  </div>
+</div>
