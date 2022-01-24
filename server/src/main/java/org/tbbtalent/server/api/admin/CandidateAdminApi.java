@@ -101,10 +101,6 @@ public class CandidateAdminApi {
     public Map<String, Object> get(@PathVariable("id") long id) {
         Candidate candidate = this.candidateService.getCandidate(id);
 
-        // TODO This a temporary hack to allow us start working on the display of candidate
-        //task assignments on the Angular back end.
-        this.candidateService.addFakeTasks(candidate);
-
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }

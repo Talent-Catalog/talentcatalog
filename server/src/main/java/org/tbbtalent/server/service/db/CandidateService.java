@@ -475,7 +475,6 @@ public interface CandidateService {
      * @param candidates
      */
     void addFakeTasks(Iterable<Candidate> candidates);
-    void addFakeTasks(Candidate candidate);
 
     /**
      * Retrieve a dummy candidate who can be used for testing.

@@ -155,9 +155,6 @@ public class CandidatePortalApi {
     public Map<String, Object> getCandidateProfile() {
         Candidate candidate = this.candidateService.getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        // TODO This a temporary hack to allow us start working on the display of candidate
-        //task assignments on the Angular back end.
-        this.candidateService.addFakeTasks(candidate);
         return candidateProfileDto().build(candidate);
     }
 

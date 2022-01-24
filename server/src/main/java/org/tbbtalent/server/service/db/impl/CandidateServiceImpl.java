@@ -2471,8 +2471,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Override
-    public void addFakeTasks(Candidate candidate) {
+    private void addFakeTasks(Candidate candidate) {
         List<TaskAssignment> taskAssignments = new ArrayList<>();
 
         //Generate a different combination of task assignments based on the last digit of the
