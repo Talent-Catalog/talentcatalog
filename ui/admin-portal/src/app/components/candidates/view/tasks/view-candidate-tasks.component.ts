@@ -35,8 +35,10 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       this.candidateService.get(this.candidate.id).subscribe(
         candidate => {
           this.candidate = candidate;
-          this.ongoingTasks = this.candidate.taskAssignments.filter(t => t.completedDate == null);
-          this.completedTasks = this.candidate.taskAssignments.filter(t => t.completedDate != null);
+          if (this.candidate.taskAssignments) {
+            this.ongoingTasks = this.candidate.taskAssignments.filter(t => t.completedDate == null);
+            this.completedTasks = this.candidate.taskAssignments.filter(t => t.completedDate != null);
+          }
           this.loading = false;
         },
         error => {
