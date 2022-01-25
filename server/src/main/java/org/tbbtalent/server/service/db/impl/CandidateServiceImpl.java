@@ -70,7 +70,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
@@ -2355,7 +2357,7 @@ public class CandidateServiceImpl implements CandidateService {
         TaskAssignmentImpl ta = new TaskAssignmentImpl();
         ta.setTask(task);
         ta.setDueDate(overdue ? yesterday : tomorrow);
-        ta.setCompletedDate(completed ? OffsetDateTime.from(yesterday) : null);
+        ta.setCompletedDate(completed ? OffsetDateTime.of(yesterday, LocalTime.MIDNIGHT, ZoneOffset.UTC) : null);
 
         return ta;
     }
