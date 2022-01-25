@@ -14,32 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Candidate} from './candidate';
-import {User} from './user';
+alter table candidate_attachment add column upload_type text;
 
-export enum AttachmentType {
-  googlefile = 'googlefile',
-  file = 'file',
-  link = 'link'
-}
-
-export enum UploadType {
-  cv = 'cv',
-  other = 'other',
-}
+update candidate_attachment set upload_type = 'cv' where cv = true;
+update candidate_attachment set upload_type = 'other' where cv = false;
 
 
-export interface CandidateAttachment {
-  id?: number;
-  name: string;
-  location: string;
-  fileType: string;
-  type: AttachmentType;
-  migrated: boolean;
-  cv: boolean;
-  candidate?: Candidate;
-  createdBy: User;
-  createdDate: string;
-  uploadType: UploadType;
-
-}

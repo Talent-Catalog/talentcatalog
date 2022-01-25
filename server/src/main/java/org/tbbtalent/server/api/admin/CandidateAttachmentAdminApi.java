@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -71,11 +71,11 @@ public class CandidateAttachmentAdminApi {
 
     /**
      * This was called for attachments which were uploaded to AWS S3.
-     * <p/> 
+     * <p/>
      * @deprecated {@link #uploadAttachment} is used now instead. It is
      * called now that attachments are first uploaded to this server,
-     * then uploaded to Google Drive from here. 
-     * @param request Details about attachment record to be created. 
+     * then uploaded to Google Drive from here.
+     * @param request Details about attachment record to be created.
      * @return Candidate attachment
      */
     @PostMapping()
@@ -92,18 +92,18 @@ public class CandidateAttachmentAdminApi {
      */
     @GetMapping("{id}/download")
     public void downloadAttachment(
-            @PathVariable("id") long id, HttpServletResponse response ) 
+            @PathVariable("id") long id, HttpServletResponse response )
             throws IOException {
-        CandidateAttachment attachment = 
+        CandidateAttachment attachment =
                 candidateAttachmentService.getCandidateAttachment(id);
         if (attachment.getType() != AttachmentType.googlefile) {
             throw new NoSuchObjectException(FileSystemService.class, id);
         }
-        
-        response.setHeader("Content-Disposition", 
+
+        response.setHeader("Content-Disposition",
                 "attachment; filename=\"" + attachment.getName() + "\"");
         response.setContentType("application/octet-stream");
-        
+
         candidateAttachmentService.downloadCandidateAttachment(
                 attachment, response.getOutputStream());
         response.flushBuffer();
@@ -114,28 +114,28 @@ public class CandidateAttachmentAdminApi {
      * creates a CandidateAttachment record on the database.
      * <p/>
      * Processes uploaded file and then uploads it again to Google Drive.
-     * This replaces the old {@link #createCandidateAttachment} 
+     * This replaces the old {@link #createCandidateAttachment}
      * @param id ID of candidate associated with file attachment
-     * @param cv True if the attachment is a CV (in which case its text is 
+     * @param cv True if the attachment is a CV (in which case its text is
      *           extracted for keywords).
-     * @param file Attachment file           
+     * @param file Attachment file
      * @return Candidate attachment
      */
     @PostMapping("{id}/upload")
     public Map<String, Object> uploadAttachment(
             @PathVariable("id") long id, @RequestParam("cv") Boolean cv,
-            @RequestParam("file") MultipartFile file ) 
+            @RequestParam("file") MultipartFile file )
             throws IOException {
-        CandidateAttachment candidateAttachment = 
+        CandidateAttachment candidateAttachment =
                 candidateAttachmentService.uploadAttachment(id, cv, file);
         return candidateAttachmentDto().build(candidateAttachment);
     }
 
     @PutMapping("{id}")
     public Map<String, Object> update( @PathVariable("id") long id,
-            @RequestBody UpdateCandidateAttachmentRequest request) 
+            @RequestBody UpdateCandidateAttachmentRequest request)
             throws IOException {
-        CandidateAttachment candidateAttachment = 
+        CandidateAttachment candidateAttachment =
                 this.candidateAttachmentService.updateCandidateAttachment(id, request);
         return candidateAttachmentDto().build(candidateAttachment);
     }
@@ -166,6 +166,7 @@ public class CandidateAttachmentAdminApi {
                 .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
+                .add("uploadType")
                 ;
     }
 

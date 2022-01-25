@@ -148,6 +148,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         attachment.setCandidate(candidate);
         attachment.setMigrated(false);
         attachment.setAuditFields(user);
+        attachment.setUploadType(request.getUploadType());
 
         if (request.getType().equals(AttachmentType.link)) {
 
@@ -436,7 +437,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         //Do text extraction if CV - otherwise leave as null.
         String textExtract = null;
-        if(uploadType == UploadType.Cv) {
+        if(uploadType == UploadType.cv) {
             try {
                 textExtract = textExtractHelper
                     .getTextExtractFromFile(tempFile, fileType);
@@ -457,7 +458,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         req.setName(uploadedFileName);
         req.setFileType(fileType);
         req.setLocation(uploadedFile.getUrl());
-        req.setCv(uploadType == UploadType.Cv);
+        req.setUploadType(uploadType);
+        req.setCv(uploadType == UploadType.cv);
         if(StringUtils.isNotBlank(textExtract)) {
             // Remove any null bytes to avoid PSQLException: ERROR: invalid byte sequence for encoding "UTF8"
             textExtract = Pattern.compile("\\x00").matcher(textExtract).replaceAll("?");
@@ -483,7 +485,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         //originating computer).
         String fileName = file.getOriginalFilename();
 
-        UploadType uploadType = cv ? UploadType.Cv : UploadType.Other;
+        UploadType uploadType = cv ? UploadType.cv : UploadType.other;
         return uploadAttachment(candidate, fileName, null, file, uploadType);
     }
 

@@ -22,10 +22,8 @@ package org.tbbtalent.server.model.db.task;
  * @author John Cameron
  */
 public enum UploadType {
-    Cv,
-    Passport,
-    Visa,
-    Other
+    cv,
+    other
 
     //TODO JC See Sarah's list of doc types
 }

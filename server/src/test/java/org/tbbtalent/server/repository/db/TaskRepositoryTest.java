@@ -68,7 +68,7 @@ class TaskRepositoryTest {
         utask.setName("Sample Upload Task");
         utask.setCreatedBy(owningUser);
         utask.setCreatedDate(OffsetDateTime.now());
-        utask.setUploadType(UploadType.Cv);
+        utask.setUploadType(UploadType.cv);
         utask.setUploadSubfolderName("CVsGoHere");
 
         taskRepository.save(utask);
@@ -86,7 +86,7 @@ class TaskRepositoryTest {
             assertEquals(TaskType.Upload, task.getTaskType());
             if (task instanceof UploadTaskImpl) {
                 UploadTaskImpl uploadTask = (UploadTaskImpl) task;
-                assertEquals(UploadType.Cv, uploadTask.getUploadType());
+                assertEquals(UploadType.cv, uploadTask.getUploadType());
                 assertEquals("CVsGoHere", uploadTask.getUploadSubfolderName());
             }
         }

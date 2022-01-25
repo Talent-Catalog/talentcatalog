@@ -241,6 +241,8 @@ public class CandidateBuilderSelector {
             .add("cv")
             .add("createdBy", userDto())
             .add("createdDate")
+            .add("uploadType")
+
             ;
     }
 

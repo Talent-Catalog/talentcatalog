@@ -22,6 +22,11 @@ export enum AttachmentType {
   link = 'link'
 }
 
+export enum UploadType {
+  cv = 'cv',
+  other = 'other',
+}
+
 export interface CandidateAttachment {
   id: number;
   type: AttachmentType;
@@ -34,6 +39,7 @@ export interface CandidateAttachment {
   updatedDate: number;
   migrated: boolean; // A flag determining is the file was migrated from the previous system
   cv: boolean;
+  uploadType: UploadType;
 }
 
 export class CandidateAttachmentRequest {
@@ -42,6 +48,7 @@ export class CandidateAttachmentRequest {
   name: string;
   location: string;
   cv: boolean;
+  uploadType: UploadType;
   fileType?: string; //Not needed for links
   folder?: string; //Only used by S3. Not needed for links or Google
 }
