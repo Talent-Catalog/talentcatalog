@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,16 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
-import org.tbbtalent.server.model.db.TaskDtoHelper;
-import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.request.task.CreateTaskAssignmentRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.service.db.TaskService;
+
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/task-assignment")
@@ -74,7 +71,7 @@ public class TaskAssignmentAdminApi implements
         TaskImpl task = taskService.get(request.getTaskId());
         Candidate candidate = candidateService.getCandidate(request.getCandidateId());
         TaskAssignmentImpl taskAssignment =
-            taskAssignmentService.assignTaskToCandidate(user, task, candidate);
+            taskAssignmentService.assignTaskToCandidate(user, task, candidate, request.getDueDate());
 
         return TaskDtoHelper.getTaskAssignmentDto().build(taskAssignment);
     }

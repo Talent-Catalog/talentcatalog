@@ -16,13 +16,15 @@
 
 package org.tbbtalent.server.model.db.task;
 
-import java.time.OffsetDateTime;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 /**
  * Represents the assignment of a task to a candidate.
@@ -115,10 +117,10 @@ public interface TaskAssignment {
      * Date by which the task should be completed.
      * <p/>
      * This defaults based on {@link Task#getDaysToComplete()}.
-     * @return Due date/time. Can be null for optional tasks.
+     * @return Due date only (time not needed). Can be null for optional tasks.
      */
     @Nullable
-    OffsetDateTime getDueDate();
+    LocalDate getDueDate();
 
     /**
      * Unique id identifying this task assignment

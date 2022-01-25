@@ -16,18 +16,13 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.time.OffsetDateTime;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 /**
  * Default implementation of {@link TaskAssignment}
@@ -60,7 +55,10 @@ public class TaskAssignmentImpl extends AbstractDomainObject<Long> implements Ta
     User deactivatedBy;
 
     OffsetDateTime deactivatedDate;
-    OffsetDateTime dueDate;
+
+    // Comment CC - Couldn't this be a LocalDate, we don't need the time as we only as for a date.
+    // Also we don't neccessarily want an Offset date, if I want something due on the 25th that would be the same date across timezones.
+    LocalDate dueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "related_list_id")

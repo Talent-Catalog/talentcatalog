@@ -16,13 +16,6 @@
 
 package org.tbbtalent.server.service.db;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.tbbtalent.server.model.db.Candidate;
@@ -31,6 +24,12 @@ import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.service.db.impl.TaskAssigmentServiceImpl;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 //TODO Note for Caroline: See also notes in TaskAssignmentService
 //Notes:
@@ -63,8 +62,9 @@ class TaskAssignmentServiceTest {
     @Test
     void assignTaskToCandidate() {
 
+        LocalDate dueDate = LocalDate.parse("2022-02-14");
         //Assign task to candidate, and remember the returned task assigment.
-        TaskAssignment ta = taskAssignmentService.assignTaskToCandidate(null, task, candidate);
+        TaskAssignment ta = taskAssignmentService.assignTaskToCandidate(null, task, candidate, dueDate);
 
         assertNotNull(ta);
 

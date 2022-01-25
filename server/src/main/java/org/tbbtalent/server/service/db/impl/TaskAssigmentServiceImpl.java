@@ -16,19 +16,11 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
-import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.db.task.UploadTask;
@@ -37,6 +29,11 @@ import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.service.db.TaskService;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 // TODO: Note for Caroline:  that none of the methods are completed.
 // They are the default implementations that I have configured Intellij to provide when I do a
@@ -76,13 +73,18 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     }
 
     @Override
-    public TaskAssignmentImpl assignTaskToCandidate(User user, TaskImpl task, Candidate candidate) {
+    public TaskAssignmentImpl assignTaskToCandidate(User user, TaskImpl task, Candidate candidate, LocalDate dueDate) {
         TaskAssignmentImpl taskAssignment = new TaskAssignmentImpl();
         taskAssignment.setTask(task);
         taskAssignment.setActivatedBy(user);
         taskAssignment.setActivatedDate(OffsetDateTime.now());
         taskAssignment.setCandidate(candidate);
         taskAssignment.setStatus(Status.active);
+        // If no due date given in assignment, set due date to the days to complete from today.
+        if (dueDate == null && task.getDaysToComplete() != null) {
+            dueDate = LocalDate.now().plusDays(task.getDaysToComplete());
+        }
+        taskAssignment.setDueDate(dueDate);
         return taskAssignmentRepository.save(taskAssignment);
     }
 

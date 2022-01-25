@@ -18,6 +18,9 @@ package org.tbbtalent.server.request.task;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
+
+import java.time.LocalDate;
 
 /**
  * Request to create a TaskAssignment by assigning a task to a candidate
@@ -37,4 +40,10 @@ public class CreateTaskAssignmentRequest {
      * Task to assign to candidate
      */
     long taskId;
+
+    /**
+     * Custom due date if supplied (otherwise the due date will be set from the task days to complete)
+     */
+    @Nullable
+    LocalDate dueDate;
 }
