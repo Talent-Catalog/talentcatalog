@@ -16,11 +16,24 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Set;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.db.task.UploadTask;
@@ -30,30 +43,6 @@ import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.service.db.TaskService;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
-
-// TODO: Note for Caroline:  that none of the methods are completed.
-// They are the default implementations that I have configured Intellij to provide when I do a
-// Command I - or Ctrl N (Code | Generate menu) and ask Intellij to provide method implementations.
-//
-// Nevertheless, I can write and run all the tests in TaskAssignmentServiceTest. They all fail
-// (because this class is not fully coded) - but that is TDD.
-// Note also that the tests run immediately and very quickly - because they don't require the
-// Spring framework.
-//
-// Once I have written the code to make all the tests pass, theoretically this class is complete.
-// I then just have to add the Spring notation and attach a repository to it so that stuff
-// is saved in our data base.
-//
-// Note that the tests should still be able to run quickly by mocking up the Spring dependencies,
-// but let's not worry about that for now. Let's get the basic logic working - without worrying
-// about Spring and the database initially.
 
 /**
  * Default implementation of a TaskAssignmentService
@@ -76,7 +65,8 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     }
 
     @Override
-    public TaskAssignmentImpl assignTaskToCandidate(User user, TaskImpl task, Candidate candidate, LocalDate dueDate) {
+    public TaskAssignmentImpl assignTaskToCandidate(
+        User user, TaskImpl task, Candidate candidate, @Nullable LocalDate dueDate) {
         TaskAssignmentImpl taskAssignment = new TaskAssignmentImpl();
         taskAssignment.setTask(task);
         taskAssignment.setActivatedBy(user);
@@ -92,9 +82,12 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     }
 
     @Override
-    public void assignTaskToList(Task task, SavedList list) {
-        //TODO JC Implement assignTaskToList
-        throw new UnsupportedOperationException("assignTaskToList not implemented");
+    public void assignTaskToList(
+        User user, TaskImpl task, SavedList list, @Nullable LocalDate dueDate) {
+        Set<Candidate> candidates = list.getCandidates();
+        for (Candidate candidate : candidates) {
+            assignTaskToCandidate(user, task, candidate, dueDate);
+        }
     }
 
     @NonNull
@@ -156,7 +149,7 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
 
     @Override
     public void completeUploadTaskAssignment(TaskAssignment ta, MultipartFile file)
-        throws IOException {
+        throws IOException, ClassCastException {
         UploadTask uploadTask = (UploadTask) ta.getTask();
 
         Candidate candidate = ta.getCandidate();

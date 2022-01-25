@@ -16,16 +16,20 @@
 
 package org.tbbtalent.server.api.admin;
 
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.request.task.AssignTaskToListRequest;
 import org.tbbtalent.server.request.task.CreateTaskAssignmentRequest;
 import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.service.db.TaskService;
 
@@ -42,23 +46,26 @@ public class TaskAssignmentAdminApi implements
 
     private final AuthService authService;
     private final CandidateService candidateService;
+    private final SavedListService savedListService;
     private final TaskAssignmentService taskAssignmentService;
     private final TaskService taskService;
 
     @Autowired
     public TaskAssignmentAdminApi(
         AuthService authService, CandidateService candidateService,
+        SavedListService savedListService,
         TaskAssignmentService taskAssignmentService,
         TaskService taskService) {
         this.authService = authService;
         this.candidateService = candidateService;
+        this.savedListService = savedListService;
         this.taskAssignmentService = taskAssignmentService;
         this.taskService = taskService;
     }
 
     @Override
     @PostMapping
-    public Map<String, Object> create(CreateTaskAssignmentRequest request)
+    public Map<String, Object> create(@Valid @RequestBody CreateTaskAssignmentRequest request)
         throws EntityExistsException, NoSuchObjectException {
 
         User user = authService.getLoggedInUser()
@@ -84,6 +91,19 @@ public class TaskAssignmentAdminApi implements
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return this.taskAssignmentService.removeTaskAssignment(user, id);
+    }
+
+    @PostMapping("assign-to-list")
+    public void assignTaskToList(@Valid @RequestBody AssignTaskToListRequest request)
+        throws EntityExistsException, NoSuchObjectException {
+
+        User user = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        TaskImpl task = taskService.get(request.getTaskId());
+        SavedList savedList = savedListService.get(request.getSavedListId());
+
+        taskAssignmentService.assignTaskToList(user, task, savedList, request.getDueDate());
     }
 
 }

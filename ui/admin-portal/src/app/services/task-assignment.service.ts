@@ -5,6 +5,12 @@ import {Observable} from "rxjs";
 import {TaskAssignment} from "../model/candidate";
 
 
+export interface AssignTaskToListRequest {
+  savedListId: number,
+  taskId: number,
+  dueDate?: Date
+}
+
 export interface CreateTaskAssignmentRequest {
   candidateId: number,
   taskId: number,
@@ -25,6 +31,10 @@ export class TaskAssignmentService {
   private apiUrl: string = environment.apiUrl + '/task-assignment';
 
   constructor(private http: HttpClient) { }
+
+  assignTaskToList(request: AssignTaskToListRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/assign-to-list`, request);
+  }
 
   createTaskAssignment(request: CreateTaskAssignmentRequest): Observable<TaskAssignment> {
     return this.http.post<TaskAssignment>(`${this.apiUrl}`, request);

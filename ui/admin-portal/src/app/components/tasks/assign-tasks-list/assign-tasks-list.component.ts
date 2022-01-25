@@ -5,6 +5,10 @@ import {Task} from "../../../model/candidate";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {SavedList} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
+import {
+  AssignTaskToListRequest,
+  TaskAssignmentService
+} from "../../../services/task-assignment.service";
 
 @Component({
   selector: 'app-assign-tasks-list',
@@ -22,7 +26,8 @@ export class AssignTasksListComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private modalService: NgbModal,
-              private taskService: TaskService) { }
+              private taskService: TaskService,
+              private taskAssignmentService: TaskAssignmentService) { }
 
   ngOnInit(): void {
     this.assignForm = this.fb.group({
@@ -56,7 +61,26 @@ export class AssignTasksListComponent implements OnInit {
   }
 
   onSave() {
-    this.activeModal.close();
+    this.loading = true;
+
+    const task: Task = this.assignForm.value.task;
+
+    //Construct request
+    const request: AssignTaskToListRequest = {
+      savedListId: this.savedList.id,
+      taskId: task.id,
+      dueDate: this.assignForm.value.dueDate
+    }
+    this.taskAssignmentService.assignTaskToList(request).subscribe(
+      () => {
+        this.activeModal.close();
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
   }
 
   cancel() {

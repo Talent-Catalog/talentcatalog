@@ -16,6 +16,14 @@
 
 package org.tbbtalent.server.service.db;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.tbbtalent.server.model.db.Candidate;
@@ -24,18 +32,6 @@ import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.service.db.impl.TaskAssigmentServiceImpl;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-//TODO Note for Caroline: See also notes in TaskAssignmentService
-//Notes:
-// 1. These tests run super fast because they do not need to start up the Spring framework in
-//    order to run
-// 2. These tests compile and run even though TaskAssignmentService is still not coded.
 
 /**
  * Tests TaskAssignmentService
@@ -84,7 +80,7 @@ class TaskAssignmentServiceTest {
 
     @Test
     void assignTaskToList() {
-        taskAssignmentService.assignTaskToList(task, list);
+        taskAssignmentService.assignTaskToList(null, task, list, null);
 
         //Check that each candidate in the list has an assignment for the above task associated
         //with it.
