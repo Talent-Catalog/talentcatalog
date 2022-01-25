@@ -16,6 +16,7 @@ export class AssignTasksCandidateComponent implements OnInit {
   allTasks: Task[];
   loading;
   error;
+  saving;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -50,7 +51,7 @@ export class AssignTasksCandidateComponent implements OnInit {
   }
 
   onSave() {
-    this.loading = true;
+    this.saving = true;
 
     const task: Task = this.assignForm.value.task;
 
@@ -64,11 +65,11 @@ export class AssignTasksCandidateComponent implements OnInit {
     this.taskAssignmentService.createTaskAssignment(request).subscribe(
       (taskAssignment: TaskAssignment) => {
           this.activeModal.close(taskAssignment);
-          this.loading = false;
+          this.saving = false;
         },
       error => {
         this.error = error;
-        this.loading = false;
+        this.saving = false;
       }
     );
   }

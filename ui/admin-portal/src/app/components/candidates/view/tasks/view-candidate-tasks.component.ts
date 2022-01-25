@@ -5,6 +5,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AssignTasksCandidateComponent} from "../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component";
 import {EditTaskAssignmentComponent} from "./edit/edit-task-assignment.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {TaskAssignmentService} from "../../../../services/task-assignment.service";
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -23,6 +24,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   today: Date;
 
   constructor(private candidateService: CandidateService,
+              private taskAssignmentService: TaskAssignmentService,
               private modalService: NgbModal) { }
 
   ngOnInit(): void {
@@ -32,23 +34,27 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.loading = true;
-      this.candidateService.get(this.candidate.id).subscribe(
-        candidate => {
-          this.candidate = candidate;
-          if (this.candidate.taskAssignments) {
-            this.ongoingTasks = this.candidate.taskAssignments.filter(t => t.completedDate == null);
-            this.completedTasks = this.candidate.taskAssignments.filter(t => t.completedDate != null);
-          } else {
-            this.ongoingTasks = [];
-            this.completedTasks = [];
-          }
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        });
+      this.getCandidate();
     }
+  }
+
+  getCandidate() {
+    this.candidateService.get(this.candidate.id).subscribe(
+      candidate => {
+        this.candidate = candidate;
+        if (this.candidate.taskAssignments) {
+          this.ongoingTasks = this.candidate.taskAssignments.filter(t => t.completedDate == null);
+          this.completedTasks = this.candidate.taskAssignments.filter(t => t.completedDate != null);
+        } else {
+          this.ongoingTasks = [];
+          this.completedTasks = [];
+        }
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      });
   }
 
   isOverdue(ta: TaskAssignment) {
@@ -64,9 +70,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
     assignTaskCandidateModal.componentInstance.candidateId = this.candidate.id;
 
     assignTaskCandidateModal.result
-      .then((taskAssignment: TaskAssignment) => {
-        this.candidate.taskAssignments.push(taskAssignment)
-      })
+      .then((taskAssignment: TaskAssignment) => this.getCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -80,7 +84,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
     editTaskAssignmentModal.componentInstance.taskAssignment = ta;
 
     editTaskAssignmentModal.result
-      .then((taskAssignment) => ta = taskAssignment)
+      .then((taskAssignment) => this.getCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -97,6 +101,16 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
     deleteTaskAssignmentModal.result
       .then((result) => {
         if (result === true) {
+          this.taskAssignmentService.removeTaskAssignment(ta.id).subscribe(
+            () => {
+              this.getCandidate();
+              this.saving = false;
+            },
+            error => {
+              this.error = error;
+              this.saving = false;
+            }
+          );
         }
       })
       .catch(() => { /* Isn't possible */

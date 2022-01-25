@@ -23,6 +23,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
+import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -82,7 +83,26 @@ public interface TaskAssignmentService {
      * @throws NoSuchObjectException if there is no TaskAssignment with this id.
      */
     @NonNull
-    TaskAssignment get(long taskAssignmentId) throws NoSuchObjectException;
+    TaskAssignmentImpl get(long taskAssignmentId) throws NoSuchObjectException;
+
+    /**
+     * Update the task assignment with the given id.
+     * @param taskAssignmentId ID of the TaskAssignment to update
+     * @param request Update request containing the due date
+     * @return Updated Task Assignment
+     * @throws NoSuchObjectException
+     */
+    @NonNull
+    TaskAssignmentImpl update(long taskAssignmentId, UpdateTaskAssignmentRequest request) throws NoSuchObjectException;
+
+    /**
+     * Deactivate the task assignment record and set as inactive.
+     * @param loggedInUser - the logged in admin user who deactivated the task assignment
+     * @param taskAssignmentId - Task Assignment to be removed.
+     * @return true/false depending on success
+     * @throws NoSuchObjectException
+     */
+    boolean removeTaskAssignment(User loggedInUser, long taskAssignmentId) throws NoSuchObjectException;
 
     /**
      * Fetch task assignments for a given candidate by Status (eg active or inactive)

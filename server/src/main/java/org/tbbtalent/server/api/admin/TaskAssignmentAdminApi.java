@@ -20,11 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.request.task.CreateTaskAssignmentRequest;
+import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
@@ -39,10 +38,7 @@ public class TaskAssignmentAdminApi implements
             //todo replace with search request
             CreateTaskAssignmentRequest,
 
-            CreateTaskAssignmentRequest,
-
-            //todo replace with update request
-            CreateTaskAssignmentRequest> {
+            CreateTaskAssignmentRequest, UpdateTaskAssignmentRequest> {
 
     private final AuthService authService;
     private final CandidateService candidateService;
@@ -74,6 +70,20 @@ public class TaskAssignmentAdminApi implements
             taskAssignmentService.assignTaskToCandidate(user, task, candidate, request.getDueDate());
 
         return TaskDtoHelper.getTaskAssignmentDto().build(taskAssignment);
+    }
+
+    @Override
+    public Map<String, Object> update(long id, UpdateTaskAssignmentRequest request)
+        throws EntityExistsException, NoSuchObjectException {
+        TaskAssignmentImpl taskAssignment = taskAssignmentService.update(id, request);
+        return TaskDtoHelper.getTaskAssignmentDto().build(taskAssignment);
+    }
+
+    @Override
+    public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
+        User user = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        return this.taskAssignmentService.removeTaskAssignment(user, id);
     }
 
 }

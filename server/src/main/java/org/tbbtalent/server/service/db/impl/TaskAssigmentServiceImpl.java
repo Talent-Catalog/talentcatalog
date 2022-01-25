@@ -26,6 +26,7 @@ import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
+import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.service.db.TaskService;
@@ -96,9 +97,32 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
 
     @NonNull
     @Override
-    public TaskAssignment get(long taskAssignmentId) throws NoSuchObjectException {
+    public TaskAssignmentImpl get(long taskAssignmentId) throws NoSuchObjectException {
         return taskAssignmentRepository.findById(taskAssignmentId)
             .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
+    }
+
+    @NonNull
+    @Override
+    public TaskAssignmentImpl update(long taskAssignmentId, UpdateTaskAssignmentRequest request) throws NoSuchObjectException {
+        TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(taskAssignmentId)
+            .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
+
+        taskAssignment.setDueDate(request.getDueDate());
+        return taskAssignmentRepository.save(taskAssignment);
+    }
+
+    @NonNull
+    @Override
+    public boolean removeTaskAssignment(User user, long taskAssignmentId) throws NoSuchObjectException {
+        TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(taskAssignmentId)
+            .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
+
+        taskAssignment.setDeactivatedBy(user);
+        taskAssignment.setDeactivatedDate(OffsetDateTime.now());
+        taskAssignment.setStatus(Status.inactive);
+        taskAssignmentRepository.save(taskAssignment);
+        return true;
     }
 
     @Override

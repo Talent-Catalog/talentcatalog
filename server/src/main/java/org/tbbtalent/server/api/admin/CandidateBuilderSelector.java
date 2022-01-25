@@ -18,6 +18,7 @@ package org.tbbtalent.server.api.admin;
 
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -104,7 +105,7 @@ public class CandidateBuilderSelector {
                 .add("shareableDoc", candidateAttachmentDto())
                 .add("listShareableCv", candidateAttachmentDto())
                 .add("listShareableDoc", candidateAttachmentDto())
-                .add("taskAssignments", taskAssignmentDto())
+                .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                 .add("shareableNotes")
                 .add("stage")
                 .add("sfOpportunityLink")
@@ -240,23 +241,6 @@ public class CandidateBuilderSelector {
             .add("cv")
             .add("createdBy", userDto())
             .add("createdDate")
-            ;
-    }
-
-    private DtoBuilder taskAssignmentDto() {
-        return new DtoBuilder()
-            // TODO: other attributes
-            .add("completedDate")
-            .add("dueDate")
-            .add("task", taskDto())
-            ;
-    }
-
-    private DtoBuilder taskDto() {
-        return new DtoBuilder()
-            // TODO: other attributes
-            .add("name")
-            .add("optional")
             ;
     }
 

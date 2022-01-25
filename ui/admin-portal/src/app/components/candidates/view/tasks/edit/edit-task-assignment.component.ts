@@ -1,8 +1,9 @@
 import {Component, Inject, LOCALE_ID, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {TaskAssignment} from "../../../../../model/candidate";
-import { formatDate } from '@angular/common';
+import {Task, TaskAssignment} from "../../../../../model/candidate";
+import {formatDate} from '@angular/common';
+import {TaskAssignmentService, UpdateTaskAssignmentRequest} from "../../../../../services/task-assignment.service";
 
 @Component({
   selector: 'app-edit-task-assignment',
@@ -21,6 +22,7 @@ export class EditTaskAssignmentComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
+              private taskAssignmentService: TaskAssignmentService,
               @Inject(LOCALE_ID) private locale: string) { }
 
   ngOnInit(): void {
@@ -47,16 +49,26 @@ export class EditTaskAssignmentComponent implements OnInit {
   }
 
   onSave() {
-    // this.saving = true;
-    // this.candidateService.update(this.candidateId, this.candidateForm.value).subscribe(
-    //   (candidate) => {
-    //     this.closeModal(candidate);
-    //     this.saving = false;
-    //   },
-    //   (error) => {
-    //     this.error = error;
-    //     this.saving = false;
-    //   });
+    this.saving = true;
+
+    const task: Task = this.form.value.task;
+
+    //Pick up candidate and task
+    const request: UpdateTaskAssignmentRequest = {
+      id: this.taskAssignment.id,
+      dueDate: this.form.value.dueDate
+    }
+
+    this.taskAssignmentService.updateTaskAssignment(request).subscribe(
+      (taskAssignment: TaskAssignment) => {
+        this.activeModal.close(taskAssignment);
+        this.saving = false;
+      },
+      error => {
+        this.error = error;
+        this.saving = false;
+      }
+    );
   }
 
   closeModal(ta: TaskAssignment) {
