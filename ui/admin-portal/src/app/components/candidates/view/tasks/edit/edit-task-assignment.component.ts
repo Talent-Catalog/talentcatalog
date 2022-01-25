@@ -56,7 +56,9 @@ export class EditTaskAssignmentComponent implements OnInit {
     //Pick up candidate and task
     const request: UpdateTaskAssignmentRequest = {
       id: this.taskAssignment.id,
-      dueDate: this.form.value.dueDate
+      dueDate: this.form.value.dueDate,
+      completedDate: this.form.value.completedDate,
+      complete: this.form.value.complete
     }
 
     this.taskAssignmentService.updateTaskAssignment(request).subscribe(

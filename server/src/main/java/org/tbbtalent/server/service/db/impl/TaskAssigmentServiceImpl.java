@@ -33,7 +33,9 @@ import org.tbbtalent.server.service.db.TaskService;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 // TODO: Note for Caroline:  that none of the methods are completed.
@@ -108,7 +110,17 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(taskAssignmentId)
             .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
 
-        taskAssignment.setDueDate(request.getDueDate());
+        if (request.getDueDate() != null) {
+            taskAssignment.setDueDate(request.getDueDate());
+        }
+        if (request.getCompletedDate() != null) {
+            // How to best turn Local Date into offset date time, but keeping the correct date selected. Use LocalDateTime?
+            // If I have a due date of the 25th, I want the candidate to complete it on the 25th in their timezone.
+            taskAssignment.setCompletedDate(OffsetDateTime.of(request.getCompletedDate(), LocalTime.now(), ZoneOffset.MIN));
+        }
+        if (request.isComplete()) {
+            taskAssignment.setCompletedDate(OffsetDateTime.now());
+        }
         return taskAssignmentRepository.save(taskAssignment);
     }
 

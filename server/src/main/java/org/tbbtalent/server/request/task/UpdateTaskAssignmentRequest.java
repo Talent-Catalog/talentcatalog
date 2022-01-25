@@ -41,4 +41,16 @@ public class UpdateTaskAssignmentRequest {
      */
     @Nullable
     LocalDate dueDate;
+
+    /**
+     * Custom completed date if supplied
+     */
+    @Nullable
+    LocalDate completedDate;
+
+    /**
+     * If task is set as complete or not (admin portal)
+     */
+    @Nullable
+    boolean complete;
 }

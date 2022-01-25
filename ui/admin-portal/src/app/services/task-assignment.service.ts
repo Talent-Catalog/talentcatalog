@@ -13,7 +13,9 @@ export interface CreateTaskAssignmentRequest {
 
 export interface UpdateTaskAssignmentRequest {
   id: number,
-  dueDate?: Date
+  dueDate?: Date,
+  completedDate?: Date,
+  complete?: boolean
 }
 
 @Injectable({
