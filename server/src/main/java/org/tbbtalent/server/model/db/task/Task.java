@@ -76,6 +76,8 @@ public interface Task extends Auditable {
      */
     boolean isOptional();
 
+    //todo This is not fully implemented yet. Maybe we should not do it this way.
+    //Alternative is to have a separate "TaskList" object.
     /**
      * Subtasks - this task involves carrying out these sub tasks.
      * @return May be null - in which case this is a simple task, rather than a list of sub tasks.
