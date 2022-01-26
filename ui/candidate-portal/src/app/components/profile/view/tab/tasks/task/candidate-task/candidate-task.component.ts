@@ -35,13 +35,12 @@ export class CandidateTaskComponent implements OnInit {
     const uploads: Observable<TaskAssignment>[] = [];
     for (const file of $event.files) {
       const formData: FormData = new FormData();
-      // todo we want to name the file based on the file type uploaded
       formData.append('file', file);
 
       this.taskAssignmentService.completeUploadTask(this.selectedTask.id, formData).subscribe(
         (taskAssignment: TaskAssignment) => {
           //todo Need to update the task assignment
-           console.log("Completed on: " + taskAssignment.completedDate);
+          this.uploading = false;
         },
         error => {
           this.error = error;

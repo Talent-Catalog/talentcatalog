@@ -42,6 +42,7 @@ import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
@@ -303,17 +304,16 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         } else if (user.getRole().equals(Role.limited) || user.getRole().equals(Role.semilimited)) {
             throw new InvalidRequestException("You don't have permission to download this attachment.");
         } else {
+            //We only handle Google attachments for now because that is all
+            //we need.
+            //We can access link and AWS attachments simply using their urls.
+            //We can do that with Google attachments because of security
+            //restrictions with the Google Shared Drive.
+            //To get around that, we actually download a copy of the Google
+            //file and return that copy to the user's browser.
             if (attachment.getType() == AttachmentType.googlefile) {
                 GoogleFileSystemFile file = new GoogleFileSystemFile(attachment.getLocation());
                 fileSystemService.downloadFile(file, out);
-            } else {
-                //We only handle Google attachments for now because that is all
-                //we need.
-                //We can access link and AWS attachments simply using their urls.
-                //We can do that with Google attachments because of security
-                //restrictions with the Google Shared Drive.
-                //To get around that, we actually download a copy of the Google
-                //file and return that copy to the user's browser.
             }
         }
     }
@@ -425,13 +425,24 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         //file will be uploaded to)
         GoogleFileSystemFolder parentFolder = new GoogleFileSystemFolder(folderLink);
 
-        // TODO: 22/1/22 Subfolder if not null
+        final GoogleFileSystemDrive candidateDataDrive = googleDriveConfig.getCandidateDataDrive();
+        if (subfolderName != null) {
+            //Create folder if it does not exist
+            GoogleFileSystemFolder subfolder = fileSystemService.findAFolder(
+                candidateDataDrive, parentFolder, subfolderName);
+            if (subfolder == null) {
+                subfolder = fileSystemService.createFolder(
+                    candidateDataDrive, parentFolder, subfolderName);
+            }
+
+            //Set parentFolder to subfolder
+            parentFolder = subfolder;
+        }
 
         //Upload the file to its folder, with the correct name (not the temp
         //file name).
-        GoogleFileSystemFile uploadedFile =
-            fileSystemService.uploadFile(googleDriveConfig.getCandidateDataDrive(),
-                parentFolder, uploadedFileName, tempFile);
+        GoogleFileSystemFile uploadedFile = fileSystemService.uploadFile(
+            candidateDataDrive, parentFolder, uploadedFileName, tempFile);
 
         final String fileType = getFileExtension(uploadedFileName);
 
