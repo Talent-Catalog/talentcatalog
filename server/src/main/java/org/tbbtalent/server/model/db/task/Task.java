@@ -77,7 +77,15 @@ public interface Task extends Auditable {
     boolean isOptional();
 
     //todo This is not fully implemented yet. Maybe we should not do it this way.
-    //Alternative is to have a separate "TaskList" object.
+    //Alternative is to have a separate "TaskList" object. The advantage of this way is the
+    //nesting ability. One issue with that is that when passing object up to front end only
+    //Task attributes are sent - so this needs to be in base class even though it does not
+    //make sense for, for example, an UploadTask to also be a task with subtasks.
+    //It needs to be it's own task type - eg ParentTask - but the subTasks atribute has to be
+    //part of Task to get serialized up to Angular. Then just need convention that subtasks should
+    //be null (or ignored) if TaskType is not Parent.
+    //Anyway, we don't need it for day one - it is just a convenience for grouping tasks together,
+    //so come back to this later.
     /**
      * Subtasks - this task involves carrying out these sub tasks.
      * @return May be null - in which case this is a simple task, rather than a list of sub tasks.
