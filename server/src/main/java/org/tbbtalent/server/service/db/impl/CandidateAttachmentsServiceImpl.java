@@ -307,7 +307,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             //We only handle Google attachments for now because that is all
             //we need.
             //We can access link and AWS attachments simply using their urls.
-            //We can do that with Google attachments because of security
+            //We can't do that with Google attachments because of security
             //restrictions with the Google Shared Drive.
             //To get around that, we actually download a copy of the Google
             //file and return that copy to the user's browser.
