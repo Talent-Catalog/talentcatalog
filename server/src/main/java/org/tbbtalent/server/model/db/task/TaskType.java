@@ -16,8 +16,12 @@
 
 package org.tbbtalent.server.model.db.task;
 
+import org.tbbtalent.server.model.db.TaskImpl;
+
 /**
- * TODO JC Doc
+ * Different kind of tasks.
+ * <p/>
+ * See {@link TaskImpl#getTaskType()} for explanation of the need for this enum.
  *
  * @author John Cameron
  */
