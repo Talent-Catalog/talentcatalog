@@ -65,6 +65,7 @@ public interface FileSystemService {
      * Creates a folder with the given name.
      * Does not check if folder with that name already exists - may create
      * duplicate folder with the same name if the file system allows it.
+     * @param parentFolder Parent folder of folder to be created.
      * @param folderName Name of folder to be created
      * @return Folder created
      * @throws IOException If there was a problem creating the folder
