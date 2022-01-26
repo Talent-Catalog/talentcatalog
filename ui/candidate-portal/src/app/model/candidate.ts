@@ -60,14 +60,26 @@ export interface Candidate {
 
 export interface TaskAssignment {
   id: number;
+  abandonedDate: Date;
+  candidateNotes: string;
   completedDate: Date;
   dueDate: Date;
   task: Task;
 }
 
 export interface Task {
+  id: number;
   name: string;
+  description: string;
   optional: boolean;
+  taskType: TaskType;
+}
+
+export enum TaskType {
+  Question = "Question",
+  Simple = "Simple",
+  Upload = "Upload",
+  YesNoQuestion = "YesNoQuestion"
 }
 
 export enum CandidateStatus {
