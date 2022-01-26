@@ -17,12 +17,17 @@
 package org.tbbtalent.server.model.db.task;
 
 /**
- * TODO JC Doc
+ * Different types of uploadable document
  *
  * @author John Cameron
  */
 public enum UploadType {
     cv,
+    degree,
+    degreeTranscript,
+    degreeTranscriptTrans,
+    passport,
+    studiedInEnglish,
     other
 
     //TODO JC See Sarah's list of doc types
