@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -35,9 +35,10 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import org.tbbtalent.server.model.db.Role;
 
 /**
- * Originally taken from 
+ * Originally taken from
  * https://www.callicoder.com/spring-boot-spring-security-jwt-mysql-react-app-part-2/
  * <p/>
  * Updated to use latest version of io.jsonwebtoken library.
@@ -75,6 +76,11 @@ public class JwtTokenProvider implements InitializingBean {
         if (authentication.getPrincipal() instanceof TbbUserDetails) {
             TbbUserDetails user = (TbbUserDetails) authentication.getPrincipal();
             subject = user.getUsername();
+
+            //Candidates can stay logged in forever
+            if (Role.user.equals(user.getUser().getRole())) {
+                expiryDate = null;
+            }
         }
 
         return Jwts.builder()
