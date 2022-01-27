@@ -17,6 +17,7 @@ export class AssignTasksCandidateComponent implements OnInit {
   loading;
   error;
   saving;
+  estDate: Date;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -28,9 +29,20 @@ export class AssignTasksCandidateComponent implements OnInit {
     this.loading = true;
     this.assignForm = this.fb.group({
       task: [null],
+      customDate: [false],
       dueDate: [null]
     });
     this.getAllTasks();
+  }
+
+  get selectedTask(): Task {
+    return this.assignForm?.value?.task;
+  }
+
+  get estimatedDueDate() {
+    this.estDate = new Date();
+    this.estDate.setDate( this.estDate.getDate() + this.selectedTask.daysToComplete );
+    return this.estDate;
   }
 
   getAllTasks() {

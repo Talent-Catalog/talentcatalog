@@ -43,6 +43,7 @@ public class TaskDtoHelper {
             // TODO: other attributes
             .add("id")
             .add("name")
+            .add("daysToComplete")
             .add("description")
             .add("optional")
             .add("taskType")

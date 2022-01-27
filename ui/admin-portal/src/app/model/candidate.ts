@@ -93,6 +93,7 @@ export interface TaskAssignment {
 export interface Task {
   id: number;
   name: string;
+  daysToComplete: number;
   description: string;
   optional: boolean;
   taskType: TaskType;

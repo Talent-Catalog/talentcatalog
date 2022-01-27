@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 <div class="mb-4">
-  <button class="btn btn-primary btn-sm w-100" (click)="downloadCV()">
+  <button class="btn btn-primary btn-sm" (click)="downloadCV()">
     <span *ngIf="!loading">{{ 'PROFILE.BUTTON.CV' | translate }}</span>
     <span *ngIf="loading">{{ 'LOADING' | translate }}</span>
   </button>
