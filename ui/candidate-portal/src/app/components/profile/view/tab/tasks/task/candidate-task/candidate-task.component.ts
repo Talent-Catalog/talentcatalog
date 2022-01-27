@@ -13,6 +13,7 @@ import {TaskAssignmentService} from "../../../../../../../services/task-assignme
 export class CandidateTaskComponent implements OnInit {
   @Input() selectedTask: TaskAssignment;
   @Output() back = new EventEmitter();
+  filesUploaded: File[];
   form: FormGroup;
   loading: boolean;
   uploading: boolean;
@@ -31,6 +32,7 @@ export class CandidateTaskComponent implements OnInit {
     this.error = null;
     this.uploading = true;
 
+
     //todo this all doesn't look right - needs work.
     const uploads: Observable<TaskAssignment>[] = [];
     for (const file of $event.files) {
@@ -39,7 +41,9 @@ export class CandidateTaskComponent implements OnInit {
 
       this.taskAssignmentService.completeUploadTask(this.selectedTask.id, formData).subscribe(
         (taskAssignment: TaskAssignment) => {
-          //todo Need to update the task assignment
+          this.selectedTask = taskAssignment;
+          // This allows us to display the success message in the html
+          this.filesUploaded = $event.files;
           this.uploading = false;
         },
         error => {

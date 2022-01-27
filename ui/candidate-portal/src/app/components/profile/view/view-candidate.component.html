@@ -24,7 +24,8 @@
         <a ngbNavLink>Tasks</a>
         <ng-template ngbNavContent>
           <app-candidate-tasks
-            [candidate]="candidate">
+            [candidate]="candidate"
+            (refresh)="getCandidate()">
           </app-candidate-tasks>
         </ng-template>
       </ng-container>

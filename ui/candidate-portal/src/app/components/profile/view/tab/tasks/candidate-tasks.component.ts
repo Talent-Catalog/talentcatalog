@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, EventEmitter, OnInit, Output} from '@angular/core';
 import {Candidate, Status, TaskAssignment} from "../../../../../model/candidate";
 
 @Component({
@@ -11,6 +11,7 @@ export class CandidateTasksComponent implements OnInit {
   error;
   loading;
   @Input() candidate: Candidate;
+  @Output() refresh = new EventEmitter();
   selectedTask: TaskAssignment;
 
   constructor() { }
@@ -37,6 +38,7 @@ export class CandidateTasksComponent implements OnInit {
 
   unSelectTask() {
     this.selectedTask = null;
+    this.refresh.emit();
   }
 
 }

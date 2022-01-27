@@ -24,6 +24,11 @@ export class ViewCandidateComponent implements OnInit {
               private localStorageService: LocalStorageService) { }
 
   ngOnInit(): void {
+    this.getCandidate();
+    this.selectDefaultTab();
+  }
+
+  getCandidate() {
     this.candidateService.getProfile().subscribe(
       (response) => {
         this.candidate = response;
@@ -34,7 +39,6 @@ export class ViewCandidateComponent implements OnInit {
         this.error = error;
         this.loading = false;
       });
-    this.selectDefaultTab();
   }
 
   private selectDefaultTab() {
