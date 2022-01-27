@@ -29,6 +29,9 @@
   <div class="card">
     <div>
       <app-file-upload [uploading]="uploading" (uploadStarted)="startServerUpload($event)"></app-file-upload>
+      <div *ngIf="uploading">
+        Uploading please wait <fa-icon  [spin]="true" icon="spinner"></fa-icon>
+      </div>
       <div *ngFor="let file of filesUploaded; let i = index;">
         <p>Successfully uploaded {{file.name}}!</p>
       </div>
