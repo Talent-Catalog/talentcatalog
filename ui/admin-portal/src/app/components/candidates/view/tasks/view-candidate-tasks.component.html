@@ -23,7 +23,7 @@
       <div class="d-flex justify-content-between">
         <div class="w-50">
           <p class="mb-0" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
-          <div [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date: 'mediumDate'}}</div>
+          <div [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date: 'yyyy-MM-dd'}}</div>
         </div>
         <div class="d-flex w-50 justify-content-between">
           <div *ngIf="ta.candidateNotes">
@@ -57,7 +57,7 @@
       <div class="d-flex justify-content-between">
         <div class="w-50">
           <p class="mb-0">{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
-          <div>Completed: {{ta.completedDate | date: 'mediumDate'}}</div>
+          <div>Completed: {{ta.completedDate | date: 'yyyy-MM-dd'}}</div>
         </div>
         <div *ngIf="editable" class=" float-right text-right">
           <button class="btn btn-default" (click)="editTaskAssignment(ta)">

@@ -34,7 +34,7 @@
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
               <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
             </td>
-            <td class="font-weight-light" [ngClass]="{'text-danger': isOverdue(ta)}">{{ta.dueDate | date: 'dd-MM-yyyy'}}</td>
+            <td class="font-weight-light" [ngClass]="{'text-danger': isOverdue(ta)}">{{ta.dueDate | date: 'yyyy-MM-dd'}}</td>
           </tr>
           <!-- loading -->
           <tr *ngIf="loading">
@@ -77,7 +77,7 @@
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
               <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
             </td>
-            <td>{{ta.completedDate | date: 'shortDate'}}</td>
+            <td>{{ta.completedDate | date: 'yyyy-MM-dd'}}</td>
           </tr>
           <!-- loading -->
           <tr *ngIf="loading">
