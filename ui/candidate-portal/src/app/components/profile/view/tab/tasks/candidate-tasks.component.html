@@ -29,12 +29,12 @@
 
           <tbody>
           <tr *ngFor="let ta of ongoingTasks" (click)="selectTask(ta)">
-            <td [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}"><div>{{ta.task.name}}</div></td>
+            <td><div class="link underline">{{ta.task.name}}</div></td>
             <td class="text-center">
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
               <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
             </td>
-            <td class="font-weight-light" [ngClass]="{'text-danger': isOverdue(ta)}">{{ta.dueDate | date: 'yyyy-MM-dd'}}</td>
+            <td class="font-weight-light" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">{{ta.dueDate | date: 'yyyy-MM-dd'}}</td>
           </tr>
           <!-- loading -->
           <tr *ngIf="loading">
@@ -58,10 +58,9 @@
     <div>
       <div class="mb-4">
         <h3>Completed Tasks</h3>
-        <p class="text-muted">Click on task to view details.</p>
       </div>
       <div class="table-responsive-sm">
-        <table class="table table-hover bg-white">
+        <table class="table bg-white">
           <thead class="thead-light">
           <tr>
             <th>Task Name</th>
@@ -71,7 +70,7 @@
           </thead>
 
           <tbody>
-          <tr *ngFor="let ta of completedTasks" (click)="selectTask(ta)">
+          <tr *ngFor="let ta of completedTasks">
             <td><div>{{ta.task.name}}</div></td>
             <td class="text-center">
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
