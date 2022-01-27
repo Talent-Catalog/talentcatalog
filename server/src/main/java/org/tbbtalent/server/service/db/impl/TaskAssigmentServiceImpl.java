@@ -106,6 +106,9 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         if (request.getDueDate() != null) {
             taskAssignment.setDueDate(request.getDueDate());
         }
+        if (request.getCandidateNotes() != null) {
+            taskAssignment.setCandidateNotes(request.getCandidateNotes());
+        }
         if (request.getCompletedDate() != null) {
             // How to best turn Local Date into offset date time, but keeping the correct date selected. Use LocalDateTime?
             // If I have a due date of the 25th, I want the candidate to complete it on the 25th in their timezone.

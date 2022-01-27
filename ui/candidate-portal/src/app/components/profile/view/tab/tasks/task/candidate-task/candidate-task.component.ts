@@ -3,7 +3,9 @@ import {TaskAssignment} from "../../../../../../../model/candidate";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {forkJoin, Observable} from "rxjs";
 import {CandidateAttachment} from "../../../../../../../model/candidate-attachment";
-import {TaskAssignmentService} from "../../../../../../../services/task-assignment.service";
+import {
+  TaskAssignmentService, UpdateTaskAssignmentRequest
+} from "../../../../../../../services/task-assignment.service";
 
 @Component({
   selector: 'app-candidate-task',
@@ -17,6 +19,7 @@ export class CandidateTaskComponent implements OnInit {
   form: FormGroup;
   loading: boolean;
   uploading: boolean;
+  saving: boolean;
   error;
 
   constructor(private fb: FormBuilder,
@@ -24,7 +27,7 @@ export class CandidateTaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      comment: [''],
+      comment: [this.selectedTask.candidateNotes],
     });
   }
 
@@ -70,6 +73,23 @@ export class CandidateTaskComponent implements OnInit {
 
   isOverdue(ta: TaskAssignment) {
     return (new Date(ta.dueDate) < new Date()) && !ta.task.optional;
+  }
+
+  submitComment() {
+    this.saving = true;
+    const submitComment: UpdateTaskAssignmentRequest = {
+      taskAssignmentId: this.selectedTask.id,
+      candidateNotes: this.form.value.comment
+    }
+    this.taskAssignmentService.addComment(this.selectedTask.id, submitComment).subscribe(
+      (taskAssignment: TaskAssignment) => {
+        this.selectedTask = taskAssignment;
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
   }
 
 }

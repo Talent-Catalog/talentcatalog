@@ -18,10 +18,11 @@ export interface CreateTaskAssignmentRequest {
 }
 
 export interface UpdateTaskAssignmentRequest {
-  id: number,
+  taskAssignmentId: number,
   dueDate?: Date,
   completedDate?: Date,
-  complete?: boolean
+  complete?: boolean,
+  candidateNotes?: string
 }
 
 @Injectable({
@@ -41,7 +42,7 @@ export class TaskAssignmentService {
   }
 
   updateTaskAssignment(request: UpdateTaskAssignmentRequest): Observable<TaskAssignment> {
-    return this.http.put<TaskAssignment>(`${this.apiUrl}/${request.id}`, request);
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${request.taskAssignmentId}`, request);
   }
 
   removeTaskAssignment(id: number): Observable<boolean>  {

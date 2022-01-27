@@ -23,7 +23,7 @@ import org.springframework.lang.Nullable;
 import java.time.LocalDate;
 
 /**
- * Request to create a TaskAssignment by assigning a task to a candidate
+ * Request to update a TaskAssignment
  *
  * @author John Cameron
  */
@@ -53,4 +53,10 @@ public class UpdateTaskAssignmentRequest {
      */
     @Nullable
     boolean complete;
+
+    /**
+     * If task has some notes provided by the candidate
+     */
+    @Nullable
+    String candidateNotes;
 }

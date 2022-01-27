@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Candidate, TaskAssignment} from "../../../../model/candidate";
+import {Candidate, Status, TaskAssignment} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AssignTasksCandidateComponent} from "../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component";
@@ -21,6 +21,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   saving;
   ongoingTasks: TaskAssignment[];
   completedTasks: TaskAssignment[];
+  inactiveTasks: TaskAssignment[];
   today: Date;
 
   constructor(private candidateService: CandidateService,
@@ -43,8 +44,12 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       candidate => {
         this.candidate = candidate;
         if (this.candidate.taskAssignments) {
-          this.ongoingTasks = this.candidate.taskAssignments.filter(t => t.completedDate == null);
-          this.completedTasks = this.candidate.taskAssignments.filter(t => t.completedDate != null);
+          this.ongoingTasks = this.candidate.taskAssignments.filter(t =>
+            t.completedDate == null && t.status === Status.active);
+          this.completedTasks = this.candidate.taskAssignments.filter(t =>
+            t.completedDate != null);
+          this.inactiveTasks = this.candidate.taskAssignments.filter(t =>
+            t.status === Status.inactive);
         } else {
           this.ongoingTasks = [];
           this.completedTasks = [];

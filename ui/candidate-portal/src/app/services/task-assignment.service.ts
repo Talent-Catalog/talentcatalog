@@ -20,6 +20,14 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {TaskAssignment} from "../model/candidate";
 
+export interface UpdateTaskAssignmentRequest {
+  taskAssignmentId: number,
+  dueDate?: Date,
+  completedDate?: Date,
+  complete?: boolean,
+  candidateNotes?: string
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,6 +43,10 @@ export class TaskAssignmentService {
 
   completeUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
     return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload`, formData);
+  }
+
+  addComment(id: number, request: UpdateTaskAssignmentRequest) {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}`, request);
   }
 
 }

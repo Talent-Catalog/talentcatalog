@@ -87,6 +87,7 @@ export interface TaskAssignment {
   candidateNotes: string;
   completedDate: Date;
   dueDate: Date;
+  status: Status;
   task: Task;
 }
 
@@ -100,6 +101,12 @@ export interface Task extends Auditable {
   uploadType: UploadType;
   uploadSubfolderName: string;
   uploadableFileTypes: string;
+}
+
+export enum Status {
+  active = "active",
+  inactive = "inactive",
+  deleted = "deleted"
 }
 
 export enum TaskType {

@@ -35,6 +35,7 @@ public class TaskDtoHelper {
             .add("completedDate")
             .add("dueDate")
             .add("status")
+            .add("candidateNotes")
             .add("task", getTaskDto())
             ;
     }

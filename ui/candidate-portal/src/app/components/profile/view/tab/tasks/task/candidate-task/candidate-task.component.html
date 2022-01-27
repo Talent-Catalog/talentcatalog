@@ -42,7 +42,7 @@
     <h5>Add/Edit Comment</h5>
   </div>
   <div class="card">
-    <form [formGroup]="form">
+    <form [formGroup]="form" (submit)="submitComment()">
 
       <div class="form-group">
         <label class="font-weight-bold" for="comment">
@@ -50,6 +50,10 @@
         </label>
         <textarea id="comment" class="md-textarea-auto form-control" rows="5"
                   [formControlName]="'comment'"></textarea>
+          <button class="btn btn-primary mt-2" type="submit">
+            Save
+            <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+          </button>
       </div>
     </form>
   </div>

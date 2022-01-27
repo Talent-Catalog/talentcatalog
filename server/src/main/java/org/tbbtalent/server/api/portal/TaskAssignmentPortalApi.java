@@ -18,8 +18,11 @@ package org.tbbtalent.server.api.portal;
 
 import java.io.IOException;
 import java.util.Map;
+import javax.validation.Valid;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +33,7 @@ import org.tbbtalent.server.exception.UnauthorisedActionException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
+import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
@@ -112,6 +116,19 @@ public class TaskAssignmentPortalApi {
         checkAuthorisation(ta);
 
         taskAssignmentService.completeUploadTaskAssignment(ta, file);
+
+        return TaskDtoHelper.getTaskAssignmentDto().build(ta);
+    }
+
+    @PutMapping("{id}")
+    public Map<String, Object> update(@PathVariable("id") long id, @Valid @RequestBody UpdateTaskAssignmentRequest request)
+        throws IOException, NoSuchObjectException, UnauthorisedActionException {
+
+        TaskAssignment ta = taskAssignmentService.get(id);
+
+        checkAuthorisation(ta);
+
+        ta = taskAssignmentService.update(id, request);
 
         return TaskDtoHelper.getTaskAssignmentDto().build(ta);
     }
