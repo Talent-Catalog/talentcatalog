@@ -32,7 +32,6 @@ export class CandidateTaskComponent implements OnInit {
     this.error = null;
     this.uploading = true;
 
-
     //todo this all doesn't look right - needs work.
     const uploads: Observable<TaskAssignment>[] = [];
     for (const file of $event.files) {

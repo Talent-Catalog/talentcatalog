@@ -65,6 +65,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public List<TaskImpl> listTasksAssignedToList(long listId) {
+        // todo get the tasks that have been assigned through a list to display in assign to list modal
+        return taskRepository.findAll();
+    }
+
+    @Override
     public Page<TaskImpl> searchTasks(PagedSearchRequest request) {
         Page<TaskImpl> tasks = taskRepository.findAll(request.getPageRequest());
         return tasks;

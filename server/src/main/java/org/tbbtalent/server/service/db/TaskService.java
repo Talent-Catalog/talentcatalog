@@ -48,6 +48,13 @@ public interface TaskService {
     List<TaskImpl> listTasks();
 
     /**
+     * Get the tasks assigned to a list of candidates (related list id)
+     * @param listId the list which we want the assigned tasks associated with
+     * @return List of tasks
+     */
+    List<TaskImpl> listTasksAssignedToList(long listId);
+
+    /**
      * Get the tasks as a paged search request
      * @param request - Paged Search Request
      * @return Page of tasks
