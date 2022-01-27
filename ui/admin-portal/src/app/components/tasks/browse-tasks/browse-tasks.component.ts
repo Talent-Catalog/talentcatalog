@@ -66,6 +66,23 @@ export class BrowseTasksComponent implements OnInit {
 
     this.taskService.searchPaged(req).subscribe(results => {
         this.results = results;
+        if (results.content.length > 0) {
+          //Selected previously search if any
+          const id: number = this.localStorageService.get(this.savedStateKeyPrefix + "Tasks");
+          if (id) {
+            this.selectedIndex = indexOfAuditable(id, this.results.content);
+            if (this.selectedIndex >= 0) {
+              this.selectedTask = this.results.content[this.selectedIndex];
+            } else {
+              //Select the first search if can't find previous (category of search
+              // may have changed)
+              this.onSelect(this.results.content[0]);
+            }
+          } else {
+            //Select the first search if no previous
+            this.onSelect(this.results.content[0]);
+          }
+        }
 
         this.loading = false;
       },
@@ -84,10 +101,21 @@ export class BrowseTasksComponent implements OnInit {
     this.selectedTask = task;
 
     const id: number = task.id;
-    // this.localStorageService.set(this.savedStateKey(), id);
+    this.localStorageService.set(this.savedStateKeyPrefix + "Tasks", id);
 
     this.selectedIndex = indexOfAuditable(id, this.results.content);
   }
+
+  // private savedStateKey() {
+  //   //This key is constructed from the combination of inputs which are associated with each tab
+  //   // in home.component.html
+  //   //This key is used to store the last state associated with each tab.
+  //
+  //   //The standard key is "BrowseKey" + the sourceType (SavedSearch or SaveList) +
+  //   // the search by (corresponding to the specific displayed tab)
+  //   const key = this.savedStateKeyPrefix + "Tasks"
+  //   return key;
+  // }
 
   keyDown(event: KeyboardEvent) {
     const oldSelectedIndex = this.selectedIndex;
