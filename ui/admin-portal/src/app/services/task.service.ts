@@ -3,6 +3,8 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import { Task } from '../model/candidate';
+import {SearchResults} from "../model/search-results";
+import {CandidateAttachment} from "../model/candidate-attachment";
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +18,10 @@ export class TaskService {
 
   listTasks(): Observable<Task[]> {
     return this.http.get<Task[]>(`${this.apiUrl}`);
+  }
+
+  searchPaged(request): Observable<SearchResults<Task>> {
+    return this.http.post<SearchResults<Task>>(`${this.apiUrl}/search-paged`, request);
   }
 
 }

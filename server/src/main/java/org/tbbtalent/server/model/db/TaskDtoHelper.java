@@ -48,6 +48,19 @@ public class TaskDtoHelper {
             .add("description")
             .add("optional")
             .add("taskType")
+            .add("uploadType")
+            .add("uploadSubfolderName")
+            .add("uploadableFileTypes")
+            .add("createdBy", getUserDto())
+            .add("createdDate")
+            ;
+    }
+
+    public static DtoBuilder getUserDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("firstName")
+            .add("lastName")
             ;
     }
 

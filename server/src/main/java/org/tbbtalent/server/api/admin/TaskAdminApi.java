@@ -18,13 +18,15 @@ package org.tbbtalent.server.api.admin;
 
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.request.country.SearchCountryRequest;
+import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.country.UpdateCountryRequest;
 import org.tbbtalent.server.service.db.TaskService;
 
@@ -32,7 +34,7 @@ import org.tbbtalent.server.service.db.TaskService;
 @RequestMapping("/api/admin/task")
 public class TaskAdminApi implements
     //todo Need to add in proper task request objects here
-        ITableApi<SearchCountryRequest, UpdateCountryRequest, UpdateCountryRequest> {
+        ITableApi<PagedSearchRequest, UpdateCountryRequest, UpdateCountryRequest> {
 
     private final TaskService taskService;
 
@@ -45,6 +47,13 @@ public class TaskAdminApi implements
     public @NotNull List<Map<String, Object>> list() {
         List<TaskImpl> tasks = taskService.listTasks();
         return TaskDtoHelper.getTaskDto().buildList(tasks);
+    }
+
+    @Override
+    public @NotNull Map<String, Object> searchPaged(
+        @Valid PagedSearchRequest request) {
+        Page<TaskImpl> tasks = this.taskService.searchTasks(request);
+        return TaskDtoHelper.getTaskDto().buildPage(tasks);
     }
 
 }

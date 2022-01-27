@@ -1,0 +1,22 @@
+.selected {
+  background-color: lightgray;
+}
+
+.watched {
+  color: red;
+}
+
+.notwatched {
+  color: grey;
+}
+
+.d-flex {
+  i {
+    margin-top: 5px;
+    padding-right: 7px;
+  }
+}
+
+.min-height-150 {
+  min-height: 160px;
+}

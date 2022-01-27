@@ -245,6 +245,8 @@ import {AssignTasksListComponent} from './components/tasks/assign-tasks-list/ass
 import {AssignTasksCandidateComponent} from './components/tasks/assign-tasks-candidate/assign-tasks-candidate.component';
 import {EditTaskAssignmentComponent} from './components/candidates/view/tasks/edit/edit-task-assignment.component';
 import {ViewCandidateTasksComponent} from "./components/candidates/view/tasks/view-candidate-tasks.component";
+import { BrowseTasksComponent } from './components/tasks/browse-tasks/browse-tasks.component';
+import { ViewTaskDetailsComponent } from './components/tasks/view-task-details/view-task-details.component';
 
 @NgModule({
   declarations: [
@@ -467,7 +469,9 @@ import {ViewCandidateTasksComponent} from "./components/candidates/view/tasks/vi
     AssignTasksListComponent,
     AssignTasksCandidateComponent,
     EditTaskAssignmentComponent,
-    ViewCandidateTasksComponent
+    ViewCandidateTasksComponent,
+    BrowseTasksComponent,
+    ViewTaskDetailsComponent
   ],
   imports: [
     BrowserModule,
