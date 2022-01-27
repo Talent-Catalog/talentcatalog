@@ -64,6 +64,7 @@ export interface TaskAssignment {
   candidateNotes: string;
   completedDate: Date;
   dueDate: Date;
+  status: Status;
   task: Task;
 }
 
@@ -93,6 +94,12 @@ export enum CandidateStatus {
   pending = "pending",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
+}
+
+export enum Status {
+  active = "active",
+  inactive = "inactive",
+  deleted = "deleted"
 }
 
 export enum YesNo {

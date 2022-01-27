@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, TaskAssignment} from "../../../../../model/candidate";
+import {Candidate, Status, TaskAssignment} from "../../../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-tasks',
@@ -16,21 +16,11 @@ export class CandidateTasksComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.candidate);
-
-
-  }
-
-  filterOngoing(ta: TaskAssignment) {
-    return ta.completedDate == null;
-  }
-
-  filterCompleted(ta: TaskAssignment) {
-    return ta.completedDate != null;
   }
 
   get ongoingTasks() {
-    return this.candidate?.taskAssignments.filter(t => t.completedDate == null);
+    return this.candidate?.taskAssignments.filter(t =>
+      t.completedDate == null && t.status === Status.active);
   }
 
   get completedTasks() {
