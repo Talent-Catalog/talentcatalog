@@ -19,6 +19,7 @@ export class RegistrationUploadFileComponent implements OnInit {
   error: any;
   // Component states
   saving: boolean;
+  activeIds: string;
 
 
   constructor(public registrationService: RegistrationService,
@@ -26,6 +27,12 @@ export class RegistrationUploadFileComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Make the accordions closed if editing (to allow better view of footer navigation)
+    if (!this.edit) {
+      this.activeIds = 'upload-cv'
+    } else {
+      this.activeIds = ''
+    }
   }
 
   //Final registration step method
