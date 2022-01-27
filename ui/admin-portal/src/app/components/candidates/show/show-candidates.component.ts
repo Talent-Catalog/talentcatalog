@@ -1541,7 +1541,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   assignTasks() {
     const modal = this.modalService.open(AssignTasksListComponent, {scrollable: true});
     if (isSavedList(this.candidateSource)) {
-      console.log(this.candidateSource);
       modal.componentInstance.setTasks(this.candidateSource);
     }
 

@@ -39,10 +39,25 @@
                      [clearable]="false" placeholder="Search/type to find task" bindLabel="name"></ng-select>
         </div>
 
-        <!-- DUE DATE -->
-        <div class="form-group">
-          <label for="dueDate">Due date</label>
-          <app-date-picker id="dueDate" [control]="assignForm.controls.dueDate" [allowPast]="false"></app-date-picker>
+        <!-- DAYS TO COMPLETE -->
+        <div *ngIf="selectedTask">
+          <div class="form-group">
+            <div>Estimated Due Date:
+              <span class="font-weight-light">{{estimatedDueDate | date: 'mediumDate'}}</span>
+            </div>
+            <small class="text-muted">{{selectedTask?.daysToComplete}} days to complete.</small>
+          </div>
+
+          <!-- CUSTOM DUE DATE -->
+          <div class="form-group">
+            <div class="form-inline">
+              <label for="customDate">Do you want to set a custom due date?</label>
+              <input class="form-control" id="customDate" [formControlName]="'customDate'" type="checkbox">
+            </div>
+            <div *ngIf="this.assignForm.value.customDate">
+              <app-date-picker id="dueDate" [control]="assignForm.controls.dueDate" [allowPast]="false"></app-date-picker>
+            </div>
+          </div>
         </div>
 
       </form>
