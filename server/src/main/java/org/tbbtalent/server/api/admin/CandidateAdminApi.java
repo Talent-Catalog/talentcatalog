@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -61,7 +61,7 @@ public class CandidateAdminApi {
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
-    
+
     @PostMapping("findbyemail")
     public Map<String, Object> findByCandidateEmail(@RequestBody CandidateEmailSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
@@ -100,6 +100,7 @@ public class CandidateAdminApi {
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
         Candidate candidate = this.candidateService.getCandidate(id);
+
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -107,17 +108,17 @@ public class CandidateAdminApi {
     @GetMapping("{id}/intake")
     public Map<String, Object> getIntakeData(@PathVariable("id") long id) {
         Candidate candidate = candidateService.getCandidate(id);
-        
+
         //Check if new TBB destinations have been added since the last time
         //someone looked at this candidate's intake.
         //If so, we automatically generate some new records corresponding tp
-        //those new destinations - for example for candidate destination 
+        //those new destinations - for example for candidate destination
         //preferences and visa checks.
         candidate = candidateService.addMissingDestinations(candidate);
         DtoBuilder builder = intakeDataBuilderSelector.selectBuilder();
         return builder.build(candidate);
     }
-    
+
     @PostMapping
     public Map<String, Object> create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
         Candidate candidate = this.candidateService.createCandidate(request);
@@ -208,7 +209,7 @@ public class CandidateAdminApi {
     }
 
     @PutMapping("{id}/create-folder")
-    public Map<String, Object> createCandidateFolder(@PathVariable("id") long id) 
+    public Map<String, Object> createCandidateFolder(@PathVariable("id") long id)
             throws IOException {
         Candidate candidate = this.candidateService.createCandidateFolder(id);
         DtoBuilder builder = builderSelector.selectBuilder();
@@ -221,7 +222,7 @@ public class CandidateAdminApi {
      * If no Contact record exists, one is created.
      *
      * @param id ID of candidate
-     * @return Updated candidate object, containing link to corresponding 
+     * @return Updated candidate object, containing link to corresponding
      * Salesforce Contact record (created or
      * existing) in {@link Candidate#getSflink()}
      * @throws NoSuchObjectException if no candidate is found with that id

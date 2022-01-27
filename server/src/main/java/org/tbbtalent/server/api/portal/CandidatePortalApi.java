@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -22,8 +22,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.servlet.http.HttpServletResponse;
@@ -37,10 +39,13 @@ import java.util.Map;
 public class CandidatePortalApi {
 
     private final CandidateService candidateService;
+    private final TaskAssignmentService taskAssignmentService;
 
     @Autowired
-    public CandidatePortalApi(CandidateService candidateService) {
+    public CandidatePortalApi(CandidateService candidateService,
+        TaskAssignmentService taskAssignmentService) {
         this.candidateService = candidateService;
+        this.taskAssignmentService = taskAssignmentService;
     }
 
     @GetMapping("contact")
@@ -94,7 +99,7 @@ public class CandidatePortalApi {
     public Map<String, Object> getCandidateLanguages() {
         Candidate candidate = this.candidateService
                 .getLoggedInCandidateLoadCandidateLanguages()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));         
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateWithCandidateLanguagesDto().build(candidate);
     }
 
@@ -135,7 +140,7 @@ public class CandidatePortalApi {
     public Map<String, Object> getCandidateCertifications() {
         Candidate candidate = this.candidateService
                 .getLoggedInCandidateLoadCertifications()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));         
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateWithCertificationsDto().build(candidate);
     }
 
@@ -428,6 +433,7 @@ public class CandidatePortalApi {
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")
                 .add("linkedInLink")
+                .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                 ;
     }
 }

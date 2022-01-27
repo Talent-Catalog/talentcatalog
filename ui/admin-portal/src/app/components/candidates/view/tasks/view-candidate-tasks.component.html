@@ -1,0 +1,95 @@
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<div class="card" *ngIf="!loading">
+  <div class="card-header">
+    <span>Candidate Tasks: Ongoing</span>
+    <div class="float-right" *ngIf="editable">
+      <button class="btn btn-primary btn-sm" (click)="assignTask()">
+        <i class="fas fa-plus"></i> Assign task
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="ongoingTasks.length <= 0">
+      <p class="text-center text-muted small">No ongoing tasks</p>
+    </div>
+    <div *ngFor="let ta of ongoingTasks; let i = index;">
+      <div class="d-flex justify-content-between">
+        <div class="w-50">
+          <p class="mb-0" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
+          <div [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date: 'yyyy-MM-dd'}}</div>
+        </div>
+        <div class="d-flex w-50 justify-content-between">
+          <div *ngIf="ta.candidateNotes">
+            Comment: <span>{{ta.candidateNotes}}</span>
+          </div>
+          <div class="float-right text-right" *ngIf="editable">
+            <button class="btn btn-default" (click)="editTaskAssignment(ta)">
+              <i class="fas fa-edit"></i></button>
+            <button class="btn btn-default" (click)="deleteTaskAssignment(ta)">
+              <i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+      <hr>
+    </div>
+  </div>
+</div>
+
+<hr/>
+
+<div class="card" *ngIf="!loading">
+  <div class="card-header">
+    Candidate Tasks: Completed
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="completedTasks.length <= 0">
+      <p class="text-center text-muted small">No completed tasks</p>
+    </div>
+    <div *ngFor="let ta of completedTasks; let i = index;">
+      <div class="d-flex justify-content-between">
+        <div class="w-50">
+          <p class="mb-0">{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
+          <div>Completed: {{ta.completedDate | date: 'yyyy-MM-dd'}}</div>
+        </div>
+        <div *ngIf="editable" class=" float-right text-right">
+          <button class="btn btn-default" (click)="editTaskAssignment(ta)">
+            <i class="fas fa-edit"></i></button>
+          <button class="btn btn-default" (click)="viewResponse(ta)">
+            <i class="far fa-eye"></i></button>
+        </div>
+      </div>
+      <hr>
+    </div>
+  </div>
+</div>
+
+<hr/>
+
+<div class="card" *ngIf="!loading">
+  <div class="card-header">
+    Candidate Tasks: Inactive
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="completedTasks.length <= 0">
+      <p class="text-center text-muted small">No inactive tasks</p>
+    </div>
+    <div *ngFor="let ta of inactiveTasks; let i = index;">
+      <div class="d-flex justify-content-between">
+        <div class="w-50">
+          <p class="mb-0">{{ta.task.name}}</p>
+          <div>Status: {{ta.status}}</div>
+        </div>
+      </div>
+      <hr>
+    </div>
+  </div>
+</div>

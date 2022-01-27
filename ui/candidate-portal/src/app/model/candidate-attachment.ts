@@ -23,6 +23,12 @@ export enum AttachmentType {
   link = 'link'
 }
 
+export enum UploadType {
+  cv = 'cv',
+  other = 'other',
+}
+
+
 export interface CandidateAttachment {
   id?: number;
   name: string;
@@ -34,4 +40,6 @@ export interface CandidateAttachment {
   candidate?: Candidate;
   createdBy: User;
   createdDate: string;
+  uploadType: UploadType;
+
 }

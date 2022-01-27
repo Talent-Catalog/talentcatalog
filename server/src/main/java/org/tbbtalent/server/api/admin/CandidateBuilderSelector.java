@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -18,6 +18,7 @@ package org.tbbtalent.server.api.admin;
 
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -104,6 +105,7 @@ public class CandidateBuilderSelector {
                 .add("shareableDoc", candidateAttachmentDto())
                 .add("listShareableCv", candidateAttachmentDto())
                 .add("listShareableDoc", candidateAttachmentDto())
+                .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                 .add("shareableNotes")
                 .add("stage")
                 .add("sfOpportunityLink")
@@ -227,7 +229,7 @@ public class CandidateBuilderSelector {
                 .add("score")
                 ;
     }
-    
+
     private DtoBuilder candidateAttachmentDto() {
         return new DtoBuilder()
             .add("id")
@@ -239,6 +241,8 @@ public class CandidateBuilderSelector {
             .add("cv")
             .add("createdBy", userDto())
             .add("createdDate")
+            .add("uploadType")
+
             ;
     }
 

@@ -55,6 +55,8 @@ import org.tbbtalent.server.model.db.ExportColumn;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.ExportColumnRepository;
@@ -887,6 +889,35 @@ public class SavedListServiceImpl implements SavedListService {
     private SavedList saveIt(SavedList savedList) {
         savedList.setAuditFields(authService.getLoggedInUser().orElse(null));
         return savedListRepository.save(savedList);
+    }
+
+    //TODO JC These addFakeTasks methods might eventually be moved out and
+    // into the unit testing code. Useful to have them here now to support temporary hack
+    // allowing us to send up had coded task assignments to the Angular code.
+    @Override
+    public void addFakeTasks(SavedList savedList) {
+        List<TaskImpl> tasks = new ArrayList<>();
+
+        UploadTaskImpl task = new UploadTaskImpl();
+        String name = "test task 1";
+        task.setName(name);
+        task.setOptional(false);
+
+        UploadTaskImpl task2 = new UploadTaskImpl();
+        String name2 = "test task 2";
+        task2.setName(name2);
+        task2.setOptional(false);
+
+        UploadTaskImpl task3 = new UploadTaskImpl();
+        String name3 = "test task 3";
+        task3.setName(name3);
+        task3.setOptional(false);
+
+        tasks.add(task);
+        tasks.add(task2);
+        tasks.add(task3);
+
+        savedList.setTasks(tasks);
     }
 
 }

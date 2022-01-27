@@ -20,7 +20,8 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
 import {
   CandidateAttachment,
-  CandidateAttachmentRequest
+  CandidateAttachmentRequest,
+  UploadType
 } from "../../../../../model/candidate-attachment";
 import {forkJoin, Observable} from "rxjs";
 
@@ -74,6 +75,7 @@ export class CreateCandidateAttachmentComponent implements OnInit {
     request.name = this.form.value.name;
     request.location = this.form.value.location;
     request.cv = false;
+    request.uploadType = UploadType.other;
     this.candidateAttachmentService.createAttachment(request).subscribe(
       (response) => this.modal.close(),
       (error) => this.error = error

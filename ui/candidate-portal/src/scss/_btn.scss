@@ -20,10 +20,10 @@
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/buttons";
 
-.btn {
-  @include button-size(8px, 1em, 18px, 1.25, 0);
-}
-
+//.btn {
+//  @include button-size(8px, 1em, 18px, 1.25, 0);
+//}
+//
 .btn + .btn {
   margin-left: 1em;
 }
@@ -103,6 +103,10 @@ a {
   &.disabled {
     color: $color-text-inactive;
   }
+}
+
+.link {
+  color: $color-primary;
 }
 
 /* Disabled styles are last so that they always take precedence */

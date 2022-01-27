@@ -57,7 +57,7 @@ import {CandidateJobExperienceFormComponent} from './components/common/candidate
 import {CandidateJobExperienceCardComponent} from './components/common/candidate-job-experience-card/candidate-job-experience-card.component';
 import {ErrorComponent} from './components/common/error/error.component';
 import {LoadingComponent} from './components/common/loading/loading.component';
-import {CandidateProfileComponent} from './components/profile/view/candidate-profile.component';
+import {CandidateProfileComponent} from './components/profile/view/tab/profile/candidate-profile.component';
 import {FormControlErrorComponent} from './components/common/form-control-error/form-control-error.component';
 import {CandidateCertificationCardComponent} from './components/common/candidate-certification-card/candidate-certification-card.component';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
@@ -73,13 +73,17 @@ import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {
+  faArrowLeft,
   faCalendar,
+  faCheck,
   faChevronDown,
   faChevronUp,
   faEdit,
   faEllipsisH,
   faExternalLinkAlt,
-  faGlobe
+  faGlobe,
+  faQuestion,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
@@ -92,6 +96,9 @@ import {DatePickerComponent} from './components/common/date-picker/date-picker.c
 import {CustomDatepickerI18n} from "./util/custom-date-picker";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {ViewCandidateComponent} from './components/profile/view/view-candidate.component';
+import {CandidateTasksComponent} from './components/profile/view/tab/tasks/candidate-tasks.component';
+import {CandidateTaskComponent} from './components/profile/view/tab/tasks/task/candidate-task/candidate-task.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -143,6 +150,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     DownloadCvComponent,
     RegistrationUploadFileComponent,
     DatePickerComponent,
+    ViewCandidateComponent,
+    CandidateTasksComponent,
+    CandidateTaskComponent,
   ],
   imports: [
     BrowserModule,
@@ -202,7 +212,11 @@ export class AppModule {
       faEllipsisH,
       faCalendar,
       faExternalLinkAlt,
-      faGlobe
+      faGlobe,
+      faCheck,
+      faQuestion,
+      faTimes,
+      faArrowLeft
     );
   }
 }

@@ -239,7 +239,14 @@ import {EditExternalLinkComponent} from './components/settings/external-links/ed
 import {CovidVaccinationComponent} from './components/candidates/intake/vaccination/covid-vaccination.component';
 import {EnglishThresholdComponent} from './components/candidates/visa/english-threshold/english-threshold.component';
 import {FilterPipe} from "./pipes/filter.pipe";
+import {CandidateTaskTabComponent} from './components/candidates/view/tab/candidate-task-tab/candidate-task-tab.component';
 import {DownloadCvComponent} from './components/util/download-cv/download-cv.component';
+import {AssignTasksListComponent} from './components/tasks/assign-tasks-list/assign-tasks-list.component';
+import {AssignTasksCandidateComponent} from './components/tasks/assign-tasks-candidate/assign-tasks-candidate.component';
+import {EditTaskAssignmentComponent} from './components/candidates/view/tasks/edit/edit-task-assignment.component';
+import {ViewCandidateTasksComponent} from "./components/candidates/view/tasks/view-candidate-tasks.component";
+import { BrowseTasksComponent } from './components/tasks/browse-tasks/browse-tasks.component';
+import { ViewTaskDetailsComponent } from './components/tasks/view-task-details/view-task-details.component';
 
 @NgModule({
   declarations: [
@@ -456,7 +463,15 @@ import {DownloadCvComponent} from './components/util/download-cv/download-cv.com
     CovidVaccinationComponent,
     EnglishThresholdComponent,
     FilterPipe,
-    DownloadCvComponent
+    CandidateTaskTabComponent,
+    FilterPipe,
+    DownloadCvComponent,
+    AssignTasksListComponent,
+    AssignTasksCandidateComponent,
+    EditTaskAssignmentComponent,
+    ViewCandidateTasksComponent,
+    BrowseTasksComponent,
+    ViewTaskDetailsComponent
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2022 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,23 +14,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {CandidateService} from "../../../services/candidate.service";
-import {Candidate} from "../../../model/candidate";
+import {Component, Input, OnInit} from '@angular/core';
+import {CandidateService} from "../../../../../services/candidate.service";
+import {Candidate} from "../../../../../model/candidate";
 import {ActivatedRoute} from "@angular/router";
-import {SurveyType, US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
+import {SurveyType} from "../../../../../model/survey-type";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
-import {OccupationService} from "../../../services/occupation.service";
-import {Occupation} from "../../../model/occupation";
-import {CountryService} from "../../../services/country.service";
-import {Country} from "../../../model/country";
-import {EducationMajorService} from "../../../services/education-major.service";
-import {EducationMajor} from "../../../model/education-major";
-import {LanguageService} from "../../../services/language.service";
-import {Language} from "../../../model/language";
-import {LanguageLevelService} from "../../../services/language-level.service";
-import {LanguageLevel} from "../../../model/language-level";
-import {SurveyTypeService} from "../../../services/survey-type.service";
+import {OccupationService} from "../../../../../services/occupation.service";
+import {Occupation} from "../../../../../model/occupation";
+import {CountryService} from "../../../../../services/country.service";
+import {Country} from "../../../../../model/country";
+import {EducationMajorService} from "../../../../../services/education-major.service";
+import {EducationMajor} from "../../../../../model/education-major";
+import {LanguageService} from "../../../../../services/language.service";
+import {Language} from "../../../../../model/language";
+import {LanguageLevelService} from "../../../../../services/language-level.service";
+import {LanguageLevel} from "../../../../../model/language-level";
+import {SurveyTypeService} from "../../../../../services/survey-type.service";
 
 @Component({
   selector: 'app-candidate-profile',
@@ -58,7 +58,7 @@ export class CandidateProfileComponent implements OnInit {
   languages: Language[];
   languageLevels: LanguageLevel[];
   surveyTypes: SurveyType[];
-  candidate: Candidate;
+  @Input() candidate: Candidate;
   usAfghan: boolean;
 
   constructor(private candidateService: CandidateService,
@@ -72,7 +72,6 @@ export class CandidateProfileComponent implements OnInit {
               private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.loading = true;
 
     this.loadDropDownData();
     // listen for change of language and save
@@ -80,16 +79,16 @@ export class CandidateProfileComponent implements OnInit {
       this.loadDropDownData();
     });
 
-    this.candidateService.getProfile().subscribe(
-      (response) => {
-        this.candidate = response;
-        this.usAfghan = response.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
-        this.loading = false;
-      },
-      (error) => {
-        this.error = error;
-        this.loading = false;
-      });
+    // this.candidateService.getProfile().subscribe(
+    //   (response) => {
+    //     this.candidate = response;
+    //     this.usAfghan = response.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
+    //     this.loading = false;
+    //   },
+    //   (error) => {
+    //     this.error = error;
+    //     this.loading = false;
+    //   });
 
 
   }
@@ -174,7 +173,7 @@ export class CandidateProfileComponent implements OnInit {
   }
 
   getCountryName(country: Country) {
-    return this.countries?.find(c => c.id === country.id)?.name;
+    return this.countries?.find(c => c.id === country?.id)?.name;
   }
 
 }

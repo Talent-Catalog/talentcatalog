@@ -25,7 +25,7 @@ import {Location} from '@angular/common';
 import {getExternalHref} from '../util/url';
 import {Occupation} from './occupation';
 import {LanguageLevel} from './language-level';
-import {HasId} from "./base";
+import {Auditable, HasId} from "./base";
 import {CandidateAttachment} from "./candidate-attachment";
 
 export interface Candidate extends HasId {
@@ -78,6 +78,52 @@ export interface Candidate extends HasId {
   sfOpportunityLink: string;
   stage: string;
   candidateAttachments?: CandidateAttachment[];
+  taskAssignments?: TaskAssignment[];
+}
+
+export interface TaskAssignment {
+  id: number;
+  abandonedDate: Date;
+  candidateNotes: string;
+  completedDate: Date;
+  dueDate: Date;
+  status: Status;
+  task: Task;
+}
+
+export interface Task extends Auditable {
+  id: number;
+  name: string;
+  daysToComplete: number;
+  description: string;
+  optional: boolean;
+  taskType: TaskType;
+  uploadType: UploadType;
+  uploadSubfolderName: string;
+  uploadableFileTypes: string;
+}
+
+export enum Status {
+  active = "active",
+  inactive = "inactive",
+  deleted = "deleted"
+}
+
+export enum TaskType {
+  Question = "Question",
+  Simple = "Simple",
+  Upload = "Upload",
+  YesNoQuestion = "YesNoQuestion"
+}
+
+export enum UploadType {
+    cv = "CV",
+    degree = "Degree",
+    degreeTranscript = "Degree Transcript",
+    degreeTranscriptTrans = "Degree Transcript Translated",
+    passport = "Passport",
+    studiedInEnglish = "Studied in English",
+    other = "Other"
 }
 
 export interface CandidateIntakeData {

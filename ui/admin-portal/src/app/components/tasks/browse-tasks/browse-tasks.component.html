@@ -1,0 +1,61 @@
+<div class="row">
+  <div class="col-md-4">
+    <div class="py-3">
+          <!-- TODO IMPLEMENT SEARCH -->
+      <!--    <div class="searches">-->
+      <!--      <div class="alert alert-danger" *ngIf="error">-->
+      <!--        {{error}}-->
+      <!--      </div>-->
+
+      <!--      <form [formGroup]="searchForm" (ngSubmit)="search()">-->
+      <!--        <div class="form-group">-->
+      <!--          <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"-->
+      <!--                 id="keyword">-->
+      <!--        </div>-->
+      <!--      </form>-->
+
+      <!--    </div>-->
+    </div>
+
+    <ul class="searches" (window:keydown)="keyDown($event)">
+      <li *ngFor="let task of results?.content; let i = index"
+          [class.selected]="task === selectedTask"
+          (click)="onSelect(task)">
+        {{task.name}}
+      </li>
+
+    </ul>
+
+    <div class="text-muted mb-2 align-middle">
+
+      <ngb-pagination
+        [boundaryLinks]="true"
+        [pageSize]="pageSize"
+        [collectionSize]="results?.totalElements"
+        [(page)]="pageNumber"
+        (pageChange)="search()">
+      </ngb-pagination>
+
+      Found {{results?.totalElements}} tasks in total
+    </div>
+
+    <!-- loading -->
+    <div *ngIf="loading">
+      <div>
+        <i class="fas fa-spinner fa-spin"></i> Loading...
+      </div>
+    </div>
+
+    <!-- no results -->
+    <div *ngIf="!loading && !results?.totalElements">
+      <div>
+        <span class="text-muted">(none found)</span>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="selectedTask" class="col-md-6 admin-panel">
+    <app-view-task-details
+      [task]="selectedTask">
+    </app-view-task-details>
+  </div>
+</div>

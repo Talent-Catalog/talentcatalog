@@ -70,7 +70,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
@@ -925,6 +927,14 @@ public class CandidateServiceImpl implements CandidateService {
     public @NonNull Candidate getCandidate(long id) throws NoSuchObjectException {
         return candidateRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+    }
+
+    @Override
+    public Candidate getTestCandidate() {
+        //TODO JC Hack for the moment
+        long id = 32156L;
+        return candidateRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
 
     @Override
@@ -2322,5 +2332,85 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
         return newStatus;
+    }
+
+    /**
+     * Generates a task assigment which is optional or not, completed or not, overdue or not
+     * based on the input parameters.
+     * <p/>
+     * Used for testing.
+     * @return Generated task assignment
+     */
+    private TaskAssignmentImpl makeFakeTaskAssignment
+        (boolean optional, boolean completed, boolean overdue) {
+
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate tomorrow =  LocalDate.now().plusDays(1);
+
+        UploadTaskImpl task = new UploadTaskImpl();
+        String name = (optional ? "Optional" : "Required") + " " +
+            (completed ? "Complete" : "Incomplete") + " " +
+            (overdue ? "Overdue" : "Not overdue") + " task";
+        task.setName(name);
+        task.setOptional(optional);
+
+        TaskAssignmentImpl ta = new TaskAssignmentImpl();
+        ta.setTask(task);
+        ta.setDueDate(overdue ? yesterday : tomorrow);
+        ta.setCompletedDate(completed ? OffsetDateTime.of(yesterday, LocalTime.MIDNIGHT, ZoneOffset.UTC) : null);
+
+        return ta;
+    }
+
+    //TODO JC These addFakeTasks methods might eventually be moved out of CandidateService and
+    //into the unit testing code. Useful to have them here now to support temporary hack
+    //allowing us to send up had coded task assignments to the Angular code.
+    @Override
+    public void addFakeTasks(Iterable<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            addFakeTasks(candidate);
+        }
+    }
+
+    private void addFakeTasks(Candidate candidate) {
+        Set<TaskAssignmentImpl> taskAssignments = new HashSet<>();
+
+        //Generate a different combination of task assignments based on the last digit of the
+        //candidate number.
+        long candidateNumber = Long.parseLong(candidate.getCandidateNumber());
+        int lastDigit = (int) candidateNumber % 10;
+
+        //Depending on the last digit of the candidate number generate task assignments which
+        //are all possible combinations of optional/completed/overdue.
+        //Useful for testing the way these different task assignments are displayed to the user.
+        switch (lastDigit) {
+            case 0:
+            case 1:
+            case 2:
+                taskAssignments.add(makeFakeTaskAssignment(false, false, false));
+                taskAssignments.add(makeFakeTaskAssignment(false, false, true));
+                break;
+            case 3:
+            case 4:
+            case 5:
+                taskAssignments.add(makeFakeTaskAssignment(false, true, false));
+                taskAssignments.add(makeFakeTaskAssignment(false, true, true));
+                taskAssignments.add(makeFakeTaskAssignment(true, false, false));
+                break;
+
+            case 6:
+            case 7:
+            case 8:
+                taskAssignments.add(makeFakeTaskAssignment(true, false, true));
+                taskAssignments.add(makeFakeTaskAssignment(true, true, false));
+                taskAssignments.add(makeFakeTaskAssignment(true, true, true));
+                break;
+
+            case 9:
+                //Candidate numbers ending in 9 have no tasks assigned
+                break;
+        }
+
+        candidate.setTaskAssignments(taskAssignments);
     }
 }

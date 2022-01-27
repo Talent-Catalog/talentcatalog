@@ -24,7 +24,7 @@
     </a>
 
     <!-- MOBILE NAV TOGGLE -->
-    <button class="navbar-toggler hidden-sm-up" type="button"
+    <button class="navbar-toggler" type="button"
             data-target="#headerNav" aria-controls="headerNav" aria-expanded="false" aria-label="Toggle navigation"
             (click)="isNavbarCollapsed = !isNavbarCollapsed">
       <span class="navbar-toggler-icon"></span>
@@ -33,14 +33,14 @@
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
 
       <!-- TRANSLATION -->
-      <div class="navbar-nav" *ngIf="!languageService.isLanguageSelectionDisabled()">
-        <div class="nav-item dropdown" ngbDropdown>
-          <a class="dropdown-toggle translation-toggle" ngbDropdownToggle>
+      <div class="navbar-nav mobile-menu-item" *ngIf="!languageService.isLanguageSelectionDisabled()">
+        <div class="nav-item dropdown py-3" ngbDropdown>
+          <a class="translation-toggle" ngbDropdownToggle>
             <fa-icon icon="globe"></fa-icon> {{selectedLanguage}}
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <div class="dropdown-header">
-              <h5 class="mb-0">{{ 'HEADER.LANG.SELECT' | translate }}</h5>
+              <h5 class="mb-0 font-weight-bold">{{ 'HEADER.LANG.SELECT' | translate }}</h5>
             </div>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item text-center" *ngFor="let lang of languages" (click)="setLanguage(lang.language)">{{lang.label}}</a>
@@ -49,10 +49,10 @@
       </div>
 
       <!-- ACCOUNT -->
-      <ul class="navbar-nav" *ngIf="(authService.user$ | async)">
-        <li class="nav-item dropdown" ngbDropdown>
+      <div class="navbar-nav mobile-menu-item" *ngIf="(authService.user$ | async)">
+        <div class="nav-item dropdown" ngbDropdown>
 
-          <a class="nav-link dropdown-toggle" ngbDropdownToggle>
+          <a class="nav-link" ngbDropdownToggle>
             {{ 'HEADER.NAV.ACCOUNT' | translate }} (TBB-{{this.candidateService?.getCandNumberStorage()}})
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
@@ -78,8 +78,8 @@
             </a>
           </div>
 
-        </li>
-      </ul>
+        </div>
+      </div>
 
       <!-- LOGIN -->
       <a class="btn btn-link" [routerLink]="['/login']" *ngIf="!(authService.user$ | async)">

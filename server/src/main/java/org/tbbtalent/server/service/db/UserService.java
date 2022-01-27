@@ -44,6 +44,8 @@ public interface UserService {
 
     void logout();
     User getMyUser();
+    User getSystemAdminUser();
+
     void resetPassword(ResetPasswordRequest request);
     void checkResetToken(CheckPasswordResetTokenRequest request);
     void generateResetPasswordToken(SendResetPasswordEmailRequest request);

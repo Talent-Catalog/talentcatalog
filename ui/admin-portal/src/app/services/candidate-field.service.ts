@@ -39,6 +39,9 @@ export class CandidateFieldService {
   private getIeltsScoreType = (value) => {
     return this.getIeltsScore(value);
   }
+  private getOverallTasksStatus = (value) => {
+    return this.getTasksStatus(value);
+  }
 
   private allDisplayableFields = [
     new CandidateFieldInfo("First Name", "user.firstName",
@@ -77,6 +80,8 @@ export class CandidateFieldService {
       this.getDisplayEnum, null),
     new CandidateFieldInfo("Dependants", "numberDependants",
       null, null),
+    new CandidateFieldInfo("Tasks Status", "taskAssignments",
+      this.getOverallTasksStatus, null),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
@@ -227,6 +232,19 @@ export class CandidateFieldService {
       }
     }
     return score;
+  }
+
+  getTasksStatus(value): string {
+    let status: string = null;
+    for (const ta of value) {
+      if (ta.completedDate) {
+        status = 'Completed'
+      } else if (new Date(ta.dueDate) < new Date()) {
+        status = 'Overdue';
+        break;
+      }
+    }
+    return status;
   }
 
 }

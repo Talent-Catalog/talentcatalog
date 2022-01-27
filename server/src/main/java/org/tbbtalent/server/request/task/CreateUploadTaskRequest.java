@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+/*
+ * Copyright (c) 2022 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,22 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
-  padding: 20px 0;
-}
+package org.tbbtalent.server.request.task;
 
-section {
-  margin-bottom: 40px;
+import lombok.Getter;
+import lombok.Setter;
 
-  .section-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 0 1em 0;
-
-    h5 {
-      margin: 0;
-    }
-  }
+@Getter
+@Setter
+public class CreateUploadTaskRequest {
+    private String name;
+    private String description;
+    private Integer daysToComplete;
+    private boolean admin;
 }

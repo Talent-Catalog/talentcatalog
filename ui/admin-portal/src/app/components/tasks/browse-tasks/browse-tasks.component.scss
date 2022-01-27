@@ -1,0 +1,43 @@
+@import "~src/scss/variables";
+
+.admin-panel {
+  justify-content: space-between;
+  //align-items: flex-end;
+  //background-color: #efefef;
+  padding: 1em;
+  max-width: 700px;
+}
+
+.searches {
+  margin: 0 0 2em 0;
+  list-style-type: none;
+  padding: 0;
+  width: 25em;
+}
+
+.searches .form-control {
+  margin-top: 1em;
+}
+
+.searches li {
+  cursor: pointer;
+  position: relative;
+  left: 0;
+  background-color: $color-secondary-lighter;
+  margin: .5em;
+  margin-left: 0;
+  padding: 0.1em .4em;
+  border-radius: 4px;
+}
+.searches li:hover {;
+  background-color: $color-primary-dark;
+  left: .1em;
+}
+.searches li.selected {
+  background-color: $color-secondary-light;
+  color: white;
+}
+.searches li.selected:hover {
+  background-color: $color-primary-darker;
+  color: white;
+}

@@ -22,7 +22,7 @@ import {
   SearchCandidateSourcesRequest
 } from "./base";
 import {isSavedSearch, SavedSearchRef} from "./saved-search";
-import {UpdateCandidateStatusInfo} from "./candidate";
+import {Task, UpdateCandidateStatusInfo} from "./candidate";
 import {environment} from "../../environments/environment";
 
 export enum SearchBy {
@@ -45,6 +45,7 @@ export interface SavedList extends CandidateSource {
   folderjdlink?: string;
   publishedDocLink?: string;
   tbbShortName?: string;
+  tasks?: Task[];
 }
 
 export function externalDocLink(savedList: SavedList): string {

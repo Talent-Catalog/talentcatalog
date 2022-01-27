@@ -55,6 +55,32 @@ export interface Candidate {
   surveyType: SurveyType;
   surveyComment: string;
   status: CandidateStatus;
+  taskAssignments: TaskAssignment[];
+}
+
+export interface TaskAssignment {
+  id: number;
+  abandonedDate: Date;
+  candidateNotes: string;
+  completedDate: Date;
+  dueDate: Date;
+  status: Status;
+  task: Task;
+}
+
+export interface Task {
+  id: number;
+  name: string;
+  description: string;
+  optional: boolean;
+  taskType: TaskType;
+}
+
+export enum TaskType {
+  Question = "Question",
+  Simple = "Simple",
+  Upload = "Upload",
+  YesNoQuestion = "YesNoQuestion"
 }
 
 export enum CandidateStatus {
@@ -68,6 +94,12 @@ export enum CandidateStatus {
   pending = "pending",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
+}
+
+export enum Status {
+  active = "active",
+  inactive = "inactive",
+  deleted = "deleted"
 }
 
 export enum YesNo {

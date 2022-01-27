@@ -16,9 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +27,13 @@ import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.user.CreateUserRequest;
+import org.tbbtalent.server.request.user.UpdateUserRequest;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.PasswordHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,10 +53,20 @@ class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private AuthService authService;
+
     @InjectMocks
     private UserServiceImpl userService;
 
-//    @Test
+    @BeforeEach
+    void authenticate() {
+        User loggedInUser = new User("username", "first", "last",
+                "email@test.com", Role.admin);
+        when(authService.getLoggedInUser()).thenReturn(Optional.of(loggedInUser));
+    }
+
+    @Test
     void createUserAndCountries(){
         assertNotNull(userService);
         assertNotNull(userRepository);
@@ -64,7 +79,7 @@ class UserServiceImplTest {
         assertNotNull(user);
     }
 
-//    @Test
+    @Test
     void testCreateUserSourceCountries(){
         CreateUserRequest request = new CreateUserRequest();
         request.setFirstName("first");
@@ -73,6 +88,8 @@ class UserServiceImplTest {
         request.setEmail("email2@test.com");
         request.setRole(Role.admin);
         request.setPassword("xxxxxxxxxx");
+        request.setReadOnly(false);
+        request.setUsingMfa(false);
 
         when(userRepository.save(any(User.class))).then(returnsFirstArg());
 
@@ -91,6 +108,28 @@ class UserServiceImplTest {
         assertNotNull(testUser2);
         assertThat(testUser2.getSourceCountries()).isNotEmpty();
 
+    }
+
+    @Test
+    void updateUser() {
+        User user = new User("username2", "first", "last", "email2@test.com", Role.admin);
+        user.setId(1L);
+
+        UpdateUserRequest update = new UpdateUserRequest();
+        update.setFirstName("new name");
+        update.setLastName("last");
+        update.setEmail("email2@test.com");
+        update.setRole(Role.admin);
+        update.setStatus(Status.active);
+        update.setReadOnly(false);
+        update.setUsingMfa(false);
+
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).then(returnsFirstArg());
+        User testUserNew = userService.updateUser(user.getId(), update);
+
+        assertNotNull(testUserNew);
+        assertThat(testUserNew.getFirstName()).isEqualTo("new name");
     }
 
 }

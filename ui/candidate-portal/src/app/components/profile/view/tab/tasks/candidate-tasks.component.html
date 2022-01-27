@@ -1,0 +1,98 @@
+<div class="container">
+
+  <app-error [error]="error"></app-error>
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading && selectedTask">
+    <app-candidate-task
+      [selectedTask]="selectedTask"
+      (back)="unSelectTask()">
+    </app-candidate-task>
+  </ng-container>
+
+  <ng-container *ngIf="!loading && !selectedTask">
+    <div>
+      <div class="mb-4">
+        <h3>Your Tasks</h3>
+        <p class="text-muted">Click on task to view details and complete action.</p>
+      </div>
+      <div class="table-responsive-sm">
+        <table class="table table-hover bg-white">
+          <thead class="thead-light">
+          <tr>
+            <th>Task Name</th>
+            <th class="text-center">Required?</th>
+            <th>Due Date</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let ta of ongoingTasks" (click)="selectTask(ta)">
+            <td><div class="link underline">{{ta.task.name}}</div></td>
+            <td class="text-center">
+              <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
+              <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
+            </td>
+            <td class="font-weight-light" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">{{ta.dueDate | date: 'yyyy-MM-dd'}}</td>
+          </tr>
+          <!-- loading -->
+          <tr *ngIf="loading">
+            <td colspan="42">
+              <i class="fas fa-spinner fa-spin"></i> Loading...
+            </td>
+          </tr>
+          <!-- no results -->
+          <tr *ngIf="!loading && !ongoingTasks?.length">
+            <td colspan="42" class="text-center">
+              <span class="text-muted">(no tasks to complete)</span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div>
+      <div class="mb-4">
+        <h3>Completed Tasks</h3>
+      </div>
+      <div class="table-responsive-sm">
+        <table class="table bg-white">
+          <thead class="thead-light">
+          <tr>
+            <th>Task Name</th>
+            <th class="text-center">Required?</th>
+            <th>Completed</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let ta of completedTasks">
+            <td><div>{{ta.task.name}}</div></td>
+            <td class="text-center">
+              <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
+              <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
+            </td>
+            <td>{{ta.completedDate | date: 'yyyy-MM-dd'}}</td>
+          </tr>
+          <!-- loading -->
+          <tr *ngIf="loading">
+            <td colspan="42">
+              <i class="fas fa-spinner fa-spin"></i> Loading...
+            </td>
+          </tr>
+          <!-- no results -->
+          <tr *ngIf="!loading && !completedTasks?.length">
+            <td colspan="42" class="text-center">
+              <span class="text-muted">(no completed tasks)</span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+</div>

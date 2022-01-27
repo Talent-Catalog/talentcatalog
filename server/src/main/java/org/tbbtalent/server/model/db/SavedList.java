@@ -52,6 +52,11 @@ import java.util.Set;
 public class SavedList extends AbstractCandidateSource {
     private static final Logger log = LoggerFactory.getLogger(SavedList.class);
 
+    //TODO JC For now this is just a transient attribute until we have all the database/JPA stuff
+    // for tasks figured out.
+    @Transient
+    private List<TaskImpl> tasks;
+
     /**
      * Url link to corresponding candidate folder on Google Drive, if one exists. 
      */
@@ -327,5 +332,13 @@ public class SavedList extends AbstractCandidateSource {
     @Override
     public Set<SavedList> getUsersCollection(User user) {
         return user.getSharedLists();
+    }
+
+    public List<TaskImpl> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<TaskImpl> tasks) {
+        this.tasks = tasks;
     }
 }

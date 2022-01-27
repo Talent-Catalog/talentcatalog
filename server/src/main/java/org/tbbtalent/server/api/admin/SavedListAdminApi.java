@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -44,7 +44,7 @@ import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/saved-list")
-public class SavedListAdminApi implements 
+public class SavedListAdminApi implements
         ITableApi<SearchSavedListRequest, UpdateSavedListInfoRequest, UpdateSavedListInfoRequest> {
 
     private final CandidateService candidateService;
@@ -53,7 +53,7 @@ public class SavedListAdminApi implements
     private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
 
     @Autowired
-    public SavedListAdminApi(SavedListService savedListService, 
+    public SavedListAdminApi(SavedListService savedListService,
         CandidateService candidateService, CandidateSavedListService candidateSavedListService) {
         this.candidateService = candidateService;
         this.savedListService = savedListService;
@@ -63,21 +63,21 @@ public class SavedListAdminApi implements
     /*
         Standard ITableApi methods
      */
-    
+
     /**
      * Creates a new SavedList unless it is a registered list and a registered list for that
      * job, as defined by {@link SavedList#getSfJoblink()} already exists, in which case
      * nothing new is created, and the existing list is returned.
      * @param request Request defining new list (including whether it is a registered list
      *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
-     * @return The details about the list.  
+     * @return The details about the list.
      * @throws EntityExistsException if a list with this name already exists.
      */
     @Override
     public @NotNull Map<String, Object> create(
             @Valid UpdateSavedListInfoRequest request) throws EntityExistsException {
         SavedList savedList = savedListService.createSavedList(request);
-        
+
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
     }
@@ -97,7 +97,7 @@ public class SavedListAdminApi implements
      * Gets the save list with the given id.
      * @param id Requested id
      * @return The details about the list - but not the contents.
-     * @throws NoSuchObjectException if there is no saved list with this id. 
+     * @throws NoSuchObjectException if there is no saved list with this id.
      */
     @Override
     public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
@@ -107,7 +107,7 @@ public class SavedListAdminApi implements
     }
 
     /**
-     * Returns all saved lists matching the request. 
+     * Returns all saved lists matching the request.
      * <p/>
      * See also {@link #searchPaged} .
      * @param request Defines which lists should be returned. Any paging or
@@ -123,10 +123,10 @@ public class SavedListAdminApi implements
     }
 
     /**
-     * Returns the requested page of saved lists matching the request. 
+     * Returns the requested page of saved lists matching the request.
      * <p/>
-     * See also {@link #search} 
-     * @param request Defines which lists should be returned. Any sorting fields 
+     * See also {@link #search}
+     * @param request Defines which lists should be returned. Any sorting fields
      *                in the request are ignored.
      * @return Requested page of matching SavedLists
      */
@@ -140,13 +140,13 @@ public class SavedListAdminApi implements
 
     @Override
     public @NotNull Map<String, Object> update(
-            long id, @Valid UpdateSavedListInfoRequest request) 
+            long id, @Valid UpdateSavedListInfoRequest request)
             throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SavedList savedList = savedListService.updateSavedList(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
     }
-    
+
     /*
         End standard ITableApi methods
      */
@@ -155,17 +155,17 @@ public class SavedListAdminApi implements
      * Copies the given list to the list specified in the given request (which
      * may be a requested new list).
      * @param sourceListId ID of list to be copied
-     * @param request Defines the target list and also whether copy is a 
+     * @param request Defines the target list and also whether copy is a
      *                replace or an add.
-     * @return The target list                
+     * @return The target list
      * @throws EntityExistsException If a new list needs to be created but the
      * list name already exists.
      * @throws NoSuchObjectException if there is no saved list matching the id
-     * or the target list id. 
+     * or the target list id.
      */
     @PutMapping("/copy/{id}")
     public @NotNull Map<String, Object> copy(@PathVariable("id") long sourceListId,
-            @RequestBody CopySourceContentsRequest request) 
+            @RequestBody CopySourceContentsRequest request)
             throws EntityExistsException, NoSuchObjectException {
 
         SavedList sourceList = this.savedListService.get(sourceListId);
@@ -178,11 +178,11 @@ public class SavedListAdminApi implements
         if (info != null) {
             candidateService.updateCandidateStatus(sourceList, info);
         }
-        
+
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(targetList);
     }
-    
+
     @PutMapping("{id}/create-folder")
     public Map<String, Object> createListFolder(@PathVariable("id") long id)
         throws IOException {
@@ -216,7 +216,7 @@ public class SavedListAdminApi implements
      * @param savedListId ID of published list
      * @return PublishedDocImportReport containing details of the import
      * @throws GeneralSecurityException if there are security problems accessing document storage
-     * @throws IOException if there are problems creating the document 
+     * @throws IOException if there are problems creating the document
      * @throws NoSuchObjectException  if there is no saved list with this id or if published doc
      * is not found (maybe it has been manually deleted).
      */
@@ -228,11 +228,11 @@ public class SavedListAdminApi implements
     }
 
     /**
-     * Create a published external document from the data of candidates in the given list. 
+     * Create a published external document from the data of candidates in the given list.
      * @param savedListId Id of saved list
-     * @param request Request containing details of what is to be published 
-     * @return SavedList containing a link to the published doc as well as to the possibly updated 
-     * published column keys in exportColumns.  
+     * @param request Request containing details of what is to be published
+     * @return SavedList containing a link to the published doc as well as to the possibly updated
+     * published column keys in exportColumns.
      */
     @PutMapping(value = "{id}/publish")
     public Map<String, Object> publish(
@@ -268,5 +268,5 @@ public class SavedListAdminApi implements
     public void updateTbbShortName(@RequestBody UpdateShortNameRequest request) {
         savedListService.updateTbbShortName(request);
     }
-    
+
 }

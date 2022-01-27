@@ -5,20 +5,28 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.springframework.lang.Nullable;
-
-import javax.persistence.*;
+import org.tbbtalent.server.model.db.task.UploadType;
 
 @Entity
 @Table(name = "candidate_attachment")
@@ -35,23 +43,28 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     private String name;
 
     /**
-     * For links {@link AttachmentType#link} and Google docs 
+     * For links {@link AttachmentType#link} and Google docs
      * {@link AttachmentType#googlefile}, the associated url.
-     * 
+     *
      * For S3 files {@link AttachmentType#file}, it is the unique filename
      * generated on S3.
      */
     private String location;
 
     /**
-     * This is recorded just as the suffix of the attachment filename 
+     * This is recorded just as the suffix of the attachment filename
      * (ie name attribute) - eg pdf, doc, jpg etc
      */
     private String fileType;
-    
+
     private boolean migrated;
-    private boolean cv;
     private String textExtract;
+
+    //todo Eventually get rid of this cv attribute altogether - replacing it with just uploadType
+    //For now they duplicate each other
+    private boolean cv;
+    @Enumerated(EnumType.STRING)
+    private UploadType uploadType;
 
     @Transient
     @Nullable
@@ -125,4 +138,12 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     public String getTextExtract() { return textExtract; }
 
     public void setTextExtract(String textExtract) { this.textExtract = textExtract; }
+
+    public UploadType getUploadType() {
+        return uploadType;
+    }
+
+    public void setUploadType(UploadType uploadType) {
+        this.uploadType = uploadType;
+    }
 }

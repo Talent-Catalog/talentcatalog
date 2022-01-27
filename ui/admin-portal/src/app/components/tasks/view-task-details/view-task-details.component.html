@@ -1,0 +1,33 @@
+<div class="card">
+  <!--  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>-->
+  <div class="card-body min-height-150 align-items-center">
+    <div class="d-flex pt-3">
+      <div class="w-75 align-self-center pr-4">
+        <div class="mb-1">
+          <strong>{{task?.name}} </strong><span>- {{task?.taskType}}</span>
+        </div>
+        <div *ngIf="task.uploadType" class="small">
+            File: <span>{{uploadTypeString}}</span>
+        </div>
+        <div *ngIf="task.uploadType" class="small">
+          Folder: <span>{{task.uploadSubfolderName}}</span>
+        </div>
+      </div>
+      <div class="w-25">
+        <div class="w-100" *ngIf="task.daysToComplete">Days to complete: <span>{{task.daysToComplete}}</span></div>
+        <div class="w-100">Required? <span>{{task.optional ? 'No' : 'Yes'}}</span></div>
+      </div>
+    </div>
+    <hr>
+    <p class="font-italic mb-0" *ngIf="task?.description">{{task.description}}</p>
+  </div>
+
+
+  <div class="card-footer">
+    <div class="w-100">
+      <app-updated-by [object]="task"></app-updated-by>
+    </div>
+  </div>
+
+
+</div>

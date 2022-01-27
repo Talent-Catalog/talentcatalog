@@ -103,6 +103,7 @@ import {SalesforceStageComponent} from "../../util/salesforce-stage/salesforce-s
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {PublishedDocColumnSelectorComponent} from "../../util/published-doc-column-selector/published-doc-column-selector.component";
+import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -1535,6 +1536,19 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.updatingStatuses = false;
         });
     }
+  }
 
+  assignTasks() {
+    const modal = this.modalService.open(AssignTasksListComponent, {scrollable: true});
+    if (isSavedList(this.candidateSource)) {
+      modal.componentInstance.setTasks(this.candidateSource);
+    }
+
+    modal.result
+      .then(
+        () => this.loadSelectedFields(),
+        error => this.error = error
+      )
+      .catch();
   }
 }

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2022 Talent Beyond Boundaries.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -21,13 +21,10 @@
   <app-loading [loading]="loading"></app-loading>
 
   <ng-container *ngIf="!loading">
-      <div>
-        <app-download-cv></app-download-cv>
-      </div>
-
-      <div class="text-center">
-        <h5>TBB-{{candidate?.candidateNumber}}</h5>
-      </div>
+    <div class="d-sm-flex justify-content-between">
+      <h3>TBB-{{candidate?.candidateNumber}}</h3>
+      <app-download-cv></app-download-cv>
+    </div>
 
     <!-- CONTACT -->
     <section>
@@ -239,7 +236,7 @@
 
       <div class="card">
 
-        <ng-container *ngFor="let occupation of candidate.candidateOccupations; let i = index;">
+        <ng-container *ngFor="let occupation of candidate?.candidateOccupations; let i = index;">
 
           <app-candidate-occupation-card [candidateOccupation]="occupation"
                                          [occupations]="occupations"
@@ -270,7 +267,7 @@
 
       <div class="card">
 
-        <ng-container *ngFor="let experience of candidate.candidateJobExperiences; let i = index;">
+        <ng-container *ngFor="let experience of candidate?.candidateJobExperiences; let i = index;">
           <app-candidate-job-experience-card [experience]="experience"
                                              [countries]="countries"
                                              [preview]="true">
@@ -300,7 +297,7 @@
 
       <div class="card">
 
-        <ng-container *ngFor="let education of candidate.candidateEducations; let i = index;">
+        <ng-container *ngFor="let education of candidate?.candidateEducations; let i = index;">
           <app-candidate-education-card [candidateEducation]="education"
                                         [countries]="countries"
                                         [majors]="majors"
@@ -330,7 +327,7 @@
       </div>
 
       <div class="card">
-        <ng-container *ngFor="let certification of candidate.candidateCertifications; let i = index;">
+        <ng-container *ngFor="let certification of candidate?.candidateCertifications; let i = index;">
           <app-candidate-certification-card [certificate]="certification"
                                             [preview]="true">
           </app-candidate-certification-card>
@@ -358,7 +355,7 @@
 
       <div class="card">
 
-        <ng-container *ngFor="let language of candidate.candidateLanguages; let i = index;">
+        <ng-container *ngFor="let language of candidate?.candidateLanguages; let i = index;">
           <app-candidate-language-card [language]="language"
                                        [languages]="languages"
                                        [languageLevels]="languageLevels"

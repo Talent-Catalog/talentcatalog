@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -102,16 +102,16 @@ public class CandidateAttachmentPortalApi {
                 attachment, response.getOutputStream());
         response.flushBuffer();
     }
-    
+
     /**
      * Upload an attachment associated with the currently logged in candidate and
      * creates a CandidateAttachment record on the database.
      * <p/>
      * Processes uploaded file and then uploads it again to Google Drive.
      * This replaces the old {@link #createCandidateAttachment}
-     * @param cv True if the attachment is a CV (in which case its text is 
+     * @param cv True if the attachment is a CV (in which case its text is
      *           extracted for keywords).
-     * @param file Attachment file           
+     * @param file Attachment file
      * @return Candidate attachment
      */
     @PostMapping("upload")
@@ -131,7 +131,7 @@ public class CandidateAttachmentPortalApi {
                 this.candidateAttachmentService.updateCandidateAttachment(id, request);
         return candidateAttachmentDto().build(candidateAttachment);
     }
-    
+
 
     private DtoBuilder candidateAttachmentDto() {
         return new DtoBuilder()
@@ -144,7 +144,8 @@ public class CandidateAttachmentPortalApi {
                 .add("cv")
                 .add("createdBy", userDto())
                 .add("createdDate")
-                ;
+                .add("uploadType")
+            ;
     }
 
     private DtoBuilder userDto() {
