@@ -21,7 +21,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
@@ -30,7 +29,7 @@ import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.UserService;
 
-@SpringBootTest
+//@SpringBootTest
 class TaskAssignmentRepositoryTest {
 
     private Candidate assignedCandidate;
@@ -70,7 +69,7 @@ class TaskAssignmentRepositoryTest {
         taskRepository.delete(task);
     }
 
-    @Test
+    //@Test
     void create() {
         taskAssignment = new TaskAssignmentImpl();
         taskAssignment.setTask(task);
