@@ -6,8 +6,9 @@
 </div>
 
 <div class="card" *ngIf="!loading">
-  <div class="card-header">
+  <div class="card-header d-flex justify-content-between">
     <span>Candidate Tasks: Ongoing</span>
+    <span>Comment?</span>
     <div class="float-right" *ngIf="editable">
       <button class="btn btn-primary btn-sm" (click)="assignTask()">
         <i class="fas fa-plus"></i> Assign task
@@ -26,8 +27,8 @@
           <div [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date: 'yyyy-MM-dd'}}</div>
         </div>
         <div class="d-flex w-50 justify-content-between">
-          <div *ngIf="ta.candidateNotes">
-            Comment: <span>{{ta.candidateNotes}}</span>
+          <div>
+            <span *ngIf="ta.candidateNotes">{{ta.candidateNotes}}</span>
           </div>
           <div class="float-right text-right" *ngIf="editable">
             <button class="btn btn-default" (click)="editTaskAssignment(ta)">
@@ -45,8 +46,10 @@
 <hr/>
 
 <div class="card" *ngIf="!loading">
-  <div class="card-header">
-    Candidate Tasks: Completed
+  <div class="card-header card-header d-flex">
+    <span class="w-50">Candidate Tasks: Completed</span>
+    <span>Comment?</span>
+    <span></span>
   </div>
 
   <div class="card-body">
@@ -59,11 +62,16 @@
           <p class="mb-0">{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
           <div>Completed: {{ta.completedDate | date: 'yyyy-MM-dd'}}</div>
         </div>
-        <div *ngIf="editable" class=" float-right text-right">
-          <button class="btn btn-default" (click)="editTaskAssignment(ta)">
-            <i class="fas fa-edit"></i></button>
-          <button class="btn btn-default" (click)="viewResponse(ta)">
-            <i class="far fa-eye"></i></button>
+        <div class="d-flex w-50 justify-content-between">
+          <div>
+            <span *ngIf="ta.candidateNotes">{{ta.candidateNotes}}</span>
+          </div>
+          <div *ngIf="editable" class=" float-right text-right">
+            <button class="btn btn-default" (click)="editTaskAssignment(ta)">
+              <i class="fas fa-edit"></i></button>
+            <button class="btn btn-default" (click)="viewResponse(ta)">
+              <i class="far fa-eye"></i></button>
+          </div>
         </div>
       </div>
       <hr>
