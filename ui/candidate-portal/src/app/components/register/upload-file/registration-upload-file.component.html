@@ -17,15 +17,15 @@
 <div class="container">
 
     <div id="upload">
-      <ngb-accordion #a="ngbAccordion" activeIds="upload-cv">
+      <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds">
         <ngb-panel id="upload-cv">
           <ng-template ngbPanelHeader let-opened="opened">
             <div class="d-flex align-items-center justify-content-between">
               <div>
-                <strong>{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}</strong>
+                <strong class="link underline">{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}</strong>
                 <p class="mb-0 small">{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}</p>
               </div>
-              <button ngbPanelToggle class="btn btn-link p-0 ml-4">
+              <button ngbPanelToggle class="btn btn-link p-0 ml-4 stretched-link">
                 <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
                 <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
               </button>
@@ -46,10 +46,10 @@
           <ng-template ngbPanelHeader let-opened="opened">
             <div class="d-flex align-items-center justify-content-between">
               <div>
-                <strong>{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
+                <strong class="link underline">{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
                 <p class="mb-0 small">{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
               </div>
-              <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+              <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none stretched-link">
                 <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
                 <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
               </button>

@@ -58,9 +58,10 @@
     <div>
       <div class="mb-4">
         <h3>Completed Tasks</h3>
+        <p class="text-muted">Click on task to view details.</p>
       </div>
       <div class="table-responsive-sm">
-        <table class="table bg-white">
+        <table class="table table-hover bg-white">
           <thead class="thead-light">
           <tr>
             <th>Task Name</th>
@@ -70,7 +71,7 @@
           </thead>
 
           <tbody>
-          <tr *ngFor="let ta of completedTasks">
+          <tr *ngFor="let ta of completedTasks" (click)="selectTask(ta)">
             <td><div>{{ta.task.name}}</div></td>
             <td class="text-center">
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>

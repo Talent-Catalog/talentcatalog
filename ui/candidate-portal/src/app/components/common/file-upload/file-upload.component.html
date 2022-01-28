@@ -27,7 +27,9 @@
   <span>
     <button class="btn btn-primary" [disabled]="uploading" (click)="input.click()">
       <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE.FILE' | translate }}</ng-container>
-      <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
+      <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}
+        <fa-icon [spin]="true" icon="spinner"></fa-icon>
+      </ng-container>
     </button>
   </span>
 </div>
