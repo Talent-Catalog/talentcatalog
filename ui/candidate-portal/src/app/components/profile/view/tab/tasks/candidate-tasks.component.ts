@@ -1,4 +1,4 @@
-import {Component, Input, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate, Status, TaskAssignment} from "../../../../../model/candidate";
 
 @Component({
@@ -21,11 +21,12 @@ export class CandidateTasksComponent implements OnInit {
 
   get ongoingTasks() {
     return this.candidate?.taskAssignments.filter(t =>
-      t.completedDate == null && t.status === Status.active);
+      t.completedDate == null && t.abandonedDate == null && t.status === Status.active);
   }
 
-  get completedTasks() {
-    return this.candidate?.taskAssignments.filter(t => t.completedDate != null);
+  get completedOrAbandonedTasks() {
+    return this.candidate?.taskAssignments.filter(t =>
+      (t.completedDate != null || t.abandonedDate != null) && t.status === Status.active);
   }
 
   isOverdue(ta: TaskAssignment) {

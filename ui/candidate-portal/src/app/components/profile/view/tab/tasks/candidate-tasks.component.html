@@ -57,7 +57,7 @@
 
     <div>
       <div class="mb-4">
-        <h3>Completed Tasks</h3>
+        <h3>Completed or Abandoned Tasks</h3>
         <p class="text-muted">Click on task to view details.</p>
       </div>
       <div class="table-responsive-sm">
@@ -67,17 +67,19 @@
             <th>Task Name</th>
             <th class="text-center">Required?</th>
             <th>Completed</th>
+            <th>Abandoned</th>
           </tr>
           </thead>
 
           <tbody>
-          <tr *ngFor="let ta of completedTasks" (click)="selectTask(ta)">
+          <tr *ngFor="let ta of completedOrAbandonedTasks" (click)="selectTask(ta)">
             <td><div>{{ta.task.name}}</div></td>
             <td class="text-center">
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
               <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
             </td>
             <td>{{ta.completedDate | date: 'yyyy-MM-dd'}}</td>
+            <td>{{ta.abandonedDate | date: 'yyyy-MM-dd'}}</td>
           </tr>
           <!-- loading -->
           <tr *ngIf="loading">
@@ -86,7 +88,7 @@
             </td>
           </tr>
           <!-- no results -->
-          <tr *ngIf="!loading && !completedTasks?.length">
+          <tr *ngIf="!loading && !completedOrAbandonedTasks?.length">
             <td colspan="42" class="text-center">
               <span class="text-muted">(no completed tasks)</span>
             </td>
