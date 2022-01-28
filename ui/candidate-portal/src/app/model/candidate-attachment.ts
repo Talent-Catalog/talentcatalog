@@ -34,6 +34,8 @@ export enum UploadType {
   degreeTranscript = "degreeTranscript",
   degreeTranscriptTrans = "degreeTranscriptTrans",
   englishExam = "englishExam",
+  licencing = "licencing",
+  licencingTrans = "licencingTrans",
   offer = "offer",
   otherId = "otherId",
   otherIdTrans = "otherIdTrans",

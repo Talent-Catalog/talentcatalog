@@ -32,6 +32,8 @@ public enum UploadType {
     degreeTranscript,
     degreeTranscriptTrans,
     englishExam,
+    licencing,
+    licencingTrans,
     offer,
     otherId,
     otherIdTrans,
