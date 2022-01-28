@@ -47,9 +47,9 @@
   <div class="card">
     <form [formGroup]="form" (submit)="submitComment()">
       <div class="form-group">
-        <div class="form-inline">
-          <label class="mb-0 mr-2" for="abandoned">Are you unable to complete this task? </label>
-          <input class="form-control" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
+        <div class="form-check-inline">
+          <label class="form-check-label mb-0 mr-2" for="abandoned">Are you unable to complete this task? </label>
+          <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
         </div>
         <div>
           <small class="text-muted">If checked a comment must be added to provide reason why this task can't be completed.</small>
