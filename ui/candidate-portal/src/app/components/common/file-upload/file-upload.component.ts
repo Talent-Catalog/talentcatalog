@@ -88,19 +88,20 @@ export class FileUploadComponent implements OnInit {
     }
 
     const tokens = file.name.split('.');
-    const validExtensions = [
-      'jpg',
-      'png',
-      'pdf',
-      'doc',
-      'docx',
-      'txt',
-    ];
-    const ext = tokens[tokens.length - 1].toLowerCase();
-    if (!validExtensions.includes(ext)) {
-      this.error = 'Unsupported file extension. Please upload a file with one of the following extensions: ' + validExtensions.join(', ');
-      return false;
-    }
+    // todo make valid extensions more flexible for other component uses (e.g. CV uploads shouldn't be videos)
+    // const validExtensions = [
+    //   'jpg',
+    //   'png',
+    //   'pdf',
+    //   'doc',
+    //   'docx',
+    //   'txt',
+    // ];
+    // const ext = tokens[tokens.length - 1].toLowerCase();
+    // if (!validExtensions.includes(ext)) {
+    //   this.error = 'Unsupported file extension. Please upload a file with one of the following extensions: ' + validExtensions.join(', ');
+    //   return false;
+    // }
 
     return true;
   }
