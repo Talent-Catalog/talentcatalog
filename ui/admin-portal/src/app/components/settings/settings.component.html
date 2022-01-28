@@ -98,6 +98,15 @@
         </app-search-external-links>
       </ng-template>
     </ng-container>
+
+    <!-- Tasks -->
+    <ng-container ngbNavItem="Tasks">
+      <a ngbNavLink>Tasks</a>
+      <ng-template ngbNavContent>
+        <app-search-tasks [loggedInUser]="loggedInUser">
+        </app-search-tasks>
+      </ng-template>
+    </ng-container>
   </ng-container>
 
 </nav>

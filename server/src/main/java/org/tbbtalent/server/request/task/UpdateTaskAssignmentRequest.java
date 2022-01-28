@@ -55,6 +55,12 @@ public class UpdateTaskAssignmentRequest {
     boolean complete;
 
     /**
+     * If task is set as complete or not (admin portal)
+     */
+    @Nullable
+    boolean abandoned;
+
+    /**
      * If task has some notes provided by the candidate
      */
     @Nullable

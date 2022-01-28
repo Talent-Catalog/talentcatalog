@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {TaskAssignment} from "../../../../../../../model/candidate";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {forkJoin, Observable} from "rxjs";
 import {CandidateAttachment} from "../../../../../../../model/candidate-attachment";
 import {
@@ -28,7 +28,22 @@ export class CandidateTaskComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       comment: [this.selectedTask.candidateNotes],
+      abandoned: [this.isAbandoned]
     });
+
+    // Set comment as required field if abandon is checked
+    this.form.get('abandoned').valueChanges.subscribe(abandoned => {
+      if (abandoned) {
+        this.form.get('comment').setValidators([Validators.required])
+      } else {
+        this.form.get('comment').clearValidators();
+      }
+      this.form.controls['comment'].updateValueAndValidity()
+    });
+  }
+
+  get isAbandoned() {
+    return this.selectedTask.abandonedDate != null;
   }
 
   startServerUpload($event) {
@@ -79,7 +94,8 @@ export class CandidateTaskComponent implements OnInit {
     this.saving = true;
     const submitComment: UpdateTaskAssignmentRequest = {
       taskAssignmentId: this.selectedTask.id,
-      candidateNotes: this.form.value.comment
+      candidateNotes: this.form.value.comment,
+      abandoned: this.form.value.abandoned
     }
     this.taskAssignmentService.addComment(this.selectedTask.id, submitComment).subscribe(
       (taskAssignment: TaskAssignment) => {
