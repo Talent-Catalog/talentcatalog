@@ -53,11 +53,13 @@ export class FileUploadComponent implements OnInit {
 
   error: any;
   hover: boolean;
+  maxUploadSize: number;
 
   constructor(private modalService: NgbModal) {
   }
 
   ngOnInit() {
+    this.maxUploadSize = 10485790;
   }
 
   handleFileChanged(event: any, type: string) {
@@ -69,6 +71,9 @@ export class FileUploadComponent implements OnInit {
 
       for (const file of files) {
         if (!this.validFile(file)) {
+          return;
+        }
+        if (!this.validFileSize(file)) {
           return;
         }
       }
@@ -98,6 +103,15 @@ export class FileUploadComponent implements OnInit {
     }
 
     return true;
+  }
+
+  validFileSize(file: File): boolean {
+    if (file.size > this.maxUploadSize) {
+      this.error = "Max file size exceeded, please reduce file size to under 10MB."
+      return false;
+    } else {
+      return true;
+    }
   }
 
 }
