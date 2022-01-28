@@ -235,12 +235,23 @@ export class CandidateFieldService {
   }
 
   getTasksStatus(value): string {
-    let status: string = null;
+    let status: string;
+    // If there are na task assignments, then the status is empty.
+    // Otherwise default to completed before going through for loop heirachy below.
+    if (value.length > 0) {
+      status = 'Completed';
+    } else {
+      status = null;
+    }
     for (const ta of value) {
-      if (ta.completedDate) {
-        status = 'Completed'
-      } else if (new Date(ta.dueDate) < new Date()) {
+      if (new Date(ta.dueDate) < new Date()) {
         status = 'Overdue';
+        break;
+      } else if (ta.abandonedDate) {
+        status = 'Abandoned'
+        break;
+      } else if (!ta.completedDate) {
+        status = null;
         break;
       }
     }

@@ -25,7 +25,8 @@ export interface UpdateTaskAssignmentRequest {
   dueDate?: Date,
   completedDate?: Date,
   complete?: boolean,
-  candidateNotes?: string
+  candidateNotes?: string,
+  abandoned?: boolean
 }
 
 @Injectable({

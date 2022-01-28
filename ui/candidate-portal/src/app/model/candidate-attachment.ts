@@ -24,8 +24,33 @@ export enum AttachmentType {
 }
 
 export enum UploadType {
-  cv = 'cv',
-  other = 'other',
+  conductEmployer = "conductEmployer",
+  conductEmployerTrans = "conductEmployerTrans",
+  conductMinistry = "conductMinistry",
+  conductMinistryTrans = "conductMinistryTrans",
+  cos = "cos",
+  cv = "cv",
+  degree = "degree",
+  degreeTranscript = "degreeTranscript",
+  degreeTranscriptTrans = "degreeTranscriptTrans",
+  englishExam = "englishExam",
+  licencing = "licencing",
+  licencingTrans = "licencingTrans",
+  offer = "offer",
+  otherId = "otherId",
+  otherIdTrans = "otherIdTrans",
+  passport = "passport",
+  policeCheck = "policeCheck",
+  policeCheckTrans = "policeCheckTrans",
+  proofAddress = "proofAddress",
+  proofAddressTrans = "proofAddressTrans",
+  references = "references",
+  residenceAttest = "residenceAttest",
+  residenceAttestTrans = "residenceAttestTrans",
+  studiedInEnglish = "studiedInEnglish",
+  other = "other",
+  vaccination = "vaccination",
+  vaccinationTran = "vaccinationTrans"
 }
 
 

@@ -117,6 +117,11 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         if (request.isComplete()) {
             taskAssignment.setCompletedDate(OffsetDateTime.now());
         }
+        if (request.isAbandoned()) {
+            taskAssignment.setAbandonedDate(OffsetDateTime.now());
+        } else {
+            taskAssignment.setAbandonedDate(null);
+        }
         return taskAssignmentRepository.save(taskAssignment);
     }
 
