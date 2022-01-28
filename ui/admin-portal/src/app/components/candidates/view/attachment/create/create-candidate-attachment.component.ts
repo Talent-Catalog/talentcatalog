@@ -20,10 +20,10 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
 import {
   CandidateAttachment,
-  CandidateAttachmentRequest,
-  UploadType
+  CandidateAttachmentRequest
 } from "../../../../../model/candidate-attachment";
 import {forkJoin, Observable} from "rxjs";
+import {UploadType} from "../../../../../model/candidate";
 
 @Component({
   selector: 'app-create-candidate-attachment',

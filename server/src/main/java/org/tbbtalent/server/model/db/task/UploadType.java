@@ -22,13 +22,29 @@ package org.tbbtalent.server.model.db.task;
  * @author John Cameron
  */
 public enum UploadType {
+    conductEmployer,
+    conductEmployerTrans,
+    conductMinistry,
+    conductMinistryTrans,
+    cos,
     cv,
     degree,
     degreeTranscript,
     degreeTranscriptTrans,
+    englishExam,
+    offer,
+    otherId,
+    otherIdTrans,
     passport,
+    policeCheck,
+    policeCheckTrans,
+    proofAddress,
+    proofAddressTrans,
+    references,
+    residenceAttest,
+    residenceAttestTrans,
     studiedInEnglish,
-    other
-
-    //TODO JC See Sarah's list of doc types
+    other,
+    vaccination,
+    vaccinationTrans
 }

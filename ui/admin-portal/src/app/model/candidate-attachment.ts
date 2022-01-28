@@ -15,16 +15,12 @@
  */
 
 import {User} from './user';
+import {UploadType} from "./candidate";
 
 export enum AttachmentType {
   googlefile = 'googlefile',
   file = 'file',
   link = 'link'
-}
-
-export enum UploadType {
-  cv = 'cv',
-  other = 'other',
 }
 
 export interface CandidateAttachment {
