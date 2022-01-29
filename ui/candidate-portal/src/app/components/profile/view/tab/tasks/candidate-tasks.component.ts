@@ -1,5 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Candidate, Status, TaskAssignment} from "../../../../../model/candidate";
+import {
+  Candidate,
+  Status,
+  TaskAssignment,
+  taskAssignmentSort
+} from "../../../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-tasks',
@@ -19,14 +24,16 @@ export class CandidateTasksComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  get ongoingTasks() {
-    return this.candidate?.taskAssignments.filter(t =>
+  get ongoingTasks(): TaskAssignment[] {
+    const filter = this.candidate?.taskAssignments.filter(t =>
       t.completedDate == null && t.abandonedDate == null && t.status === Status.active);
+    return filter ? filter.sort(taskAssignmentSort) : filter;
   }
 
-  get completedOrAbandonedTasks() {
-    return this.candidate?.taskAssignments.filter(t =>
+  get completedOrAbandonedTasks(): TaskAssignment[] {
+    const filter: TaskAssignment[] = this.candidate?.taskAssignments.filter(t =>
       (t.completedDate != null || t.abandonedDate != null) && t.status === Status.active);
+    return filter ? filter.sort(taskAssignmentSort) : filter;
   }
 
   isOverdue(ta: TaskAssignment) {
