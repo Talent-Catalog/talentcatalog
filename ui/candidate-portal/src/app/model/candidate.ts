@@ -23,6 +23,7 @@ import {CandidateLanguage} from "./candidate-language";
 import {EducationLevel} from "./education-level";
 import {User} from "./user";
 import {SurveyType} from "./survey-type";
+import {toDateOnly} from "../util/date";
 
 export interface Candidate {
   id: number;
@@ -67,6 +68,44 @@ export interface TaskAssignment {
   status: Status;
   task: Task;
 }
+
+/**
+ * Defines standard sort for Task Assignments.
+ * <p/>
+ * Basically ongoing task assignments, come before completed (or abandoned) ones.
+ * Then ongoing task assignments are sorted by due date (ascending order), and then alphabetically
+ * for a given due date.
+ * Completed (or abandoned) task assignments are just sorted alphabetically by task name.
+ * @param a Task assignment
+ * @param b Another task assignment
+ * @return 1, 0 or -1 for greater, equal or less
+ */
+export function taskAssignmentSort(a: TaskAssignment, b: TaskAssignment) {
+  function isOngoingTaskAssignment(ta: TaskAssignment) {
+    return ta.completedDate == null && ta.abandonedDate == null;
+  }
+
+  if (!isOngoingTaskAssignment(a) && !isOngoingTaskAssignment(b)) {
+    //Neither task assignment is ongoing, just sort by task name
+    return a.task.name.localeCompare(b.task.name);
+  } else if (isOngoingTaskAssignment(a) && isOngoingTaskAssignment(b)) {
+    //Both task assignments are ongoing, sort by due date, then task name
+    //Strip any time off dueDate
+    const aDateOnly = toDateOnly(a.dueDate);
+    const bDateOnly = toDateOnly(b.dueDate);
+    if (aDateOnly.getTime() === bDateOnly.getTime()) {
+      //Dates are the same, sort by task name
+      return a.task.name.localeCompare(b.task.name)
+    } else {
+      //Dates are different, sort by date - most recent first
+      return aDateOnly > bDateOnly ? 1 : -1;
+    }
+  } else {
+    //One is ongoing the other is not. The ongoing one comes first
+    return isOngoingTaskAssignment(a) ? 1 : -1;
+  }
+}
+
 
 export interface Task {
   id: number;
