@@ -29,7 +29,7 @@
 
           <tbody>
           <tr *ngFor="let ta of ongoingTasks" (click)="selectTask(ta)">
-            <td><div class="link underline">{{ta.task.name}}</div></td>
+            <td><div class="link underline">{{displayTaskName(ta)}}</div></td>
             <td class="text-center">
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
               <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
@@ -73,7 +73,7 @@
 
           <tbody>
           <tr *ngFor="let ta of completedOrAbandonedTasks" (click)="selectTask(ta)">
-            <td><div>{{ta.task.name}}</div></td>
+            <td><div>{{displayTaskName(ta)}}</div></td>
             <td class="text-center">
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
               <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
