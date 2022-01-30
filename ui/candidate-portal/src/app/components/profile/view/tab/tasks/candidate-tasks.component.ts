@@ -49,4 +49,7 @@ export class CandidateTasksComponent implements OnInit {
     this.refresh.emit();
   }
 
+  displayTaskName(ta: TaskAssignment): string {
+    return ta.task.taskType + " " + ta.task.name;
+  }
 }

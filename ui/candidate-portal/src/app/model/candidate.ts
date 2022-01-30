@@ -78,7 +78,7 @@ export interface TaskAssignment {
  * Completed (or abandoned) task assignments are just sorted alphabetically by task name.
  * @param a Task assignment
  * @param b Another task assignment
- * @return 1, 0 or -1 for greater, equal or less
+ * @return 1, 0 or -1 for "a" greater, equal or less than "b"
  */
 export function taskAssignmentSort(a: TaskAssignment, b: TaskAssignment) {
   function isOngoingTaskAssignment(ta: TaskAssignment) {
