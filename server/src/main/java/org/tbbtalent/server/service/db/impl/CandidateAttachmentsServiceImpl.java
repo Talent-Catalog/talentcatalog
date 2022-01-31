@@ -433,6 +433,10 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             if (subfolder == null) {
                 subfolder = fileSystemService.createFolder(
                     candidateDataDrive, parentFolder, subfolderName);
+
+                //We make upload subfolders viewable by anyone with link so that they and their
+                //contents can be shared externally (eg with migration agents).
+                fileSystemService.publishFolder(subfolder);
             }
 
             //Set parentFolder to subfolder
