@@ -99,6 +99,13 @@ public interface FileSystemService {
     void publishFile(@NonNull GoogleFileSystemFile file) throws IOException;
 
     /**
+     * Makes the given folder and its contents viewable by anyone.
+     * @param folder Describes folder to be published
+     * @throws IOException If there was a problem changing the folders's accessibility.
+     */
+    void publishFolder(@NonNull GoogleFileSystemFolder folder) throws IOException;
+
+    /**
      * Renames the given file
      * @param file Description of file, including id or url, plus its new name
      * @throws IOException If there was a problem renaming the file

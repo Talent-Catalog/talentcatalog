@@ -34,6 +34,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemBaseEntity;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -142,9 +143,9 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
                 .executeMediaAndDownloadTo(out);
     }
 
-    @Override
-    public void publishFile(@NonNull GoogleFileSystemFile file) throws IOException {
-        String id = file.getId();
+    private void publishFileOrFolder(@NonNull GoogleFileSystemBaseEntity fileOrFolder)
+        throws IOException {
+        String id = fileOrFolder.getId();
 
         Permission anyoneReadPermission = new Permission()
             .setType("anyone")
@@ -153,6 +154,16 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         googleDriveService.permissions().create(id, anyoneReadPermission)
             .setSupportsAllDrives(true)
             .execute();
+    }
+
+    @Override
+    public void publishFile(@NonNull GoogleFileSystemFile file) throws IOException {
+        publishFileOrFolder(file);
+    }
+
+    @Override
+    public void publishFolder(@NonNull GoogleFileSystemFolder folder) throws IOException {
+        publishFileOrFolder(folder);
     }
 
     @Override
