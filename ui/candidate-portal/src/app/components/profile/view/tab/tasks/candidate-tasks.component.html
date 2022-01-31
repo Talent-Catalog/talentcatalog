@@ -65,7 +65,6 @@
           <thead class="thead-light">
           <tr>
             <th>Task Name</th>
-            <th class="text-center">Required?</th>
             <th>Completed</th>
             <th>Abandoned</th>
           </tr>
@@ -74,12 +73,8 @@
           <tbody>
           <tr *ngFor="let ta of completedOrAbandonedTasks" (click)="selectTask(ta)">
             <td><div>{{displayTaskName(ta)}}</div></td>
-            <td class="text-center">
-              <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
-              <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
-            </td>
-            <td>{{ta.completedDate | date: 'yyyy-MM-dd'}}</td>
-            <td>{{ta.abandonedDate | date: 'yyyy-MM-dd'}}</td>
+            <td class="date-size">{{ta.completedDate | date: 'yyyy-MM-dd'}}</td>
+            <td class="date-size">{{ta.abandonedDate | date: 'yyyy-MM-dd'}}</td>
           </tr>
           <!-- loading -->
           <tr *ngIf="loading">
