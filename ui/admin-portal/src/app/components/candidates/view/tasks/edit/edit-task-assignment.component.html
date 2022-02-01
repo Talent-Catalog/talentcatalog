@@ -58,13 +58,13 @@
       <!-- COMPLETED DATE -->
       <div *ngIf="this.form.value.complete">
         <div class="form-group">
-          <label for="completedDate">Completed date (if left blank set to today's date)</label>
-          <app-date-picker id="completedDate" [control]="form.controls.completedDate" [allowPast]="false"></app-date-picker>
+          <label for="completedDate">Completed date <span class="small">(if left blank set to today's date)</span></label>
+          <app-date-picker id="completedDate" [control]="form.controls.completedDate" [allowFuture]="false"></app-date-picker>
         </div>
       </div>
 
       <!-- ABANDONED -->
-      <div *ngIf="!isComplete" class="form-group">
+      <div class="form-group">
         <div class="form-check-inline">
           <label class="form-check-label" for="abandoned">Is this task assignment abandoned?</label>
           <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
