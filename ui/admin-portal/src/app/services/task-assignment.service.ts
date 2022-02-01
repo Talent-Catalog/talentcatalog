@@ -22,6 +22,7 @@ export interface UpdateTaskAssignmentRequest {
   dueDate?: Date,
   completedDate?: Date,
   complete?: boolean,
+  abandoned?: boolean,
   candidateNotes?: string
 }
 

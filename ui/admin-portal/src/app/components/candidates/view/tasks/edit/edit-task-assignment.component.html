@@ -38,7 +38,7 @@
     <form [formGroup]="form">
 
       <!-- DUE DATE -->
-      <div *ngIf="!isComplete">
+      <div *ngIf="!isComplete && !isAbandoned">
         <div class="form-group">
           <label for="dueDate">Due date</label>
           <app-date-picker id="dueDate" [control]="form.controls.dueDate" [allowPast]="false"></app-date-picker>
@@ -47,24 +47,36 @@
 
 
 
+      <!-- COMPLETED -->
+      <div class="form-group">
+        <div class="form-check-inline">
+          <label class="form-check-label" for="complete">Is this task assignment completed?</label>
+          <input class="form-check-input" id="complete" [formControlName]="'complete'" type="checkbox">
+        </div>
+      </div>
+
       <!-- COMPLETED DATE -->
-      <div *ngIf="isComplete">
+      <div *ngIf="this.form.value.complete">
         <div class="form-group">
-          <label for="completedDate">Completed date</label>
+          <label for="completedDate">Completed date (if left blank set to today's date)</label>
           <app-date-picker id="completedDate" [control]="form.controls.completedDate" [allowPast]="false"></app-date-picker>
         </div>
       </div>
 
-      <!-- COMPLETED -->
-      <div class="form-group">
-        <div class="form-inline">
-          <label for="complete">Is this task assignment completed?</label>
-          <input class="form-control" id="complete" [formControlName]="'complete'" type="checkbox">
-        </div>
-        <div>
-          <small class="text-muted">The completed date will be set from today's date. If unchecked, it will become active and use it's previous due date.</small>
+      <!-- ABANDONED -->
+      <div *ngIf="!isComplete" class="form-group">
+        <div class="form-check-inline">
+          <label class="form-check-label" for="abandoned">Is this task assignment abandoned?</label>
+          <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
         </div>
       </div>
+
+<!--      &lt;!&ndash; ABANDONED DATE &ndash;&gt;-->
+<!--      <div *ngIf="isAbandoned" class="form-group">-->
+<!--        <div>Abandoned Date:-->
+<!--          <span class="font-weight-light">{{this.form.value.abandonedDate | date}}</span>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"

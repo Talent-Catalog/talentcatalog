@@ -45,9 +45,12 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
         this.candidate = candidate;
         if (this.candidate.taskAssignments) {
           this.ongoingTasks = this.candidate.taskAssignments.filter(t =>
-            t.completedDate == null && t.status === Status.active);
+            t.completedDate == null &&
+            t.abandonedDate == null &&
+            t.status === Status.active);
           this.completedTasks = this.candidate.taskAssignments.filter(t =>
-            t.completedDate != null);
+            t.completedDate != null ||
+            t.abandonedDate != null);
           this.inactiveTasks = this.candidate.taskAssignments.filter(t =>
             t.status === Status.inactive);
         } else {
