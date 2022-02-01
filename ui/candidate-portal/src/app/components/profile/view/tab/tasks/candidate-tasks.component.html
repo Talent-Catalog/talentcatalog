@@ -34,7 +34,7 @@
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
               <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
             </td>
-            <td class="font-weight-light" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">{{ta.dueDate | date: 'yyyy-MM-dd'}}</td>
+            <td class="font-weight-light" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">{{ta.dueDate | date}}</td>
           </tr>
           <!-- loading -->
           <tr *ngIf="loading">
@@ -73,8 +73,8 @@
           <tbody>
           <tr *ngFor="let ta of completedOrAbandonedTasks" (click)="selectTask(ta)">
             <td><div>{{displayTaskName(ta)}}</div></td>
-            <td class="date-size">{{ta.completedDate | date: 'yyyy-MM-dd'}}</td>
-            <td class="date-size">{{ta.abandonedDate | date: 'yyyy-MM-dd'}}</td>
+            <td class="date-size">{{ta.completedDate | date}}</td>
+            <td class="date-size">{{ta.abandonedDate | date}}</td>
           </tr>
           <!-- loading -->
           <tr *ngIf="loading">
