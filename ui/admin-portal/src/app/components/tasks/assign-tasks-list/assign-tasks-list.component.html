@@ -43,7 +43,7 @@
         <div *ngIf="selectedTask">
           <div class="form-group">
             <div>Estimated Due Date:
-              <span class="font-weight-light">{{estimatedDueDate | date: 'mediumDate'}}</span>
+              <span class="font-weight-light">{{estimatedDueDate | date}}</span>
             </div>
             <small class="text-muted">{{selectedTask?.daysToComplete}} days to complete.</small>
           </div>
