@@ -6,13 +6,15 @@
 </div>
 
 <div class="card" *ngIf="!loading">
-  <div class="card-header d-flex justify-content-between">
-    <span>Candidate Tasks: Ongoing</span>
-    <span>Comment?</span>
-    <div class="float-right" *ngIf="editable">
-      <button class="btn btn-primary btn-sm" (click)="assignTask()">
-        <i class="fas fa-plus"></i> Assign task
-      </button>
+  <div class="card-header d-flex">
+    <span class="w-50">Candidate Tasks: Ongoing</span>
+    <div class="d-flex flex-fill justify-content-between">
+      <span>Comment? <span class="small text-muted">(hover over long comments)</span></span>
+      <div *ngIf="editable">
+        <button class="btn btn-primary btn-sm" (click)="assignTask()">
+          <i class="fas fa-plus"></i> Assign task
+        </button>
+      </div>
     </div>
   </div>
 
@@ -21,16 +23,19 @@
       <p class="text-center text-muted small">No ongoing tasks</p>
     </div>
     <div *ngFor="let ta of ongoingTasks; let i = index;">
-      <div class="d-flex justify-content-between">
+      <div class="set-height d-flex justify-content-between">
         <div class="w-50">
           <p class="mb-0" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
           <div [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date}}</div>
         </div>
-        <div class="d-flex w-50 justify-content-between">
-          <div>
-            <span *ngIf="ta.candidateNotes">{{ta.candidateNotes}}</span>
+        <div class="d-flex w-50 justify-content-between align-items-center">
+          <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave"
+               [disablePopover]="ta.candidateNotes?.length <=40">
+            <span *ngIf="ta.candidateNotes">{{ta.candidateNotes | slice: 0 : 40}}
+              <span *ngIf="ta.candidateNotes?.length >=40">...</span>
+            </span>
           </div>
-          <div class="float-right text-right" *ngIf="editable">
+          <div class="d-flex float-right text-right" *ngIf="editable">
             <button class="btn btn-default" (click)="editTaskAssignment(ta)">
               <i class="fas fa-edit"></i></button>
             <button class="btn btn-default" (click)="deleteTaskAssignment(ta)">
@@ -48,7 +53,7 @@
 <div class="card" *ngIf="!loading">
   <div class="card-header card-header d-flex">
     <span class="w-50">Candidate Tasks: Completed</span>
-    <span>Comment?</span>
+    <span>Comment? <span class="small text-muted">(hover over long comments)</span></span>
     <span></span>
   </div>
 
@@ -63,11 +68,14 @@
           <div *ngIf="ta.completedDate" class="text-success">Completed: {{ta.completedDate | date}}</div>
           <div *ngIf="ta.abandonedDate && !ta.completedDate" class="text-alert">Abandoned: {{ta.abandonedDate | date}}</div>
         </div>
-        <div class="d-flex w-50 justify-content-between">
-          <div>
-            <span *ngIf="ta.candidateNotes">{{ta.candidateNotes}}</span>
+        <div class="d-flex w-50 justify-content-between align-items-center">
+          <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave"
+               [disablePopover]="ta.candidateNotes?.length <=40">
+            <span *ngIf="ta.candidateNotes">{{ta.candidateNotes | slice: 0 : 40}}
+              <span *ngIf="ta.candidateNotes?.length >=40">...</span>
+            </span>
           </div>
-          <div *ngIf="editable" class=" float-right text-right">
+          <div *ngIf="editable" class="d-flex float-right text-right">
             <button class="btn btn-default" (click)="editTaskAssignment(ta)">
               <i class="fas fa-edit"></i></button>
             <button class="btn btn-default" (click)="viewResponse(ta)">
