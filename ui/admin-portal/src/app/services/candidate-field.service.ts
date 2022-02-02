@@ -20,7 +20,13 @@ import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
 import {CandidateSource} from "../model/base";
 import {enumKeysToEnumOptions} from "../util/enum";
-import {Candidate, checkIeltsScoreType, ResidenceStatus} from "../model/candidate";
+import {
+  Candidate,
+  checkIeltsScoreType,
+  ResidenceStatus,
+  Status,
+  TaskAssignment
+} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -234,28 +240,36 @@ export class CandidateFieldService {
     return score;
   }
 
-  getTasksStatus(value): string {
+  getTasksStatus(values: TaskAssignment[]): string {
     let status: string;
-    // If there are na task assignments, then the status is empty.
-    // Otherwise default to completed before going through for loop heirachy below.
-    if (value.length > 0) {
-      status = 'Completed';
+    // Only run through active tasks.
+    values = values.filter(ta => ta.status === Status.active);
+    if (this.checkForOverdue(values)) {
+      status = 'Overdue'
+    } else if (this.checkForAbandoned(values)) {
+      status = 'Abandoned'
+    } else if (this.checkForCompleted(values) && !this.checkForOngoing(values)) {
+      status = 'Completed'
     } else {
       status = null;
     }
-    for (const ta of value) {
-      if (new Date(ta.dueDate) < new Date()) {
-        status = 'Overdue';
-        break;
-      } else if (ta.abandonedDate) {
-        status = 'Abandoned'
-        break;
-      } else if (!ta.completedDate) {
-        status = null;
-        break;
-      }
-    }
     return status;
+  }
+
+  private checkForOverdue(values: TaskAssignment[]) {
+    return values.some(ta => new Date(ta.dueDate) < new Date() && (!ta.abandonedDate && !ta.completedDate));
+  }
+
+  private checkForAbandoned(values: TaskAssignment[]) {
+    return values.some(ta => ta.abandonedDate && !ta.completedDate);
+  }
+
+  private checkForCompleted(values: TaskAssignment[]) {
+    return values.some(ta => ta.completedDate);
+  }
+
+  private checkForOngoing(values: TaskAssignment[]) {
+    return values.some(ta => new Date(ta.dueDate) > new Date() && (!ta.abandonedDate && !ta.completedDate));
   }
 
 }

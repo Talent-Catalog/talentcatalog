@@ -28,10 +28,9 @@ export class EditTaskAssignmentComponent implements OnInit {
   ngOnInit(): void {
     this.loading = true;
     this.form = this.fb.group({
-      abandonedDate: [this.formatTbbDate(this.taskAssignment?.abandonedDate)],
       dueDate: [this.formatTbbDate(this.taskAssignment?.dueDate)],
-      completedDate: [this.formatTbbDate(this.taskAssignment?.completedDate)],
-      complete: [this.isComplete]
+      complete: [this.isComplete],
+      abandoned: [this.isAbandoned]
     });
     this.loading = false;
   }
@@ -39,13 +38,17 @@ export class EditTaskAssignmentComponent implements OnInit {
   formatTbbDate(date: Date): string {
     let d = null;
     if (date) {
-      d = formatDate(this.taskAssignment?.dueDate, "yyyy-MM-dd", this.locale);
+      d = formatDate(date, "yyyy-MM-dd", this.locale);
     }
     return d;
   }
 
   get isComplete() {
     return this.taskAssignment.completedDate != null;
+  }
+
+  get isAbandoned() {
+    return this.taskAssignment.abandonedDate != null;
   }
 
   onSave() {
@@ -57,8 +60,8 @@ export class EditTaskAssignmentComponent implements OnInit {
     const request: UpdateTaskAssignmentRequest = {
       taskAssignmentId: this.taskAssignment.id,
       dueDate: this.form.value.dueDate,
-      completedDate: this.form.value.completedDate,
-      complete: this.form.value.complete
+      complete: this.form.value.complete,
+      abandoned: this.form.value.abandoned
     }
 
     this.taskAssignmentService.updateTaskAssignment(request).subscribe(

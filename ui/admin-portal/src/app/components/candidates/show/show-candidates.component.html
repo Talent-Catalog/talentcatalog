@@ -322,7 +322,7 @@
                 <span [ngClass]="{
                 'text-danger': field.getValue(candidate) === 'Overdue',
                 'text-success' : field.getValue(candidate) == 'Completed',
-                'text-warning' : field.getValue(candidate) == 'Abandoned'}">
+                'text-alert' : field.getValue(candidate) == 'Abandoned'}">
                   {{field.getValue(candidate)}}
                 </span>
               </td>

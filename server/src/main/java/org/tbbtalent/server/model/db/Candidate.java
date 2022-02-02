@@ -16,18 +16,6 @@
 
 package org.tbbtalent.server.model.db;
 
-import org.apache.commons.beanutils.NestedNullException;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.annotations.Formula;
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
-import org.tbbtalent.server.model.db.task.TaskAssignment;
-import org.tbbtalent.server.model.es.CandidateEs;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
-
-import javax.persistence.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,6 +25,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.annotations.Formula;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
+import org.tbbtalent.server.model.es.CandidateEs;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 @Entity
 @Table(name = "candidate")
@@ -49,6 +60,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private Long contextSavedListId;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OrderBy("activatedDate DESC")
     private Set<TaskAssignmentImpl> taskAssignments;
 
     private String phone;

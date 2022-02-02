@@ -2,13 +2,16 @@
   <div>
     <h3>{{selectedTask?.task?.name}} <span class="font-weight-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">(Required)</span></h3>
     <div class="mb-2">{{selectedTask?.task?.description}}</div>
-    <ng-container *ngIf="!selectedTask?.completedDate">
-      <h5 [ngClass]="{'text-danger': isOverdue(selectedTask)}">Due Date: {{selectedTask?.dueDate | date: 'yyyy-MM-dd'}}
+    <ng-container *ngIf="!selectedTask?.completedDate && !selectedTask?.abandonedDate">
+      <h5 [ngClass]="{'text-danger': isOverdue(selectedTask)}">Due Date: {{selectedTask?.dueDate | date}}
         <span *ngIf="isOverdue(selectedTask)" class="text-danger"> - Overdue</span>
       </h5>
     </ng-container>
     <ng-container *ngIf="selectedTask?.completedDate">
-      <h5 class="text-success">Completed Date: {{selectedTask?.completedDate | date: 'yyyy-MM-dd'}}</h5>
+      <h5 class="text-success">Completed Date: {{selectedTask?.completedDate | date}}</h5>
+    </ng-container>
+    <ng-container *ngIf="selectedTask?.abandonedDate && !selectedTask?.completedDate">
+      <h5 class="text-alert">Abandoned Date: {{selectedTask?.abandonedDate | date}}</h5>
     </ng-container>
 
   </div>
@@ -46,7 +49,7 @@
   </div>
   <div class="card">
     <form [formGroup]="form" (submit)="submitComment()">
-      <div class="form-group">
+      <div *ngIf="!isComplete" class="form-group">
         <div class="form-check-inline">
           <label class="form-check-label mb-0 mr-2" for="abandoned">Are you unable to complete this task? </label>
           <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">

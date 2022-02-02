@@ -22,11 +22,11 @@ import {TaskAssignment} from "../model/candidate";
 
 export interface UpdateTaskAssignmentRequest {
   taskAssignmentId: number,
+  abandoned: boolean
+  complete: boolean,
   dueDate?: Date,
   completedDate?: Date,
-  complete?: boolean,
   candidateNotes?: string,
-  abandoned?: boolean
 }
 
 @Injectable({
@@ -46,7 +46,7 @@ export class TaskAssignmentService {
     return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload`, formData);
   }
 
-  addComment(id: number, request: UpdateTaskAssignmentRequest) {
+  update(id: number, request: UpdateTaskAssignmentRequest) {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}`, request);
   }
 

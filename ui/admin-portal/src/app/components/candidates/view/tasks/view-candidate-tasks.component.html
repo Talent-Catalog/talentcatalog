@@ -24,7 +24,7 @@
       <div class="d-flex justify-content-between">
         <div class="w-50">
           <p class="mb-0" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
-          <div [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date: 'yyyy-MM-dd'}}</div>
+          <div [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date}}</div>
         </div>
         <div class="d-flex w-50 justify-content-between">
           <div>
@@ -60,8 +60,8 @@
       <div class="d-flex justify-content-between">
         <div class="w-50">
           <p class="mb-0">{{ta.task.name}}<span *ngIf="!ta.task.optional">*</span></p>
-          <div *ngIf="ta.completedDate && !ta.abandonedDate">Completed: {{ta.completedDate | date: 'yyyy-MM-dd'}}</div>
-          <div *ngIf="ta.abandonedDate">Abandoned: {{ta.abandonedDate | date: 'yyyy-MM-dd'}}</div>
+          <div *ngIf="ta.completedDate" class="text-success">Completed: {{ta.completedDate | date}}</div>
+          <div *ngIf="ta.abandonedDate && !ta.completedDate" class="text-alert">Abandoned: {{ta.abandonedDate | date}}</div>
         </div>
         <div class="d-flex w-50 justify-content-between">
           <div>

@@ -99,6 +99,8 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {ViewCandidateComponent} from './components/profile/view/view-candidate.component';
 import {CandidateTasksComponent} from './components/profile/view/tab/tasks/candidate-tasks.component';
 import {CandidateTaskComponent} from './components/profile/view/tab/tasks/task/candidate-task/candidate-task.component';
+import {DatePipe} from "@angular/common";
+import {ExtendDatePipe} from "./util/date-adapter/extend-date-pipe";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -153,6 +155,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ViewCandidateComponent,
     CandidateTasksComponent,
     CandidateTaskComponent,
+    ExtendDatePipe
   ],
   imports: [
     BrowserModule,
@@ -195,7 +198,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
-    {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}
+    {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n},
+    DatePipe
 
   ],
   bootstrap: [AppComponent]
