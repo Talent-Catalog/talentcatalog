@@ -2,13 +2,16 @@
   <div>
     <h3>{{selectedTask?.task?.name}} <span class="font-weight-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">(Required)</span></h3>
     <div class="mb-2">{{selectedTask?.task?.description}}</div>
-    <ng-container *ngIf="!selectedTask?.completedDate">
+    <ng-container *ngIf="!selectedTask?.completedDate && !selectedTask?.abandonedDate">
       <h5 [ngClass]="{'text-danger': isOverdue(selectedTask)}">Due Date: {{selectedTask?.dueDate | date}}
         <span *ngIf="isOverdue(selectedTask)" class="text-danger"> - Overdue</span>
       </h5>
     </ng-container>
     <ng-container *ngIf="selectedTask?.completedDate">
       <h5 class="text-success">Completed Date: {{selectedTask?.completedDate | date}}</h5>
+    </ng-container>
+    <ng-container *ngIf="selectedTask?.abandonedDate && !selectedTask?.completedDate">
+      <h5 class="text-alert">Abandoned Date: {{selectedTask?.abandonedDate | date}}</h5>
     </ng-container>
 
   </div>
