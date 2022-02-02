@@ -45,21 +45,11 @@
         </div>
       </div>
 
-
-
       <!-- COMPLETED -->
       <div class="form-group">
         <div class="form-check-inline">
           <label class="form-check-label" for="complete">Is this task assignment completed?</label>
           <input class="form-check-input" id="complete" [formControlName]="'complete'" type="checkbox">
-        </div>
-      </div>
-
-      <!-- COMPLETED DATE -->
-      <div *ngIf="this.form.value.complete">
-        <div class="form-group">
-          <label for="completedDate">Completed date <span class="small">(if left blank set to today's date)</span></label>
-          <app-date-picker id="completedDate" [control]="form.controls.completedDate" [allowFuture]="false"></app-date-picker>
         </div>
       </div>
 
@@ -70,13 +60,6 @@
           <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
         </div>
       </div>
-
-<!--      &lt;!&ndash; ABANDONED DATE &ndash;&gt;-->
-<!--      <div *ngIf="isAbandoned" class="form-group">-->
-<!--        <div>Abandoned Date:-->
-<!--          <span class="font-weight-light">{{this.form.value.abandonedDate | date}}</span>-->
-<!--        </div>-->
-<!--      </div>-->
 
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"

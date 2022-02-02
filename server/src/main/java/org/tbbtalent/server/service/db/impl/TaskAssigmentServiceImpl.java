@@ -18,9 +18,7 @@ package org.tbbtalent.server.service.db.impl;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 import org.springframework.lang.NonNull;
@@ -109,17 +107,22 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         if (request.getCandidateNotes() != null) {
             taskAssignment.setCandidateNotes(request.getCandidateNotes());
         }
+
         if (request.isComplete()) {
-            if (request.getCompletedDate() != null) {
-                taskAssignment.setCompletedDate(OffsetDateTime.of(request.getCompletedDate(), LocalTime.now(), ZoneOffset.MIN));
-            } else {
+            // Only set the completed date if it's a completed task and a date hasn't already been set.
+            if (taskAssignment.getCompletedDate() == null) {
                 taskAssignment.setCompletedDate(OffsetDateTime.now());
             }
         } else {
             taskAssignment.setCompletedDate(null);
         }
+
         if (request.isAbandoned()) {
-            taskAssignment.setAbandonedDate(OffsetDateTime.now());
+            // If the task is abandoned and the TA doesn't have an abandoned date, set to now.
+            // Otherwise keep the existing abandoned date.
+            if (taskAssignment.getAbandonedDate() == null) {
+                taskAssignment.setAbandonedDate(OffsetDateTime.now());
+            }
         } else {
             taskAssignment.setAbandonedDate(null);
         }

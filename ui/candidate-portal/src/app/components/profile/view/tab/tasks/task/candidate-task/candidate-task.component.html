@@ -46,7 +46,7 @@
   </div>
   <div class="card">
     <form [formGroup]="form" (submit)="submitComment()">
-      <div class="form-group">
+      <div *ngIf="!isComplete" class="form-group">
         <div class="form-check-inline">
           <label class="form-check-label mb-0 mr-2" for="abandoned">Are you unable to complete this task? </label>
           <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">

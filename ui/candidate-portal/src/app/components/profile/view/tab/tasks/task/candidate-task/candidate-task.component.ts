@@ -46,6 +46,10 @@ export class CandidateTaskComponent implements OnInit {
     return this.selectedTask.abandonedDate != null;
   }
 
+  get isComplete() {
+    return this.selectedTask.completedDate != null;
+  }
+
   startServerUpload($event) {
     this.error = null;
     this.uploading = true;
@@ -92,12 +96,13 @@ export class CandidateTaskComponent implements OnInit {
 
   submitComment() {
     this.saving = true;
-    const submitComment: UpdateTaskAssignmentRequest = {
+    const updateRequest: UpdateTaskAssignmentRequest = {
       taskAssignmentId: this.selectedTask.id,
       candidateNotes: this.form.value.comment,
-      abandoned: this.form.value.abandoned
+      abandoned: this.form.value.abandoned,
+      complete: this.isComplete
     }
-    this.taskAssignmentService.addComment(this.selectedTask.id, submitComment).subscribe(
+    this.taskAssignmentService.update(this.selectedTask.id, updateRequest).subscribe(
       (taskAssignment: TaskAssignment) => {
         this.selectedTask = taskAssignment;
         this.saving = false;
