@@ -25,8 +25,9 @@ import {Location} from '@angular/common';
 import {getExternalHref} from '../util/url';
 import {Occupation} from './occupation';
 import {LanguageLevel} from './language-level';
-import {Auditable, HasId} from "./base";
+import {HasId} from "./base";
 import {CandidateAttachment} from "./candidate-attachment";
+import {TaskAssignment} from "./task-assignment";
 
 export interface Candidate extends HasId {
   id: number;
@@ -81,69 +82,10 @@ export interface Candidate extends HasId {
   taskAssignments?: TaskAssignment[];
 }
 
-export interface TaskAssignment {
-  id: number;
-  abandonedDate: Date;
-  candidateNotes: string;
-  completedDate: Date;
-  dueDate: Date;
-  status: Status;
-  task: Task;
-}
-
-export interface Task extends Auditable {
-  id: number;
-  name: string;
-  daysToComplete: number;
-  description: string;
-  optional: boolean;
-  taskType: TaskType;
-  uploadType: UploadType;
-  uploadSubfolderName: string;
-  uploadableFileTypes: string;
-}
-
 export enum Status {
   active = "active",
   inactive = "inactive",
   deleted = "deleted"
-}
-
-export enum TaskType {
-  Question = "Question",
-  Simple = "Simple",
-  Upload = "Upload",
-  YesNoQuestion = "YesNoQuestion"
-}
-
-export enum UploadType {
-  conductEmployer = "conductEmployer",
-  conductEmployerTrans = "conductEmployerTrans",
-  conductMinistry = "conductMinistry",
-  conductMinistryTrans = "conductMinistryTrans",
-  cos = "cos",
-  cv = "cv",
-  degree = "degree",
-  degreeTranscript = "degreeTranscript",
-  degreeTranscriptTrans = "degreeTranscriptTrans",
-  englishExam = "englishExam",
-  licencing = "licencing",
-  licencingTrans = "licencingTrans",
-  offer = "offer",
-  otherId = "otherId",
-  otherIdTrans = "otherIdTrans",
-  passport = "passport",
-  policeCheck = "policeCheck",
-  policeCheckTrans = "policeCheckTrans",
-  proofAddress = "proofAddress",
-  proofAddressTrans = "proofAddressTrans",
-  references = "references",
-  residenceAttest = "residenceAttest",
-  residenceAttestTrans = "residenceAttestTrans",
-  studiedInEnglish = "studiedInEnglish",
-  other = "other",
-  vaccination = "vaccination",
-  vaccinationTran = "vaccinationTrans"
 }
 
 export interface CandidateIntakeData {

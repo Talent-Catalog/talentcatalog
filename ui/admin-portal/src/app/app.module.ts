@@ -248,6 +248,7 @@ import {ViewCandidateTasksComponent} from "./components/candidates/view/tasks/vi
 import { BrowseTasksComponent } from './components/tasks/browse-tasks/browse-tasks.component';
 import { ViewTaskDetailsComponent } from './components/tasks/view-task-details/view-task-details.component';
 import { SearchTasksComponent } from './components/settings/tasks/search-tasks.component';
+import { TasksMonitorComponent } from './components/util/tasks-monitor/tasks-monitor.component';
 
 @NgModule({
   declarations: [
@@ -473,7 +474,8 @@ import { SearchTasksComponent } from './components/settings/tasks/search-tasks.c
     ViewCandidateTasksComponent,
     BrowseTasksComponent,
     ViewTaskDetailsComponent,
-    SearchTasksComponent
+    SearchTasksComponent,
+    TasksMonitorComponent
   ],
   imports: [
     BrowserModule,

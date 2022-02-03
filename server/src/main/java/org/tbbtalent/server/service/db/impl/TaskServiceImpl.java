@@ -18,6 +18,7 @@ package org.tbbtalent.server.service.db.impl;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.QuestionTask;
@@ -61,7 +62,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskImpl> listTasks() {
-        return taskRepository.findAll();
+        return taskRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
     }
 
     @Override

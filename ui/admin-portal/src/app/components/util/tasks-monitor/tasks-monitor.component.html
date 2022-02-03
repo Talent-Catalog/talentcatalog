@@ -1,0 +1,9 @@
+<div class="d-inline-block ml-2">
+  <sup [ngClass]="{'text-danger' : hasOverdue,'text-alert' : hasAbandoned,'text-success' : hasCompleted}">
+    {{this.completedTaskAssignments.length}}
+  </sup>
+  &frasl;
+  <sub class="text-muted">
+    {{this.requiredTaskAssignments.length}}
+  </sub>
+</div>

@@ -53,14 +53,6 @@
         </div>
       </div>
 
-      <!-- ABANDONED -->
-      <div class="form-group">
-        <div class="form-check-inline">
-          <label class="form-check-label" for="abandoned">Is this task assignment abandoned?</label>
-          <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
-        </div>
-      </div>
-
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"
                 [disabled]="form.invalid || loading || saving">
