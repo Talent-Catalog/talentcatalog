@@ -1,11 +1,12 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Candidate, Status, TaskAssignment} from "../../../../model/candidate";
+import {Candidate, Status} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AssignTasksCandidateComponent} from "../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component";
 import {EditTaskAssignmentComponent} from "./edit/edit-task-assignment.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 import {TaskAssignmentService} from "../../../../services/task-assignment.service";
+import {TaskAssignment} from "../../../../model/task-assignment";
 
 @Component({
   selector: 'app-view-candidate-tasks',

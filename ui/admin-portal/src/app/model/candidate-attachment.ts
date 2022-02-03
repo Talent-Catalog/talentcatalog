@@ -15,7 +15,7 @@
  */
 
 import {User} from './user';
-import {UploadType} from "./candidate";
+import {UploadType} from "./task";
 
 export enum AttachmentType {
   googlefile = 'googlefile',

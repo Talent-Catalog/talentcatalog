@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {Task, TaskAssignment} from "../../../model/candidate";
 import {TaskService} from "../../../services/task.service";
 import {CreateTaskAssignmentRequest, TaskAssignmentService} from "../../../services/task-assignment.service";
+import {TaskAssignment} from "../../../model/task-assignment";
+import {Task} from "../../../model/task";
 
 @Component({
   selector: 'app-assign-tasks-candidate',

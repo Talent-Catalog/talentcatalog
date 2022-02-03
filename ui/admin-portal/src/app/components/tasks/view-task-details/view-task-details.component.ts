@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Task, UploadType} from "../../../model/candidate";
+import {Task, UploadType} from "../../../model/task";
 
 @Component({
   selector: 'app-view-task-details',

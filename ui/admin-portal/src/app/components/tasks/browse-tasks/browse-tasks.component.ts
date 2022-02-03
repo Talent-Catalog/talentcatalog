@@ -15,7 +15,7 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {indexOfAuditable, SearchSavedSearchRequest} from "../../../model/saved-search";
 import {SearchSavedListRequest} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
-import {Task} from "../../../model/candidate";
+import {Task} from "../../../model/task";
 
 @Component({
   selector: 'app-browse-tasks',

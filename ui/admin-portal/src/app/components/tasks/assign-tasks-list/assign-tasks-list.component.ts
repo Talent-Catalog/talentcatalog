@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {Task} from "../../../model/candidate";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {SavedList} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
@@ -9,6 +8,7 @@ import {
   AssignTaskToListRequest,
   TaskAssignmentService
 } from "../../../services/task-assignment.service";
+import {Task} from "../../../model/task";
 
 @Component({
   selector: 'app-assign-tasks-list',

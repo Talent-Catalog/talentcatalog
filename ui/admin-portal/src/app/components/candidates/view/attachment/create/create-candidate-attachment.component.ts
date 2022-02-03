@@ -23,7 +23,7 @@ import {
   CandidateAttachmentRequest
 } from "../../../../../model/candidate-attachment";
 import {forkJoin, Observable} from "rxjs";
-import {UploadType} from "../../../../../model/candidate";
+import {UploadType} from "../../../../../model/task";
 
 @Component({
   selector: 'app-create-candidate-attachment',

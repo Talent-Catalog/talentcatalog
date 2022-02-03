@@ -24,9 +24,14 @@ import {
   Candidate,
   checkIeltsScoreType,
   ResidenceStatus,
-  Status,
-  TaskAssignment
+  Status
 } from "../model/candidate";
+import {
+  checkForAbandoned,
+  checkForCompleted, checkForOngoing,
+  checkForOverdue,
+  TaskAssignment
+} from "../model/task-assignment";
 
 @Injectable({
   providedIn: 'root'
@@ -86,8 +91,9 @@ export class CandidateFieldService {
       this.getDisplayEnum, null),
     new CandidateFieldInfo("Dependants", "numberDependants",
       null, null),
-    new CandidateFieldInfo("Tasks Status", "taskAssignments",
-      this.getOverallTasksStatus, null),
+    // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
+    // new CandidateFieldInfo("Tasks Status", "taskAssignments",
+    //   this.getOverallTasksStatus, null),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
@@ -244,32 +250,16 @@ export class CandidateFieldService {
     let status: string;
     // Only run through active tasks.
     values = values.filter(ta => ta.status === Status.active);
-    if (this.checkForOverdue(values)) {
+    if (checkForOverdue(values)) {
       status = 'Overdue'
-    } else if (this.checkForAbandoned(values)) {
+    } else if (checkForAbandoned(values)) {
       status = 'Abandoned'
-    } else if (this.checkForCompleted(values) && !this.checkForOngoing(values)) {
+    } else if (checkForCompleted(values) && !checkForOngoing(values)) {
       status = 'Completed'
     } else {
       status = null;
     }
     return status;
-  }
-
-  private checkForOverdue(values: TaskAssignment[]) {
-    return values.some(ta => new Date(ta.dueDate) < new Date() && (!ta.abandonedDate && !ta.completedDate));
-  }
-
-  private checkForAbandoned(values: TaskAssignment[]) {
-    return values.some(ta => ta.abandonedDate && !ta.completedDate);
-  }
-
-  private checkForCompleted(values: TaskAssignment[]) {
-    return values.some(ta => ta.completedDate);
-  }
-
-  private checkForOngoing(values: TaskAssignment[]) {
-    return values.some(ta => new Date(ta.dueDate) > new Date() && (!ta.abandonedDate && !ta.completedDate));
   }
 
 }
