@@ -137,7 +137,7 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
 
         taskAssignment.setDeactivatedBy(user);
         taskAssignment.setDeactivatedDate(OffsetDateTime.now());
-        taskAssignment.setStatus(Status.inactive);
+        taskAssignment.setStatus(Status.deleted);
         taskAssignmentRepository.save(taskAssignment);
         return true;
     }
