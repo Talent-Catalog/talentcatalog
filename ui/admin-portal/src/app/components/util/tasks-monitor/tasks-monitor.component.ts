@@ -28,7 +28,7 @@ export class TasksMonitorComponent implements OnInit {
     this.requiredTaskAssignments = this.activeTaskAssignments.filter(
        ta => !ta.task.optional);
     this.completedTaskAssignments = this.activeTaskAssignments.filter(
-      ta => ta.completedDate != null || ta.abandonedDate != null);
+      ta => (ta.completedDate != null || ta.abandonedDate != null) && !ta.task.optional);
 
     this.hasOverdue = checkForOverdue(this.activeTaskAssignments);
     this.hasAbandoned = checkForAbandoned(this.activeTaskAssignments);

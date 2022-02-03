@@ -113,6 +113,7 @@ export interface Task {
   description: string;
   optional: boolean;
   taskType: TaskType;
+  uploadType: UploadType;
 }
 
 export enum TaskType {
@@ -120,6 +121,36 @@ export enum TaskType {
   Simple = "Simple",
   Upload = "Upload",
   YesNoQuestion = "YesNoQuestion"
+}
+
+export enum UploadType {
+  conductEmployer,
+  conductEmployerTrans,
+  conductMinistry,
+  conductMinistryTrans,
+  cos,
+  cv,
+  degree,
+  degreeTranscript,
+  degreeTranscriptTrans,
+  englishExam,
+  licencing,
+  licencingTrans,
+  offer,
+  otherId,
+  otherIdTrans,
+  passport,
+  policeCheck,
+  policeCheckTrans,
+  proofAddress,
+  proofAddressTrans,
+  references,
+  residenceAttest,
+  residenceAttestTrans,
+  studiedInEnglish,
+  other,
+  vaccination,
+  vaccinationTrans
 }
 
 export enum CandidateStatus {
