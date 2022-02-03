@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {TaskAssignment} from "../../../../../../../model/candidate";
+import {Candidate, TaskAssignment} from "../../../../../../../model/candidate";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {forkJoin, Observable} from "rxjs";
 import {CandidateAttachment} from "../../../../../../../model/candidate-attachment";
@@ -14,6 +14,7 @@ import {
 })
 export class CandidateTaskComponent implements OnInit {
   @Input() selectedTask: TaskAssignment;
+  @Input() candidate: Candidate;
   @Output() back = new EventEmitter();
   filesUploaded: File[];
   form: FormGroup;
@@ -83,6 +84,10 @@ export class CandidateTaskComponent implements OnInit {
         this.uploading = false;
       }
     );
+  }
+
+  getFileName(fileName: string): string {
+    return this.candidate?.candidateNumber + "-" + this.selectedTask?.task?.uploadType + "-" + fileName;
   }
 
   goBack() {
