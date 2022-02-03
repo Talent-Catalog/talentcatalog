@@ -20,7 +20,7 @@
 
   <div class="card-body">
     <div *ngIf="ongoingTasks.length <= 0">
-      <p class="text-center text-muted small">No ongoing tasks</p>
+      <p class="text-center text-muted small mb-0">No ongoing tasks</p>
     </div>
     <div *ngFor="let ta of ongoingTasks; let i = index;">
       <div class="set-height d-flex justify-content-between">
@@ -59,7 +59,7 @@
 
   <div class="card-body">
     <div *ngIf="completedTasks.length <= 0">
-      <p class="text-center text-muted small">No completed tasks</p>
+      <p class="text-center text-muted small mb-0">No completed tasks</p>
     </div>
     <div *ngFor="let ta of completedTasks; let i = index;">
       <div class="d-flex justify-content-between">
@@ -96,8 +96,8 @@
   </div>
 
   <div class="card-body">
-    <div *ngIf="completedTasks.length <= 0">
-      <p class="text-center text-muted small">No inactive tasks</p>
+    <div *ngIf="inactiveTasks.length <= 0">
+      <p class="text-center text-muted small mb-0">No inactive tasks</p>
     </div>
     <div *ngFor="let ta of inactiveTasks; let i = index;">
       <div class="d-flex justify-content-between">
