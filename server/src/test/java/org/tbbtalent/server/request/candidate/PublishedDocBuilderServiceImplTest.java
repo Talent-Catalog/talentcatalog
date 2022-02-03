@@ -28,8 +28,8 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.User;
 
-class PublishedDocBuilderTest {
-  PublishedDocBuilder builder;
+class PublishedDocBuilderServiceImplTest {
+  PublishedDocBuilderServiceImpl builder;
   Candidate candidate;
   PublishedDocColumnDef infoId;
   PublishedDocColumnDef infoCN;
@@ -63,36 +63,36 @@ class PublishedDocBuilderTest {
     candidate.setUser(user);
     user.setFirstName("fred");
     user.setLastName("nurk with \n in the middle");
-    
+
     columnInfos = new ArrayList<>();
 
     infoId = addColumn("id", "Candidate id", new PublishedDocFieldSource("id"));
-    
-    infoCN = addColumn("cn", "Candidate number", 
-        new PublishedDocFieldSource("candidateNumber"), 
+
+    infoCN = addColumn("cn", "Candidate number",
+        new PublishedDocFieldSource("candidateNumber"),
         new PublishedDocFieldSource("shareableCv.location"));
-    
+
     infoUser = addColumn("name", "Name", new PublishedDocFieldSource("user"));
-    
+
     infoCV = addColumn("cv", "CV",
         new PublishedDocConstantSource("cv"),
         new PublishedDocFieldSource("shareableCv.location"));
-    
-    builder = new PublishedDocBuilder();
+
+    builder = new PublishedDocBuilderServiceImpl(null, null);
   }
 
   @Test
   void buildCell() {
     Object obj;
-    
+
     obj = builder.buildCell(candidate, infoId);
     assertNotNull(obj);
     assertEquals(1234L, obj);
-    
+
     obj = builder.buildCell(candidate, infoCN);
     assertNotNull(obj);
     assertEquals("=HYPERLINK(\"https://candidateCVLink\",1234)", obj);
-    
+
     obj = builder.buildCell(candidate, infoCV);
     assertNotNull(obj);
     assertEquals("=HYPERLINK(\"https://candidateCVLink\",\"cv\")", obj);
