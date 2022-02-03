@@ -36,7 +36,7 @@
         Uploading please wait <fa-icon  [spin]="true" icon="spinner"></fa-icon>
       </div>
       <div *ngFor="let file of filesUploaded; let i = index;">
-        <p>Successfully uploaded {{file.name}} as {{getFileName(file.name)}}!</p>
+        <p>Successfully uploaded as {{getFileName(file.name)}}!</p>
       </div>
     </div>
   </div>
