@@ -1,9 +1,10 @@
 import {Component, Inject, LOCALE_ID, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {Task, TaskAssignment} from "../../../../../model/candidate";
 import {formatDate} from '@angular/common';
 import {TaskAssignmentService, UpdateTaskAssignmentRequest} from "../../../../../services/task-assignment.service";
+import {TaskAssignment} from "../../../../../model/task-assignment";
+import {Task} from "../../../../../model/task";
 
 @Component({
   selector: 'app-edit-task-assignment',

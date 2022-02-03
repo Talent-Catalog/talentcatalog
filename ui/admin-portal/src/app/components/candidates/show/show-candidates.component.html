@@ -305,6 +305,10 @@
                   *ngIf="isCandidateNameViewable()"
                   [candidate]="candidate">
                 </app-cv-icon>
+                <app-tasks-monitor
+                  *ngIf="hasTaskAssignments(candidate)"
+                 [candidate]="candidate">
+                </app-tasks-monitor>
               </td>
               <td *ngIf="isShowStage()">
                 <a *ngIf="candidate.stage" [href]="candidate.sfOpportunityLink" target="_blank"

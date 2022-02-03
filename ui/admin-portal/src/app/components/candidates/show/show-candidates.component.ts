@@ -28,7 +28,7 @@ import {
 
 import {
   Candidate,
-  SalesforceOppParams,
+  SalesforceOppParams, Status,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
@@ -1550,5 +1550,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         error => this.error = error
       )
       .catch();
+  }
+
+  hasTaskAssignments(candidate: Candidate): boolean {
+    const active = candidate.taskAssignments.filter(ta => ta.status === Status.active);
+    return active.length > 0;
   }
 }

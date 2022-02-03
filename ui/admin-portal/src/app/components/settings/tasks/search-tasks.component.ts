@@ -10,8 +10,8 @@ import {CreateLanguageComponent} from "../languages/create/create-language.compo
 import {isAdminUser, PagedSearchRequest} from "../../../model/base";
 import {indexOfAuditable} from "../../../model/saved-search";
 import {TaskService} from "../../../services/task.service";
-import {Task} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
+import {Task} from "../../../model/task";
 
 @Component({
   selector: 'app-search-tasks',

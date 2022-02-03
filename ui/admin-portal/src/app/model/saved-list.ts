@@ -22,8 +22,9 @@ import {
   SearchCandidateSourcesRequest
 } from "./base";
 import {isSavedSearch, SavedSearchRef} from "./saved-search";
-import {Task, UpdateCandidateStatusInfo} from "./candidate";
+import {UpdateCandidateStatusInfo} from "./candidate";
 import {environment} from "../../environments/environment";
+import {Task} from "./task";
 
 export enum SearchBy {
   type,

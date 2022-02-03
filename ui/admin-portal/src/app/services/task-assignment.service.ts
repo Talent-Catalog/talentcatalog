@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {TaskAssignment} from "../model/candidate";
+import {TaskAssignment} from "../model/task-assignment";
 
 
 export interface AssignTaskToListRequest {
