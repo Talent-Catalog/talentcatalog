@@ -91,8 +91,9 @@ export class CandidateFieldService {
       this.getDisplayEnum, null),
     new CandidateFieldInfo("Dependants", "numberDependants",
       null, null),
-    new CandidateFieldInfo("Tasks Status", "taskAssignments",
-      this.getOverallTasksStatus, null),
+    // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
+    // new CandidateFieldInfo("Tasks Status", "taskAssignments",
+    //   this.getOverallTasksStatus, null),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
