@@ -30,8 +30,7 @@ export class EditTaskAssignmentComponent implements OnInit {
     this.loading = true;
     this.form = this.fb.group({
       dueDate: [this.formatTbbDate(this.taskAssignment?.dueDate)],
-      complete: [this.isComplete],
-      abandoned: [this.isAbandoned]
+      complete: [this.isComplete]
     });
     this.loading = false;
   }
@@ -62,7 +61,7 @@ export class EditTaskAssignmentComponent implements OnInit {
       taskAssignmentId: this.taskAssignment.id,
       dueDate: this.form.value.dueDate,
       complete: this.form.value.complete,
-      abandoned: this.form.value.abandoned
+      abandoned: this.isAbandoned
     }
 
     this.taskAssignmentService.updateTaskAssignment(request).subscribe(
