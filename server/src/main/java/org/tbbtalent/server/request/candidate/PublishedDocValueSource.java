@@ -18,10 +18,7 @@ package org.tbbtalent.server.request.candidate;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.Candidate;
 
 /**
  * Values can come from one of two sources:
@@ -33,16 +30,15 @@ import org.tbbtalent.server.model.db.Candidate;
  * It has to be one or other - it cannot be both. If the field name is not null, that is what is
  * used, otherwise the constant is used.
  * <p/>
- * Note that this could be better designed in Java with a value source interface with two 
- * implementations: one a field source and the other a constant source. Unfortunately that 
- * does not map to JSON well - which we need to in order to map to send up to Angular Typescript. 
+ * Note that this could be better designed in Java with a value source interface with two
+ * implementations: one a field source and the other a constant source. Unfortunately that
+ * does not map to JSON well - which we need to in order to map to send up to Angular Typescript.
  *
  * @author John Cameron
  */
 @Getter
 @Setter
 public class PublishedDocValueSource {
-  private static final Logger log = LoggerFactory.getLogger(PublishedDocValueSource.class);
 
   /**
    * If not null, this is the name of a candidate field which is used to extract the value from
@@ -58,35 +54,4 @@ public class PublishedDocValueSource {
   @Nullable
   private Object constant;
 
-  /**
-   * Retrieves the data that is the value of this value source corresponding to the given candidate.
-   * @param candidate Candidate - only used for field value sources 
-   * @return the value
-   */
-  @Nullable
-  public Object fetchData(Candidate candidate) {
-    Object val = null;
-    if (fieldName != null) {
-      if (candidate == null) {
-        log.error("Cannot extract field " + fieldName + " from null candidate");
-      } else {
-        try {
-          // Get the list specific shareable CV or Doc if exists, otherwise get the field name supplied.
-          if (fieldName.equals("shareableCv.url") && candidate.getListShareableCv() != null) {
-            val = candidate.extractField("listShareableCv.url");
-          } else if (fieldName.equals("shareableDoc.url") && candidate.getListShareableDoc() != null) {
-            val = candidate.extractField("listShareableDoc.url");
-          } else {
-            val = candidate.extractField(fieldName);
-          }
-        } catch (Exception e) {
-          log.error("Error extracting field " + fieldName + " from candidate " + candidate.getCandidateNumber());
-        }
-      }
-    } else {
-      val = constant;
-    }
-    return val;
-  }
-  
 }

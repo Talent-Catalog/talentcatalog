@@ -100,6 +100,41 @@ export class PublishedDocColumnService {
     this.addColumnWithLink("cv", "CV", new PublishedDocConstantSource("cv"),
       new PublishedDocFieldSource("shareableCv.url"))
     .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("address", "Folder: Address",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("subfolder.Address"))
+      .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("character", "Folder: Character",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("subfolder.Character"))
+      .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("employer", "Folder: Employer",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("subfolder.Employer"))
+    .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("identity", "Folder: Identity",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("subfolder.Identity"))
+      .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("medical", "Folder: Medicals",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("subfolder.Medicals"))
+    .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("qualification", "Folder: Qualification",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("subfolder.Qualification"))
+      .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("registration", "Folder: Registration",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("subfolder.Registration"))
+    .width = PublishedDocColumnWidth.Narrow;
   }
 
   getColumnConfigFromExportColumns(exportColumns: ExportColumn[]): PublishedDocColumnConfig[] {
