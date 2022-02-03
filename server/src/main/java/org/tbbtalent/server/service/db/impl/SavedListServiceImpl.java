@@ -67,7 +67,7 @@ import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
 import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
-import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
+import org.tbbtalent.server.request.candidate.PublishedDocBuilderService;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
@@ -113,6 +113,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final DocPublisherService docPublisherService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
+    private final PublishedDocBuilderService publishedDocBuilderService;
     private final SalesforceService salesforceService;
     private final UserRepository userRepository;
     private final AuthService authService;
@@ -130,6 +131,7 @@ public class SavedListServiceImpl implements SavedListService {
         DocPublisherService docPublisherService,
         FileSystemService fileSystemService,
         GoogleDriveConfig googleDriveConfig,
+        PublishedDocBuilderService publishedDocBuilderService,
         SalesforceService salesforceService, UserRepository userRepository,
         AuthService authService
     ) {
@@ -141,6 +143,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.docPublisherService = docPublisherService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
+        this.publishedDocBuilderService = publishedDocBuilderService;
         this.salesforceService = salesforceService;
         this.userRepository = userRepository;
         this.authService = authService;
@@ -741,18 +744,16 @@ public class SavedListServiceImpl implements SavedListService {
 
         List<PublishedDocColumnDef> columnInfos = request.getConfiguredColumns();
 
-        PublishedDocBuilder builder = new PublishedDocBuilder();
-
         //This is what will be used to create the published doc
         List<List<Object>> publishedData = new ArrayList<>();
 
         //Title row
-        List<Object> title = builder.buildTitle(columnInfos);
+        List<Object> title = publishedDocBuilderService.buildTitle(columnInfos);
         publishedData.add(title);
 
         //Add row for each candidate
         for (Candidate candidate : candidates) {
-            List<Object> candidateData = builder.buildRow(candidate, columnInfos);
+            List<Object> candidateData = publishedDocBuilderService.buildRow(candidate, columnInfos);
             publishedData.add(candidateData);
         }
 
