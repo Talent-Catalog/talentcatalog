@@ -27,6 +27,7 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -737,7 +738,7 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = createListFolder(id);
 
         //Fetch candidates in list
-        Set<Candidate> candidates = savedList.getCandidates();
+        List<Candidate> candidates = new ArrayList<>(savedList.getCandidates());
 
         //Set list context on candidates so that Candidate field contextNote can be accessed.
         setCandidateContext(savedList.getId(), candidates);
@@ -751,6 +752,9 @@ public class SavedListServiceImpl implements SavedListService {
         List<Object> title = publishedDocBuilderService.buildTitle(columnInfos);
         publishedData.add(title);
 
+        //Sort candidates by candidate id (ie oldest first) - note that sorting by candidateNumber
+        //gives alpha sort - eg 100 before 20
+        candidates.sort(Comparator.comparing(Candidate::getId));
         //Add row for each candidate
         for (Candidate candidate : candidates) {
             List<Object> candidateData = publishedDocBuilderService.buildRow(candidate, columnInfos);

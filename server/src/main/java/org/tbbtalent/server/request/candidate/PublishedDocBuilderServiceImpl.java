@@ -105,7 +105,11 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
               GoogleFileSystemDrive drive = googleDriveConfig.getCandidateDataDrive();
               GoogleFileSystemFolder subfolder =
                   fileSystemService.findAFolder(drive, folder, subfolderName);
-              val = subfolder == null ? null : subfolder.getUrl();
+              //Create folder if one does not exist.
+              if (subfolder == null) {
+                subfolder = fileSystemService.createFolder(drive, folder, subfolderName);
+              }
+              val = subfolder.getUrl();
             }
           } else {
             // Get the list specific shareable CV or Doc if exists, otherwise get the field name supplied.
