@@ -20,6 +20,9 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {TaskAssignment} from "../model/candidate";
 
+// todo merge the update task assignment request with the simple task/question task request.
+// This would then only one Save button rather than two on the same page.
+// So a candidate can complete the simple/question task, and add a comment and click one save button.
 export interface UpdateTaskAssignmentRequest {
   taskAssignmentId: number,
   abandoned: boolean
@@ -27,6 +30,14 @@ export interface UpdateTaskAssignmentRequest {
   dueDate?: Date,
   completedDate?: Date,
   candidateNotes?: string,
+}
+
+export interface CompleteSimpleTaskRequest {
+  completed: boolean;
+}
+
+export interface CompleteQuestionTaskRequest {
+  answer: string;
 }
 
 @Injectable({
@@ -38,8 +49,16 @@ export class TaskAssignmentService {
 
   constructor(private http: HttpClient) { }
 
-  completeSimpleTask(id: number): Observable<TaskAssignment> {
-    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete`, null);
+  completeSimpleTask(id: number, request: CompleteSimpleTaskRequest): Observable<TaskAssignment> {
+    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete`, request);
+  }
+
+  completeQuestionTask(id: number, request: CompleteQuestionTaskRequest): Observable<TaskAssignment> {
+    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-question`, request);
+  }
+
+  completeYNQuestionTask(id: number, request: CompleteQuestionTaskRequest): Observable<TaskAssignment> {
+    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-question`, request);
   }
 
   completeUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {

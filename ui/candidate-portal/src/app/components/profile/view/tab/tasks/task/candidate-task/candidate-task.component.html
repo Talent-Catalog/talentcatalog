@@ -25,22 +25,99 @@
 </div>
 
 <!-- ACTION -->
-<section>
-  <div class="section-heading">
-    <h5>Upload File</h5>
-  </div>
-  <div class="card">
-    <div>
-      <app-file-upload [uploading]="uploading" (uploadStarted)="startServerUpload($event)"></app-file-upload>
-      <div *ngIf="uploading">
-        Uploading please wait <fa-icon  [spin]="true" icon="spinner"></fa-icon>
-      </div>
-      <div *ngFor="let file of filesUploaded; let i = index;">
-        <p>Successfully uploaded as {{getFileName(file.name)}}!</p>
+<ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
+  <section>
+    <div class="section-heading">
+      <h5>Upload File</h5>
+    </div>
+    <div class="card">
+      <div>
+        <app-file-upload [uploading]="uploading" (uploadStarted)="completeUploadTask($event)"></app-file-upload>
+        <div *ngIf="uploading">
+          Uploading please wait <fa-icon  [spin]="true" icon="spinner"></fa-icon>
+        </div>
+        <div *ngFor="let file of filesUploaded; let i = index;">
+          <p>Successfully uploaded as {{getFileName(file.name)}}!</p>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</ng-container>
+
+<form [formGroup]="completeForm" (submit)="completeTask()">
+  <ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
+    <!-- *ngIf="selectedTask.task.taskType === 'Simple'" -->
+    <section>
+      <div class="section-heading">
+        <h5>Complete Task</h5>
+      </div>
+      <div class="card">
+        <div class="form-group mb-0">
+          <div class="form-check-inline">
+            <label class="form-check-label mb-0 mr-2" for="completeSimple">
+              Have you completed this task? If yes, please check the box and click the complete button below.
+            </label>
+            <input class="form-check-input" id="completeSimple" [formControlName]="'completeSimple'" type="checkbox">
+          </div>
+          <div>
+            <small class="text-muted">If you can't complete this task, please check the box below saying you can't complete this task and provide a reason.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
+    <!-- *ngIf="selectedTask.task.taskType === 'Question'" -->
+    <section>
+      <div class="section-heading">
+        <h5>Answer Question</h5>
+      </div>
+      <div class="card-header">
+        Please explain your experience that will make you a great candidate?
+      </div>
+      <div class="card">
+        <div class="form-group">
+          <label class="font-weight-bold" for="completeQuestion">
+            Please explain your answer to the question:
+          </label>
+          <textarea id="completeQuestion" class="md-textarea-auto form-control" rows="5"
+                    [formControlName]="'completeQuestion'"></textarea>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
+    <!--*ngIf="selectedTask.task.taskType === 'YesNoQuestion'" -->
+    <section>
+      <div class="section-heading">
+        <h5>Answer Question</h5>
+      </div>
+      <div class="card-header">
+        Are you vaccinated against Covid 19?
+      </div>
+      <div class="card">
+        <div class="form-group">
+          <label for="completeYNQuestion">
+            Please select your answer to the question:
+          </label>
+          <ng-select  id="completeYNQuestion" [formControlName]="'completeYNQuestion'"
+                      [clearable]="false" placeholder="Select...">
+            <ng-option [value]="'Yes'">Yes</ng-option>
+            <ng-option [value]="'No'">No</ng-option>
+          </ng-select>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <button class="btn btn-primary mt-2" type="submit"
+          [disabled]="completeForm.invalid">
+    Complete
+    <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+  </button>
+</form>
 
 <!-- COMMENT -->
 <section>
@@ -48,7 +125,7 @@
     <h5>Add/Edit Comment</h5>
   </div>
   <div class="card">
-    <form [formGroup]="form" (submit)="submitComment()">
+    <form [formGroup]="commentForm" (submit)="submitComment()">
       <div *ngIf="!isComplete" class="form-group">
         <div class="form-check-inline">
           <label class="form-check-label mb-0 mr-2" for="abandoned">Are you unable to complete this task? </label>
@@ -66,7 +143,7 @@
         <textarea id="comment" class="md-textarea-auto form-control" rows="5"
                   [formControlName]="'comment'"></textarea>
           <button class="btn btn-primary mt-2" type="submit"
-                  [disabled]="form.invalid">
+                  [disabled]="commentForm.invalid">
             Save
             <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
           </button>

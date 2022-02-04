@@ -1,10 +1,13 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Candidate, TaskAssignment} from "../../../../../../../model/candidate";
+import {Candidate, TaskAssignment, TaskType} from "../../../../../../../model/candidate";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {forkJoin, Observable} from "rxjs";
 import {CandidateAttachment} from "../../../../../../../model/candidate-attachment";
 import {
-  TaskAssignmentService, UpdateTaskAssignmentRequest
+  CompleteQuestionTaskRequest,
+  CompleteSimpleTaskRequest,
+  TaskAssignmentService,
+  UpdateTaskAssignmentRequest
 } from "../../../../../../../services/task-assignment.service";
 
 @Component({
@@ -17,7 +20,8 @@ export class CandidateTaskComponent implements OnInit {
   @Input() candidate: Candidate;
   @Output() back = new EventEmitter();
   filesUploaded: File[];
-  form: FormGroup;
+  commentForm: FormGroup;
+  completeForm: FormGroup;
   loading: boolean;
   uploading: boolean;
   saving: boolean;
@@ -27,19 +31,25 @@ export class CandidateTaskComponent implements OnInit {
               private taskAssignmentService: TaskAssignmentService) { }
 
   ngOnInit(): void {
-    this.form = this.fb.group({
+    this.completeForm = this.fb.group({
+      completeSimple: [null],
+      completeQuestion: [null],
+      completeYNQuestion: [null]
+    })
+
+    this.commentForm = this.fb.group({
       comment: [this.selectedTask.candidateNotes],
       abandoned: [this.isAbandoned]
     });
 
     // Set comment as required field if abandon is checked
-    this.form.get('abandoned').valueChanges.subscribe(abandoned => {
+    this.commentForm.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
-        this.form.get('comment').setValidators([Validators.required])
+        this.commentForm.get('comment').setValidators([Validators.required])
       } else {
-        this.form.get('comment').clearValidators();
+        this.commentForm.get('comment').clearValidators();
       }
-      this.form.controls['comment'].updateValueAndValidity()
+      this.commentForm.controls['comment'].updateValueAndValidity()
     });
   }
 
@@ -51,7 +61,7 @@ export class CandidateTaskComponent implements OnInit {
     return this.selectedTask.completedDate != null;
   }
 
-  startServerUpload($event) {
+  completeUploadTask($event) {
     this.error = null;
     this.uploading = true;
 
@@ -86,6 +96,65 @@ export class CandidateTaskComponent implements OnInit {
     );
   }
 
+
+  completeNonUploadTask() {
+    if (this.selectedTask.task.taskType === TaskType.Question) {
+      this.completeQuestionTask();
+    } else if (this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
+      this.completeYNQuestionTask();
+    } else {
+      this.completeSimpleTask();
+    }
+  }
+
+  completeSimpleTask() {
+    this.saving = true;
+    const req: CompleteSimpleTaskRequest = {
+      completed: this.completeForm.value.completeSimple,
+    }
+    this.taskAssignmentService.completeSimpleTask(this.selectedTask.id, req).subscribe(
+      (taskAssignment) => {
+        this.selectedTask = taskAssignment;
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+  }
+
+  completeQuestionTask() {
+    this.saving = true;
+    const req: CompleteQuestionTaskRequest = {
+      answer: this.completeForm.value.completeQuestion,
+    }
+    this.taskAssignmentService.completeQuestionTask(this.selectedTask.id, req).subscribe(
+      (taskAssignment) => {
+        this.selectedTask = taskAssignment;
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+  }
+
+  completeYNQuestionTask() {
+    this.saving = true;
+    const req: CompleteQuestionTaskRequest = {
+      answer: this.completeForm.value.completeYNQuestion,
+    }
+    this.taskAssignmentService.completeYNQuestionTask(this.selectedTask.id, req).subscribe(
+      (taskAssignment) => {
+        this.selectedTask = taskAssignment;
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+  }
+
   getFileName(fileName: string): string {
     return this.candidate?.candidateNumber + "-" + this.selectedTask?.task?.uploadType + "-" + fileName;
   }
@@ -103,8 +172,8 @@ export class CandidateTaskComponent implements OnInit {
     this.saving = true;
     const updateRequest: UpdateTaskAssignmentRequest = {
       taskAssignmentId: this.selectedTask.id,
-      candidateNotes: this.form.value.comment,
-      abandoned: this.form.value.abandoned,
+      candidateNotes: this.commentForm.value.comment,
+      abandoned: this.commentForm.value.abandoned,
       complete: this.isComplete
     }
     this.taskAssignmentService.update(this.selectedTask.id, updateRequest).subscribe(
