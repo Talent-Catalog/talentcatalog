@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -393,9 +394,11 @@ public interface CandidateService {
     Candidate save(Candidate candidate, boolean updateCandidateEs);
 
     /**
-     * Creates a folder for the given candidate on Google Drive.
+     * Creates a folder for the given candidate on Google Drive, as well as standard subfolders.
      * <p/>
-     * If a folder already exists for the candidate, does nothing.
+     * If a link to the folder or subfolders are already recorded for the candidate, does nothing.
+     * Otherwise, checks whether folders already exist, creating them if necessary, and stores
+     * the links with the candidate (and DB).
      *
      * @param id ID of candidate
      * @return Updated candidate object, containing link to folder (created or
@@ -405,6 +408,15 @@ public interface CandidateService {
      */
     Candidate createCandidateFolder(long id)
             throws NoSuchObjectException, IOException;
+
+    /**
+     * Applies {@link #createCandidateFolder(long)} for each of the given candidate ids.
+     * @param candidateIds ids of candidates
+     * @throws NoSuchObjectException if no candidate is found with an id
+     * @throws IOException           if there is a problem creating the folders.
+     */
+    void createCandidateFolder(Collection<Long> candidateIds)
+        throws NoSuchObjectException, IOException;
 
     /**
      * Creates/updates a Contact record on Salesforce for the given candidate.

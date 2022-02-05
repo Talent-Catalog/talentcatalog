@@ -2190,10 +2190,17 @@ public class CandidateServiceImpl implements CandidateService {
 
         //Check that all candidate subfolders are present and links are stored
         for (CandidateSubfolderType cstype: CandidateSubfolderType.values()) {
-
             if (getCandidateSubfolderlink(candidate, cstype) == null) {
+                //No link stored = check if folder exists
+                final String subfolderName = getCandidateSubfolderName(cstype);
                 GoogleFileSystemFolder subfolder =
-                    findOrCreateSubfolder(candidateDrive, folder, getCandidateSubfolderName(cstype));
+                    fileSystemService.findAFolder(candidateDrive, folder, subfolderName);
+                if (subfolder == null) {
+                    //No subfolder exists - create one
+                    subfolder = fileSystemService.createFolder(candidateDrive, folder, subfolderName);
+                    //Make publicly viewable
+                    fileSystemService.publishFolder(subfolder);
+                }
 
                 setCandidateSubfolderlink(candidate, cstype, subfolder.getUrl());
             }
@@ -2203,24 +2210,12 @@ public class CandidateServiceImpl implements CandidateService {
         return candidate;
     }
 
-    private GoogleFileSystemFolder findOrCreateSubfolder(
-        GoogleFileSystemDrive candidateDrive, GoogleFileSystemFolder parent, String folderName)
-        throws IOException {
-
-        GoogleFileSystemFolder subfolder = fileSystemService.findAFolder(
-            candidateDrive, parent, folderName);
-
-        //Todo one off code - remove once existing folders are all public
-        if (subfolder != null) {
-            fileSystemService.publishFolder(subfolder);
+    @Override
+    public void createCandidateFolder(Collection<Long> candidateIds)
+        throws NoSuchObjectException, IOException {
+        for (Long candidateId : candidateIds) {
+            createCandidateFolder(candidateId);
         }
-        //Todo END one off code
-
-        if (subfolder == null) {
-            subfolder = fileSystemService.createFolder(candidateDrive, parent, folderName);
-            fileSystemService.publishFolder(subfolder);
-        }
-        return subfolder;
     }
 
     @Override
