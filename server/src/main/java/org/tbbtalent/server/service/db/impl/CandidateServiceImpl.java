@@ -101,6 +101,18 @@ public class CandidateServiceImpl implements CandidateService {
             CandidateStatus.withdrawn
         )));
 
+    private static final Map<CandidateSubfolderType, String> candidateSubfolderNames;
+    static {
+        candidateSubfolderNames = new HashMap<>();
+        candidateSubfolderNames.put(CandidateSubfolderType.address, "Address");
+        candidateSubfolderNames.put(CandidateSubfolderType.character, "Character");
+        candidateSubfolderNames.put(CandidateSubfolderType.employer, "Employer");
+        candidateSubfolderNames.put(CandidateSubfolderType.identity, "Identity");
+        candidateSubfolderNames.put(CandidateSubfolderType.medical, "Medicals");
+        candidateSubfolderNames.put(CandidateSubfolderType.qualification, "Qualification");
+        candidateSubfolderNames.put(CandidateSubfolderType.registration, "Registration");
+    }
+
     private final UserRepository userRepository;
     private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
@@ -2084,6 +2096,71 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @NonNull
+    public String getCandidateSubfolderName(CandidateSubfolderType type) {
+        return candidateSubfolderNames.get(type);
+    }
+
+    @Override
+    @Nullable
+    public String getCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type) {
+        String link = null;
+        switch (type) {
+            case address:
+                link = candidate.getFolderlinkAddress();
+                break;
+            case character:
+                link = candidate.getFolderlinkCharacter();
+                break;
+            case employer:
+                link = candidate.getFolderlinkEmployer();
+                break;
+            case identity:
+                link = candidate.getFolderlinkIdentity();
+                break;
+            case medical:
+                link = candidate.getFolderlinkMedical();
+                break;
+            case qualification:
+                link = candidate.getFolderlinkQualification();
+                break;
+            case registration:
+                link = candidate.getFolderlinkRegistration();
+                break;
+        }
+        return link;
+    }
+
+    @Override
+    public void setCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type,
+        @Nullable String link) {
+
+        switch (type) {
+            case address:
+                candidate.setFolderlinkAddress(link);
+                break;
+            case character:
+                candidate.setFolderlinkCharacter(link);
+                break;
+            case employer:
+                candidate.setFolderlinkEmployer(link);
+                break;
+            case identity:
+                candidate.setFolderlinkIdentity(link);
+                break;
+            case medical:
+                candidate.setFolderlinkMedical(link);
+                break;
+            case qualification:
+                candidate.setFolderlinkQualification(link);
+                break;
+            case registration:
+                candidate.setFolderlinkRegistration(link);
+                break;
+        }
+    }
+
+    @Override
     public Candidate createCandidateFolder(long id)
             throws NoSuchObjectException, IOException {
         Candidate candidate = getCandidate(id);
@@ -2091,16 +2168,59 @@ public class CandidateServiceImpl implements CandidateService {
         GoogleFileSystemDrive candidateDrive = googleDriveConfig.getCandidateDataDrive();
         GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
 
-        String candidateNumber = candidate.getCandidateNumber();
+        GoogleFileSystemFolder folder;
 
-        GoogleFileSystemFolder folder = fileSystemService.findAFolder(
-            candidateDrive, candidateRoot, candidateNumber);
-        if (folder == null) {
-            folder = fileSystemService.createFolder(candidateDrive, candidateRoot, candidateNumber);
+        String folderlink = candidate.getFolderlink();
+
+        //If we already have a folderlink stored, that gives us the folder object
+        if (folderlink != null) {
+            folder = new GoogleFileSystemFolder(folderlink);
+        } else {
+            //If we don't have a folderlink stored, look for the folder, creating one if needed.
+            String candidateNumber = candidate.getCandidateNumber();
+            folder = fileSystemService.findAFolder(candidateDrive, candidateRoot, candidateNumber);
+            if (folder == null) {
+                //No folder exists on drive, create it
+                folder = fileSystemService.createFolder(
+                    candidateDrive, candidateRoot, candidateNumber);
+            }
+            //Store the link
+            candidate.setFolderlink(folder.getUrl());
         }
-        candidate.setFolderlink(folder.getUrl());
+
+        //Check that all candidate subfolders are present and links are stored
+        for (CandidateSubfolderType cstype: CandidateSubfolderType.values()) {
+
+            if (getCandidateSubfolderlink(candidate, cstype) == null) {
+                GoogleFileSystemFolder subfolder =
+                    findOrCreateSubfolder(candidateDrive, folder, getCandidateSubfolderName(cstype));
+
+                setCandidateSubfolderlink(candidate, cstype, subfolder.getUrl());
+            }
+        }
+
         save(candidate, false);
         return candidate;
+    }
+
+    private GoogleFileSystemFolder findOrCreateSubfolder(
+        GoogleFileSystemDrive candidateDrive, GoogleFileSystemFolder parent, String folderName)
+        throws IOException {
+
+        GoogleFileSystemFolder subfolder = fileSystemService.findAFolder(
+            candidateDrive, parent, folderName);
+
+        //Todo one off code - remove once existing folders are all public
+        if (subfolder != null) {
+            fileSystemService.publishFolder(subfolder);
+        }
+        //Todo END one off code
+
+        if (subfolder == null) {
+            subfolder = fileSystemService.createFolder(candidateDrive, parent, folderName);
+            fileSystemService.publishFolder(subfolder);
+        }
+        return subfolder;
     }
 
     @Override
@@ -2360,57 +2480,5 @@ public class CandidateServiceImpl implements CandidateService {
         ta.setCompletedDate(completed ? OffsetDateTime.of(yesterday, LocalTime.MIDNIGHT, ZoneOffset.UTC) : null);
 
         return ta;
-    }
-
-    //TODO JC These addFakeTasks methods might eventually be moved out of CandidateService and
-    //into the unit testing code. Useful to have them here now to support temporary hack
-    //allowing us to send up had coded task assignments to the Angular code.
-    @Override
-    public void addFakeTasks(Iterable<Candidate> candidates) {
-        for (Candidate candidate : candidates) {
-            addFakeTasks(candidate);
-        }
-    }
-
-    private void addFakeTasks(Candidate candidate) {
-        Set<TaskAssignmentImpl> taskAssignments = new HashSet<>();
-
-        //Generate a different combination of task assignments based on the last digit of the
-        //candidate number.
-        long candidateNumber = Long.parseLong(candidate.getCandidateNumber());
-        int lastDigit = (int) candidateNumber % 10;
-
-        //Depending on the last digit of the candidate number generate task assignments which
-        //are all possible combinations of optional/completed/overdue.
-        //Useful for testing the way these different task assignments are displayed to the user.
-        switch (lastDigit) {
-            case 0:
-            case 1:
-            case 2:
-                taskAssignments.add(makeFakeTaskAssignment(false, false, false));
-                taskAssignments.add(makeFakeTaskAssignment(false, false, true));
-                break;
-            case 3:
-            case 4:
-            case 5:
-                taskAssignments.add(makeFakeTaskAssignment(false, true, false));
-                taskAssignments.add(makeFakeTaskAssignment(false, true, true));
-                taskAssignments.add(makeFakeTaskAssignment(true, false, false));
-                break;
-
-            case 6:
-            case 7:
-            case 8:
-                taskAssignments.add(makeFakeTaskAssignment(true, false, true));
-                taskAssignments.add(makeFakeTaskAssignment(true, true, false));
-                taskAssignments.add(makeFakeTaskAssignment(true, true, true));
-                break;
-
-            case 9:
-                //Candidate numbers ending in 9 have no tasks assigned
-                break;
-        }
-
-        candidate.setTaskAssignments(taskAssignments);
     }
 }
