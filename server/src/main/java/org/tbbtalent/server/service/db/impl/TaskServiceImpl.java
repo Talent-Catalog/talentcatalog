@@ -16,12 +16,11 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.QuestionTask;
+import org.tbbtalent.server.model.db.QuestionTaskImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.task.Task;
@@ -31,6 +30,8 @@ import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
 import org.tbbtalent.server.request.task.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
+
+import java.util.List;
 
 
 // TODO: 15/1/22 Services should implement interfaces which define the operations of the service.
@@ -46,7 +47,7 @@ public class TaskServiceImpl implements TaskService {
         return null;
     }
 
-    public QuestionTask createQuestionTask(CreateQuestionTaskRequest request) {
+    public QuestionTaskImpl createQuestionTask(CreateQuestionTaskRequest request) {
         return null;
     }
 

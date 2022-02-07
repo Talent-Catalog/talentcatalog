@@ -16,19 +16,17 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.tbbtalent.server.model.db.QuestionTask;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.repository.db.TaskRepository;
-import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
 import org.tbbtalent.server.request.task.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 // TODO Note for Caroline: The problem with SpringBootTest is that it starts up the whole of Spring
@@ -74,26 +72,26 @@ class TaskServiceImplTest {
      */
     //@Test
     void createQuestionTask(){
-        CreateQuestionTaskRequest request = new CreateQuestionTaskRequest();
-        request.setName("Test Question Task");
-        request.setDescription("This is a test description.");
-        request.setTimeframe("2 Weeks");
-        request.setAdminOnly(false);
-        request.setQuestion("Do you have a passport?");
-        request.setAnswer("Yes");
-
-        // Do I need a repository for each task class (e.g. question/upload/other, even if they extend from the one interface)
-        // https://stackoverflow.com/a/63658452 - looks like can use the single repo
-//        when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
-        QuestionTask qTask = taskService.createQuestionTask(request);
-
-        assertNotNull(qTask);
-        assertThat(qTask.getName()).isEqualTo("Test Question Task");
-        assertThat(qTask.getDescription()).isEqualTo("This is a test description.");
-        assertThat(qTask.getTimeframe()).isEqualTo("2 Weeks");
-        assertThat(qTask.isAdminOnly()).isFalse();
-        assertThat(qTask.getQuestion()).isEqualTo("Do you have a passport?");
-        assertThat(qTask.getAnswer()).isEqualTo("Yes");
+//        CreateQuestionTaskRequest request = new CreateQuestionTaskRequest();
+//        request.setName("Test Question Task");
+//        request.setDescription("This is a test description.");
+//        request.setTimeframe("2 Weeks");
+//        request.setAdminOnly(false);
+//        request.setQuestion("Do you have a passport?");
+//        request.setAnswer("Yes");
+//
+//        // Do I need a repository for each task class (e.g. question/upload/other, even if they extend from the one interface)
+//        // https://stackoverflow.com/a/63658452 - looks like can use the single repo
+////        when(taskRepository.save(any(org.tbbtalent.server.model.db.task.Task.class))).then(returnsFirstArg());
+//        QuestionTask qTask = taskService.createQuestionTask(request);
+//
+//        assertNotNull(qTask);
+//        assertThat(qTask.getName()).isEqualTo("Test Question Task");
+//        assertThat(qTask.getDescription()).isEqualTo("This is a test description.");
+//        assertThat(qTask.getTimeframe()).isEqualTo("2 Weeks");
+//        assertThat(qTask.isAdminOnly()).isFalse();
+//        assertThat(qTask.getQuestion()).isEqualTo("Do you have a passport?");
+//        assertThat(qTask.getAnswer()).isEqualTo("Yes");
     }
 
     /**
