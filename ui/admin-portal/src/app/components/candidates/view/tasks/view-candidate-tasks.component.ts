@@ -9,6 +9,7 @@ import {TaskAssignmentService} from "../../../../services/task-assignment.servic
 import {TaskAssignment} from "../../../../model/task-assignment";
 import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../services/candidate-attachment.service";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
+import {TaskType} from "../../../../model/task";
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -131,30 +132,30 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   }
 
   viewResponse(ta: TaskAssignment) {
-    // todo link to the uploaded file, or in future it might be the answer to a question.
-    // Otherwise get all attachments
-    const request: ListByUploadTypeRequest = {
-      candidateId: this.candidate.id,
-      uploadType: ta.task.uploadType
+    // todo in future it might be the answer to a question, display this answer in a modal?
+    if (ta.task.taskType === TaskType.Upload) {
+      const request: ListByUploadTypeRequest = {
+        candidateId: this.candidate.id,
+        uploadType: ta.task.uploadType
+      }
+      this.candidateAttachmentService.listByType(request).subscribe(
+        results => {
+          if (results.length > 0) {
+            this.openFiles(results)
+          }
+        },
+        error => {
+          this.error = error;
+        });
     }
-
-    this.candidateAttachmentService.listByType(request).subscribe(
-      results => {
-        if (results.length > 0) {
-          this.openFiles(results)
-        }
-      },
-      error => {
-        this.error = error;
-      })
-    ;
   }
 
   openFiles(ats: CandidateAttachment[]) {
     this.loadingResponse = true;
-    this.candidateAttachmentService.downloadAttachments(this.candidate, ats).subscribe(
-      () => this.loadingResponse = false,
-      (err: string) => {this.loadingResponse = false; this.error = err}
-    );
+    for (let i = 0; i < ats.length; i++) {
+      console.log(ats[i]);
+      window.open(ats[i].url);
+    }
+    this.loadingResponse = false;
   }
 }

@@ -81,10 +81,11 @@
             </span>
           </div>
           <div *ngIf="editable" class="d-flex float-right text-right">
-            <button class="btn btn-default" (click)="editTaskAssignment(ta)">
+            <button class="btn btn-default" title="Edit task" (click)="editTaskAssignment(ta)">
               <i class="fas fa-edit"></i></button>
-            <button class="btn btn-default" (click)="viewResponse(ta)">
-              <i class="far fa-comment-dots" title="See response to task"></i>
+            <button class="btn btn-default" title="See response to task" (click)="viewResponse(ta)">
+              <i *ngIf="ta.task.taskType === 'Upload'" class="fas fa-link" ></i>
+              <i *ngIf="ta.task.taskType === 'Question'" class="far fa-comment-dots"></i>
             </button>
           </div>
         </div>
