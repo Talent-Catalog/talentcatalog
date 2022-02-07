@@ -52,7 +52,7 @@ public class UpdateTaskAssignmentRequest {
      * If task is set as complete or not (admin portal)
      */
     @Nullable
-    boolean complete;
+    boolean completed;
 
     /**
      * If task is set as complete or not (admin portal)
