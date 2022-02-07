@@ -97,6 +97,8 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(taskAssignmentId)
             .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
 
+        // A way to establish if coming from candidate or admin portal as the requests may be different?
+
         if (request.getDueDate() != null) {
             taskAssignment.setDueDate(request.getDueDate());
         }

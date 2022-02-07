@@ -52,7 +52,12 @@
 
 <div class="card" *ngIf="!loading">
   <div class="card-header card-header d-flex">
-    <span class="w-50">Candidate Tasks: Completed</span>
+    <span class="w-50">Candidate Tasks: Completed
+        <ng-container *ngIf="loadingResponse">
+          <i class="fas fa-spinner fa-spin"></i>
+        </ng-container>
+    </span>
+
     <span>Comment? <span class="small text-muted">(hover over long comments)</span></span>
     <span></span>
   </div>
@@ -79,7 +84,8 @@
             <button class="btn btn-default" (click)="editTaskAssignment(ta)">
               <i class="fas fa-edit"></i></button>
             <button class="btn btn-default" (click)="viewResponse(ta)">
-              <i class="far fa-eye"></i></button>
+              <i class="far fa-comment-dots" title="See response to task"></i>
+            </button>
           </div>
         </div>
       </div>

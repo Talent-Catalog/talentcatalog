@@ -20,8 +20,7 @@ export class CandidateTaskComponent implements OnInit {
   @Input() candidate: Candidate;
   @Output() back = new EventEmitter();
   filesUploaded: File[];
-  commentForm: FormGroup;
-  completeForm: FormGroup;
+  form: FormGroup;
   loading: boolean;
   uploading: boolean;
   saving: boolean;
@@ -31,25 +30,22 @@ export class CandidateTaskComponent implements OnInit {
               private taskAssignmentService: TaskAssignmentService) { }
 
   ngOnInit(): void {
-    this.completeForm = this.fb.group({
+    this.form = this.fb.group({
       completeSimple: [null],
       completeQuestion: [null],
-      completeYNQuestion: [null]
-    })
-
-    this.commentForm = this.fb.group({
+      completeYNQuestion: [null],
       comment: [this.selectedTask.candidateNotes],
       abandoned: [this.isAbandoned]
-    });
+    })
 
     // Set comment as required field if abandon is checked
-    this.commentForm.get('abandoned').valueChanges.subscribe(abandoned => {
+    this.form.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
-        this.commentForm.get('comment').setValidators([Validators.required])
+        this.form.get('comment').setValidators([Validators.required])
       } else {
-        this.commentForm.get('comment').clearValidators();
+        this.form.get('comment').clearValidators();
       }
-      this.commentForm.controls['comment'].updateValueAndValidity()
+      this.form.controls['comment'].updateValueAndValidity()
     });
   }
 
@@ -105,12 +101,13 @@ export class CandidateTaskComponent implements OnInit {
     } else {
       this.completeSimpleTask();
     }
+    this.submitComment();
   }
 
   completeSimpleTask() {
     this.saving = true;
     const req: CompleteSimpleTaskRequest = {
-      completed: this.completeForm.value.completeSimple,
+      completed: this.form.value.completeSimple,
     }
     this.taskAssignmentService.completeSimpleTask(this.selectedTask.id, req).subscribe(
       (taskAssignment) => {
@@ -126,7 +123,7 @@ export class CandidateTaskComponent implements OnInit {
   completeQuestionTask() {
     this.saving = true;
     const req: CompleteQuestionTaskRequest = {
-      answer: this.completeForm.value.completeQuestion,
+      answer: this.form.value.completeQuestion,
     }
     this.taskAssignmentService.completeQuestionTask(this.selectedTask.id, req).subscribe(
       (taskAssignment) => {
@@ -142,7 +139,7 @@ export class CandidateTaskComponent implements OnInit {
   completeYNQuestionTask() {
     this.saving = true;
     const req: CompleteQuestionTaskRequest = {
-      answer: this.completeForm.value.completeYNQuestion,
+      answer: this.form.value.completeYNQuestion,
     }
     this.taskAssignmentService.completeYNQuestionTask(this.selectedTask.id, req).subscribe(
       (taskAssignment) => {
@@ -172,9 +169,12 @@ export class CandidateTaskComponent implements OnInit {
     this.saving = true;
     const updateRequest: UpdateTaskAssignmentRequest = {
       taskAssignmentId: this.selectedTask.id,
-      candidateNotes: this.commentForm.value.comment,
-      abandoned: this.commentForm.value.abandoned,
-      complete: this.isComplete
+      candidateNotes: this.form.value.comment,
+      abandoned: this.form.value.abandoned,
+      completed: this.isComplete,
+      completeSimple: this.form.value.completeSimple,
+      completeQuestion: this.form.value.completeQuestion,
+      completeYNQuestion: this.form.value.completeSimple,
     }
     this.taskAssignmentService.update(this.selectedTask.id, updateRequest).subscribe(
       (taskAssignment: TaskAssignment) => {

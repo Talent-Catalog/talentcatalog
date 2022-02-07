@@ -48,8 +48,3 @@ export class CandidateAttachmentRequest {
   fileType?: string; //Not needed for links
   folder?: string; //Only used by S3. Not needed for links or Google
 }
-
-export interface SearchCandidateAttachmentsRequest {
-  candidateId: number;
-  cvOnly: boolean;
-}

@@ -32,6 +32,16 @@ export interface UpdateCandidateAttachmentRequest {
   cv?: boolean;
 }
 
+export interface SearchCandidateAttachmentsRequest {
+  candidateId: number;
+  cvOnly: boolean;
+}
+
+export interface ListByUploadTypeRequest {
+  candidateId: number;
+  uploadType: string;
+}
+
 @Injectable({providedIn: 'root'})
 export class CandidateAttachmentService {
 
@@ -40,7 +50,7 @@ export class CandidateAttachmentService {
 
   constructor(private http: HttpClient) {}
 
-  search(request): Observable<CandidateAttachment[]> {
+  search(request: SearchCandidateAttachmentsRequest): Observable<CandidateAttachment[]> {
     return this.http.post<CandidateAttachment[]>(`${this.apiUrl}/search`, request);
   }
 
@@ -115,5 +125,9 @@ export class CandidateAttachmentService {
 
   updateAttachment(id: number, request: UpdateCandidateAttachmentRequest): Observable<CandidateAttachment> {
     return this.http.put<CandidateAttachment>(`${this.apiUrl}/${id}`, request);
+  }
+
+  listByType(request: ListByUploadTypeRequest): Observable<CandidateAttachment[]> {
+    return this.http.post<CandidateAttachment[]>(`${this.apiUrl}/list-by-type`, request);
   }
 }

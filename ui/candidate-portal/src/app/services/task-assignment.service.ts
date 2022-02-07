@@ -18,7 +18,7 @@ import {Injectable} from "@angular/core";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {TaskAssignment} from "../model/candidate";
+import {TaskAssignment, YesNo} from "../model/candidate";
 
 // todo merge the update task assignment request with the simple task/question task request.
 // This would then only one Save button rather than two on the same page.
@@ -26,10 +26,13 @@ import {TaskAssignment} from "../model/candidate";
 export interface UpdateTaskAssignmentRequest {
   taskAssignmentId: number,
   abandoned: boolean
-  complete: boolean,
+  completed: boolean,
   dueDate?: Date,
   completedDate?: Date,
   candidateNotes?: string,
+  completeSimple?: boolean,
+  completeQuestion?: string,
+  completeYNQuestion?: YesNo
 }
 
 export interface CompleteSimpleTaskRequest {

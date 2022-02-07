@@ -44,7 +44,7 @@
   </section>
 </ng-container>
 
-<form [formGroup]="completeForm" (submit)="completeTask()">
+<form [formGroup]="form" (submit)="completeNonUploadTask()">
   <ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
     <!-- *ngIf="selectedTask.task.taskType === 'Simple'" -->
     <section>
@@ -112,45 +112,45 @@
     </section>
   </ng-container>
 
+
+
+  <!-- COMMENT -->
+  <section>
+    <div class="section-heading">
+      <h5>Add/Edit Comment</h5>
+    </div>
+    <div class="card">
+        <div *ngIf="!isComplete" class="form-group">
+          <div class="form-check-inline">
+            <label class="form-check-label mb-0 mr-2" for="abandoned">Are you unable to complete this task? </label>
+            <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
+          </div>
+          <div>
+            <small class="text-muted">If checked a comment must be added to provide reason why this task can't be completed.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="font-weight-bold" for="comment">
+            Comment:
+          </label>
+          <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+                    [formControlName]="'comment'"></textarea>
+<!--            <button class="btn btn-primary mt-2" type="submit"-->
+<!--                    [disabled]="commentForm.invalid">-->
+<!--              Save-->
+<!--              <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>-->
+<!--            </button>-->
+        </div>
+    </div>
+  </section>
+
   <button class="btn btn-primary mt-2" type="submit"
-          [disabled]="completeForm.invalid">
-    Complete
+          [disabled]="form.invalid">
+    Submit
     <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
   </button>
 </form>
-
-<!-- COMMENT -->
-<section>
-  <div class="section-heading">
-    <h5>Add/Edit Comment</h5>
-  </div>
-  <div class="card">
-    <form [formGroup]="commentForm" (submit)="submitComment()">
-      <div *ngIf="!isComplete" class="form-group">
-        <div class="form-check-inline">
-          <label class="form-check-label mb-0 mr-2" for="abandoned">Are you unable to complete this task? </label>
-          <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
-        </div>
-        <div>
-          <small class="text-muted">If checked a comment must be added to provide reason why this task can't be completed.</small>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="font-weight-bold" for="comment">
-          Comment:
-        </label>
-        <textarea id="comment" class="md-textarea-auto form-control" rows="5"
-                  [formControlName]="'comment'"></textarea>
-          <button class="btn btn-primary mt-2" type="submit"
-                  [disabled]="commentForm.invalid">
-            Save
-            <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
-          </button>
-      </div>
-    </form>
-  </div>
-</section>
 
 
 

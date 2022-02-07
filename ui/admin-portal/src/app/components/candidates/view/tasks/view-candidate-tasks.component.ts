@@ -7,6 +7,8 @@ import {EditTaskAssignmentComponent} from "./edit/edit-task-assignment.component
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 import {TaskAssignmentService} from "../../../../services/task-assignment.service";
 import {TaskAssignment} from "../../../../model/task-assignment";
+import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../services/candidate-attachment.service";
+import {CandidateAttachment} from "../../../../model/candidate-attachment";
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -18,6 +20,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
   loading;
+  loadingResponse;
   error;
   saving;
   ongoingTasks: TaskAssignment[];
@@ -26,6 +29,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   today: Date;
 
   constructor(private candidateService: CandidateService,
+              private candidateAttachmentService: CandidateAttachmentService,
               private taskAssignmentService: TaskAssignmentService,
               private modalService: NgbModal) { }
 
@@ -128,5 +132,29 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   viewResponse(ta: TaskAssignment) {
     // todo link to the uploaded file, or in future it might be the answer to a question.
+    // Otherwise get all attachments
+    const request: ListByUploadTypeRequest = {
+      candidateId: this.candidate.id,
+      uploadType: ta.task.uploadType
+    }
+
+    this.candidateAttachmentService.listByType(request).subscribe(
+      results => {
+        if (results.length > 0) {
+          this.openFiles(results)
+        }
+      },
+      error => {
+        this.error = error;
+      })
+    ;
+  }
+
+  openFiles(ats: CandidateAttachment[]) {
+    this.loadingResponse = true;
+    this.candidateAttachmentService.downloadAttachments(this.candidate, ats).subscribe(
+      () => this.loadingResponse = false,
+      (err: string) => {this.loadingResponse = false; this.error = err}
+    );
   }
 }
