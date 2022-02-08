@@ -80,9 +80,32 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     this.fileSystemService = fileSystemService;
   }
 
-  @Override
-  public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
-      String name, String dataRangeName, List<List<Object>> mainData, Map<String, Object> props,
+  public void populatePublishedDoc(
+      String docUrl, String dataRangeName, List<List<Object>> mainData)
+      throws GeneralSecurityException, IOException {
+
+    GoogleFileSystemFile sheet = new GoogleFileSystemFile(docUrl);
+
+    List<ValueRange> data = new ArrayList<>();
+
+    //Add main data - the rows for each candidate, plus the column headers in the first row.
+    data.add(new ValueRange().setRange(dataRangeName).setValues(mainData));
+
+    // TODO: 8/2/22 Should work - but no need to batch
+    BatchUpdateValuesRequest body = new BatchUpdateValuesRequest()
+        .setValueInputOption("USER_ENTERED")
+        .setData(data);
+
+    final Sheets service = googleDriveConfig.getGoogleSheetsService();
+    final String spreadsheetId = sheet.getId();
+
+    BatchUpdateValuesResponse res = service.spreadsheets().values().batchUpdate(spreadsheetId, body).execute();
+    log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: " + sheet.getUrl());
+
+  }
+
+  public String createPublishedDoc(GoogleFileSystemFolder folder,
+      String name, String dataRangeName, int nRowsData, Map<String, Object> props,
       Map<Integer, PublishedDocColumnSetUp> columnSetUpMap)
       throws GeneralSecurityException, IOException {
 
@@ -122,13 +145,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
       }
     }
 
-    DataInSheet dataInSheet = new DataInSheet(mainSheetId, dataRange, mainData);
-
-
-    //   NOW START POPULATING SHEET
-
-    //Add main data - the rows for each candidate, plus the column headers in the first row.
-    data.add(new ValueRange().setRange(dataRangeName).setValues(mainData));
+    DataInSheet dataInSheet = new DataInSheet(mainSheetId, dataRange, nRowsData);
 
     //Add in extra properties. These go into the named cells whose names are given by the map keys.
     //This is the data that ends up in the sheet's Data tab.
@@ -195,6 +212,24 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     fileSystemService.publishFile(file);
 
     return file.getUrl();
+
+  }
+
+  @Override
+  public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
+      String name, String dataRangeName, List<List<Object>> mainData, Map<String, Object> props,
+      Map<Integer, PublishedDocColumnSetUp> columnSetUpMap)
+      throws GeneralSecurityException, IOException {
+
+    String docUrl = createPublishedDoc(folder, name, dataRangeName, mainData.size(), props, columnSetUpMap);
+
+    //Async
+    //todo Calculate main data
+    populatePublishedDoc(docUrl, dataRangeName, mainData);
+    //End async
+
+
+    return docUrl;
   }
 
   @Override
@@ -348,7 +383,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
 
     private final GridRange dataRange;
     private final Integer sheetId;
-    private final List<List<Object>> data;
+    private final int nRowsData;
 
     /**
      * Places the given data at the given location in the given sheet.
@@ -356,12 +391,12 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
      * The first row of the data is assumed to be column headers
      * @param sheetId Sheet id (ie the tab id)
      * @param dataRange Location within which the data is located in the sheet
-     * @param data The array of data values.
+     * @param nRowsData The number of rows of data (including the header row).
      */
-    public DataInSheet(Integer sheetId, GridRange dataRange, List<List<Object>> data) {
+    public DataInSheet(Integer sheetId, GridRange dataRange, int nRowsData) {
       this.dataRange = dataRange;
       this.sheetId = sheetId;
-      this.data = data;
+      this.nRowsData = nRowsData;
     }
 
     /**
@@ -378,7 +413,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
           .setStartRowIndex(startRow)
           .setStartColumnIndex(startColumn)
           //Don't count header row
-          .setEndRowIndex(startRow + data.size()-1)
+          .setEndRowIndex(startRow + nRowsData-1)
           .setEndColumnIndex(startColumn+1);
     }
   }
