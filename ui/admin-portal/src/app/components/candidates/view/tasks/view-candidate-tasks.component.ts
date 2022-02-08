@@ -10,6 +10,7 @@ import {TaskAssignment} from "../../../../model/task-assignment";
 import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../services/candidate-attachment.service";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {TaskType} from "../../../../model/task";
+import {ViewResponseComponent} from "./view-response/view-response.component";
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -147,6 +148,8 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
         error => {
           this.error = error;
         });
+    } else if (ta.task?.taskType === TaskType.Question) {
+      this.viewQuestionResponse(ta);
     }
   }
 
@@ -157,5 +160,20 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       window.open(ats[i].url);
     }
     this.loadingResponse = false;
+  }
+
+  viewQuestionResponse(ta: TaskAssignment) {
+    const viewResponseModal = this.modalService.open(ViewResponseComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    viewResponseModal.componentInstance.taskAssignment = ta;
+
+    viewResponseModal.result
+      .then(() => {
+      })
+      .catch(() => { /* Isn't possible */
+      });
   }
 }
