@@ -19,7 +19,7 @@ export interface CreateTaskAssignmentRequest {
 
 export interface UpdateTaskAssignmentRequest {
   taskAssignmentId: number,
-  complete: boolean,
+  completed: boolean,
   abandoned: boolean,
   dueDate?: Date,
   candidateNotes?: string
