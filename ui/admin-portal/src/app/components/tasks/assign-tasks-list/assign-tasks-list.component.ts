@@ -4,10 +4,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {SavedList} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
-import {
-  AssignTaskToListRequest,
-  TaskAssignmentService
-} from "../../../services/task-assignment.service";
+import {AssignTaskToListRequest, TaskAssignmentService} from "../../../services/task-assignment.service";
 import {Task} from "../../../model/task";
 
 @Component({
@@ -115,6 +112,11 @@ export class AssignTasksListComponent implements OnInit {
         error => this.error = error
       )
       .catch();
+  }
+
+  // Allow to search for either a task name or a task type.
+  searchTypeOrName = (searchTerm: string, item: any) => {
+    return item.taskType.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || item.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
   }
 
 }
