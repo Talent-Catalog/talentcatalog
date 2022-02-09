@@ -25,6 +25,10 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
  */
 public class TaskDtoHelper {
 
+    public static DtoBuilder selectTaskTypeBuilder() {
+        return getTaskAssignmentDto();
+    }
+
     public static DtoBuilder getTaskAssignmentDto() {
         return new DtoBuilder()
             // TODO: other attributes
@@ -50,9 +54,9 @@ public class TaskDtoHelper {
             .add("description")
             .add("optional")
             .add("taskType")
-            .add("uploadType")
-            .add("uploadSubfolderName")
-            .add("uploadableFileTypes")
+//            .add("uploadType")
+//            .add("uploadSubfolderName")
+//            .add("uploadableFileTypes")
             .add("createdBy", getUserDto())
             .add("createdDate")
             ;

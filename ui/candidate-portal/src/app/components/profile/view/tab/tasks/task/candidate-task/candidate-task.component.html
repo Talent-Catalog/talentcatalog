@@ -44,9 +44,8 @@
   </section>
 </ng-container>
 
-<form [formGroup]="form" (submit)="completeNonUploadTask()">
-  <ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
-    <!-- *ngIf="selectedTask.task.taskType === 'Simple'" -->
+<form [formGroup]="form" (submit)="submitTask()">
+  <ng-container *ngIf="selectedTask.task.taskType === 'Simple'">
     <section>
       <div class="section-heading">
         <h5>Complete Task</h5>
@@ -55,7 +54,7 @@
         <div class="form-group mb-0">
           <div class="form-check-inline">
             <label class="form-check-label mb-0 mr-2" for="completeSimple">
-              Have you completed this task? If yes, please check the box and click the complete button below.
+              Have you completed this task? If yes, please check the box and click the submit button below.
             </label>
             <input class="form-check-input" id="completeSimple" [formControlName]="'completeSimple'" type="checkbox">
           </div>
@@ -67,19 +66,15 @@
     </section>
   </ng-container>
 
-  <ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
-    <!-- *ngIf="selectedTask.task.taskType === 'Question'" -->
+  <ng-container *ngIf="selectedTask.task.taskType === 'Question'">
     <section>
       <div class="section-heading">
         <h5>Answer Question</h5>
       </div>
-      <div class="card-header">
-        Please explain your experience that will make you a great candidate?
-      </div>
       <div class="card">
         <div class="form-group">
           <label class="font-weight-bold" for="completeQuestion">
-            Please explain your answer to the question:
+            Please provide as much detail as required:
           </label>
           <textarea id="completeQuestion" class="md-textarea-auto form-control" rows="5"
                     [formControlName]="'completeQuestion'"></textarea>
@@ -88,19 +83,15 @@
     </section>
   </ng-container>
 
-  <ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
-    <!--*ngIf="selectedTask.task.taskType === 'YesNoQuestion'" -->
+  <ng-container *ngIf="selectedTask.task.taskType === 'YesNoQuestion'">
     <section>
       <div class="section-heading">
         <h5>Answer Question</h5>
       </div>
-      <div class="card-header">
-        Are you vaccinated against Covid 19?
-      </div>
       <div class="card">
         <div class="form-group">
           <label for="completeYNQuestion">
-            Please select your answer to the question:
+            Please select your answer to the question below:
           </label>
           <ng-select  id="completeYNQuestion" [formControlName]="'completeYNQuestion'"
                       [clearable]="false" placeholder="Select...">
@@ -111,8 +102,6 @@
       </div>
     </section>
   </ng-container>
-
-
 
   <!-- COMMENT -->
   <section>
@@ -136,11 +125,6 @@
           </label>
           <textarea id="comment" class="md-textarea-auto form-control" rows="5"
                     [formControlName]="'comment'"></textarea>
-<!--            <button class="btn btn-primary mt-2" type="submit"-->
-<!--                    [disabled]="commentForm.invalid">-->
-<!--              Save-->
-<!--              <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>-->
-<!--            </button>-->
         </div>
     </div>
   </section>

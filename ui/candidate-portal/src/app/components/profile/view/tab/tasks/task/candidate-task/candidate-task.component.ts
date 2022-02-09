@@ -92,16 +92,54 @@ export class CandidateTaskComponent implements OnInit {
     );
   }
 
+  getFileName(fileName: string): string {
+    return this.candidate?.candidateNumber + "-" + this.selectedTask?.task?.uploadType + "-" + fileName;
+  }
 
+  goBack() {
+    this.selectedTask = null;
+    this.back.emit();
+  }
+
+  isOverdue(ta: TaskAssignment) {
+    return (new Date(ta.dueDate) < new Date()) && !ta.task.optional;
+  }
+
+  submitTask() {
+    this.completeNonUploadTask();
+    this.addComment();
+  }
+
+  // This handles the API call to send the candidate's comment, as well as if the task is abandoned.
+  addComment() {
+    this.saving = true;
+    const updateRequest: UpdateTaskAssignmentRequest = {
+      taskAssignmentId: this.selectedTask.id,
+      candidateNotes: this.form.value.comment,
+      abandoned: this.form.value.abandoned,
+      completed: this.isComplete
+    }
+    this.taskAssignmentService.update(this.selectedTask.id, updateRequest).subscribe(
+      (taskAssignment: TaskAssignment) => {
+        this.selectedTask = taskAssignment;
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+  }
+
+  // This handles the submission of the non upload task, and the relevant API call appropriate to the task type.
+  // If it is an upload task, it will not call any API as upload tasks are completed seperately.
   completeNonUploadTask() {
     if (this.selectedTask.task.taskType === TaskType.Question) {
       this.completeQuestionTask();
     } else if (this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
       this.completeYNQuestionTask();
-    } else {
+    } else if (this.selectedTask.task.taskType === TaskType.Simple) {
       this.completeSimpleTask();
     }
-    this.submitComment();
   }
 
   completeSimpleTask() {
@@ -143,41 +181,6 @@ export class CandidateTaskComponent implements OnInit {
     }
     this.taskAssignmentService.completeYNQuestionTask(this.selectedTask.id, req).subscribe(
       (taskAssignment) => {
-        this.selectedTask = taskAssignment;
-        this.saving = false;
-      }, error => {
-        this.error = error;
-        this.saving = false;
-      }
-    )
-  }
-
-  getFileName(fileName: string): string {
-    return this.candidate?.candidateNumber + "-" + this.selectedTask?.task?.uploadType + "-" + fileName;
-  }
-
-  goBack() {
-    this.selectedTask = null;
-    this.back.emit();
-  }
-
-  isOverdue(ta: TaskAssignment) {
-    return (new Date(ta.dueDate) < new Date()) && !ta.task.optional;
-  }
-
-  submitComment() {
-    this.saving = true;
-    const updateRequest: UpdateTaskAssignmentRequest = {
-      taskAssignmentId: this.selectedTask.id,
-      candidateNotes: this.form.value.comment,
-      abandoned: this.form.value.abandoned,
-      completed: this.isComplete,
-      completeSimple: this.form.value.completeSimple,
-      completeQuestion: this.form.value.completeQuestion,
-      completeYNQuestion: this.form.value.completeSimple,
-    }
-    this.taskAssignmentService.update(this.selectedTask.id, updateRequest).subscribe(
-      (taskAssignment: TaskAssignment) => {
         this.selectedTask = taskAssignment;
         this.saving = false;
       }, error => {
