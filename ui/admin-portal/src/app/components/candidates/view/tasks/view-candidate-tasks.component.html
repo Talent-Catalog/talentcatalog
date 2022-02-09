@@ -35,9 +35,9 @@
 
         <div *ngIf="editable" class="d-flex flex-fill justify-content-between">
           <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body"
-               [disablePopover]="ta.candidateNotes?.length <=40">
-            <span *ngIf="ta.candidateNotes" class="font-r85">{{ta.candidateNotes | slice: 0 : 40}}
-              <span *ngIf="ta.candidateNotes?.length >=40">...</span>
+               [disablePopover]="ta.candidateNotes?.length <=80">
+            <span *ngIf="ta.candidateNotes" class="font-r85">{{ta.candidateNotes | slice: 0 : 80}}
+              <span *ngIf="ta.candidateNotes?.length >=80">...</span>
             </span>
           </div>
           <div class="d-flex float-right text-right">
