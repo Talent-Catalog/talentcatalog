@@ -235,6 +235,7 @@ export interface CandidateDependant {
   relation?: DependantRelations;
   relationOther?: string;
   dob?: string;
+  gender?: Gender;
   name?: string;
   registered?: Registrations;
   registeredNumber?: string;
@@ -427,11 +428,11 @@ export enum FamilyRelations {
 
 export enum DependantRelations {
   Partner = "Spouse/Partner",
-  Child = "Daughter/Son",
-  Parent = "Mother/Father",
-  Sibling = "Sister/Brother",
+  Child = "Child",
+  Parent = "Parent",
+  Sibling = "Sibling",
   AuntUncle = "Aunt/Uncle",
-  Grandparent = "Grandmother/Grandfather",
+  Grandparent = "Grandparent",
   Cousin = "First Cousin",
   Other = "Other"
 }
