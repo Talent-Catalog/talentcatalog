@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -179,6 +180,15 @@ public class SavedListCandidateAdminApi implements
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
         response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(savedListId, request, response.getWriter());
+    }
+
+    @PutMapping(value = "{id}/create-folders")
+    public void createCandidateFolders(@PathVariable("id") long savedListId)
+        throws NoSuchObjectException, IOException {
+        SavedList savedList = savedListService.get(savedListId);
+        Set<Candidate> candidates = savedList.getCandidates();
+        Set<Long> candidateIds = candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+        candidateService.createCandidateFolder(candidateIds);
     }
 
     /**

@@ -42,6 +42,8 @@ public class CandidateDependant extends AbstractDomainObject<Long> {
 
     private LocalDate dob;
 
+    private Gender gender;
+
     private String name;
 
     @Enumerated(EnumType.STRING)
@@ -71,6 +73,9 @@ public class CandidateDependant extends AbstractDomainObject<Long> {
         }
         if (data.getDependantDob() != null) {
             setDob(data.getDependantDob());
+        }
+        if (data.getDependantGender() != null) {
+            setGender(data.getDependantGender());
         }
         if (data.getDependantName() != null) {
             setName(data.getDependantName());

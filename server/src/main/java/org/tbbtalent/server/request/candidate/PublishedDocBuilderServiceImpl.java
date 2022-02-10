@@ -108,6 +108,8 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
               //Create folder if one does not exist.
               if (subfolder == null) {
                 subfolder = fileSystemService.createFolder(drive, folder, subfolderName);
+                //Make public
+                fileSystemService.publishFolder(subfolder);
               }
               val = subfolder.getUrl();
             }

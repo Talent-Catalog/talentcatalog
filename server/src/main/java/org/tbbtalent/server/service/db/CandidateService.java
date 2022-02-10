@@ -20,12 +20,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.ExportFailedException;
@@ -34,6 +37,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UnauthorisedActionException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateSubfolderType;
 import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.SavedList;
@@ -294,6 +298,41 @@ public interface CandidateService {
 
     Candidate getCandidateFromRequest(Long requestCandidateId);
 
+    /**
+     * Get the standard name of the candidate subfolder corresponding to the given candidate
+     * subfolder type.
+     * @param type Type of candidate subfolder
+     * @return Subfolder name
+     */
+    @NonNull
+    String getCandidateSubfolderName(CandidateSubfolderType type);
+
+    /**
+     * Stored url link to candidate subfolder on Google Drive which corresponds to the given
+     * candidate subfolder type, if a link has been stored.
+     * <p/>
+     * Note that this ends up calling one of the standard {@link Candidate} methods like
+     * getFolderlinkAddress etc.
+     * @param candidate Candidate owning subfolder
+     * @param type Type of candidate subfolder
+     * @return Url link or null if no link is stored
+     */
+    @Nullable
+    String getCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type);
+
+    /**
+     * Saves url link of candidate subfolder on Google Drive which corresponds to the given
+     * candidate subfolder type.
+     * <p/>
+     * Note that this ends up calling one of the standard {@link Candidate} methods like
+     * setFolderlinkAddress etc.
+     * @param candidate Candidate owning subfolder
+     * @param type Type of candidate subfolder
+     * @param link Url - can be null if we want to clear the link
+     */
+    void setCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type,
+        @Nullable String link);
+
     void exportToCsv(long savedListId, SavedListGetRequest request, PrintWriter writer)
             throws ExportFailedException;
 
@@ -355,9 +394,11 @@ public interface CandidateService {
     Candidate save(Candidate candidate, boolean updateCandidateEs);
 
     /**
-     * Creates a folder for the given candidate on Google Drive.
+     * Creates a folder for the given candidate on Google Drive, as well as standard subfolders.
      * <p/>
-     * If a folder already exists for the candidate, does nothing.
+     * If a link to the folder or subfolders are already recorded for the candidate, does nothing.
+     * Otherwise, checks whether folders already exist, creating them if necessary, and stores
+     * the links with the candidate (and DB).
      *
      * @param id ID of candidate
      * @return Updated candidate object, containing link to folder (created or
@@ -367,6 +408,15 @@ public interface CandidateService {
      */
     Candidate createCandidateFolder(long id)
             throws NoSuchObjectException, IOException;
+
+    /**
+     * Applies {@link #createCandidateFolder(long)} for each of the given candidate ids.
+     * @param candidateIds ids of candidates
+     * @throws NoSuchObjectException if no candidate is found with an id
+     * @throws IOException           if there is a problem creating the folders.
+     */
+    void createCandidateFolder(Collection<Long> candidateIds)
+        throws NoSuchObjectException, IOException;
 
     /**
      * Creates/updates a Contact record on Salesforce for the given candidate.
@@ -464,17 +514,9 @@ public interface CandidateService {
      * @throws EntityReferencedException if the object cannot be deleted because
      * it is referenced by another object.
      * @throws InvalidRequestException if not authorized to delete this list.
-     * @param examId id of exam to be deleted
      */
     boolean deleteCandidateExam(long examId)
             throws EntityReferencedException, InvalidRequestException;
-
-    // TODO: 16/1/22 Will probably eventually pull out these methods.
-    /**
-     * Used for testing - adding test task assignments
-     * @param candidates
-     */
-    void addFakeTasks(Iterable<Candidate> candidates);
 
     /**
      * Retrieve a dummy candidate who can be used for testing.

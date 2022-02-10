@@ -28,11 +28,14 @@ export interface TaskAssignment {
 }
 
 export function checkForOverdue(values: TaskAssignment[]) {
-  return values.some(ta => new Date(ta.dueDate) < new Date() && (!ta.abandonedDate && !ta.completedDate));
+  return values.some(ta =>
+    new Date(ta.dueDate) < new Date() &&
+    (!ta.abandonedDate && !ta.completedDate && !ta.task.optional)
+  );
 }
 
 export function checkForAbandoned(values: TaskAssignment[]) {
-  return values.some(ta => ta.abandonedDate && !ta.completedDate);
+  return values.some(ta => ta.abandonedDate && (!ta.completedDate && !ta.task.optional));
 }
 
 export function checkForCompleted(values: TaskAssignment[]) {

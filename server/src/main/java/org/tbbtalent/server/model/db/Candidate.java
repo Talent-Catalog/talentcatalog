@@ -182,6 +182,48 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String folderlink;
 
     /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkAddress;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkCharacter;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkEmployer;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkIdentity;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkMedical;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkQualification;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkRegistration;
+
+    /**
      * Url link to corresponding Salesforce Contact record, if one exists.
      */
     @Nullable
@@ -1024,7 +1066,74 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public void setFolderlink(@Nullable String folderlink) {
+        //Treat empty string links like nulls.
+        if (folderlink != null && folderlink.trim().length() == 0) {
+            folderlink = null;
+        }
         this.folderlink = folderlink;
+    }
+
+    @Nullable
+    public String getFolderlinkAddress() {
+        return folderlinkAddress;
+    }
+
+    public void setFolderlinkAddress(@Nullable String folderlinkAddress) {
+        this.folderlinkAddress = folderlinkAddress;
+    }
+
+    @Nullable
+    public String getFolderlinkCharacter() {
+        return folderlinkCharacter;
+    }
+
+    public void setFolderlinkCharacter(@Nullable String folderlinkCharacter) {
+        this.folderlinkCharacter = folderlinkCharacter;
+    }
+
+    @Nullable
+    public String getFolderlinkEmployer() {
+        return folderlinkEmployer;
+    }
+
+    public void setFolderlinkEmployer(@Nullable String folderlinkEmployer) {
+        this.folderlinkEmployer = folderlinkEmployer;
+    }
+
+    @Nullable
+    public String getFolderlinkIdentity() {
+        return folderlinkIdentity;
+    }
+
+    public void setFolderlinkIdentity(@Nullable String folderlinkIdentity) {
+        this.folderlinkIdentity = folderlinkIdentity;
+    }
+
+    @Nullable
+    public String getFolderlinkMedical() {
+        return folderlinkMedical;
+    }
+
+    public void setFolderlinkMedical(@Nullable String folderlinkMedical) {
+        this.folderlinkMedical = folderlinkMedical;
+    }
+
+    @Nullable
+    public String getFolderlinkQualification() {
+        return folderlinkQualification;
+    }
+
+    public void setFolderlinkQualification(@Nullable String folderlinkQualification) {
+        this.folderlinkQualification = folderlinkQualification;
+    }
+
+    @Nullable
+    public String getFolderlinkRegistration() {
+        return folderlinkRegistration;
+    }
+
+    public void setFolderlinkRegistration(@Nullable String folderlinkRegistration) {
+        this.folderlinkRegistration = folderlinkRegistration;
     }
 
     @Nullable

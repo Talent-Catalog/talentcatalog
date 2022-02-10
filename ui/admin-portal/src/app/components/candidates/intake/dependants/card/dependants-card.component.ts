@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {CandidateDependant, DependantRelations, Registrations, YesNo} from '../../../../../model/candidate';
+import {CandidateDependant, DependantRelations, Gender, Registrations, YesNo} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';
@@ -34,6 +34,7 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
 
   //Drop down values for enumeration
   dependantRelations: EnumOption[] = enumOptions(DependantRelations);
+  dependantGenders: EnumOption[] = enumOptions(Gender);
   dependantRegisterOptions: EnumOption[] = enumOptions(Registrations);
   dependentHealthConcerns: EnumOption[] = enumOptions(YesNo);
 
@@ -48,6 +49,7 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantRelation: [this.myRecord?.relation],
       dependantRelationOther: [this.myRecord?.relationOther],
       dependantDob: [this.myRecord?.dob],
+      dependantGender: [this.myRecord?.gender],
       dependantName: [this.myRecord?.name],
       dependantRegistered: [this.myRecord?.registered],
       dependantRegisteredNumber: [this.myRecord?.registeredNumber],
