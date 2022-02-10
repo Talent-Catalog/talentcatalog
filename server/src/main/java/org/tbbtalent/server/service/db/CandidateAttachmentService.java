@@ -16,9 +16,6 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -30,14 +27,21 @@ import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
+import org.tbbtalent.server.request.attachment.ListByUploadTypeRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 
 public interface CandidateAttachmentService {
 
     Page<CandidateAttachment> searchCandidateAttachments(SearchCandidateAttachmentsRequest request);
 
     Page<CandidateAttachment> searchCandidateAttachmentsForLoggedInCandidate(PagedSearchRequest request);
+
+    List<CandidateAttachment> listCandidateAttachmentsByType(ListByUploadTypeRequest request);
 
     List<CandidateAttachment> listCandidateAttachmentsForLoggedInCandidate();
 
