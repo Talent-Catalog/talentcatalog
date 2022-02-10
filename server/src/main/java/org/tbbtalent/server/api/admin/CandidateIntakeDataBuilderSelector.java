@@ -197,6 +197,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("relation")
                 .add("relationOther")
                 .add("dob")
+                .add("gender")
                 .add("name")
                 .add("registered")
                 .add("registeredNumber")
