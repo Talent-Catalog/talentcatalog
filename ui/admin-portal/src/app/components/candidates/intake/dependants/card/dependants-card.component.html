@@ -55,8 +55,7 @@
           <label [for]="'dependantGender'+myRecordIndex">Gender</label>
 
           <ng-select [id]="'dependantGender'+myRecordIndex" [formControlName]="'dependantGender'"
-                     (clear)="setNoResponse('dependantGender')" [items]="dependantGenders"
-                     [clearOnBackspace]="false"
+                     [items]="dependantGenders" [clearable]="false"
                      placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
         </div>
 
