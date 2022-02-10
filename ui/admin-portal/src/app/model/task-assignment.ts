@@ -35,7 +35,7 @@ export function checkForOverdue(values: TaskAssignment[]) {
 }
 
 export function checkForAbandoned(values: TaskAssignment[]) {
-  return values.some(ta => ta.abandonedDate && !ta.completedDate);
+  return values.some(ta => ta.abandonedDate && (!ta.completedDate && !ta.task.optional));
 }
 
 export function checkForCompleted(values: TaskAssignment[]) {
