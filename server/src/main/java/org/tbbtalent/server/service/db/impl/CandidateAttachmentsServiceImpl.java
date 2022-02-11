@@ -35,6 +35,7 @@ import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
+import org.tbbtalent.server.request.attachment.ListByUploadTypeRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.security.AuthService;
@@ -99,6 +100,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         }
         return candidateAttachmentRepository
                 .findByCandidateId(candidateId, request.getPageRequest());
+    }
+
+    @Override
+    public List<CandidateAttachment> listCandidateAttachmentsByType(ListByUploadTypeRequest request) {
+        return candidateAttachmentRepository.findByCandidateIdAndType(request.getCandidateId(), request.getUploadType());
     }
 
     @Override

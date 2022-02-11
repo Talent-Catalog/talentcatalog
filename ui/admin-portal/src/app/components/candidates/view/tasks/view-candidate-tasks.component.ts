@@ -6,7 +6,9 @@ import {AssignTasksCandidateComponent} from "../../../tasks/assign-tasks-candida
 import {EditTaskAssignmentComponent} from "./edit/edit-task-assignment.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 import {TaskAssignmentService} from "../../../../services/task-assignment.service";
-import {TaskAssignment} from "../../../../model/task-assignment";
+import {TaskAssignment, taskAssignmentSort} from "../../../../model/task-assignment";
+import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../services/candidate-attachment.service";
+import {CandidateAttachment} from "../../../../model/candidate-attachment";
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -18,6 +20,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
   loading;
+  loadingResponse;
   error;
   saving;
   ongoingTasks: TaskAssignment[];
@@ -26,6 +29,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   today: Date;
 
   constructor(private candidateService: CandidateService,
+              private candidateAttachmentService: CandidateAttachmentService,
               private taskAssignmentService: TaskAssignmentService,
               private modalService: NgbModal) { }
 
@@ -48,10 +52,10 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
           this.ongoingTasks = this.candidate.taskAssignments.filter(t =>
             t.completedDate == null &&
             t.abandonedDate == null &&
-            t.status === Status.active);
+            t.status === Status.active).sort(taskAssignmentSort);
           this.completedTasks = this.candidate.taskAssignments.filter(t =>
             t.completedDate != null ||
-            t.abandonedDate != null);
+            t.abandonedDate != null).sort(taskAssignmentSort);
           this.inactiveTasks = this.candidate.taskAssignments.filter(t =>
             t.status === Status.inactive);
         } else {
@@ -127,6 +131,28 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   }
 
   viewResponse(ta: TaskAssignment) {
-    // todo link to the uploaded file, or in future it might be the answer to a question.
+    // todo in future it might be the answer to a question, display this answer in a modal?
+    const request: ListByUploadTypeRequest = {
+      candidateId: this.candidate.id,
+      uploadType: ta.task.uploadType
+    }
+    this.candidateAttachmentService.listByType(request).subscribe(
+      results => {
+        if (results.length > 0) {
+          this.openFiles(results)
+        }
+      },
+      error => {
+        this.error = error;
+      });
+  }
+
+  openFiles(ats: CandidateAttachment[]) {
+    this.loadingResponse = true;
+    for (let i = 0; i < ats.length; i++) {
+      console.log(ats[i]);
+      window.open(ats[i].url);
+    }
+    this.loadingResponse = false;
   }
 }

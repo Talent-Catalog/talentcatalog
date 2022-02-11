@@ -77,9 +77,10 @@
           </div>
           <div *ngIf="editable" class="d-flex float-right text-right">
             <button class="btn btn-default" (click)="editTaskAssignment(ta)">
-              <i class="fas fa-edit"></i></button>
-            <button class="btn btn-default" (click)="viewResponse(ta)">
-              <i class="far fa-eye"></i></button>
+              <i class="fas fa-edit fa-sm"></i></button>
+            <button class="btn btn-default" title="See response to task" (click)="viewResponse(ta)">
+              <i class="fas fa-link fa-sm" ></i>
+            </button>
           </div>
         </div>
       </div>
