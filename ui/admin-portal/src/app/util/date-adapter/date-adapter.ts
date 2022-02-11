@@ -33,5 +33,5 @@ export function toDateOnly(date: any): Date {
   //Convert the incoming date into a proper Date object
   const origDate = new Date(date);
   //Return a new date just constructed from the incoming dates, year, month and day
-  return new Date(Date.UTC(origDate.getFullYear(), origDate.getMonth(), origDate.getDay()));
+  return new Date(Date.UTC(origDate.getFullYear(), origDate.getMonth(), origDate.getDate()));
 }
