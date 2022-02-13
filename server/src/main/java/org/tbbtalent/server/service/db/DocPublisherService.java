@@ -20,8 +20,9 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
-import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
@@ -34,25 +35,47 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 public interface DocPublisherService {
 
   /**
-   * Creates an external document with the given name from the given data.
+   * Creates an external document with the given name ready to be populated with a given number
+   * of rows of candidate data which will be populated later.
    * <p/>
    * The document is made viewable by anyone with a link to it.
    *
-   * @param drive Drive where doc is created
    * @param folder Folder where doc is created
    * @param name Name of created document
    * @param dataRangeName Name of range for candidate data
-   * @param data Data which comprises the published document
    * @param props Extra properties to send to sheet. Each property key should correspond to
    *              a named cell reference in the document template, and the value is the value
    *              to appear in that cell.
    * @param columnSetUpMap Defines how columns are formatted. In the map each key is a column number
    *                       (starting at 0).
    * @return A link to the created document
+   * @throws GeneralSecurityException if there are security problems accessing the document
+   * @throws IOException if there are communication problems accessing the document
+   * @see #populatePublishedDoc
    */
-  String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
-      String name, String dataRangeName, List<List<Object>> data, Map<String, Object> props,
+  String createPublishedDoc(GoogleFileSystemFolder folder,
+      String name, String dataRangeName, int nRowsData, Map<String, Object> props,
       Map<Integer, PublishedDocColumnSetUp> columnSetUpMap)
+      throws GeneralSecurityException, IOException;
+
+  /**
+   * Populate candidate data in published doc with given link.
+   * <p/>
+   * This link would typically be returned from a call to {@link #createPublishedDoc}
+   * </p>
+   * This is designed to be run asynchronously, so that a doc can be created quickly by
+   * {@link #createPublishedDoc} but it can be populated over time - which ca take a while depending
+   * on how many candidates are to be displayed in the doc.
+   * @param publishedDocLink Link to published doc
+   * @param candidates Candidates whose data is used to populate the doc
+   * @param columnInfos Specifies the columns of data to be populated
+   * @param publishedSheetDataRangeName The name of the range in the doc where data will be written
+   * @throws GeneralSecurityException if there are security problems accessing the document
+   * @throws IOException if there are communication problems accessing the document
+   * @see #createPublishedDoc
+   */
+  void populatePublishedDoc(String publishedDocLink, List<Candidate> candidates,
+      List<PublishedDocColumnDef> columnInfos, String publishedSheetDataRangeName)
       throws GeneralSecurityException, IOException;
 
   /**

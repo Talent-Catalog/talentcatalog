@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -30,6 +30,7 @@ import org.tbbtalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import java.time.LocalDate;
@@ -43,26 +44,29 @@ public class CandidateStatAdminApi {
     private final CandidateService candidateService;
     private final CountryRepository countryRepository;
     private final SavedListService savedListService;
+    private final SavedSearchService savedSearchService;
     private final AuthService authService;
 
     @Autowired
     public CandidateStatAdminApi(
-            CandidateService candidateService,
-            CountryRepository countryRepository,
-            SavedListService savedListService,
-            AuthService authService) {
+        CandidateService candidateService,
+        CountryRepository countryRepository,
+        SavedListService savedListService,
+        SavedSearchService savedSearchService,
+        AuthService authService) {
         this.candidateService = candidateService;
         this.countryRepository = countryRepository;
         this.savedListService = savedListService;
+        this.savedSearchService = savedSearchService;
         this.authService = authService;
     }
 
     /**
      * Runs queries to generate all our supported reports.
-     * @param request Defines the data that will be reported on 
-     * @return A number of named reports. Each report is a serialized 
+     * @param request Defines the data that will be reported on
+     * @return A number of named reports. Each report is a serialized
      * {@link StatReport}
-     * @throws NoSuchObjectException if there is no saved list with the id 
+     * @throws NoSuchObjectException if there is no saved list with the id
      * specified in the request.
      */
     @PostMapping("all")
@@ -84,10 +88,10 @@ public class CandidateStatAdminApi {
             for (Candidate candidate : candidates) {
                 candidateIds.add(candidate.getId());
             }
-            
+
         } else if (request.getSearchId() != null) {
             //Get candidates from search
-            candidateIds = candidateService.searchCandidates(request.getSearchId());
+            candidateIds = savedSearchService.searchCandidates(request.getSearchId());
         }
 
         convertDateRangeDefaults(request);
@@ -97,7 +101,7 @@ public class CandidateStatAdminApi {
         if (candidateIds != null) {
             statReports = createReports(request.getDateFrom(), request.getDateTo(),  candidateIds, sourceCountryIds);
         } else {
-            statReports = createReports(request.getDateFrom(), request.getDateTo(), sourceCountryIds); 
+            statReports = createReports(request.getDateFrom(), request.getDateTo(), sourceCountryIds);
         }
 
         //Construct the dto - just a list of all individual report dtos
@@ -105,7 +109,7 @@ public class CandidateStatAdminApi {
         for (StatReport statReport: statReports) {
             dto.add(statDto().buildReport(statReport));
         }
-        
+
         return dto;
     }
 
@@ -123,8 +127,8 @@ public class CandidateStatAdminApi {
     }
 
     private List<StatReport> createReports(
-            LocalDate dateFrom, 
-            LocalDate dateTo, 
+            LocalDate dateFrom,
+            LocalDate dateTo,
             List<Long> sourceCountryIds ) {
         String language;
         String title;
@@ -237,21 +241,21 @@ public class CandidateStatAdminApi {
                 this.candidateService.computeSpokenLanguageLevelStats(Gender.male, language, dateFrom, dateTo, sourceCountryIds)));
         statReports.add(new StatReport(title + " (female)",
                 this.candidateService.computeSpokenLanguageLevelStats(Gender.female, language, dateFrom, dateTo, sourceCountryIds)));
-        
+
         return statReports;
     }
 
 
-    private List<StatReport> createReports(            
+    private List<StatReport> createReports(
         LocalDate dateFrom,
         LocalDate dateTo,
-        Set<Long> candidateIds, 
+        Set<Long> candidateIds,
         List<Long> sourceCountryIds) {
-        
+
         String language;
         String title;
         String chartType;
-        
+
         List<StatReport> statReports = new ArrayList<>();
         chartType = "bar";
         statReports.add(new StatReport("Gender",

@@ -17,12 +17,14 @@
 package org.tbbtalent.server.service.db;
 
 import java.util.List;
+import java.util.Set;
 import javax.security.auth.login.AccountLockedException;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.LoginRequest;
@@ -57,6 +59,11 @@ public interface UserService {
     Page<User> searchUsers(SearchUserRequest request);
 
     User getUser(long id);
+
+    /**
+     * Get a user’s source countries, defaulting to all countries if empty
+     */
+    Set<Country> getDefaultSourceCountries(User user);
 
     User createUser(CreateUserRequest request, @Nullable User creatingUser) throws UsernameTakenException;
     User createUser(CreateUserRequest request) throws UsernameTakenException;

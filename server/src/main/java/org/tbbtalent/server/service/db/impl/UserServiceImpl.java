@@ -26,7 +26,9 @@ import dev.samstevens.totp.qr.QrGenerator;
 import dev.samstevens.totp.secret.SecretGenerator;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.security.auth.login.AccountLockedException;
@@ -159,6 +161,17 @@ public class UserServiceImpl implements UserService {
     public User getUser(long id) {
         return this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+    }
+
+    @Override
+    public Set<Country> getDefaultSourceCountries(User user) {
+        Set<Country> countries;
+        if(CollectionUtils.isEmpty(user.getSourceCountries())){
+            countries = new HashSet<>(countryRepository.findAll());
+        } else {
+            countries = user.getSourceCountries();
+        }
+        return countries;
     }
 
     @Override

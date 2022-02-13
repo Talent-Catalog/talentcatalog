@@ -33,6 +33,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
 import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -70,14 +71,18 @@ public class SavedListCandidateAdminApi implements
     IManyToManyApi<SavedListGetRequest, UpdateExplicitSavedListContentsRequest> {
 
     private final CandidateService candidateService;
+    private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
     private final CandidateBuilderSelector candidateBuilderSelector;
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
     @Autowired
     public SavedListCandidateAdminApi(
-            CandidateService candidateService, SavedListService savedListService,
-            AuthService authService) {
+        CandidateService candidateService,
+        CandidateSavedListService candidateSavedListService,
+        SavedListService savedListService,
+        AuthService authService) {
         this.candidateService = candidateService;
+        this.candidateSavedListService = candidateSavedListService;
         this.savedListService = savedListService;
         candidateBuilderSelector = new CandidateBuilderSelector(authService);
     }
@@ -114,13 +119,13 @@ public class SavedListCandidateAdminApi implements
     @Override
     public void remove(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request)
             throws NoSuchObjectException {
-        savedListService.removeFromSavedList(savedListId, request);
+        candidateSavedListService.removeFromSavedList(savedListId, request);
     }
 
     @Override
     public void replace(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request)
             throws NoSuchObjectException {
-        savedListService.clearSavedList(savedListId);
+        candidateSavedListService.clearSavedList(savedListId);
         savedListService.mergeSavedList(savedListId, request);
     }
 
@@ -133,10 +138,6 @@ public class SavedListCandidateAdminApi implements
         this.savedListService.setCandidateContext(savedListId, candidates);
 
         this.savedListService.addOpportunityStages(savedListId, candidates);
-
-        // TODO This a temporary hack to allow us start working on the display of candidate
-        //task assignments on the Angular back end.
-        //this.candidateService.addFakeTasks(candidates);
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder();
         return builder.buildPage(candidates);
@@ -159,7 +160,7 @@ public class SavedListCandidateAdminApi implements
         SavedList savedList = savedListService.createSavedList(request);
 
         //Now copy any contents across
-        savedListService.copyContents(request, savedList);
+        candidateSavedListService.copyContents(request, savedList);
 
         //Update all candidate statuses if requested.
         final UpdateCandidateStatusInfo info = request.getStatusUpdateInfo();
@@ -204,7 +205,7 @@ public class SavedListCandidateAdminApi implements
         @Valid @RequestBody UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
 
         if (request.getUpdateType() == ContentUpdateType.replace) {
-            savedListService.clearSavedList(savedListId);
+            candidateSavedListService.clearSavedList(savedListId);
         }
         savedListService.mergeSavedList(savedListId, request);
 
