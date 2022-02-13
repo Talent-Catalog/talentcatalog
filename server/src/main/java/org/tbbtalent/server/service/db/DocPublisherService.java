@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
-import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
 import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -67,14 +66,14 @@ public interface DocPublisherService {
    * {@link #createPublishedDoc} but it can be populated over time - which ca take a while depending
    * on how many candidates are to be displayed in the doc.
    * @param publishedDocLink Link to published doc
-   * @param candidates Candidates whose data is used to populate the doc
+   * @param candidateIds Ids of candidates whose data is used to populate the doc
    * @param columnInfos Specifies the columns of data to be populated
    * @param publishedSheetDataRangeName The name of the range in the doc where data will be written
    * @throws GeneralSecurityException if there are security problems accessing the document
    * @throws IOException if there are communication problems accessing the document
    * @see #createPublishedDoc
    */
-  void populatePublishedDoc(String publishedDocLink, List<Candidate> candidates,
+  void populatePublishedDoc(String publishedDocLink, List<Long> candidateIds,
       List<PublishedDocColumnDef> columnInfos, String publishedSheetDataRangeName)
       throws GeneralSecurityException, IOException;
 

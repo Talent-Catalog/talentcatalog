@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -652,8 +653,11 @@ public class SavedListServiceImpl implements SavedListService {
         String link = docPublisherService.createPublishedDoc(listFolder, savedList.getName(),
                 publishedSheetDataRangeName, candidates.size() + 1, props, columnSetUpMap);
 
-        //This is processed asynchronously
-        docPublisherService.populatePublishedDoc(link, candidates, columnInfos, publishedSheetDataRangeName);
+        //This is processed asynchronously so pass candidate ids, rather than candidate entities
+        //which will not in a persistence context in the Async processing. They will need to
+        //be reloaded from the database using their ids.
+        List<Long> candidateIds = candidates.stream().map(Candidate::getId).collect(Collectors.toList());
+        docPublisherService.populatePublishedDoc(link, candidateIds, columnInfos, publishedSheetDataRangeName);
 
         /*
          * Need to remove any existing columns - can't rely on the savedList.setExportColumns call

@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.PublishedDocBuilderService;
@@ -93,10 +94,24 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         this.publishedDocBuilderService = publishedDocBuilderService;
     }
 
+    /**
+     * Designed to be run asynchronously - hence candidate ids are passed, forcing candidate
+     * entities to be reloaded from database.
+     * <p/>
+     * The @Transactional notation kicks off a new persistence context which allows for
+     * lazy attributes to be automatically loaded as needed.
+     */
+    @Transactional
     @Async
-    public void populatePublishedDoc(String publishedDocLink, List<Candidate> candidates,
+    public void populatePublishedDoc(String publishedDocLink, List<Long> candidateIds,
         List<PublishedDocColumnDef> columnInfos, String publishedSheetDataRangeName)
         throws GeneralSecurityException, IOException {
+
+        //Load candidates from database into persistence context
+        List<Candidate> candidates = new ArrayList<>();
+        for (Long candidateId : candidateIds) {
+            candidates.add(candidateService.getCandidate(candidateId));
+        }
 
         //Create all candidate folders as needed.
         for (Candidate candidate : candidates) {
@@ -119,10 +134,18 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
                 columnInfos);
             publishedData.add(candidateData);
         }
-        populatePublishedDoc(publishedDocLink, publishedSheetDataRangeName, publishedData);
+        writeCandidateDataToDoc(publishedDocLink, publishedSheetDataRangeName, publishedData);
     }
 
-    private void populatePublishedDoc(
+    /**
+     * Writes the candidate data to the given document into the given range.
+     * @param docUrl Link to document (sheet) to write to
+     * @param dataRangeName Name of data range where data is to be writtem
+     * @param mainData Array of cell data to write
+     * @throws GeneralSecurityException if there are security problems accessing the document
+     * @throws IOException if there are communication problems accessing the document
+     */
+    private void writeCandidateDataToDoc(
         String docUrl, String dataRangeName, List<List<Object>> mainData)
         throws GeneralSecurityException, IOException {
 
