@@ -75,6 +75,7 @@ public class CandidateIntakeDataUpdate {
     private DependantRelations dependantRelation;
     private String dependantRelationOther;
     private LocalDate dependantDob;
+    private Gender dependantGender;
     private String dependantName;
     private Registration dependantRegistered;
     private String dependantRegisteredNumber;

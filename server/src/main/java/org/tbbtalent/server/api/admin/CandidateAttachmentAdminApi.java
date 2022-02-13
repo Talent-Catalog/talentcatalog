@@ -24,10 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.AttachmentType;
 import org.tbbtalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
-import org.tbbtalent.server.request.attachment.SearchByIdCandidateAttachmentRequest;
-import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
-import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
+import org.tbbtalent.server.request.attachment.*;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.FileSystemService;
@@ -138,6 +135,13 @@ public class CandidateAttachmentAdminApi {
         CandidateAttachment candidateAttachment =
                 this.candidateAttachmentService.updateCandidateAttachment(id, request);
         return candidateAttachmentDto().build(candidateAttachment);
+    }
+
+    @PostMapping("list-by-type")
+    public List<Map<String, Object>> listByType(@RequestBody ListByUploadTypeRequest request) {
+        List<CandidateAttachment> candidateAttachments;
+        candidateAttachments = this.candidateAttachmentService.listCandidateAttachmentsByType(request);
+        return candidateAttachmentDto().buildList(candidateAttachments);
     }
 
     /**

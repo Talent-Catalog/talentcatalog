@@ -22,6 +22,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.task.UploadType;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,13 @@ public interface CandidateAttachmentRepository extends JpaRepository<CandidateAt
             + " where c.id = :candidateId "
             + " order by a.createdDate desc")
     List<CandidateAttachment> findByCandidateIdLoadAudit(@Param("candidateId") Long candidateId);
+
+    @Query(" select distinct a from CandidateAttachment a "
+            + " left join a.candidate c "
+            + " where c.id = :candidateId "
+            + " and a.uploadType = :uploadType ")
+    List<CandidateAttachment> findByCandidateIdAndType(@Param("candidateId") Long candidateId,
+                                                         @Param("uploadType") UploadType uploadType);
 
     Page<CandidateAttachment> findByCandidateId(Long candidateId, Pageable request);
 
