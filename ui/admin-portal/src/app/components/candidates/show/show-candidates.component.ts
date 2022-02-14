@@ -1574,7 +1574,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           sourceListId: this.candidateSource.id,
           statusUpdateInfo: selection.statusUpdateInfo,
           updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
-          sfJoblink: selection.sfJoblink
+          sfJoblink: this.candidateSource?.sfJoblink
 
         }
         this.candidateSourceService.copy(this.candidateSource, request).subscribe(
