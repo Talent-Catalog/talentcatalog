@@ -17,13 +17,7 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.index.query.SimpleQueryStringBuilder;
+import org.elasticsearch.index.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,26 +41,20 @@ import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.repository.db.*;
-import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
-import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.search.*;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.CountryService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.email.EmailHelper;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.tbbtalent.server.service.db.email.EmailHelper;
 
 @Service
 public class SavedSearchServiceImpl implements SavedSearchService {
@@ -281,6 +269,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
+    @Transactional
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates;
         User user = authService.getLoggedInUser().orElse(null);
