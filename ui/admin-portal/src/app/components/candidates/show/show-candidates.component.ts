@@ -165,6 +165,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   targetListName: string;
   targetListId: number;
   targetListReplace: boolean;
+  savedSelection: boolean;
   timestamp: number;
   private reviewStatusFilter: string[] = defaultReviewStatusFilter;
   savedSearchSelectionChange: boolean;
@@ -1083,6 +1084,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.targetListId = savedListResult.id;
           this.targetListName = savedListResult.name;
           this.targetListReplace = targetChoice.replace;
+          this.savedSelection = true;
 
           //Associate current target list with this source.
           this.cacheTargetList(savedSearch);
@@ -1118,6 +1120,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         //Save the target list
         this.targetListId = savedListId;
         this.targetListReplace = request.updateType === ContentUpdateType.replace;
+        this.savedSelection = true;
         //Invalidate the cache for this list (so that user does not need
         //to refresh in order to see latest list contents)
         this.candidateSourceResultsCacheService.removeFromCache(this.candidateSource);
@@ -1579,8 +1582,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.candidateSourceService.copy(this.candidateSource, request).subscribe(
           (targetSource) => {
-            //Refresh display which may display new list if there is one.
-            this.doSearch(true);
+            this.targetListId = targetSource.id;
+            this.targetListName = targetSource.name;
+            // Set to false, to allow display of copied message in html. Otherwise it will display the saved message.
+            this.savedSelection = false;
 
             //Clear cache for target list as its contents will have changed.
             this.candidateSourceResultsCacheService.removeFromCache(targetSource);
