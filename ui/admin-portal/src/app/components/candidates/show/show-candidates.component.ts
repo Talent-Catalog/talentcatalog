@@ -28,7 +28,8 @@ import {
 
 import {
   Candidate,
-  SalesforceOppParams, Status,
+  SalesforceOppParams,
+  Status,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
@@ -1555,5 +1556,44 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   hasTaskAssignments(candidate: Candidate): boolean {
     const active = candidate.taskAssignments.filter(ta => ta.status === Status.active);
     return active.length > 0;
+  }
+
+  doCopySource() {
+    //Show modal allowing for list selection
+    const modal = this.modalService.open(SelectListComponent);
+    modal.componentInstance.action = "Copy";
+    modal.componentInstance.title = "Copy to another List";
+    modal.componentInstance.excludeList = this.candidateSource;
+
+    modal.result
+      .then((selection: TargetListSelection) => {
+        this.loading = true;
+        const request: CopySourceContentsRequest = {
+          savedListId: selection.savedListId,
+          newListName: selection.newListName,
+          sourceListId: this.candidateSource.id,
+          statusUpdateInfo: selection.statusUpdateInfo,
+          updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
+          sfJoblink: selection.sfJoblink
+
+        }
+        this.candidateSourceService.copy(this.candidateSource, request).subscribe(
+          (targetSource) => {
+            //Refresh display which may display new list if there is one.
+            this.doSearch(true);
+
+            //Clear cache for target list as its contents will have changed.
+            this.candidateSourceResultsCacheService.removeFromCache(targetSource);
+
+            this.loading = false;
+          },
+          error => {
+            this.error = error;
+            this.loading = false;
+          }
+        );
+      })
+      .catch(() => { /* Isn't possible */
+      });
   }
 }

@@ -69,6 +69,9 @@
         <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()">
           <i class="fas fa-link" title="Copy shareable link"></i>
         </button>
+        <button class="btn" *ngIf="isSavedList()" (click)="doCopySource()">
+          <i class="fas fa-clone" title="Copy"></i>
+        </button>
         <button class="btn" *ngIf="hasSavedSearchSource()" (click)="doShowSearch()">
           <i class="fas fa-search" title="Show Search"></i>
         </button>
@@ -166,7 +169,7 @@
           <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
           Feedback <i class="fas fa-globe"></i>
         </button>
-
+        <!-- todo should this button be here if there is no salesforce associated link? Currently appears even if no sf link, appears on all lists. -->
         <button *ngIf="isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
                 (click)="createUpdateSalesforce()"
                 title="Create or update candidates in Salesforce">
