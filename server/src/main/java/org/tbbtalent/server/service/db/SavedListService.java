@@ -16,28 +16,35 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.GeneralSecurityException;
+import java.util.List;
+import java.util.Set;
+import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.exception.*;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.RegisteredListException;
+import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
+import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
-import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.link.UpdateShortNameRequest;
+import org.tbbtalent.server.request.list.IHasSetOfCandidates;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.GeneralSecurityException;
-import java.util.List;
 
 /**
  * Saved List Service
@@ -58,61 +65,6 @@ public interface SavedListService {
      */
     void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
         throws NoSuchObjectException, SalesforceException;
-
-    /**
-     * Clear the contents of the SavedList with the given ID
-     * @param savedListId ID of SavedList to clear
-     * @return False if no saved list with that id was found, otherwise true.
-     */
-    boolean clearSavedList(long savedListId) throws InvalidRequestException;
-
-    /**
-     * Copies the given list to the list specified in the given request (which
-     * may be a requested new list).
-     * @param id ID of list to be copied
-     * @param request Defines the target list and also whether copy is a
-     *                replace or an add.
-     * @return The target list
-     * @throws EntityExistsException If a new list needs to be created but the
-     * list name already exists.
-     * @throws NoSuchObjectException if there is no saved list matching the id
-     * or the target list id.
-     */
-    SavedList copy(long id, CopySourceContentsRequest request)
-            throws EntityExistsException, NoSuchObjectException;
-
-    /**
-     * Copies the given list to the list specified in the given request (which
-     * may be a requested new list).
-     * @param sourceList List to be copied
-     * @param request Defines the target list and also whether copy is a
-     *                replace or an add.
-     * @return The target list
-     * @throws EntityExistsException If a new list needs to be created but the
-     * list name already exists.
-     * @throws NoSuchObjectException if there is no saved list matching the target list id.
-     */
-    SavedList copy(SavedList sourceList, CopySourceContentsRequest request)
-            throws EntityExistsException, NoSuchObjectException;
-
-    /**
-     * Copies the contents (candidates plus any context notes) from the
-     * source list to the destination.
-     * Note that other list info (eg name, sfJoblink and other attributes are
-     * not copied).
-     * @param source List to copy from
-     * @param destination List to copy to
-     */
-    void copyContents(SavedList source, SavedList destination, boolean replace);
-
-    /**
-     * Copies the contents (candidates plus any context notes) from the
-     * candidates specified in the request to the destination.
-     * @param request Contains the candidates to be copied including where those
-     *                candidates came from. Also may contain updateStatusInfo.
-     * @param destination List to copy to
-     */
-    void copyContents(UpdateExplicitSavedListContentsRequest request, SavedList destination);
 
     /**
      * Creates a folder for the given list on Google Drive with two subfolders, one for CVs and
@@ -144,6 +96,24 @@ public interface SavedListService {
             throws EntityExistsException, RegisteredListException;
 
     /**
+     * Creates/updates Salesforce records corresponding to candidates in a given list
+     * <p/>
+     * This could involve creating or updating contact records and/or
+     * creating or updating opportunity records.
+     * <p/>
+     * Salesforce links may be created and stored in candidate records.
+     *
+     * @param request Identifies list of candidates as well as optional Salesforce fields to set on
+     *                candidate opportunities
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
+        throws NoSuchObjectException, GeneralSecurityException, WebClientException;
+
+    /**
      /**
      * Creates a new SavedList unless it is a registered list and a registered list for that
      * job, as defined by {@link SavedList#getSfJoblink()} already exists, in which case
@@ -159,12 +129,13 @@ public interface SavedListService {
             throws EntityExistsException, RegisteredListException;
 
     /**
-     * Delete the SavedList with the given ID
-     * @param savedListId ID of SavedList to delete
-     * @return True if delete was successful
-     * @throws InvalidRequestException if not authorized to delete this list.
+     * Fetches the candidates specified in the given request.
+     * @param request Request containing candidates to be fetched
+     * @return Set of candidates - never null. Empty if no candidates in request.
+     * @throws NoSuchObjectException if a candidate in the request does not exist
      */
-    boolean deleteSavedList(long savedListId) throws InvalidRequestException;
+    @NotNull Set<Candidate> fetchCandidates(IHasSetOfCandidates request)
+        throws NoSuchObjectException;
 
     /**
      * Get the SavedList with the given id.
@@ -228,16 +199,6 @@ public interface SavedListService {
      */
     void mergeSavedListFromInputStream(long savedListId, InputStream is)
         throws NoSuchObjectException, IOException;
-
-    /**
-     * Remove the candidates indicated in the given request from the SavedList
-     * with the given id.
-     * @param savedListId ID of saved list to be updated
-     * @param request Request containing the new list contents
-     * @throws NoSuchObjectException if there is no saved list with this id
-     */
-    void removeFromSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request)
-        throws NoSuchObjectException;
 
     /**
      * Return a page of SavedList's that match the given request, ordered by
@@ -364,10 +325,19 @@ public interface SavedListService {
     PublishedDocImportReport importEmployerFeedback(long savedListId)
         throws GeneralSecurityException, NoSuchObjectException, IOException;
 
-    // TODO: 16/1/22 Will probably eventually pull out these methods.
     /**
-     * Used for testing - adding test tasks to list
-     * @param savedList
+     * Update audit fields and use repository to save the SavedList
+     * @param savedList Entity to save
+     * @return Saved entity
      */
-    void addFakeTasks(SavedList savedList);
+    SavedList saveIt(SavedList savedList);
+
+    /**
+     * Fetches source list specified by attribute sourceListId in given request
+     * @param request Request containing source list
+     * @return SavedList if specified in request, null if non specified
+     * @throws NoSuchObjectException if the list specified in the request does not exist
+     */
+    @Nullable
+    SavedList fetchSourceList(UpdateSavedListContentsRequest request) throws NoSuchObjectException;
 }

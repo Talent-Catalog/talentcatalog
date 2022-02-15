@@ -34,10 +34,10 @@ import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.UnauthorisedActionException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateSubfolderType;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.SavedList;
@@ -49,20 +49,16 @@ import org.tbbtalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateShareableDocsRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
@@ -121,34 +117,6 @@ public interface CandidateService {
      */
     int populateCandidatesFromElastic(Pageable pageable);
 
-    /**
-     * Returns the requested page of candidates which match the attributes in
-     * the request.
-     * @param request Request specifying which candidates to return
-     * @return Page of candidates
-     */
-    Page<Candidate> searchCandidates(SearchCandidateRequest request);
-
-    /**
-     * Returns the requested page of candidates of the given saved search.
-     * @param savedSearchId ID of saved search
-     * @param request Request specifying which candidates to return
-     * @return Page of candidates
-     * @throws NoSuchObjectException is no saved search exists with given id.
-     */
-    Page<Candidate> searchCandidates(
-            long savedSearchId, SavedSearchGetRequest request)
-            throws NoSuchObjectException;
-
-    /**
-     * Returns a set of the ids of all candidates matching the given saved search.
-     * @param savedSearchId ID of saved search
-     * @return Candidate ids (NOT candidateNumbers) of candidates matching search
-     * @throws NoSuchObjectException is no saved search exists with given id.
-     */
-    Set<Long> searchCandidates(long savedSearchId)
-            throws NoSuchObjectException;
-
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
 
     Page<Candidate> searchCandidates(CandidateEmailOrPhoneSearchRequest request);
@@ -159,34 +127,6 @@ public interface CandidateService {
 
     Page<Candidate> getSavedListCandidates(long id, SavedListGetRequest request);
 
-    /**
-     * Remove the given candidate from all its lists
-     * @param candidateId ID of candidate
-     * @return False if no candidate with that id was found, otherwise true.
-     */
-    boolean clearCandidateSavedLists(long candidateId);
-
-    /**
-     * Merge the saved lists indicated in the request into the given candidate's
-     * existing lists.
-     *
-     * @param candidateId ID of candidate to be updated
-     * @param request     Request containing the saved lists to be merged into
-     *                    the candidate's existing lists
-     * @return False if no candidate with that id was found, otherwise true.
-     */
-    boolean mergeCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
-
-    /**
-     * Merge the saved lists indicated in the request into the given candidate's
-     * existing lists.
-     *
-     * @param candidateId ID of candidate to be updated
-     * @param request     Request containing the new saved lists
-     * @return False if no candidate with that id was found, otherwise true.
-     */
-    boolean removeFromCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
-
     Candidate getCandidate(long id) throws NoSuchObjectException;
 
     Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException;
@@ -194,17 +134,6 @@ public interface CandidateService {
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);
 
     Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request);
-
-    /**
-     * Update a candidate's shareable docs according to the given request.
-     * @param id Id of candidate
-     * @param request Request specific the docs to be shared.
-     * @return Updated candidate object
-     * @throws UnauthorisedActionException if there was a problem changing the sharing permissions
-     * of the docs to be shared.
-     */
-    Candidate updateShareableDocs(long id, UpdateCandidateShareableDocsRequest request)
-        throws UnauthorisedActionException;
 
     Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request);
 
@@ -336,14 +265,6 @@ public interface CandidateService {
     void exportToCsv(long savedListId, SavedListGetRequest request, PrintWriter writer)
             throws ExportFailedException;
 
-    void exportToCsv(long savedSearchId, SavedSearchGetRequest request, PrintWriter writer)
-            throws ExportFailedException;
-
-    void exportToCsv(SearchCandidateRequest request, PrintWriter writer)
-            throws ExportFailedException;
-
-    void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
-
     List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
@@ -406,8 +327,7 @@ public interface CandidateService {
      * @throws NoSuchObjectException if no candidate is found with that id
      * @throws IOException           if there is a problem creating the folder.
      */
-    Candidate createCandidateFolder(long id)
-            throws NoSuchObjectException, IOException;
+    Candidate createCandidateFolder(long id) throws NoSuchObjectException, IOException;
 
     /**
      * Applies {@link #createCandidateFolder(long)} for each of the given candidate ids.
@@ -438,6 +358,12 @@ public interface CandidateService {
     Candidate createUpdateSalesforce(long id)
             throws NoSuchObjectException, GeneralSecurityException, WebClientException;
 
+    //todo doc
+    void createUpdateSalesforce(Collection<Candidate> candidates,
+        @Nullable String sfJoblink,
+        @Nullable SalesforceOppParams salesforceOppParams)
+        throws GeneralSecurityException, WebClientException;
+
     /**
      * Creates/updates Salesforce records corresponding to the given candidates.
      * <p/>
@@ -454,24 +380,6 @@ public interface CandidateService {
      */
     void createUpdateSalesforce(UpdateCandidateOppsRequest request)
         throws GeneralSecurityException, WebClientException;
-
-    /**
-     * Creates/updates Salesforce records corresponding to candidates in a given list
-     * <p/>
-     * This could involve creating or updating contact records and/or
-     * creating or updating opportunity records.
-     * <p/>
-     * Salesforce links may be created and stored in candidate records.
-     *
-     * @param request Identifies list of candidates as well as optional Salesforce fields to set on
-     *                candidate opportunities
-     * @throws NoSuchObjectException  if there is no saved list with this id
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     */
-    void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
-        throws NoSuchObjectException, GeneralSecurityException, WebClientException;
 
     /**
      * Updates the intake data associated with the given candidate.
@@ -523,4 +431,19 @@ public interface CandidateService {
      * @return a dummy test candidate
      */
     Candidate getTestCandidate();
+
+    // TODO: 12/2/22 Doc
+    Candidate findByIdLoadSavedLists(long candidateId);
+
+    //TODO JC Doc
+    void saveIt(Candidate candidate);
+
+    //todo doc
+    Candidate findByIdLoadUser(long id, Set<Country> sourceCountries);
+
+    //todo doc
+    String[] getExportCandidateStrings(Candidate candidate);
+
+    //todo doc
+    String[] getExportTitles();
 }

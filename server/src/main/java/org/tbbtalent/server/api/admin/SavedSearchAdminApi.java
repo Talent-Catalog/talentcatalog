@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -53,6 +53,7 @@ import org.tbbtalent.server.request.search.SelectCandidateInSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.request.search.UpdateWatchingRequest;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
@@ -60,11 +61,12 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/admin/saved-search")
-public class SavedSearchAdminApi implements 
-        ITableApi<SearchSavedSearchRequest, 
+public class SavedSearchAdminApi implements
+        ITableApi<SearchSavedSearchRequest,
                 UpdateSavedSearchRequest, UpdateSavedSearchRequest> {
 
     private final CandidateService candidateService;
+    private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
@@ -74,11 +76,13 @@ public class SavedSearchAdminApi implements
 
     @Autowired
     public SavedSearchAdminApi(SavedSearchService savedSearchService,
-                               SavedListService savedListService,
-                               CandidateService candidateService) {
+        SavedListService savedListService,
+        CandidateService candidateService,
+        CandidateSavedListService candidateSavedListService) {
         this.candidateService = candidateService;
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
+        this.candidateSavedListService = candidateSavedListService;
     }
 
     /*
@@ -114,12 +118,12 @@ public class SavedSearchAdminApi implements
     }
 
     @Override
-    public @NotNull Map<String, Object> update(long id, @Valid UpdateSavedSearchRequest request) 
+    public @NotNull Map<String, Object> update(long id, @Valid UpdateSavedSearchRequest request)
             throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SavedSearch savedSearch = this.savedSearchService.updateSavedSearch(id, request);
         return savedSearchDto().build(savedSearch);
     }
- 
+
     /*
         End standard ITableApi methods
      */
@@ -140,9 +144,9 @@ public class SavedSearchAdminApi implements
     }
 
     /**
-     * Creates a new saved search from the current user's default saved search, 
+     * Creates a new saved search from the current user's default saved search,
      * named as specified in the request (either with the name of a specified
-     * existing saved list, or with a specified name) and with the sfJoblink, 
+     * existing saved list, or with a specified name) and with the sfJoblink,
      * if any, in the request.
      * <p/>
      * The selection for the new saved search is the same as the selection
@@ -151,12 +155,12 @@ public class SavedSearchAdminApi implements
      * If a saved search with the given already exists, it is replaced.
      * @param request Request containing details from which the search is created.
      * @return Created search
-     * @throws NoSuchObjectException If there is no logged in user or no list 
+     * @throws NoSuchObjectException If there is no logged in user or no list
      * with given id.
      */
     @PostMapping("create-from-default")
     public @NotNull Map<String, Object> createFromDefaultSearch(
-            @Valid @RequestBody CreateFromDefaultSavedSearchRequest request) 
+            @Valid @RequestBody CreateFromDefaultSavedSearchRequest request)
             throws NoSuchObjectException {
         SavedSearch savedSearch = this.savedSearchService
                 .createFromDefaultSavedSearch(request);
@@ -189,7 +193,7 @@ public class SavedSearchAdminApi implements
         SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(id);
 
         //Copy to the target list.
-        SavedList targetList = savedListService.copy(selectionList, request);
+        SavedList targetList = candidateSavedListService.copy(selectionList, request);
 
         //Update all candidate statuses if requested.
         final UpdateCandidateStatusInfo info = request.getStatusUpdateInfo();
@@ -206,7 +210,7 @@ public class SavedSearchAdminApi implements
      * <p/>
      * The status and related information are specified in the given request.
      * @param id ID of saved search
-     * @param request Request containing the new status and other information relating to the 
+     * @param request Request containing the new status and other information relating to the
      *                status change.
      * @throws InvalidRequestException if not authorized
      * @throws NoSuchObjectException if there is no such saved search or user
@@ -217,12 +221,12 @@ public class SavedSearchAdminApi implements
     public void updateSelectedStatuses(@PathVariable("id") long id,
                               @Valid @RequestBody UpdateCandidateStatusInfo request)
             throws InvalidRequestException, NoSuchObjectException, InvalidSessionException {
-        
+
         //Get the selection list for this user and saved search.
         SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(id);
-        
+
         UpdateCandidateStatusRequest ucsr = new UpdateCandidateStatusRequest();
-        List<Long> candidateIds = 
+        List<Long> candidateIds =
             selectionList.getCandidates().stream().map(Candidate::getId).collect(Collectors.toList());
         ucsr.setCandidateIds(candidateIds);
         ucsr.setInfo(request);
@@ -239,10 +243,10 @@ public class SavedSearchAdminApi implements
      * @throws InvalidSessionException if there is no logged in user.
      */
     @GetMapping("/get-selection-count/{id}")
-    public long getSelectionCount(@PathVariable("id") long id) 
+    public long getSelectionCount(@PathVariable("id") long id)
         throws NoSuchObjectException, InvalidSessionException {
         SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(id);
-        return selectionList.getCandidates().size();        
+        return selectionList.getCandidates().size();
     }
 
     /**
@@ -255,23 +259,23 @@ public class SavedSearchAdminApi implements
      * or candidate with the given ids
      */
     @PutMapping("/select-candidate/{id}")
-    public void selectCandidate(@PathVariable("id") long id, 
+    public void selectCandidate(@PathVariable("id") long id,
                          @Valid @RequestBody SelectCandidateInSearchRequest request)
             throws InvalidRequestException, NoSuchObjectException {
 
         //Get the selection list for this user and saved search.
         SavedList selectionList =
                 savedSearchService.getSelectionList(id, request.getUserId());
-        
+
         //Create a list request containing our candidate id.
         UpdateExplicitSavedListContentsRequest listRequest = new UpdateExplicitSavedListContentsRequest();
         listRequest.addCandidateId(request.getCandidateId());
-        
+
         //Add or remove candidate depending on selection.
         if (request.isSelected()) {
             savedListService.mergeSavedList(selectionList.getId(), listRequest);
         } else {
-            savedListService.removeFromSavedList(selectionList.getId(), listRequest);
+            candidateSavedListService.removeFromSavedList(selectionList.getId(), listRequest);
         }
     }
 

@@ -22,11 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.service.db.FileSystemService;
-import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
-import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
  * Used to build the published Google sheet doc
@@ -37,14 +33,7 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderService {
   private static final Logger log = LoggerFactory.getLogger(PublishedDocBuilderServiceImpl.class);
 
-  private final FileSystemService fileSystemService;
-  private final GoogleDriveConfig googleDriveConfig;
-
-  public PublishedDocBuilderServiceImpl(
-      FileSystemService fileSystemService,
-      GoogleDriveConfig googleDriveConfig) {
-    this.fileSystemService = fileSystemService;
-    this.googleDriveConfig = googleDriveConfig;
+  public PublishedDocBuilderServiceImpl() {
   }
 
   public Object buildCell(Candidate candidate, PublishedDocColumnDef columnInfo) {
@@ -96,33 +85,14 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
         log.error("Cannot extract field " + fieldName + " from null candidate");
       } else {
         try {
-          // Special field name: "subfolder.xxx"
-          if (fieldName.startsWith("subfolder.")) {
-            String subfolderName = fieldName.substring(fieldName.indexOf('.')+1).trim();
-            final String folderlink = candidate.getFolderlink();
-            if (folderlink != null) {
-              GoogleFileSystemFolder folder = new GoogleFileSystemFolder(folderlink);
-              GoogleFileSystemDrive drive = googleDriveConfig.getCandidateDataDrive();
-              GoogleFileSystemFolder subfolder =
-                  fileSystemService.findAFolder(drive, folder, subfolderName);
-              //Create folder if one does not exist.
-              if (subfolder == null) {
-                subfolder = fileSystemService.createFolder(drive, folder, subfolderName);
-                //Make public
-                fileSystemService.publishFolder(subfolder);
-              }
-              val = subfolder.getUrl();
-            }
+          // Get the list specific shareable CV or Doc if exists, otherwise get the field name supplied.
+          if (fieldName.equals("shareableCv.url") && candidate.getListShareableCv() != null) {
+            val = candidate.extractField("listShareableCv.url");
+          } else if (fieldName.equals("shareableDoc.url")
+              && candidate.getListShareableDoc() != null) {
+            val = candidate.extractField("listShareableDoc.url");
           } else {
-            // Get the list specific shareable CV or Doc if exists, otherwise get the field name supplied.
-            if (fieldName.equals("shareableCv.url") && candidate.getListShareableCv() != null) {
-              val = candidate.extractField("listShareableCv.url");
-            } else if (fieldName.equals("shareableDoc.url")
-                && candidate.getListShareableDoc() != null) {
-              val = candidate.extractField("listShareableDoc.url");
-            } else {
-              val = candidate.extractField(fieldName);
-            }
+            val = candidate.extractField(fieldName);
           }
         } catch (Exception e) {
           log.error("Error extracting field " + fieldName + " from candidate " + candidate.getCandidateNumber());
