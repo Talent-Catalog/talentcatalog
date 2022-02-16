@@ -268,6 +268,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidateIds;
     }
 
+    /**
+     * Added @Transactional to this method as it is calling another method (updateSavedSearch) which requires
+     * the @Transactional annotation.
+     * Transaction needs to wrap the database modifying operation (searchJoinRepository.deleteBySearchId(id)) or
+     * else an exception will be thrown. See: https://www.baeldung.com/jpa-transaction-required-exception
+     */
     @Override
     @Transactional
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
