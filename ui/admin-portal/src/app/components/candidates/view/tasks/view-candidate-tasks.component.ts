@@ -6,14 +6,11 @@ import {AssignTasksCandidateComponent} from "../../../tasks/assign-tasks-candida
 import {EditTaskAssignmentComponent} from "./edit/edit-task-assignment.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 import {TaskAssignmentService} from "../../../../services/task-assignment.service";
-import {TaskAssignment} from "../../../../model/task-assignment";
+import {TaskAssignment, taskAssignmentSort} from "../../../../model/task-assignment";
 import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../services/candidate-attachment.service";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
-import {TaskAssignment, taskAssignmentSort} from "../../../../model/task-assignment";
-import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../services/candidate-attachment.service";
-import {CandidateAttachment} from "../../../../model/candidate-attachment";
 
 @Component({
   selector: 'app-view-candidate-tasks',
