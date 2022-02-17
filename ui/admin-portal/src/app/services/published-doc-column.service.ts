@@ -101,6 +101,10 @@ export class PublishedDocColumnService {
       new PublishedDocFieldSource("shareableCv.url"))
     .width = PublishedDocColumnWidth.Narrow;
 
+    this.addColumnWithLink("linkedIn", "LinkedIn Link", new PublishedDocConstantSource("link"),
+      new PublishedDocFieldSource("linkedInLink"))
+    .width = PublishedDocColumnWidth.Narrow;
+
     this.addColumnWithLink("address", "Folder: Address",
       new PublishedDocConstantSource("folder"),
       new PublishedDocFieldSource("folderlinkAddress"))
