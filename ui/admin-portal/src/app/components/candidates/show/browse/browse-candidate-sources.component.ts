@@ -291,7 +291,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
             sourceListId: source.id,
             statusUpdateInfo: selection.statusUpdateInfo,
             updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
-            sfJoblink: selection.sfJoblink
+            sfJoblink: source?.sfJoblink
 
           }
           this.candidateSourceService.copy(source, request).subscribe(

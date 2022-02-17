@@ -29,7 +29,11 @@ import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.DocPublisherService;
+import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.servlet.http.HttpServletResponse;
@@ -44,20 +48,32 @@ import java.util.Map;
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
+    private final CandidateSavedListService candidateSavedListService;
     private final CandidateBuilderSelector builderSelector;
+    private final SavedListService savedListService;
+    private final SavedSearchService savedSearchService;
+    private final DocPublisherService docPublisherService;
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
 
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
-                             AuthService authService) {
+        CandidateSavedListService candidateSavedListService,
+        AuthService authService,
+        SavedListService savedListService,
+        SavedSearchService savedSearchService,
+        DocPublisherService docPublisherService) {
         this.candidateService = candidateService;
+        this.candidateSavedListService = candidateSavedListService;
         builderSelector = new CandidateBuilderSelector(authService);
         intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(authService);
+        this.savedListService = savedListService;
+        this.savedSearchService = savedSearchService;
+        this.docPublisherService = docPublisherService;
     }
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
-        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        Page<Candidate> candidates = savedSearchService.searchCandidates(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
@@ -166,7 +182,7 @@ public class CandidateAdminApi {
     @PutMapping("{id}/shareable-docs")
     public Map<String, Object> updateShareableDocs(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateShareableDocsRequest request) {
-        Candidate candidate = this.candidateService.updateShareableDocs(id, request);
+        Candidate candidate = this.candidateSavedListService.updateShareableDocs(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -189,7 +205,7 @@ public class CandidateAdminApi {
                        HttpServletResponse response) throws IOException, ExportFailedException {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
         response.setContentType("text/csv; charset=utf-8");
-        candidateService.exportToCsv(request, response.getWriter());
+        savedSearchService.exportToCsv(request, response.getWriter());
     }
 
     @PostMapping(value = "{id}/cv.pdf")
@@ -211,7 +227,7 @@ public class CandidateAdminApi {
     @PutMapping("{id}/create-folder")
     public Map<String, Object> createCandidateFolder(@PathVariable("id") long id)
             throws IOException {
-        Candidate candidate = this.candidateService.createCandidateFolder(id);
+        Candidate candidate = candidateService.createCandidateFolder(id);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -250,7 +266,7 @@ public class CandidateAdminApi {
         @Valid @RequestBody UpdateCandidateListOppsRequest request)
         throws NoSuchObjectException, GeneralSecurityException, WebClientException {
 
-        candidateService.createUpdateSalesforce(request);
+        savedListService.createUpdateSalesforce(request);
     }
 
     @PutMapping("{id}/intake")

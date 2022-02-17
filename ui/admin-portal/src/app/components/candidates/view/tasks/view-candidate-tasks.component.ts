@@ -11,6 +11,9 @@ import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../s
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
+import {TaskAssignment, taskAssignmentSort} from "../../../../model/task-assignment";
+import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../services/candidate-attachment.service";
+import {CandidateAttachment} from "../../../../model/candidate-attachment";
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -54,10 +57,10 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
           this.ongoingTasks = this.candidate.taskAssignments.filter(t =>
             t.completedDate == null &&
             t.abandonedDate == null &&
-            t.status === Status.active);
+            t.status === Status.active).sort(taskAssignmentSort);
           this.completedTasks = this.candidate.taskAssignments.filter(t =>
             t.completedDate != null ||
-            t.abandonedDate != null);
+            t.abandonedDate != null).sort(taskAssignmentSort);
           this.inactiveTasks = this.candidate.taskAssignments.filter(t =>
             t.status === Status.inactive);
         } else {

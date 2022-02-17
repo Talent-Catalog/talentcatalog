@@ -90,7 +90,7 @@ public class SavedListAdminApi implements
      */
     @Override
     public boolean delete(long id) throws InvalidRequestException {
-        return savedListService.deleteSavedList(id);
+        return candidateSavedListService.deleteSavedList(id);
     }
 
     /**
@@ -168,10 +168,10 @@ public class SavedListAdminApi implements
             @RequestBody CopySourceContentsRequest request)
             throws EntityExistsException, NoSuchObjectException {
 
-        SavedList sourceList = this.savedListService.get(sourceListId);
+        SavedList sourceList = savedListService.get(sourceListId);
 
         //Copy to the target list.
-        SavedList targetList = this.savedListService.copy(sourceList, request);
+        SavedList targetList = candidateSavedListService.copy(sourceList, request);
 
         //Update all candidate statuses if requested.
         final UpdateCandidateStatusInfo info = request.getStatusUpdateInfo();
