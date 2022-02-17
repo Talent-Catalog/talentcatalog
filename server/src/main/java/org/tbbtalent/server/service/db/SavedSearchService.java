@@ -5,26 +5,31 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.service.db;
 
+import java.io.PrintWriter;
 import java.util.List;
+import java.util.Set;
 import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
@@ -54,6 +59,36 @@ public interface SavedSearchService {
      */
     Page<SavedSearch> searchPaged(SearchSavedSearchRequest request);
 
+    /**
+     * Returns the requested page of candidates which match the attributes in
+     * the request.
+     * @param request Request specifying which candidates to return
+     * @return Page of candidates
+     */
+    Page<Candidate> searchCandidates(SearchCandidateRequest request);
+
+    /**
+     * Returns the requested page of candidates of the given saved search.
+     * @param savedSearchId ID of saved search
+     * @param request Request specifying which candidates to return
+     * @return Page of candidates
+     * @throws NoSuchObjectException is no saved search exists with given id.
+     */
+    Page<Candidate> searchCandidates(
+        long savedSearchId, SavedSearchGetRequest request)
+        throws NoSuchObjectException;
+
+    /**
+     * Returns a set of the ids of all candidates matching the given saved search.
+     * @param savedSearchId ID of saved search
+     * @return Candidate ids (NOT candidateNumbers) of candidates matching search
+     * @throws NoSuchObjectException is no saved search exists with given id.
+     */
+    Set<Long> searchCandidates(long savedSearchId)
+        throws NoSuchObjectException;
+
+    void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
+
     SearchCandidateRequest loadSavedSearch(long id);
 
     SavedSearch getSavedSearch(long id);
@@ -69,19 +104,19 @@ public interface SavedSearchService {
             throws InvalidRequestException, NoSuchObjectException;
 
     /**
-     * Creates a new saved search from the data in the given request. 
+     * Creates a new saved search from the data in the given request.
      * @param request Request containing details from which the record is created.
      * @return Created saved search
      * @throws EntityExistsException If a saved search with the requested name
      * already exists.
      */
-    SavedSearch createSavedSearch(UpdateSavedSearchRequest request) 
+    SavedSearch createSavedSearch(UpdateSavedSearchRequest request)
             throws EntityExistsException;
 
     /**
-     * Creates a new saved search from the current user's default saved search, 
+     * Creates a new saved search from the current user's default saved search,
      * named as specified in the request (either with the name of a specified
-     * existing saved list, or with a specified name) and with the sfJoblink, 
+     * existing saved list, or with a specified name) and with the sfJoblink,
      * if any, in the request.
      * <p/>
      * The selection for the new saved search is the same as the selection
@@ -90,19 +125,25 @@ public interface SavedSearchService {
      * If a saved search with the given already exists, it is replaced.
      * @param request Request containing details from which the search is created.
      * @return Created search
-     * @throws NoSuchObjectException If there is no logged in user or no list 
+     * @throws NoSuchObjectException If there is no logged in user or no list
      * with given id.
      */
     SavedSearch createFromDefaultSavedSearch(
-            CreateFromDefaultSavedSearchRequest request) 
+            CreateFromDefaultSavedSearchRequest request)
             throws NoSuchObjectException;
 
     SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException;
 
     boolean deleteSavedSearch(long id);
 
+    void exportToCsv(long savedSearchId, SavedSearchGetRequest request, PrintWriter writer)
+        throws ExportFailedException;
+
+    void exportToCsv(SearchCandidateRequest request, PrintWriter writer)
+        throws ExportFailedException;
+
     /**
-     * Adds a user who wants to share the given saved search (created by someone 
+     * Adds a user who wants to share the given saved search (created by someone
      * else).
      * @param id id of Saved Search being shared
      * @param request Contains the id of the user who is sharing the search
@@ -111,11 +152,11 @@ public interface SavedSearchService {
      * @throws NoSuchObjectException if there is no saved search with this id
      * or the user is not found.
      */
-    SavedSearch addSharedUser(long id, UpdateSharingRequest request) 
+    SavedSearch addSharedUser(long id, UpdateSharingRequest request)
             throws NoSuchObjectException;
-    
+
     /**
-     * Removes a user who was sharing the given saved search (created by someone 
+     * Removes a user who was sharing the given saved search (created by someone
      * else).
      * @param id id of Saved Search
      * @param request Contains the id of the user who is no longer interested
@@ -150,7 +191,7 @@ public interface SavedSearchService {
      * associated with the given saved list.
      * @throws NoSuchObjectException if there is no such saved search or user.
      */
-    @NotNull SavedList getSelectionList(long id, Long userId) 
+    @NotNull SavedList getSelectionList(long id, Long userId)
             throws NoSuchObjectException;
 
     /**
@@ -162,7 +203,7 @@ public interface SavedSearchService {
      * @throws NoSuchObjectException if there is no such saved search.
      * @throws InvalidSessionException if there is no logged in user.
      */
-    @NotNull SavedList getSelectionListForLoggedInUser(long id) 
+    @NotNull SavedList getSelectionListForLoggedInUser(long id)
             throws NoSuchObjectException, InvalidSessionException;
 
     /**
@@ -171,9 +212,9 @@ public interface SavedSearchService {
      * If the candidate (specified in the request) is not currently selected
      * into the saved search, does nothing.
      * @param id Id of saved search
-     * @param request Request containing the candidate id and the context note 
+     * @param request Request containing the candidate id and the context note
      *                text
-     */ 
+     */
     void updateCandidateContextNote(
             long id, UpdateCandidateContextNoteRequest request);
 
@@ -187,7 +228,7 @@ public interface SavedSearchService {
         throws  NoSuchObjectException;
 
     /**
-     * Updates the fields that are displayed for each candidate in the results 
+     * Updates the fields that are displayed for each candidate in the results
      * of the given saved search.
      * @param id Id of saved search
      * @param request Request containing the field paths to be displayed.

@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -29,6 +29,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.HasSetOfSavedListsImpl;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -44,9 +45,9 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
  *     search criteria) that a candidate belongs to</li>
  * </ul>
  * <p/>
- * For actually modifying candidate details - see {@link CandidateAdminApi}, 
- * or for modifying saved list details see {@link SavedListAdminApi}. 
- * <p/> 
+ * For actually modifying candidate details - see {@link CandidateAdminApi},
+ * or for modifying saved list details see {@link SavedListAdminApi}.
+ * <p/>
  * See also {@link SavedListCandidateAdminApi} which is the mirror image,
  * managing the reverse association between a SavedList and its associated
  * Candidate's.
@@ -57,27 +58,30 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 public class CandidateSavedListAdminApi implements IManyToManyApi<SearchSavedListRequest, HasSetOfSavedListsImpl> {
 
     private final CandidateService candidateService;
+    private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
     private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
 
     @Autowired
     public CandidateSavedListAdminApi(
-            CandidateService candidateService,
-            SavedListService savedListService) {
+        CandidateService candidateService,
+        CandidateSavedListService candidateSavedListService,
+        SavedListService savedListService) {
         this.candidateService = candidateService;
+        this.candidateSavedListService = candidateSavedListService;
         this.savedListService = savedListService;
     }
 
     @Override
-    public void replace(long candidateId, @Valid HasSetOfSavedListsImpl request) 
+    public void replace(long candidateId, @Valid HasSetOfSavedListsImpl request)
             throws NoSuchObjectException {
-        candidateService.clearCandidateSavedLists(candidateId);
-        candidateService.mergeCandidateSavedLists(candidateId, request);
+        candidateSavedListService.clearCandidateSavedLists(candidateId);
+        candidateSavedListService.mergeCandidateSavedLists(candidateId, request);
     }
 
     @Override
     public @NotNull List<Map<String, Object>> search(
-            long candidateId, @Valid SearchSavedListRequest request) 
+            long candidateId, @Valid SearchSavedListRequest request)
             throws NoSuchObjectException {
         List<SavedList> savedLists = savedListService.search(candidateId, request);
         DtoBuilder builder = builderSelector.selectBuilder();

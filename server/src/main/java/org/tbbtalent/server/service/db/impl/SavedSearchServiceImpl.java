@@ -5,42 +5,52 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.service.db.impl;
 
+import com.opencsv.CSVWriter;
+import org.elasticsearch.index.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.repository.db.*;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
-import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.search.*;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.email.EmailHelper;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,7 +61,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private static final Logger log = LoggerFactory.getLogger(SavedSearchServiceImpl.class);
 
+    private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
+    private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
+    private final CountryService countryService;
+    private final ElasticsearchOperations elasticsearchOperations;
+    private final EmailHelper emailHelper;
     private final UserRepository userRepository;
     private final SavedListRepository savedListRepository;
     private final SavedListService savedListService;
@@ -66,23 +82,50 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationLevelRepository educationLevelRepository;
     private final AuthService authService;
 
+    /**
+     * These are the default candidate statuses to included in searches when no statuses are
+     * specified.
+     * Basically all "inactive" statuses such as draft, deleted, employed and ineligible.
+     */
+    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>(
+        EnumSet.complementOf(EnumSet.of(
+            CandidateStatus.autonomousEmployment,
+            CandidateStatus.deleted,
+            CandidateStatus.draft,
+            CandidateStatus.employed,
+            CandidateStatus.ineligible,
+            CandidateStatus.withdrawn
+        )));
+
     @Autowired
     public SavedSearchServiceImpl(
-            CandidateSavedListService candidateSavedListService,
-            UserRepository userRepository,
-            SavedListRepository savedListRepository,
-            SavedListService savedListService,
-            SavedSearchRepository savedSearchRepository,
-            SearchJoinRepository searchJoinRepository,
-            LanguageLevelRepository languageLevelRepository,
-            LanguageRepository languageRepository,
-            CountryRepository countryRepository,
-            OccupationRepository occupationRepository,
-            SurveyTypeRepository surveyTypeRepository,
-            EducationMajorRepository educationMajorRepository,
-            EducationLevelRepository educationLevelRepository,
-            AuthService authService) {
+        CandidateRepository candidateRepository,
+        CandidateService candidateService,
+        CandidateReviewStatusRepository candidateReviewStatusRepository,
+        CandidateSavedListService candidateSavedListService,
+        CountryService countryService,
+        ElasticsearchOperations elasticsearchOperations,
+        EmailHelper emailHelper,
+        UserRepository userRepository,
+        SavedListRepository savedListRepository,
+        SavedListService savedListService,
+        SavedSearchRepository savedSearchRepository,
+        SearchJoinRepository searchJoinRepository,
+        LanguageLevelRepository languageLevelRepository,
+        LanguageRepository languageRepository,
+        CountryRepository countryRepository,
+        OccupationRepository occupationRepository,
+        SurveyTypeRepository surveyTypeRepository,
+        EducationMajorRepository educationMajorRepository,
+        EducationLevelRepository educationLevelRepository,
+        AuthService authService) {
+        this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
+        this.candidateReviewStatusRepository = candidateReviewStatusRepository;
         this.candidateSavedListService = candidateSavedListService;
+        this.countryService = countryService;
+        this.elasticsearchOperations = elasticsearchOperations;
+        this.emailHelper = emailHelper;
         this.userRepository = userRepository;
         this.savedListRepository = savedListRepository;
         this.savedListService = savedListService;
@@ -144,7 +187,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 watches = savedSearchRepository.findUserWatchedSearches(loggedInUser.getId());
             }
             savedSearches = new PageImpl<>(
-                    new ArrayList<>(watches), request.getPageRequest(), 
+                    new ArrayList<>(watches), request.getPageRequest(),
                     watches.size());
         } else {
             User userWithSharedSearches = loggedInUser == null ? null :
@@ -159,8 +202,136 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         for (SavedSearch savedSearch: savedSearches) {
             savedSearch.parseType();
         }
-        
+
         return savedSearches;
+    }
+
+    @Override
+    public Page<Candidate> searchCandidates(
+        long savedSearchId, SavedSearchGetRequest request)
+        throws NoSuchObjectException {
+
+        SearchCandidateRequest searchRequest =
+            loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request.
+        searchRequest.merge(request);
+
+        //Do the search
+        final Page<Candidate> candidates = doSearchCandidates(searchRequest);
+
+        //Add in any selections
+        markUserSelectedCandidates(savedSearchId, candidates);
+
+        return candidates;
+    }
+
+    @Override
+    public Set<Long> searchCandidates(long savedSearchId)
+        throws NoSuchObjectException {
+        SearchCandidateRequest searchRequest =
+            loadSavedSearch(savedSearchId);
+
+        Set<Long> candidateIds = new HashSet<>();
+        String simpleQueryString = searchRequest.getSimpleQueryString();
+        if (simpleQueryString != null && simpleQueryString.length() > 0) {
+            //This is an elastic search request.
+
+            BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
+                simpleQueryString, null);
+
+            NativeSearchQuery query = new NativeSearchQueryBuilder()
+                .withQuery(boolQueryBuilder)
+                .build();
+
+            SearchHits<CandidateEs> hits = elasticsearchOperations.search(
+                query, CandidateEs.class, IndexCoordinates.of("candidates"));
+
+            //Get candidate ids from the returned results
+            for (SearchHit<CandidateEs> hit : hits) {
+                candidateIds.add(hit.getContent().getMasterId());
+            }
+        } else {
+            //Compute the normal query
+            final Specification<Candidate> query = computeQuery(searchRequest, null);
+
+            List<Candidate> candidates = candidateRepository.findAll(query);
+
+            for (Candidate candidate : candidates) {
+                candidateIds.add(candidate.getId());
+            }
+        }
+
+        log.info("Found " + candidateIds.size() + " candidates in search");
+
+        return candidateIds;
+    }
+
+    /**
+     * Added @Transactional to this method as it is calling another method (updateSavedSearch) which requires
+     * the @Transactional annotation.
+     * Transaction needs to wrap the database modifying operation (searchJoinRepository.deleteBySearchId(id)) or
+     * else an exception will be thrown. See: https://www.baeldung.com/jpa-transaction-required-exception
+     */
+    @Override
+    @Transactional
+    public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
+        Page<Candidate> candidates;
+        User user = authService.getLoggedInUser().orElse(null);
+        if (user == null) {
+            candidates = doSearchCandidates(request);
+        } else {
+            //Update default search
+            SavedSearch defaultSavedSearch =
+                getDefaultSavedSearch();
+            Long savedSearchId = defaultSavedSearch.getId();
+            UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
+            updateRequest.setSearchCandidateRequest(request);
+            //Set other fields - no changes there
+            updateRequest.setName(defaultSavedSearch.getName());
+            updateRequest.setDefaultSearch(defaultSavedSearch.getDefaultSearch());
+            updateRequest.setFixed(defaultSavedSearch.getFixed());
+            updateRequest.setReviewable(defaultSavedSearch.getReviewable());
+            updateRequest.setSavedSearchType(defaultSavedSearch.getSavedSearchType());
+            updateRequest.setSavedSearchSubtype(defaultSavedSearch.getSavedSearchSubtype());
+            //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
+            updateSavedSearch(savedSearchId, updateRequest);
+
+            //Do the search
+            candidates = doSearchCandidates(request);
+
+            //Add in any selections
+            markUserSelectedCandidates(savedSearchId, candidates);
+        }
+
+        return candidates;
+    }
+
+    /**
+     * Mark the Candidate objects with any context associated with the
+     * selection list of the saved search.
+     * This means that context fields (ie ContextNote) associated with the
+     * saved search will be returned through the DtoBuilder if present.
+     */
+    @Override
+    public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
+        User user = authService.getLoggedInUser().orElse(null);
+        SavedList selectionList = null;
+        if (user != null) {
+            selectionList = getSelectionList(savedSearchId, user.getId());
+        }
+        if (selectionList != null) {
+            //Only set context of selected candidates
+            Set<Candidate> selectedCandidates = selectionList.getCandidates();
+            //Loop through candidates we are considering
+            for (Candidate candidate : candidates) {
+                //Only selected candidates
+                if (selectedCandidates.contains(candidate)) {
+                    candidate.setContextSavedListId(selectionList.getId());
+                }
+            }
+        }
     }
 
     @Override
@@ -222,20 +393,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
-    public void clearSelection(long id, Long userId) 
+    public void clearSelection(long id, Long userId)
             throws InvalidRequestException, NoSuchObjectException {
         //Get the selection list for this user and saved search.
         SavedList selectionList = getSelectionList(id, userId);
 
         //Clear the list.
-        savedListService.clearSavedList(selectionList.getId());
+        candidateSavedListService.clearSavedList(selectionList.getId());
     }
 
     @Override
     public SavedSearch createFromDefaultSavedSearch(
-            CreateFromDefaultSavedSearchRequest request)  
+            CreateFromDefaultSavedSearchRequest request)
             throws NoSuchObjectException {
-        
+
         final User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
@@ -258,20 +429,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (existing != null) {
             deleteSavedSearch(existing.getId());
         }
-        
+
         UpdateSavedSearchRequest createRequest = new UpdateSavedSearchRequest();
         createRequest.setName(name);
         createRequest.setSfJoblink(request.getSfJoblink());
-        
+
         //Default to job type
         createRequest.setSavedSearchType(SavedSearchType.job);
-        
+
         //Other fields eg fixed, reviewable etc to default values
-        
+
         //Copy search params from default search
         createRequest.setSearchCandidateRequest(
-                convertToSearchCandidateRequest(defaultSavedSearch));        
-        
+                convertToSearchCandidateRequest(defaultSavedSearch));
+
         SavedSearch createdSearch = createSavedSearch(createRequest);
 
         //Clear search attributes and selections of default saved search
@@ -292,7 +463,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     @Transactional
-    public SavedSearch createSavedSearch(UpdateSavedSearchRequest request) 
+    public SavedSearch createSavedSearch(UpdateSavedSearchRequest request)
             throws EntityExistsException {
         SavedSearch savedSearch = convertToSavedSearch(request);
         final User loggedInUser = authService.getLoggedInUser().orElse(null);
@@ -304,7 +475,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch = savedSearchRepository.save(savedSearch);
         savedSearch = addSearchJoins(request, savedSearch);
 
-        //Copy across the user's selections (including context notes) 
+        //Copy across the user's selections (including context notes)
         //of the default saved search.
         if (loggedInUser != null) {
             SavedSearch defaultSavedSearch = getDefaultSavedSearch();
@@ -319,19 +490,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     getSelectionList(savedSearch.getId(), loggedInUser.getId());
 
             //Copy default list to the selection list of the new saved search.
-            savedListService.copyContents(
+            candidateSavedListService.copyContents(
                     defaultSelectionList, newSelectionList, false);
 
             //Clear search attributes and selections of default saved search
             clearSavedSearch(defaultSavedSearch, loggedInUser);
-            
+
         }
         return savedSearch;
     }
 
     @Override
     @Transactional
-    public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) 
+    public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request)
             throws EntityExistsException {
         final User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
@@ -354,7 +525,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         SavedSearch savedSearch = convertToSavedSearch(request);
-        
+
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
 
@@ -377,7 +548,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             // Check if saved search was created by the user deleting.
             if(savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
                 savedSearch.setStatus(Status.deleted);
-                
+
                 //Change name so that that name can be reused
                 savedSearch.setName("__deleted__" + savedSearch.getName());
                 savedSearchRepository.save(savedSearch);
@@ -388,6 +559,46 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         }
         return false;
+    }
+
+    // Search export
+    @Override
+    public void exportToCsv(
+        long savedSearchId, SavedSearchGetRequest request, PrintWriter writer)
+        throws ExportFailedException {
+        SearchCandidateRequest searchRequest = loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request.
+        searchRequest.merge(request);
+        exportToCsv(searchRequest, writer);
+    }
+
+    @Override
+    public void exportToCsv(SearchCandidateRequest request, PrintWriter writer)
+        throws ExportFailedException {
+        try (CSVWriter csvWriter = new CSVWriter(writer)) {
+            csvWriter.writeNext(candidateService.getExportTitles());
+
+            request.setPageNumber(0);
+            request.setPageSize(500);
+            boolean hasMore = true;
+            while (hasMore) {
+                Page<Candidate> result = doSearchCandidates(request);
+                setCandidateContext(request.getSavedSearchId(), result);
+                for (Candidate candidate : result.getContent()) {
+                    csvWriter.writeNext(candidateService.getExportCandidateStrings(candidate));
+                }
+
+                if ((long) result.getNumber() * request.getPageSize() < result.getTotalElements()) {
+                    request.setPageNumber(request.getPageNumber()+1);
+                } else {
+                    hasMore = false;
+                }
+            }
+        } catch (IOException e) {
+            throw new ExportFailedException( e);
+        }
     }
 
     @Override
@@ -455,13 +666,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
-    public @NotNull SavedSearch getDefaultSavedSearch() 
+    public @NotNull SavedSearch getDefaultSavedSearch()
             throws NoSuchObjectException {
         //Check that we have a logged in user.
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        SavedSearch savedSearch = 
+        SavedSearch savedSearch =
                 savedSearchRepository.findDefaultSavedSearch(loggedInUser.getId())
                 .orElse(null);
         if (savedSearch == null) {
@@ -479,7 +690,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
-    public @NotNull SavedList getSelectionList(long id, Long userId) 
+    public @NotNull SavedList getSelectionList(long id, Long userId)
             throws NoSuchObjectException {
         //Check that saved search and user are valid.
         SavedSearch savedSearch = savedSearchRepository.findById(id)
@@ -493,13 +704,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (savedList == null) {
             savedList = new SavedList();
             savedList.setSavedSearch(savedSearch);
-            
+
             //Setting the savedSearchSource on all selection lists allows
             //the standard list savedSearchSource copy logic to work for
-            //selection lists as well as normal lists. 
+            //selection lists as well as normal lists.
             //See code in SavedListServiceImpl.createSavedList
             savedList.setSavedSearchSource(savedSearch);
-            
+
             savedList.setCreatedBy(user);
             savedList.setCreatedDate(OffsetDateTime.now());
             savedList.setName(constructSelectionListName(user, savedSearch));
@@ -521,12 +732,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 }
             }
         }
-        
+
         return savedList;
     }
 
     @Override
-    public @NotNull SavedList getSelectionListForLoggedInUser(long id) 
+    public @NotNull SavedList getSelectionListForLoggedInUser(long id)
         throws InvalidSessionException {
 
         final User loggedInUser = authService.getLoggedInUser()
@@ -544,7 +755,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     .orElse(null);
             if (savedList != null) {
                 candidateSavedListService
-                        .updateCandidateContextNote(savedList.getId(), request); 
+                        .updateCandidateContextNote(savedList.getId(), request);
             }
         }
     }
@@ -573,34 +784,227 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearchRepository.save(savedSearch);
     }
 
+    private Specification<Candidate> computeQuery(
+        SearchCandidateRequest request, @Nullable Collection<Candidate> excludedCandidates) {
+        //There may be no logged in user if the search is called by the
+        //overnight Watcher process.
+        User user = authService.getLoggedInUser().orElse(null);
+
+        //This list is initialized with the main saved search id, but can be
+        //added to by addQuery below when the search is built on other
+        //searches. The idea is to avoid circular dependencies between searches.
+        //For example, in the simplest case we don't want a saved search
+        //to be based on itself.
+        List<Long> searchIds = new ArrayList<>();
+        if (request.getSavedSearchId() != null) {
+            searchIds.add(request.getSavedSearchId());
+        }
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, user, excludedCandidates);
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
+            for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
+                query = addQuery(query, searchJoinRequest, searchIds);
+            }
+        }
+        return query;
+    }
+
+    private BoolQueryBuilder computeElasticQuery(SearchCandidateRequest request,
+        String simpleQueryString, @Nullable Collection <Candidate> excludedCandidates) {
+    /*
+       Constructing a filtered simple query that looks like this:
+
+       GET /candidates/_search
+        {
+          "query": {
+            "bool": {
+              "must": [
+                { "simple_query_string": {"query":"the +jet+ engine"}}
+              ],
+              "filter": [
+                { "term":  { "status": "pending" }},
+                { "range":  { "minEnglishSpokenLevel": {"gte": 2}}}
+              ]
+            }
+          }
+        }
+     */
+
+        //Create a simple query string builder from the given string
+        SimpleQueryStringBuilder simpleQueryStringBuilder =
+            QueryBuilders.simpleQueryStringQuery(simpleQueryString);
+
+        //The simple query will be part of a composite query containing
+        //filters.
+        BoolQueryBuilder boolQueryBuilder =
+            QueryBuilders.boolQuery().must(simpleQueryStringBuilder);
+
+        //Add filters - each filter must return true for a hit
+        //(Note: Filters are different from "Must" entries only in that
+        //they don't affect the Elasticsearch score)
+
+        //Add a TermsQuery filter for each multiselect request - eg
+        //countries and nationalities. A match against any one of the
+        //multiselected values will result in the filter returning true.
+        //There is also a TermQuery which takes only one value.
+
+        //English levels
+        Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
+        if (minSpokenLevel != null) {
+            boolQueryBuilder =
+                addElasticRangeFilter(boolQueryBuilder,
+                    "minEnglishSpokenLevel",
+                    minSpokenLevel, null);
+        }
+        Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
+        if (minWrittenLevel != null) {
+            boolQueryBuilder =
+                addElasticRangeFilter(boolQueryBuilder,
+                    "minEnglishWrittenLevel",
+                    minWrittenLevel, null);
+        }
+
+        //Exclude given candidates
+        if (excludedCandidates != null && excludedCandidates.size() > 0) {
+            List<Object> candidateIds = excludedCandidates.stream()
+                .map(Candidate::getId).collect(Collectors.toList());
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                SearchType.not,"masterId", candidateIds);
+        }
+
+        //Countries
+        final List<Long> countryIds = request.getCountryIds();
+        if (countryIds != null) {
+            //Look up country names from ids.
+            List<Object> reqCountries = new ArrayList<>();
+            for (Long countryId : countryIds) {
+                final Country country = countryService.getCountry(countryId);
+                reqCountries.add(country.getName());
+            }
+            boolQueryBuilder =
+                addElasticTermFilter(boolQueryBuilder,
+                    null,"country.keyword", reqCountries);
+        }
+
+        //Nationalities
+        final List<Long> nationalityIds = request.getNationalityIds();
+        if (nationalityIds != null) {
+            //Look up names from ids.
+            List<Object> reqNationalities = new ArrayList<>();
+            for (Long id : nationalityIds) {
+                final Country nationality = countryService.getCountry(id);
+                reqNationalities.add(nationality.getName());
+            }
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                request.getNationalitySearchType(),
+                "nationality.keyword", reqNationalities);
+        }
+
+        //Statuses
+        List<CandidateStatus> statuses = request.getStatuses();
+        if (statuses != null) {
+            //Extract names from enums
+            List<Object> reqStatuses = new ArrayList<>();
+            for (CandidateStatus status : statuses) {
+                reqStatuses.add(status.name());
+            }
+            boolQueryBuilder =
+                addElasticTermFilter(boolQueryBuilder,
+                    null,"status.keyword", reqStatuses);
+        }
+
+        //Gender
+        Gender gender = request.getGender();
+        if (gender != null) {
+            boolQueryBuilder = boolQueryBuilder.filter(
+                QueryBuilders.termQuery("gender", gender.name()));
+        }
+        return boolQueryBuilder;
+    }
+
     private static String constructDefaultSearchName(User user) {
-        return "_DefaultSavedSearchForUser" + user.getId(); 
+        return "_DefaultSavedSearchForUser" + user.getId();
     }
 
     private static String constructSelectionListName(
             User user, SavedSearch savedSearch) {
-        return "_SelectionListUser" + user.getId() + 
-                "Search" + savedSearch.getId(); 
+        return "_SelectionListUser" + user.getId() +
+                "Search" + savedSearch.getId();
     }
 
     /**
-     * Checks whether the given user already has another saved search with this 
+     * Checks whether the given user already has another saved search with this
      * name - throwing exception if it does
-     * @param savedSearchId Existing saved search - or null if none 
+     * @param savedSearchId Existing saved search - or null if none
      * @param name Saved search name
      * @param userId User
-     * @throws EntityExistsException if saved search with this name already 
+     * @throws EntityExistsException if saved search with this name already
      * exists for this user
      */
     private void checkDuplicates(
             @Nullable Long savedSearchId, String name, Long userId) {
-        SavedSearch existing = 
+        SavedSearch existing =
                 savedSearchRepository.findByNameIgnoreCase(name, userId);
         if (existing != null && existing.getStatus() != Status.deleted) {
             if (!existing.getId().equals(savedSearchId)) {
                 throw new EntityExistsException("savedSearch");
             }
         }
+    }
+
+    private BoolQueryBuilder addElasticRangeFilter(
+        BoolQueryBuilder builder, String field,
+        @Nullable Object min, @Nullable Object max) {
+        if (min != null || max != null) {
+            RangeQueryBuilder rangeQueryBuilder =
+                QueryBuilders.rangeQuery(field).from(min).to(max);
+            builder = builder.filter(rangeQueryBuilder);
+        }
+        return builder;
+    }
+
+    private BoolQueryBuilder addElasticTermFilter(
+        BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
+        List<Object> values) {
+        final int nValues = values.size();
+        if (nValues > 0) {
+            QueryBuilder queryBuilder;
+            if (nValues == 1) {
+                queryBuilder = QueryBuilders.termQuery(field, values.get(0));
+            } else {
+                queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
+            }
+            if (searchType == SearchType.not) {
+                builder = builder.mustNot(queryBuilder);
+            } else {
+                builder = builder.filter(queryBuilder);
+            }
+        } return builder;
+    }
+
+    private Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
+        if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
+            throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
+        }
+        User user = authService.getLoggedInUser().orElse(null);
+        //add id to list as do not want circular references
+        savedSearchIds.add(searchJoinRequest.getSavedSearchId());
+        //load saved search
+        SearchCandidateRequest request = loadSavedSearch(searchJoinRequest.getSavedSearchId());
+        Specification<Candidate> joinQuery = CandidateSpecification.buildSearchQuery(request, user, null);
+        if (searchJoinRequest.getSearchType().equals(SearchType.and)) {
+            query = Specification.where(query.and(joinQuery));
+        } else {
+            query = Specification.where(query.or(joinQuery));
+        }
+        if (!request.getSearchJoinRequests().isEmpty()) {
+            for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
+                query = addQuery(query, joinRequest, savedSearchIds);
+            }
+        }
+        return query;
+
     }
 
     private SavedSearch addSearchJoins(UpdateSavedSearchRequest request, SavedSearch savedSearch) {
@@ -639,7 +1043,105 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         return savedSearch;
     }
-    
+
+    private void markUserSelectedCandidates(@Nullable Long savedSearchId, Page<Candidate> candidates) {
+        if (savedSearchId != null) {
+            //Check for selection list to set the selected attribute on returned
+            // candidates.
+            SavedList selectionList = null;
+            User user = authService.getLoggedInUser().orElse(null);
+            if (user != null) {
+                selectionList = getSelectionList(savedSearchId, user.getId());
+            }
+            if (selectionList != null) {
+                Set<Candidate> selectedCandidates = selectionList.getCandidates();
+                if (selectedCandidates.size() > 0) {
+                    for (Candidate candidate : candidates) {
+                        if (selectedCandidates.contains(candidate)) {
+                            candidate.setSelected(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //Midnight GMT
+    @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
+    public void notifySearchWatchers() {
+        String currentSearch = "";
+        try {
+            Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
+            Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
+
+            log.info("Notify watchers: running " + searches.size() + " searches");
+
+            int count = 0;
+
+            OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
+
+            //Look through all watched searches looking for any that have candidates that were
+            //created since yesterday.
+            //Those are the searches that need to notify their watchers.
+            for (SavedSearch savedSearch : searches) {
+
+                count++;
+                currentSearch = savedSearch.getName();
+                log.info("Running search " + count + ": " + currentSearch);
+
+                SearchCandidateRequest searchCandidateRequest =
+                    convertToSearchCandidateRequest(savedSearch);
+
+                //Set up paging
+                searchCandidateRequest.setPageNumber(0);
+                //Short page is all we need - we are only going to look at first element
+                searchCandidateRequest.setPageSize(1);
+
+                Page<Candidate> candidates =
+                    doSearchCandidates(searchCandidateRequest);
+
+                boolean newCandidates = false;
+                if (candidates.getNumberOfElements() > 0) {
+                    //Get first (latest) candidate
+                    Candidate candidate = candidates.getContent().get(0);
+                    OffsetDateTime createdDate = candidate.getCreatedDate();
+                    newCandidates = createdDate.isAfter(yesterday);
+                }
+
+                if (newCandidates) {
+                    //Query has new results. Need to let watchers know
+                    Set<Long> watcherUserIds = savedSearch.getWatcherUserIds();
+                    for (Long watcherUserId : watcherUserIds) {
+                        Set<SavedSearch> userWatches = userNotifications
+                            .computeIfAbsent(watcherUserId, k -> new HashSet<>());
+                        userWatches.add(savedSearch);
+                    }
+                }
+            }
+
+            //Construct and send emails
+            for (Long userId : userNotifications.keySet()) {
+                final Set<SavedSearch> savedSearches = userNotifications.get(userId);
+                String s = savedSearches.stream()
+                    .map(SavedSearch::getName)
+                    .collect(Collectors.joining("/"));
+                log.info("Tell user " + userId + " about searches " + s);
+                User user = this.userRepository.findById(userId).orElse(null);
+                if (user == null) {
+                    final String mess = "Unknown user watcher id " + userId + " watching searches " + s;
+                    log.warn(mess);
+                    emailHelper.sendAlert(mess);
+                } else {
+                    emailHelper.sendWatcherEmail(user, savedSearches);
+                }
+            }
+        } catch (Exception ex) {
+            String mess = "Watcher notification failure (" + currentSearch + ")";
+            log.error(mess, ex);
+            emailHelper.sendAlert(mess, ex);
+        }
+    }
+
     private void populateSearchAttributes(
             SavedSearch savedSearch, SearchCandidateRequest request) {
         if (request != null) {
@@ -661,22 +1163,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setSurveyTypeIds(getListAsString(request.getSurveyTypeIds()));
             savedSearch.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
             savedSearch.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
-            Optional<Language> language = 
-                    request.getOtherLanguageId() != null ? 
+            Optional<Language> language =
+                    request.getOtherLanguageId() != null ?
                             languageRepository.findById(
                                     request.getOtherLanguageId()) : Optional.empty();
             if (language.isPresent()) {
                 savedSearch.setOtherLanguage(language.get());
             }
-            
-            Optional<SavedList> exclusionList = 
-                    request.getExclusionListId() != null ? 
+
+            Optional<SavedList> exclusionList =
+                    request.getExclusionListId() != null ?
                             savedListRepository.findById(
                                     request.getExclusionListId()) : Optional.empty();
             if (exclusionList.isPresent()) {
                 savedSearch.setExclusionList(exclusionList.get());
             }
-            
+
             savedSearch.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
             savedSearch.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
             savedSearch.setLastModifiedFrom(request.getLastModifiedFrom());
@@ -777,4 +1279,78 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .map(s -> CandidateStatus.valueOf(s))
                 .collect(Collectors.toList()) : null;
     }
+
+
+    private Page<Candidate> doSearchCandidates(SearchCandidateRequest request) {
+
+        Page<Candidate> candidates;
+
+        Set<Candidate> excludedCandidates = new HashSet<>();
+
+        final Long exclusionListId = request.getExclusionListId();
+        if (exclusionListId != null) {
+            SavedList exclusionList = savedListService.get(exclusionListId);
+            excludedCandidates.addAll(exclusionList.getCandidates());
+        }
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
+            //Compute excluded candidates based on review statuses
+            excludedCandidates.addAll(candidateReviewStatusRepository
+                .findCandidatesExcludedFromSearch(request.getSavedSearchId(),
+                    request.getReviewStatusFilter()));
+        }
+
+        //Modify request, defaulting blank statuses
+        List<CandidateStatus> requestedStatuses = request.getStatuses();
+        if (requestedStatuses == null || requestedStatuses.isEmpty()) {
+            request.setStatuses(defaultSearchStatuses);
+        }
+
+        String simpleQueryString = request.getSimpleQueryString();
+        if (simpleQueryString != null && simpleQueryString.length() > 0) {
+            //This is an elastic search request
+            BoolQueryBuilder boolQueryBuilder = computeElasticQuery(request,
+                simpleQueryString, excludedCandidates);
+
+            //Define sort from request
+            PageRequest req = CandidateEs.convertToElasticSortField(request);
+
+            NativeSearchQuery query = new NativeSearchQueryBuilder()
+                .withQuery(boolQueryBuilder)
+                .withPageable(req)
+                .build();
+
+            SearchHits<CandidateEs> hits = elasticsearchOperations.search(
+                query, CandidateEs.class, IndexCoordinates.of("candidates"));
+
+            //Get candidate ids from the returned results - maintaining the sort
+            //Avoid duplicates, but maintaining order by using a LinkedHashSet
+            LinkedHashSet<Long> candidateIds = new LinkedHashSet<>();
+            for (SearchHit<CandidateEs> hit : hits) {
+                candidateIds.add(hit.getContent().getMasterId());
+            }
+
+            //Now fetch those candidates from the normal database
+            //They will come back in random order
+            List<Candidate> unsorted = candidateRepository.findByIds(candidateIds);
+            //Put the results in a map indexed by the id
+            Map<Long, Candidate> mapById = new HashMap<>();
+            for (Candidate candidate : unsorted) {
+                mapById.put(candidate.getId(), candidate);
+            }
+            //Now construct a candidate list sorted according to the original
+            //list of ids.
+            List<Candidate> candidateList = new ArrayList<>();
+            for (Long candidateId : candidateIds) {
+                candidateList.add(mapById.get(candidateId));
+            }
+            candidates = new PageImpl<>(candidateList, request.getPageRequest(),
+                hits.getTotalHits());
+        } else {
+            Specification<Candidate> query = computeQuery(request, excludedCandidates);
+            candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
+        }
+        log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        return candidates;
+    }
+
 }
