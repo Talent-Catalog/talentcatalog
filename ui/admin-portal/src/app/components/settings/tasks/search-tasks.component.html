@@ -50,7 +50,7 @@
     Found {{results?.totalElements}} users
   </div>
 
-  <table class="table">
+  <table class="table table-responsive">
 
     <thead>
     <tr>
@@ -62,6 +62,7 @@
       <th>Days To Complete</th>
       <th>Upload Type</th>
       <th>Upload Subfolder</th>
+      <th>Help link</th>
       <th></th>
     </tr>
     </thead>
@@ -76,6 +77,7 @@
       <td>{{ta.daysToComplete}}</td>
       <td>{{ta.uploadType}}</td>
       <td>{{ta.uploadSubfolderName}}</td>
+      <td>{{ta.helpLink}}</td>
       <td>
 <!--        <div *ngIf="!loggedInUser.readOnly && canEdit(user)" ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">-->
 <!--          <button class="btn btn-xs hide-after" ngbDropdownToggle>-->

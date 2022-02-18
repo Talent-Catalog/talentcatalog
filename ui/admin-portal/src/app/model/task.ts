@@ -22,6 +22,7 @@ export interface Task extends Auditable {
   daysToComplete: number;
   description: string;
   optional: boolean;
+  helpLink: string;
   taskType: TaskType;
   uploadType: UploadType;
   uploadSubfolderName: string;
