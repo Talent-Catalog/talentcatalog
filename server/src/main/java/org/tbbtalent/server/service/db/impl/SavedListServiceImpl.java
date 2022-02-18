@@ -585,12 +585,6 @@ public class SavedListServiceImpl implements SavedListService {
         //Get list, creating list folder if necessary
         SavedList savedList = createListFolder(id);
 
-        //Fetch candidates in list
-        List<Candidate> candidates = new ArrayList<>(savedList.getCandidates());
-
-        //Set list context on candidates so that Candidate field contextNote can be accessed.
-        setCandidateContext(savedList.getId(), candidates);
-
         List<PublishedDocColumnDef> columnInfos = request.getConfiguredColumns();
 
         //Create the doc in the list folder.
@@ -650,14 +644,21 @@ public class SavedListServiceImpl implements SavedListService {
         }
 
         String publishedSheetDataRangeName = googleDriveConfig.getPublishedSheetDataRangeName();
+
+        //Fetch candidates in list
+        List<Candidate> candidates = new ArrayList<>(savedList.getCandidates());
+
+        //Create an empty doc - leaving room for the number of candidates
         String link = docPublisherService.createPublishedDoc(listFolder, savedList.getName(),
                 publishedSheetDataRangeName, candidates.size() + 1, props, columnSetUpMap);
 
+        //Populate candidate data in doc.
         //This is processed asynchronously so pass candidate ids, rather than candidate entities
         //which will not in a persistence context in the Async processing. They will need to
         //be reloaded from the database using their ids.
         List<Long> candidateIds = candidates.stream().map(Candidate::getId).collect(Collectors.toList());
-        docPublisherService.populatePublishedDoc(link, candidateIds, columnInfos, publishedSheetDataRangeName);
+        docPublisherService.populatePublishedDoc(link, savedList.getId(), candidateIds, columnInfos,
+            publishedSheetDataRangeName);
 
         /*
          * Need to remove any existing columns - can't rely on the savedList.setExportColumns call

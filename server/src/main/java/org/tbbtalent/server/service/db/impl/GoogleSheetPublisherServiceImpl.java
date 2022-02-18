@@ -103,14 +103,19 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
      */
     @Transactional
     @Async
-    public void populatePublishedDoc(String publishedDocLink, List<Long> candidateIds,
+    public void populatePublishedDoc(
+        String publishedDocLink, long savedListId, List<Long> candidateIds,
         List<PublishedDocColumnDef> columnInfos, String publishedSheetDataRangeName)
         throws GeneralSecurityException, IOException {
 
         //Load candidates from database into persistence context
         List<Candidate> candidates = new ArrayList<>();
         for (Long candidateId : candidateIds) {
-            candidates.add(candidateService.getCandidate(candidateId));
+            final Candidate candidate = candidateService.getCandidate(candidateId);
+
+            //Set list context on candidate entities so that Candidate field contextNote can be accessed.
+            candidate.setContextSavedListId(savedListId);
+            candidates.add(candidate);
         }
 
         //Create all candidate folders as needed.
