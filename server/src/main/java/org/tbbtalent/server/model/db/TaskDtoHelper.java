@@ -49,6 +49,7 @@ public class TaskDtoHelper {
             .add("daysToComplete")
             .add("description")
             .add("optional")
+            .add("helpLink")
             .add("taskType")
             .add("uploadType")
             .add("uploadSubfolderName")
