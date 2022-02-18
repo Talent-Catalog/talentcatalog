@@ -42,7 +42,7 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges {
   other: CandidateAttachment[];
 
   showAttachments: boolean = false;
-  showNotes: boolean = false;
+  showNotes: boolean = true;
 
   constructor() { }
 
