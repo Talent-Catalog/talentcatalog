@@ -75,7 +75,8 @@ public class WebConfiguration implements WebMvcConfigurer {
 
         UIBundle[] uiBundles = new UIBundle[]{
                 new UIBundle("candidate-portal", "candidate-portal"),
-                new UIBundle("admin-portal", "admin-portal")
+                new UIBundle("admin-portal", "admin-portal"),
+                new UIBundle("public-portal", "public-portal")
         };
 
         for (UIBundle uiBundle : uiBundles) {

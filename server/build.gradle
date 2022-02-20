@@ -53,6 +53,7 @@ dependencies {
     if (!isDev) {
         implementation(project(':ui:admin-portal'))
         implementation(project(':ui:candidate-portal'))
+        implementation(project(':ui:public-portal'))
     }
     implementation platform('com.google.cloud:libraries-bom:22.0.0')
     implementation 'com.google.cloud:google-cloud-storage'
