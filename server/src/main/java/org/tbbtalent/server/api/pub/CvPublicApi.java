@@ -16,13 +16,17 @@
 
 package org.tbbtalent.server.api.pub;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.security.CandidateTokenProvider;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -33,27 +37,29 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 @RequestMapping("/api/public/cv")
 public class CvPublicApi {
     private final CandidateService candidateService;
+    private final CandidateTokenProvider candidateTokenProvider;
 
-    public CvPublicApi(CandidateService candidateService) {
+    public CvPublicApi(CandidateService candidateService,
+        CandidateTokenProvider candidateTokenProvider) {
         this.candidateService = candidateService;
+        this.candidateTokenProvider = candidateTokenProvider;
     }
 
     @GetMapping("{token}")
     public Map<String, Object> decodeCvRequest(@PathVariable("token") String token) {
 
-        String candidateNumber = extractCandidateNumber(token);
-
-        Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
-        if (candidate == null) {
-            throw new NoSuchObjectException("Unknown candidate");
+        try {
+            String candidateNumber = candidateTokenProvider.getCandidateNumberFromToken(token);
+            Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
+            if (candidate == null) {
+                throw new NoSuchObjectException("Unknown candidate");
+            }
+            return candidateDto().build(candidate);
+        } catch (ExpiredJwtException ex) {
+            throw new InvalidRequestException("This link has expired");
+        } catch (JwtException ex) {
+            throw new InvalidRequestException("Invalid link");
         }
-
-        return candidateDto().build(candidate);
-    }
-
-    private String extractCandidateNumber(String token) {
-        //TODO JC Do proper extraction
-        return token;
     }
 
     private DtoBuilder candidateDto() {

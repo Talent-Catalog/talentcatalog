@@ -1,0 +1,92 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+package org.tbbtalent.server.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.util.Date;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+/**
+ * Generates candidate token strings which encode a candidateNumber and an expiry time.
+ * These strings are used to construct the obscure urls which display candidate cvs when
+ * processed by the public-portal.
+ * <p/>
+ * The idea of these is:
+ * <ul>
+ *     <li>Hide the actual candidate number so that people can't generate urls to look at
+ *     any candidate. They can only use the urls that we give them.</li>
+ *     <li>To provide an expiry of these urls, so that they become unusable after a time.</li>
+ * </ul>
+ * <p/>
+ * The strings are just JWT's - built using the excellent and well documented io.jsonwebtoken code.
+ * See https://github.com/jwtk/jjwt
+ * <p/>
+ * It uses the same JWT secret key as the tokens we use for authorization in {@link JwtTokenProvider}
+ *
+ * @author John Cameron
+ */
+@Service
+public class CandidateTokenProvider implements InitializingBean {
+
+    @Value("${jwt.secret}")
+    private String jwtSecretBase64;
+
+    private Key jwtSecret;
+
+    @Override
+    public void afterPropertiesSet() {
+        //Once the properties have been set from the config file, convert the
+        //String version of the key into a Key object.
+        this.jwtSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretBase64));
+    }
+
+    public String generateToken(String candidateNumber, int expiryTimeInMs) {
+
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expiryTimeInMs);
+
+        return Jwts.builder()
+                .setSubject(candidateNumber)
+                .setIssuedAt(new Date())
+                .setExpiration(expiryDate)
+                .signWith(jwtSecret, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String getCandidateNumberFromToken(String token) throws JwtException {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(jwtSecret)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
+    }
+
+    void setJwtSecretBase64(String jwtSecretBase64) {
+        this.jwtSecretBase64 = jwtSecretBase64;
+        this.jwtSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretBase64));
+    }
+}
