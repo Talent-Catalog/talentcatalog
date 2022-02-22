@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.security.CandidateTokenProvider;
 
 /**
  * Used to build the published Google sheet doc
@@ -33,7 +34,11 @@ import org.tbbtalent.server.model.db.Candidate;
 public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderService {
   private static final Logger log = LoggerFactory.getLogger(PublishedDocBuilderServiceImpl.class);
 
-  public PublishedDocBuilderServiceImpl() {
+  private final CandidateTokenProvider candidateTokenProvider;
+
+  public PublishedDocBuilderServiceImpl(
+      CandidateTokenProvider candidateTokenProvider) {
+    this.candidateTokenProvider = candidateTokenProvider;
   }
 
   public Object buildCell(Candidate candidate, PublishedDocColumnDef columnInfo) {
@@ -91,6 +96,10 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
           } else if (fieldName.equals("shareableDoc.url")
               && candidate.getListShareableDoc() != null) {
             val = candidate.extractField("listShareableDoc.url");
+          } else if (fieldName.equals("autoCvLink")) {
+            //TODO JC Constant - https://tbbtalent.org/public-portal/
+            val = "http://localhost:4202/cv/" + candidateTokenProvider.generateToken(
+                candidate.getCandidateNumber(), 365L);
           } else {
             val = candidate.extractField(fieldName);
           }

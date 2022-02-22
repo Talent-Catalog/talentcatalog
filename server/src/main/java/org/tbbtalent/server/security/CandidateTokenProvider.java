@@ -62,10 +62,17 @@ public class CandidateTokenProvider implements InitializingBean {
         this.jwtSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretBase64));
     }
 
-    public String generateToken(String candidateNumber, int expiryTimeInMs) {
+    /**
+     * Generates a JWT token string encoding a candidate number. The token will expire after the
+     * given number of days.
+     * @param candidateNumber A candidate number
+     * @param expiryTimeInDays Token expiry in days from now
+     * @return Candidate token string
+     */
+    public String generateToken(String candidateNumber, long expiryTimeInDays) {
 
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiryTimeInMs);
+        Date expiryDate = new Date(now.getTime() + expiryTimeInDays * 24 * 60 * 60 * 1000);
 
         return Jwts.builder()
                 .setSubject(candidateNumber)
@@ -75,6 +82,13 @@ public class CandidateTokenProvider implements InitializingBean {
                 .compact();
     }
 
+    /**
+     * Retrieves the candidate number from the token, otherwise throws exceptions if the token
+     * is not valid or has expired.
+     * @param token Candidate token string
+     * @return Candidate number
+     * @throws JwtException if there are any problems with the token.
+     */
     public String getCandidateNumberFromToken(String token) throws JwtException {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(jwtSecret)
