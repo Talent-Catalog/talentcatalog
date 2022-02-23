@@ -14,9 +14,16 @@
 
   <ng-container *ngIf="!loading && !selectedTask">
     <div>
-      <div class="mb-4">
-        <h3>Your Tasks</h3>
-        <p class="text-muted">Click on task to view details and complete action.</p>
+      <div class="d-flex justify-content-between align-items-baseline mb-4">
+        <div>
+          <h3>Your Tasks</h3>
+          <p class="text-muted">Click on task to view details and complete action.</p>
+        </div>
+        <div class="flex-shrink-0">
+          <a class="btn btn-sm btn-primary" target="_blank" href="https://talentbeyondboundaries.org/help/tasks-overview">
+            View Help <fa-icon class="ml-1" icon="question-circle"></fa-icon>
+          </a>
+        </div>
       </div>
       <div class="table-responsive-sm">
         <table class="table table-hover bg-white">

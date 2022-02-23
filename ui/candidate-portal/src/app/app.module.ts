@@ -83,6 +83,7 @@ import {
   faExternalLinkAlt,
   faGlobe,
   faQuestion,
+  faQuestionCircle,
   faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
@@ -220,7 +221,8 @@ export class AppModule {
       faCheck,
       faQuestion,
       faTimes,
-      faArrowLeft
+      faArrowLeft,
+      faQuestionCircle
     );
   }
 }

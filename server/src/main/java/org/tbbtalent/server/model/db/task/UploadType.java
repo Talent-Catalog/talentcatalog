@@ -22,6 +22,7 @@ package org.tbbtalent.server.model.db.task;
  * @author John Cameron
  */
 public enum UploadType {
+    collaborationAgreement,
     conductEmployer,
     conductEmployerTrans,
     conductMinistry,
@@ -32,6 +33,7 @@ public enum UploadType {
     degreeTranscript,
     degreeTranscriptTrans,
     englishExam,
+    infoReleaseForm,
     licencing,
     licencingTrans,
     offer,
