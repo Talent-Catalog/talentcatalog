@@ -15,4 +15,8 @@ export class CvDisplayComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  print() {
+    window.print();
+  }
+
 }
