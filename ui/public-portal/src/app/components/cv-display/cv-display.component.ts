@@ -13,6 +13,7 @@ export class CvDisplayComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    console.log(this.candidate);
   }
 
   print() {

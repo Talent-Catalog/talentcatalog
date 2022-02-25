@@ -11,20 +11,28 @@
   position: fixed;
   bottom: 0;
   width: 100%;
-  border-top: 1px solid black; /* for demo */
-  background: #0eb1e3; /* for demo */
+  padding: 0 100px;
+  //border-top: 1px solid #0eb1e3; /* for demo */
+  background: #9d9d9d; /* for demo */
+  display: flex;
+  align-items: center;
 }
 
 .page-header {
   position: fixed;
-  top: 0mm;
+  text-align: center;
+  top: 0;
   width: 100%;
-  border-bottom: 1px solid black; /* for demo */
-  background: #0eb1e3; /* for demo */
+  padding: 0 100px;
+  //border-bottom: 1px solid #0eb1e3; /* for demo */
+  background: #232B2B /* for demo */
 }
 
 .page {
   page-break-after: always;
+  padding: 30px 100px;
+  line-height: 2;
+  background-color: #f3f3f7;
 }
 
 @page {
@@ -38,4 +46,24 @@
   button {display: none;}
 
   body {margin: 0;}
+}
+
+img {
+  max-width: 250px;
+}
+
+p {
+  white-space: pre-wrap;
+}
+
+h4 {
+  margin-bottom: 20px;
+}
+
+h5, h6 {
+  font-family: 'Nunito', sans-serif;
+}
+
+.light-text {
+  color: #f3f3f7;
 }

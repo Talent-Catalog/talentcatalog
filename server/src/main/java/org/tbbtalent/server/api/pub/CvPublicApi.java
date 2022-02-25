@@ -18,7 +18,6 @@ package org.tbbtalent.server.api.pub;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +28,8 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.security.CandidateTokenProvider;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.util.Map;
 
 /**
  * Public API - accessible without a login
@@ -102,8 +103,105 @@ public class CvPublicApi {
             .add("shareableNotes")
             .add("stage")
             .add("sfOpportunityLink")
-
+            .add("country", countryDto())
+            .add("candidateOccupations", candidateOccupationDto())
+            .add("candidateJobExperiences", candidateJobExperienceDto())
+            .add("candidateEducations", candidateEducationDto())
+            .add("candidateLanguages", candidateLanguageDto())
+            .add("candidateCertifications", candidateCertificationDto())
             ;
+    }
+
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name");
+    }
+
+    private DtoBuilder candidateJobExperienceDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("companyName")
+                .add("role")
+                .add("startDate")
+                .add("endDate")
+                .add("fullTime")
+                .add("paid")
+                .add("description")
+                .add("country", countryDto())
+                .add("candidateOccupation", candidateOccupationDto())
+                ;
+    }
+
+    private DtoBuilder candidateOccupationDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("occupation", occupationDto())
+                .add("yearsExperience")
+                ;
+    }
+
+    private DtoBuilder occupationDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                ;
+    }
+
+    private DtoBuilder candidateEducationDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("educationType")
+                .add("country", countryDto())
+                .add("educationMajor", majorDto())
+                .add("lengthOfCourseYears")
+                .add("institution")
+                .add("courseName")
+                .add("yearCompleted")
+                .add("incomplete")
+                ;
+    }
+
+    private DtoBuilder majorDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("status")
+                ;
+    }
+
+    private DtoBuilder candidateLanguageDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("migrationLanguage")
+                .add("language", languageDto())
+                .add("writtenLevel", languageLevelDto())
+                .add("spokenLevel",languageLevelDto())
+                ;
+    }
+
+    private DtoBuilder languageDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                ;
+    }
+
+    private DtoBuilder languageLevelDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("level")
+                ;
+    }
+
+    private DtoBuilder candidateCertificationDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("institution")
+                .add("dateCompleted")
+                ;
     }
 
 }
