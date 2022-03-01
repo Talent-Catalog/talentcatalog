@@ -14,9 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-rootProject.name = 'tbbtalentv2'
+export interface Language {
+  id: number;
+  name: string;
+  status: string;
+}
 
-include ':ui:admin-portal'
-include ':ui:candidate-portal'
-include ':ui:public-portal'
-include ':server'
+export interface SystemLanguage {
+  id: number;
+  label: string;
+  language: string;
+  rtl: boolean;
+}

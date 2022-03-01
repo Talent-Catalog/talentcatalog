@@ -1039,6 +1039,11 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate findByCandidateNumber(String candidateNumber) {
+        return candidateRepository.findByCandidateNumber(candidateNumber);
+    }
+
+    @Override
+    public Candidate findByCandidateNumberRestricted(String candidateNumber) {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 

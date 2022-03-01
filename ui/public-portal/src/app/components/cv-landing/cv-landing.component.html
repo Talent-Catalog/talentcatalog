@@ -1,0 +1,11 @@
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i>
+</div>
+
+<app-cv-display *ngIf="!error && !loading && candidate"
+                     [candidate]="candidate"
+></app-cv-display>

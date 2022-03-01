@@ -78,7 +78,7 @@ class PublishedDocBuilderServiceImplTest {
         new PublishedDocConstantSource("cv"),
         new PublishedDocFieldSource("shareableCv.location"));
 
-    builder = new PublishedDocBuilderServiceImpl();
+    builder = new PublishedDocBuilderServiceImpl(null);
   }
 
   @Test

@@ -30,9 +30,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
@@ -223,7 +225,26 @@ public interface CandidateService {
      */
     Optional<Candidate> getLoggedInCandidate();
 
+    /**
+     * Finds candidate with the given candidate number, or null if none found.
+     *
+     * @param candidateNumber Number of desired candidate
+     * @return Candidate or null if none found
+     */
+    @Nullable
     Candidate findByCandidateNumber(String candidateNumber);
+
+    /**
+     * Restricted access to the candidate with the given candidate number.
+     * <p/>
+     * Access is restricted to users who are logged in and also depending on any source country
+     * restrictions they have associated with them.
+     * @param candidateNumber Number of desired candidate
+     * @return Candidate
+     * @throws InvalidSessionException if user is not logged in
+     * @throws CountryRestrictionException if the candidate is not found
+     */
+    Candidate findByCandidateNumberRestricted(String candidateNumber);
 
     Candidate getCandidateFromRequest(Long requestCandidateId);
 

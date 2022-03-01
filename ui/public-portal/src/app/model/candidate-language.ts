@@ -14,9 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-rootProject.name = 'tbbtalentv2'
+import {Language} from "./language";
+import {LanguageLevel} from "./language-level";
 
-include ':ui:admin-portal'
-include ':ui:candidate-portal'
-include ':ui:public-portal'
-include ':server'
+export interface CandidateLanguage {
+  id: number;
+  language?: Language;
+  spokenLevel?: LanguageLevel;
+  writtenLevel?: LanguageLevel;
+  // Request object variables
+  languageId?: number;
+  spokenLevelId?: number;
+  writtenLevelId?: number;
+}
