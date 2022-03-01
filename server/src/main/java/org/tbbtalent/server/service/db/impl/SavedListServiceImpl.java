@@ -52,6 +52,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.ExportColumn;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
@@ -137,6 +138,50 @@ public class SavedListServiceImpl implements SavedListService {
         this.salesforceService = salesforceService;
         this.userRepository = userRepository;
         this.authService = authService;
+    }
+
+    @Override
+    public void addCandidate(@NonNull SavedList destinationList, @NonNull Candidate candidate,
+        @Nullable SavedList sourceList) {
+        //Find any context note for the given candidate and sourceList
+        String contextNote = null;
+        if (sourceList != null) {
+            //Need to copy the context across from the source list.
+            //Construct the csl we are looking for...
+            CandidateSavedList targetCsl = new CandidateSavedList(candidate, sourceList);
+
+            //Now search for that csl in the candidate's csl's.
+            Set<CandidateSavedList> sourceCsls = candidate.getCandidateSavedLists();
+            for (CandidateSavedList sourceCsl : sourceCsls) {
+                if (sourceCsl.equals(targetCsl)) {
+                    //Found context note for the candidate and the sourceList.
+                    contextNote = sourceCsl.getContextNote();
+                    break;
+                }
+            }
+        }
+
+        //Create new candidate/list link
+        final CandidateSavedList csl =
+            new CandidateSavedList(candidate, destinationList);
+        //Copy across context
+        if (contextNote != null) {
+            csl.setContextNote(contextNote);
+        }
+
+        //Add candidate to the collection of candidates in this list
+        destinationList.getCandidateSavedLists().add(csl);
+        //Also update other side of many to many relationship, adding this
+        //list to the candidate's collection of lists that they belong to.
+        candidate.getCandidateSavedLists().add(csl);
+    }
+
+    @Override
+    public void addCandidates(@NonNull SavedList destinationList, @NonNull Iterable<Candidate> candidates,
+        @Nullable SavedList sourceList) {
+        for (Candidate candidate : candidates) {
+            addCandidate(destinationList, candidate, sourceList);
+        }
     }
 
     /**
@@ -266,7 +311,7 @@ public class SavedListServiceImpl implements SavedListService {
 
         SavedList sourceList = fetchSourceList(request);
         Set<Candidate> candidates = fetchCandidates(request);
-        savedList.addCandidates(candidates, sourceList);
+        addCandidates(savedList, candidates, sourceList);
 
         saveIt(savedList);
     }

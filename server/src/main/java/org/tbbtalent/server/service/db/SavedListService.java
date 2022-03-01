@@ -53,6 +53,28 @@ import org.tbbtalent.server.request.search.UpdateSharingRequest;
  */
 public interface SavedListService {
 
+    //TODO JC
+    /**
+     * Add the given candidate to the given destination list - merging it in with any
+     * existing candidates in the list (no duplicates - if a candidate is
+     * already present it will still only appear once).
+     * <p/>
+     * If a source list is supplied, the original candidate context will be
+     * copied across (eg contextNote).
+     * @param destinationList List to which candidates are added
+     * @param candidate Candidate to add to the destination list
+     * @param sourceList If not null, refers to the list where candidates came
+     *                   from, so that context can be copied across.
+     */
+    void addCandidate(@NonNull SavedList destinationList, @NonNull Candidate candidate,
+        @Nullable SavedList sourceList);
+
+    /**
+     * See {@link #addCandidate} - except that this adds multiple candidates
+     */
+    void addCandidates(@NonNull SavedList destinationList, @NonNull Iterable<Candidate> candidates,
+        @Nullable SavedList sourceList);
+
     /**
      * If the given list is associated with a Salesforce job opportunity, the given candidates
      * are populated with their candidate opportunity stages associated with that job opportunity.
@@ -179,6 +201,8 @@ public interface SavedListService {
     List<SavedList> listSavedLists(SearchSavedListRequest request);
 
     /**
+     * This is how candidates are added to a list.
+     * <p/>
      * Merge the contents of the SavedList with the given id with the
      * candidates indicated in the given request.
      * @param savedListId ID of saved list to be updated

@@ -95,6 +95,15 @@ public class SavedListCandidateAdminApi implements
         return builder.buildList(candidates);
     }
 
+    /**
+     * This is where candidates are added to a list.
+     * <p/>
+     * It is a "merge" because duplicates are not allowed - ie a candidate cannot appear more than
+     * once in a list. If a candidate is already in the list, they won't be added a second time.
+     * @param savedListId List to be added to.
+     * @param request Contains the ids of candidates to be added.
+     * @throws NoSuchObjectException
+     */
     @Override
     public void merge(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request)
             throws NoSuchObjectException {
