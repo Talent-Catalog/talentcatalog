@@ -33,6 +33,10 @@
   break-inside: avoid;
 }
 
+table {
+  width: 100%;
+}
+
 @media print {
   thead {display: table-header-group;}
   tfoot {display: table-footer-group;}
