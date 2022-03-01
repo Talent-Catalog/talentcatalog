@@ -16,14 +16,15 @@
 
 package org.tbbtalent.server.request.candidate;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.security.CandidateTokenProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used to build the published Google sheet doc
@@ -97,8 +98,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
               && candidate.getListShareableDoc() != null) {
             val = candidate.extractField("listShareableDoc.url");
           } else if (fieldName.equals("autoCvLink")) {
-            //TODO JC Constant - https://tbbtalent.org/public-portal/
-            val = "http://localhost:4202/cv/" + candidateTokenProvider.generateToken(
+            val = "https://tbbtalent.org/public-portal/" + candidateTokenProvider.generateToken(
                 candidate.getCandidateNumber(), 365L);
           } else {
             val = candidate.extractField(fieldName);
