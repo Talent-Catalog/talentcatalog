@@ -98,7 +98,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
               && candidate.getListShareableDoc() != null) {
             val = candidate.extractField("listShareableDoc.url");
           } else if (fieldName.equals("autoCvLink")) {
-            val = "https://tbbtalent.org/public-portal/" + candidateTokenProvider.generateToken(
+            val = "https://tbbtalent.org/public-portal/cv/" + candidateTokenProvider.generateToken(
                 candidate.getCandidateNumber(), 365L);
           } else {
             val = candidate.extractField(fieldName);
