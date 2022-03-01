@@ -4,18 +4,16 @@
 
 .page-footer, .page-footer-space {
   height: 50px;
-
 }
 
 .page-footer {
   position: fixed;
+  display: block;
   bottom: 0;
   width: 100%;
-  padding: 0 100px;
-  //border-top: 1px solid #0eb1e3; /* for demo */
-  background: #9d9d9d; /* for demo */
-  display: flex;
-  align-items: center;
+  padding-left: 100px;
+  background: #9d9d9d;
+  z-index: 100;
 }
 
 .page-header {
@@ -24,19 +22,15 @@
   top: 0;
   width: 100%;
   padding: 0 100px;
-  //border-bottom: 1px solid #0eb1e3; /* for demo */
-  background: #232B2B /* for demo */
+  background: #232B2B;
+  z-index: 100;
 }
 
 .page {
-  page-break-after: always;
-  padding: 30px 100px;
-  line-height: 2;
+  line-height: 2.3;
   background-color: #f3f3f7;
-}
-
-@page {
-  margin: 20mm
+  padding: 30px 100px;
+  break-inside: avoid;
 }
 
 @media print {
@@ -46,6 +40,19 @@
   button {display: none;}
 
   body {margin: 0;}
+
+  .page {
+    padding: 0;
+  }
+
+  .page-header {
+    z-index: 0;
+  }
+
+  .page-footer {
+    z-index: 0;
+    padding: 0;
+  }
 }
 
 img {
@@ -66,4 +73,18 @@ h5, h6 {
 
 .light-text {
   color: #f3f3f7;
+}
+
+@media (max-width: 575.98px) {
+  img {
+    max-width: 180px;
+  }
+  .page-header {
+    padding: 0 40px;
+    font-size: 12px;
+  }
+
+  .page {
+    padding: 0 40px;
+  }
 }
