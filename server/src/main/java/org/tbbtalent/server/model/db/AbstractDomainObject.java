@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -47,14 +47,14 @@ public abstract class AbstractDomainObject<IdType extends Serializable>  impleme
 
     /*
       For good discussion on hashCode and equals for entities see
-      https://web.archive.org/web/20170710132916/http://www.onjava.com/pub/a/onjava/2006/09/13/dont-let-hibernate-steal-your-identity.html      
-     
+      https://web.archive.org/web/20170710132916/http://www.onjava.com/pub/a/onjava/2006/09/13/dont-let-hibernate-steal-your-identity.html
+
       The key problem is that entity objects only get an id once they are
       persisted. If you are using those objects before persisting them
       the absence of an id can lead to peculiar results - for example all
-      object instances looking like they are equal.      
+      object instances looking like they are equal.
      */
-    
+
     @Override
     public int hashCode() {
         if (id != null) {
@@ -68,17 +68,17 @@ public abstract class AbstractDomainObject<IdType extends Serializable>  impleme
     public boolean equals(Object obj) {
         if (this == obj) return true;
 
-        if (obj == null || !(obj instanceof AbstractDomainObject)) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        AbstractDomainObject other = (AbstractDomainObject) obj;
-        
+        AbstractDomainObject<?> other = (AbstractDomainObject<?>) obj;
+
         //If id is missing assume that it is not equal to other instance.
         //(Previous version of this code treated all instances with null
         //ids as equal).
         if (id == null) return false;
 
-        //Equivalence by id         
+        //Equivalence by id
         return id.equals(other.id);
     }
 
