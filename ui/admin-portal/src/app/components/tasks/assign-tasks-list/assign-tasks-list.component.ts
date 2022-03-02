@@ -112,9 +112,9 @@ export class AssignTasksListComponent implements OnInit {
   removeTask(task: Task) {
     const confirmationModal = this.modalService.open(ConfirmationComponent, {scrollable: true});
     confirmationModal.componentInstance.title =
-      "Are you sure you want to remove " + task.name + " from the list " + this.savedList.name + "?";
+      "Are you sure you want to remove " + task.name + " from the associated list " + this.savedList.name + "?";
     confirmationModal.componentInstance.message =
-      "Note: Removing this task (or task list with sub tasks) will deactivate the task from all candidates within the list. "
+      "Note: Removing this task association will make the task inactive for any candidates within the list who have not completed the task. "
 
     confirmationModal.result
       .then((result) => {
