@@ -14,9 +14,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-rootProject.name = 'tbbtalentv2'
+import {Country} from "./country";
+import {EducationMajor} from "./education-major";
 
-include ':ui:admin-portal'
-include ':ui:candidate-portal'
-include ':ui:public-portal'
-include ':server'
+export interface CandidateEducation {
+  id: number;
+  educationType: string;
+  lengthOfCourseYears: number;
+  institution: string;
+  courseName: string;
+  yearCompleted: string;
+  country?: Country;
+  educationMajor?: EducationMajor;
+  // Request object variables
+  countryId?: number;
+  educationMajorId?: number;
+  incomplete?: boolean;
+}

@@ -14,9 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-rootProject.name = 'tbbtalentv2'
+export const US_AFGHAN_SURVEY_TYPE = 10;
 
-include ':ui:admin-portal'
-include ':ui:candidate-portal'
-include ':ui:public-portal'
-include ':server'
+export interface SurveyType {
+  id: number;
+  name: string;
+}

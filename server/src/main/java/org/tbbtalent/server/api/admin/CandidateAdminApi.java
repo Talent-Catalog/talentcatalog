@@ -108,7 +108,7 @@ public class CandidateAdminApi {
 
     @GetMapping("number/{number}")
     public Map<String, Object> get(@PathVariable("number") String number) {
-        Candidate candidate = this.candidateService.findByCandidateNumber(number);
+        Candidate candidate = this.candidateService.findByCandidateNumberRestricted(number);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }

@@ -1,0 +1,94 @@
+.page-header, .page-header-space {
+  height: 100px;
+}
+
+.page-footer, .page-footer-space {
+  height: 50px;
+}
+
+.page-footer {
+  position: fixed;
+  display: block;
+  bottom: 0;
+  width: 100%;
+  //padding-left: 100px;
+  //background: #9d9d9d;
+  //z-index: 100;
+}
+
+.page-header {
+  position: fixed;
+  text-align: center;
+  top: 0;
+  width: 100%;
+  padding: 0 100px;
+  background: #232B2B;
+  z-index: 100;
+}
+
+.page {
+  line-height: 2.3;
+  background-color: #f3f3f7;
+  padding: 30px 100px;
+  break-inside: avoid;
+}
+
+table {
+  width: 100%;
+}
+
+@media print {
+  thead {display: table-header-group;}
+  tfoot {display: table-footer-group;}
+
+  button {display: none;}
+
+  body {margin: 0;}
+
+  .page {
+    padding: 0;
+  }
+
+  .page-header {
+    z-index: 0;
+  }
+
+  .page-footer {
+    z-index: 0;
+    padding: 0;
+  }
+}
+
+img {
+  max-width: 250px;
+}
+
+p {
+  white-space: pre-wrap;
+}
+
+h4 {
+  margin-bottom: 20px;
+}
+
+h5, h6 {
+  font-family: 'Nunito', sans-serif;
+}
+
+.light-text {
+  color: #f3f3f7;
+}
+
+@media (max-width: 575.98px) {
+  img {
+    max-width: 180px;
+  }
+  .page-header {
+    padding: 0 40px;
+    font-size: 12px;
+  }
+
+  .page {
+    padding: 0 40px;
+  }
+}
