@@ -16,10 +16,14 @@
 
 package org.tbbtalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 
 public interface TaskAssignmentRepository extends
     JpaRepository<TaskAssignmentImpl, Long>, JpaSpecificationExecutor<TaskAssignmentImpl> {
+
+    List<TaskAssignmentImpl> findAllByStatus(Status status);
 }

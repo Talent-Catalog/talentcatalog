@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.service.db.impl.TaskAssigmentServiceImpl;
@@ -48,7 +49,7 @@ class TaskAssignmentServiceTest {
     void setUp() {
         // TODO: 22/1/22 Mock candidate attachment service
         taskAssignmentService = new TaskAssigmentServiceImpl(
-            null, null, null);
+            null, null);
 
         task = new TaskImpl();
     }
@@ -71,8 +72,8 @@ class TaskAssignmentServiceTest {
 
         //Check that the task assignment is contained in the active assignments associated with the
         //candidate.
-        List<TaskAssignment> tas =
-            taskAssignmentService.getCandidateTaskAssignments(candidate, Status.active);
+        List<TaskAssignmentImpl> tas =
+            taskAssignmentService.getCandidateTaskAssignmentsByStatus(candidate, Status.active);
         assertNotNull(tas);
         assertTrue(tas.contains(ta));
     }
@@ -86,8 +87,8 @@ class TaskAssignmentServiceTest {
         Set<Candidate> candidates = list.getCandidates();
         for (Candidate c : candidates) {
             //Get all this candidate's active task assignments
-            List<TaskAssignment> tas =
-                taskAssignmentService.getCandidateTaskAssignments(candidate, Status.active);
+            List<TaskAssignmentImpl> tas =
+                taskAssignmentService.getCandidateTaskAssignmentsByStatus(candidate, Status.active);
 
             //Check that one of the task assignments is associated with the task.
             boolean found = false;
@@ -112,20 +113,20 @@ class TaskAssignmentServiceTest {
     void getCandidateTaskAssignments() {
         // TODO: 16/1/22 Set up some assignments, mixed active and inactive
 
-        List<TaskAssignment> tas;
+        List<TaskAssignmentImpl> tas;
 
         //Check passing with null status - should return all assignments
-        tas = taskAssignmentService.getCandidateTaskAssignments(candidate, null);
+        tas = taskAssignmentService.getCandidateTaskAssignmentsByStatus(candidate, null);
         assertNotNull(tas);
         //TODO Check that all assignments are returned
 
         //Check passing with active status - should only return active assignments
-        tas = taskAssignmentService.getCandidateTaskAssignments(candidate, Status.active);
+        tas = taskAssignmentService.getCandidateTaskAssignmentsByStatus(candidate, Status.active);
         assertNotNull(tas);
         //TODO Check that all active assignments are returned
 
         //Check passing with inactive status - should only return inactive assignments
-        tas = taskAssignmentService.getCandidateTaskAssignments(candidate, Status.inactive);
+        tas = taskAssignmentService.getCandidateTaskAssignmentsByStatus(candidate, Status.inactive);
         assertNotNull(tas);
         //TODO Check that all inactive assignments are returned
 

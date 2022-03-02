@@ -40,7 +40,6 @@ import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
 import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
-import org.tbbtalent.server.service.db.TaskService;
 
 /**
  * Default implementation of a TaskAssignmentService
@@ -51,15 +50,12 @@ import org.tbbtalent.server.service.db.TaskService;
 public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final CandidateAttachmentService candidateAttachmentService;
     private final TaskAssignmentRepository taskAssignmentRepository;
-    private final TaskService taskService;
 
     public TaskAssigmentServiceImpl(
         CandidateAttachmentService candidateAttachmentService,
-        TaskAssignmentRepository taskAssignmentRepository,
-        TaskService taskService) {
+        TaskAssignmentRepository taskAssignmentRepository) {
         this.candidateAttachmentService = candidateAttachmentService;
         this.taskAssignmentRepository = taskAssignmentRepository;
-        this.taskService = taskService;
     }
 
     @Override
@@ -129,12 +125,23 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         return taskAssignmentRepository.save(taskAssignment);
     }
 
-    @NonNull
     @Override
-    public boolean removeTaskAssignment(User user, long taskAssignmentId) throws NoSuchObjectException {
+    public void deactivateTaskAssignment(User user, long taskAssignmentId) throws NoSuchObjectException {
         TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(taskAssignmentId)
             .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
 
+        taskAssignment.setDeactivatedBy(user);
+        taskAssignment.setDeactivatedDate(OffsetDateTime.now());
+        taskAssignment.setStatus(Status.inactive);
+        taskAssignmentRepository.save(taskAssignment);
+    }
+
+    @Override
+    public boolean deleteTaskAssignment(User user, long taskAssignmentId) throws NoSuchObjectException {
+        TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(taskAssignmentId)
+            .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
+
+        //Note that we use the deactivatedBy and Date fields to record deletions.
         taskAssignment.setDeactivatedBy(user);
         taskAssignment.setDeactivatedDate(OffsetDateTime.now());
         taskAssignment.setStatus(Status.deleted);
@@ -143,9 +150,8 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     }
 
     @Override
-    public List<TaskAssignment> getCandidateTaskAssignments(Candidate candidate, Status status) {
-        //TODO JC Implement getCandidateTaskAssignments
-        throw new UnsupportedOperationException("getCandidateTaskAssignments not implemented");
+    public List<TaskAssignmentImpl> getCandidateTaskAssignmentsByStatus(Candidate candidate, Status status) {
+        return taskAssignmentRepository.findAllByStatus(status);
     }
 
     @Override

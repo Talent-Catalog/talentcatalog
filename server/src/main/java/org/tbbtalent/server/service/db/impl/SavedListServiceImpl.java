@@ -189,31 +189,6 @@ public class SavedListServiceImpl implements SavedListService {
         assignListTasksToCandidate(destinationList, candidate);
     }
 
-    private void assignListTasksToCandidate(SavedList savedList, Candidate candidate) {
-        Set<TaskImpl> listTasks = savedList.getTasks();
-
-        if (!listTasks.isEmpty()) {
-            final User loggedInUser = authService.getLoggedInUser().orElse(null);
-
-            final Set<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
-            //Extract tasks which are actively assigned to the candidate.
-            // We don't want to duplicate them.
-            Set<TaskImpl> activeCandidateTasks = candidateTaskAssignments.stream()
-                    .filter(taskAssignment -> taskAssignment.getStatus() == Status.active)
-                    .map(TaskAssignmentImpl::getTask).collect(Collectors.toSet());
-
-            //Assign all list tasks to the candidate that they don't already have assigned.
-            for (TaskImpl listTask : listTasks) {
-                boolean newTask = !activeCandidateTasks.contains(listTask);
-                if (newTask) {
-                    TaskAssignmentImpl taskAssignment = taskAssignmentService.assignTaskToCandidate(
-                        loggedInUser, listTask, candidate,null);
-                    taskAssignment.setRelatedList(savedList);
-                }
-            }
-        }
-    }
-
     @Override
     public void addCandidatesToList(@NonNull SavedList destinationList, @NonNull Iterable<Candidate> candidates,
         @Nullable SavedList sourceList) {
@@ -229,6 +204,8 @@ public class SavedListServiceImpl implements SavedListService {
             candidateSavedListRepository.delete(csl);
             csl.getCandidate().getCandidateSavedLists().remove(csl);
             csl.getSavedList().getCandidateSavedLists().remove(csl);
+
+            deactivateIncompleteCandidateListTasks(savedList, candidate);
         } catch (Exception ex) {
             log.warn("Could not delete candidate saved list " + csl.getId(), ex);
         }
@@ -246,6 +223,71 @@ public class SavedListServiceImpl implements SavedListService {
         Set<Candidate> candidates = fetchCandidates(request);
         for (Candidate candidate : candidates) {
             removeCandidateFromList(candidate, savedList);
+        }
+    }
+
+    /**
+     * Assigns each task associated with the given list to the given candidate, unless the candidate
+     * already has been assigned the task.
+     * <p/>
+     * Tasks that are assigned, have the relatedList attribute for the task assignment set to the
+     * given list.
+     * @param savedList List whose tasks are being assigned
+     * @param candidate Candidate being assigned tasks
+     */
+    private void assignListTasksToCandidate(SavedList savedList, Candidate candidate) {
+        Set<TaskImpl> listTasks = savedList.getTasks();
+
+        if (!listTasks.isEmpty()) {
+            final User loggedInUser = authService.getLoggedInUser().orElse(null);
+
+            final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
+            //Extract tasks which are actively assigned to the candidate.
+            // We don't want to duplicate them.
+            Set<TaskImpl> activeCandidateTasks = candidateTaskAssignments.stream()
+                .filter(taskAssignment -> taskAssignment.getStatus() == Status.active)
+                .map(TaskAssignmentImpl::getTask).collect(Collectors.toSet());
+
+            //Assign all list tasks to the candidate that they don't already have assigned.
+            for (TaskImpl listTask : listTasks) {
+                boolean newTask = !activeCandidateTasks.contains(listTask);
+                if (newTask) {
+                    TaskAssignmentImpl taskAssignment = taskAssignmentService.assignTaskToCandidate(
+                        loggedInUser, listTask, candidate,null);
+                    taskAssignment.setRelatedList(savedList);
+                }
+            }
+        }
+    }
+
+    /**
+     * Deactivates candidate task assignments corresponding to each task associated with the given
+     * list where the task assignment is related to this list and where the assigned candidate task
+     * has not yet been completed or abandoned.
+     * @param savedList List whose task assignments are being deactivated
+     * @param candidate Candidate whose task assignments may be deactivated
+     */
+    private void deactivateIncompleteCandidateListTasks(@NonNull SavedList savedList, @NonNull Candidate candidate) {
+        Set<TaskImpl> listTasks = savedList.getTasks();
+
+        if (!listTasks.isEmpty()) {
+            final User loggedInUser = authService.getLoggedInUser().orElse(null);
+
+            final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
+
+            for (TaskAssignmentImpl taskAssignment : candidateTaskAssignments) {
+                //Is this task assignment an active task related to this list which has not been
+                //completed or abandoned? If so we can deactivate it.
+                boolean canDeactivate = listTasks.contains(taskAssignment.getTask())
+                    && taskAssignment.getStatus() == Status.active
+                    && savedList.equals(taskAssignment.getRelatedList())
+                    && taskAssignment.getCompletedDate() == null
+                    && taskAssignment.getAbandonedDate() == null;
+
+                if (canDeactivate) {
+                    taskAssignmentService.deactivateTaskAssignment(loggedInUser, taskAssignment.getId());
+                }
+            }
         }
     }
 

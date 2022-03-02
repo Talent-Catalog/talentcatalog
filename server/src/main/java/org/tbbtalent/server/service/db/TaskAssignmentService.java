@@ -102,14 +102,31 @@ public interface TaskAssignmentService {
         throws NoSuchObjectException;
 
     /**
-     * Deactivate the task assignment record and set as inactive.
+     * Deactivate the task assignment.
      *
      * @param loggedInUser     - the logged in admin user who deactivated the task assignment
-     * @param taskAssignmentId - Task Assignment to be removed.
+     * @param taskAssignmentId - Task Assignment to be deactivated.
+     * @throws NoSuchObjectException If no such task assignment exists with that id
+     */
+    void deactivateTaskAssignment(User loggedInUser, long taskAssignmentId)
+        throws NoSuchObjectException;
+
+    /**
+     * Delete the task assignment.
+     * <p/>
+     * Note that the difference between deleting and deactivating is that a deactivated task
+     * assignment can still be displayed to users - where a deleted task assignment is as if
+     * it never existed (although it is in fact still kept on the database).
+     * <p/>
+     * Typically we delete task assignments when they never should have been assigned in the first
+     * place.
+     *
+     * @param loggedInUser     - the logged in admin user who deleted the task assignment
+     * @param taskAssignmentId - Task Assignment to be deleted.
      * @return true/false depending on success
      * @throws NoSuchObjectException If no such task assignment exists with that id
      */
-    boolean removeTaskAssignment(User loggedInUser, long taskAssignmentId)
+    boolean deleteTaskAssignment(User loggedInUser, long taskAssignmentId)
         throws NoSuchObjectException;
 
     /**
@@ -120,7 +137,8 @@ public interface TaskAssignmentService {
      *                  assignments are fetched.
      * @return Task assignments associated with candidate
      */
-    List<TaskAssignment> getCandidateTaskAssignments(Candidate candidate, @Nullable Status status);
+    List<TaskAssignmentImpl> getCandidateTaskAssignmentsByStatus(
+        Candidate candidate, @Nullable Status status);
 
     /**
      * Marks the given task assignment as completed.

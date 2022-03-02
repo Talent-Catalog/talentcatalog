@@ -90,7 +90,7 @@ public class TaskAssignmentAdminApi implements
     public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        return this.taskAssignmentService.removeTaskAssignment(user, id);
+        return this.taskAssignmentService.deleteTaskAssignment(user, id);
     }
 
     @PostMapping("assign-to-list")
