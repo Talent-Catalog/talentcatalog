@@ -1,14 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {SavedList} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
-import {
-  AssignTaskToListRequest,
-  TaskAssignmentService
-} from "../../../services/task-assignment.service";
+import {AssignTaskToListRequest, TaskAssignmentService} from "../../../services/task-assignment.service";
 import {Task} from "../../../model/task";
+import {SavedListService} from "../../../services/saved-list.service";
 
 @Component({
   selector: 'app-assign-tasks-list',
@@ -17,7 +15,7 @@ import {Task} from "../../../model/task";
 })
 export class AssignTasksListComponent implements OnInit {
   assignForm: FormGroup;
-  tasks: Task[];
+  taskAssociations: Task[];
   allTasks: Task[];
   savedList: SavedList;
   loading;
@@ -27,12 +25,13 @@ export class AssignTasksListComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private modalService: NgbModal,
+              private savedListService: SavedListService,
               private taskService: TaskService,
               private taskAssignmentService: TaskAssignmentService) { }
 
   ngOnInit(): void {
     this.assignForm = this.fb.group({
-      task: [null],
+      task: [null, [Validators.required]],
       customDate: [false],
       dueDate: [null]
     });
@@ -69,7 +68,18 @@ export class AssignTasksListComponent implements OnInit {
 
   setTasks(candidateSource: any) {
     this.savedList = candidateSource;
-    this.tasks = candidateSource.tasks;
+    this.taskAssociations = candidateSource.tasks;
+  }
+
+  refreshTaskAssociations() {
+    this.savedListService.get(this.savedList.id).subscribe(
+      (result) => {
+        this.savedList = result;
+        this.taskAssociations = result.tasks;
+      }, (error) => {
+        this.error = error;
+      }
+    )
   }
 
   onSave() {
@@ -85,7 +95,7 @@ export class AssignTasksListComponent implements OnInit {
     }
     this.taskAssignmentService.assignTaskToList(request).subscribe(
       () => {
-        this.activeModal.close();
+        this.refreshTaskAssociations();
         this.loading = false;
       },
       error => {
@@ -95,7 +105,7 @@ export class AssignTasksListComponent implements OnInit {
     );
   }
 
-  cancel() {
+  close() {
     this.activeModal.dismiss();
   }
 
@@ -115,6 +125,14 @@ export class AssignTasksListComponent implements OnInit {
         error => this.error = error
       )
       .catch();
+  }
+
+  search(target): void {
+    if (target.value != null) {
+      this.taskAssociations = this.savedList.tasks.filter((val) => val.name.toLowerCase().includes(target.value));
+    } else {
+      this.taskAssociations = this.savedList.tasks;
+    }
   }
 
 }
