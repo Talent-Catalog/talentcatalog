@@ -60,6 +60,7 @@ import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
@@ -106,6 +107,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
     private final static String REGISTERED_NAME_SUFFIX = "*";
     private final CandidateRepository candidateRepository;
+    private final CandidateSavedListRepository candidateSavedListRepository;
     private final CandidateService candidateService;
     private final ExportColumnsService exportColumnsService;
     private final SavedListRepository savedListRepository;
@@ -123,6 +125,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Autowired
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
+        CandidateSavedListRepository candidateSavedListRepository,
         CandidateService candidateService,
         ExportColumnsService exportColumnsService,
         SavedListRepository savedListRepository,
@@ -135,6 +138,7 @@ public class SavedListServiceImpl implements SavedListService {
         AuthService authService
     ) {
         this.candidateRepository = candidateRepository;
+        this.candidateSavedListRepository = candidateSavedListRepository;
         this.candidateService = candidateService;
         this.exportColumnsService = exportColumnsService;
         this.savedListRepository = savedListRepository;
@@ -215,6 +219,33 @@ public class SavedListServiceImpl implements SavedListService {
         @Nullable SavedList sourceList) {
         for (Candidate candidate : candidates) {
             addCandidateToList(destinationList, candidate, sourceList);
+        }
+    }
+
+    @Override
+    public void removeCandidateFromList(@NonNull Candidate candidate, @NonNull SavedList savedList) {
+        final CandidateSavedList csl = new CandidateSavedList(candidate, savedList);
+        try {
+            candidateSavedListRepository.delete(csl);
+            csl.getCandidate().getCandidateSavedLists().remove(csl);
+            csl.getSavedList().getCandidateSavedLists().remove(csl);
+        } catch (Exception ex) {
+            log.warn("Could not delete candidate saved list " + csl.getId(), ex);
+        }
+    }
+
+    @Override
+    public void removeCandidateFromList(long savedListId,
+        UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
+        SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
+            .orElse(null);
+        if (savedList == null) {
+            throw new NoSuchObjectException(SavedList.class, savedListId);
+        }
+
+        Set<Candidate> candidates = fetchCandidates(request);
+        for (Candidate candidate : candidates) {
+            removeCandidateFromList(candidate, savedList);
         }
     }
 

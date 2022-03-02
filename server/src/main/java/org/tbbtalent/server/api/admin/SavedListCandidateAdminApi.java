@@ -128,7 +128,7 @@ public class SavedListCandidateAdminApi implements
     @Override
     public void remove(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request)
             throws NoSuchObjectException {
-        candidateSavedListService.removeCandidateFromList(savedListId, request);
+        savedListService.removeCandidateFromList(savedListId, request);
     }
 
     @Override

@@ -75,6 +75,23 @@ public interface SavedListService {
         @Nullable SavedList sourceList);
 
     /**
+     * Remove the given candidate from the given savedList
+     * @param candidate Candidate to remove
+     * @param savedList SavedList to remove from
+     */
+    void removeCandidateFromList(@NonNull Candidate candidate, @NonNull SavedList savedList);
+
+    /**
+     * Remove the candidates indicated in the given request from the SavedList
+     * with the given id.
+     * @param savedListId ID of saved list to be updated
+     * @param request Request containing the new list contents
+     * @throws NoSuchObjectException if there is no saved list with this id
+     */
+    void removeCandidateFromList(long savedListId, UpdateExplicitSavedListContentsRequest request)
+        throws NoSuchObjectException;
+
+    /**
      * If the given list is associated with a Salesforce job opportunity, the given candidates
      * are populated with their candidate opportunity stages associated with that job opportunity.
      * <p/>
