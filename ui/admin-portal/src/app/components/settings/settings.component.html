@@ -89,7 +89,9 @@
         </app-dropdown-translations>
       </ng-template>
     </ng-container>
+  </ng-container>
 
+  <ng-container *ngIf="loggedInUser.role === 'admin' || loggedInUser.role === 'sourcepartneradmin'">
     <!-- External Links -->
     <ng-container ngbNavItem="links">
       <a ngbNavLink>External Links</a>
