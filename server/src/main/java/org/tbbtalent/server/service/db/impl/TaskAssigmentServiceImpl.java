@@ -19,7 +19,6 @@ package org.tbbtalent.server.service.db.impl;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -147,11 +146,6 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         taskAssignment.setStatus(Status.deleted);
         taskAssignmentRepository.save(taskAssignment);
         return true;
-    }
-
-    @Override
-    public List<TaskAssignmentImpl> getCandidateTaskAssignmentsByStatus(Candidate candidate, Status status) {
-        return taskAssignmentRepository.findAllByStatus(status);
     }
 
     @Override

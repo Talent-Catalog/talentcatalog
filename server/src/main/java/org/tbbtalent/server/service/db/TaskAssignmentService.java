@@ -18,14 +18,12 @@ package org.tbbtalent.server.service.db;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
@@ -128,17 +126,6 @@ public interface TaskAssignmentService {
      */
     boolean deleteTaskAssignment(User loggedInUser, long taskAssignmentId)
         throws NoSuchObjectException;
-
-    /**
-     * Fetch task assignments for a given candidate by Status (eg active or inactive)
-     *
-     * @param candidate - Candidate whose task assignments we want
-     * @param status    - Status (active or inactive) of task assignments. If null all task
-     *                  assignments are fetched.
-     * @return Task assignments associated with candidate
-     */
-    List<TaskAssignmentImpl> getCandidateTaskAssignmentsByStatus(
-        Candidate candidate, @Nullable Status status);
 
     /**
      * Marks the given task assignment as completed.
