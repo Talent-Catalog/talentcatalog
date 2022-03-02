@@ -275,7 +275,7 @@ public class SavedSearchAdminApi implements
         if (request.isSelected()) {
             savedListService.mergeSavedList(selectionList.getId(), listRequest);
         } else {
-            candidateSavedListService.removeFromSavedList(selectionList.getId(), listRequest);
+            candidateSavedListService.removeCandidateFromList(selectionList.getId(), listRequest);
         }
     }
 

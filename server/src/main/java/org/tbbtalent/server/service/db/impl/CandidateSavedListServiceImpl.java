@@ -91,7 +91,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     public void clearCandidateSavedLists(Candidate candidate) {
         Set<SavedList> savedLists = candidate.getSavedLists();
         for (SavedList savedList : savedLists) {
-            removeFromSavedList(candidate, savedList);
+            removeCandidateFromList(candidate, savedList);
         }
     }
 
@@ -112,7 +112,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     public void clearSavedListCandidates(SavedList savedList) {
         Set<Candidate> candidates = savedList.getCandidates();
         for (Candidate candidate : candidates) {
-           removeFromSavedList(candidate, savedList);
+           removeCandidateFromList(candidate, savedList);
         }
     }
 
@@ -294,7 +294,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         } else {
             Set<SavedList> savedLists = fetchSavedLists(request);
             for (SavedList savedList : savedLists) {
-                removeFromSavedList(candidate, savedList);
+                removeCandidateFromList(candidate, savedList);
             }
         }
         return done;
@@ -317,7 +317,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     }
 
     @Override
-    public void removeFromSavedList(Candidate candidate, SavedList savedList) {
+    public void removeCandidateFromList(Candidate candidate, SavedList savedList) {
         final CandidateSavedList csl = new CandidateSavedList(candidate, savedList);
         try {
             candidateSavedListRepository.delete(csl);
@@ -329,7 +329,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     }
 
     @Override
-    public void removeFromSavedList(long savedListId,
+    public void removeCandidateFromList(long savedListId,
         UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
             .orElse(null);
@@ -339,7 +339,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
 
         Set<Candidate> candidates = savedListService.fetchCandidates(request);
         for (Candidate candidate : candidates) {
-            removeFromSavedList(candidate, savedList);
+            removeCandidateFromList(candidate, savedList);
         }
     }
 
