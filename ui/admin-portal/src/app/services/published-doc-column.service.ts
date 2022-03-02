@@ -51,6 +51,11 @@ export class PublishedDocColumnService {
       new PublishedDocFieldSource("autoCvLink"))
     .width = PublishedDocColumnWidth.Narrow;
 
+    this.addColumnWithLink("candidateNumberSmartCv", "Candidate # \n (smart CV)",
+      new PublishedDocFieldSource("candidateNumber"),
+      new PublishedDocFieldSource("smartCvLink"))
+    .width = PublishedDocColumnWidth.Narrow;
+
     this.addColumnWithLink("candidateNumberLinkTc", "Candidate # \n(link to TC)",
       new PublishedDocFieldSource("candidateNumber"),
       new PublishedDocFieldSource("tcLink"))

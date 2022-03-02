@@ -245,10 +245,12 @@ import {AssignTasksListComponent} from './components/tasks/assign-tasks-list/ass
 import {AssignTasksCandidateComponent} from './components/tasks/assign-tasks-candidate/assign-tasks-candidate.component';
 import {EditTaskAssignmentComponent} from './components/candidates/view/tasks/edit/edit-task-assignment.component';
 import {ViewCandidateTasksComponent} from "./components/candidates/view/tasks/view-candidate-tasks.component";
-import { BrowseTasksComponent } from './components/tasks/browse-tasks/browse-tasks.component';
-import { ViewTaskDetailsComponent } from './components/tasks/view-task-details/view-task-details.component';
-import { SearchTasksComponent } from './components/settings/tasks/search-tasks.component';
-import { TasksMonitorComponent } from './components/util/tasks-monitor/tasks-monitor.component';
+import {BrowseTasksComponent} from './components/tasks/browse-tasks/browse-tasks.component';
+import {ViewTaskDetailsComponent} from './components/tasks/view-task-details/view-task-details.component';
+import {SearchTasksComponent} from './components/settings/tasks/search-tasks.component';
+import {TasksMonitorComponent} from './components/util/tasks-monitor/tasks-monitor.component';
+import {ViewCandidateMediaWillingnessComponent} from './components/candidates/view/media/view-candidate-media-willingness.component';
+import {EditCandidateMediaWillingnessComponent} from './components/candidates/view/media/edit/edit-candidate-media-willingness.component';
 
 @NgModule({
   declarations: [
@@ -475,7 +477,9 @@ import { TasksMonitorComponent } from './components/util/tasks-monitor/tasks-mon
     BrowseTasksComponent,
     ViewTaskDetailsComponent,
     SearchTasksComponent,
-    TasksMonitorComponent
+    TasksMonitorComponent,
+    ViewCandidateMediaWillingnessComponent,
+    EditCandidateMediaWillingnessComponent
   ],
   imports: [
     BrowserModule,
