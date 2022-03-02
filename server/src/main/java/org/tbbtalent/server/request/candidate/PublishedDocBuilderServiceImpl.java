@@ -94,12 +94,21 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
           // Get the list specific shareable CV or Doc if exists, otherwise get the field name supplied.
           if (fieldName.equals("shareableCv.url") && candidate.getListShareableCv() != null) {
             val = candidate.extractField("listShareableCv.url");
-          } else if (fieldName.equals("shareableDoc.url")
-              && candidate.getListShareableDoc() != null) {
+          } else if (fieldName.equals("shareableDoc.url") && candidate.getListShareableDoc() != null) {
             val = candidate.extractField("listShareableDoc.url");
           } else if (fieldName.equals("autoCvLink")) {
             val = "https://tbbtalent.org/public-portal/cv/" + candidateTokenProvider.generateToken(
-                candidate.getCandidateNumber(), 365L);
+                    candidate.getCandidateNumber(), 365L);
+          } else if(fieldName.equals("smartCvLink")) {
+            // If a candidate has a shareable CV use that link, otherwise use the autogen CV link.
+            if (candidate.getListShareableCv() != null) {
+              val = candidate.extractField("listShareableCv.url");
+            } else if (candidate.getShareableCv() != null) {
+              val = candidate.extractField("shareableCv.url");
+            } else {
+              val = "https://tbbtalent.org/public-portal/cv/" + candidateTokenProvider.generateToken(
+                      candidate.getCandidateNumber(), 365L);
+            }
           } else {
             val = candidate.extractField(fieldName);
           }
