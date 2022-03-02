@@ -103,7 +103,7 @@ public class TaskAssignmentAdminApi implements
         TaskImpl task = taskService.get(request.getTaskId());
         SavedList savedList = savedListService.get(request.getSavedListId());
 
-        taskAssignmentService.assignTaskToList(user, task, savedList, request.getDueDate());
+        savedListService.associateTaskWithList(user, task, savedList);
     }
 
 }

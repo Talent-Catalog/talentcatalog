@@ -23,7 +23,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
@@ -55,27 +54,6 @@ public interface TaskAssignmentService {
      */
     TaskAssignmentImpl assignTaskToCandidate(
         User user, TaskImpl task, Candidate candidate, @Nullable LocalDate dueDate);
-
-    /**
-     * A user may want to assign a task to a list of candidates. For example if there’s a list of
-     * candidates shortlisted for a job opportunity, they might all be required to complete some
-     * pre-offer tasks via a task list.
-     * <p/>
-     * A new active TaskAssignment object for each candidate in the list, associated with the given
-     * task.
-     * <p/>
-     * Note that if the task is composed of subtasks, each subtask is assigned to the candidate.
-     * <p/>
-     * This is effectively multiple applications of {@link #assignTaskToCandidate} for each
-     * candidate in the list. See above doc for that method.
-     *
-     * @param user    - User who made assignment
-     * @param task    - Task to be associated with the newly created TaskAssignment
-     * @param list    - List of candidates to whom the task should be assigned
-     * @param dueDate - Custom due date (can be null, which case the days to complete will be used
-     *                to set)
-     */
-    void assignTaskToList(User user, TaskImpl task, SavedList list, @Nullable LocalDate dueDate);
 
     /**
      * Get the TaskAssignment with the given id.

@@ -594,6 +594,19 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public void associateTaskWithList(User user, TaskImpl task, SavedList list) {
+
+        final Set<TaskImpl> listTasks = list.getTasks();
+        listTasks.add(task);
+        savedListRepository.save(list);
+
+        Set<Candidate> candidates = list.getCandidates();
+        for (Candidate candidate : candidates) {
+            taskAssignmentService.assignTaskToCandidate(user, task, candidate, null);
+        }
+    }
+
+    @Override
     @Transactional
     public SavedList addSharedUser(long id, UpdateSharingRequest request)
             throws NoSuchObjectException {

@@ -19,14 +19,12 @@ package org.tbbtalent.server.service.db.impl;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
@@ -72,15 +70,6 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         }
         taskAssignment.setDueDate(dueDate);
         return taskAssignmentRepository.save(taskAssignment);
-    }
-
-    @Override
-    public void assignTaskToList(
-        User user, TaskImpl task, SavedList list, @Nullable LocalDate dueDate) {
-        Set<Candidate> candidates = list.getCandidates();
-        for (Candidate candidate : candidates) {
-            assignTaskToCandidate(user, task, candidate, dueDate);
-        }
     }
 
     @NonNull

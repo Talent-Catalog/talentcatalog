@@ -32,6 +32,7 @@ import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
@@ -103,6 +104,26 @@ public interface SavedListService {
      */
     void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
         throws NoSuchObjectException, SalesforceException;
+
+    /**
+     * Associates the given task with the given list. Also assigns that task to all candidates
+     * currently in the list.
+     * <p/>
+     * Once the task has been associated with a list, any future candidates added to that list
+     * will automatically be assigned that task (unless they have already been assigned the task).
+     * <p/>
+     * A user may want to assign a task to a list of candidates. For example if there’s a list of
+     * candidates shortlisted for a job opportunity, they might all be required to complete some
+     * pre-offer tasks via a task list.
+     * <p/>
+     * A new active TaskAssignment object is created for each candidate in the list, associated with
+     * the given task.
+     *
+     * @param user    - User who associated task with list
+     * @param task    - Task to be associated with the list, and assigned to candidates
+     * @param list    - List of candidates to whom the task should be assigned
+     */
+    void associateTaskWithList(User user, TaskImpl task, SavedList list);
 
     /**
      * Creates a folder for the given list on Google Drive with two subfolders, one for CVs and
