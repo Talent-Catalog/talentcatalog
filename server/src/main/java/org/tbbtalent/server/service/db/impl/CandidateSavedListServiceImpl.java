@@ -186,7 +186,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         if (replace) {
             clearSavedList(destination.getId());
         }
-        savedListService.addCandidates(destination, candidates, source);
+        savedListService.addCandidatesToList(destination, candidates, source);
 
         savedListService.saveIt(destination);
     }
@@ -215,7 +215,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
 
         //Add candidates to created list, together with any context if source
         //list was supplied.
-        savedListService.addCandidates(destination, candidates, sourceList);
+        savedListService.addCandidatesToList(destination, candidates, sourceList);
 
         savedListService.saveIt(destination);
     }

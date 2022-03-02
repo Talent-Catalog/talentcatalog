@@ -53,7 +53,6 @@ import org.tbbtalent.server.request.search.UpdateSharingRequest;
  */
 public interface SavedListService {
 
-    //TODO JC
     /**
      * Add the given candidate to the given destination list - merging it in with any
      * existing candidates in the list (no duplicates - if a candidate is
@@ -66,13 +65,13 @@ public interface SavedListService {
      * @param sourceList If not null, refers to the list where candidates came
      *                   from, so that context can be copied across.
      */
-    void addCandidate(@NonNull SavedList destinationList, @NonNull Candidate candidate,
+    void addCandidateToList(@NonNull SavedList destinationList, @NonNull Candidate candidate,
         @Nullable SavedList sourceList);
 
     /**
-     * See {@link #addCandidate} - except that this adds multiple candidates
+     * See {@link #addCandidateToList} - except that this adds multiple candidates
      */
-    void addCandidates(@NonNull SavedList destinationList, @NonNull Iterable<Candidate> candidates,
+    void addCandidatesToList(@NonNull SavedList destinationList, @NonNull Iterable<Candidate> candidates,
         @Nullable SavedList sourceList);
 
     /**

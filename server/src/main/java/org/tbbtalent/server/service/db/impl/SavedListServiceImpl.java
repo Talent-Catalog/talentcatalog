@@ -148,7 +148,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public void addCandidate(@NonNull SavedList destinationList, @NonNull Candidate candidate,
+    public void addCandidateToList(@NonNull SavedList destinationList, @NonNull Candidate candidate,
         @Nullable SavedList sourceList) {
         //Find any context note for the given candidate and sourceList
         String contextNote = null;
@@ -211,10 +211,10 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public void addCandidates(@NonNull SavedList destinationList, @NonNull Iterable<Candidate> candidates,
+    public void addCandidatesToList(@NonNull SavedList destinationList, @NonNull Iterable<Candidate> candidates,
         @Nullable SavedList sourceList) {
         for (Candidate candidate : candidates) {
-            addCandidate(destinationList, candidate, sourceList);
+            addCandidateToList(destinationList, candidate, sourceList);
         }
     }
 
@@ -345,7 +345,7 @@ public class SavedListServiceImpl implements SavedListService {
 
         SavedList sourceList = fetchSourceList(request);
         Set<Candidate> candidates = fetchCandidates(request);
-        addCandidates(savedList, candidates, sourceList);
+        addCandidatesToList(savedList, candidates, sourceList);
 
         saveIt(savedList);
     }
