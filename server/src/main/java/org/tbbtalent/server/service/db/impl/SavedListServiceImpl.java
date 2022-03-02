@@ -56,6 +56,8 @@ import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.ExportColumn;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
@@ -87,6 +89,7 @@ import org.tbbtalent.server.service.db.ExportColumnsService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -110,6 +113,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
+    private final TaskAssignmentService taskAssignmentService;
     private final UserRepository userRepository;
     private final AuthService authService;
 
@@ -125,7 +129,9 @@ public class SavedListServiceImpl implements SavedListService {
         DocPublisherService docPublisherService,
         FileSystemService fileSystemService,
         GoogleDriveConfig googleDriveConfig,
-        SalesforceService salesforceService, UserRepository userRepository,
+        SalesforceService salesforceService,
+        TaskAssignmentService taskAssignmentService,
+        UserRepository userRepository,
         AuthService authService
     ) {
         this.candidateRepository = candidateRepository;
@@ -136,6 +142,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
         this.salesforceService = salesforceService;
+        this.taskAssignmentService = taskAssignmentService;
         this.userRepository = userRepository;
         this.authService = authService;
     }
@@ -174,6 +181,33 @@ public class SavedListServiceImpl implements SavedListService {
         //Also update other side of many to many relationship, adding this
         //list to the candidate's collection of lists that they belong to.
         candidate.getCandidateSavedLists().add(csl);
+
+        assignListTasksToCandidate(destinationList, candidate);
+    }
+
+    private void assignListTasksToCandidate(SavedList savedList, Candidate candidate) {
+        Set<TaskImpl> listTasks = savedList.getTasks();
+
+        if (!listTasks.isEmpty()) {
+            final User loggedInUser = authService.getLoggedInUser().orElse(null);
+
+            final Set<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
+            //Extract tasks which are actively assigned to the candidate.
+            // We don't want to duplicate them.
+            Set<TaskImpl> activeCandidateTasks = candidateTaskAssignments.stream()
+                    .filter(taskAssignment -> taskAssignment.getStatus() == Status.active)
+                    .map(TaskAssignmentImpl::getTask).collect(Collectors.toSet());
+
+            //Assign all list tasks to the candidate that they don't already have assigned.
+            for (TaskImpl listTask : listTasks) {
+                boolean newTask = !activeCandidateTasks.contains(listTask);
+                if (newTask) {
+                    TaskAssignmentImpl taskAssignment = taskAssignmentService.assignTaskToCandidate(
+                        loggedInUser, listTask, candidate,null);
+                    taskAssignment.setRelatedList(savedList);
+                }
+            }
+        }
     }
 
     @Override
