@@ -29,11 +29,7 @@ import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.DocPublisherService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.servlet.http.HttpServletResponse;
@@ -191,6 +187,14 @@ public class CandidateAdminApi {
     public Map<String, Object> updateSurvey(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateSurveyRequest request) {
         Candidate candidate = this.candidateService.updateCandidateSurvey(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
+    @PutMapping("{id}/media")
+    public Map<String, Object> updateMedia(@PathVariable("id") long id,
+                                                    @RequestBody UpdateCandidateMediaRequest request) {
+        Candidate candidate = this.candidateService.updateCandidateMedia(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
