@@ -26,9 +26,9 @@
       <div class="set-height d-flex justify-content-between">
         <div [ngClass]="{'custom-flex-40 pr-3' : editable, 'custom-flex-75' : !editable}">
           <p class="mb-0" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">
-            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle"></i>
-            <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file"></i>
             {{ta.task.name}}<span *ngIf="!ta.task.optional">*</span>
+            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ml-1"></i>
+            <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ml-1"></i>
           </p>
           <div class="font-r85" [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date}}</div>
         </div>
@@ -82,9 +82,9 @@
 
         <div [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">
           <p class="mb-0 pr-3">
-            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle"></i>
-            <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file"></i>
             {{ta.task.name}}<span *ngIf="!ta.task.optional">*</span>
+            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ml-1"></i>
+            <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ml-1"></i>
           </p>
           <div *ngIf="ta.completedDate" class="text-success font-r85">Completed: {{ta.completedDate | date}}</div>
           <div *ngIf="ta.abandonedDate && !ta.completedDate" class="text-alert font-r85">Abandoned: {{ta.abandonedDate | date}}</div>
