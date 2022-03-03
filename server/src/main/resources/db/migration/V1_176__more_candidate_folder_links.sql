@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-alter table candidate add column folderlink_agreement text;
+alter table candidate add column folderlink_engagement text;
 alter table candidate add column folderlink_experience text;
 alter table candidate add column folderlink_family text;
 alter table candidate add column folderlink_immigration text;
