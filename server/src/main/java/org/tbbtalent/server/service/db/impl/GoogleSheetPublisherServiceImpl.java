@@ -118,7 +118,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
             candidates.add(candidate);
         }
 
-        //Create all candidate folders as needed.
+        //Create all candidate folders (and subfolders) as needed.
         for (Candidate candidate : candidates) {
             candidateService.createCandidateFolder(candidate.getId());
         }

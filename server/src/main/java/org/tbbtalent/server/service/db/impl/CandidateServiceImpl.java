@@ -99,8 +99,13 @@ public class CandidateServiceImpl implements CandidateService {
         candidateSubfolderNames.put(CandidateSubfolderType.address, "Address");
         candidateSubfolderNames.put(CandidateSubfolderType.character, "Character");
         candidateSubfolderNames.put(CandidateSubfolderType.employer, "Employer");
+        candidateSubfolderNames.put(CandidateSubfolderType.engagement, "Engagement");
+        candidateSubfolderNames.put(CandidateSubfolderType.experience, "Experience");
+        candidateSubfolderNames.put(CandidateSubfolderType.family, "Family");
         candidateSubfolderNames.put(CandidateSubfolderType.identity, "Identity");
-        candidateSubfolderNames.put(CandidateSubfolderType.medical, "Medicals");
+        candidateSubfolderNames.put(CandidateSubfolderType.immigration, "Immigration");
+        candidateSubfolderNames.put(CandidateSubfolderType.language, "Language");
+        candidateSubfolderNames.put(CandidateSubfolderType.medical, "Medical");
         candidateSubfolderNames.put(CandidateSubfolderType.qualification, "Qualification");
         candidateSubfolderNames.put(CandidateSubfolderType.registration, "Registration");
     }
@@ -1454,8 +1459,23 @@ public class CandidateServiceImpl implements CandidateService {
             case employer:
                 link = candidate.getFolderlinkEmployer();
                 break;
+            case engagement:
+                link = candidate.getFolderlinkEngagement();
+                break;
+            case experience:
+                link = candidate.getFolderlinkExperience();
+                break;
+            case family:
+                link = candidate.getFolderlinkFamily();
+                break;
             case identity:
                 link = candidate.getFolderlinkIdentity();
+                break;
+            case immigration:
+                link = candidate.getFolderlinkImmigration();
+                break;
+            case language:
+                link = candidate.getFolderlinkLanguage();
                 break;
             case medical:
                 link = candidate.getFolderlinkMedical();
@@ -1484,8 +1504,23 @@ public class CandidateServiceImpl implements CandidateService {
             case employer:
                 candidate.setFolderlinkEmployer(link);
                 break;
+            case engagement:
+                candidate.setFolderlinkEngagement(link);
+                break;
+            case experience:
+                candidate.setFolderlinkExperience(link);
+                break;
+            case family:
+                candidate.setFolderlinkFamily(link);
+                break;
             case identity:
                 candidate.setFolderlinkIdentity(link);
+                break;
+            case immigration:
+                candidate.setFolderlinkImmigration(link);
+                break;
+            case language:
+                candidate.setFolderlinkLanguage(link);
                 break;
             case medical:
                 candidate.setFolderlinkMedical(link);
@@ -1512,7 +1547,9 @@ public class CandidateServiceImpl implements CandidateService {
         String folderlink = candidate.getFolderlink();
 
         //If we already have a folderlink stored, that gives us the folder object
-        if (folderlink != null) {
+        if (folderlink != null
+            //Avoid any crap links - eg blank field which is not null
+            && folderlink.startsWith("http")) {
             folder = new GoogleFileSystemFolder(folderlink);
         } else {
             //If we don't have a folderlink stored, look for the folder, creating one if needed.

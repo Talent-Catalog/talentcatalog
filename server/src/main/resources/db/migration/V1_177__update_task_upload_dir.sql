@@ -14,28 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
-
-/**
- * These correspond to the different types of candidate subfolder.
- * <p/>
- * See https://docs.google.com/document/d/1ytIH3LQ40ICrKa2YM-eIVp09THpHHbEI8kBeWQXjAEQ/
- * and
- * https://docs.google.com/document/d/1VEFQAVapmbond_3GIjdWfV95E3QLd3wBlIBDNZsFNcI/
- *
- * @author John Cameron
- */
-public enum CandidateSubfolderType {
-    address,
-    character,
-    employer,
-    engagement,
-    experience,
-    family,
-    identity,
-    immigration,
-    language,
-    medical,
-    qualification,
-    registration
-}
+update task set upload_subfolder_name = 'Engagement' where upload_subfolder_name = 'TBB Forms';
+update task set upload_subfolder_name = 'Language' where upload_subfolder_name = 'English';
+update task set upload_subfolder_name = 'Medical' where upload_subfolder_name = 'Medicals';
