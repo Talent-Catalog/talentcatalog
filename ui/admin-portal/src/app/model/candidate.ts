@@ -80,6 +80,7 @@ export interface Candidate extends HasId {
   stage: string;
   candidateAttachments?: CandidateAttachment[];
   taskAssignments?: TaskAssignment[];
+  mediaWillingness?: string;
 }
 
 export enum Status {

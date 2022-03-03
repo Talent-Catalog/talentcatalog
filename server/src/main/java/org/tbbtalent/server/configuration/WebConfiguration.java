@@ -68,6 +68,13 @@ public class WebConfiguration implements WebMvcConfigurer {
     /**
      * This defines the location of the compiled Angular for the candidate (front end,
      * candidate-portal) code and admin (back end, admin-portal) code.
+     * <p/>
+     * See for example Chapter 4 of https://www.baeldung.com/spring-mvc-static-resources
+     * <p/>
+     * Each compiled Angular project (ie each "portal") contains an index.html which loads all the
+     * Javascript files and kicks off Angular. This method associates the various url's
+     * - admin-portal, candidate-portal etc - with their corresponding directories.
+     * The browser will load the index.html, start Angular and away we go.
      * @param registry Used to add resource handlers
      */
     @Override
@@ -75,7 +82,8 @@ public class WebConfiguration implements WebMvcConfigurer {
 
         UIBundle[] uiBundles = new UIBundle[]{
                 new UIBundle("candidate-portal", "candidate-portal"),
-                new UIBundle("admin-portal", "admin-portal")
+                new UIBundle("admin-portal", "admin-portal"),
+                new UIBundle("public-portal", "public-portal")
         };
 
         for (UIBundle uiBundle : uiBundles) {

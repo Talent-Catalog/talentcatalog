@@ -16,6 +16,19 @@
 
 package org.tbbtalent.server.service.db;
 
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.request.LoginRequest;
+import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.util.dto.DtoBuilder;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
@@ -24,46 +37,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.exception.ExportFailedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateSubfolderType;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.DataRow;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateExternalIdSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
-import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
-import org.tbbtalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
 
@@ -136,6 +109,8 @@ public interface CandidateService {
     Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request);
 
     Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request);
+
+    Candidate updateCandidateMedia(long id, UpdateCandidateMediaRequest request);
 
     void updateCandidateStatus(UpdateCandidateStatusRequest request);
 
@@ -223,7 +198,26 @@ public interface CandidateService {
      */
     Optional<Candidate> getLoggedInCandidate();
 
+    /**
+     * Finds candidate with the given candidate number, or null if none found.
+     *
+     * @param candidateNumber Number of desired candidate
+     * @return Candidate or null if none found
+     */
+    @Nullable
     Candidate findByCandidateNumber(String candidateNumber);
+
+    /**
+     * Restricted access to the candidate with the given candidate number.
+     * <p/>
+     * Access is restricted to users who are logged in and also depending on any source country
+     * restrictions they have associated with them.
+     * @param candidateNumber Number of desired candidate
+     * @return Candidate
+     * @throws InvalidSessionException if user is not logged in
+     * @throws CountryRestrictionException if the candidate is not found
+     */
+    Candidate findByCandidateNumberRestricted(String candidateNumber);
 
     Candidate getCandidateFromRequest(Long requestCandidateId);
 
