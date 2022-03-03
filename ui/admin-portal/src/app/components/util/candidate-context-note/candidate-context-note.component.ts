@@ -62,7 +62,7 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
   }
 
   get title(): string {
-    return "Notes for " + this.candidate.user.firstName + " in " + this.candidateSource.name +
+    return "Context notes for " + this.candidate.user.firstName + " in " + this.candidateSource.name +
       " " + getCandidateSourceType(this.candidateSource);
   }
 

@@ -249,6 +249,8 @@ import {BrowseTasksComponent} from './components/tasks/browse-tasks/browse-tasks
 import {ViewTaskDetailsComponent} from './components/tasks/view-task-details/view-task-details.component';
 import {SearchTasksComponent} from './components/settings/tasks/search-tasks.component';
 import {TasksMonitorComponent} from './components/util/tasks-monitor/tasks-monitor.component';
+import {ViewCandidateMediaWillingnessComponent} from './components/candidates/view/media/view-candidate-media-willingness.component';
+import {EditCandidateMediaWillingnessComponent} from './components/candidates/view/media/edit/edit-candidate-media-willingness.component';
 import {ViewResponseComponent} from './components/candidates/view/tasks/view-response/view-response.component';
 
 @NgModule({
@@ -477,6 +479,8 @@ import {ViewResponseComponent} from './components/candidates/view/tasks/view-res
     ViewTaskDetailsComponent,
     SearchTasksComponent,
     TasksMonitorComponent,
+    ViewCandidateMediaWillingnessComponent,
+    EditCandidateMediaWillingnessComponent,
     ViewResponseComponent
   ],
   imports: [

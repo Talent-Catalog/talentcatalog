@@ -46,6 +46,16 @@ export class PublishedDocColumnService {
       new PublishedDocFieldSource("shareableCv.url"))
     .width = PublishedDocColumnWidth.Narrow;
 
+    this.addColumnWithLink("candidateNumberLinkAutoCv", "Candidate # \n (auto CV)",
+      new PublishedDocFieldSource("candidateNumber"),
+      new PublishedDocFieldSource("autoCvLink"))
+    .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("candidateNumberSmartCv", "Candidate # \n (smart CV)",
+      new PublishedDocFieldSource("candidateNumber"),
+      new PublishedDocFieldSource("smartCvLink"))
+    .width = PublishedDocColumnWidth.Narrow;
+
     this.addColumnWithLink("candidateNumberLinkTc", "Candidate # \n(link to TC)",
       new PublishedDocFieldSource("candidateNumber"),
       new PublishedDocFieldSource("tcLink"))
@@ -99,6 +109,10 @@ export class PublishedDocColumnService {
 
     this.addColumnWithLink("cv", "CV", new PublishedDocConstantSource("cv"),
       new PublishedDocFieldSource("shareableCv.url"))
+    .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("linkedIn", "LinkedIn Link", new PublishedDocConstantSource("link"),
+      new PublishedDocFieldSource("linkedInLink"))
     .width = PublishedDocColumnWidth.Narrow;
 
     this.addColumnWithLink("address", "Folder: Address",

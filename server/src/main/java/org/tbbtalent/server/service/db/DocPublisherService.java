@@ -66,14 +66,16 @@ public interface DocPublisherService {
    * {@link #createPublishedDoc} but it can be populated over time - which ca take a while depending
    * on how many candidates are to be displayed in the doc.
    * @param publishedDocLink Link to published doc
-   * @param candidateIds Ids of candidates whose data is used to populate the doc
+   * @param savedListId Id of list associated with the published doc
+   * @param candidateIds Ids of candidates whose data is used to populate the doc. Note that this
+   *                     will be the candidates in the list.
    * @param columnInfos Specifies the columns of data to be populated
    * @param publishedSheetDataRangeName The name of the range in the doc where data will be written
    * @throws GeneralSecurityException if there are security problems accessing the document
    * @throws IOException if there are communication problems accessing the document
    * @see #createPublishedDoc
    */
-  void populatePublishedDoc(String publishedDocLink, List<Long> candidateIds,
+  void populatePublishedDoc(String publishedDocLink, long savedListId, List<Long> candidateIds,
       List<PublishedDocColumnDef> columnInfos, String publishedSheetDataRangeName)
       throws GeneralSecurityException, IOException;
 

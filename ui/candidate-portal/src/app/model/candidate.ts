@@ -111,6 +111,7 @@ export interface Task {
   id: number;
   name: string;
   description: string;
+  helpLink: string;
   optional: boolean;
   taskType: TaskType;
   uploadType: UploadType;
