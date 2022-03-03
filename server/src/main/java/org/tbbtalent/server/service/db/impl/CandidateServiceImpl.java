@@ -1512,7 +1512,9 @@ public class CandidateServiceImpl implements CandidateService {
         String folderlink = candidate.getFolderlink();
 
         //If we already have a folderlink stored, that gives us the folder object
-        if (folderlink != null) {
+        if (folderlink != null
+            //Avoid any crap links - eg blank field which is not null
+            && folderlink.startsWith("http")) {
             folder = new GoogleFileSystemFolder(folderlink);
         } else {
             //If we don't have a folderlink stored, look for the folder, creating one if needed.
