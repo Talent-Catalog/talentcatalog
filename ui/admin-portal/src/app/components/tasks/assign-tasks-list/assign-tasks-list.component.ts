@@ -32,8 +32,6 @@ export class AssignTasksListComponent implements OnInit {
   ngOnInit(): void {
     this.assignForm = this.fb.group({
       task: [null, [Validators.required]],
-      customDate: [false],
-      dueDate: [null]
     });
 
     this.getAllTasks();
@@ -91,7 +89,6 @@ export class AssignTasksListComponent implements OnInit {
     const request: AssignTaskToListRequest = {
       savedListId: this.savedList.id,
       taskId: task.id,
-      dueDate: this.assignForm.value.dueDate
     }
     this.taskAssignmentService.assignTaskToList(request).subscribe(
       () => {

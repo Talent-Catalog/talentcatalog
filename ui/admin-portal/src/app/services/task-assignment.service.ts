@@ -7,8 +7,7 @@ import {TaskAssignment} from "../model/task-assignment";
 
 export interface AssignTaskToListRequest {
   savedListId: number,
-  taskId: number,
-  dueDate?: Date
+  taskId: number
 }
 
 export interface CreateTaskAssignmentRequest {
