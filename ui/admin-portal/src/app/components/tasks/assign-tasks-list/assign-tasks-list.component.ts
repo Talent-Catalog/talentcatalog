@@ -7,6 +7,7 @@ import {TaskService} from "../../../services/task.service";
 import {AssignTaskToListRequest, TaskAssignmentService} from "../../../services/task-assignment.service";
 import {Task} from "../../../model/task";
 import {SavedListService} from "../../../services/saved-list.service";
+import {CandidateSource} from "../../../model/base";
 
 @Component({
   selector: 'app-assign-tasks-list',
@@ -15,7 +16,7 @@ import {SavedListService} from "../../../services/saved-list.service";
 })
 export class AssignTasksListComponent implements OnInit {
   assignForm: FormGroup;
-  taskAssociations: Task[];
+  filteredTaskAssociations: Task[];
   allTasks: Task[];
   savedList: SavedList;
   loading;
@@ -64,16 +65,21 @@ export class AssignTasksListComponent implements OnInit {
     this.loading = false;
   }
 
-  setTasks(candidateSource: any) {
-    this.savedList = candidateSource;
-    this.taskAssociations = candidateSource.tasks;
+  setTasks(savedList: SavedList) {
+    this.savedList = savedList;
+    //todo This should really do a search with the current filter. Can we make the search
+    //part of the component so we can access the filter data in this code.
+    this.filteredTaskAssociations = savedList.tasks;
   }
 
   refreshTaskAssociations() {
     this.savedListService.get(this.savedList.id).subscribe(
       (result) => {
-        this.savedList = result;
-        this.taskAssociations = result.tasks;
+        this.savedList.tasks = result.tasks;
+
+        //todo This should really do a search with the current filter. Can we make the search
+        //part of the component so we can access the filter data in this code.
+        this.filteredTaskAssociations = result.tasks;
       }, (error) => {
         this.error = error;
       }
@@ -126,9 +132,9 @@ export class AssignTasksListComponent implements OnInit {
 
   search(target): void {
     if (target.value != null) {
-      this.taskAssociations = this.savedList.tasks.filter((val) => val.name.toLowerCase().includes(target.value));
+      this.filteredTaskAssociations = this.savedList.tasks.filter((val) => val.name.toLowerCase().includes(target.value));
     } else {
-      this.taskAssociations = this.savedList.tasks;
+      this.filteredTaskAssociations = this.savedList.tasks;
     }
   }
 
