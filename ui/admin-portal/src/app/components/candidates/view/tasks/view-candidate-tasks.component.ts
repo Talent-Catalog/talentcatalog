@@ -108,8 +108,9 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       backdrop: 'static'
     });
 
-    deleteTaskAssignmentModal.componentInstance.message = "Are you sure you want to remove the candidate "
-      + this.candidate.user.firstName + " " + this.candidate.user.lastName + " from the task " + ta.task.name + "?"
+    deleteTaskAssignmentModal.componentInstance.message = "Are you sure you want to delete the task '"
+      + ta.task.name + "' from the tasks assigned to "
+      + this.candidate.user.firstName + " " + this.candidate.user.lastName + "?";
 
     deleteTaskAssignmentModal.result
       .then((result) => {
