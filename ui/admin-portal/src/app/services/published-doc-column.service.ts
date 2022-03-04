@@ -127,12 +127,37 @@ export class PublishedDocColumnService {
       new PublishedDocFieldSource("folderlinkEmployer"))
     .width = PublishedDocColumnWidth.Narrow;
 
+    this.addColumnWithLink("engagement", "Folder: Engagement",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("folderlinkEngagement"))
+    .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("experience", "Folder: Experience",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("folderlinkExperience"))
+    .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("family", "Folder: Family",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("folderlinkFamily"))
+    .width = PublishedDocColumnWidth.Narrow;
+
     this.addColumnWithLink("identity", "Folder: Identity",
       new PublishedDocConstantSource("folder"),
       new PublishedDocFieldSource("folderlinkIdentity"))
       .width = PublishedDocColumnWidth.Narrow;
 
-    this.addColumnWithLink("medical", "Folder: Medicals",
+    this.addColumnWithLink("immigration", "Folder: Immigration",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("folderlinkImmigration"))
+      .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("language", "Folder: Language",
+      new PublishedDocConstantSource("folder"),
+      new PublishedDocFieldSource("folderlinkLanguage"))
+      .width = PublishedDocColumnWidth.Narrow;
+
+    this.addColumnWithLink("medical", "Folder: Medical",
       new PublishedDocConstantSource("folder"),
       new PublishedDocFieldSource("folderlinkMedical"))
     .width = PublishedDocColumnWidth.Narrow;

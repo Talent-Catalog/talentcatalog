@@ -33,6 +33,7 @@ public enum UploadType {
     degreeTranscript,
     degreeTranscriptTrans,
     englishExam,
+    idCard,
     infoReleaseForm,
     licencing,
     licencingTrans,
@@ -49,6 +50,7 @@ public enum UploadType {
     residenceAttestTrans,
     studiedInEnglish,
     other,
+    unhcrUnrwaRegCard,
     vaccination,
     vaccinationTrans
 }

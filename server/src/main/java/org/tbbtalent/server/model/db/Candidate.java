@@ -192,7 +192,37 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * Url link to corresponding candidate folder on Google Drive, if one exists.
      */
     @Nullable
+    private String folderlinkEngagement;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkExperience;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkFamily;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
     private String folderlinkIdentity;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkImmigration;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     */
+    @Nullable
+    private String folderlinkLanguage;
 
     /**
      * Url link to corresponding candidate folder on Google Drive, if one exists.
@@ -1093,12 +1123,57 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
+    public String getFolderlinkEngagement() {
+        return folderlinkEngagement;
+    }
+
+    public void setFolderlinkEngagement(@Nullable String folderlinkEngagement) {
+        this.folderlinkEngagement = folderlinkEngagement;
+    }
+
+    @Nullable
+    public String getFolderlinkExperience() {
+        return folderlinkExperience;
+    }
+
+    public void setFolderlinkExperience(@Nullable String folderlinkExperience) {
+        this.folderlinkExperience = folderlinkExperience;
+    }
+
+    @Nullable
+    public String getFolderlinkFamily() {
+        return folderlinkFamily;
+    }
+
+    public void setFolderlinkFamily(@Nullable String folderlinkFamily) {
+        this.folderlinkFamily = folderlinkFamily;
+    }
+
+    @Nullable
     public String getFolderlinkIdentity() {
         return folderlinkIdentity;
     }
 
     public void setFolderlinkIdentity(@Nullable String folderlinkIdentity) {
         this.folderlinkIdentity = folderlinkIdentity;
+    }
+
+    @Nullable
+    public String getFolderlinkImmigration() {
+        return folderlinkImmigration;
+    }
+
+    public void setFolderlinkImmigration(@Nullable String folderlinkImmigration) {
+        this.folderlinkImmigration = folderlinkImmigration;
+    }
+
+    @Nullable
+    public String getFolderlinkLanguage() {
+        return folderlinkLanguage;
+    }
+
+    public void setFolderlinkLanguage(@Nullable String folderlinkLanguage) {
+        this.folderlinkLanguage = folderlinkLanguage;
     }
 
     @Nullable

@@ -14,28 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
-
-/**
- * These correspond to the different types of candidate subfolder.
- * <p/>
- * See https://docs.google.com/document/d/1ytIH3LQ40ICrKa2YM-eIVp09THpHHbEI8kBeWQXjAEQ/
- * and
- * https://docs.google.com/document/d/1VEFQAVapmbond_3GIjdWfV95E3QLd3wBlIBDNZsFNcI/
- *
- * @author John Cameron
- */
-public enum CandidateSubfolderType {
-    address,
-    character,
-    employer,
-    engagement,
-    experience,
-    family,
-    identity,
-    immigration,
-    language,
-    medical,
-    qualification,
-    registration
-}
+update task set help_link = 'https://www.talentbeyondboundaries.org/talentcatalog/tasks/upload-collaboration-agreement' where name = 'Collaboration Agreement';
+update task set help_link = 'https://www.talentbeyondboundaries.org/talentcatalog/tasks/upload-tbb-info-release-form' where name = 'Information Release Form';
