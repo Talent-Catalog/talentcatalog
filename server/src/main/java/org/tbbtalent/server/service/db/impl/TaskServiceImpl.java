@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -26,11 +25,14 @@ import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.repository.db.TaskRepository;
-import org.tbbtalent.server.request.PagedSearchRequest;
+import org.tbbtalent.server.repository.db.TaskSpecification;
 import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
 import org.tbbtalent.server.request.task.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
+import org.tbbtalent.server.request.task.SearchTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
+
+import java.util.List;
 
 
 // TODO: 15/1/22 Services should implement interfaces which define the operations of the service.
@@ -72,8 +74,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Page<TaskImpl> searchTasks(PagedSearchRequest request) {
-        Page<TaskImpl> tasks = taskRepository.findAll(request.getPageRequest());
+    public Page<TaskImpl> searchTasks(SearchTaskRequest request) {
+        Page<TaskImpl> tasks = taskRepository.findAll(
+                TaskSpecification.buildSearchQuery(request), request.getPageRequest());
         return tasks;
     }
 }
