@@ -14,28 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
+package org.tbbtalent.server.request.task;
 
-/**
- * These correspond to the different types of candidate subfolder.
- * <p/>
- * See https://docs.google.com/document/d/1ytIH3LQ40ICrKa2YM-eIVp09THpHHbEI8kBeWQXjAEQ/
- * and
- * https://docs.google.com/document/d/1VEFQAVapmbond_3GIjdWfV95E3QLd3wBlIBDNZsFNcI/
- *
- * @author John Cameron
- */
-public enum CandidateSubfolderType {
-    address,
-    character,
-    employer,
-    engagement,
-    experience,
-    family,
-    identity,
-    immigration,
-    language,
-    medical,
-    qualification,
-    registration
+import org.tbbtalent.server.request.PagedSearchRequest;
+
+public class SearchTaskRequest extends PagedSearchRequest {
+    private String keyword;
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
 }

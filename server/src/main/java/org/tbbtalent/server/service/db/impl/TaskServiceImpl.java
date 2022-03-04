@@ -25,10 +25,11 @@ import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.repository.db.TaskRepository;
-import org.tbbtalent.server.request.PagedSearchRequest;
+import org.tbbtalent.server.repository.db.TaskSpecification;
 import org.tbbtalent.server.request.task.CreateQuestionTaskRequest;
 import org.tbbtalent.server.request.task.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
+import org.tbbtalent.server.request.task.SearchTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
 
 import java.util.List;
@@ -73,8 +74,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Page<TaskImpl> searchTasks(PagedSearchRequest request) {
-        Page<TaskImpl> tasks = taskRepository.findAll(request.getPageRequest());
+    public Page<TaskImpl> searchTasks(SearchTaskRequest request) {
+        Page<TaskImpl> tasks = taskRepository.findAll(
+                TaskSpecification.buildSearchQuery(request), request.getPageRequest());
         return tasks;
     }
 }

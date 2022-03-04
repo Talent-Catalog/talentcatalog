@@ -419,13 +419,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         }
 
 
-        //Get link to candidate folder if we have one.
+        //Get link to candidate folder, creating one (plus subfolders) if needed.
+        candidate = candidateService.createCandidateFolder(candidate.getId());
         String folderLink = candidate.getFolderlink();
-        if (folderLink == null || !folderLink.startsWith("http")) {
-            //No candidate folder recorded, create one.
-            candidate = candidateService.createCandidateFolder(candidate.getId());
-            folderLink = candidate.getFolderlink();
-        }
 
         //Create a folder object for the candidate folder (where the attachment
         //file will be uploaded to)

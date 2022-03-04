@@ -36,10 +36,12 @@ import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.DataSharingService;
+import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.LanguageService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 import java.io.File;
@@ -71,6 +73,7 @@ public class SystemAdminApi {
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
     private final CountryService countryService;
+    private final FileSystemService fileSystemService;
     private final LanguageService languageService;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
@@ -105,6 +108,7 @@ public class SystemAdminApi {
         CandidateNoteRepository candidateNoteRepository,
         CandidateRepository candidateRepository,
         CountryService countryService,
+        FileSystemService fileSystemService,
         LanguageService languageService,
         PopulateElasticsearchService populateElasticsearchService,
         SalesforceService salesforceService,
@@ -116,12 +120,78 @@ public class SystemAdminApi {
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
         this.countryService = countryService;
+        this.fileSystemService = fileSystemService;
         this.languageService = languageService;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
         countryForGeneralCountry = getExtraCountryMappings();
+    }
+
+    @GetMapping("rename-candidate-folders")
+    public String renameCandidateFolders() throws GeneralSecurityException, IOException {
+        log.info("Starting candidate folder re-name. About to get folders.");
+        Map<String, String> renames = new HashMap<>();
+        renames.put("English", "Language");
+        renames.put("Medicals", "Medical");
+        renames.put("TBB Forms", "Engagement");
+        String nextPageToken = null;
+        int count = 0;
+        do {
+            // Getting folders
+            FileList result = googleDriveConfig.getGoogleDriveService().files().list()
+                .setQ("'" + candidateRootFolderId + "' in parents" +
+                    " and mimeType='application/vnd.google-apps.folder'")
+                .setSupportsAllDrives(true)
+                .setIncludeItemsFromAllDrives(true)
+                .setCorpora("drive")
+                .setDriveId(candidateDataDriveId)
+                .setPageToken(nextPageToken)
+                .setPageSize(100)
+                .setFields("nextPageToken, files(id,name,webViewLink)")
+                .execute();
+            List<com.google.api.services.drive.model.File> folders = result.getFiles();
+            nextPageToken = result.getNextPageToken();
+            // Looping over folders
+            int size = folders.size();
+            log.info("Got " + size + " folders. About to loop through.");
+            for(com.google.api.services.drive.model.File folder: folders) {
+
+                String folderId = folder.getId();
+                //Get subfolders
+                FileList result2 = googleDriveConfig.getGoogleDriveService().files().list()
+                    .setQ("'" + folderId + "' in parents" +
+                        " and mimeType='application/vnd.google-apps.folder'")
+                    .setSupportsAllDrives(true)
+                    .setIncludeItemsFromAllDrives(true)
+                    .setCorpora("drive")
+                    .setDriveId(candidateDataDriveId)
+                    .setFields("files(id,name,webViewLink)")
+                    .execute();
+                List<com.google.api.services.drive.model.File> subfolders = result2.getFiles();
+                for (com.google.api.services.drive.model.File subfolder : subfolders) {
+                    GoogleFileSystemFile gsf = new GoogleFileSystemFile(subfolder.getWebViewLink());
+                    final String name = subfolder.getName();
+                    String newName = renames.get(name);
+                    if (newName != null) {
+                        gsf.setName(newName);
+                        fileSystemService.renameFile(gsf);
+                        log.info("Candidate " + folder.getName() + ": " + name + " --> " + newName);
+                    }
+                }
+
+                if (count%100 == 0) {
+                    log.info("Folders processed:" + count);
+                }
+                count++;
+            }
+        } while(
+            nextPageToken != null
+        );
+
+        log.info("Completed processing. Total: " + count);
+        return "Done";
     }
 
     @GetMapping("updatesflinks")
@@ -211,7 +281,7 @@ public class SystemAdminApi {
     }
 
     //Remove after running. One off method. Login as System Admin user.
-    @GetMapping("update-isocodes")
+//    @GetMapping("update-isocodes")
     public String updateIsoCodes() {
 
         String sb = "Countries: "

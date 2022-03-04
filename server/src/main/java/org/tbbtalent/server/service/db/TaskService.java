@@ -16,15 +16,16 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.UploadTaskImpl;
-import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.task.CreateTaskRequest;
 import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
+import org.tbbtalent.server.request.task.SearchTaskRequest;
+
+import java.util.List;
 
 /**
  * TODO JC Doc
@@ -59,5 +60,5 @@ public interface TaskService {
      * @param request - Paged Search Request
      * @return Page of tasks
      */
-    Page<TaskImpl> searchTasks(PagedSearchRequest request);
+    Page<TaskImpl> searchTasks(SearchTaskRequest request);
 }
