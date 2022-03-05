@@ -110,7 +110,7 @@ export class AssignTasksListComponent implements OnInit {
   }
 
   close() {
-    this.activeModal.dismiss();
+    this.activeModal.close();
   }
 
   removeTask(task: Task) {
