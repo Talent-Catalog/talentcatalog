@@ -83,9 +83,6 @@ export class PublishedDocColumnService {
     this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"))
     .width = PublishedDocColumnWidth.Narrow;
 
-    this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"))
-    .width = PublishedDocColumnWidth.Narrow;
-
     this.addColumn("ieltsScore", "IELTS Score", new PublishedDocFieldSource("ieltsScore"));
     this.addColumn("lastName", "Last Name", new PublishedDocFieldSource("user.lastName"));
     this.addColumn("location", "Location", new PublishedDocFieldSource("country.name"));

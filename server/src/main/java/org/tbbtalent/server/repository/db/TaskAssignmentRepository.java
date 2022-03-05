@@ -22,4 +22,5 @@ import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 
 public interface TaskAssignmentRepository extends
     JpaRepository<TaskAssignmentImpl, Long>, JpaSpecificationExecutor<TaskAssignmentImpl> {
+
 }

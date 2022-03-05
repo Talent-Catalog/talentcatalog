@@ -52,11 +52,17 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.ExportColumn;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.task.Task;
+import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
@@ -86,6 +92,7 @@ import org.tbbtalent.server.service.db.ExportColumnsService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -102,6 +109,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
     private final static String REGISTERED_NAME_SUFFIX = "*";
     private final CandidateRepository candidateRepository;
+    private final CandidateSavedListRepository candidateSavedListRepository;
     private final CandidateService candidateService;
     private final ExportColumnsService exportColumnsService;
     private final SavedListRepository savedListRepository;
@@ -109,6 +117,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
+    private final TaskAssignmentService taskAssignmentService;
     private final UserRepository userRepository;
     private final AuthService authService;
 
@@ -118,16 +127,20 @@ public class SavedListServiceImpl implements SavedListService {
     @Autowired
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
+        CandidateSavedListRepository candidateSavedListRepository,
         CandidateService candidateService,
         ExportColumnsService exportColumnsService,
         SavedListRepository savedListRepository,
         DocPublisherService docPublisherService,
         FileSystemService fileSystemService,
         GoogleDriveConfig googleDriveConfig,
-        SalesforceService salesforceService, UserRepository userRepository,
+        SalesforceService salesforceService,
+        TaskAssignmentService taskAssignmentService,
+        UserRepository userRepository,
         AuthService authService
     ) {
         this.candidateRepository = candidateRepository;
+        this.candidateSavedListRepository = candidateSavedListRepository;
         this.candidateService = candidateService;
         this.exportColumnsService = exportColumnsService;
         this.savedListRepository = savedListRepository;
@@ -135,8 +148,194 @@ public class SavedListServiceImpl implements SavedListService {
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
         this.salesforceService = salesforceService;
+        this.taskAssignmentService = taskAssignmentService;
         this.userRepository = userRepository;
         this.authService = authService;
+    }
+
+    @Override
+    public void addCandidateToList(@NonNull SavedList destinationList, @NonNull Candidate candidate,
+        @Nullable SavedList sourceList) {
+        //Find any context note for the given candidate and sourceList
+        String contextNote = null;
+        if (sourceList != null) {
+            //Need to copy the context across from the source list.
+            //Construct the csl we are looking for...
+            CandidateSavedList targetCsl = new CandidateSavedList(candidate, sourceList);
+
+            //Now search for that csl in the candidate's csl's.
+            Set<CandidateSavedList> sourceCsls = candidate.getCandidateSavedLists();
+            for (CandidateSavedList sourceCsl : sourceCsls) {
+                if (sourceCsl.equals(targetCsl)) {
+                    //Found context note for the candidate and the sourceList.
+                    contextNote = sourceCsl.getContextNote();
+                    break;
+                }
+            }
+        }
+
+        //Create new candidate/list link
+        final CandidateSavedList csl =
+            new CandidateSavedList(candidate, destinationList);
+        //Copy across context
+        if (contextNote != null) {
+            csl.setContextNote(contextNote);
+        }
+
+        //Add candidate to the collection of candidates in this list
+        destinationList.getCandidateSavedLists().add(csl);
+        //Also update other side of many to many relationship, adding this
+        //list to the candidate's collection of lists that they belong to.
+        candidate.getCandidateSavedLists().add(csl);
+
+        assignListTasksToCandidate(destinationList, candidate);
+    }
+
+    @Override
+    public void addCandidatesToList(@NonNull SavedList destinationList, @NonNull Iterable<Candidate> candidates,
+        @Nullable SavedList sourceList) {
+        for (Candidate candidate : candidates) {
+            addCandidateToList(destinationList, candidate, sourceList);
+        }
+    }
+
+    @Override
+    public void removeCandidateFromList(@NonNull Candidate candidate, @NonNull SavedList savedList) {
+        final CandidateSavedList csl = new CandidateSavedList(candidate, savedList);
+        try {
+            candidateSavedListRepository.delete(csl);
+            csl.getCandidate().getCandidateSavedLists().remove(csl);
+            csl.getSavedList().getCandidateSavedLists().remove(csl);
+
+            deactivateIncompleteCandidateListTasks(savedList, candidate);
+        } catch (Exception ex) {
+            log.warn("Could not delete candidate saved list " + csl.getId(), ex);
+        }
+    }
+
+    @Override
+    public void removeCandidateFromList(long savedListId,
+        UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
+        SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
+            .orElse(null);
+        if (savedList == null) {
+            throw new NoSuchObjectException(SavedList.class, savedListId);
+        }
+
+        Set<Candidate> candidates = fetchCandidates(request);
+        for (Candidate candidate : candidates) {
+            removeCandidateFromList(candidate, savedList);
+        }
+    }
+
+    /**
+     * Returns active tasks assigned to given candidate
+     * @param candidate Candidate whose task assignments we are looking at
+     * @return Set of active tasks. Not null, but can be empty set if no active tasks are assigned.
+     */
+    @NonNull
+    private Set<TaskImpl> findActiveCandidateTasks(Candidate candidate) {
+        final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
+        //Extract tasks which are actively assigned to the candidate.
+        // We don't want to duplicate them.
+        Set<TaskImpl> activeCandidateTasks = candidateTaskAssignments.stream()
+            .filter(taskAssignment -> taskAssignment.getStatus() == Status.active)
+            .map(TaskAssignmentImpl::getTask).collect(Collectors.toSet());
+        return activeCandidateTasks;
+    }
+
+    /**
+     * Assigns each task associated with the given list to the given candidate, unless the candidate
+     * already has been assigned the task.
+     * <p/>
+     * Tasks that are assigned, have the relatedList attribute for the task assignment set to the
+     * given list.
+     * @param savedList List whose tasks are being assigned
+     * @param candidate Candidate being assigned tasks
+     */
+    private void assignListTasksToCandidate(SavedList savedList, Candidate candidate) {
+        Set<TaskImpl> listTasks = savedList.getTasks();
+
+        if (!listTasks.isEmpty()) {
+            final User loggedInUser = authService.getLoggedInUser().orElse(null);
+
+            Set<TaskImpl> activeCandidateTasks = findActiveCandidateTasks(candidate);
+
+            //Assign all list tasks to the candidate that they don't already have assigned.
+            for (TaskImpl listTask : listTasks) {
+                if (!activeCandidateTasks.contains(listTask)) {
+                    taskAssignmentService.assignTaskToCandidate(
+                        loggedInUser, listTask, candidate, savedList, null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks whether a task assignment could be deactivated
+     * @param taskAssignment Task assignment
+     * @param savedList Saved list
+     * @return True if the given task assignment is active and incomplete and related to the given
+     * list
+     */
+    private boolean isActiveIncompleteListRelatedTaskAssignment(
+        TaskAssignment taskAssignment, SavedList savedList) {
+        return taskAssignment.getStatus() == Status.active
+            && savedList.equals(taskAssignment.getRelatedList())
+            && taskAssignment.getCompletedDate() == null
+            && taskAssignment.getAbandonedDate() == null;
+    }
+
+    /**
+     * Deactivates candidate task assignments corresponding to each task associated with the given
+     * list where the task assignment is related to this list and where the assigned candidate task
+     * has not yet been completed or abandoned.
+     * @param savedList List whose task assignments are being deactivated
+     * @param candidate Candidate whose task assignments may be deactivated
+     */
+    private void deactivateIncompleteCandidateListTasks(@NonNull SavedList savedList, @NonNull Candidate candidate) {
+        Set<TaskImpl> listTasks = savedList.getTasks();
+
+        if (!listTasks.isEmpty()) {
+            final User loggedInUser = authService.getLoggedInUser().orElse(null);
+
+            final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
+
+            for (TaskAssignmentImpl taskAssignment : candidateTaskAssignments) {
+                //If this candidate task assignment is related to this list - and it is still
+                //one of the tasks associated with this list, then deactivate it if it is incomplete
+                //and still active.
+                boolean canDeactivate = listTasks.contains(taskAssignment.getTask())
+                    && isActiveIncompleteListRelatedTaskAssignment(taskAssignment, savedList);
+
+                if (canDeactivate) {
+                    taskAssignmentService.deactivateTaskAssignment(loggedInUser, taskAssignment.getId());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void deassociateTaskFromList(User user, TaskImpl task, SavedList list) {
+
+        final Set<TaskImpl> listTasks = list.getTasks();
+        listTasks.remove(task);
+        savedListRepository.save(list);
+
+        //See if any candidates in the list have task assignments for this task which should be
+        //deactivated.
+        Set<Candidate> candidates = list.getCandidates();
+        for (Candidate candidate : candidates) {
+            //Deactivate any active, incomplete candidate task assignments for this task and
+            //related to this list.
+            final List<TaskAssignmentImpl> taskAssignments = candidate.getTaskAssignments();
+            for (TaskAssignmentImpl taskAssignment : taskAssignments) {
+                if (taskAssignment.getTask().equals(task)
+                    && isActiveIncompleteListRelatedTaskAssignment(taskAssignment, list)) {
+                    taskAssignmentService.deactivateTaskAssignment(user, taskAssignment.getId());
+                }
+            }
+        }
     }
 
     /**
@@ -266,7 +465,7 @@ public class SavedListServiceImpl implements SavedListService {
 
         SavedList sourceList = fetchSourceList(request);
         Set<Candidate> candidates = fetchCandidates(request);
-        savedList.addCandidates(candidates, sourceList);
+        addCandidatesToList(savedList, candidates, sourceList);
 
         saveIt(savedList);
     }
@@ -438,6 +637,24 @@ public class SavedListServiceImpl implements SavedListService {
         final String joblink = savedList.getSfJoblink();
         if (joblink != null) {
             salesforceService.addCandidateOpportunityStages(candidates, joblink);
+        }
+    }
+
+    @Override
+    public void associateTaskWithList(User user, TaskImpl task, SavedList list) {
+
+        final Set<TaskImpl> listTasks = list.getTasks();
+        listTasks.add(task);
+        savedListRepository.save(list);
+
+        //Now assign tasks to candidates in list (if they do not already have the task actively assigned)
+        Set<Candidate> candidates = list.getCandidates();
+        for (Candidate candidate : candidates) {
+            //Assign task if candidate does not already have this task active
+            Set<? extends Task> activeCandidateTasks = findActiveCandidateTasks(candidate);
+            if (!activeCandidateTasks.contains(task)) {
+                taskAssignmentService.assignTaskToCandidate(user, task, candidate, list, null);
+            }
         }
     }
 
