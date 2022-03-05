@@ -16,10 +16,11 @@
 
 package org.tbbtalent.server.model.db;
 
+import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
- * TODO JC Doc
+ * DTOs for Tasks
  *
  * @author John Cameron
  */
@@ -27,8 +28,6 @@ public class TaskDtoHelper {
 
     public static DtoBuilder getTaskAssignmentDto() {
         return new DtoBuilder()
-            // TODO: other attributes
-            //todo If we are going to be mapping everything, do we need a dto?
             .add("id")
             .add("abandonedDate")
             .add("candidateNotes")
@@ -42,7 +41,7 @@ public class TaskDtoHelper {
     }
 
     public static DtoBuilder getTaskDto() {
-        return new DtoBuilder()
+        return new DtoBuilder("taskType")
             // TODO: other attributes
             .add("id")
             .add("name")
@@ -51,9 +50,9 @@ public class TaskDtoHelper {
             .add("optional")
             .add("helpLink")
             .add("taskType")
-            .add("uploadType")
-            .add("uploadSubfolderName")
-            .add("uploadableFileTypes")
+            .add("uploadType", TaskType.Upload)
+            .add("uploadSubfolderName", TaskType.Upload)
+            .add("uploadableFileTypes", TaskType.Upload)
             .add("createdBy", getUserDto())
             .add("createdDate")
             ;
