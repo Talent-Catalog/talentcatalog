@@ -4,7 +4,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {SavedList} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
-import {AssignTaskToListRequest, TaskAssignmentService} from "../../../services/task-assignment.service";
+import {TaskListRequest, TaskAssignmentService} from "../../../services/task-assignment.service";
 import {Task} from "../../../model/task";
 import {SavedListService} from "../../../services/saved-list.service";
 import {CandidateSource} from "../../../model/base";
@@ -88,11 +88,12 @@ export class AssignTasksListComponent implements OnInit {
 
   onSave() {
     this.loading = true;
+    this.error = null;
 
     const task: Task = this.assignForm.value.task;
 
     //Construct request
-    const request: AssignTaskToListRequest = {
+    const request: TaskListRequest = {
       savedListId: this.savedList.id,
       taskId: task.id,
     }
@@ -122,12 +123,31 @@ export class AssignTasksListComponent implements OnInit {
     confirmationModal.result
       .then((result) => {
         if (result === true) {
-          // todo remove task assignments from all candidates in list
+          this.doRemoveTask(task);
         }
-      },
-        error => this.error = error
-      )
+      })
       .catch();
+  }
+
+  private doRemoveTask(task: Task) {
+    this.loading = true;
+    this.error = null;
+
+    //Construct request
+    const request: TaskListRequest = {
+      savedListId: this.savedList.id,
+      taskId: task.id,
+    }
+    this.taskAssignmentService.removeTaskFromList(request).subscribe(
+      () => {
+        this.refreshTaskAssociations();
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
   }
 
   search(target): void {

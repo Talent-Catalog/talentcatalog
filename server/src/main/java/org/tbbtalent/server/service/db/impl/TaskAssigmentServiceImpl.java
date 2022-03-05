@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
@@ -57,13 +58,15 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
 
     @Override
     public TaskAssignmentImpl assignTaskToCandidate(
-        User user, TaskImpl task, Candidate candidate, @Nullable LocalDate dueDate) {
+        User user, TaskImpl task, Candidate candidate, @Nullable SavedList savedList,
+        @Nullable LocalDate dueDate) {
         TaskAssignmentImpl taskAssignment = new TaskAssignmentImpl();
         taskAssignment.setTask(task);
         taskAssignment.setActivatedBy(user);
         taskAssignment.setActivatedDate(OffsetDateTime.now());
         taskAssignment.setCandidate(candidate);
         taskAssignment.setStatus(Status.active);
+        taskAssignment.setRelatedList(savedList);
         // If no due date given in assignment, set due date to the days to complete from today.
         if (dueDate == null && task.getDaysToComplete() != null) {
             dueDate = LocalDate.now().plusDays(task.getDaysToComplete());

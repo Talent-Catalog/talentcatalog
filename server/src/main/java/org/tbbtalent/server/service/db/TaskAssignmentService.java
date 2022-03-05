@@ -23,6 +23,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
@@ -48,12 +49,14 @@ public interface TaskAssignmentService {
      * @param user      - User who made assignment
      * @param task      - Task to be associated with the newly created TaskAssignment
      * @param candidate - Candidate associated with the newly created TaskAssignment
+     * @param relatedList - If not null, indicates that the assignemtn is related to the given list
      * @param dueDate   - Custom due date (can be null, which case the days to complete will be used
      *                  to set)
      * @return Newly created task assignment associated with candidate and task
      */
     TaskAssignmentImpl assignTaskToCandidate(
-        User user, TaskImpl task, Candidate candidate, @Nullable LocalDate dueDate);
+        User user, TaskImpl task, Candidate candidate, @Nullable SavedList relatedList,
+        @Nullable LocalDate dueDate);
 
     /**
      * Get the TaskAssignment with the given id.

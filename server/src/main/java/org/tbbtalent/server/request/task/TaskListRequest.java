@@ -20,13 +20,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Request to create a TaskAssignment by assigning a task to a candidate
+ * Request relating to a Task and a SavedList
  *
  * @author John Cameron
  */
 @Getter
 @Setter
-public class AssignTaskToListRequest {
+public class TaskListRequest {
 
     /**
      * Saved list to which task is being assigned

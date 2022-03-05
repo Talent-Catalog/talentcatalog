@@ -5,7 +5,7 @@ import {Observable} from "rxjs";
 import {TaskAssignment} from "../model/task-assignment";
 
 
-export interface AssignTaskToListRequest {
+export interface TaskListRequest {
   savedListId: number,
   taskId: number
 }
@@ -32,8 +32,12 @@ export class TaskAssignmentService {
 
   constructor(private http: HttpClient) { }
 
-  assignTaskToList(request: AssignTaskToListRequest): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/assign-to-list`, request);
+  assignTaskToList(request: TaskListRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/assign-to-list`, request);
+  }
+
+  removeTaskFromList(request: TaskListRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/remove-from-list`, request);
   }
 
   createTaskAssignment(request: CreateTaskAssignmentRequest): Observable<TaskAssignment> {

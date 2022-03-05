@@ -59,6 +59,8 @@ import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.task.Task;
+import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
@@ -227,6 +229,22 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     /**
+     * Returns active tasks assigned to given candidate
+     * @param candidate Candidate whose task assignments we are looking at
+     * @return Set of active tasks. Not null, but can be empty set if no active tasks are assigned.
+     */
+    @NonNull
+    private Set<TaskImpl> findActiveCandidateTasks(Candidate candidate) {
+        final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
+        //Extract tasks which are actively assigned to the candidate.
+        // We don't want to duplicate them.
+        Set<TaskImpl> activeCandidateTasks = candidateTaskAssignments.stream()
+            .filter(taskAssignment -> taskAssignment.getStatus() == Status.active)
+            .map(TaskAssignmentImpl::getTask).collect(Collectors.toSet());
+        return activeCandidateTasks;
+    }
+
+    /**
      * Assigns each task associated with the given list to the given candidate, unless the candidate
      * already has been assigned the task.
      * <p/>
@@ -241,23 +259,31 @@ public class SavedListServiceImpl implements SavedListService {
         if (!listTasks.isEmpty()) {
             final User loggedInUser = authService.getLoggedInUser().orElse(null);
 
-            final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
-            //Extract tasks which are actively assigned to the candidate.
-            // We don't want to duplicate them.
-            Set<TaskImpl> activeCandidateTasks = candidateTaskAssignments.stream()
-                .filter(taskAssignment -> taskAssignment.getStatus() == Status.active)
-                .map(TaskAssignmentImpl::getTask).collect(Collectors.toSet());
+            Set<TaskImpl> activeCandidateTasks = findActiveCandidateTasks(candidate);
 
             //Assign all list tasks to the candidate that they don't already have assigned.
             for (TaskImpl listTask : listTasks) {
-                boolean newTask = !activeCandidateTasks.contains(listTask);
-                if (newTask) {
-                    TaskAssignmentImpl taskAssignment = taskAssignmentService.assignTaskToCandidate(
-                        loggedInUser, listTask, candidate,null);
-                    taskAssignment.setRelatedList(savedList);
+                if (!activeCandidateTasks.contains(listTask)) {
+                    taskAssignmentService.assignTaskToCandidate(
+                        loggedInUser, listTask, candidate, savedList, null);
                 }
             }
         }
+    }
+
+    /**
+     * Checks whether a task assignment could be deactivated
+     * @param taskAssignment Task assignment
+     * @param savedList Saved list
+     * @return True if the given task assignment is active and incomplete and related to the given
+     * list
+     */
+    private boolean isActiveIncompleteListRelatedTaskAssignment(
+        TaskAssignment taskAssignment, SavedList savedList) {
+        return taskAssignment.getStatus() == Status.active
+            && savedList.equals(taskAssignment.getRelatedList())
+            && taskAssignment.getCompletedDate() == null
+            && taskAssignment.getAbandonedDate() == null;
     }
 
     /**
@@ -276,16 +302,37 @@ public class SavedListServiceImpl implements SavedListService {
             final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
 
             for (TaskAssignmentImpl taskAssignment : candidateTaskAssignments) {
-                //Is this task assignment an active task related to this list which has not been
-                //completed or abandoned? If so we can deactivate it.
+                //If this candidate task assignment is related to this list - and it is still
+                //one of the tasks associated with this list, then deactivate it if it is incomplete
+                //and still active.
                 boolean canDeactivate = listTasks.contains(taskAssignment.getTask())
-                    && taskAssignment.getStatus() == Status.active
-                    && savedList.equals(taskAssignment.getRelatedList())
-                    && taskAssignment.getCompletedDate() == null
-                    && taskAssignment.getAbandonedDate() == null;
+                    && isActiveIncompleteListRelatedTaskAssignment(taskAssignment, savedList);
 
                 if (canDeactivate) {
                     taskAssignmentService.deactivateTaskAssignment(loggedInUser, taskAssignment.getId());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void deassociateTaskFromList(User user, TaskImpl task, SavedList list) {
+
+        final Set<TaskImpl> listTasks = list.getTasks();
+        listTasks.remove(task);
+        savedListRepository.save(list);
+
+        //See if any candidates in the list have task assignments for this task which should be
+        //deactivated.
+        Set<Candidate> candidates = list.getCandidates();
+        for (Candidate candidate : candidates) {
+            //Deactivate any active, incomplete candidate task assignments for this task and
+            //related to this list.
+            final List<TaskAssignmentImpl> taskAssignments = candidate.getTaskAssignments();
+            for (TaskAssignmentImpl taskAssignment : taskAssignments) {
+                if (taskAssignment.getTask().equals(task)
+                    && isActiveIncompleteListRelatedTaskAssignment(taskAssignment, list)) {
+                    taskAssignmentService.deactivateTaskAssignment(user, taskAssignment.getId());
                 }
             }
         }
@@ -600,9 +647,14 @@ public class SavedListServiceImpl implements SavedListService {
         listTasks.add(task);
         savedListRepository.save(list);
 
+        //Now assign tasks to candidates in list (if they do not already have the task actively assigned)
         Set<Candidate> candidates = list.getCandidates();
         for (Candidate candidate : candidates) {
-            taskAssignmentService.assignTaskToCandidate(user, task, candidate, null);
+            //Assign task if candidate does not already have this task active
+            Set<? extends Task> activeCandidateTasks = findActiveCandidateTasks(candidate);
+            if (!activeCandidateTasks.contains(task)) {
+                taskAssignmentService.assignTaskToCandidate(user, task, candidate, list, null);
+            }
         }
     }
 

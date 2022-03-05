@@ -119,11 +119,22 @@ public interface SavedListService {
      * A new active TaskAssignment object is created for each candidate in the list, associated with
      * the given task.
      *
-     * @param user    - User who associated task with list
+     * @param user    - User who is associating task with list
      * @param task    - Task to be associated with the list, and assigned to candidates
      * @param list    - List of candidates to whom the task should be assigned
      */
     void associateTaskWithList(User user, TaskImpl task, SavedList list);
+
+    /**
+     * Removes the association of the given task with the given list.
+     * Also deactivates any active incomplete candidate assignments of that task which are related
+     * to this list.
+     *
+     * @param user    - User who is removing the association
+     * @param task    - Task to be deassociated
+     * @param list    - List in question
+     */
+    void deassociateTaskFromList(User user, TaskImpl task, SavedList list);
 
     /**
      * Creates a folder for the given list on Google Drive with two subfolders, one for CVs and
