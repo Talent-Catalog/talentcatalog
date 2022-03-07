@@ -91,7 +91,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     public void clearCandidateSavedLists(Candidate candidate) {
         Set<SavedList> savedLists = candidate.getSavedLists();
         for (SavedList savedList : savedLists) {
-            removeFromSavedList(candidate, savedList);
+            savedListService.removeCandidateFromList(candidate, savedList);
         }
     }
 
@@ -112,7 +112,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     public void clearSavedListCandidates(SavedList savedList) {
         Set<Candidate> candidates = savedList.getCandidates();
         for (Candidate candidate : candidates) {
-           removeFromSavedList(candidate, savedList);
+            savedListService.removeCandidateFromList(candidate, savedList);
         }
     }
 
@@ -186,7 +186,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         if (replace) {
             clearSavedList(destination.getId());
         }
-        destination.addCandidates(candidates, source);
+        savedListService.addCandidatesToList(destination, candidates, source);
 
         savedListService.saveIt(destination);
     }
@@ -215,7 +215,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
 
         //Add candidates to created list, together with any context if source
         //list was supplied.
-        destination.addCandidates(candidates, sourceList);
+        savedListService.addCandidatesToList(destination, candidates, sourceList);
 
         savedListService.saveIt(destination);
     }
@@ -294,7 +294,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         } else {
             Set<SavedList> savedLists = fetchSavedLists(request);
             for (SavedList savedList : savedLists) {
-                removeFromSavedList(candidate, savedList);
+                savedListService.removeCandidateFromList(candidate, savedList);
             }
         }
         return done;
@@ -314,33 +314,6 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         }
 
         return savedLists;
-    }
-
-    @Override
-    public void removeFromSavedList(Candidate candidate, SavedList savedList) {
-        final CandidateSavedList csl = new CandidateSavedList(candidate, savedList);
-        try {
-            candidateSavedListRepository.delete(csl);
-            csl.getCandidate().getCandidateSavedLists().remove(csl);
-            csl.getSavedList().getCandidateSavedLists().remove(csl);
-        } catch (Exception ex) {
-            log.warn("Could not delete candidate saved list " + csl.getId(), ex);
-        }
-    }
-
-    @Override
-    public void removeFromSavedList(long savedListId,
-        UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
-        SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
-            .orElse(null);
-        if (savedList == null) {
-            throw new NoSuchObjectException(SavedList.class, savedListId);
-        }
-
-        Set<Candidate> candidates = savedListService.fetchCandidates(request);
-        for (Candidate candidate : candidates) {
-            removeFromSavedList(candidate, savedList);
-        }
     }
 
     @Override

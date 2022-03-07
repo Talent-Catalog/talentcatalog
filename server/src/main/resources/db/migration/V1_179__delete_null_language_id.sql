@@ -14,35 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.task;
-
-import java.time.LocalDate;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.lang.Nullable;
-
-/**
- * Request to create a TaskAssignment by assigning a task to a candidate
- *
- * @author John Cameron
- */
-@Getter
-@Setter
-public class AssignTaskToListRequest {
-
-    /**
-     * Saved list to which task is being assigned
-     */
-    long savedListId;
-
-    /**
-     * Task to assign to candidate
-     */
-    long taskId;
-
-    /**
-     * Custom due date if supplied (otherwise the due date will be set from the task days to complete)
-     */
-    @Nullable
-    LocalDate dueDate;
-}
+delete from candidate_language where language_id is null;

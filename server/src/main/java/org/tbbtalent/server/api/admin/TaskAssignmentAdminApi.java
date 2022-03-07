@@ -16,15 +16,26 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
-import org.tbbtalent.server.request.task.AssignTaskToListRequest;
+import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.EntityReferencedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.TaskDtoHelper;
+import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.request.task.TaskListRequest;
 import org.tbbtalent.server.request.task.CreateTaskAssignmentRequest;
 import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 import org.tbbtalent.server.security.AuthService;
@@ -32,8 +43,6 @@ import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.service.db.TaskService;
-
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/task-assignment")
@@ -74,7 +83,7 @@ public class TaskAssignmentAdminApi implements
         TaskImpl task = taskService.get(request.getTaskId());
         Candidate candidate = candidateService.getCandidate(request.getCandidateId());
         TaskAssignmentImpl taskAssignment =
-            taskAssignmentService.assignTaskToCandidate(user, task, candidate, request.getDueDate());
+            taskAssignmentService.assignTaskToCandidate(user, task, candidate, null, request.getDueDate());
 
         return TaskDtoHelper.getTaskAssignmentDto().build(taskAssignment);
     }
@@ -90,11 +99,11 @@ public class TaskAssignmentAdminApi implements
     public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        return this.taskAssignmentService.removeTaskAssignment(user, id);
+        return this.taskAssignmentService.deleteTaskAssignment(user, id);
     }
 
-    @PostMapping("assign-to-list")
-    public void assignTaskToList(@Valid @RequestBody AssignTaskToListRequest request)
+    @PutMapping("assign-to-list")
+    public void assignTaskToList(@Valid @RequestBody TaskListRequest request)
         throws EntityExistsException, NoSuchObjectException {
 
         User user = authService.getLoggedInUser()
@@ -103,7 +112,20 @@ public class TaskAssignmentAdminApi implements
         TaskImpl task = taskService.get(request.getTaskId());
         SavedList savedList = savedListService.get(request.getSavedListId());
 
-        taskAssignmentService.assignTaskToList(user, task, savedList, request.getDueDate());
+        savedListService.associateTaskWithList(user, task, savedList);
+    }
+
+    @PutMapping("remove-from-list")
+    public void removeTaskFromList(@Valid @RequestBody TaskListRequest request)
+        throws EntityExistsException, NoSuchObjectException {
+
+        User user = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        TaskImpl task = taskService.get(request.getTaskId());
+        SavedList savedList = savedListService.get(request.getSavedListId());
+
+        savedListService.deassociateTaskFromList(user, task, savedList);
     }
 
 }

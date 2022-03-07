@@ -21,6 +21,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
+import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
@@ -49,7 +50,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @OrderBy("activatedDate DESC")
-    private Set<TaskAssignmentImpl> taskAssignments;
+    private List<TaskAssignmentImpl> taskAssignments;
 
     private String phone;
     private String whatsapp;
@@ -1791,11 +1792,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.candidateSavedLists = candidateSavedLists;
     }
 
-    public Set<TaskAssignmentImpl> getTaskAssignments() {
+    public List<TaskAssignmentImpl> getTaskAssignments() {
         return taskAssignments;
     }
 
-    public void setTaskAssignments(Set<TaskAssignmentImpl> taskAssignments) {
+    public void setTaskAssignments(List<TaskAssignmentImpl> taskAssignments) {
         this.taskAssignments = taskAssignments;
     }
 

@@ -32,6 +32,7 @@ import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
@@ -54,6 +55,44 @@ import org.tbbtalent.server.request.search.UpdateSharingRequest;
 public interface SavedListService {
 
     /**
+     * Add the given candidate to the given destination list - merging it in with any
+     * existing candidates in the list (no duplicates - if a candidate is
+     * already present it will still only appear once).
+     * <p/>
+     * If a source list is supplied, the original candidate context will be
+     * copied across (eg contextNote).
+     * @param destinationList List to which candidates are added
+     * @param candidate Candidate to add to the destination list
+     * @param sourceList If not null, refers to the list where candidates came
+     *                   from, so that context can be copied across.
+     */
+    void addCandidateToList(@NonNull SavedList destinationList, @NonNull Candidate candidate,
+        @Nullable SavedList sourceList);
+
+    /**
+     * See {@link #addCandidateToList} - except that this adds multiple candidates
+     */
+    void addCandidatesToList(@NonNull SavedList destinationList, @NonNull Iterable<Candidate> candidates,
+        @Nullable SavedList sourceList);
+
+    /**
+     * Remove the given candidate from the given savedList
+     * @param candidate Candidate to remove
+     * @param savedList SavedList to remove from
+     */
+    void removeCandidateFromList(@NonNull Candidate candidate, @NonNull SavedList savedList);
+
+    /**
+     * Remove the candidates indicated in the given request from the SavedList
+     * with the given id.
+     * @param savedListId ID of saved list to be updated
+     * @param request Request containing the new list contents
+     * @throws NoSuchObjectException if there is no saved list with this id
+     */
+    void removeCandidateFromList(long savedListId, UpdateExplicitSavedListContentsRequest request)
+        throws NoSuchObjectException;
+
+    /**
      * If the given list is associated with a Salesforce job opportunity, the given candidates
      * are populated with their candidate opportunity stages associated with that job opportunity.
      * <p/>
@@ -65,6 +104,37 @@ public interface SavedListService {
      */
     void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
         throws NoSuchObjectException, SalesforceException;
+
+    /**
+     * Associates the given task with the given list. Also assigns that task to all candidates
+     * currently in the list.
+     * <p/>
+     * Once the task has been associated with a list, any future candidates added to that list
+     * will automatically be assigned that task (unless they have already been assigned the task).
+     * <p/>
+     * A user may want to assign a task to a list of candidates. For example if there’s a list of
+     * candidates shortlisted for a job opportunity, they might all be required to complete some
+     * pre-offer tasks via a task list.
+     * <p/>
+     * A new active TaskAssignment object is created for each candidate in the list, associated with
+     * the given task.
+     *
+     * @param user    - User who is associating task with list
+     * @param task    - Task to be associated with the list, and assigned to candidates
+     * @param list    - List of candidates to whom the task should be assigned
+     */
+    void associateTaskWithList(User user, TaskImpl task, SavedList list);
+
+    /**
+     * Removes the association of the given task with the given list.
+     * Also deactivates any active incomplete candidate assignments of that task which are related
+     * to this list.
+     *
+     * @param user    - User who is removing the association
+     * @param task    - Task to be deassociated
+     * @param list    - List in question
+     */
+    void deassociateTaskFromList(User user, TaskImpl task, SavedList list);
 
     /**
      * Creates a folder for the given list on Google Drive with two subfolders, one for CVs and
@@ -179,6 +249,8 @@ public interface SavedListService {
     List<SavedList> listSavedLists(SearchSavedListRequest request);
 
     /**
+     * This is how candidates are added to a list.
+     * <p/>
      * Merge the contents of the SavedList with the given id with the
      * candidates indicated in the given request.
      * @param savedListId ID of saved list to be updated

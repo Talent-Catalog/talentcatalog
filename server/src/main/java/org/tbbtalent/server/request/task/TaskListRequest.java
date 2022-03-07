@@ -14,13 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.repository.db;
+package org.tbbtalent.server.request.task;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import lombok.Getter;
+import lombok.Setter;
 
-public interface TaskAssignmentRepository extends
-    JpaRepository<TaskAssignmentImpl, Long>, JpaSpecificationExecutor<TaskAssignmentImpl> {
+/**
+ * Request relating to a Task and a SavedList
+ *
+ * @author John Cameron
+ */
+@Getter
+@Setter
+public class TaskListRequest {
 
+    /**
+     * Saved list to which task is being assigned
+     */
+    long savedListId;
+
+    /**
+     * Task to assign to candidate
+     */
+    long taskId;
 }

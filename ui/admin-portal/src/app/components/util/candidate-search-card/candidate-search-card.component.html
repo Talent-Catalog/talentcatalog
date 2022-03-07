@@ -88,10 +88,10 @@
     </ng-container>
 
     <!-- TABS -->
-    <nav ngbNav #nav="ngbNav" class="nav-tabs">
+    <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
       <!-- GENERAL -->
-      <ng-container ngbNavItem>
+      <ng-container ngbNavItem="general">
         <a ngbNavLink>General</a>
         <ng-template ngbNavContent>
           <app-candidate-general-tab
@@ -103,7 +103,7 @@
       </ng-container>
 
       <!-- EXPERIENCE -->
-      <ng-container ngbNavItem>
+      <ng-container ngbNavItem="experience">
         <a ngbNavLink>Experience</a>
         <ng-template ngbNavContent>
           <app-candidate-experience-tab
@@ -114,7 +114,7 @@
       </ng-container>
 
       <!-- EDUCATION -->
-      <ng-container ngbNavItem>
+      <ng-container ngbNavItem="education">
         <a ngbNavLink>Education</a>
         <ng-template ngbNavContent>
           <app-candidate-education-tab
@@ -125,7 +125,7 @@
       </ng-container>
 
       <!-- TASKS -->
-      <ng-container ngbNavItem>
+      <ng-container ngbNavItem="tasks">
         <a ngbNavLink>Tasks</a>
         <ng-template ngbNavContent>
           <app-candidate-task-tab
@@ -136,7 +136,7 @@
       </ng-container>
 
       <!-- NOTES -->
-      <ng-container ngbNavItem>
+      <ng-container ngbNavItem="notes">
         <a ngbNavLink>Notes</a>
         <ng-template ngbNavContent>
           <app-candidate-history-tab

@@ -16,12 +16,20 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.db.task.UploadTask;
@@ -30,13 +38,6 @@ import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
 import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
-import org.tbbtalent.server.service.db.TaskService;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Default implementation of a TaskAssignmentService
@@ -47,41 +48,31 @@ import java.util.Set;
 public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final CandidateAttachmentService candidateAttachmentService;
     private final TaskAssignmentRepository taskAssignmentRepository;
-    private final TaskService taskService;
 
     public TaskAssigmentServiceImpl(
         CandidateAttachmentService candidateAttachmentService,
-        TaskAssignmentRepository taskAssignmentRepository,
-        TaskService taskService) {
+        TaskAssignmentRepository taskAssignmentRepository) {
         this.candidateAttachmentService = candidateAttachmentService;
         this.taskAssignmentRepository = taskAssignmentRepository;
-        this.taskService = taskService;
     }
 
     @Override
     public TaskAssignmentImpl assignTaskToCandidate(
-        User user, TaskImpl task, Candidate candidate, @Nullable LocalDate dueDate) {
+        User user, TaskImpl task, Candidate candidate, @Nullable SavedList savedList,
+        @Nullable LocalDate dueDate) {
         TaskAssignmentImpl taskAssignment = new TaskAssignmentImpl();
         taskAssignment.setTask(task);
         taskAssignment.setActivatedBy(user);
         taskAssignment.setActivatedDate(OffsetDateTime.now());
         taskAssignment.setCandidate(candidate);
         taskAssignment.setStatus(Status.active);
+        taskAssignment.setRelatedList(savedList);
         // If no due date given in assignment, set due date to the days to complete from today.
         if (dueDate == null && task.getDaysToComplete() != null) {
             dueDate = LocalDate.now().plusDays(task.getDaysToComplete());
         }
         taskAssignment.setDueDate(dueDate);
         return taskAssignmentRepository.save(taskAssignment);
-    }
-
-    @Override
-    public void assignTaskToList(
-        User user, TaskImpl task, SavedList list, @Nullable LocalDate dueDate) {
-        Set<Candidate> candidates = list.getCandidates();
-        for (Candidate candidate : candidates) {
-            assignTaskToCandidate(user, task, candidate, dueDate);
-        }
     }
 
     @NonNull
@@ -97,8 +88,6 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(taskAssignmentId)
             .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
 
-        // A way to establish if coming from candidate or admin portal as the requests may be different?
-
         if (request.getDueDate() != null) {
             taskAssignment.setDueDate(request.getDueDate());
         }
@@ -106,7 +95,7 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
             taskAssignment.setCandidateNotes(request.getCandidateNotes());
         }
 
-        if (request.isCompleted()) {
+        if (request.isComplete()) {
             // Only set the completed date if it's a completed task and a date hasn't already been set.
             if (taskAssignment.getCompletedDate() == null) {
                 taskAssignment.setCompletedDate(OffsetDateTime.now());
@@ -127,23 +116,28 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         return taskAssignmentRepository.save(taskAssignment);
     }
 
-    @NonNull
     @Override
-    public boolean removeTaskAssignment(User user, long taskAssignmentId) throws NoSuchObjectException {
+    public void deactivateTaskAssignment(User user, long taskAssignmentId) throws NoSuchObjectException {
         TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(taskAssignmentId)
             .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
 
         taskAssignment.setDeactivatedBy(user);
         taskAssignment.setDeactivatedDate(OffsetDateTime.now());
-        taskAssignment.setStatus(Status.deleted);
+        taskAssignment.setStatus(Status.inactive);
         taskAssignmentRepository.save(taskAssignment);
-        return true;
     }
 
     @Override
-    public List<TaskAssignment> getCandidateTaskAssignments(Candidate candidate, Status status) {
-        //TODO JC Implement getCandidateTaskAssignments
-        throw new UnsupportedOperationException("getCandidateTaskAssignments not implemented");
+    public boolean deleteTaskAssignment(User user, long taskAssignmentId) throws NoSuchObjectException {
+        TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(taskAssignmentId)
+            .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
+
+        //Note that we use the deactivatedBy and Date fields to record deletions.
+        taskAssignment.setDeactivatedBy(user);
+        taskAssignment.setDeactivatedDate(OffsetDateTime.now());
+        taskAssignment.setStatus(Status.deleted);
+        taskAssignmentRepository.save(taskAssignment);
+        return true;
     }
 
     @Override
