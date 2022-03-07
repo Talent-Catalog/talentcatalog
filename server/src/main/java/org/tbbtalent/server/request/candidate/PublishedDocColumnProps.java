@@ -101,7 +101,7 @@ public class PublishedDocColumnProps {
   /*
      Implemented the following hashCode and equals to get rid of following startup warning from
      Spring. Don't really understand it since class should inherit standard Object implementations
-     anyway - which is all I amhpopking into here.
+     anyway - which is all I am hooking into here.
 
      John Cameron
 
