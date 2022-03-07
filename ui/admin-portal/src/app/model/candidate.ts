@@ -80,7 +80,13 @@ export interface Candidate extends HasId {
   stage: string;
   candidateAttachments?: CandidateAttachment[];
   taskAssignments?: TaskAssignment[];
+  candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
+}
+
+export interface CandidateProperty {
+  name: string;
+  value: string;
 }
 
 export enum Status {
