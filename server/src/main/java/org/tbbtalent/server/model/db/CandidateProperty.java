@@ -18,6 +18,8 @@ package org.tbbtalent.server.model.db;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -34,13 +36,15 @@ import org.springframework.lang.Nullable;
  */
 @Entity
 @Table(name = "candidate_property")
+@IdClass(CandidatePropertyKey.class)
 @Getter
 @Setter
-public class CandidateProperty extends AbstractDomainObject<Long> {
+public class CandidateProperty {
 
     /**
      * Candidate associated with this property
      */
+    @Id
     @NonNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -49,6 +53,7 @@ public class CandidateProperty extends AbstractDomainObject<Long> {
     /**
      * The name of the property
      */
+    @Id
     @NonNull
     private String name;
 
@@ -63,44 +68,6 @@ public class CandidateProperty extends AbstractDomainObject<Long> {
      */
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "candidate_id")
+    @JoinColumn(name = "related_task_id")
     private TaskImpl relatedTask;
-
-    /**
-     * Properties are equal if they have the same name and are for the same candidate.
-     * <p/>
-     * Note that candidates cannot have two properties with the same name - so value is irrelevant
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-
-        CandidateProperty that = (CandidateProperty) o;
-
-        if (!candidate.equals(that.candidate)) {
-            return false;
-        }
-        return name.equals(that.name);
-    }
-
-    /**
-     * Properties are equal if they have the same name and are for the same candidate.
-     * <p/>
-     * Note that candidates cannot have two properties with the same name - so value is irrelevant
-     */
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + candidate.hashCode();
-        result = 31 * result + name.hashCode();
-        return result;
-    }
 }
