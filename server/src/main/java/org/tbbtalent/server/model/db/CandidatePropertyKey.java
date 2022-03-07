@@ -16,30 +16,27 @@
 
 package org.tbbtalent.server.model.db;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import java.io.Serializable;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.task.QuestionTask;
-import org.tbbtalent.server.model.db.task.TaskType;
+import org.springframework.lang.NonNull;
 
 /**
- * Default Implementation
+ * Primary key for {@link CandidateProperty}. Needed because we have a composite private key.
+ * <p/>
+ * See https://www.baeldung.com/jpa-composite-primary-keys
  *
  * @author John Cameron
  */
-@Entity(name="QuestionTask")
-@DiscriminatorValue("QuestionTask")
 @Getter
 @Setter
-public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
+@EqualsAndHashCode
+public class CandidatePropertyKey implements Serializable {
 
-    @Nullable
-    private String candidateAnswerField;
+    @NonNull
+    private Candidate candidate;
 
-    public TaskType getTaskType() {
-        return TaskType.Question;
-    }
-
+    @NonNull
+    private String name;
 }

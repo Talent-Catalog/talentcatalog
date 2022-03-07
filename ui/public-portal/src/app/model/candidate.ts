@@ -56,6 +56,12 @@ export interface Candidate {
   surveyComment: string;
   status: CandidateStatus;
   taskAssignments: TaskAssignment[];
+  candidateProperties?: CandidateProperty[];
+}
+
+export interface CandidateProperty {
+  name: string;
+  value: string;
 }
 
 export interface TaskAssignment {
