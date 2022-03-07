@@ -32,7 +32,7 @@ import org.springframework.lang.Nullable;
 public class PublishedDocColumnProps {
 
   /**
-   * If present, supplies a non default header for the column 
+   * If present, supplies a non default header for the column
    */
   @Nullable
   private String header;
@@ -41,7 +41,7 @@ public class PublishedDocColumnProps {
    * If present, supplies a non default constant value to appear in the column.
    * <p/>
    * Note that if the column definition specifies that the value of a candidate field should
-   * appear in the column, rather than a constant value, then this property is ignored. 
+   * appear in the column, rather than a constant value, then this property is ignored.
    */
   @Nullable
   private String constant;
@@ -69,7 +69,7 @@ public class PublishedDocColumnProps {
   }
 
   /**
-   * Construct this properties object from a String representation, as defined by 
+   * Construct this properties object from a String representation, as defined by
    * {@link #toString()}. This is used to construct the object from its string representation
    * in the database.
    * @param s String representation - if null, the individual properties are left null.
@@ -96,5 +96,29 @@ public class PublishedDocColumnProps {
 
   public PublishedDocColumnProps() {
     this(null);
+  }
+
+  /*
+     Implemented the following hashCode and equals to get rid of following startup warning from
+     Spring. Don't really understand it since class should inherit standard Object implementations
+     anyway - which is all I amhpopking into here.
+
+     John Cameron
+
+     Spring giving this error:
+     Encountered Java type [class org.tbbtalent.server.request.candidate.PublishedDocColumnProps] for
+     which we could not locate a JavaTypeDescriptor and which does not appear to
+     implement equals and/or hashCode.  This can lead to significant performance problems when
+     performing equality/dirty checking involving this Java type.
+     Consider registering a custom JavaTypeDescriptor or at least implementing equals/hashCode.
+   */
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return super.equals(obj);
   }
 }
