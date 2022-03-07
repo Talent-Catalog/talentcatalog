@@ -1,14 +1,29 @@
+/*
+ * Copyright (c) 2022 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Candidate, TaskAssignment, TaskType} from "../../../../../../../model/candidate";
+import {Candidate, TaskAssignment, TaskType} from "../../../../../../model/candidate";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {forkJoin, Observable} from "rxjs";
-import {CandidateAttachment} from "../../../../../../../model/candidate-attachment";
+import {CandidateAttachment} from "../../../../../../model/candidate-attachment";
 import {
-  CompleteQuestionTaskRequest,
-  CompleteSimpleTaskRequest,
   TaskAssignmentService,
+  UpdateQuestionTaskRequest,
   UpdateTaskAssignmentRequest
-} from "../../../../../../../services/task-assignment.service";
+} from "../../../../../../services/task-assignment.service";
 
 @Component({
   selector: 'app-candidate-task',
@@ -106,64 +121,27 @@ export class CandidateTaskComponent implements OnInit {
   }
 
   submitTask() {
-    this.completeNonUploadTask();
-    this.addComment();
-  }
-
-  // This handles the API call to send the candidate's comment, as well as if the task is abandoned.
-  addComment() {
-    this.saving = true;
-    const updateRequest: UpdateTaskAssignmentRequest = {
-      taskAssignmentId: this.selectedTask.id,
-      candidateNotes: this.form.value.comment,
-      abandoned: this.form.value.abandoned,
-      completed: this.isComplete
-    }
-    this.taskAssignmentService.update(this.selectedTask.id, updateRequest).subscribe(
-      (taskAssignment: TaskAssignment) => {
-        this.selectedTask = taskAssignment;
-        this.saving = false;
-      }, error => {
-        this.error = error;
-        this.saving = false;
-      }
-    )
-  }
-
-  // This handles the submission of the non upload task, and the relevant API call appropriate to the task type.
-  // If it is an upload task, it will not call any API as upload tasks are completed seperately.
-  completeNonUploadTask() {
-    if (this.selectedTask.task.taskType === TaskType.Question) {
+    // This handles the submission of the non upload tasks, including any comment or if abandoned.
+    // If it is an upload task the task is completed separately on file upload, the submit button will then add a comment or if abandoned to the upload task.
+    if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
       this.completeQuestionTask();
-    } else if (this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
-      this.completeYNQuestionTask();
     } else if (this.selectedTask.task.taskType === TaskType.Simple) {
       this.completeSimpleTask();
+    } else {
+      this.addUploadTaskComment();
     }
-  }
-
-  completeSimpleTask() {
-    this.saving = true;
-    const req: CompleteSimpleTaskRequest = {
-      completed: this.form.value.completeSimple,
-    }
-    this.taskAssignmentService.completeSimpleTask(this.selectedTask.id, req).subscribe(
-      (taskAssignment) => {
-        this.selectedTask = taskAssignment;
-        this.saving = false;
-      }, error => {
-        this.error = error;
-        this.saving = false;
-      }
-    )
   }
 
   completeQuestionTask() {
     this.saving = true;
-    const req: CompleteQuestionTaskRequest = {
+    const request: UpdateQuestionTaskRequest = {
+      taskAssignmentId: this.selectedTask.id,
       answer: this.form.value.completeQuestion,
+      abandoned: this.form.value.abandoned,
+      completed: this.isComplete,
+      candidateNotes: this.form.value.comment
     }
-    this.taskAssignmentService.completeQuestionTask(this.selectedTask.id, req).subscribe(
+    this.taskAssignmentService.updateQuestionTask(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
         this.saving = false;
@@ -174,12 +152,34 @@ export class CandidateTaskComponent implements OnInit {
     )
   }
 
-  completeYNQuestionTask() {
+  completeSimpleTask() {
     this.saving = true;
-    const req: CompleteQuestionTaskRequest = {
-      answer: this.form.value.completeYNQuestion,
+    const request: UpdateTaskAssignmentRequest = {
+      taskAssignmentId: this.selectedTask.id,
+      completed: this.form.value.completeSimple,
+      abandoned: this.form.value.abandoned,
+      candidateNotes: this.form.value.comment
     }
-    this.taskAssignmentService.completeYNQuestionTask(this.selectedTask.id, req).subscribe(
+    this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
+      (taskAssignment) => {
+        this.selectedTask = taskAssignment;
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+  }
+
+  addUploadTaskComment() {
+    this.saving = true;
+    const request: UpdateTaskAssignmentRequest = {
+      taskAssignmentId: this.selectedTask.id,
+      completed: this.isComplete,
+      abandoned: this.form.value.abandoned,
+      candidateNotes: this.form.value.comment
+    }
+    this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
         this.saving = false;

@@ -4,11 +4,9 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {SavedList} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
-import {TaskListRequest, TaskAssignmentService} from "../../../services/task-assignment.service";
-import {AssignTaskToListRequest, TaskAssignmentService} from "../../../services/task-assignment.service";
+import {TaskAssignmentService, TaskListRequest} from "../../../services/task-assignment.service";
 import {Task} from "../../../model/task";
 import {SavedListService} from "../../../services/saved-list.service";
-import {CandidateSource} from "../../../model/base";
 
 @Component({
   selector: 'app-assign-tasks-list',

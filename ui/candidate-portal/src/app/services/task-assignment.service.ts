@@ -24,16 +24,10 @@ export interface UpdateTaskAssignmentRequest {
   taskAssignmentId: number,
   abandoned: boolean
   completed: boolean,
-  dueDate?: Date,
-  completedDate?: Date,
   candidateNotes?: string,
 }
 
-export interface CompleteSimpleTaskRequest {
-  completed: boolean;
-}
-
-export interface CompleteQuestionTaskRequest {
+export interface UpdateQuestionTaskRequest extends UpdateTaskAssignmentRequest {
   answer: string;
 }
 
@@ -46,23 +40,15 @@ export class TaskAssignmentService {
 
   constructor(private http: HttpClient) { }
 
-  completeSimpleTask(id: number, request: CompleteSimpleTaskRequest): Observable<TaskAssignment> {
-    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete`, request);
-  }
-
-  completeQuestionTask(id: number, request: CompleteQuestionTaskRequest): Observable<TaskAssignment> {
-    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-question`, request);
-  }
-
-  completeYNQuestionTask(id: number, request: CompleteQuestionTaskRequest): Observable<TaskAssignment> {
-    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-question`, request);
-  }
-
   completeUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
     return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload`, formData);
   }
 
-  update(id: number, request: UpdateTaskAssignmentRequest) {
+  updateQuestionTask(id: number, request: UpdateQuestionTaskRequest): Observable<TaskAssignment> {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/question`, request);
+  }
+
+  updateTaskAssignment(id: number, request: UpdateTaskAssignmentRequest) {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}`, request);
   }
 
