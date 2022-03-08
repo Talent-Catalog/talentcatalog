@@ -15,8 +15,11 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CandidateAttachment, SearchCandidateAttachmentsRequest} from '../../../model/candidate-attachment';
-import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
+import {CandidateAttachment} from '../../../model/candidate-attachment';
+import {
+  CandidateAttachmentService,
+  SearchCandidateAttachmentsRequest
+} from '../../../services/candidate-attachment.service';
 import {Candidate} from '../../../model/candidate';
 
 @Component({

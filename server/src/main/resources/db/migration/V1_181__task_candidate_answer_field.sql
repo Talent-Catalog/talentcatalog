@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,47 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  font-size: 0.80rem;
-}
-
-.candidate-card {
-  width: 100%;
-  padding: 1em;
-  border: 1px solid #aaa;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.candidate-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1em;
-
-  * {
-    margin: 0;
-  }
-
-  .btn + .btn {
-    margin: 0 0 0 1em;
-  }
-}
-
-::ng-deep .nav-tabs {
-  margin: 0 0 1em 0;
-}
-
-expand-button {
-  position:absolute;
-  top:0;
-  right:0;
-}
-
-.btn-secondary-light {
-  background-color: #dedede;
-  color: black;
-  font-size: 12px;
-  border: 1px solid #dedede;
-}
+alter table task add column candidate_answer_field text;

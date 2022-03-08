@@ -99,7 +99,7 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {ViewCandidateComponent} from './components/profile/view/view-candidate.component';
 import {CandidateTasksComponent} from './components/profile/view/tab/tasks/candidate-tasks.component';
-import {CandidateTaskComponent} from './components/profile/view/tab/tasks/task/candidate-task/candidate-task.component';
+import {CandidateTaskComponent} from './components/profile/view/tab/tasks/task/candidate-task.component';
 import {DatePipe} from "@angular/common";
 import {ExtendDatePipe} from "./util/date-adapter/extend-date-pipe";
 

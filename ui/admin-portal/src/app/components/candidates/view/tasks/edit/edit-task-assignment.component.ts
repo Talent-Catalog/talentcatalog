@@ -60,7 +60,7 @@ export class EditTaskAssignmentComponent implements OnInit {
     const request: UpdateTaskAssignmentRequest = {
       taskAssignmentId: this.taskAssignment.id,
       dueDate: this.form.value.dueDate,
-      complete: this.form.value.complete,
+      completed: this.form.value.complete,
       abandoned: this.isAbandoned
     }
 

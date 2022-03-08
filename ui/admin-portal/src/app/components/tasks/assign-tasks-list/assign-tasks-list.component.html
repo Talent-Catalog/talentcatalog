@@ -15,9 +15,9 @@
   -->
 
 <div class="modal-header">
-  <h4 class="modal-title">Assign Task to List</h4>
+  <h4 class="modal-title">Associate Task with List</h4>
   <button type="button" class="close" aria-label="Close"
-          (click)="cancel()">
+          (click)="close()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
@@ -36,7 +36,8 @@
         <div class="form-group">
           <label for="task">Task to assign</label>
           <ng-select id="task" appendTo="body" [formControlName]="'task'" [items]="allTasks"
-                     [clearable]="false" placeholder="Select or type to search..." bindLabel="name"></ng-select>
+                     [groupBy]="'taskType'" [searchFn]="searchTypeOrName" [clearable]="false"
+                     placeholder="Select or type to search..." bindLabel="name"></ng-select>
         </div>
 
         <!-- DAYS TO COMPLETE -->
@@ -47,38 +48,26 @@
             </div>
             <small class="text-muted">{{selectedTask?.daysToComplete}} days to complete.</small>
           </div>
-
-          <!-- CUSTOM DUE DATE -->
-          <div class="form-group">
-            <div class="form-inline">
-              <label for="customDate">Do you want to set a custom due date?</label>
-              <input class="form-control" id="customDate" [formControlName]="'customDate'" type="checkbox">
-            </div>
-            <div *ngIf="this.assignForm.value.customDate">
-              <app-date-picker id="dueDate" [control]="assignForm.controls.dueDate" [allowPast]="false"></app-date-picker>
-            </div>
-          </div>
         </div>
 
       </form>
   </div>
 </div>
 <div class="modal-header">
-  <h4 class="modal-title">Active Task Assignments</h4>
+  <h4 class="modal-title">Current Task Associations</h4>
 </div>
 <div class="modal-body">
-  <ng-select id="searchListTasks" class="mb-3" appendTo="body" [items]="tasks"
-               [clearable]="false" placeholder="Search tasks assigned to this list" bindValue="id" bindLabel="name"></ng-select>
-  <div *ngFor="let t of tasks;">
+  <input type="text" class="form-control mb-3" placeholder="Search..." aria-label="Search" (keyup)="search($event.target)"
+         id="keyword">
+<!--  <ng-select id="searchListTasks" class="mb-3" appendTo="body" [items]="taskAssociations" [(ngModel)]="selectedTaskAssociation"-->
+<!--             [clearable]="false" placeholder="Search tasks associated to this list..." bindValue="id" bindLabel="name"></ng-select>-->
+  <div *ngFor="let t of filteredTaskAssociations;">
     <div class="card mt-2 grey-bg">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-baseline">
-          <h6>{{t.name}}</h6>
-          <button type="button" class="float-right close" aria-label="Close"
-                  (click)="removeTask(t)">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
+      <div class="d-flex justify-content-between align-items-center mx-2 my-1">
+        <p class="small font-weight-light mb-0">{{t.name}}</p>
+        <button type="button" class="float-right close" aria-label="Close" (click)="removeTask(t)">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
     </div>
   </div>
@@ -87,5 +76,5 @@
   <button type="button" class="btn btn-primary" [disabled]="assignForm.invalid || loading"
           (click)="onSave()">Save</button>
   <button type="button" class="btn btn-secondary"
-          (click)="cancel()">Cancel</button>
+          (click)="close()">Close</button>
 </div>

@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -38,7 +38,7 @@ import java.util.Set;
  *         Selection lists. These are "hidden" lists associated with a saved
  *         search - indicated by the savedSearch attribute. They are used
  *         to record a user's items selected from the results of a saved search.
- *         So each selection list is associated with a saved search and a 
+ *         So each selection list is associated with a saved search and a
  *         particular user. The sfJoblink of a selection list is copied at
  *         creation from its associated saved search.
  *         The name of a selection list is automatically created from the
@@ -52,31 +52,42 @@ import java.util.Set;
 public class SavedList extends AbstractCandidateSource {
     private static final Logger log = LoggerFactory.getLogger(SavedList.class);
 
-    //TODO JC For now this is just a transient attribute until we have all the database/JPA stuff
-    // for tasks figured out.
-    @Transient
-    private List<TaskImpl> tasks;
+    /**
+     * Tasks associated with this list.
+     * <p/>
+     * Candidates assigned to this list will be automatically assigned these tasks.
+     * <p/>
+     * Empty set if no tasks associated.
+     */
+    @NonNull
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+        name = "task_saved_list",
+        joinColumns = @JoinColumn(name = "saved_list_id"),
+        inverseJoinColumns = @JoinColumn(name = "task_id")
+    )
+    private Set<TaskImpl> tasks = new HashSet<>();
 
     /**
-     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
      */
     @Nullable
     private String folderlink;
 
     /**
-     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
      */
     @Nullable
     private String foldercvlink;
 
     /**
-     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     * Url link to corresponding candidate folder on Google Drive, if one exists.
      */
     @Nullable
     private String folderjdlink;
 
     /**
-     * Url link to published list doc, if one exists. 
+     * Url link to published list doc, if one exists.
      */
     @Nullable
     private String publishedDocLink;
@@ -93,11 +104,11 @@ public class SavedList extends AbstractCandidateSource {
      * There should only be one list registered to a particular job, as defined by its sfJoblink.
      */
     private Boolean registeredJob = false;
-    
+
     /**
      * Non null if this is the selection list for the given saved search.
      * <p/>
-     * For "normal" saved lists (ie not selection lists) this will always be 
+     * For "normal" saved lists (ie not selection lists) this will always be
      * null.
      * <p/>
      * Note that a saved search may be shared between multiple users and each
@@ -111,7 +122,7 @@ public class SavedList extends AbstractCandidateSource {
     private SavedSearch savedSearch;
 
     /**
-     * If not null this is a saved search that contributed to the candidates 
+     * If not null this is a saved search that contributed to the candidates
      * in the list. Some of those candidates were selected from that search.
      */
     @Nullable
@@ -122,13 +133,13 @@ public class SavedList extends AbstractCandidateSource {
     /**
      * This is the set of all CandidateSavedList entities associated with this
      * SavedList. There is one of these for each candidate in the list.
-     * @see #getCandidates() 
+     * @see #getCandidates()
      * <p/>
-     * We would prefer CascadeType.ALL with 'orphanRemoval' so that 
+     * We would prefer CascadeType.ALL with 'orphanRemoval' so that
      * removing from the candidateSavedLists collection would automatically
-     * cascade down to delete the corresponding entry in the 
+     * cascade down to delete the corresponding entry in the
      * candidate_saved_list table.
-     * However we get Hibernate errors with that set up which it seems can only 
+     * However we get Hibernate errors with that set up which it seems can only
      * be fixed by setting CascadeType.MERGE.
      * <p/>
      * See
@@ -138,17 +149,17 @@ public class SavedList extends AbstractCandidateSource {
      * contents of a collection is here:
      * https://stackoverflow.com/a/2011546/929968
      * <p/>
-     * 
+     *
      * This means that we have to manually manage all deletions. That has been
      * moved into {@link CandidateSavedListService} which is used to manage all
-     * those deletions, also making sure that the corresponding 
+     * those deletions, also making sure that the corresponding
      * candidateSavedLists collections are kept up to date.
      */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedList", cascade = CascadeType.MERGE)
     private Set<CandidateSavedList> candidateSavedLists = new HashSet<>();
-    
+
     //Note use of Set rather than List as strongly recommended for Many to Many
-    //relationships here: 
+    //relationships here:
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedLists", cascade = CascadeType.MERGE)
     private Set<User> users = new HashSet<>();
@@ -247,7 +258,7 @@ public class SavedList extends AbstractCandidateSource {
 
     /**
      * Get all candidates in this list.
-     * @return Set of candidates in this list (a candidate cannot appear more 
+     * @return Set of candidates in this list (a candidate cannot appear more
      * than once in a given list).
      */
     @Transient
@@ -257,71 +268,6 @@ public class SavedList extends AbstractCandidateSource {
             candidates.add(candidateSavedList.getCandidate());
         }
         return candidates;
-    }
-
-    /**
-     * Add the given candidates to this SavedList - merging them in with any
-     * existing candidates in the list (no duplicates - if a candidate is
-     * already present it will still only appear once).
-     * <p/>
-     * If a source list is supplied, the original candidate context will be
-     * copied across (eg contextNote).
-     * @param candidates Candidates to add to this SavedList.
-     * @param sourceList If not null, refers to the list where candidates came
-     *                   from, so that context can be copied across.
-     */
-    public void addCandidates(
-            Set<Candidate> candidates, @Nullable SavedList sourceList) {
-        for (Candidate candidate : candidates) {
-            addCandidate(candidate, sourceList);
-        }
-    }
-
-    public void addCandidates(Set<Candidate> candidates) {
-        addCandidates(candidates, null);
-    }
-
-    /**
-     * Add the given candidate to this list
-     * @param candidate Candidate to add
-     * @param sourceList If not null, refers to the list where candidate came
-     *                   from, so that context can be copied across.
-     */
-    public void addCandidate(
-            Candidate candidate, @Nullable SavedList sourceList) {
-        String contextNote = null;
-        if (sourceList != null) {
-            //Need to copy the context across from the source list.
-            //Contract csl we are looking for
-            CandidateSavedList targetCsl = 
-                    new CandidateSavedList(candidate, sourceList);
-            Set<CandidateSavedList> sourceCsls = 
-                    candidate.getCandidateSavedLists();
-            for (CandidateSavedList sourceCsl : sourceCsls) {
-                if (sourceCsl.equals(targetCsl)) {
-                    contextNote = sourceCsl.getContextNote();
-                    break;
-                }
-            }
-        }
-        
-        //Create new candidate/list link
-        final CandidateSavedList csl = 
-                new CandidateSavedList(candidate, this);
-        //Copy across context
-        if (contextNote != null) {
-            csl.setContextNote(contextNote);
-        }
-        
-        //Add candidate to the collection of candidates in this list
-        getCandidateSavedLists().add(csl);
-        //Also update other side of many to many relationship, adding this 
-        //list to the candidate's collection of lists that they belong to.
-        candidate.getCandidateSavedLists().add(csl);
-    }
-    
-    public void addCandidate(Candidate candidate) {
-        addCandidate(candidate, null);
     }
 
     @Override
@@ -334,11 +280,11 @@ public class SavedList extends AbstractCandidateSource {
         return user.getSharedLists();
     }
 
-    public List<TaskImpl> getTasks() {
+    public Set<TaskImpl> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<TaskImpl> tasks) {
+    public void setTasks(Set<TaskImpl> tasks) {
         this.tasks = tasks;
     }
 }

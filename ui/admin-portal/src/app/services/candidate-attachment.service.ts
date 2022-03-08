@@ -32,6 +32,11 @@ export interface UpdateCandidateAttachmentRequest {
   cv?: boolean;
 }
 
+export interface SearchCandidateAttachmentsRequest {
+  candidateId: number;
+  cvOnly: boolean;
+}
+
 export interface ListByUploadTypeRequest {
   candidateId: number;
   uploadType: string;
@@ -45,7 +50,7 @@ export class CandidateAttachmentService {
 
   constructor(private http: HttpClient) {}
 
-  search(request): Observable<CandidateAttachment[]> {
+  search(request: SearchCandidateAttachmentsRequest): Observable<CandidateAttachment[]> {
     return this.http.post<CandidateAttachment[]>(`${this.apiUrl}/search`, request);
   }
 

@@ -17,17 +17,11 @@
 package org.tbbtalent.server.model.db;
 
 
-import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -37,15 +31,6 @@ import org.tbbtalent.server.model.db.task.TaskType;
 
 /**
  * Base implementation of all tasks.
- * <p/>
- * Note our Angular code only sees these base attributes tasks. Angular doesn't see the attributes
- * of subclasses. That is because our simple DTO processing and JSON loses that type specific
- * information. It doesn't matter because these attributes are all our Angular code needs in order
- * to work.
- * <p/>
- * However the Angular code does need to distinguish between different types of tasks, because they
- * will be processed differently. So for example, the Angular does need to know whether a task
- * is an upload task. That task type information is encoded in {@link #getTaskType()}.
  */
 @Entity(name="Task")
 @Table(name = "task")
@@ -62,14 +47,6 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
     private String helpLink;
     private String name;
     private boolean optional;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinTable(
-        name = "task_list",
-        joinColumns = @JoinColumn(name="parent_task_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name="task_id", referencedColumnName = "id", unique = true)
-    )
-    private Set<TaskImpl> subtasks;
 
     /**
      * Type of task - this encodes the class type - so {@link TaskType#Simple} for a simple task,

@@ -16,27 +16,27 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.io.Serializable;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 
-//todo Note for Caroline: This doesn't implement the UploadTask interface, and it duplicates
-// fields from TaskImpl. It should subclass it normally (reflecting how the QuestionTask interface
-//extends the Task interface). Let's go over this together.
-//
-//One issue we need to look into is how the way we implement inheritance using JPA affects
-//our class design.
-
+/**
+ * Primary key for {@link CandidateProperty}. Needed because we have a composite private key.
+ * <p/>
+ * See https://www.baeldung.com/jpa-composite-primary-keys
+ *
+ * @author John Cameron
+ */
 @Getter
 @Setter
-// todo this should be extending from the task interface?
-public class QuestionTask {
+@EqualsAndHashCode
+public class CandidatePropertyKey implements Serializable {
+
+    @NonNull
+    private Candidate candidate;
+
+    @NonNull
     private String name;
-    private String description;
-    private String timeframe;
-    private boolean adminOnly;
-
-    private String question;
-
-    // todo this should be an enum or another class? See UML
-    private String answer;
 }

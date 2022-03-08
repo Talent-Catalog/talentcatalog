@@ -23,10 +23,12 @@ import {TaskAssignment} from "../model/candidate";
 export interface UpdateTaskAssignmentRequest {
   taskAssignmentId: number,
   abandoned: boolean
-  complete: boolean,
-  dueDate?: Date,
-  completedDate?: Date,
+  completed: boolean,
   candidateNotes?: string,
+}
+
+export interface UpdateQuestionTaskRequest extends UpdateTaskAssignmentRequest {
+  answer: string;
 }
 
 @Injectable({
@@ -38,15 +40,15 @@ export class TaskAssignmentService {
 
   constructor(private http: HttpClient) { }
 
-  completeSimpleTask(id: number): Observable<TaskAssignment> {
-    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete`, null);
-  }
-
   completeUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
     return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload`, formData);
   }
 
-  update(id: number, request: UpdateTaskAssignmentRequest) {
+  updateQuestionTask(id: number, request: UpdateQuestionTaskRequest): Observable<TaskAssignment> {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/question`, request);
+  }
+
+  updateTaskAssignment(id: number, request: UpdateTaskAssignmentRequest) {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}`, request);
   }
 

@@ -14,20 +14,31 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges, ViewChild
+} from '@angular/core';
 import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
 import {CandidateSource} from '../../../model/base';
 import {CandidateAttachment} from "../../../model/candidate-attachment";
 import {isSavedSearch} from "../../../model/saved-search";
 import {isSavedList} from "../../../model/saved-list";
+import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-candidate-search-card',
   templateUrl: './candidate-search-card.component.html',
   styleUrls: ['./candidate-search-card.component.scss']
 })
-export class CandidateSearchCardComponent implements OnInit, OnChanges {
+export class CandidateSearchCardComponent implements OnInit, OnChanges, AfterViewChecked {
 
   @Input() candidate: Candidate;
   @Input() loggedInUser: User;
@@ -44,7 +55,16 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges {
   showAttachments: boolean = false;
   showNotes: boolean = true;
 
-  constructor() { }
+  activeTabId: string;
+  private lastTabKey: string = 'SelectedCandidateLastTab';
+
+  //Get reference to the nav element
+  @ViewChild(NgbNav)
+  nav: NgbNav;
+
+  constructor(
+    private localStorageService: LocalStorageService
+  ) { }
 
   ngOnInit() {
   }
@@ -82,6 +102,25 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges {
       }
     }
     return display;
+  }
+
+  ngAfterViewChecked(): void {
+    //This is called in order for the navigation tabs, this.nav, to be set.
+    this.selectDefaultTab()
+  }
+
+  onTabChanged(event: NgbNavChangeEvent) {
+    this.setActiveTabId(event.nextId);
+  }
+
+  private setActiveTabId(id: string) {
+    this.nav?.select(id);
+    this.localStorageService.set(this.lastTabKey, id);
+  }
+
+  private selectDefaultTab() {
+    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
+    this.setActiveTabId(defaultActiveTabID == null ? "general" : defaultActiveTabID);
   }
 
 }

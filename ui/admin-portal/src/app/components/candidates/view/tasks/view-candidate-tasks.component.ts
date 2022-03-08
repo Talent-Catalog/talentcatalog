@@ -9,6 +9,8 @@ import {TaskAssignmentService} from "../../../../services/task-assignment.servic
 import {TaskAssignment, taskAssignmentSort} from "../../../../model/task-assignment";
 import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../services/candidate-attachment.service";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
+import {TaskType} from "../../../../model/task";
+import {ViewResponseComponent} from "./view-response/view-response.component";
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -108,8 +110,9 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       backdrop: 'static'
     });
 
-    deleteTaskAssignmentModal.componentInstance.message = "Are you sure you want to remove the candidate "
-      + this.candidate.user.firstName + " " + this.candidate.user.lastName + " from the task " + ta.task.name + "?"
+    deleteTaskAssignmentModal.componentInstance.message = "Are you sure you want to delete the task '"
+      + ta.task.name + "' from the tasks assigned to "
+      + this.candidate.user.firstName + " " + this.candidate.user.lastName + "?";
 
     deleteTaskAssignmentModal.result
       .then((result) => {
@@ -132,19 +135,23 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   viewResponse(ta: TaskAssignment) {
     // todo in future it might be the answer to a question, display this answer in a modal?
-    const request: ListByUploadTypeRequest = {
-      candidateId: this.candidate.id,
-      uploadType: ta.task.uploadType
+    if (ta.task.taskType === TaskType.Upload) {
+      const request: ListByUploadTypeRequest = {
+        candidateId: this.candidate.id,
+        uploadType: ta.task.uploadType
+      }
+      this.candidateAttachmentService.listByType(request).subscribe(
+        results => {
+          if (results.length > 0) {
+            this.openFiles(results)
+          }
+        },
+        error => {
+          this.error = error;
+        });
+    } else if (ta.task?.taskType === TaskType.Question) {
+      this.viewQuestionResponse(ta);
     }
-    this.candidateAttachmentService.listByType(request).subscribe(
-      results => {
-        if (results.length > 0) {
-          this.openFiles(results)
-        }
-      },
-      error => {
-        this.error = error;
-      });
   }
 
   openFiles(ats: CandidateAttachment[]) {
@@ -154,5 +161,20 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       window.open(ats[i].url);
     }
     this.loadingResponse = false;
+  }
+
+  viewQuestionResponse(ta: TaskAssignment) {
+    const viewResponseModal = this.modalService.open(ViewResponseComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    viewResponseModal.componentInstance.taskAssignment = ta;
+
+    viewResponseModal.result
+      .then(() => {
+      })
+      .catch(() => { /* Isn't possible */
+      });
   }
 }

@@ -426,6 +426,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
         //Run the saved list or saved search as stored on the server.
 
+        //Saved the current candidate selection, then set it to null while we are searching.
+        //Then we restore it at the end of the search. This means that anything displaying
+        //info on the current selection will update its data.
+        const saveCurrentCandidate = this.currentCandidate;
+        this.setCurrentCandidate(null);
+
         this.searching = true;
 
         //Create the appropriate request
@@ -449,6 +455,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           results => {
             this.results = results;
             this.cacheResults();
+
+            //Restore the selection prior to the search
+            this.setCurrentCandidate(saveCurrentCandidate);
 
             this.searching = false;
           },
@@ -1550,8 +1559,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     modal.result
       .then(
-        () => this.loadSelectedFields(),
-        error => this.error = error
+        () => this.doSearch(true)
       )
       .catch();
   }

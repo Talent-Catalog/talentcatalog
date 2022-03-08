@@ -16,16 +16,7 @@
 
 package org.tbbtalent.server.api.portal;
 
-import java.io.IOException;
-import java.util.Map;
-import javax.validation.Valid;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -37,6 +28,10 @@ import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Candidate portal API for TaskAssignment operations.
@@ -121,7 +116,7 @@ public class TaskAssignmentPortalApi {
     }
 
     @PutMapping("{id}")
-    public Map<String, Object> update(@PathVariable("id") long id, @Valid @RequestBody UpdateTaskAssignmentRequest request)
+    public Map<String, Object> updateTaskAssignment(@PathVariable("id") long id, @Valid @RequestBody UpdateTaskAssignmentRequest request)
         throws IOException, NoSuchObjectException, UnauthorisedActionException {
 
         TaskAssignment ta = taskAssignmentService.get(id);

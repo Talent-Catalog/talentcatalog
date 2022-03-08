@@ -107,6 +107,7 @@ public class CandidateBuilderSelector {
                 .add("listShareableCv", candidateAttachmentDto())
                 .add("listShareableDoc", candidateAttachmentDto())
                 .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
+                .add("candidateProperties", candidatePropertyDto())
                 .add("shareableNotes")
                 .add("stage")
                 .add("sfOpportunityLink")
@@ -207,6 +208,13 @@ public class CandidateBuilderSelector {
     private DtoBuilder savedSearchDto() {
         return new DtoBuilder()
                 .add("id")
+                ;
+    }
+
+    private DtoBuilder candidatePropertyDto() {
+        return new DtoBuilder()
+                .add("name")
+                .add("value")
                 ;
     }
 

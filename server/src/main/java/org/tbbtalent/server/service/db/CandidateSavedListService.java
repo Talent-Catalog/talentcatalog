@@ -142,23 +142,6 @@ public interface CandidateSavedListService {
     boolean removeFromCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
 
     /**
-     * Remove the given candidate from the given savedList
-     * @param candidate Candidate to remove
-     * @param savedList SavedList to remove from
-     */
-    void removeFromSavedList(Candidate candidate, SavedList savedList);
-
-    /**
-     * Remove the candidates indicated in the given request from the SavedList
-     * with the given id.
-     * @param savedListId ID of saved list to be updated
-     * @param request Request containing the new list contents
-     * @throws NoSuchObjectException if there is no saved list with this id
-     */
-    void removeFromSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request)
-        throws NoSuchObjectException;
-
-    /**
      * Updates a candidate context note associated with the given saved list.
      * @param savedListId Id of saved list
      * @param request Request containing the candidate id and the context note

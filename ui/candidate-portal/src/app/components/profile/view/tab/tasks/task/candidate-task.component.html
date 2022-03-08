@@ -1,0 +1,148 @@
+<app-error [error]="error"></app-error>
+<div class="d-sm-flex justify-content-between">
+  <div>
+    <h3>{{selectedTask?.task?.name}} <span class="font-weight-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">(Required)</span></h3>
+    <div class="mb-2">{{selectedTask?.task?.description}}</div>
+
+    <ng-container *ngIf="!selectedTask?.completedDate && !selectedTask?.abandonedDate">
+      <h5 [ngClass]="{'text-danger': isOverdue(selectedTask)}">Due Date: {{selectedTask?.dueDate | date}}
+        <span *ngIf="isOverdue(selectedTask)" class="text-danger"> - Overdue</span>
+      </h5>
+    </ng-container>
+    <ng-container *ngIf="selectedTask?.completedDate">
+      <h5 class="text-success">Completed Date: {{selectedTask?.completedDate | date}}</h5>
+    </ng-container>
+    <ng-container *ngIf="selectedTask?.abandonedDate && !selectedTask?.completedDate">
+      <h5 class="text-alert">Abandoned Date: {{selectedTask?.abandonedDate | date}}</h5>
+    </ng-container>
+
+  </div>
+
+  <div class="mt-4 text-center flex-shrink-0">
+    <div class="mb-2" *ngIf="selectedTask?.task?.helpLink">
+      <a class="btn btn-sm btn-primary" target="_blank" [href]="selectedTask?.task?.helpLink">View Task Help <fa-icon class="ml-1" icon="question-circle"></fa-icon></a>
+    </div>
+    <button class="btn btn-sm btn-secondary" (click)="goBack()">
+      <fa-icon class="mr-1" icon="arrow-left"></fa-icon> Return to Tasks
+    </button>
+  </div>
+
+</div>
+
+<!-- ACTION -->
+<ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
+  <section>
+    <div class="section-heading">
+      <h5>Upload File</h5>
+    </div>
+    <div class="card">
+      <div>
+        <app-file-upload [uploading]="uploading" (uploadStarted)="completeUploadTask($event)"></app-file-upload>
+        <div *ngIf="uploading">
+          Uploading please wait <fa-icon  [spin]="true" icon="spinner"></fa-icon>
+        </div>
+        <div *ngFor="let file of filesUploaded; let i = index;">
+          <p>Successfully uploaded as {{getFileName(file.name)}}!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</ng-container>
+
+<form [formGroup]="form" (submit)="submitTask()">
+  <ng-container *ngIf="selectedTask.task.taskType === 'Simple'">
+    <section>
+      <div class="section-heading">
+        <h5>Complete Task</h5>
+      </div>
+      <div class="card">
+        <div class="form-group mb-0">
+          <div class="form-check-inline">
+            <label class="form-check-label mb-0 mr-2" for="completeSimple">
+              Have you completed this task?
+            </label>
+            <input class="form-check-input" id="completeSimple" [formControlName]="'completeSimple'" type="checkbox">
+          </div>
+          <div>
+            <small class="text-muted">If you can't complete this task, please check the box below saying you can't complete this task and provide a reason.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <ng-container *ngIf="selectedTask.task.taskType === 'Question'">
+    <section>
+      <div class="section-heading">
+        <h5>Answer Question</h5>
+      </div>
+      <div class="card">
+        <div class="form-group">
+          <label class="font-weight-bold" for="completeQuestion">
+            Please provide as much detail as required:
+          </label>
+          <textarea id="completeQuestion" class="md-textarea-auto form-control" rows="5"
+                    [formControlName]="'completeQuestion'"></textarea>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <ng-container *ngIf="selectedTask.task.taskType === 'YesNoQuestion'">
+    <section>
+      <div class="section-heading">
+        <h5>Answer Question</h5>
+      </div>
+      <div class="card">
+        <div class="form-group">
+          <label for="completeYNQuestion">
+            Please select your answer to the question below:
+          </label>
+          <ng-select  id="completeYNQuestion" [formControlName]="'completeYNQuestion'"
+                      [clearable]="false" placeholder="Select...">
+            <ng-option [value]="'Yes'">Yes</ng-option>
+            <ng-option [value]="'No'">No</ng-option>
+          </ng-select>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <!-- COMMENT -->
+  <section>
+    <div class="section-heading">
+      <h5>Add/Edit Comment</h5>
+    </div>
+    <div class="card">
+        <div *ngIf="!isComplete" class="form-group">
+          <div class="form-check-inline">
+            <label class="form-check-label mb-0 mr-2" for="abandoned">Are you unable to complete this task? </label>
+            <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
+          </div>
+          <div>
+            <small class="text-muted">If checked a comment must be added to provide reason why this task can't be completed.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="font-weight-bold" for="comment">
+            Comment:
+          </label>
+          <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+                    [formControlName]="'comment'"></textarea>
+        </div>
+    </div>
+  </section>
+
+  <button class="btn btn-primary mt-2" type="submit"
+          [disabled]="form.invalid">
+    Submit
+    <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+  </button>
+</form>
+
+
+
+
+
+
