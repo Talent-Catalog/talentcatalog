@@ -33,6 +33,9 @@ import org.springframework.lang.Nullable;
  * <p/>
  * The property name is unique for the candidate. ie a candidate can't have two properties with
  * the same name.
+ * <p/>
+ * Primary key is {@link CandidatePropertyKey} - needed because primary key is composite, made
+ * up from candidate and property name.
  */
 @Entity
 @Table(name = "candidate_property")
@@ -64,10 +67,13 @@ public class CandidateProperty {
     private String value;
 
     /**
-     * Task associated with this property - if any. May be null.
+     * Task assignment associated with this property - if any. May be null.
+     * <p/>
+     * If not null, the task assignment will be related to a question task assigned to the candidate
+     * and the candidate's answer to that question is stored in this property.
      */
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_task_id")
-    private TaskImpl relatedTask;
+    @JoinColumn(name = "related_task_assignment_id")
+    private TaskAssignmentImpl relatedTaskAssignment;
 }
