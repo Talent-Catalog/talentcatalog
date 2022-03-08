@@ -22,6 +22,7 @@ import {CandidateAttachment} from "../../../../../../model/candidate-attachment"
 import {
   TaskAssignmentService,
   UpdateQuestionTaskRequest,
+  UpdateSimpleTaskRequest,
   UpdateTaskAssignmentRequest
 } from "../../../../../../services/task-assignment.service";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
@@ -87,7 +88,7 @@ export class CandidateTaskComponent implements OnInit {
       const formData: FormData = new FormData();
       formData.append('file', file);
 
-      this.taskAssignmentService.completeUploadTask(this.selectedTask.id, formData).subscribe(
+      this.taskAssignmentService.doUploadTask(this.selectedTask.id, formData).subscribe(
         (taskAssignment: TaskAssignment) => {
           this.selectedTask = taskAssignment;
           // This allows us to display the success message in the html
@@ -129,21 +130,19 @@ export class CandidateTaskComponent implements OnInit {
     // This handles the submission of the non upload tasks, including any comment or if abandoned.
     // If it is an upload task the task is completed separately on file upload, the submit button will then add a comment or if abandoned to the upload task.
     if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
-      this.completeQuestionTask();
+      this.updateQuestionTask();
     } else if (this.selectedTask.task.taskType === TaskType.Simple) {
-      this.completeSimpleTask();
+      this.updateSimpleTask();
     } else {
-      this.addUploadTaskComment();
+      this.updateTaskAssignment();
     }
   }
 
-  completeQuestionTask() {
+  updateQuestionTask() {
     this.saving = true;
     const request: UpdateQuestionTaskRequest = {
-      taskAssignmentId: this.selectedTask.id,
       answer: this.form.value.completeQuestion,
       abandoned: this.form.value.abandoned,
-      completed: this.isComplete,
       candidateNotes: this.form.value.comment
     }
     this.taskAssignmentService.updateQuestionTask(this.selectedTask.id, request).subscribe(
@@ -157,15 +156,14 @@ export class CandidateTaskComponent implements OnInit {
     )
   }
 
-  completeSimpleTask() {
+  updateSimpleTask() {
     this.saving = true;
-    const request: UpdateTaskAssignmentRequest = {
-      taskAssignmentId: this.selectedTask.id,
+    const request: UpdateSimpleTaskRequest = {
       completed: this.form.value.completeSimple,
       abandoned: this.form.value.abandoned,
       candidateNotes: this.form.value.comment
     }
-    this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
+    this.taskAssignmentService.updateSimpleTask(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
         this.saving = false;
@@ -176,11 +174,11 @@ export class CandidateTaskComponent implements OnInit {
     )
   }
 
-  addUploadTaskComment() {
+  // This is an update of a task assignment of only the comment/abandoned field.
+  // It is used for upload tasks, as the upload task is completed separately upon file upload.
+  updateTaskAssignment() {
     this.saving = true;
     const request: UpdateTaskAssignmentRequest = {
-      taskAssignmentId: this.selectedTask.id,
-      completed: this.isComplete,
       abandoned: this.form.value.abandoned,
       candidateNotes: this.form.value.comment
     }
