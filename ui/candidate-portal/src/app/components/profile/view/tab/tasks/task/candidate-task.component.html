@@ -52,6 +52,7 @@
 <form [formGroup]="form" (submit)="submitTask()">
   <ng-container *ngIf="selectedTask.task.taskType === 'Simple'">
     <section>
+      <iframe [src]="url" style="width: 100%;height: 500px"></iframe>
       <div class="section-heading">
         <h5>Complete Task</h5>
       </div>

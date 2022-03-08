@@ -24,6 +24,7 @@ import {
   UpdateQuestionTaskRequest,
   UpdateTaskAssignmentRequest
 } from "../../../../../../services/task-assignment.service";
+import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-candidate-task',
@@ -40,9 +41,11 @@ export class CandidateTaskComponent implements OnInit {
   uploading: boolean;
   saving: boolean;
   error;
+  url: SafeResourceUrl;
 
   constructor(private fb: FormBuilder,
-              private taskAssignmentService: TaskAssignmentService) { }
+              private taskAssignmentService: TaskAssignmentService,
+              public sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -62,6 +65,8 @@ export class CandidateTaskComponent implements OnInit {
       }
       this.form.controls['comment'].updateValueAndValidity()
     });
+
+    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.helpLink);
   }
 
   get isAbandoned() {
