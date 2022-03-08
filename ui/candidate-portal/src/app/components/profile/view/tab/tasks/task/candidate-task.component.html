@@ -1,3 +1,4 @@
+<app-error [error]="error"></app-error>
 <div class="d-sm-flex justify-content-between">
   <div>
     <h3>{{selectedTask?.task?.name}} <span class="font-weight-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">(Required)</span></h3>
