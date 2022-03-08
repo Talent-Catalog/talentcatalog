@@ -26,6 +26,9 @@ import org.springframework.lang.NonNull;
  * Primary key for {@link CandidateProperty}. Needed because we have a composite private key.
  * <p/>
  * See https://www.baeldung.com/jpa-composite-primary-keys
+ * <p/>
+ * Note that hashcode and equals of Candidate is based on its id - like all entities that extend
+ * {@link AbstractDomainObject}.
  *
  * @author John Cameron
  */
