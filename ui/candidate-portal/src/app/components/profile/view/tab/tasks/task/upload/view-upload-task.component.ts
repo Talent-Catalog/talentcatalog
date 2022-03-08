@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {forkJoin, Observable} from "rxjs";
 import {Candidate, TaskAssignment} from "../../../../../../../model/candidate";
 import {CandidateAttachment} from "../../../../../../../model/candidate-attachment";
@@ -14,6 +14,7 @@ export class ViewUploadTaskComponent implements OnInit {
   @Input() form: FormGroup;
   @Input() selectedTask: TaskAssignment;
   @Input() candidate: Candidate;
+  @Output() successfulUpload = new EventEmitter<TaskAssignment>();
   filesUploaded: File[];
   loading: boolean;
   uploading: boolean;
@@ -37,7 +38,7 @@ export class ViewUploadTaskComponent implements OnInit {
 
       this.taskAssignmentService.doUploadTask(this.selectedTask.id, formData).subscribe(
         (taskAssignment: TaskAssignment) => {
-          this.selectedTask = taskAssignment;
+          this.successfulUpload.emit(taskAssignment);
           // This allows us to display the success message in the html
           this.filesUploaded = $event.files;
           this.uploading = false;

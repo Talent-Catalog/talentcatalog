@@ -33,7 +33,8 @@
 <ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
   <app-view-upload-task
     [form]="form"
-    [selectedTask]="selectedTask">
+    [selectedTask]="selectedTask"
+    (successfulUpload)="completedUploadTask($event)">
   </app-view-upload-task>
 </ng-container>
 

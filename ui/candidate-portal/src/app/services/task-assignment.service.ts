@@ -43,7 +43,7 @@ export class TaskAssignmentService {
   constructor(private http: HttpClient) { }
 
   doUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
-    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/upload`, formData);
+    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload`, formData);
   }
 
   updateQuestionTask(id: number, request: UpdateQuestionTaskRequest): Observable<TaskAssignment> {

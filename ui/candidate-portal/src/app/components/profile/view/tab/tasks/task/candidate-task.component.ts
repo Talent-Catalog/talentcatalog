@@ -82,6 +82,10 @@ export class CandidateTaskComponent implements OnInit {
     return (new Date(ta.dueDate) < new Date()) && !ta.task.optional;
   }
 
+  completedUploadTask($event: TaskAssignment) {
+    this.selectedTask = $event;
+  }
+
   submitTask() {
     // This handles the submission of the non upload tasks, including any comment or if abandoned.
     // If it is an upload task the task is completed separately on file upload, the submit button will then add a comment or if abandoned to the upload task.
