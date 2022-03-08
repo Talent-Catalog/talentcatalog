@@ -21,14 +21,16 @@ import {Observable} from "rxjs";
 import {TaskAssignment} from "../model/candidate";
 
 export interface UpdateTaskAssignmentRequest {
-  taskAssignmentId: number,
   abandoned: boolean
-  completed: boolean,
   candidateNotes?: string,
 }
 
 export interface UpdateQuestionTaskRequest extends UpdateTaskAssignmentRequest {
   answer: string;
+}
+
+export interface UpdateSimpleTaskRequest extends UpdateTaskAssignmentRequest {
+  completed: boolean;
 }
 
 @Injectable({
@@ -40,12 +42,16 @@ export class TaskAssignmentService {
 
   constructor(private http: HttpClient) { }
 
-  completeUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
-    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload`, formData);
+  doUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
+    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/upload`, formData);
   }
 
   updateQuestionTask(id: number, request: UpdateQuestionTaskRequest): Observable<TaskAssignment> {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/question`, request);
+  }
+
+  updateSimpleTask(id: number, request: UpdateSimpleTaskRequest): Observable<TaskAssignment> {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/simple`, request);
   }
 
   updateTaskAssignment(id: number, request: UpdateTaskAssignmentRequest) {
