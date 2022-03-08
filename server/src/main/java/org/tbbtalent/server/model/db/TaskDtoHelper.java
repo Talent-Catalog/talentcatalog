@@ -53,6 +53,7 @@ public class TaskDtoHelper {
             .add("uploadType", TaskType.Upload)
             .add("uploadSubfolderName", TaskType.Upload)
             .add("uploadableFileTypes", TaskType.Upload)
+            .add("candidateAnswerField", TaskType.Question)
             .add("createdBy", getUserDto())
             .add("createdDate")
             ;

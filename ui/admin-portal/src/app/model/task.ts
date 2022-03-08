@@ -27,6 +27,7 @@ export interface Task extends Auditable {
   uploadType: UploadType;
   uploadSubfolderName: string;
   uploadableFileTypes: string;
+  candidateAnswerField: string;
 }
 
 export enum TaskType {
