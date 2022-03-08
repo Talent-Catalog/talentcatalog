@@ -1,0 +1,14 @@
+<section [formGroup]="form">
+  <div class="section-heading">
+    <h5>Answer Question</h5>
+  </div>
+  <div class="card">
+    <div class="form-group">
+      <label class="font-weight-bold" for="completeQuestion">
+        Please provide as much detail as required:
+      </label>
+      <textarea id="completeQuestion" class="md-textarea-auto form-control" rows="5"
+                [formControlName]="'completeQuestion'"></textarea>
+    </div>
+  </div>
+</section>

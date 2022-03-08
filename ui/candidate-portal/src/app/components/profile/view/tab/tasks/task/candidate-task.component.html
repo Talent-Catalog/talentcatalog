@@ -31,82 +31,36 @@
 
 <!-- ACTION -->
 <ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
-  <section>
-    <div class="section-heading">
-      <h5>Upload File</h5>
-    </div>
-    <div class="card">
-      <div>
-        <app-file-upload [uploading]="uploading" (uploadStarted)="completeUploadTask($event)"></app-file-upload>
-        <div *ngIf="uploading">
-          Uploading please wait <fa-icon  [spin]="true" icon="spinner"></fa-icon>
-        </div>
-        <div *ngFor="let file of filesUploaded; let i = index;">
-          <p>Successfully uploaded as {{getFileName(file.name)}}!</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-view-upload-task
+    [form]="form"
+    [selectedTask]="selectedTask">
+  </app-view-upload-task>
 </ng-container>
 
 <form [formGroup]="form" (submit)="submitTask()">
-  <ng-container *ngIf="selectedTask.task.taskType === 'Simple'">
-    <section>
-      <iframe [src]="url" style="width: 100%;height: 500px"></iframe>
-      <div class="section-heading">
-        <h5>Complete Task</h5>
-      </div>
-      <div class="card">
-        <div class="form-group mb-0">
-          <div class="form-check-inline">
-            <label class="form-check-label mb-0 mr-2" for="completeSimple">
-              Have you completed this task?
-            </label>
-            <input class="form-check-input" id="completeSimple" [formControlName]="'completeSimple'" type="checkbox">
-          </div>
-          <div>
-            <small class="text-muted">If you can't complete this task, please check the box below saying you can't complete this task and provide a reason.</small>
-          </div>
-        </div>
-      </div>
-    </section>
+  <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink == null">
+    <app-view-simple-task
+      [form]="form">
+    </app-view-simple-task>
+  </ng-container>
+
+  <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null">
+    <app-view-simple-doc-task
+      [form]="form"
+      [docLink]="selectedTask.task.helpLink">
+    </app-view-simple-doc-task>
   </ng-container>
 
   <ng-container *ngIf="selectedTask.task.taskType === 'Question'">
-    <section>
-      <div class="section-heading">
-        <h5>Answer Question</h5>
-      </div>
-      <div class="card">
-        <div class="form-group">
-          <label class="font-weight-bold" for="completeQuestion">
-            Please provide as much detail as required:
-          </label>
-          <textarea id="completeQuestion" class="md-textarea-auto form-control" rows="5"
-                    [formControlName]="'completeQuestion'"></textarea>
-        </div>
-      </div>
-    </section>
+    <app-view-question-task
+      [form]="form">
+    </app-view-question-task>
   </ng-container>
 
   <ng-container *ngIf="selectedTask.task.taskType === 'YesNoQuestion'">
-    <section>
-      <div class="section-heading">
-        <h5>Answer Question</h5>
-      </div>
-      <div class="card">
-        <div class="form-group">
-          <label for="completeYNQuestion">
-            Please select your answer to the question below:
-          </label>
-          <ng-select  id="completeYNQuestion" [formControlName]="'completeYNQuestion'"
-                      [clearable]="false" placeholder="Select...">
-            <ng-option [value]="'Yes'">Yes</ng-option>
-            <ng-option [value]="'No'">No</ng-option>
-          </ng-select>
-        </div>
-      </div>
-    </section>
+    <app-view-yn-question-task
+      [form]="form">
+    </app-view-yn-question-task>
   </ng-container>
 
   <!-- COMMENT -->

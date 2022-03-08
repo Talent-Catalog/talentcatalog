@@ -17,15 +17,13 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate, TaskAssignment, TaskType} from "../../../../../../model/candidate";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {forkJoin, Observable} from "rxjs";
-import {CandidateAttachment} from "../../../../../../model/candidate-attachment";
 import {
   TaskAssignmentService,
   UpdateQuestionTaskRequest,
   UpdateSimpleTaskRequest,
   UpdateTaskAssignmentRequest
 } from "../../../../../../services/task-assignment.service";
-import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-candidate-task',
@@ -36,13 +34,10 @@ export class CandidateTaskComponent implements OnInit {
   @Input() selectedTask: TaskAssignment;
   @Input() candidate: Candidate;
   @Output() back = new EventEmitter();
-  filesUploaded: File[];
   form: FormGroup;
   loading: boolean;
-  uploading: boolean;
   saving: boolean;
   error;
-  url: SafeResourceUrl;
 
   constructor(private fb: FormBuilder,
               private taskAssignmentService: TaskAssignmentService,
@@ -57,6 +52,8 @@ export class CandidateTaskComponent implements OnInit {
       abandoned: [this.isAbandoned]
     })
 
+    this.form.valueChanges.subscribe(newVal => console.log(newVal));
+
     // Set comment as required field if abandon is checked
     this.form.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
@@ -66,8 +63,6 @@ export class CandidateTaskComponent implements OnInit {
       }
       this.form.controls['comment'].updateValueAndValidity()
     });
-
-    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.helpLink);
   }
 
   get isAbandoned() {
@@ -76,45 +71,6 @@ export class CandidateTaskComponent implements OnInit {
 
   get isComplete() {
     return this.selectedTask.completedDate != null;
-  }
-
-  completeUploadTask($event) {
-    this.error = null;
-    this.uploading = true;
-
-    //todo this all doesn't look right - needs work.
-    const uploads: Observable<TaskAssignment>[] = [];
-    for (const file of $event.files) {
-      const formData: FormData = new FormData();
-      formData.append('file', file);
-
-      this.taskAssignmentService.doUploadTask(this.selectedTask.id, formData).subscribe(
-        (taskAssignment: TaskAssignment) => {
-          this.selectedTask = taskAssignment;
-          // This allows us to display the success message in the html
-          this.filesUploaded = $event.files;
-          this.uploading = false;
-        },
-        error => {
-          this.error = error;
-          this.uploading = false;
-        }
-      );
-    }
-
-    forkJoin(...uploads).subscribe(
-      (results: CandidateAttachment[]) => {
-        this.uploading = false;
-      },
-      error => {
-        this.error = error;
-        this.uploading = false;
-      }
-    );
-  }
-
-  getFileName(fileName: string): string {
-    return this.candidate?.candidateNumber + "-" + this.selectedTask?.task?.uploadType + "-" + fileName;
   }
 
   goBack() {
@@ -134,7 +90,7 @@ export class CandidateTaskComponent implements OnInit {
     } else if (this.selectedTask.task.taskType === TaskType.Simple) {
       this.updateSimpleTask();
     } else {
-      this.updateTaskAssignment();
+      this.updateUploadTask();
     }
   }
 
@@ -176,7 +132,7 @@ export class CandidateTaskComponent implements OnInit {
 
   // This is an update of a task assignment of only the comment/abandoned field.
   // It is used for upload tasks, as the upload task is completed separately upon file upload.
-  updateTaskAssignment() {
+  updateUploadTask() {
     this.saving = true;
     const request: UpdateTaskAssignmentRequest = {
       abandoned: this.form.value.abandoned,
