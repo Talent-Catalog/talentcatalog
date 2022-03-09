@@ -91,7 +91,7 @@
   </section>
 
   <button class="btn btn-primary mt-2" type="submit"
-          [disabled]="form.invalid">
+          [disabled]="form.invalid || form.pristine">
     Submit
     <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
   </button>

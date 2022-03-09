@@ -48,16 +48,14 @@ export class CandidateTaskComponent implements OnInit {
       completeSimple: [null],
       completeQuestion: [null],
       completeYNQuestion: [null],
-      comment: [this.selectedTask.candidateNotes],
-      abandoned: [this.isAbandoned]
+      abandoned: [this.isAbandoned],
+      comment: [this.selectedTask.candidateNotes]
     })
-
-    this.form.valueChanges.subscribe(newVal => console.log(newVal));
 
     // Set comment as required field if abandon is checked
     this.form.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
-        this.form.get('comment').setValidators([Validators.required])
+        this.form.get('comment').setValidators([Validators.required]);
       } else {
         this.form.get('comment').clearValidators();
       }
