@@ -45,9 +45,7 @@ export class CandidateTaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      completeSimple: [null],
-      completeQuestion: [null],
-      completeYNQuestion: [null],
+      response: [null],
       abandoned: [this.isAbandoned],
       comment: [this.selectedTask.candidateNotes]
     })
@@ -99,7 +97,7 @@ export class CandidateTaskComponent implements OnInit {
   updateQuestionTask() {
     this.saving = true;
     const request: UpdateQuestionTaskRequest = {
-      answer: this.form.value.completeQuestion,
+      answer: this.form.value.response,
       abandoned: this.form.value.abandoned,
       candidateNotes: this.form.value.comment
     }
@@ -117,7 +115,7 @@ export class CandidateTaskComponent implements OnInit {
   updateSimpleTask() {
     this.saving = true;
     const request: UpdateSimpleTaskRequest = {
-      completed: this.form.value.completeSimple,
+      completed: this.form.value.response,
       abandoned: this.form.value.abandoned,
       candidateNotes: this.form.value.comment
     }
