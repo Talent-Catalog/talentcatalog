@@ -21,8 +21,8 @@ import {forkJoin, Observable} from "rxjs";
 import {CandidateAttachment} from "../../../../../../model/candidate-attachment";
 import {
   TaskAssignmentService,
-  UpdateQuestionTaskRequest,
-  UpdateTaskAssignmentRequest
+  UpdateQuestionTaskAssignmentRequest,
+  UpdateTaskAssignmentRequest, UpdateUploadTaskAssignmentRequest
 } from "../../../../../../services/task-assignment.service";
 
 @Component({
@@ -134,7 +134,7 @@ export class CandidateTaskComponent implements OnInit {
 
   completeQuestionTask() {
     this.saving = true;
-    const request: UpdateQuestionTaskRequest = {
+    const request: UpdateQuestionTaskAssignmentRequest = {
       taskAssignmentId: this.selectedTask.id,
       answer: this.form.value.completeQuestion,
       abandoned: this.form.value.abandoned,
@@ -173,13 +173,12 @@ export class CandidateTaskComponent implements OnInit {
 
   addUploadTaskComment() {
     this.saving = true;
-    const request: UpdateTaskAssignmentRequest = {
+    const request: UpdateUploadTaskAssignmentRequest = {
       taskAssignmentId: this.selectedTask.id,
-      completed: this.isComplete,
       abandoned: this.form.value.abandoned,
       candidateNotes: this.form.value.comment
     }
-    this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
+    this.taskAssignmentService.updateUploadTaskAssignment(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
         this.saving = false;

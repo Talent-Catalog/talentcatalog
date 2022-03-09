@@ -20,16 +20,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
-import java.time.LocalDate;
-
 /**
- * Request to update a TaskAssignment
+ * Request to update a TaskAssignment received through the candidate portal
  *
  * @author John Cameron
  */
 @Getter
 @Setter
-public class UpdateTaskAssignmentRequest {
+public class UpdateTaskAssignmentRequestCandidate {
 
     /**
      * Task assignment to update
@@ -37,27 +35,13 @@ public class UpdateTaskAssignmentRequest {
     long taskAssignmentId;
 
     /**
-     * Custom due date if supplied (otherwise the due date will be set from the task days to complete)
+     * If task is set as completed
      */
-    @Nullable
-    LocalDate dueDate;
-
-    /**
-     * Custom completed date if supplied
-     */
-    @Nullable
-    LocalDate completedDate;
-
-    /**
-     * If task is set as complete or not (admin portal)
-     */
-    @Nullable
     boolean completed;
 
     /**
-     * If task is set as complete or not (admin portal)
+     * If task is set as abandoned
      */
-    @Nullable
     boolean abandoned;
 
     /**

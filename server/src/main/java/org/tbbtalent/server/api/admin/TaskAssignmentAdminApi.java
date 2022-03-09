@@ -37,7 +37,7 @@ import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.task.TaskListRequest;
 import org.tbbtalent.server.request.task.CreateTaskAssignmentRequest;
-import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
+import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequestAdmin;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
@@ -51,7 +51,7 @@ public class TaskAssignmentAdminApi implements
             //todo replace with search request
             CreateTaskAssignmentRequest,
 
-            CreateTaskAssignmentRequest, UpdateTaskAssignmentRequest> {
+            CreateTaskAssignmentRequest, UpdateTaskAssignmentRequestAdmin> {
 
     private final AuthService authService;
     private final CandidateService candidateService;
@@ -89,9 +89,14 @@ public class TaskAssignmentAdminApi implements
     }
 
     @Override
-    public Map<String, Object> update(long id, UpdateTaskAssignmentRequest request)
+    public Map<String, Object> update(long id, UpdateTaskAssignmentRequestAdmin request)
         throws EntityExistsException, NoSuchObjectException {
-        TaskAssignmentImpl taskAssignment = taskAssignmentService.update(id, request);
+        TaskAssignmentImpl ta = taskAssignmentService.get(id);
+
+        TaskAssignmentImpl taskAssignment = taskAssignmentService.update(
+            ta, request.isCompleted(), request.isAbandoned(), request.getCandidateNotes(),
+            request.getDueDate());
+
         return TaskDtoHelper.getTaskAssignmentDto().build(taskAssignment);
     }
 

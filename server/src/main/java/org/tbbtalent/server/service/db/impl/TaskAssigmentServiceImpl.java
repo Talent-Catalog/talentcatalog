@@ -16,24 +16,27 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
-import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 
 /**
  * Default implementation of a TaskAssignmentService
@@ -80,27 +83,48 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
 
     @NonNull
     @Override
-    public TaskAssignmentImpl update(long taskAssignmentId, UpdateTaskAssignmentRequest request) throws NoSuchObjectException {
-        TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(taskAssignmentId)
-            .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
+    public TaskAssignmentImpl updateQuestionTaskAssignment(
+        @NonNull TaskAssignmentImpl taskAssignment, @NonNull String answer, boolean completed,
+        boolean abandoned, @Nullable String notes, @Nullable LocalDate nonDefaultDueDate) {
+        if (!abandoned) {
+             //todo Update answer
 
-        if (request.getDueDate() != null) {
-            taskAssignment.setDueDate(request.getDueDate());
         }
-        if (request.getCandidateNotes() != null) {
-            taskAssignment.setCandidateNotes(request.getCandidateNotes());
+        return update(taskAssignment, completed, abandoned, notes, nonDefaultDueDate);
+    }
+
+    @NonNull
+    @Override
+    public TaskAssignmentImpl updateUploadTaskAssignment(@NonNull TaskAssignmentImpl taskAssignment,
+        boolean abandoned, @Nullable String notes, @Nullable LocalDate nonDefaultDueDate) {
+        return update(taskAssignment, null, abandoned, notes, nonDefaultDueDate);
+    }
+
+    @NonNull
+    @Override
+    public TaskAssignmentImpl update(
+        @NonNull TaskAssignmentImpl taskAssignment, @Nullable Boolean completed,
+        boolean abandoned, @Nullable String notes, @Nullable LocalDate nonDefaultDueDate) {
+
+        if (nonDefaultDueDate != null) {
+            taskAssignment.setDueDate(nonDefaultDueDate);
+        }
+        if (notes != null) {
+            taskAssignment.setCandidateNotes(notes);
         }
 
-        if (request.isCompleted()) {
-            // Only set the completed date if it's a completed task and a date hasn't already been set.
-            if (taskAssignment.getCompletedDate() == null) {
-                taskAssignment.setCompletedDate(OffsetDateTime.now());
+        if (completed != null) {
+            if (completed) {
+                // Only set the completed date if it's a completed task and a date hasn't already been set.
+                if (taskAssignment.getCompletedDate() == null) {
+                    taskAssignment.setCompletedDate(OffsetDateTime.now());
+                }
+            } else {
+                taskAssignment.setCompletedDate(null);
             }
-        } else {
-            taskAssignment.setCompletedDate(null);
         }
 
-        if (request.isAbandoned()) {
+        if (abandoned) {
             // If the task is abandoned and the TA doesn't have an abandoned date, set to now.
             // Otherwise keep the existing abandoned date.
             if (taskAssignment.getAbandonedDate() == null) {

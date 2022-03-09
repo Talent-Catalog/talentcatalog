@@ -27,7 +27,13 @@ export interface UpdateTaskAssignmentRequest {
   candidateNotes?: string,
 }
 
-export interface UpdateQuestionTaskRequest extends UpdateTaskAssignmentRequest {
+export interface UpdateUploadTaskAssignmentRequest {
+  taskAssignmentId: number,
+  abandoned: boolean
+  candidateNotes?: string,
+}
+
+export interface UpdateQuestionTaskAssignmentRequest extends UpdateTaskAssignmentRequest {
   answer: string;
 }
 
@@ -44,8 +50,12 @@ export class TaskAssignmentService {
     return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload`, formData);
   }
 
-  updateQuestionTask(id: number, request: UpdateQuestionTaskRequest): Observable<TaskAssignment> {
+  updateQuestionTask(id: number, request: UpdateQuestionTaskAssignmentRequest): Observable<TaskAssignment> {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/question`, request);
+  }
+
+  updateUploadTaskAssignment(id: number, request: UpdateUploadTaskAssignmentRequest) {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/upload`, request);
   }
 
   updateTaskAssignment(id: number, request: UpdateTaskAssignmentRequest) {

@@ -28,7 +28,6 @@ import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
-import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequest;
 
 /**
  * Service for managing {@link TaskAssignment}s.
@@ -69,16 +68,53 @@ public interface TaskAssignmentService {
     TaskAssignmentImpl get(long taskAssignmentId) throws NoSuchObjectException;
 
     /**
-     * Update the task assignment with the given id.
+     * Update the given question task assignment.
      *
-     * @param taskAssignmentId ID of the TaskAssignment to update
-     * @param request          Update request containing the due date
+     * @param taskAssignment   TaskAssignment to update
+     * @param completed The task assignment is marked as completed or not (by setting completedDate)
+     * @param abandoned The task assignment is marked as abandoned or not (by setting the abandonedDate).
+     * @param notes If not null, sets the candidateNotes associated with the task assignment
+     * @param nonDefaultDueDate If not null, sets a non default task assignment dueDate (otherwise
+     *                          the due date is set automatically based on the task's
+     *                          daysToComplete field.
      * @return Updated Task Assignment
-     * @throws NoSuchObjectException If no such task assignment exists with that id
      */
     @NonNull
-    TaskAssignmentImpl update(long taskAssignmentId, UpdateTaskAssignmentRequest request)
-        throws NoSuchObjectException;
+    TaskAssignmentImpl updateQuestionTaskAssignment(
+        @NonNull TaskAssignmentImpl taskAssignment, @NonNull String answer,
+        boolean completed, boolean abandoned, @Nullable String notes, @Nullable LocalDate nonDefaultDueDate);
+
+    /**
+     * Update the given upload task assignment.
+     *
+     * @param taskAssignment   TaskAssignment to update
+     * @param abandoned The task assignment is marked as abandoned or not (by setting the abandonedDate).
+     * @param notes If not null, sets the candidateNotes associated with the task assignment
+     * @param nonDefaultDueDate If not null, sets a non default task assignment dueDate (otherwise
+     *                          the due date is set automatically based on the task's
+     *                          daysToComplete field.
+     * @return Updated Task Assignment
+     */
+    @NonNull
+    TaskAssignmentImpl updateUploadTaskAssignment(@NonNull TaskAssignmentImpl taskAssignment,
+        boolean abandoned, @Nullable String notes, @Nullable LocalDate nonDefaultDueDate);
+
+    /**
+     * Update the given task assignment.
+     *
+     * @param taskAssignment   TaskAssignment to update
+     * @param completed If null, this is not processed at all. Otherwise the task assignment is
+     *                  marked as completed or not - by setting completedDate
+     * @param abandoned The task assignment is marked as abandoned (by setting the abandonedDate).
+     * @param notes If not null, sets the candidateNotes associated with the task assignment
+     * @param nonDefaultDueDate If not null, sets a non default task assignment dueDate (otherwise
+     *                          the due date is set automatically based on the task's
+     *                          daysToComplete field.
+     * @return Updated Task Assignment
+     */
+    @NonNull
+    TaskAssignmentImpl update(@NonNull TaskAssignmentImpl taskAssignment, @Nullable Boolean completed,
+        boolean abandoned, @Nullable String notes, @Nullable LocalDate nonDefaultDueDate);
 
     /**
      * Deactivate the task assignment.
