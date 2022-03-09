@@ -45,6 +45,8 @@
     </app-view-simple-task>
   </ng-container>
 
+  <!-- If there is a help link with a simple task, the help link will be embedded into the component.
+       This is to allow for documents to be displayed within the page and viewed easily by candidates. -->
   <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null">
     <app-view-simple-doc-task
       [form]="form"
