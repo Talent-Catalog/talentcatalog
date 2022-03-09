@@ -45,7 +45,7 @@ export class CandidateTaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      response: [null],
+      response: [null, Validators.required],
       abandoned: [this.isAbandoned],
       comment: [this.selectedTask.candidateNotes]
     })
@@ -54,10 +54,13 @@ export class CandidateTaskComponent implements OnInit {
     this.form.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
         this.form.get('comment').setValidators([Validators.required]);
+        this.form.get('response').clearValidators();
       } else {
         this.form.get('comment').clearValidators();
+        this.form.get('response').setValidators([Validators.required]);
       }
       this.form.controls['comment'].updateValueAndValidity()
+      this.form.controls['response'].updateValueAndValidity()
     });
   }
 
