@@ -38,11 +38,6 @@ import org.tbbtalent.server.api.portal.TaskAssignmentPortalApi;
 public class UpdateUploadTaskAssignmentRequestCandidate {
 
     /**
-     * Task assignment to update
-     */
-    long taskAssignmentId;
-
-    /**
      * If task is set as abandoned
      */
     boolean abandoned;

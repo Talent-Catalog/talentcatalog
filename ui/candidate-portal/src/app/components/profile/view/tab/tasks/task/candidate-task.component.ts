@@ -110,7 +110,6 @@ export class CandidateTaskComponent implements OnInit {
   updateQuestionTask() {
     this.saving = true;
     const request: UpdateQuestionTaskAssignmentRequest = {
-      taskAssignmentId: this.selectedTask.id,
       answer: this.form.value.response,
       abandoned: this.form.value.abandoned,
       candidateNotes: this.form.value.comment
@@ -149,7 +148,6 @@ export class CandidateTaskComponent implements OnInit {
   updateUploadTask() {
     this.saving = true;
     const request: UpdateUploadTaskAssignmentRequest = {
-      taskAssignmentId: this.selectedTask.id,
       abandoned: this.form.value.abandoned,
       candidateNotes: this.form.value.comment
     }

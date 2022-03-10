@@ -30,11 +30,6 @@ import org.springframework.lang.Nullable;
 public class UpdateTaskAssignmentRequestCandidate {
 
     /**
-     * Task assignment to update
-     */
-    long taskAssignmentId;
-
-    /**
      * If task is set as completed
      */
     boolean completed;

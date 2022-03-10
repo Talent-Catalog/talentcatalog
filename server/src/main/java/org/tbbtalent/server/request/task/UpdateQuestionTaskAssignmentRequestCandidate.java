@@ -30,11 +30,6 @@ import org.springframework.lang.Nullable;
 public class UpdateQuestionTaskAssignmentRequestCandidate {
 
     /**
-     * Task assignment to update
-     */
-    long taskAssignmentId;
-
-    /**
      * Answer supplied to question. If not empty and abandoned has not been set, this implies that
      * the task assignment is complete.
      */

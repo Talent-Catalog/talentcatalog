@@ -32,11 +32,6 @@ import java.time.LocalDate;
 public class UpdateTaskAssignmentRequestAdmin {
 
     /**
-     * Task assignment to update
-     */
-    long taskAssignmentId;
-
-    /**
      * Custom due date if supplied (otherwise the due date will be set from the task days to complete)
      */
     @Nullable

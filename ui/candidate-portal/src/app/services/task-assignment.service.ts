@@ -21,24 +21,23 @@ import {Observable} from "rxjs";
 import {TaskAssignment} from "../model/candidate";
 
 export interface UpdateTaskAssignmentRequest {
-  taskAssignmentId: number,
   abandoned: boolean
   completed: boolean,
   candidateNotes?: string,
 }
 
 export interface UpdateUploadTaskAssignmentRequest {
-  taskAssignmentId: number,
   abandoned: boolean
   candidateNotes?: string,
 }
 
-export interface UpdateQuestionTaskAssignmentRequest extends UpdateTaskAssignmentRequest {
+export interface UpdateQuestionTaskAssignmentRequest {
   answer: string;
+  abandoned: boolean
+  candidateNotes?: string,
 }
 
 export interface UpdateSimpleTaskRequest extends UpdateTaskAssignmentRequest {
-  completed: boolean;
 }
 
 @Injectable({
