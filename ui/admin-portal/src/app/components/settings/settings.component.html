@@ -89,6 +89,15 @@
         </app-dropdown-translations>
       </ng-template>
     </ng-container>
+
+  <!-- Translations -->
+    <ng-container ngbNavItem="translations-tasks">
+      <a ngbNavLink>Translations (tasks)</a>
+      <ng-template ngbNavContent>
+        <app-task-translations [loggedInUser]="loggedInUser">
+        </app-task-translations>
+      </ng-template>
+    </ng-container>
   </ng-container>
 
   <ng-container *ngIf="loggedInUser.role === 'admin' || loggedInUser.role === 'sourcepartneradmin'">

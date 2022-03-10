@@ -44,10 +44,6 @@
           <ng-select [items]="languages" (change)="setLanguage($event)" [clearable]="false" [ngModel]="systemLanguage">
           </ng-select>
         </div>
-        <div class="col-sm-6">
-          <ng-select [items]="keys" [placeholder]="'Filter by a specific field group'" [clearable]="true" (change)="filterItems($event)">
-          </ng-select>
-        </div>
       </div>
     </div>
 
@@ -59,7 +55,7 @@
       </tr>
       </thead>
       <tbody>
-      <ng-container  *ngFor="let field of fieldsFiltered">
+      <ng-container  *ngFor="let field of fields">
         <tr [class.is-blank]="isBlank(field.value)">
           <td style="width: 200px">
             {{field.path}}
