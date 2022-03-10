@@ -37,6 +37,10 @@ export interface UpdateQuestionTaskAssignmentRequest extends UpdateTaskAssignmen
   answer: string;
 }
 
+export interface UpdateSimpleTaskRequest extends UpdateTaskAssignmentRequest {
+  completed: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -46,12 +50,16 @@ export class TaskAssignmentService {
 
   constructor(private http: HttpClient) { }
 
-  completeUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
+  doUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
     return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload`, formData);
   }
 
   updateQuestionTask(id: number, request: UpdateQuestionTaskAssignmentRequest): Observable<TaskAssignment> {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/question`, request);
+  }
+
+  updateSimpleTask(id: number, request: UpdateSimpleTaskRequest): Observable<TaskAssignment> {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/simple`, request);
   }
 
   updateUploadTaskAssignment(id: number, request: UpdateUploadTaskAssignmentRequest) {

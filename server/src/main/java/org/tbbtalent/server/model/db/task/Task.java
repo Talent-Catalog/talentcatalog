@@ -51,6 +51,8 @@ public interface Task extends Auditable {
 
     /**
      * Link which refers to help for a candidate on what they need to do to complete this task.
+     * If a help link exists it will be linked to in a help button in the candidate task view.
+     * If linking to a document, this can be embedded into the page in simple task's (e.g. display document in page to allow checkbox agreement).
      * @return Typically a link to a document or web page.
      */
     @Nullable

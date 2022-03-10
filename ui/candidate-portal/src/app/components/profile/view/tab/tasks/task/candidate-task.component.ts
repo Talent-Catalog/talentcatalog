@@ -17,13 +17,13 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate, TaskAssignment, TaskType} from "../../../../../../model/candidate";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {forkJoin, Observable} from "rxjs";
-import {CandidateAttachment} from "../../../../../../model/candidate-attachment";
 import {
   TaskAssignmentService,
+  UpdateSimpleTaskRequest,
   UpdateQuestionTaskAssignmentRequest,
   UpdateTaskAssignmentRequest, UpdateUploadTaskAssignmentRequest
 } from "../../../../../../services/task-assignment.service";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-candidate-task',
@@ -34,33 +34,33 @@ export class CandidateTaskComponent implements OnInit {
   @Input() selectedTask: TaskAssignment;
   @Input() candidate: Candidate;
   @Output() back = new EventEmitter();
-  filesUploaded: File[];
   form: FormGroup;
   loading: boolean;
-  uploading: boolean;
   saving: boolean;
   error;
 
   constructor(private fb: FormBuilder,
-              private taskAssignmentService: TaskAssignmentService) { }
+              private taskAssignmentService: TaskAssignmentService,
+              public sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      completeSimple: [null],
-      completeQuestion: [null],
-      completeYNQuestion: [null],
-      comment: [this.selectedTask.candidateNotes],
-      abandoned: [this.isAbandoned]
+      response: [null, this.taskTypeValidators()],
+      abandoned: [this.isAbandoned],
+      comment: [this.selectedTask.candidateNotes]
     })
 
-    // Set comment as required field if abandon is checked
+    // Set comment as required field if abandoned is checked, if unchecked reset validation on response field.
     this.form.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
-        this.form.get('comment').setValidators([Validators.required])
+        this.form.get('comment').setValidators([Validators.required]);
+        this.form.get('response').clearValidators();
       } else {
         this.form.get('comment').clearValidators();
+        this.form.get('response').setValidators(this.taskTypeValidators());
       }
       this.form.controls['comment'].updateValueAndValidity()
+      this.form.controls['response'].updateValueAndValidity()
     });
   }
 
@@ -72,43 +72,14 @@ export class CandidateTaskComponent implements OnInit {
     return this.selectedTask.completedDate != null;
   }
 
-  completeUploadTask($event) {
-    this.error = null;
-    this.uploading = true;
-
-    //todo this all doesn't look right - needs work.
-    const uploads: Observable<TaskAssignment>[] = [];
-    for (const file of $event.files) {
-      const formData: FormData = new FormData();
-      formData.append('file', file);
-
-      this.taskAssignmentService.completeUploadTask(this.selectedTask.id, formData).subscribe(
-        (taskAssignment: TaskAssignment) => {
-          this.selectedTask = taskAssignment;
-          // This allows us to display the success message in the html
-          this.filesUploaded = $event.files;
-          this.uploading = false;
-        },
-        error => {
-          this.error = error;
-          this.uploading = false;
-        }
-      );
+  taskTypeValidators() {
+    let validators = []
+    if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
+      validators = [Validators.required]
+    } else if (this.selectedTask.task.taskType === 'Simple') {
+      validators = [Validators.requiredTrue]
     }
-
-    forkJoin(...uploads).subscribe(
-      (results: CandidateAttachment[]) => {
-        this.uploading = false;
-      },
-      error => {
-        this.error = error;
-        this.uploading = false;
-      }
-    );
-  }
-
-  getFileName(fileName: string): string {
-    return this.candidate?.candidateNumber + "-" + this.selectedTask?.task?.uploadType + "-" + fileName;
+    return validators;
   }
 
   goBack() {
@@ -120,25 +91,28 @@ export class CandidateTaskComponent implements OnInit {
     return (new Date(ta.dueDate) < new Date()) && !ta.task.optional;
   }
 
+  completedUploadTask($event: TaskAssignment) {
+    this.selectedTask = $event;
+  }
+
   submitTask() {
     // This handles the submission of the non upload tasks, including any comment or if abandoned.
     // If it is an upload task the task is completed separately on file upload, the submit button will then add a comment or if abandoned to the upload task.
     if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
-      this.completeQuestionTask();
+      this.updateQuestionTask();
     } else if (this.selectedTask.task.taskType === TaskType.Simple) {
-      this.completeSimpleTask();
+      this.updateSimpleTask();
     } else {
-      this.addUploadTaskComment();
+      this.updateUploadTask();
     }
   }
 
-  completeQuestionTask() {
+  updateQuestionTask() {
     this.saving = true;
     const request: UpdateQuestionTaskAssignmentRequest = {
       taskAssignmentId: this.selectedTask.id,
-      answer: this.form.value.completeQuestion,
+      answer: this.form.value.response,
       abandoned: this.form.value.abandoned,
-      completed: this.isComplete,
       candidateNotes: this.form.value.comment
     }
     this.taskAssignmentService.updateQuestionTask(this.selectedTask.id, request).subscribe(
@@ -152,15 +126,14 @@ export class CandidateTaskComponent implements OnInit {
     )
   }
 
-  completeSimpleTask() {
+  updateSimpleTask() {
     this.saving = true;
-    const request: UpdateTaskAssignmentRequest = {
-      taskAssignmentId: this.selectedTask.id,
-      completed: this.form.value.completeSimple,
+    const request: UpdateSimpleTaskRequest = {
+      completed: this.form.value.response,
       abandoned: this.form.value.abandoned,
       candidateNotes: this.form.value.comment
     }
-    this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
+    this.taskAssignmentService.updateSimpleTask(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
         this.saving = false;
@@ -171,7 +144,9 @@ export class CandidateTaskComponent implements OnInit {
     )
   }
 
-  addUploadTaskComment() {
+  // This is an update of a task assignment of only the comment/abandoned field.
+  // It is used for upload tasks, as the upload task is completed separately upon file upload.
+  updateUploadTask() {
     this.saving = true;
     const request: UpdateUploadTaskAssignmentRequest = {
       taskAssignmentId: this.selectedTask.id,
