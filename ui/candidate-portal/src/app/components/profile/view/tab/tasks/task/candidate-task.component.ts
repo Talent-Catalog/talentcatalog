@@ -45,19 +45,19 @@ export class CandidateTaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      response: [null, Validators.required],
+      response: [null, this.taskTypeValidators()],
       abandoned: [this.isAbandoned],
       comment: [this.selectedTask.candidateNotes]
     })
 
-    // Set comment as required field if abandon is checked
+    // Set comment as required field if abandoned is checked, if unchecked reset validation on response field.
     this.form.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
         this.form.get('comment').setValidators([Validators.required]);
         this.form.get('response').clearValidators();
       } else {
         this.form.get('comment').clearValidators();
-        this.form.get('response').setValidators([Validators.required]);
+        this.form.get('response').setValidators(this.taskTypeValidators());
       }
       this.form.controls['comment'].updateValueAndValidity()
       this.form.controls['response'].updateValueAndValidity()
@@ -70,6 +70,16 @@ export class CandidateTaskComponent implements OnInit {
 
   get isComplete() {
     return this.selectedTask.completedDate != null;
+  }
+
+  taskTypeValidators() {
+    let validators = []
+    if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
+      validators = [Validators.required]
+    } else if (this.selectedTask.task.taskType === 'Simple') {
+      validators = [Validators.requiredTrue]
+    }
+    return validators;
   }
 
   goBack() {
