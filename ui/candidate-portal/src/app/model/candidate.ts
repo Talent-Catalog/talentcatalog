@@ -110,11 +110,15 @@ export function taskAssignmentSort(a: TaskAssignment, b: TaskAssignment) {
 export interface Task {
   id: number;
   name: string;
+  daysToComplete: number,
   description: string;
   helpLink: string;
   optional: boolean;
   taskType: TaskType;
-  uploadType: UploadType;
+  uploadType?: UploadType;
+  uploadSubfolderName?: string;
+  uploadableFileTypes?: string;
+  candidateAnswerField?: string;
 }
 
 export enum TaskType {
