@@ -59,7 +59,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Transient
     private Long contextSavedListId;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateId", cascade = CascadeType.MERGE)
     private Set<CandidateProperty> candidateProperties;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)

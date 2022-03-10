@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -45,13 +46,12 @@ import org.springframework.lang.Nullable;
 public class CandidateProperty {
 
     /**
-     * Candidate associated with this property
+     * ID of candidate associated with this property
      */
     @Id
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "candidate_id")
-    private Candidate candidate;
+    @Column(name = "candidate_id")
+    private Long candidateId;
 
     /**
      * The name of the property

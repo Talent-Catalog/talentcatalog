@@ -17,8 +17,10 @@
 package org.tbbtalent.server.model.db;
 
 import java.io.Serializable;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 
@@ -35,10 +37,12 @@ import org.springframework.lang.NonNull;
 @Getter
 @Setter
 @EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class CandidatePropertyKey implements Serializable {
 
     @NonNull
-    private Candidate candidate;
+    private Long candidateId;
 
     @NonNull
     private String name;
