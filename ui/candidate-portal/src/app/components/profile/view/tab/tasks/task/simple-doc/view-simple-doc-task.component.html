@@ -4,19 +4,19 @@
 
 <section [formGroup]="form">
   <div class="section-heading">
-    <h5>Complete Task</h5>
+    <h5>{{ 'TASKS.SIMPLE.HEADER' | translate }}</h5>
   </div>
   <iframe [src]="url" style="width: 100%;height: 500px"></iframe>
   <div class="card">
     <div class="form-group mb-0">
       <div class="form-check-inline">
         <label class="form-check-label mb-0 mr-2" for="response">
-          Do you agree to the document above?
+          {{ 'TASKS.SIMPLE.DOC.LABEL' | translate }}
         </label>
         <input class="form-check-input" id="response" [formControlName]="'response'" type="checkbox">
       </div>
       <div>
-        <small class="text-muted">If you can't complete this task, please check the box below saying you can't complete this task and provide a reason.</small>
+        <small class="text-muted">{{ 'TASKS.SIMPLE.DOC.NOTE' | translate }}</small>
       </div>
     </div>
   </div>

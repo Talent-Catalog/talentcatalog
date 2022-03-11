@@ -130,7 +130,7 @@ export class GeneralTranslationsComponent implements OnInit {
 
   filterItems($event) {
     if ($event != null) {
-      this.fieldsFiltered = this.fields.filter(f => f.path.startsWith($event.toLowerCase()))
+      this.fieldsFiltered = this.fields.filter(f => f.path.split('.')[0] === $event.toLowerCase())
     } else {
       this.fieldsFiltered = this.fields;
     }
@@ -138,443 +138,443 @@ export class GeneralTranslationsComponent implements OnInit {
 }
 
 const ALL_FIELDS = {
-    "HEADER": {
-      "NAV": {
-        "ACCOUNT": null,
-        "LOGOUT": null,
-        "LOGIN": null,
-        "PROFILE": null,
-        "UPLOAD": {
-          "FILE": null,
-          "PHOTO": null
-        }
-      },
-      "LANG": {
-        "SELECT": null,
-      }
-    },
-    "LOADING": null,
-    "LOGIN": {
-      "TITLE": null,
-      "LABEL": {
-        "USERNAME": null,
-        "PASSWORD": null
-      },
-      "BUTTON": {
-        "FORGOT": null,
-        "LOGIN": null
-      }
-    },
-    "RESETPASSWORD": {
-      "TITLE": null,
-      "SUCCESS": null,
-      "LABEL": {
-        "EMAIL": null
-      },
-      "BUTTON": {
-        "RESET": null
-      }
-    },
-    "CHANGEPASSWORD": {
-      "TITLE": null,
-      "SUCCESS": null,
-      "LABEL": {
-        "OLDPASSWORD": null,
-        "PASSWORD": null,
-        "PASSWORDCONFIRMATION": null
-      },
-      "BUTTON": {
-        "UPDATE": null
-      }
-    },
-    "LANDING": {
-      "TITLE": null,
-      "INTRO": null,
-      "REGISTER": null,
+  "HEADER": {
+    "NAV": {
+      "ACCOUNT": null,
+      "LOGOUT": null,
       "LOGIN": null,
-      "PARA1": null,
-      "HEADING2": null,
-      "PARA2": null,
-      "HEADING3": null,
-      "PARA3": null,
-      "HEADING4": null,
-      "PARA4": null,
-      "USAFGHAN": {
-        "HEADING1": null,
-        "HEADING2": null
-      }
-    },
-    "HOME": {
-      "TITLE": null,
-      "DRAFT": {
-        "EXPLANATION": null,
-        "BUTTON": null
-      },
-      "PENDING": {
-        "EXPLANATION": null,
-        "BUTTON": null
-      },
-      "ACTIVE": {
-        "EXPLANATION": null,
-        "BUTTON": null
-      },
-      "INCOMPLETE": {
-        "EXPLANATION": null,
-        "BUTTON": null
-      },
-      "EMPLOYED": {
-        "EXPLANATION": null,
-        "BUTTON": null
-      },
-      "INACTIVE": {
-        "EXPLANATION": null
-      },
-      "INELIGIBLE": {
-        "EXPLANATION": null,
-        "BUTTON": null
-      }
-    },
-    "REGISTRATION": {
-      "HEADER": {
-        "EXPLANATION": null,
-        "STEP": null,
-        "TITLE": {
-          "CONTACT": null,
-          "CONTACT/ALTERNATE": null,
-          "CONTACT/ADDITIONAL": null,
-          "PERSONAL": null,
-          "OCCUPATION": null,
-          "EXPERIENCE": null,
-          "EDUCATION": null,
-          "EDUCATION/MASTERS": null,
-          "EDUCATION/UNIVERSITY": null,
-          "EDUCATION/SCHOOL": null,
-          "LANGUAGE": null,
-          "CERTIFICATIONS": null,
-          "ADDITIONAL": null,
-          "UPLOAD": null,
-          "SUBMIT": null
-        }
-      },
-      "FOOTER": {
-        "BACK": null,
-        "CANCEL": null,
-        "NEXT": null,
-        "SUBMIT": null,
-        "UPDATE": null
-      },
-      "LANDING": {
-        "TITLE": null,
-        "PARA1": null,
-        "PARA2": null,
-        "BUTTON1": null
-      },
-      "CONTACT": {
-        "LABEL": {
-          "EMAIL": null,
-          "PHONE": null,
-          "WHATSAPP": null,
-          "USERNAME": null,
-          "PASSWORD": null,
-          "PASSWORDCONFIRMATION": null
-        }
-      },
-      "PERSONAL": {
-        "LABEL": {
-          "FIRSTNAME": null,
-          "LASTNAME": null,
-          "GENDER": null,
-          "DOB": null,
-          "COUNTRYID": null,
-          "CITY": null,
-          "STATE": null,
-          "YEAROFARRIVAL": null,
-          "NATIONALITY": null,
-          "EXTERNALID": null,
-          "REGISTEREDWITHUN": null,
-          "REGISTRATIONID": null,
-          "UNHCRCONSENT": null
-        },
-        "NOTE": {
-          "UNHCRREGISTERED": null,
-          "UNHCRCONSENT": null
-        }
-      },
-      "OCCUPATION": {
-        "LABEL": {
-          "OCCUPATION": null,
-          "YEARSEXPERIENCE": null,
-          "DISCLAIMER": null,
-          "MIGRATED_OCCUPATION": null
-        },
-        "BUTTON": {
-          "ADD": null
-        },
-        "DELETE": {
-          "TITLE": null,
-          "CONFIRMATION": null,
-          "YES": null,
-          "NO": null
-        }
-      },
-      "EXPERIENCE": {
-        "BUTTON": {
-          "ADD": null
-        }
-      },
-      "EDUCATION": {
-        "MESSAGE": null,
-        "LABEL": {
-          "MAXEDUCATIONLEVELID": null
-        },
-        "BUTTON": {
-          "ADD": null
-        }
-      },
-      "LANGUAGE": {
-        "LABEL": {
-          "LANGUAGE": null,
-          "SPEAK": null,
-          "WRITTEN": null
-        },
-        "BUTTON": {
-          "ADD": null
-        }
-      },
-      "CERTIFICATIONS": {
-        "LABEL": {
-          "NAME": null,
-          "INSTITUTION": null,
-          "DATECOMPLETED": null
-        },
-        "BUTTON": {
-          "ADD": null
-        }
-      },
-      "SUBMIT": {
-        "LABEL": {
-          "ADDITIONALINFO": null,
-          "SURVEY": null,
-          "COMMENT": null,
-        },
-        "LINKEDIN": {
-          "LABEL": null,
-          "WARN": null
-        },
-      },
-      "COMPLETE": {
-        "TITLE": null,
-        "PARA1": null,
-        "BUTTON": {
-          "LOGOUT": null,
-          "PROFILE": null
-        }
-      },
-      "ATTACHMENTS": {
-        "TITLE": null,
-        "EMPTYSTATE": null,
-        "LABEL": {
-          "NAME": null,
-          "CREATEDBY": null,
-          "CREATEDDATE": null
-        },
-        "CV": {
-          "NAME": null,
-          "EXPLANATION": null
-        },
-        "OTHER": {
-          "NAME": null,
-          "EXPLANATION": null
-        },
-        "WARN": {
-          "MOBILE": null
-        }
-      }
-    },
-    "PROFILE": {
-      "CONTACT": {
-        "TITLE": null,
-        "EMAIL": null,
-        "PHONE": null,
-        "WHATSAPP": null
-      },
-      "PERSONAL": {
-        "TITLE": null,
-        "FIRSTNAME": null,
-        "LASTNAME": null,
-        "GENDER": null,
-        "DOB": null,
-        "COUNTRY": null,
-        "CITY": null,
-        "STATE": null,
-        "YEAROFARRIVAL": null,
-        "NATIONALITY": null
-      },
-      "OCCUPATIONS": {
-        "TITLE": null
-      },
-      "EXPERIENCE": {
-        "TITLE": null
-      },
-      "EDUCATION": {
-        "TITLE": null
-      },
-      "CERTIFICATIONS": {
-        "TITLE": null
-      },
-      "LANGUAGES": {
-        "TITLE": null
-      },
-      "OTHER": {
-        "TITLE": null,
-        "ADDITIONALINFO": null,
-        "SURVEY": null,
-        "SURVEYCOMMENT": null,
-        "LINKEDIN": null
-      },
+      "PROFILE": null,
       "UPLOAD": {
-        "TITLE": null
-      },
-      "BUTTON": {
-        "EDIT": null,
-        "CV": null
+        "FILE": null,
+        "PHOTO": null
       }
     },
-    "EDIT": {
+    "LANG": {
+      "SELECT": null,
+    }
+  },
+  "LOADING": null,
+  "LOGIN": {
+    "TITLE": null,
+    "LABEL": {
+      "USERNAME": null,
+      "PASSWORD": null
+    },
+    "BUTTON": {
+      "FORGOT": null,
+      "LOGIN": null
+    }
+  },
+  "RESETPASSWORD": {
+    "TITLE": null,
+    "SUCCESS": null,
+    "LABEL": {
+      "EMAIL": null
+    },
+    "BUTTON": {
+      "RESET": null
+    }
+  },
+  "CHANGEPASSWORD": {
+    "TITLE": null,
+    "SUCCESS": null,
+    "LABEL": {
+      "OLDPASSWORD": null,
+      "PASSWORD": null,
+      "PASSWORDCONFIRMATION": null
+    },
+    "BUTTON": {
+      "UPDATE": null
+    }
+  },
+  "LANDING": {
+    "TITLE": null,
+    "INTRO": null,
+    "REGISTER": null,
+    "LOGIN": null,
+    "PARA1": null,
+    "HEADING2": null,
+    "PARA2": null,
+    "HEADING3": null,
+    "PARA3": null,
+    "HEADING4": null,
+    "PARA4": null,
+    "USAFGHAN": {
+      "HEADING1": null,
+      "HEADING2": null
+    }
+  },
+  "HOME": {
+    "TITLE": null,
+    "DRAFT": {
+      "EXPLANATION": null,
+      "BUTTON": null
+    },
+    "PENDING": {
+      "EXPLANATION": null,
+      "BUTTON": null
+    },
+    "ACTIVE": {
+      "EXPLANATION": null,
+      "BUTTON": null
+    },
+    "INCOMPLETE": {
+      "EXPLANATION": null,
+      "BUTTON": null
+    },
+    "EMPLOYED": {
+      "EXPLANATION": null,
+      "BUTTON": null
+    },
+    "INACTIVE": {
+      "EXPLANATION": null
+    },
+    "INELIGIBLE": {
+      "EXPLANATION": null,
+      "BUTTON": null
+    }
+  },
+  "REGISTRATION": {
+    "HEADER": {
+      "EXPLANATION": null,
+      "STEP": null,
       "TITLE": {
-        "EDITING": null,
         "CONTACT": null,
-        "OCCUPATIONS": null,
+        "CONTACT/ALTERNATE": null,
+        "CONTACT/ADDITIONAL": null,
         "PERSONAL": null,
         "OCCUPATION": null,
         "EXPERIENCE": null,
         "EDUCATION": null,
-        "LANGUAGES": null,
+        "EDUCATION/MASTERS": null,
+        "EDUCATION/UNIVERSITY": null,
+        "EDUCATION/SCHOOL": null,
+        "LANGUAGE": null,
         "CERTIFICATIONS": null,
         "ADDITIONAL": null,
-        "UPLOAD": null
+        "UPLOAD": null,
+        "SUBMIT": null
       }
     },
-    "FORM": {
+    "FOOTER": {
+      "BACK": null,
+      "CANCEL": null,
+      "NEXT": null,
+      "SUBMIT": null,
+      "UPDATE": null
+    },
+    "LANDING": {
+      "TITLE": null,
+      "PARA1": null,
+      "PARA2": null,
+      "BUTTON1": null
+    },
+    "CONTACT": {
       "LABEL": {
-        "OPTIONAL": null,
-        "CLEAR": null,
-        "CHOOSE": null,
-        "SAVE": null,
-        "APPROX": null
-      },
-      "PLACEHOLDER" : {
-        "SELECT": null,
-        "SELECTORTYPE": null
-      },
-      "ERROR": {
-        "REQUIRED": null,
         "EMAIL": null,
-        "MINVALUE": null,
-        "MINLENGTH": null,
-        "DATE": null,
-        "INVALIDDATERANGE": null
-      },
-      "JOBEXPERIENCE": {
-        "LABEL": {
-          "CANDIDATEOCCUPATIONID": null,
-          "COMPANYNAME": null,
-          "COUNTRY": null,
-          "STARTDATE": null,
-          "ENDDATE": null,
-          "ROLE": null,
-          "DESCRIPTION": null,
-          "CONTRACTTYPE": {
-            "TITLE": null,
-            "FULLTIME": null,
-            "PARTTIME": null
-          },
-          "EMPLOYMENTTYPE": {
-            "TITLE": null,
-            "PAID": null,
-            "VOLUNTARY": null
-          }
-        },
-        "BUTTON": {
-          "ADD": null,
-          "CANCEL": null,
-          "SAVE": null
-        }
-      },
-      "EDUCATION": {
-        "EDUCATIONTYPE": null,
-        "EDUCATIONMAJORID": null,
-        "COURSENAME": null,
+        "PHONE": null,
+        "WHATSAPP": null,
+        "USERNAME": null,
+        "PASSWORD": null,
+        "PASSWORDCONFIRMATION": null
+      }
+    },
+    "PERSONAL": {
+      "LABEL": {
+        "FIRSTNAME": null,
+        "LASTNAME": null,
+        "GENDER": null,
+        "DOB": null,
         "COUNTRYID": null,
+        "CITY": null,
+        "STATE": null,
+        "YEAROFARRIVAL": null,
+        "NATIONALITY": null,
+        "EXTERNALID": null,
+        "REGISTEREDWITHUN": null,
+        "REGISTRATIONID": null,
+        "UNHCRCONSENT": null
+      },
+      "NOTE": {
+        "UNHCRREGISTERED": null,
+        "UNHCRCONSENT": null
+      }
+    },
+    "OCCUPATION": {
+      "LABEL": {
+        "OCCUPATION": null,
+        "YEARSEXPERIENCE": null,
+        "DISCLAIMER": null,
+        "MIGRATED_OCCUPATION": null
+      },
+      "BUTTON": {
+        "ADD": null
+      },
+      "DELETE": {
+        "TITLE": null,
+        "CONFIRMATION": null,
+        "YES": null,
+        "NO": null
+      }
+    },
+    "EXPERIENCE": {
+      "BUTTON": {
+        "ADD": null
+      }
+    },
+    "EDUCATION": {
+      "MESSAGE": null,
+      "LABEL": {
+        "MAXEDUCATIONLEVELID": null
+      },
+      "BUTTON": {
+        "ADD": null
+      }
+    },
+    "LANGUAGE": {
+      "LABEL": {
+        "LANGUAGE": null,
+        "SPEAK": null,
+        "WRITTEN": null
+      },
+      "BUTTON": {
+        "ADD": null
+      }
+    },
+    "CERTIFICATIONS": {
+      "LABEL": {
+        "NAME": null,
         "INSTITUTION": null,
-        "LENGTHOFCOURSEYEARS": null,
-        "DATECOMPLETED": null,
-        "INCOMPLETE": null
+        "DATECOMPLETED": null
       },
-      "ATTACHMENT": {
-        "LABEL": {
-          "DROP": null,
-          "OR": null,
-          "BROWSE": {
-            "FILE": null,
-            "IMAGE": null,
-          },
-          "UPLOADING": null,
-          "PHOTO": null
-        }
+      "BUTTON": {
+        "ADD": null
       }
     },
-    "CARD": {
-      "JOBEXPERIENCE": {
-        "LABEL": {
-          "FULLTIME": null,
-          "PARTTIME": null,
-          "PAID": null,
-          "VOLUNTEER": null
-        }
+    "SUBMIT": {
+      "LABEL": {
+        "ADDITIONALINFO": null,
+        "SURVEY": null,
+        "COMMENT": null,
       },
-      "EDUCATION": {
-        "MAJOR": null
+      "LINKEDIN": {
+        "LABEL": null,
+        "WARN": null
+      },
+    },
+    "COMPLETE": {
+      "TITLE": null,
+      "PARA1": null,
+      "BUTTON": {
+        "LOGOUT": null,
+        "PROFILE": null
       }
     },
-    "GENDER": {
-      "MALE": null,
-      "FEMALE": null,
-      "OTHER": null
+    "ATTACHMENTS": {
+      "TITLE": null,
+      "EMPTYSTATE": null,
+      "LABEL": {
+        "NAME": null,
+        "CREATEDBY": null,
+        "CREATEDDATE": null
+      },
+      "CV": {
+        "NAME": null,
+        "EXPLANATION": null
+      },
+      "OTHER": {
+        "NAME": null,
+        "EXPLANATION": null
+      },
+      "WARN": {
+        "MOBILE": null
+      }
+    }
+  },
+  "PROFILE": {
+    "CONTACT": {
+      "TITLE": null,
+      "EMAIL": null,
+      "PHONE": null,
+      "WHATSAPP": null
     },
-    "EDUCATIONTYPE": {
-      "ASSOCIATE": null,
-      "VOCATIONAL": null,
-      "BACHELOR": null,
-      "MASTERS": null,
-      "DOCTORAL": null
+    "PERSONAL": {
+      "TITLE": null,
+      "FIRSTNAME": null,
+      "LASTNAME": null,
+      "GENDER": null,
+      "DOB": null,
+      "COUNTRY": null,
+      "CITY": null,
+      "STATE": null,
+      "YEAROFARRIVAL": null,
+      "NATIONALITY": null
+    },
+    "OCCUPATIONS": {
+      "TITLE": null
+    },
+    "EXPERIENCE": {
+      "TITLE": null
+    },
+    "EDUCATION": {
+      "TITLE": null
+    },
+    "CERTIFICATIONS": {
+      "TITLE": null
+    },
+    "LANGUAGES": {
+      "TITLE": null
+    },
+    "OTHER": {
+      "TITLE": null,
+      "ADDITIONALINFO": null,
+      "SURVEY": null,
+      "SURVEYCOMMENT": null,
+      "LINKEDIN": null
+    },
+    "UPLOAD": {
+      "TITLE": null
+    },
+    "BUTTON": {
+      "EDIT": null,
+      "CV": null
+    }
+  },
+  "EDIT": {
+    "TITLE": {
+      "EDITING": null,
+      "CONTACT": null,
+      "OCCUPATIONS": null,
+      "PERSONAL": null,
+      "OCCUPATION": null,
+      "EXPERIENCE": null,
+      "EDUCATION": null,
+      "LANGUAGES": null,
+      "CERTIFICATIONS": null,
+      "ADDITIONAL": null,
+      "UPLOAD": null
+    }
+  },
+  "FORM": {
+    "LABEL": {
+      "OPTIONAL": null,
+      "CLEAR": null,
+      "CHOOSE": null,
+      "SAVE": null,
+      "APPROX": null
+    },
+    "PLACEHOLDER": {
+      "SELECT": null,
+      "SELECTORTYPE": null
     },
     "ERROR": {
-      "EMAIL_TAKEN": null,
-      "PHONE_TAKEN": null,
-      "WHATSAPP_TAKEN": null,
-      "USER_DEACTIVATED": null,
-      "INVALID_PASSWORD_MATCH": null,
-      "PASSWORD_EXPIRED": null,
-      "MISSING_OBJECT": null,
-      "MISSING_WORK_EXPERIENCE": null,
-      "INVALID_PASSWORD_TOKEN": null,
-      "INVALID_PASSWORD_FORMAT": null,
-      "FILE_DOWNLOAD_FAILED": null,
-      "EXPIRED_PASSWORD_TOKEN": null,
-      "ENTITY_REFERENCED": null,
-      "UNKNOWN_OCCUPATION": null,
-      "ALLOW_POPUPS": null,
-      "CRITERIA_INVALID": {
-        "HEADING": null,
-        "LINK": null,
-      },
+      "REQUIRED": null,
+      "EMAIL": null,
+      "MINVALUE": null,
+      "MINLENGTH": null,
+      "DATE": null,
+      "INVALIDDATERANGE": null
     },
+    "JOBEXPERIENCE": {
+      "LABEL": {
+        "CANDIDATEOCCUPATIONID": null,
+        "COMPANYNAME": null,
+        "COUNTRY": null,
+        "STARTDATE": null,
+        "ENDDATE": null,
+        "ROLE": null,
+        "DESCRIPTION": null,
+        "CONTRACTTYPE": {
+          "TITLE": null,
+          "FULLTIME": null,
+          "PARTTIME": null
+        },
+        "EMPLOYMENTTYPE": {
+          "TITLE": null,
+          "PAID": null,
+          "VOLUNTARY": null
+        }
+      },
+      "BUTTON": {
+        "ADD": null,
+        "CANCEL": null,
+        "SAVE": null
+      }
+    },
+    "EDUCATION": {
+      "EDUCATIONTYPE": null,
+      "EDUCATIONMAJORID": null,
+      "COURSENAME": null,
+      "COUNTRYID": null,
+      "INSTITUTION": null,
+      "LENGTHOFCOURSEYEARS": null,
+      "DATECOMPLETED": null,
+      "INCOMPLETE": null
+    },
+    "ATTACHMENT": {
+      "LABEL": {
+        "DROP": null,
+        "OR": null,
+        "BROWSE": {
+          "FILE": null,
+          "IMAGE": null,
+        },
+        "UPLOADING": null,
+        "PHOTO": null
+      }
+    }
+  },
+  "CARD": {
+    "JOBEXPERIENCE": {
+      "LABEL": {
+        "FULLTIME": null,
+        "PARTTIME": null,
+        "PAID": null,
+        "VOLUNTEER": null
+      }
+    },
+    "EDUCATION": {
+      "MAJOR": null
+    }
+  },
+  "GENDER": {
+    "MALE": null,
+    "FEMALE": null,
+    "OTHER": null
+  },
+  "EDUCATIONTYPE": {
+    "ASSOCIATE": null,
+    "VOCATIONAL": null,
+    "BACHELOR": null,
+    "MASTERS": null,
+    "DOCTORAL": null
+  },
+  "ERROR": {
+    "EMAIL_TAKEN": null,
+    "PHONE_TAKEN": null,
+    "WHATSAPP_TAKEN": null,
+    "USER_DEACTIVATED": null,
+    "INVALID_PASSWORD_MATCH": null,
+    "PASSWORD_EXPIRED": null,
+    "MISSING_OBJECT": null,
+    "MISSING_WORK_EXPERIENCE": null,
+    "INVALID_PASSWORD_TOKEN": null,
+    "INVALID_PASSWORD_FORMAT": null,
+    "FILE_DOWNLOAD_FAILED": null,
+    "EXPIRED_PASSWORD_TOKEN": null,
+    "ENTITY_REFERENCED": null,
+    "UNKNOWN_OCCUPATION": null,
+    "ALLOW_POPUPS": null,
+    "CRITERIA_INVALID": {
+      "HEADING": null,
+      "LINK": null,
+    },
+  },
   "CONFIRMATION": {
     "YES": null,
     "NO": null,
     "UNSURE": null,
-    },
+  },
   "TASK": {
     "COLLABORATIONAGREEMENT": {
       "NAME": null,
@@ -584,6 +584,47 @@ const ALL_FIELDS = {
       "NAME": null,
       "DESCRIPTION": null,
     },
+  },
+  "TASKS": {
+    "TAB": null,
+    "VIEWHELP": null,
+    "ONGOING": {
+      "HEADER": null,
+      "NOTE": null,
+    },
+    "COMPLETED": {
+      "HEADER": null,
+      "NOTE": null,
+    },
+    "TABLE": {
+      "NAME": null,
+      "REQUIRED": null,
+      "DUEDATE": null,
+      "COMPLETED": null,
+      "ABANDONED": null,
+    },
+    "UPLOAD" : {
+      "HEADER": null,
+      "LOADING": null,
+      "SUCCESS": null
+    },
+    "QUESTION": {
+      "HEADER": null,
+      "LABEL": null,
+    },
+    "YESNOQUESTION": {
+      "HEADER": null,
+      "LABEL": null,
+    },
+    "SIMPLE": {
+      "HEADER": null,
+      "LABEL": null,
+      "NOTE": null,
+      "DOC": {
+        "LABEL": null,
+        "NOTE": null,
+      },
+    },
     "COMMENT": {
       "HEADER": null,
       "LABEL": null,
@@ -592,6 +633,15 @@ const ALL_FIELDS = {
         "NOTE": null,
       }
     },
-    "SUBMIT": null,
+    "TASK": {
+      "REQUIRED": null,
+      "DUEDATE": null,
+      "ABANDONEDDATE": null,
+      "COMPLETEDDATE": null,
+      "OVERDUE": null,
+      "VIEWHELP": null,
+      "RETURN": null,
+      "SUBMIT": null,
+    },
   }
-  };
+}
