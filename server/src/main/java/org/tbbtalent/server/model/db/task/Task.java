@@ -50,6 +50,13 @@ public interface Task extends Auditable {
     String getDescription();
 
     /**
+     * Displayed name describing the task. For Question tasks, this is the question to be answered.
+     * @return Displayed name of task (question for Question tasks).
+     */
+    @NonNull
+    String getDisplayName();
+
+    /**
      * Link which refers to help for a candidate on what they need to do to complete this task.
      * If a help link exists it will be linked to in a help button in the candidate task view.
      * If linking to a document, this can be embedded into the page in simple task's (e.g. display document in page to allow checkbox agreement).
@@ -65,8 +72,9 @@ public interface Task extends Auditable {
     Long getId();
 
     /**
-     * Name describing the task. For Question tasks, this is the question to be answered.
-     * @return Name of task (question for Question tasks).
+     * Name of task. For Question tasks, this name is used to store the answer as a property
+     * (if needed). The name must be unique.
+     * @return Name of task.
      */
     @NonNull
     String getName();

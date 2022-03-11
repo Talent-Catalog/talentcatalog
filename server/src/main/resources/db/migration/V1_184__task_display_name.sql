@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,18 +13,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+alter table task add column display_name text;
 
-package org.tbbtalent.server.request.task;
+update task set display_name = name;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class CreateTaskRequest {
-    private String name;
-    private String description;
-    private String timeframe;
-    private boolean adminOnly;
-    private boolean list;
-}
+create unique index task_name_uindex on task (name);

@@ -21,6 +21,7 @@ export interface Task extends Auditable {
   name: string;
   daysToComplete: number;
   description: string;
+  displayName: string;
   optional: boolean;
   helpLink: string;
   taskType: TaskType;

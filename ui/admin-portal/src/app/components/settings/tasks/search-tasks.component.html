@@ -56,6 +56,7 @@
     <tr>
       <th>Task Id</th>
       <th>Task Name</th>
+      <th>Task Display Name</th>
       <th>Task Description</th>
       <th>Optional</th>
       <th>Task Type</th>
@@ -71,6 +72,7 @@
     <tr *ngFor="let ta of results?.content">
       <td> {{ta.id}}</td>
       <td>{{ta.name}}</td>
+      <td>{{ta.displayName}}</td>
       <td>{{ta.description}}</td>
       <td>{{ta.optional}}</td>
       <td>{{ta.taskType}}</td>
