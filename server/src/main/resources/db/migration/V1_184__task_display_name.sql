@@ -13,5 +13,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-alter table task rename column name to display_name;
-alter table task add column name text not null unique default display_name;
+alter table task add column display_name text;
+
+update task set display_name = name;
+
+create unique index task_name_uindex on task (name);
