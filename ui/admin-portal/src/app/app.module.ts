@@ -252,7 +252,6 @@ import {TasksMonitorComponent} from './components/util/tasks-monitor/tasks-monit
 import {ViewCandidateMediaWillingnessComponent} from './components/candidates/view/media/view-candidate-media-willingness.component';
 import {EditCandidateMediaWillingnessComponent} from './components/candidates/view/media/edit/edit-candidate-media-willingness.component';
 import {ViewResponseComponent} from './components/candidates/view/tasks/view-response/view-response.component';
-import {TaskTranslationsComponent} from './components/settings/translations/tasks/task-translations.component';
 
 @NgModule({
   declarations: [
@@ -482,8 +481,7 @@ import {TaskTranslationsComponent} from './components/settings/translations/task
     TasksMonitorComponent,
     ViewCandidateMediaWillingnessComponent,
     EditCandidateMediaWillingnessComponent,
-    ViewResponseComponent,
-    TaskTranslationsComponent
+    ViewResponseComponent
   ],
   imports: [
     BrowserModule,
