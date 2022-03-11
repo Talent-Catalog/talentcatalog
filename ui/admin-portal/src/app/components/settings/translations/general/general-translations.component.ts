@@ -35,6 +35,8 @@ export class GeneralTranslationsComponent implements OnInit {
   languages: SystemLanguage[];
   systemLanguage: SystemLanguage;
   fields;
+  fieldsFiltered;
+  keys;
 
   saving: boolean;
   saveError: any;
@@ -58,6 +60,7 @@ export class GeneralTranslationsComponent implements OnInit {
         this.error = error;
       }
     )
+    this.keys = Object.keys(ALL_FIELDS);
   }
 
   setLanguage(language: SystemLanguage) {
@@ -69,7 +72,8 @@ export class GeneralTranslationsComponent implements OnInit {
         this.systemLanguage = language;
         this.fields = [];
         this.getFields(this.fields, null, ALL_FIELDS, translations);
-    }, (error) => {
+        this.fieldsFiltered = this.fields;
+      }, (error) => {
         this.loading = false;
         this.error = error;
       }
@@ -122,6 +126,14 @@ export class GeneralTranslationsComponent implements OnInit {
 
   isAnAdmin(): boolean {
     return isAdminUser(this.authService);
+  }
+
+  filterItems($event) {
+    if ($event != null) {
+      this.fieldsFiltered = this.fields.filter(f => f.path.startsWith($event.toLowerCase()))
+    } else {
+      this.fieldsFiltered = this.fields;
+    }
   }
 }
 
@@ -562,5 +574,24 @@ const ALL_FIELDS = {
     "YES": null,
     "NO": null,
     "UNSURE": null,
-    }
+    },
+  "TASK": {
+    "COLLABORATIONAGREEMENT": {
+      "NAME": null,
+      "DESCRIPTION": null
+    },
+    "INFORELEASEFORM": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "COMMENT": {
+      "HEADER": null,
+      "LABEL": null,
+      "ABANDONED": {
+        "LABEL": null,
+        "NOTE": null,
+      }
+    },
+    "SUBMIT": null,
+  }
   };

@@ -129,6 +129,7 @@ export enum TaskType {
 }
 
 export enum UploadType {
+  collaborationAgreement,
   conductEmployer,
   conductEmployerTrans,
   conductMinistry,
@@ -139,6 +140,8 @@ export enum UploadType {
   degreeTranscript,
   degreeTranscriptTrans,
   englishExam,
+  idCard,
+  infoReleaseForm,
   licencing,
   licencingTrans,
   offer,
@@ -154,6 +157,7 @@ export enum UploadType {
   residenceAttestTrans,
   studiedInEnglish,
   other,
+  unhcrUnrwaRegCard,
   vaccination,
   vaccinationTrans
 }
