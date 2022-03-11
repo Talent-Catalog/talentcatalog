@@ -574,5 +574,24 @@ const ALL_FIELDS = {
     "YES": null,
     "NO": null,
     "UNSURE": null,
-    }
+    },
+  "TASK": {
+    "COLLABORATIONAGREEMENT": {
+      "NAME": null,
+      "DESCRIPTION": null
+    },
+    "INFORELEASEFORM": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "COMMENT": {
+      "HEADER": null,
+      "LABEL": null,
+      "ABANDONED": {
+        "LABEL": null,
+        "NOTE": null,
+      }
+    },
+    "SUBMIT": null,
+  }
   };
