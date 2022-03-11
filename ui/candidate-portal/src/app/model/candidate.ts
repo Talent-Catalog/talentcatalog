@@ -87,7 +87,7 @@ export function taskAssignmentSort(a: TaskAssignment, b: TaskAssignment) {
 
   if (!isOngoingTaskAssignment(a) && !isOngoingTaskAssignment(b)) {
     //Neither task assignment is ongoing, just sort by task name
-    return a.task.name.localeCompare(b.task.name);
+    return a.task.displayName.localeCompare(b.task.displayName);
   } else if (isOngoingTaskAssignment(a) && isOngoingTaskAssignment(b)) {
     //Both task assignments are ongoing, sort by due date, then task name
     //Strip any time off dueDate
@@ -95,7 +95,7 @@ export function taskAssignmentSort(a: TaskAssignment, b: TaskAssignment) {
     const bDateOnly = toDateOnly(b.dueDate);
     if (aDateOnly.getTime() === bDateOnly.getTime()) {
       //Dates are the same, sort by task name
-      return a.task.name.localeCompare(b.task.name)
+      return a.task.displayName.localeCompare(b.task.displayName)
     } else {
       //Dates are different, sort by date - most recent first
       return aDateOnly > bDateOnly ? 1 : -1;
@@ -112,6 +112,7 @@ export interface Task {
   name: string;
   daysToComplete: number,
   description: string;
+  displayName: string;
   helpLink: string;
   optional: boolean;
   taskType: TaskType;

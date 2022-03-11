@@ -21,7 +21,7 @@
       <li *ngFor="let task of results?.content; let i = index"
           [class.selected]="task === selectedTask"
           (click)="onSelect(task)">
-        {{task.name}}
+        {{task.displayName}}
       </li>
 
     </ul>

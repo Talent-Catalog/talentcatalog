@@ -4,7 +4,7 @@
     <div class="d-flex pt-3">
       <div class="w-75 align-self-center pr-4">
         <div class="mb-1">
-          <strong>{{task?.name}} </strong><span>- {{task?.taskType}}</span>
+          <strong>{{task?.displayName}} </strong><span>- {{task?.taskType}}</span>
         </div>
         <div *ngIf="task.uploadType" class="small">
             File: <span>{{uploadTypeString}}</span>

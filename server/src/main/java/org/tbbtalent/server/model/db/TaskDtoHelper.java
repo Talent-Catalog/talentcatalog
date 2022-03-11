@@ -45,6 +45,7 @@ public class TaskDtoHelper {
             .add("name")
             .add("daysToComplete")
             .add("description")
+            .add("displayName")
             .add("optional")
             .add("helpLink")
             .add("taskType")
