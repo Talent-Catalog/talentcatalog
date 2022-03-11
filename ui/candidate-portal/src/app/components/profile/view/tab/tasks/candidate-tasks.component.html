@@ -38,7 +38,7 @@
           <tbody>
           <tr *ngFor="let ta of ongoingTasks" (click)="selectTask(ta)">
             <td>
-              <div class="link underline"><strong>{{displayTaskType(ta)}}</strong> {{ta.task.name}}</div>
+              <div class="link underline"><strong>{{ 'TASKS.TYPES.' + displayTaskType(ta) | uppercase | translate }}</strong>: {{ 'TASK.'+  ta.task.uploadType + '.NAME' | uppercase | translate }}</div>
             </td>
             <td class="text-center">
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
@@ -82,7 +82,7 @@
 
           <tbody>
           <tr *ngFor="let ta of completedOrAbandonedTasks" (click)="selectTask(ta)">
-            <td><div><strong>{{displayTaskType(ta)}}</strong> {{ta.task.name}}</div></td>
+            <td><div><strong>{{ 'TASKS.TYPES.' + displayTaskType(ta) | uppercase | translate }}</strong>: {{ 'TASK.'+  ta.task.uploadType + '.NAME' | uppercase | translate }}</div></td>
             <td class="date-size">{{ta.completedDate | date}}</td>
             <td class="date-size">{{ta.abandonedDate | date}}</td>
           </tr>

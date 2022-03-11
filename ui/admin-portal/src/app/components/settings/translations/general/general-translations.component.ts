@@ -633,6 +633,10 @@ const ALL_FIELDS = {
         "NOTE": null,
       }
     },
+    "TYPES": {
+      "UPLOAD": null,
+      "QUESTION": null,
+    },
     "TASK": {
       "REQUIRED": null,
       "DUEDATE": null,
