@@ -1057,13 +1057,27 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeUnhcrStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+    public List<DataRow> computeUnhcrRegisteredStats(LocalDate dateFrom, LocalDate dateTo,
+        List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByUnhcrRegisteredOrderByCount(
+            sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeUnhcrRegisteredStats(LocalDate dateFrom, LocalDate dateTo,
+        Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByUnhcrRegisteredOrderByCount(
+            sourceCountryIds, dateFrom, dateTo, candidateIds));
+    }
+
+    @Override
+    public List<DataRow> computeUnhcrStatusStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.countByUnhcrStatusOrderByCount(
             sourceCountryIds, dateFrom, dateTo));
     }
 
     @Override
-    public List<DataRow> computeUnhcrStats(LocalDate dateFrom, LocalDate dateTo,
+    public List<DataRow> computeUnhcrStatusStats(LocalDate dateFrom, LocalDate dateTo,
         Set<Long> candidateIds, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.countByUnhcrStatusOrderByCount(
             sourceCountryIds, dateFrom, dateTo, candidateIds));
