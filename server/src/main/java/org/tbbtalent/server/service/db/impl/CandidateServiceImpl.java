@@ -1057,6 +1057,19 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public List<DataRow> computeUnhcrStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByUnhcrStatusOrderByCount(
+            sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeUnhcrStats(LocalDate dateFrom, LocalDate dateTo,
+        Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByUnhcrStatusOrderByCount(
+            sourceCountryIds, dateFrom, dateTo, candidateIds));
+    }
+
+    @Override
     public List<DataRow> computeLanguageStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
         List<DataRow> rows = toRows(candidateRepository.
                 countByLanguageOrderByCount(
@@ -1070,6 +1083,30 @@ public class CandidateServiceImpl implements CandidateService {
                 countByLanguageOrderByCount(
                         genderStr(gender), sourceCountryIds, dateFrom, dateTo, candidateIds));
         return limitRows(rows, 15);
+    }
+
+    @Override
+    public List<DataRow> computeLinkedInStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countLinkedInByCreatedDateOrderByCount(
+            sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeLinkedInStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countLinkedInByCreatedDateOrderByCount(
+            sourceCountryIds, dateFrom, dateTo, candidateIds));
+    }
+
+    @Override
+    public List<DataRow> computeLinkedInExistsStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByLinkedInExistsOrderByCount(
+            sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeLinkedInExistsStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByLinkedInExistsOrderByCount(
+            sourceCountryIds, dateFrom, dateTo, candidateIds));
     }
 
     @Override
