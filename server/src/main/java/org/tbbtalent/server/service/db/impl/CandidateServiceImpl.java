@@ -1073,6 +1073,30 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public List<DataRow> computeLinkedInStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countLinkedInByCreatedDateOrderByCount(
+            sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeLinkedInStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countLinkedInByCreatedDateOrderByCount(
+            sourceCountryIds, dateFrom, dateTo, candidateIds));
+    }
+
+    @Override
+    public List<DataRow> computeLinkedInExistsStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByLinkedInExistsOrderByCount(
+            sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeLinkedInExistsStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByLinkedInExistsOrderByCount(
+            sourceCountryIds, dateFrom, dateTo, candidateIds));
+    }
+
+    @Override
     public List<DataRow> computeMaxEducationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.
                 countByMaxEducationLevelOrderByCount(

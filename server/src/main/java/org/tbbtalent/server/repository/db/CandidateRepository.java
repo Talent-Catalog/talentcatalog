@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -61,9 +61,9 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      * "lazy" loaded which means that they will not be loaded without
      * this join fetch.
      * <p/>
-     * Note that Hibernate - the standard JPA provider - generally doesn't like 
-     * "join fetch"ing for more than one association at a time. 
-     * There are ways around that - eg by using Set's instead of List's - but 
+     * Note that Hibernate - the standard JPA provider - generally doesn't like
+     * "join fetch"ing for more than one association at a time.
+     * There are ways around that - eg by using Set's instead of List's - but
      * then you run into cartesian product issues.
      * See https://vladmihalcea.com/hibernate-multiplebagfetchexception/
      * @param id ID of candidate to be loaded from the database.
@@ -110,7 +110,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Modifying
     @Query("update Candidate c set c.textSearchId = null")
     void clearAllCandidateTextSearchIds();
-    
+
     /**
      * ADMIN PORTAL DISPLAY CANDIDATE METHODS: includes source country restrictions.
      */
@@ -133,7 +133,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     /**
      * Note that we need to pass in a CandidateStatus.deleted constant in the
      * "exclude" parameter because I haven't been able to just put
-     * CanadidateStatus.deleted constant directly into the query. 
+     * CanadidateStatus.deleted constant directly into the query.
      * Theoretically the fully qualified name should work eg
      * " and c.status <> org.tbbtalent.server.model.db.CandidateStatus.deleted"
      * See https://stackoverflow.com/questions/8217144/problems-with-making-a-query-when-using-enum-in-entity
@@ -201,19 +201,19 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      */
 
     String candidatesCondition = " and c.id in (:candidateIds)";
-    String notTestCandidateCondition = 
+    String notTestCandidateCondition =
         " and c.id NOT IN (select candidate_id from candidate_saved_list" +
         " where saved_list_id = (select id from saved_list where name = 'TestCandidates' and global = true))";
-    String countingStandardFilter = 
-        "u.status = 'active' and c.status != 'draft'" + notTestCandidateCondition;
+    String countingStandardFilter =
+        " u.status = 'active' and c.status != 'draft'" + notTestCandidateCondition;
     String dateConditionFilter = " and u.created_date >= (:dateFrom) and u.created_date <= (:dateTo)";
-    
+
     //Stats that are not based on predefined candidate ids, should exclude ineligible.
-    //(With candidate ids, it is up to the associated list or search to decide whether or not to 
+    //(With candidate ids, it is up to the associated list or search to decide whether or not to
     // exclude ineligible)
     String excludeIneligible = " and c.status != 'ineligible'";
-    
-    //Note that I have been forced to go to native queries for these more 
+
+    //Note that I have been forced to go to native queries for these more
     //complex queries. The non native queries seem a bit buggy.
     //Anyway - I couldn't get them working. Simpler to use normal SQL. JC.
 
@@ -266,18 +266,33 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
         @Param("dateTo") LocalDate dateTo,
                                                   @Param("candidateIds") Set<Long> candidateIds);
 
+    String countLinkedInByCreatedDateSelectSQL = countByCreatedDateSelectSQL +
+    " and linked_in_link is not null";
+    @Query(value = countLinkedInByCreatedDateSelectSQL + excludeIneligible +
+            countByCreatedDateGroupBySQL, nativeQuery = true)
+    List<Object[]> countLinkedInByCreatedDateOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                  @Param("dateFrom") LocalDate dateFrom,
+                                                  @Param("dateTo") LocalDate dateTo);
+
+    @Query(value = countLinkedInByCreatedDateSelectSQL + candidatesCondition +
+            countByCreatedDateGroupBySQL, nativeQuery = true)
+    List<Object[]> countLinkedInByCreatedDateOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+                                                  @Param("candidateIds") Set<Long> candidateIds);
+
 
     /***************************************************************************
         Count By Gender
      **************************************************************************/
-    String countByGenderSelectSQL = 
+    String countByGenderSelectSQL =
             "select gender, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
             " where c.country_id in (:sourceCountryIds)" +
                     " and " + countingStandardFilter + dateConditionFilter;
     String countByGenderGroupBySQL =
                     " group by gender order by PeopleCount desc";
-    
+
     @Query(value = countByGenderSelectSQL + excludeIneligible +
             countByGenderGroupBySQL, nativeQuery = true)
     List<Object[]> countByGenderOrderByCount(
@@ -288,6 +303,34 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query(value = countByGenderSelectSQL + candidatesCondition +
             countByGenderGroupBySQL, nativeQuery = true)
     List<Object[]> countByGenderOrderByCount(
+            @Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+            @Param("candidateIds") Set<Long> candidateIds);
+
+    /***************************************************************************
+        Count By LinkedIn
+     **************************************************************************/
+    String countByLinkedInSelectSQL =
+            "select case when " +
+            " linked_in_link is not null then 'Has link' else 'No link' end as haslink," +
+            " count(distinct c) as PeopleCount" +
+            " from candidate c left join users u on c.user_id = u.id" +
+            " where c.country_id in (:sourceCountryIds)" +
+                    " and " + countingStandardFilter + dateConditionFilter;
+    String countByLinkedInGroupBySQL =
+                    " group by haslink order by PeopleCount desc";
+
+    @Query(value = countByLinkedInSelectSQL + excludeIneligible +
+            countByLinkedInGroupBySQL, nativeQuery = true)
+    List<Object[]> countByLinkedInExistsOrderByCount(
+            @Param("sourceCountryIds") List<Long> sourceCountryIds,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo);
+
+    @Query(value = countByLinkedInSelectSQL + candidatesCondition +
+            countByLinkedInGroupBySQL, nativeQuery = true)
+    List<Object[]> countByLinkedInExistsOrderByCount(
             @Param("sourceCountryIds") List<Long> sourceCountryIds,
         @Param("dateFrom") LocalDate dateFrom,
         @Param("dateTo") LocalDate dateTo,
