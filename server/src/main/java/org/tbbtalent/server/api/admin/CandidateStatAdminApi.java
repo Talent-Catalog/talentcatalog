@@ -164,6 +164,11 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " links by candidate registration date",
             this.candidateService.computeLinkedInStats(dateFrom, dateTo, sourceCountryIds), chartType));
 
+        title = "UNHCR Status";
+        chartType = "bar";
+        statReports.add(new StatReport(title,
+            this.candidateService.computeUnhcrStats(dateFrom, dateTo, sourceCountryIds), chartType));
+
         title = "Nationalities by Country";
         statReports.add(new StatReport(title,
                 this.candidateService.computeNationalityStats(null, null, dateFrom, dateTo, sourceCountryIds)));
@@ -292,6 +297,11 @@ public class CandidateStatAdminApi {
             this.candidateService.computeLinkedInExistsStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
         statReports.add(new StatReport(title + " links by candidate registration date",
             this.candidateService.computeLinkedInStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
+
+        title = "UNHCR Status";
+        chartType = "bar";
+        statReports.add(new StatReport(title,
+            this.candidateService.computeUnhcrStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
 
         title = "Nationalities";
         statReports.add(new StatReport(title,
