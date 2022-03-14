@@ -164,10 +164,11 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " links by candidate registration date",
             this.candidateService.computeLinkedInStats(dateFrom, dateTo, sourceCountryIds), chartType));
 
-        title = "UNHCR Status";
-        chartType = "bar";
-        statReports.add(new StatReport(title,
-            this.candidateService.computeUnhcrStats(dateFrom, dateTo, sourceCountryIds), chartType));
+        //TODO JC Remove UNHCR stats until we have sorted out the problems with the way we store this
+        //        title = "UNHCR Status";
+//        chartType = "bar";
+//        statReports.add(new StatReport(title,
+//            this.candidateService.computeUnhcrStats(dateFrom, dateTo, sourceCountryIds), chartType));
 
         title = "Nationalities by Country";
         statReports.add(new StatReport(title,
