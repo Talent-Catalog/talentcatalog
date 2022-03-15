@@ -112,6 +112,8 @@ public interface CandidateService {
 
     Candidate updateCandidateMedia(long id, UpdateCandidateMediaRequest request);
 
+    Candidate updateCandidateRegistration(long id, UpdateCandidateRegistrationRequest request);
+
     void updateCandidateStatus(UpdateCandidateStatusRequest request);
 
     void updateCandidateStatus(SavedList savedList, UpdateCandidateStatusInfo info);
@@ -261,6 +263,18 @@ public interface CandidateService {
 
     List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
+
+    List<DataRow> computeUnhcrRegisteredStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeUnhcrRegisteredStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
+
+    List<DataRow> computeUnhcrStatusStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeUnhcrStatusStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
+
+    List<DataRow> computeLinkedInExistsStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeLinkedInExistsStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
+
+    List<DataRow> computeLinkedInStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeLinkedInStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);

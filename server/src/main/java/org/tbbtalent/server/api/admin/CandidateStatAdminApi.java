@@ -135,8 +135,10 @@ public class CandidateStatAdminApi {
         String chartType;
 
         List<StatReport> statReports = new ArrayList<>();
+
+        title = "Gender";
         chartType = "bar";
-        statReports.add(new StatReport("Gender",
+        statReports.add(new StatReport(title,
                 this.candidateService.computeGenderStats(dateFrom, dateTo, sourceCountryIds), chartType));
 
         title = "Registrations";
@@ -154,6 +156,20 @@ public class CandidateStatAdminApi {
                 this.candidateService.computeBirthYearStats(Gender.male, dateFrom, dateTo, sourceCountryIds), chartType));
         statReports.add(new StatReport(title + " (female)",
                 this.candidateService.computeBirthYearStats(Gender.female, dateFrom, dateTo, sourceCountryIds), chartType));
+
+        title = "LinkedIn";
+        chartType = "bar";
+        statReports.add(new StatReport(title + " links",
+            this.candidateService.computeLinkedInExistsStats(dateFrom, dateTo, sourceCountryIds), chartType));
+        statReports.add(new StatReport(title + " links by candidate registration date",
+            this.candidateService.computeLinkedInStats(dateFrom, dateTo, sourceCountryIds), chartType));
+
+        title = "UNHCR";
+        chartType = "bar";
+        statReports.add(new StatReport(title + "Registered",
+            this.candidateService.computeUnhcrRegisteredStats(dateFrom, dateTo, sourceCountryIds), chartType));
+        statReports.add(new StatReport(title + "Status",
+            this.candidateService.computeUnhcrStatusStats(dateFrom, dateTo, sourceCountryIds), chartType));
 
         title = "Nationalities by Country";
         statReports.add(new StatReport(title,
@@ -276,6 +292,20 @@ public class CandidateStatAdminApi {
                 this.candidateService.computeBirthYearStats(Gender.male, dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
         statReports.add(new StatReport(title + " (female)",
                 this.candidateService.computeBirthYearStats(Gender.female, dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
+
+        title = "LinkedIn";
+        chartType = "bar";
+        statReports.add(new StatReport(title + " links",
+            this.candidateService.computeLinkedInExistsStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
+        statReports.add(new StatReport(title + " links by candidate registration date",
+            this.candidateService.computeLinkedInStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
+
+        title = "UNHCR";
+        chartType = "bar";
+        statReports.add(new StatReport(title + "Registered",
+            this.candidateService.computeUnhcrRegisteredStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
+        statReports.add(new StatReport(title + "Status",
+            this.candidateService.computeUnhcrStatusStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
 
         title = "Nationalities";
         statReports.add(new StatReport(title,

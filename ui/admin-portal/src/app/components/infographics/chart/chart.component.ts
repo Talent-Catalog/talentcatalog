@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {ChartOptions, ChartType} from "chart.js";
-import {Label, MultiDataSet} from "ng2-charts";
+import {Label, MultiDataSet, SingleDataSet} from "ng2-charts";
 import {DataRow} from "../../../model/data-row";
 
 @Component({
@@ -32,7 +32,7 @@ export class ChartComponent implements OnInit {
 
   chartLabels: Label[];
   chartOptions: ChartOptions = {};
-  chartMultiData: MultiDataSet;
+  chartDataSet: SingleDataSet;
 
   constructor() { }
 
@@ -57,7 +57,7 @@ export class ChartComponent implements OnInit {
           }
         };
       }
-      this.chartMultiData = [amountArray];
+      this.chartDataSet = amountArray;
     }
 
   }
