@@ -199,6 +199,14 @@ public class CandidateAdminApi {
         return builder.build(candidate);
     }
 
+    @PutMapping("{id}/registration")
+    public Map<String, Object> updateRegistration(@PathVariable("id") long id,
+                                                    @RequestBody UpdateCandidateRegistrationRequest request) {
+        Candidate candidate = this.candidateService.updateCandidateRegistration(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
     @DeleteMapping("{id}")
     public boolean delete(@PathVariable("id") long id) {
         return this.candidateService.deleteCandidate(id);

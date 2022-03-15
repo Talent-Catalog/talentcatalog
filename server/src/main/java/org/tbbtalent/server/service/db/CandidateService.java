@@ -112,6 +112,8 @@ public interface CandidateService {
 
     Candidate updateCandidateMedia(long id, UpdateCandidateMediaRequest request);
 
+    Candidate updateCandidateRegistration(long id, UpdateCandidateRegistrationRequest request);
+
     void updateCandidateStatus(UpdateCandidateStatusRequest request);
 
     void updateCandidateStatus(SavedList savedList, UpdateCandidateStatusInfo info);
