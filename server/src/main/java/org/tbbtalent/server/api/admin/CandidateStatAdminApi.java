@@ -300,7 +300,7 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " links by candidate registration date",
             this.candidateService.computeLinkedInStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
 
-        title = "UNHCR Status";
+        title = "UNHCR";
         chartType = "bar";
         statReports.add(new StatReport(title + "Registered",
             this.candidateService.computeUnhcrRegisteredStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
