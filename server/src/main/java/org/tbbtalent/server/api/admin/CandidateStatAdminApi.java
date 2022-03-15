@@ -166,9 +166,9 @@ public class CandidateStatAdminApi {
 
         title = "UNHCR";
         chartType = "bar";
-        statReports.add(new StatReport(title + "Registered",
+        statReports.add(new StatReport(title + " Registered",
             this.candidateService.computeUnhcrRegisteredStats(dateFrom, dateTo, sourceCountryIds), chartType));
-        statReports.add(new StatReport(title + "Status",
+        statReports.add(new StatReport(title + " Status",
             this.candidateService.computeUnhcrStatusStats(dateFrom, dateTo, sourceCountryIds), chartType));
 
         title = "Nationalities by Country";
@@ -302,9 +302,9 @@ public class CandidateStatAdminApi {
 
         title = "UNHCR";
         chartType = "bar";
-        statReports.add(new StatReport(title + "Registered",
+        statReports.add(new StatReport(title + " Registered",
             this.candidateService.computeUnhcrRegisteredStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
-        statReports.add(new StatReport(title + "Status",
+        statReports.add(new StatReport(title + " Status",
             this.candidateService.computeUnhcrStatusStats(dateFrom, dateTo, candidateIds, sourceCountryIds), chartType));
 
         title = "Nationalities";
