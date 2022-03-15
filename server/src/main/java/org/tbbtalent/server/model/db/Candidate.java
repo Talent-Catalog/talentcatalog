@@ -1822,6 +1822,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         savedList.getCandidateSavedLists().add(csl);
     }
 
+    //TODO JC Move this method to the CandidateService
     public void populateIntakeData(CandidateIntakeDataUpdate data,
                                    @Nullable Candidate partnerCandidate,
                                    @Nullable EducationLevel partnerEduLevel,

@@ -309,13 +309,40 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             @Param("candidateIds") Set<Long> candidateIds);
 
     /***************************************************************************
+        Count By Unhcr Registered
+     **************************************************************************/
+    String countByUnhcrRegisteredSelectSQL =
+            "select unhcr_registered, count(distinct c) as PeopleCount" +
+            " from candidate c left join users u on c.user_id = u.id" +
+            " where c.country_id in (:sourceCountryIds)" +
+                    " and " + countingStandardFilter + dateConditionFilter;
+    String countByUnhcrRegisteredGroupBySQL =
+                    " group by unhcr_registered order by PeopleCount desc";
+
+    @Query(value = countByUnhcrRegisteredSelectSQL + excludeIneligible +
+            countByUnhcrRegisteredGroupBySQL, nativeQuery = true)
+    List<Object[]> countByUnhcrRegisteredOrderByCount(
+            @Param("sourceCountryIds") List<Long> sourceCountryIds,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo);
+
+    @Query(value = countByUnhcrRegisteredSelectSQL + candidatesCondition +
+            countByUnhcrRegisteredGroupBySQL, nativeQuery = true)
+    List<Object[]> countByUnhcrRegisteredOrderByCount(
+            @Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+            @Param("candidateIds") Set<Long> candidateIds);
+
+    /***************************************************************************
         Count By Unhcr Status
      **************************************************************************/
     String countByUnhcrStatusSelectSQL =
             "select unhcr_status, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
             " where c.country_id in (:sourceCountryIds)" +
-                    " and " + countingStandardFilter + dateConditionFilter;
+                    " and " + countingStandardFilter + dateConditionFilter +
+                " and unhcr_status is not null";
     String countByUnhcrStatusGroupBySQL =
                     " group by unhcr_status order by PeopleCount desc";
 
