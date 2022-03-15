@@ -634,10 +634,6 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCountry(country);
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
-        candidate.setExternalId(request.getExternalId());
-        candidate.setExternalIdSource(request.getExternalIdSource());
-        candidate.setUnhcrStatus(request.getUnhcrStatus());
-        candidate.setUnhcrNumber(request.getUnhcrNumber());
         return save(candidate, true);
     }
 
@@ -697,6 +693,26 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setMediaWillingness(request.getMediaWillingness());
+        return save(candidate, true);
+    }
+
+    @Override
+    public Candidate updateCandidateRegistration(long id, UpdateCandidateRegistrationRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        candidate.setExternalId(request.getExternalId());
+        candidate.setExternalIdSource(request.getExternalIdSource());
+        candidate.setUnhcrRegistered(request.getUnhcrRegistered());
+        candidate.setUnhcrStatus(request.getUnhcrStatus());
+        candidate.setUnhcrConsent(request.getUnhcrConsent());
+        candidate.setUnhcrNumber(request.getUnhcrNumber());
+        candidate.setUnrwaRegistered(request.getUnrwaRegistered());
+        candidate.setUnrwaNumber(request.getUnrwaNumber());
         return save(candidate, true);
     }
 
