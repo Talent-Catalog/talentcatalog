@@ -483,8 +483,7 @@ import {EditCandidateRegistrationComponent} from './components/candidates/view/r
     TasksMonitorComponent,
     ViewCandidateMediaWillingnessComponent,
     EditCandidateMediaWillingnessComponent,
-    ViewResponseComponent
-    EditCandidateMediaWillingnessComponent,
+    ViewResponseComponent,
     ViewCandidateRegistrationComponent,
     EditCandidateRegistrationComponent
   ],
