@@ -16,41 +16,28 @@
 
 package org.tbbtalent.server.model.db.task;
 
-import java.util.Set;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
- * Task where candidate is required to upload a file.
- *
- * Specifies information including where the upload will be made to, how it is named,
- * and which file types are allowed.
+ * Task assignment associated with a Question Task.
  *
  * @author John Cameron
  */
-public interface UploadTask extends Task {
-    /**
-     * Type of file being uploaded
-     */
-    @NonNull
-    UploadType getUploadType();
+public interface QuestionTaskAssignment extends TaskAssignment {
 
     /**
-     * Optional subfolder name to upload into. If null, no subfolder is used.
+     * Answer provided to question.
+     * <p/>
+     * Would normally be null if the assignment is not completed.
+     * @return Answer to question
      */
     @Nullable
-    String getUploadSubfolderName();
+    String getAnswer();
 
     /**
-     * Allowable file types (eg pdf, doc, jpg etc). If null, any file type is acceptable.
+     * Set the question's answer
+     * @param answer Answer to question
      */
-    @Nullable
-    //todo This really needs to be known by Angular - maybe lose this. Or keep and throw Exception for bad suffixes
-    Set<String> getUploadableFileTypes();
-
-
-    default TaskType getTaskType() {
-        return TaskType.Upload;
-    }
+    void setAnswer(@Nullable String answer);
 
 }

@@ -26,7 +26,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.model.db.task.UploadType;
 
@@ -60,10 +59,5 @@ public class UploadTaskImpl extends TaskImpl implements UploadTask {
     @Nullable
     @Convert(converter = DelimitedStringsConverter.class)
     private Set<String> uploadableFileTypes;
-
-
-    public TaskType getTaskType() {
-        return TaskType.Upload;
-    }
 
 }

@@ -53,7 +53,12 @@ public interface QuestionTask extends Task {
      * for different kinds of answers - for example {@link YesNoQuestionTask} is for questions
      * where the answer must be a simple yes or no.
      */
-     default boolean validateAnswer(@Nullable String answer) {
+    default boolean validateAnswer(@Nullable String answer) {
          return answer != null;
      }
+
+    default TaskType getTaskType() {
+        return TaskType.Question;
+    }
+
 }

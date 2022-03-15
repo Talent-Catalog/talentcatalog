@@ -27,7 +27,6 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.tbbtalent.server.model.db.task.Task;
-import org.tbbtalent.server.model.db.task.TaskType;
 
 /**
  * Base implementation of all tasks.
@@ -48,18 +47,5 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
     private String displayName;
     private String name;
     private boolean optional;
-
-    /**
-     * Type of task - this encodes the class type - so {@link TaskType#Simple} for a simple task,
-     * {@link TaskType#Upload} for an UploadTask etc.
-     * This allows the class type information of any task to be passed to Angular through JSON
-     * serialization. Otherwise, we lose that type information when tasks objects are returned
-     * through our REST Api to Angular.
-     * <p/>
-     * This method should be overridden by subclasses, to provide their related type.
-     */
-    public TaskType getTaskType() {
-        return TaskType.Simple;
-    }
 
 }

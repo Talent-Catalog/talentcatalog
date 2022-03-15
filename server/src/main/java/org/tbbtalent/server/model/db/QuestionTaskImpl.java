@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.task.QuestionTask;
-import org.tbbtalent.server.model.db.task.TaskType;
 
 /**
  * Default Implementation
@@ -37,9 +36,5 @@ public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
 
     @Nullable
     private String candidateAnswerField;
-
-    public TaskType getTaskType() {
-        return TaskType.Question;
-    }
 
 }

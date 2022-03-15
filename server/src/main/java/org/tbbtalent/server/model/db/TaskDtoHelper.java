@@ -20,14 +20,14 @@ import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
- * DTOs for Tasks
+ * DTOs for Tasks and TaskAssignments
  *
  * @author John Cameron
  */
 public class TaskDtoHelper {
 
     public static DtoBuilder getTaskAssignmentDto() {
-        return new DtoBuilder()
+        return new DtoBuilder("taskType")
             .add("id")
             .add("abandonedDate")
             .add("candidateNotes")
@@ -35,12 +35,12 @@ public class TaskDtoHelper {
             .add("dueDate")
             .add("status")
             .add("task", getTaskDto())
+            .add("answer", TaskType.Question)
             ;
     }
 
     public static DtoBuilder getTaskDto() {
         return new DtoBuilder("taskType")
-            // TODO: other attributes
             .add("id")
             .add("name")
             .add("daysToComplete")

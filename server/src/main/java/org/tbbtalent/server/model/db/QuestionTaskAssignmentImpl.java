@@ -14,28 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db.task;
+package org.tbbtalent.server.model.db;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 
 /**
- * Task where candidate is required to answer a yes/no question.
+ * Default Implementation
  *
  * @author John Cameron
  */
-public interface YesNoQuestionTask extends QuestionTask {
+@Entity(name="QuestionTaskAssignment")
+@DiscriminatorValue("QuestionTask")
+@Getter
+@Setter
+public class QuestionTaskAssignmentImpl extends TaskAssignmentImpl implements
+    QuestionTaskAssignment {
 
-    /**
-     * Validate an answer to the question.
-     * @return True if answer is yes or no.
-     */
-    @Override
-    default boolean validateAnswer(@Nullable String answer) {
-        return "yes".equalsIgnoreCase(answer) || "no".equalsIgnoreCase(answer);
-    }
-
-   default TaskType getTaskType() {
-        return TaskType.YesNoQuestion;
-    }
-
+    @Nullable
+    String answer;
 }

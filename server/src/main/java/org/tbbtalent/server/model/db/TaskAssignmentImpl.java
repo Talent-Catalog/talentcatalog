@@ -33,6 +33,9 @@ import java.time.OffsetDateTime;
 @Entity(name="TaskAssignment")
 @Table(name = "task_assignment")
 @SequenceGenerator(name = "seq_gen", sequenceName = "task_assignment_id_seq", allocationSize = 1)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "task_type")
+@DiscriminatorValue("Task")
 @Getter
 @Setter
 public class TaskAssignmentImpl extends AbstractDomainObject<Long> implements TaskAssignment {

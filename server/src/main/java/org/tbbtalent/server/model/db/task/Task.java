@@ -84,4 +84,18 @@ public interface Task extends Auditable {
      * @return True if optional
      */
     boolean isOptional();
+
+    /**
+     * Type of task - this encodes the class type - so {@link TaskType#Simple} for a simple task,
+     * {@link TaskType#Upload} for an UploadTask etc.
+     * This allows the class type information of any task to be passed to Angular through JSON
+     * serialization. Otherwise, we lose that type information when tasks objects are returned
+     * through our REST Api to Angular.
+     * <p/>
+     * This method should be overridden by extending interfaces, to provide their related type.
+     */
+    default TaskType getTaskType() {
+        return TaskType.Simple;
+    }
+
 }
