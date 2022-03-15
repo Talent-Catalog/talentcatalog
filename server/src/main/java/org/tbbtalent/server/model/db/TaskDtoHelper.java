@@ -32,10 +32,8 @@ public class TaskDtoHelper {
             .add("abandonedDate")
             .add("candidateNotes")
             .add("completedDate")
-            .add("abandonedDate")
             .add("dueDate")
             .add("status")
-            .add("candidateNotes")
             .add("task", getTaskDto())
             ;
     }
@@ -47,12 +45,14 @@ public class TaskDtoHelper {
             .add("name")
             .add("daysToComplete")
             .add("description")
+            .add("displayName")
             .add("optional")
             .add("helpLink")
             .add("taskType")
             .add("uploadType", TaskType.Upload)
             .add("uploadSubfolderName", TaskType.Upload)
             .add("uploadableFileTypes", TaskType.Upload)
+            .add("candidateAnswerField", TaskType.Question)
             .add("createdBy", getUserDto())
             .add("createdDate")
             ;

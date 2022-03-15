@@ -36,7 +36,8 @@
         <div class="form-group">
           <label for="task">Task to assign</label>
           <ng-select id="task" appendTo="body" [formControlName]="'task'" [items]="allTasks"
-                     [clearable]="false" placeholder="Select or type to search..." bindLabel="name"></ng-select>
+                     [groupBy]="'taskType'" [searchFn]="searchTypeOrName" [clearable]="false"
+                     placeholder="Select or type to search..." bindLabel="displayName"></ng-select>
         </div>
 
         <!-- DAYS TO COMPLETE -->
@@ -63,7 +64,7 @@
   <div *ngFor="let t of filteredTaskAssociations;">
     <div class="card mt-2 grey-bg">
       <div class="d-flex justify-content-between align-items-center mx-2 my-1">
-        <p class="small font-weight-light mb-0">{{t.name}}</p>
+        <p class="small font-weight-light mb-0">{{t.displayName}}</p>
         <button type="button" class="float-right close" aria-label="Close" (click)="removeTask(t)">
           <span aria-hidden="true">&times;</span>
         </button>

@@ -20,44 +20,24 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
-import java.time.LocalDate;
-
 /**
- * Request to update a TaskAssignment
+ * Request to update a Question TaskAssignment received through the candidate portal
  *
  * @author John Cameron
  */
 @Getter
 @Setter
-public class UpdateTaskAssignmentRequest {
+public class UpdateQuestionTaskAssignmentRequestCandidate {
 
     /**
-     * Task assignment to update
+     * Answer supplied to question. If not empty and abandoned has not been set, this implies that
+     * the task assignment is complete.
      */
-    long taskAssignmentId;
+    String answer;
 
     /**
-     * Custom due date if supplied (otherwise the due date will be set from the task days to complete)
+     * If task is set as abandoned
      */
-    @Nullable
-    LocalDate dueDate;
-
-    /**
-     * Custom completed date if supplied
-     */
-    @Nullable
-    LocalDate completedDate;
-
-    /**
-     * If task is set as complete or not (admin portal)
-     */
-    @Nullable
-    boolean complete;
-
-    /**
-     * If task is set as complete or not (admin portal)
-     */
-    @Nullable
     boolean abandoned;
 
     /**

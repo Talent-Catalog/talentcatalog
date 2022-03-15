@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,16 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.task;
+create table candidate_property (
+  candidate_id      bigint not null references candidate,
+  name              text not null,
+  value             text,
+  related_task_id   bigint references task,
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class CreateUploadTaskRequest {
-    private String name;
-    private String description;
-    private Integer daysToComplete;
-    private boolean admin;
-}
+--   Name must be unique for a candidate. ie a Candidate cannot have two properties with the same name
+  primary key (candidate_id, name)
+);

@@ -22,12 +22,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.repository.db.TaskRepository;
 import org.tbbtalent.server.repository.db.TaskSpecification;
-import org.tbbtalent.server.request.task.CreateTaskRequest;
-import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
 
@@ -39,14 +36,6 @@ public class TaskServiceImpl implements TaskService {
 
     public TaskServiceImpl(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
-    }
-
-    public TaskImpl createTask(CreateTaskRequest request) {
-        return null;
-    }
-
-    public UploadTaskImpl createUploadTask(CreateUploadTaskRequest request) {
-        return null;
     }
 
     @Override

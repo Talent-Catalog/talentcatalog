@@ -1,0 +1,17 @@
+<section [formGroup]="form">
+  <div class="section-heading">
+    <h5>Answer Question</h5>
+  </div>
+  <div class="card">
+    <div class="form-group">
+      <label for="response">
+        Please select your answer to the question below:
+      </label>
+      <ng-select  id="response" [formControlName]="'response'"
+                  [clearable]="false" placeholder="Select...">
+        <ng-option [value]="'Yes'">Yes</ng-option>
+        <ng-option [value]="'No'">No</ng-option>
+      </ng-select>
+    </div>
+  </div>
+</section>

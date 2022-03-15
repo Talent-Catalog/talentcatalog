@@ -4,10 +4,9 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {SavedList} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
-import {TaskListRequest, TaskAssignmentService} from "../../../services/task-assignment.service";
+import {TaskAssignmentService, TaskListRequest} from "../../../services/task-assignment.service";
 import {Task} from "../../../model/task";
 import {SavedListService} from "../../../services/saved-list.service";
-import {CandidateSource} from "../../../model/base";
 
 @Component({
   selector: 'app-assign-tasks-list',
@@ -116,7 +115,7 @@ export class AssignTasksListComponent implements OnInit {
   removeTask(task: Task) {
     const confirmationModal = this.modalService.open(ConfirmationComponent, {scrollable: true});
     confirmationModal.componentInstance.title =
-      "Are you sure you want to remove " + task.name + " from the associated list " + this.savedList.name + "?";
+      "Are you sure you want to remove " + task.displayName + " from the associated list " + this.savedList.name + "?";
     confirmationModal.componentInstance.message =
       "Note: Removing this task association will make the task inactive for any candidates within the list who have not completed the task. "
 
@@ -152,10 +151,15 @@ export class AssignTasksListComponent implements OnInit {
 
   search(target): void {
     if (target.value != null) {
-      this.filteredTaskAssociations = this.savedList.tasks.filter((val) => val.name.toLowerCase().includes(target.value));
+      this.filteredTaskAssociations = this.savedList.tasks.filter((val) => val.displayName.toLowerCase().includes(target.value));
     } else {
       this.filteredTaskAssociations = this.savedList.tasks;
     }
+  }
+
+  // Allow to search for either a task display name or a task type.
+  searchTypeOrName = (searchTerm: string, item: any) => {
+    return item.taskType.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || item.displayName.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
   }
 
 }

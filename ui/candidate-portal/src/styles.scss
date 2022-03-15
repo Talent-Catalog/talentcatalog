@@ -49,3 +49,16 @@ a.is-link, a > i.is-link {
 .text-alert {
   color: #ed770f;
 }
+
+section {
+  margin-top: 2rem;
+  h5 {
+    font-weight: 700;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .form-group label {
+    font-size: 14px;
+  }
+}

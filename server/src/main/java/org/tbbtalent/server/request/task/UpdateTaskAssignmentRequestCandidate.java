@@ -18,21 +18,30 @@ package org.tbbtalent.server.request.task;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
-
-//TODO Note for Caroline: This request and CreateUploadTaskRequest have a lot in common (name, description,
-// timeframe, adminOnly) - so you should use inheritance. Both should subclass, say CreateTask,
-// which has all those attributes - then the sub tasks just add what makes them different
-// eg question and answer.
-
+/**
+ * Request to update a TaskAssignment received through the candidate portal
+ *
+ * @author John Cameron
+ */
 @Getter
 @Setter
-public class CreateQuestionTaskRequest {
-    private String name;
-    private String description;
-    private String timeframe;
-    private boolean adminOnly;
+public class UpdateTaskAssignmentRequestCandidate {
 
-    private String question;
-    private String answer;
+    /**
+     * If task is set as completed
+     */
+    boolean completed;
+
+    /**
+     * If task is set as abandoned
+     */
+    boolean abandoned;
+
+    /**
+     * If task has some notes provided by the candidate
+     */
+    @Nullable
+    String candidateNotes;
 }

@@ -5,17 +5,22 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +29,11 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
-import org.tbbtalent.server.repository.db.CandidateJobExperienceRepository;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.OccupationRepository;
@@ -34,16 +42,9 @@ import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupati
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
 import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
@@ -51,9 +52,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private final CandidateOccupationRepository candidateOccupationRepository;
-    private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final OccupationRepository occupationRepository;
-    private final CandidateNoteService candidateNoteService;
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final AuthService authService;
@@ -61,19 +60,15 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Autowired
     public CandidateOccupationServiceImpl(CandidateOccupationRepository candidateOccupationRepository,
-                                          CandidateJobExperienceRepository candidateJobExperienceRepository,
                                           OccupationRepository occupationRepository,
                                           CandidateRepository candidateRepository,
                                           CandidateService candidateService,
-                                          CandidateNoteService candidateNoteService,
                                           AuthService authService,
                                           EmailHelper emailHelper) {
         this.candidateOccupationRepository = candidateOccupationRepository;
-        this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.occupationRepository = occupationRepository;
-        this.candidateNoteService = candidateNoteService;
         this.authService = authService;
         this.emailHelper = emailHelper;
     }
@@ -83,7 +78,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     public CandidateOccupation createCandidateOccupation(CreateCandidateOccupationRequest request) {
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        
+
         // Load the industry from the database - throw an exception if not found
         Occupation occupation = occupationRepository.findById(request.getOccupationId())
                 .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
@@ -100,9 +95,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             candidateOccupation.setVerified(request.isVerified());
 
             candidateOccupation.setAuditFields(user);
-            // removed verification note as verified no longer used
-//            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(request.getCandidateId(),
-//                    occupation.getName() +" verification status set to "+request.isVerified(), request.getComment()));
         } else {
             candidate = authService.getLoggedInCandidate();
             if (candidate == null) {
@@ -246,7 +238,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         for (Long existingCandidateOccupationId : map.keySet()) {
             /* Check if the candidate occupation has been removed */
             if (!updatedOccupationIds.contains(existingCandidateOccupationId)){
-                //The user will have confirmed that they are OK to lose any 
+                //The user will have confirmed that they are OK to lose any
                 // associated experiences
                 candidateOccupationRepository.deleteById(existingCandidateOccupationId);
             }
@@ -279,18 +271,10 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupation.setVerified(request.isVerified());
 
         candidateOccupation.setAuditFields(authService.getLoggedInUser().orElse(null));
-        // removed as no longer use verification
-//        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
-//                candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));
 
         candidateService.save(candidateOccupation.getCandidate(), true);
-        
+
         return candidateOccupationRepository.save(candidateOccupation);
 
     }
-//
-//    @Override
-//    public CandidateOccupation getCandidateOccupation(ListJobExperienceRequest request) {
-//        return candidateOccupationRepository.findByCandidateIdAAndOccupationId(request.getCandidateId(), request.getOccupationId());
-//    }
 }

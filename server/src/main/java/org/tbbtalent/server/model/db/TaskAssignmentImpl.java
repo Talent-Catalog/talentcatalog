@@ -18,6 +18,7 @@ package org.tbbtalent.server.model.db;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 
 import javax.persistence.*;
@@ -71,6 +72,7 @@ public class TaskAssignmentImpl extends AbstractDomainObject<Long> implements Ta
     //We just get a Hibernate proxy which allows us to access all the TaskImpl attributes
     //but not attributes of subclasses such as UploadTaskImpl - and there is no elegant way
     //of casting to UploadImpl. We need an EAGER fetch to always return the full class. JC
+    @NonNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "task_id")
     TaskImpl task;
