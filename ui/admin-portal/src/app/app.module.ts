@@ -251,6 +251,8 @@ import {SearchTasksComponent} from './components/settings/tasks/search-tasks.com
 import {TasksMonitorComponent} from './components/util/tasks-monitor/tasks-monitor.component';
 import {ViewCandidateMediaWillingnessComponent} from './components/candidates/view/media/view-candidate-media-willingness.component';
 import {EditCandidateMediaWillingnessComponent} from './components/candidates/view/media/edit/edit-candidate-media-willingness.component';
+import {ViewCandidateRegistrationComponent} from './components/candidates/view/registration/view-candidate-registration.component';
+import {EditCandidateRegistrationComponent} from './components/candidates/view/registration/edit/edit-candidate-registration.component';
 
 @NgModule({
   declarations: [
@@ -479,7 +481,9 @@ import {EditCandidateMediaWillingnessComponent} from './components/candidates/vi
     SearchTasksComponent,
     TasksMonitorComponent,
     ViewCandidateMediaWillingnessComponent,
-    EditCandidateMediaWillingnessComponent
+    EditCandidateMediaWillingnessComponent,
+    ViewCandidateRegistrationComponent,
+    EditCandidateRegistrationComponent
   ],
   imports: [
     BrowserModule,

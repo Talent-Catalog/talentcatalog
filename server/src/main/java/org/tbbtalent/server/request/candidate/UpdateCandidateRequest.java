@@ -17,7 +17,6 @@
 package org.tbbtalent.server.request.candidate;
 
 import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.UnhcrStatus;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -40,10 +39,6 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
     private String city;
     private String state;
     private LocalDate dob;
-    private String externalId;
-    private String externalIdSource;
-    private UnhcrStatus unhcrStatus;
-    private String unhcrNumber;
 
     public String getFirstName() {
         return firstName;
@@ -119,29 +114,5 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
-    }
-
-    public String getExternalId() {return externalId;}
-
-    public void setExternalId(String externalId) {this.externalId = externalId;}
-
-    public String getExternalIdSource() {return externalIdSource;}
-
-    public void setExternalIdSource(String externalIdSource) {this.externalIdSource = externalIdSource;}
-
-    public UnhcrStatus getUnhcrStatus() {
-        return unhcrStatus;
-    }
-
-    public void setUnhcrStatus(UnhcrStatus unhcrStatus) {
-        this.unhcrStatus = unhcrStatus;
-    }
-
-    public String getUnhcrNumber() {
-        return unhcrNumber;
-    }
-
-    public void setUnhcrNumber(String unhcrNumber) {
-        this.unhcrNumber = unhcrNumber;
     }
 }

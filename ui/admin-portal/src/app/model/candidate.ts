@@ -48,6 +48,8 @@ export interface Candidate extends HasId {
   unhcrRegistered: YesNoUnsure;
   unhcrNumber: string;
   unhcrConsent: YesNo;
+  unrwaRegistered: YesNoUnsure;
+  unrwaNumber: string;
   user: User;
   candidateReviewStatusItems: CandidateReviewStatusItem[];
   migrationEducationMajor: EducationMajor;
