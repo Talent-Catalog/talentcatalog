@@ -66,7 +66,8 @@ export interface TaskAssignment {
   completedDate: Date;
   dueDate: Date;
   status: Status;
-  task: Task;
+  task: Task
+  answer: string;
 }
 
 /**

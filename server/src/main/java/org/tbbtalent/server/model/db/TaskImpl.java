@@ -27,6 +27,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.tbbtalent.server.model.db.task.Task;
+import org.tbbtalent.server.model.db.task.TaskType;
 
 /**
  * Base implementation of all tasks.
@@ -48,4 +49,14 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
     private String name;
     private boolean optional;
 
+    /*
+      Note that this should not be necessary because the interface provides a default implementation
+      but PropertyUtils does not find this taskType property if it is just provided by the default
+      interface implementations. Looks like some kind of bug.
+      - John Cameron
+     */
+    @Override
+    public TaskType getTaskType() {
+        return Task.super.getTaskType();
+    }
 }

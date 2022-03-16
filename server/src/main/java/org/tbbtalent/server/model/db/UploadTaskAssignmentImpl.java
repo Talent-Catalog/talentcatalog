@@ -18,25 +18,18 @@ package org.tbbtalent.server.model.db;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
+import org.tbbtalent.server.model.db.task.UploadTaskAssignment;
 
 /**
  * Default Implementation
  *
  * @author John Cameron
  */
-@Entity(name="QuestionTaskAssignment")
-@DiscriminatorValue("QuestionTask")
+@Entity(name="UploadTaskAssignment")
+@DiscriminatorValue("UploadTask")
 @Getter
 @Setter
-public class QuestionTaskAssignmentImpl extends TaskAssignmentImpl implements
-    QuestionTaskAssignment {
-
-    @Transient
-    @Nullable
-    String answer;
+public class UploadTaskAssignmentImpl extends TaskAssignmentImpl implements UploadTaskAssignment {
 }

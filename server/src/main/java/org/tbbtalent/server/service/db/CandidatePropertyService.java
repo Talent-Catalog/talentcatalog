@@ -20,7 +20,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateProperty;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.task.TaskAssignment;
 
 public interface CandidatePropertyService {
 
@@ -40,7 +40,7 @@ public interface CandidatePropertyService {
      * @return Created/updated property
      */
     CandidateProperty createOrUpdateProperty(@NonNull Candidate candidate,
-        @NonNull String name, @Nullable String value, @Nullable TaskAssignmentImpl taskAssignment);
+        @NonNull String name, @Nullable String value, @Nullable TaskAssignment taskAssignment);
 
     /**
      * Delete the candidate property with the given name.
@@ -50,5 +50,15 @@ public interface CandidatePropertyService {
      * @param name Name of property to delete
      */
     void deleteProperty(@NonNull Candidate candidate, @NonNull String name);
+
+    /**
+     * Finds the property with the given name of the given candidate if one exists.
+     *
+     * @param candidate Candidate whose property we are looking for
+     * @param name Name of the property we are looking for
+     * @return Requested property, null if none exists
+     */
+    @Nullable
+    CandidateProperty findProperty(@NonNull Candidate candidate, @NonNull String name);
 
 }

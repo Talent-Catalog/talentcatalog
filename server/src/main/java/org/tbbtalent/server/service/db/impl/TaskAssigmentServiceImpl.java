@@ -17,31 +17,28 @@
 package org.tbbtalent.server.service.db.impl;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.UploadTaskAssignmentImpl;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
+import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
-import org.tbbtalent.server.service.db.CandidatePropertyService;
-import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
 
 /**
@@ -52,18 +49,12 @@ import org.tbbtalent.server.service.db.TaskAssignmentService;
 @Service
 public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final CandidateAttachmentService candidateAttachmentService;
-    private final CandidatePropertyService candidatePropertyService;
-    private final CandidateService candidateService;
     private final TaskAssignmentRepository taskAssignmentRepository;
 
     public TaskAssigmentServiceImpl(
         CandidateAttachmentService candidateAttachmentService,
-        CandidatePropertyService candidatePropertyService,
-        CandidateService candidateService,
         TaskAssignmentRepository taskAssignmentRepository) {
         this.candidateAttachmentService = candidateAttachmentService;
-        this.candidatePropertyService = candidatePropertyService;
-        this.candidateService = candidateService;
         this.taskAssignmentRepository = taskAssignmentRepository;
     }
 
@@ -71,7 +62,24 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     public TaskAssignmentImpl assignTaskToCandidate(
         User user, TaskImpl task, Candidate candidate, @Nullable SavedList savedList,
         @Nullable LocalDate dueDate) {
-        TaskAssignmentImpl taskAssignment = new TaskAssignmentImpl();
+
+        TaskAssignmentImpl taskAssignment;
+
+        TaskType taskType = task.getTaskType();
+        switch (taskType) {
+            case Question:
+                taskAssignment = new QuestionTaskAssignmentImpl();
+                break;
+
+            case Upload:
+                taskAssignment = new UploadTaskAssignmentImpl();
+                break;
+
+            default:
+                taskAssignment = new TaskAssignmentImpl();
+                break;
+        }
+
         taskAssignment.setTask(task);
         taskAssignment.setActivatedBy(user);
         taskAssignment.setActivatedDate(OffsetDateTime.now());
@@ -89,61 +97,10 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     @NonNull
     @Override
     public TaskAssignmentImpl get(long taskAssignmentId) throws NoSuchObjectException {
-        return taskAssignmentRepository.findById(taskAssignmentId)
+        final TaskAssignmentImpl taskAssignment = taskAssignmentRepository.findById(
+                taskAssignmentId)
             .orElseThrow(() -> new NoSuchObjectException(Task.class, taskAssignmentId));
-    }
-
-    @NonNull
-    @Override
-    public TaskAssignmentImpl updateQuestionTaskAssignment(
-        @NonNull TaskAssignmentImpl taskAssignment, @NonNull String answer, boolean completed,
-        boolean abandoned, @Nullable String notes, @Nullable LocalDate nonDefaultDueDate) {
-        if (!abandoned) {
-             //Update answer
-            storeCandidateAnswer(taskAssignment, answer);
-        }
-        return update(taskAssignment, completed, abandoned, notes, nonDefaultDueDate);
-    }
-
-    /**
-     * Stores the given answer supplied for the given question task assignment.
-     * @param questionTaskAssignment Question task assignment
-     * @param answer Answer to question
-     * @throws InvalidRequestException If the task associated with the given task assignment is not
-     * a QuestionTask
-     */
-    private void storeCandidateAnswer(TaskAssignmentImpl questionTaskAssignment, String answer)
-        throws InvalidRequestException {
-        Task task = questionTaskAssignment.getTask();
-        if (task instanceof QuestionTask) {
-            String answerField = ((QuestionTask) task).getCandidateAnswerField();
-            Candidate candidate = questionTaskAssignment.getCandidate();
-            if (answerField == null) {
-                //Store answer in a candidate property
-                String propertyName = task.getName();
-                candidatePropertyService.createOrUpdateProperty(
-                    candidate, propertyName, answer, questionTaskAssignment);
-            } else {
-                //Store answer in the candidate field
-
-                try {
-                    PropertyUtils.setProperty(candidate, answerField, answer);
-                } catch (IllegalAccessException e) {
-                    throw new InvalidRequestException("Unable to access '" + answerField
-                        + "' field of candidate");
-                } catch (InvocationTargetException e) {
-                    throw new InvalidRequestException("Error while accessing '" + answerField
-                        + "' field of candidate");
-                } catch (NoSuchMethodException e) {
-                    throw new InvalidRequestException("Candidate field does not exist: '" + answerField
-                        + "'");
-                }
-
-                candidateService.save(candidate, true);
-            }
-        } else {
-            throw new InvalidRequestException("Task is not a QuestionTask: " + task.getName());
-        }
+        return taskAssignment;
     }
 
     @NonNull

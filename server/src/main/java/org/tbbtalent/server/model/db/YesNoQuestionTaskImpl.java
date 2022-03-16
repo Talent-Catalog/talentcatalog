@@ -18,6 +18,7 @@ package org.tbbtalent.server.model.db;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.model.db.task.YesNoQuestionTask;
 
 /**
@@ -29,4 +30,8 @@ import org.tbbtalent.server.model.db.task.YesNoQuestionTask;
 @DiscriminatorValue("YesNoQuestionTask")
 public class YesNoQuestionTaskImpl extends QuestionTaskImpl implements YesNoQuestionTask {
 
+    @Override
+    public TaskType getTaskType() {
+        return YesNoQuestionTask.super.getTaskType();
+    }
 }

@@ -26,6 +26,7 @@ export interface TaskAssignment {
   dueDate: Date;
   status: Status;
   task: Task;
+  answer: string;
 }
 
 /**

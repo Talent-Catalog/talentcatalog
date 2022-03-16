@@ -24,6 +24,7 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateProperty;
 import org.tbbtalent.server.model.db.CandidatePropertyKey;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.repository.db.CandidatePropertyRepository;
 import org.tbbtalent.server.service.db.CandidatePropertyService;
 
@@ -40,26 +41,29 @@ public class CandidatePropertyServiceImpl implements CandidatePropertyService {
         this.candidatePropertyRepository = candidatePropertyRepository;
     }
 
-    @Override
-    public CandidateProperty createOrUpdateProperty(@NonNull Candidate candidate,
-        @NonNull String name, @Nullable String value, @Nullable TaskAssignmentImpl taskAssignment) {
+    @Nullable
+    public CandidateProperty findProperty(@NonNull Candidate candidate, @NonNull String name) {
 
         CandidatePropertyKey key = new CandidatePropertyKey(candidate.getId(), name);
+        final Optional<CandidateProperty> oProp = candidatePropertyRepository.findById(key);
 
-        CandidateProperty property;
+        return oProp.orElse(null);
+    }
 
-        final Optional<CandidateProperty> byId = candidatePropertyRepository.findById(key);
-        if (byId.isPresent()) {
-            property = byId.get();
+    @Override
+    public CandidateProperty createOrUpdateProperty(@NonNull Candidate candidate,
+        @NonNull String name, @Nullable String value, @Nullable TaskAssignment taskAssignment) {
+
+        CandidateProperty property = findProperty(candidate, name);
+        if (property != null) {
             property.setValue(value);
-            property.setRelatedTaskAssignment(taskAssignment);
+            property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
         } else {
             property = new CandidateProperty();
             property.setCandidateId(candidate.getId());
             property.setName(name);
             property.setValue(value);
-            property.setRelatedTaskAssignment(taskAssignment);
-
+            property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
         }
         return candidatePropertyRepository.save(property);
     }

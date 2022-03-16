@@ -32,6 +32,7 @@ import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UnauthorisedActionException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
@@ -39,7 +40,7 @@ import org.tbbtalent.server.request.task.UpdateQuestionTaskAssignmentRequestCand
 import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequestCandidate;
 import org.tbbtalent.server.request.task.UpdateUploadTaskAssignmentRequestCandidate;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.CandidateAttachmentService;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
 
 /**
@@ -51,15 +52,15 @@ import org.tbbtalent.server.service.db.TaskAssignmentService;
 @RequestMapping("/api/portal/task-assignment")
 public class TaskAssignmentPortalApi {
     private final AuthService authService;
-    private final CandidateAttachmentService candidateAttachmentService;
+    private final CandidateService candidateService;
     private final TaskAssignmentService taskAssignmentService;
 
     public TaskAssignmentPortalApi(
         AuthService authService,
-        CandidateAttachmentService candidateAttachmentService,
+        CandidateService candidateService,
         TaskAssignmentService taskAssignmentService) {
         this.authService = authService;
-        this.candidateAttachmentService = candidateAttachmentService;
+        this.candidateService = candidateService;
         this.taskAssignmentService = taskAssignmentService;
     }
 
@@ -152,12 +153,16 @@ public class TaskAssignmentPortalApi {
             completed = true;
         }
 
-        TaskAssignmentImpl ta = taskAssignmentService.get(id);
+        QuestionTaskAssignmentImpl ta = (QuestionTaskAssignmentImpl) taskAssignmentService.get(id);
 
         checkAuthorisation(ta);
 
-        ta = taskAssignmentService.updateQuestionTaskAssignment(ta, answer, completed, abandoned,
+        taskAssignmentService.update(ta, completed, abandoned,
             request.getCandidateNotes(), null);
+
+        if (completed) {
+            candidateService.storeCandidateTaskAnswer(ta, answer);
+        }
 
         return TaskDtoHelper.getTaskAssignmentDto().build(ta);
     }

@@ -68,23 +68,6 @@ public interface TaskAssignmentService {
     TaskAssignmentImpl get(long taskAssignmentId) throws NoSuchObjectException;
 
     /**
-     * Update the given question task assignment.
-     *
-     * @param taskAssignment   TaskAssignment to update
-     * @param completed The task assignment is marked as completed or not (by setting completedDate)
-     * @param abandoned The task assignment is marked as abandoned or not (by setting the abandonedDate).
-     * @param notes If not null, sets the candidateNotes associated with the task assignment
-     * @param nonDefaultDueDate If not null, sets a non default task assignment dueDate (otherwise
-     *                          the due date is set automatically based on the task's
-     *                          daysToComplete field.
-     * @return Updated Task Assignment
-     */
-    @NonNull
-    TaskAssignmentImpl updateQuestionTaskAssignment(
-        @NonNull TaskAssignmentImpl taskAssignment, @NonNull String answer,
-        boolean completed, boolean abandoned, @Nullable String notes, @Nullable LocalDate nonDefaultDueDate);
-
-    /**
      * Update the given upload task assignment.
      *
      * @param taskAssignment   TaskAssignment to update

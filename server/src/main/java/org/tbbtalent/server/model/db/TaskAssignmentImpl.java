@@ -24,6 +24,7 @@ import org.tbbtalent.server.model.db.task.TaskAssignment;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import org.tbbtalent.server.model.db.task.TaskType;
 
 /**
  * Default implementation of {@link TaskAssignment}
@@ -80,4 +81,14 @@ public class TaskAssignmentImpl extends AbstractDomainObject<Long> implements Ta
     @JoinColumn(name = "task_id")
     TaskImpl task;
 
+    /*
+      Note that this should not be necessary because the interface provides a default implementation
+      but PropertyUtils does not find this taskType property if it is just provided by the default
+      interface implementations. Looks like some kind of bug.
+      - John Cameron
+     */
+    @Override
+    public TaskType getTaskType() {
+        return TaskAssignment.super.getTaskType();
+    }
 }
