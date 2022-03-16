@@ -130,7 +130,7 @@ export class GeneralTranslationsComponent implements OnInit {
 
   filterItems($event) {
     if ($event != null) {
-      this.fieldsFiltered = this.fields.filter(f => f.path.startsWith($event.toLowerCase()))
+      this.fieldsFiltered = this.fields.filter(f => f.path.split('.')[0] === $event.toLowerCase())
     } else {
       this.fieldsFiltered = this.fields;
     }
@@ -574,8 +574,96 @@ const ALL_FIELDS = {
     "YES": null,
     "NO": null,
     "UNSURE": null,
-    },
+  },
   "TASK": {
+    "DEGREE": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "DEGREETRANSCRIPT": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "DEGREETRANSCRIPTTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "STUDIEDINENGLISH": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "PASSPORT": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "OTHERID": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "OTHERIDTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "PROOFADDRESS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "PROOFADDRESSTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "RESIDENCEATTEST": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "RESIDENCEATTESTTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "POLICECHECK": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "POLICECHECKTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "LICENCING": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "LICENCINGTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "CONDUCTMINISTRY": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "CONDUCTMINISTRYTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "CONDUCTEMPLOYER": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "CONDUCTEMPLOYERTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "OFFER": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "COS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "REFERENCES": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
     "COLLABORATIONAGREEMENT": {
       "NAME": null,
       "DESCRIPTION": null
@@ -583,6 +671,67 @@ const ALL_FIELDS = {
     "INFORELEASEFORM": {
       "NAME": null,
       "DESCRIPTION": null,
+    },
+    "ENGLISHEXAM": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "VACCINATION": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "VACCINATIONTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "IDCARD": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "UNHCRUNRWAREGCARD": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+  },
+  "TASKS": {
+    "TAB": null,
+    "VIEWHELP": null,
+    "ONGOING": {
+      "HEADER": null,
+      "NOTE": null,
+    },
+    "COMPLETED": {
+      "HEADER": null,
+      "NOTE": null,
+    },
+    "TABLE": {
+      "NAME": null,
+      "REQUIRED": null,
+      "DUEDATE": null,
+      "COMPLETED": null,
+      "ABANDONED": null,
+    },
+    "UPLOAD" : {
+      "HEADER": null,
+      "LOADING": null,
+      "SUCCESS": null
+    },
+    "QUESTION": {
+      "HEADER": null,
+      "LABEL": null,
+    },
+    "YESNOQUESTION": {
+      "HEADER": null,
+      "LABEL": null,
+    },
+    "SIMPLE": {
+      "HEADER": null,
+      "LABEL": null,
+      "NOTE": null,
+      "DOC": {
+        "LABEL": null,
+        "NOTE": null,
+      },
     },
     "COMMENT": {
       "HEADER": null,
@@ -592,6 +741,19 @@ const ALL_FIELDS = {
         "NOTE": null,
       }
     },
-    "SUBMIT": null,
+    "TYPES": {
+      "UPLOAD": null,
+      "QUESTION": null,
+    },
+    "TASK": {
+      "REQUIRED": null,
+      "DUEDATE": null,
+      "ABANDONEDDATE": null,
+      "COMPLETEDDATE": null,
+      "OVERDUE": null,
+      "VIEWHELP": null,
+      "RETURN": null,
+      "SUBMIT": null,
+    },
   }
-  };
+}
