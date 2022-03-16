@@ -100,7 +100,7 @@ dependencies {
     implementation('javax.mail:javax.mail-api')
     implementation('com.sun.mail:jakarta.mail')
     implementation('com.opencsv:opencsv:5.0')
-    implementation('commons-beanutils:commons-beanutils:1.9.3')
+    implementation('commons-beanutils:commons-beanutils:1.9.4')
     implementation('org.thymeleaf.extras:thymeleaf-extras-java8time')
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
     implementation('net.sf.jtidy:jtidy:r938')
