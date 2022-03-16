@@ -130,7 +130,7 @@ export class GeneralTranslationsComponent implements OnInit {
 
   filterItems($event) {
     if ($event != null) {
-      this.fieldsFiltered = this.fields.filter(f => f.path.startsWith($event.toLowerCase()))
+      this.fieldsFiltered = this.fields.filter(f => f.path.split('.')[0] === $event.toLowerCase())
     } else {
       this.fieldsFiltered = this.fields;
     }
@@ -574,7 +574,7 @@ const ALL_FIELDS = {
     "YES": null,
     "NO": null,
     "UNSURE": null,
-    },
+  },
   "TASK": {
     "DEGREE": {
       "NAME": null,
@@ -692,6 +692,47 @@ const ALL_FIELDS = {
       "NAME": null,
       "DESCRIPTION": null,
     },
+  },
+  "TASKS": {
+    "TAB": null,
+    "VIEWHELP": null,
+    "ONGOING": {
+      "HEADER": null,
+      "NOTE": null,
+    },
+    "COMPLETED": {
+      "HEADER": null,
+      "NOTE": null,
+    },
+    "TABLE": {
+      "NAME": null,
+      "REQUIRED": null,
+      "DUEDATE": null,
+      "COMPLETED": null,
+      "ABANDONED": null,
+    },
+    "UPLOAD" : {
+      "HEADER": null,
+      "LOADING": null,
+      "SUCCESS": null
+    },
+    "QUESTION": {
+      "HEADER": null,
+      "LABEL": null,
+    },
+    "YESNOQUESTION": {
+      "HEADER": null,
+      "LABEL": null,
+    },
+    "SIMPLE": {
+      "HEADER": null,
+      "LABEL": null,
+      "NOTE": null,
+      "DOC": {
+        "LABEL": null,
+        "NOTE": null,
+      },
+    },
     "COMMENT": {
       "HEADER": null,
       "LABEL": null,
@@ -700,6 +741,19 @@ const ALL_FIELDS = {
         "NOTE": null,
       }
     },
-    "SUBMIT": null,
+    "TYPES": {
+      "UPLOAD": null,
+      "QUESTION": null,
+    },
+    "TASK": {
+      "REQUIRED": null,
+      "DUEDATE": null,
+      "ABANDONEDDATE": null,
+      "COMPLETEDDATE": null,
+      "OVERDUE": null,
+      "VIEWHELP": null,
+      "RETURN": null,
+      "SUBMIT": null,
+    },
   }
-  };
+}

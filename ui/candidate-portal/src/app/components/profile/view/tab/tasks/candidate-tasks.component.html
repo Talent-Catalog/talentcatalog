@@ -16,12 +16,12 @@
     <div>
       <div class="d-flex justify-content-between align-items-baseline mb-4">
         <div>
-          <h3>Your Tasks</h3>
-          <p class="text-muted">Click on task to view details and complete action.</p>
+          <h3>{{ 'TASKS.ONGOING.HEADER' | translate }}</h3>
+          <p class="text-muted">{{ 'TASKS.ONGOING.NOTE' | translate }}</p>
         </div>
         <div class="flex-shrink-0">
           <a class="btn btn-sm btn-primary" target="_blank" href="https://www.talentbeyondboundaries.org/talentcatalog/tasks/overview">
-            View Help <fa-icon class="ml-1" icon="question-circle"></fa-icon>
+            {{ 'TASKS.VIEWHELP' | translate }} <fa-icon class="ml-1" icon="question-circle"></fa-icon>
           </a>
         </div>
       </div>
@@ -29,16 +29,16 @@
         <table class="table table-hover bg-white">
           <thead class="thead-light">
           <tr>
-            <th>Task Name</th>
-            <th class="text-center">Required?</th>
-            <th>Due Date</th>
+            <th>{{ 'TASKS.TABLE.NAME' | translate }}</th>
+            <th class="text-center">{{ 'TASKS.TABLE.REQUIRED' | translate }}</th>
+            <th>{{ 'TASKS.TABLE.DUEDATE' | translate }}</th>
           </tr>
           </thead>
 
           <tbody>
           <tr *ngFor="let ta of ongoingTasks" (click)="selectTask(ta)">
             <td>
-              <div class="link underline"><strong>{{displayTaskType(ta)}}</strong> {{ta.task.displayName}}</div>
+              <div class="link underline"><strong>{{ 'TASKS.TYPES.' + displayTaskType(ta) | uppercase | translate }}</strong>: {{ 'TASK.'+  ta.task.name + '.NAME' | uppercase | translate }}</div>
             </td>
             <td class="text-center">
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
@@ -67,22 +67,22 @@
 
     <div>
       <div class="mb-4">
-        <h3>Completed or Abandoned Tasks</h3>
-        <p class="text-muted">Click on task to view details.</p>
+        <h3>{{ 'TASKS.COMPLETED.HEADER' | translate }}</h3>
+        <p class="text-muted">{{ 'TASKS.COMPLETED.NOTE' | translate }}</p>
       </div>
       <div class="table-responsive-sm">
         <table class="table table-hover bg-white">
           <thead class="thead-light">
           <tr>
-            <th>Task Name</th>
-            <th>Completed</th>
-            <th>Abandoned</th>
+            <th>{{ 'TASKS.TABLE.NAME' | translate }}</th>
+            <th>{{ 'TASKS.TABLE.COMPLETED' | translate }}</th>
+            <th>{{ 'TASKS.TABLE.ABANDONED' | translate }}</th>
           </tr>
           </thead>
 
           <tbody>
           <tr *ngFor="let ta of completedOrAbandonedTasks" (click)="selectTask(ta)">
-            <td><div><strong>{{displayTaskType(ta)}}</strong> {{ta.task.displayName}}</div></td>
+            <td><div><strong>{{ 'TASKS.TYPES.' + displayTaskType(ta) | uppercase | translate }}</strong>: {{ 'TASK.'+  ta.task.name + '.NAME' | uppercase | translate }}</div></td>
             <td class="date-size">{{ta.completedDate | date}}</td>
             <td class="date-size">{{ta.abandonedDate | date}}</td>
           </tr>

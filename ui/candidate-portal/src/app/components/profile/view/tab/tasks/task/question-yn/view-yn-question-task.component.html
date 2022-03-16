@@ -1,11 +1,11 @@
 <section [formGroup]="form">
   <div class="section-heading">
-    <h5>Answer Question</h5>
+    <h5>{{ 'TASKS.YESNOQUESTION.HEADER' | translate }}</h5>
   </div>
   <div class="card">
     <div class="form-group">
       <label for="response">
-        Please select your answer to the question below:
+        {{ 'TASKS.YESNOQUESTION.LABEL' | translate }}
       </label>
       <ng-select  id="response" [formControlName]="'response'"
                   [clearable]="false" placeholder="Select...">
