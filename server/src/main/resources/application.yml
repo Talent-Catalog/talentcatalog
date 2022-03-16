@@ -112,7 +112,7 @@ web:
 
 flyway:
   ignoreMissingMigrations: true
-  repair: true
+  repair: false
 
 google:
   drive:
