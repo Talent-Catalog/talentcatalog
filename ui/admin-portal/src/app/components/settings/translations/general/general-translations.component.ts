@@ -576,11 +576,119 @@ const ALL_FIELDS = {
     "UNSURE": null,
     },
   "TASK": {
+    "DEGREE": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "DEGREETRANSCRIPT": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "DEGREETRANSCRIPTTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "STUDIEDINENGLISH": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "PASSPORT": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "OTHERID": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "OTHERIDTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "PROOFADDRESS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "PROOFADDRESSTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "RESIDENCEATTEST": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "RESIDENCEATTESTTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "POLICECHECK": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "POLICECHECKTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "LICENCING": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "LICENCINGTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "CONDUCTMINISTRY": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "CONDUCTMINISTRYTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "CONDUCTEMPLOYER": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "CONDUCTEMPLOYERTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "OFFER": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "COS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "REFERENCES": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
     "COLLABORATIONAGREEMENT": {
       "NAME": null,
       "DESCRIPTION": null
     },
     "INFORELEASEFORM": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "ENGLISHEXAM": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "VACCINATION": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "VACCINATIONTRANS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "IDCARD": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "UNHCRUNRWAREGCARD": {
       "NAME": null,
       "DESCRIPTION": null,
     },
