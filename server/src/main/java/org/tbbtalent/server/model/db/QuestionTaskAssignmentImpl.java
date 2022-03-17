@@ -14,25 +14,29 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.task;
+package org.tbbtalent.server.model.db;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 
-
-//TODO Note for Caroline: This request and CreateUploadTaskRequest have a lot in common (name, description,
-// timeframe, adminOnly) - so you should use inheritance. Both should subclass, say CreateTask,
-// which has all those attributes - then the sub tasks just add what makes them different
-// eg question and answer.
-
+/**
+ * Default Implementation
+ *
+ * @author John Cameron
+ */
+@Entity(name="QuestionTaskAssignment")
+@DiscriminatorValue("QuestionTask")
 @Getter
 @Setter
-public class CreateQuestionTaskRequest {
-    private String name;
-    private String description;
-    private String timeframe;
-    private boolean adminOnly;
+public class QuestionTaskAssignmentImpl extends TaskAssignmentImpl implements
+    QuestionTaskAssignment {
 
-    private String question;
-    private String answer;
+    @Transient
+    @Nullable
+    String answer;
 }

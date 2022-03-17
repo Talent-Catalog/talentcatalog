@@ -18,11 +18,13 @@ package org.tbbtalent.server.model.db;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import org.tbbtalent.server.model.db.task.TaskType;
 
 /**
  * Default implementation of {@link TaskAssignment}
@@ -32,6 +34,9 @@ import java.time.OffsetDateTime;
 @Entity(name="TaskAssignment")
 @Table(name = "task_assignment")
 @SequenceGenerator(name = "seq_gen", sequenceName = "task_assignment_id_seq", allocationSize = 1)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "task_type")
+@DiscriminatorValue("Task")
 @Getter
 @Setter
 public class TaskAssignmentImpl extends AbstractDomainObject<Long> implements TaskAssignment {
@@ -71,8 +76,19 @@ public class TaskAssignmentImpl extends AbstractDomainObject<Long> implements Ta
     //We just get a Hibernate proxy which allows us to access all the TaskImpl attributes
     //but not attributes of subclasses such as UploadTaskImpl - and there is no elegant way
     //of casting to UploadImpl. We need an EAGER fetch to always return the full class. JC
+    @NonNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "task_id")
     TaskImpl task;
 
+    /*
+      Note that this should not be necessary because the interface provides a default implementation
+      but PropertyUtils does not find this taskType property if it is just provided by the default
+      interface implementations. Looks like some kind of bug.
+      - John Cameron
+     */
+    @Override
+    public TaskType getTaskType() {
+        return TaskAssignment.super.getTaskType();
+    }
 }

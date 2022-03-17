@@ -159,4 +159,13 @@ public interface TaskAssignment {
     Task getTask();
 
     void setCompletedDate(OffsetDateTime dateTime);
+
+    /**
+     * Type of task associated with this assignment
+     * @return Always TaskType.Question
+     */
+    default TaskType getTaskType() {
+        return getTask().getTaskType();
+    }
+
 }

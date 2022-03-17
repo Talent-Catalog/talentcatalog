@@ -21,12 +21,23 @@ import {Observable} from "rxjs";
 import {TaskAssignment} from "../model/candidate";
 
 export interface UpdateTaskAssignmentRequest {
-  taskAssignmentId: number,
   abandoned: boolean
-  complete: boolean,
-  dueDate?: Date,
-  completedDate?: Date,
+  completed: boolean,
   candidateNotes?: string,
+}
+
+export interface UpdateUploadTaskAssignmentRequest {
+  abandoned: boolean
+  candidateNotes?: string,
+}
+
+export interface UpdateQuestionTaskAssignmentRequest {
+  answer: string;
+  abandoned: boolean
+  candidateNotes?: string,
+}
+
+export interface UpdateSimpleTaskRequest extends UpdateTaskAssignmentRequest {
 }
 
 @Injectable({
@@ -38,15 +49,23 @@ export class TaskAssignmentService {
 
   constructor(private http: HttpClient) { }
 
-  completeSimpleTask(id: number): Observable<TaskAssignment> {
-    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete`, null);
-  }
-
-  completeUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
+  doUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
     return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload`, formData);
   }
 
-  update(id: number, request: UpdateTaskAssignmentRequest) {
+  updateQuestionTask(id: number, request: UpdateQuestionTaskAssignmentRequest): Observable<TaskAssignment> {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/question`, request);
+  }
+
+  updateSimpleTask(id: number, request: UpdateSimpleTaskRequest): Observable<TaskAssignment> {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/simple`, request);
+  }
+
+  updateUploadTaskAssignment(id: number, request: UpdateUploadTaskAssignmentRequest) {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/upload`, request);
+  }
+
+  updateTaskAssignment(id: number, request: UpdateTaskAssignmentRequest) {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}`, request);
   }
 

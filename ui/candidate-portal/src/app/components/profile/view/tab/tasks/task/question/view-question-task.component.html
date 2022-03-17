@@ -1,0 +1,14 @@
+<section [formGroup]="form">
+  <div class="section-heading">
+    <h5>{{ 'TASKS.QUESTION.HEADER' | translate }}</h5>
+  </div>
+  <div class="card">
+    <div class="form-group">
+      <label class="font-weight-bold" for="response">
+        {{ 'TASKS.QUESTION.LABEL' | translate }}
+      </label>
+      <textarea id="response" class="md-textarea-auto form-control" rows="5"
+                [formControlName]="'response'"></textarea>
+    </div>
+  </div>
+</section>

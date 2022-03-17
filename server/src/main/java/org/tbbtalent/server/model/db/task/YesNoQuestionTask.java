@@ -33,4 +33,9 @@ public interface YesNoQuestionTask extends QuestionTask {
     default boolean validateAnswer(@Nullable String answer) {
         return "yes".equalsIgnoreCase(answer) || "no".equalsIgnoreCase(answer);
     }
+
+   default TaskType getTaskType() {
+        return TaskType.YesNoQuestion;
+    }
+
 }

@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,9 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.task.QuestionTask;
+import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
+import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.repository.db.*;
@@ -52,6 +56,7 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
@@ -129,6 +134,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateDependantService candidateDependantService;
     private final CandidateDestinationService candidateDestinationService;
     private final CandidateExamService candidateExamService;
+    private final CandidatePropertyService candidatePropertyService;
     private final SurveyTypeRepository surveyTypeRepository;
     private final OccupationRepository occupationRepository;
     private final LanguageLevelRepository languageLevelRepository;
@@ -156,6 +162,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateVisaService candidateVisaService,
         CandidateVisaJobCheckService candidateVisaJobCheckService,
         CandidateExamService candidateExamService,
+        CandidatePropertyService candidatePropertyService,
         SurveyTypeRepository surveyTypeRepository,
         OccupationRepository occupationRepository,
         LanguageLevelRepository languageLevelRepository,
@@ -178,6 +185,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateVisaService = candidateVisaService;
         this.candidateVisaJobCheckService = candidateVisaJobCheckService;
         this.candidateExamService = candidateExamService;
+        this.candidatePropertyService = candidatePropertyService;
         this.surveyTypeRepository = surveyTypeRepository;
         this.occupationRepository = occupationRepository;
         this.languageLevelRepository = languageLevelRepository;
@@ -472,8 +480,78 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public @NonNull Candidate getCandidate(long id) throws NoSuchObjectException {
-        return candidateRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+        final Candidate candidate = candidateRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+
+        return candidate;
+    }
+
+    /**
+     * Sets transient fields on the given task assignments.
+     * @param taskAssignments Task assignments
+     */
+    private void populateTransientTaskAssignmentFields(List<TaskAssignmentImpl> taskAssignments) {
+        for (TaskAssignmentImpl taskAssignment : taskAssignments) {
+            //If task is completed, see if there is any transient data to be populated - eg the
+            //answer on a question task
+            if (taskAssignment.getCompletedDate() != null) {
+                if (taskAssignment instanceof QuestionTaskAssignmentImpl) {
+                    QuestionTaskAssignment qta = (QuestionTaskAssignmentImpl) taskAssignment;
+                    String answer = fetchCandidateAnswer(qta);
+                    qta.setAnswer(answer);
+                }
+            }
+        }
+    }
+
+    /**
+     * Retrieves the answer, if any, of the give question task assignment.
+     * @param questionTaskAssignment Question task assignment
+     * @return Candidate's answer to the question
+     * @throws NoSuchObjectException if the answer could not be retrieved because the answer has
+     * been specified as being located in a non existent candidate field or property.
+     */
+    private String fetchCandidateAnswer(QuestionTaskAssignment questionTaskAssignment)
+        throws NoSuchObjectException {
+        String answer;
+        Task task = questionTaskAssignment.getTask();
+        if (task instanceof QuestionTask) {
+            String answerField = ((QuestionTask) task).getCandidateAnswerField();
+            Candidate candidate = questionTaskAssignment.getCandidate();
+            if (answerField == null) {
+                //Get answer from candidate property
+                String propertyName = task.getName();
+                final CandidateProperty property =
+                    candidatePropertyService.findProperty(candidate, propertyName);
+
+                if (property == null) {
+                    throw new NoSuchObjectException("Answer not found to " + task.getDisplayName()
+                        + ". No such candidate property: " + propertyName);
+                }
+                answer = property.getValue();
+            } else {
+                //Get answer from candidate field
+                try {
+                    Object value = PropertyUtils.getProperty(candidate, answerField);
+                    answer = (String) value;
+                } catch (IllegalAccessException e) {
+                    throw new InvalidRequestException("Unable to access '" + answerField
+                        + "' field of candidate");
+                } catch (InvocationTargetException e) {
+                    throw new InvalidRequestException("Error while accessing '" + answerField
+                        + "' field of candidate");
+                } catch (NoSuchMethodException e) {
+                    throw new NoSuchObjectException("Answer not found to " + task.getDisplayName()
+                            + ". No such candidate field: " + answerField);
+                }
+            }
+        } else {
+            throw new InvalidRequestException("Task is not a QuestionTask: " + task.getName());
+        }
+
+        return answer;
     }
 
     @Override
@@ -915,6 +993,43 @@ public class CandidateServiceImpl implements CandidateService {
         return save(candidate, true);
     }
 
+    public void storeCandidateTaskAnswer(
+        QuestionTaskAssignment questionTaskAssignment, String answer)
+        throws InvalidRequestException {
+        Task task = questionTaskAssignment.getTask();
+        if (task instanceof QuestionTask) {
+            String answerField = ((QuestionTask) task).getCandidateAnswerField();
+            Candidate candidate = questionTaskAssignment.getCandidate();
+            if (answerField == null) {
+                //Store answer in a candidate property
+                String propertyName = task.getName();
+                candidatePropertyService.createOrUpdateProperty(
+                    candidate, propertyName, answer, questionTaskAssignment);
+            } else {
+                //Store answer in the candidate field
+
+                try {
+                    PropertyUtils.setProperty(candidate, answerField, answer);
+                } catch (IllegalAccessException e) {
+                    throw new InvalidRequestException("Unable to access '" + answerField
+                        + "' field of candidate");
+                } catch (InvocationTargetException e) {
+                    throw new InvalidRequestException("Error while accessing '" + answerField
+                        + "' field of candidate");
+                } catch (NoSuchMethodException e) {
+                    throw new InvalidRequestException("Candidate field does not exist: '" + answerField
+                        + "'");
+                }
+
+                save(candidate, true);
+            }
+        } else {
+            throw new InvalidRequestException("Task is not a QuestionTask: " + task.getName());
+        }
+
+        questionTaskAssignment.setAnswer(answer);
+    }
+
     @Override
     public Candidate submitRegistration() {
         Candidate candidate = getLoggedInCandidate()
@@ -985,7 +1100,10 @@ public class CandidateServiceImpl implements CandidateService {
             return Optional.empty();
         }
         Candidate candidate = candidateRepository.findByUserId(user.getId());
-        return candidate == null ? Optional.empty() : Optional.of(candidate);
+
+        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+
+        return Optional.of(candidate);
     }
 
     @Override

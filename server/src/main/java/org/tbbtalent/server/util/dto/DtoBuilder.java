@@ -216,7 +216,7 @@ public class DtoBuilder {
                     propertyName = translationContainingTranslation;
                 }
 
-                Object value = getPropertyValue(source, property.name);
+                Object value = getPropertyValue(source, propertyName);
                 if (value != null) {
                     if (property.builder != null) {
                         if (value instanceof Collection) {

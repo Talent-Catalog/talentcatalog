@@ -16,20 +16,18 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.repository.db.TaskRepository;
 import org.tbbtalent.server.repository.db.TaskSpecification;
-import org.tbbtalent.server.request.task.CreateTaskRequest;
-import org.tbbtalent.server.request.task.CreateUploadTaskRequest;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
+
+import java.util.List;
 
 
 // TODO: 15/1/22 Services should implement interfaces which define the operations of the service.
@@ -41,18 +39,16 @@ public class TaskServiceImpl implements TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public TaskImpl createTask(CreateTaskRequest request) {
-        return null;
-    }
-
-    public UploadTaskImpl createUploadTask(CreateUploadTaskRequest request) {
-        return null;
-    }
-
     @Override
     public TaskImpl get(long taskId) throws NoSuchObjectException {
         return taskRepository.findById(taskId)
             .orElseThrow(() -> new NoSuchObjectException(Task.class, taskId));
+    }
+
+    @Override
+    public TaskImpl getByName(String name) throws NoSuchObjectException {
+        return taskRepository.findByLowerName(name)
+            .orElseThrow(() -> new NoSuchObjectException(Task.class, name));
     }
 
     @Override

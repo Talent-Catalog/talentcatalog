@@ -1,0 +1,23 @@
+<!-- The difference between this component and the simple task component, is that there is a help link associated to the selected task.
+ In this case, we want to embed the help link into the page. This will be used for help links that are linking to documents (pdfs) that need to be reviewed by the candidate.
+ The simple task completion allows for a check box to be ticked to indicate agreement, as opposed to having to have the document signed. -->
+
+<section [formGroup]="form">
+  <div class="section-heading">
+    <h5>{{ 'TASKS.SIMPLE.HEADER' | translate }}</h5>
+  </div>
+  <iframe [src]="url" style="width: 100%;height: 500px"></iframe>
+  <div class="card">
+    <div class="form-group mb-0">
+      <div class="form-check-inline">
+        <label class="form-check-label mb-0 mr-2" for="response">
+          {{ 'TASKS.SIMPLE.DOC.LABEL' | translate }}
+        </label>
+        <input class="form-check-input" id="response" [formControlName]="'response'" type="checkbox">
+      </div>
+      <div>
+        <small class="text-muted">{{ 'TASKS.SIMPLE.DOC.NOTE' | translate }}</small>
+      </div>
+    </div>
+  </div>
+</section>

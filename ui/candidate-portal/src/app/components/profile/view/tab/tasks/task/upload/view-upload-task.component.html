@@ -1,0 +1,17 @@
+<app-error [error]="error"></app-error>
+<section>
+  <div class="section-heading">
+    <h5>{{ 'TASKS.UPLOAD.HEADER' | translate }}</h5>
+  </div>
+  <div class="card">
+    <div>
+      <app-file-upload [uploading]="uploading" (uploadStarted)="completeUploadTask($event)"></app-file-upload>
+      <div *ngIf="uploading">
+        {{ 'TASKS.UPLOAD.LOADING' | translate }} <fa-icon  [spin]="true" icon="spinner"></fa-icon>
+      </div>
+      <div *ngFor="let file of filesUploaded; let i = index;">
+        <p>{{ 'TASKS.UPLOAD.SUCCESS' | translate }} {{getFileName(file.name)}}!</p>
+      </div>
+    </div>
+  </div>
+</section>

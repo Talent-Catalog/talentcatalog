@@ -14,55 +14,30 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.task;
+package org.tbbtalent.server.model.db.task;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.lang.Nullable;
 
-import java.time.LocalDate;
-
 /**
- * Request to update a TaskAssignment
+ * Task assignment associated with a Question Task.
  *
  * @author John Cameron
  */
-@Getter
-@Setter
-public class UpdateTaskAssignmentRequest {
+public interface QuestionTaskAssignment extends TaskAssignment {
 
     /**
-     * Task assignment to update
-     */
-    long taskAssignmentId;
-
-    /**
-     * Custom due date if supplied (otherwise the due date will be set from the task days to complete)
+     * Answer provided to question.
+     * <p/>
+     * Would normally be null if the assignment is not completed.
+     * @return Answer to question
      */
     @Nullable
-    LocalDate dueDate;
+    String getAnswer();
 
     /**
-     * Custom completed date if supplied
+     * Set the question's answer
+     * @param answer Answer to question
      */
-    @Nullable
-    LocalDate completedDate;
+    void setAnswer(@Nullable String answer);
 
-    /**
-     * If task is set as complete or not (admin portal)
-     */
-    @Nullable
-    boolean complete;
-
-    /**
-     * If task is set as complete or not (admin portal)
-     */
-    @Nullable
-    boolean abandoned;
-
-    /**
-     * If task has some notes provided by the candidate
-     */
-    @Nullable
-    String candidateNotes;
 }

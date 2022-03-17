@@ -47,4 +47,10 @@ public interface UploadTask extends Task {
     @Nullable
     //todo This really needs to be known by Angular - maybe lose this. Or keep and throw Exception for bad suffixes
     Set<String> getUploadableFileTypes();
+
+
+    default TaskType getTaskType() {
+        return TaskType.Upload;
+    }
+
 }

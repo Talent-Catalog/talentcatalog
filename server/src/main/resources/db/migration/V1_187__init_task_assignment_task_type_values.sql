@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,17 +13,4 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-package org.tbbtalent.server.request.task;
-
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class CreateUploadTaskRequest {
-    private String name;
-    private String description;
-    private Integer daysToComplete;
-    private boolean admin;
-}
+update task_assignment set task_type = (select task_type from task where id = task_assignment.task_id);

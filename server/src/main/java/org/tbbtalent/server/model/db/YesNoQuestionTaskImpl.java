@@ -29,8 +29,9 @@ import org.tbbtalent.server.model.db.task.YesNoQuestionTask;
 @Entity(name="YesNoQuestionTask")
 @DiscriminatorValue("YesNoQuestionTask")
 public class YesNoQuestionTaskImpl extends QuestionTaskImpl implements YesNoQuestionTask {
-    public TaskType getTaskType() {
-        return TaskType.YesNoQuestion;
-    }
 
+    @Override
+    public TaskType getTaskType() {
+        return YesNoQuestionTask.super.getTaskType();
+    }
 }

@@ -1,0 +1,18 @@
+<section [formGroup]="form">
+  <div class="section-heading">
+    <h5>{{ 'TASKS.SIMPLE.HEADER' | translate }}</h5>
+  </div>
+  <div class="card">
+    <div class="form-group mb-0">
+      <div class="form-check-inline">
+        <label class="form-check-label mb-0 mr-2" for="response">
+          {{ 'TASKS.SIMPLE.LABEL' | translate }}
+        </label>
+        <input class="form-check-input" id="response" [formControlName]="'response'" type="checkbox">
+      </div>
+      <div>
+        <small class="text-muted">{{ 'TASKS.SIMPLE.NOTE' | translate }}</small>
+      </div>
+    </div>
+  </div>
+</section>
