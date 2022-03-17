@@ -43,20 +43,6 @@ public interface QuestionTask extends Task {
     @Nullable
     String getCandidateAnswerField();
 
-    /**
-     * Validates an answer (a String) to the question.
-     * <p/>
-     * Default validation is always true if the answer is not null, but subclasses can add
-     * extra validation.
-     * @param answer An answer to question
-     * @return True if answer is valid. This can be overridden in different subclasses code
-     * for different kinds of answers - for example {@link YesNoQuestionTask} is for questions
-     * where the answer must be a simple yes or no.
-     */
-    default boolean validateAnswer(@Nullable String answer) {
-         return answer != null;
-     }
-
     default TaskType getTaskType() {
         return TaskType.Question;
     }

@@ -28,6 +28,5 @@ import org.tbbtalent.server.model.db.TaskImpl;
 public enum TaskType {
     Question,
     Simple,
-    Upload,
-    YesNoQuestion
+    Upload
 }
