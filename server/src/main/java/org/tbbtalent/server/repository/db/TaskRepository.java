@@ -16,12 +16,19 @@
 
 package org.tbbtalent.server.repository.db;
 
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.TaskImpl;
 
-public interface TaskRepository extends
-    JpaRepository<TaskImpl, Long>, JpaSpecificationExecutor<TaskImpl> {
+import java.util.List;
+import java.util.Optional;
+
+public interface TaskRepository extends JpaRepository<TaskImpl, Long>, JpaSpecificationExecutor<TaskImpl> {
     List<TaskImpl> findByName(String name);
+
+    @Query("select distinct t from Task t "
+            + " where lower(t.name) = lower(:name) ")
+    Optional<TaskImpl> findByLowerName(@Param("name") String name);
 }

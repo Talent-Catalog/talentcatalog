@@ -18,14 +18,6 @@ package org.tbbtalent.server.service.db.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +33,16 @@ import org.tbbtalent.server.repository.db.TranslationRepository;
 import org.tbbtalent.server.request.translation.CreateTranslationRequest;
 import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.service.db.TaskService;
 import org.tbbtalent.server.service.db.TranslationService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class TranslationServiceImpl implements TranslationService {
@@ -50,13 +50,16 @@ public class TranslationServiceImpl implements TranslationService {
     private final TranslationRepository translationRepository;
     private final S3ResourceHelper s3ResourceHelper;
     private final AuthService authService;
+    private final TaskService taskService;
 
     @Autowired
     public TranslationServiceImpl(TranslationRepository translationRepository,
                                   S3ResourceHelper s3ResourceHelper,
-                                  AuthService authService) {
+                                  AuthService authService,
+                                  TaskService taskService) {
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
+        this.taskService = taskService;
         this.translationRepository = translationRepository;
     }
 
@@ -133,8 +136,20 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public void updateTranslationFile(String language, Map translations) {
+    public void updateTranslationFile(String language, Map<String, Object> translations) {
         try {
+            if (Objects.equals(language, "en")) {
+                // Update the English name & description for tasks automatically. We already have the name/description defined
+                // in the task table, so should pull this automatically and avoid doubling up on entering this data.
+                // Other languages will need to be entered manually.
+                LinkedHashMap<String, Map<String, Object>> tasks = getNestedValue(translations, "TASK");
+                for (Map.Entry<String, Map<String, Object>> task : tasks.entrySet()) {
+                    Map<String, Object> taskTranslation = task.getValue();
+                    taskTranslation.putIfAbsent("NAME", taskService.getByName(task.getKey()).getDisplayName());
+                    taskTranslation.putIfAbsent("DESCRIPTION", taskService.getByName(task.getKey()).getDescription());
+                }
+            }
+
             String json = new ObjectMapper().writeValueAsString(translations);
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
@@ -151,6 +166,16 @@ public class TranslationServiceImpl implements TranslationService {
             throw new ServiceException("file_upload", "The JSON file could not be uploaded to s3", e);
         }
 
+    }
+
+    public static <T> T getNestedValue(Map map, String... keys) {
+        Object value = map;
+
+        for (String key : keys) {
+            value = ((Map) value).get(key);
+        }
+
+        return (T) value;
     }
 
 

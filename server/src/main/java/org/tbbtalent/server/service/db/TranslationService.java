@@ -16,13 +16,14 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.util.List;
-import java.util.Map;
 import org.tbbtalent.server.model.db.AbstractTranslatableDomainObject;
 import org.tbbtalent.server.model.db.Translation;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.translation.CreateTranslationRequest;
 import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
+
+import java.util.List;
+import java.util.Map;
 
 public interface TranslationService {
 
@@ -36,7 +37,7 @@ public interface TranslationService {
 
     Translation updateTranslation(long id, UpdateTranslationRequest request);
 
-    void updateTranslationFile(String language, Map translations);
+    void updateTranslationFile(String language, Map<String, Object> translations);
 
     Map<String, Object> getTranslationFile(String language);
 

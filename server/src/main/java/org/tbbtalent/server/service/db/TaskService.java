@@ -16,12 +16,13 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
+
+import java.util.List;
 
 /**
  * TODO JC Doc
@@ -38,6 +39,15 @@ public interface TaskService {
      */
     @NonNull
     TaskImpl get(long taskId) throws NoSuchObjectException;
+
+    /**
+     * Get the Task with the given name.
+     * @param name name of TaskAssignment to get
+     * @return Task
+     * @throws NoSuchObjectException if there is no Task with this name.
+     */
+    @NonNull
+    TaskImpl getByName(String name) throws NoSuchObjectException;
 
     List<TaskImpl> listTasks();
 
