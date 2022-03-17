@@ -98,10 +98,10 @@
               <span *ngIf="ta.candidateNotes?.length >=40">...</span>
             </span>
           </div>
-          <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pr-3"
-               [disablePopover]="ta.candidateNotes?.length <=40">
-          <span *ngIf="ta.candidateNotes" class="font-r85">{{ta.candidateNotes | slice: 0 : 40}}
-            <span *ngIf="ta.candidateNotes?.length >=40">...</span>
+          <div [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pr-3"
+               [disablePopover]="ta.answer?.length <=40">
+          <span *ngIf="ta.answer" class="font-r85">{{ta.answer | slice: 0 : 40}}
+            <span *ngIf="ta.answer?.length >=40">...</span>
           </span>
           </div>
           <div class="flex-fill text-right">
