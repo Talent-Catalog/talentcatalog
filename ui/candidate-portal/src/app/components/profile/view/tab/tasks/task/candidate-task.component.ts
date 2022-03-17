@@ -19,9 +19,9 @@ import {Candidate, TaskAssignment, TaskType} from "../../../../../../model/candi
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {
   TaskAssignmentService,
-  UpdateSimpleTaskRequest,
   UpdateQuestionTaskAssignmentRequest,
-  UpdateTaskAssignmentRequest, UpdateUploadTaskAssignmentRequest
+  UpdateSimpleTaskRequest,
+  UpdateUploadTaskAssignmentRequest
 } from "../../../../../../services/task-assignment.service";
 import {DomSanitizer} from "@angular/platform-browser";
 
@@ -45,7 +45,7 @@ export class CandidateTaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      response: [null, this.taskTypeValidators()],
+      response: [this.selectedTask?.answer, this.taskTypeValidators()],
       abandoned: [this.isAbandoned],
       comment: [this.selectedTask.candidateNotes]
     })
