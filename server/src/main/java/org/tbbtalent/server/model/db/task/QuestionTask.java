@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.db.task;
 
+import java.util.List;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
 
@@ -27,6 +28,19 @@ import org.tbbtalent.server.model.db.Candidate;
  * @author John Cameron
  */
 public interface QuestionTask extends Task {
+
+    /**
+     * Get allowed answers to this question, or null if there are no restrictions on the answers.
+     * @return Allowable answers
+     */
+    @Nullable
+    List<AllowedQuestionTaskAnswer> getAllowedAnswers();
+
+    /**
+     * Set allowed answers to this question, or null if there are no restrictions on the answers.
+     * @param allowedAnswers Allowable answers
+     */
+    void setAllowedAnswers(@Nullable List<AllowedQuestionTaskAnswer> allowedAnswers);
 
     /**
      * If not null, returns the name of the {@link Candidate} field
@@ -43,22 +57,7 @@ public interface QuestionTask extends Task {
     @Nullable
     String getCandidateAnswerField();
 
-    /**
-     * Validates an answer (a String) to the question.
-     * <p/>
-     * Default validation is always true if the answer is not null, but subclasses can add
-     * extra validation.
-     * @param answer An answer to question
-     * @return True if answer is valid. This can be overridden in different subclasses code
-     * for different kinds of answers - for example {@link YesNoQuestionTask} is for questions
-     * where the answer must be a simple yes or no.
-     */
-    default boolean validateAnswer(@Nullable String answer) {
-         return answer != null;
-     }
-
     default TaskType getTaskType() {
         return TaskType.Question;
     }
-
 }

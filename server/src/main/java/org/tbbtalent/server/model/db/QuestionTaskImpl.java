@@ -16,11 +16,14 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.task.AllowedQuestionTaskAnswer;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.TaskType;
 
@@ -34,6 +37,10 @@ import org.tbbtalent.server.model.db.task.TaskType;
 @Getter
 @Setter
 public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
+
+    @Transient
+    @Nullable
+    List<AllowedQuestionTaskAnswer> allowedAnswers;
 
     @Nullable
     private String candidateAnswerField;

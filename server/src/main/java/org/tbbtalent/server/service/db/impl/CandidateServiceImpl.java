@@ -17,6 +17,8 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -51,6 +53,7 @@ import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
+import org.tbbtalent.server.util.BeanHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
@@ -139,6 +142,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final OccupationRepository occupationRepository;
     private final LanguageLevelRepository languageLevelRepository;
     private final CandidateExamRepository candidateExamRepository;
+    private final TaskService taskService;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
 
@@ -167,7 +171,8 @@ public class CandidateServiceImpl implements CandidateService {
         OccupationRepository occupationRepository,
         LanguageLevelRepository languageLevelRepository,
         CandidateExamRepository candidateExamRepository,
-        EmailHelper emailHelper, PdfHelper pdfHelper) {
+        TaskService taskService, EmailHelper emailHelper,
+        PdfHelper pdfHelper) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.candidateRepository = candidateRepository;
@@ -190,6 +195,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.occupationRepository = occupationRepository;
         this.languageLevelRepository = languageLevelRepository;
         this.candidateExamRepository = candidateExamRepository;
+        this.taskService = taskService;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
         this.fileSystemService = fileSystemService;
@@ -494,6 +500,9 @@ public class CandidateServiceImpl implements CandidateService {
      */
     private void populateTransientTaskAssignmentFields(List<TaskAssignmentImpl> taskAssignments) {
         for (TaskAssignmentImpl taskAssignment : taskAssignments) {
+
+            taskService.populateTransientFields(taskAssignment.getTask());
+
             //If task is completed, see if there is any transient data to be populated - eg the
             //answer on a question task
             if (taskAssignment.getCompletedDate() != null) {
@@ -535,7 +544,7 @@ public class CandidateServiceImpl implements CandidateService {
                 //Get answer from candidate field
                 try {
                     Object value = PropertyUtils.getProperty(candidate, answerField);
-                    answer = (String) value;
+                    answer = value.toString();
                 } catch (IllegalAccessException e) {
                     throw new InvalidRequestException("Unable to access '" + answerField
                         + "' field of candidate");
@@ -1007,9 +1016,9 @@ public class CandidateServiceImpl implements CandidateService {
                     candidate, propertyName, answer, questionTaskAssignment);
             } else {
                 //Store answer in the candidate field
-
+                Object answerValue = convertAnswerToCorrectType(answerField, answer);
                 try {
-                    PropertyUtils.setProperty(candidate, answerField, answer);
+                    PropertyUtils.setProperty(candidate, answerField, answerValue);
                 } catch (IllegalAccessException e) {
                     throw new InvalidRequestException("Unable to access '" + answerField
                         + "' field of candidate");
@@ -1028,6 +1037,38 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         questionTaskAssignment.setAnswer(answer);
+    }
+
+    /**
+     * Converts the given String answer to the type expected by the given Candidate field.
+     * This may be a String, in which case the given String answer is returned.
+     * However, if it is an enum, it will be converted to the matching enum value.
+     * @param answerField Field of Candidate object
+     * @param answer String answer to be converted if needed
+     * @return Object containing type version of String answer
+     * @throws InvalidRequestException If we can't find info on the given field on the Candidate class.
+     */
+    private Object convertAnswerToCorrectType(String answerField, String answer)
+        throws InvalidRequestException {
+        PropertyDescriptor pd;
+        try {
+            pd = BeanHelper.getPropertyDescriptor(Candidate.class, answerField);
+        } catch (IntrospectionException e) {
+            throw new InvalidRequestException("Could not extract candidate field: " + answerField);
+        }
+        Object val;
+        if (pd == null) {
+            val = answer;
+        } else {
+            Class clz = pd.getPropertyType();
+            if (clz.isEnum()) {
+                val = Enum.valueOf(clz, answer);
+            } else {
+                //TODO JC What about numerics
+                throw new InvalidRequestException("Could not convert answer to candidate field: " + answerField);
+            }
+        }
+        return val;
     }
 
     @Override

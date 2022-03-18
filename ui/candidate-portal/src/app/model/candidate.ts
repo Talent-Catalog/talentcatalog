@@ -107,6 +107,10 @@ export function taskAssignmentSort(a: TaskAssignment, b: TaskAssignment) {
   }
 }
 
+class AllowedQuestionTaskAnswer {
+  name: string;
+  displayName: string;
+}
 
 export interface Task {
   id: number;
@@ -121,6 +125,7 @@ export interface Task {
   uploadSubfolderName?: string;
   uploadableFileTypes?: string;
   candidateAnswerField?: string;
+  allowedAnswers?: AllowedQuestionTaskAnswer[];
 }
 
 export enum TaskType {

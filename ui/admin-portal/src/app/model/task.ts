@@ -16,6 +16,11 @@
 
 import {Auditable} from "./base";
 
+class AllowedQuestionTaskAnswer {
+  name: string;
+  displayName: string;
+}
+
 export interface Task extends Auditable {
   id: number;
   name: string;
@@ -29,6 +34,8 @@ export interface Task extends Auditable {
   uploadSubfolderName: string;
   uploadableFileTypes: string;
   candidateAnswerField: string;
+  allowedAnswers?: AllowedQuestionTaskAnswer[];
+
 }
 
 export enum TaskType {
