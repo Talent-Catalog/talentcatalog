@@ -17,7 +17,18 @@
 package org.tbbtalent.server.model.db;
 
 public enum VaccinationStatus {
-    NoResponse,
-    Full,
-    Partial
+    NoResponse("No response"),
+    Full("Fully Vaccinated"),
+    Partial("Partially Vaccinated");
+
+    public final String label;
+
+    VaccinationStatus(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public String toString() {
+        return label;
+    }
 }
