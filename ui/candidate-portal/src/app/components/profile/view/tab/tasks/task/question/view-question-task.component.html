@@ -9,7 +9,7 @@
             {{ 'TASKS.QUESTION.DROPDOWN.LABEL' | translate }}
           </label>
           <ng-select  id="responseDropdown" [formControlName]="'response'" [clearable]="false" [items]="selectedTask.task.allowedAnswers"
-                      bindLabel="displayName" bindValue="displayName" placeholder="Select...">
+                      bindLabel="displayName" bindValue="name" placeholder="Select...">
           </ng-select>
         </div>
       </div>

@@ -17,8 +17,6 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -57,6 +55,8 @@ import org.tbbtalent.server.util.BeanHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -544,7 +544,11 @@ public class CandidateServiceImpl implements CandidateService {
                 //Get answer from candidate field
                 try {
                     Object value = PropertyUtils.getProperty(candidate, answerField);
-                    answer = value.toString();
+                    if (value instanceof Enum) {
+                        answer = ((Enum) value).name();
+                    } else {
+                        answer = value.toString();
+                    }
                 } catch (IllegalAccessException e) {
                     throw new InvalidRequestException("Unable to access '" + answerField
                         + "' field of candidate");
