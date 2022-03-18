@@ -1133,6 +1133,10 @@ public class CandidateServiceImpl implements CandidateService {
             throw new InvalidRequestException("Task is not a QuestionTask: " + task.getName());
         }
 
+        //Fetch answer back to capture any reformatting (eg answers stored as Enums, return their
+        //display name) in the transient answer attached to the task assignment.
+        answer = fetchCandidateAnswer(questionTaskAssignment);
+
         questionTaskAssignment.setAnswer(answer);
     }
 
