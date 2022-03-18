@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.db.task;
 
+import java.util.List;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
 
@@ -27,6 +28,19 @@ import org.tbbtalent.server.model.db.Candidate;
  * @author John Cameron
  */
 public interface QuestionTask extends Task {
+
+    /**
+     * Get allowed answers to this question, or null if there are no restrictions on the answers.
+     * @return Allowable answers
+     */
+    @Nullable
+    List<AllowedQuestionTaskAnswer> getAllowedAnswers();
+
+    /**
+     * Set allowed answers to this question, or null if there are no restrictions on the answers.
+     * @param allowedAnswers Allowable answers
+     */
+    void setAllowedAnswers(@Nullable List<AllowedQuestionTaskAnswer> allowedAnswers);
 
     /**
      * If not null, returns the name of the {@link Candidate} field
@@ -46,5 +60,4 @@ public interface QuestionTask extends Task {
     default TaskType getTaskType() {
         return TaskType.Question;
     }
-
 }
