@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormGroup} from "@angular/forms";
+import {TaskAssignment} from "../../../../../../../model/candidate";
 
 @Component({
   selector: 'app-view-question-task',
@@ -8,6 +9,7 @@ import {FormGroup} from "@angular/forms";
 })
 export class ViewQuestionTaskComponent implements OnInit {
   @Input() form: FormGroup;
+  @Input() selectedTask: TaskAssignment;
 
   constructor() { }
 

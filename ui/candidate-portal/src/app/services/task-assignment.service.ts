@@ -53,18 +53,19 @@ export class TaskAssignmentService {
     return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload`, formData);
   }
 
-  updateQuestionTask(id: number, request: UpdateQuestionTaskAssignmentRequest): Observable<TaskAssignment> {
-    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/question`, request);
-  }
-
-  updateSimpleTask(id: number, request: UpdateSimpleTaskRequest): Observable<TaskAssignment> {
-    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/simple`, request);
-  }
-
   updateUploadTaskAssignment(id: number, request: UpdateUploadTaskAssignmentRequest) {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/upload`, request);
   }
 
+  updateQuestionTask(id: number, request: UpdateQuestionTaskAssignmentRequest): Observable<TaskAssignment> {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/question`, request);
+  }
+
+  /**
+   * This is used for simple tasks, sending up if the completed checkbox is checked or not as well as the abandoned/notes fields.
+   * @param id Id of the task assignment to update.
+   * @param request Update Task Assignment Request: completed, abandoned & notes.
+   */
   updateTaskAssignment(id: number, request: UpdateTaskAssignmentRequest) {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}`, request);
   }

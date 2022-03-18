@@ -16,16 +16,16 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
 
-import java.util.List;
-
 /**
- * TODO JC Doc
+ * Service for managing {@link Task}
  *
  * @author John Cameron
  */
@@ -59,9 +59,16 @@ public interface TaskService {
     List<TaskImpl> listTasksAssignedToList(long listId);
 
     /**
-     * Get the tasks as a paged search request
-     * @param request - Paged Search Request
-     * @return Page of tasks
+     * Populate transient fields on given task
+     * @param task Task to populate
      */
+    void populateTransientFields(Task task);
+
+
+        /**
+         * Get the tasks as a paged search request
+         * @param request - Paged Search Request
+         * @return Page of tasks
+         */
     Page<TaskImpl> searchTasks(SearchTaskRequest request);
 }

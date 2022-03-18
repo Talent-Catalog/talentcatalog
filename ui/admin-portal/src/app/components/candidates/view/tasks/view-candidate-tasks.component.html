@@ -30,13 +30,13 @@
             <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ml-1"></i>
             <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ml-1"></i>
           </p>
-          <div class="font-r85" [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date}}</div>
+          <div class="font-r80" [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date}}</div>
         </div>
 
         <div *ngIf="editable" class="d-flex flex-fill justify-content-between">
           <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body"
                [disablePopover]="ta.candidateNotes?.length <=80">
-            <span *ngIf="ta.candidateNotes" class="font-r85">{{ta.candidateNotes | slice: 0 : 80}}
+            <span *ngIf="ta.candidateNotes" class="font-r80">{{ta.candidateNotes | slice: 0 : 80}}
               <span *ngIf="ta.candidateNotes?.length >=80">...</span>
             </span>
           </div>
@@ -86,21 +86,29 @@
             <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ml-1"></i>
             <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ml-1"></i>
           </p>
-          <div *ngIf="ta.completedDate" class="text-success font-r85">Completed: {{ta.completedDate | date}}</div>
-          <div *ngIf="ta.abandonedDate && !ta.completedDate" class="text-alert font-r85">Abandoned: {{ta.abandonedDate | date}}</div>
+          <!-- SEARCH CARD DISPLAY ANSWER -->
+          <div *ngIf="!editable && ta.answer" [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pr-3"
+               [disablePopover]="ta.answer?.length <=40">
+            <i class="fas fa-angle-right"></i>
+            <span *ngIf="ta.answer" class="font-r80 font-italic font-weight-normal ml-1">{{ta.answer | slice: 0 : 40}}
+              <span *ngIf="ta.answer?.length >=40">...</span>
+            </span>
+          </div>
+          <div *ngIf="ta.completedDate" class="text-success font-r80">Completed: {{ta.completedDate | date}}</div>
+          <div *ngIf="ta.abandonedDate && !ta.completedDate" class="text-alert font-r80">Abandoned: {{ta.abandonedDate | date}}</div>
         </div>
 
         <!-- IF EDITABLE SHOW FULL RESULTS (COMMENTS, ANSWERS AND EDIT BUTTONS) -->
         <ng-container *ngIf="editable">
           <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pr-3"
                [disablePopover]="ta.candidateNotes?.length <=40">
-            <span *ngIf="ta.candidateNotes" class="font-r85">{{ta.candidateNotes | slice: 0 : 40}}
+            <span *ngIf="ta.candidateNotes" class="font-r80">{{ta.candidateNotes | slice: 0 : 40}}
               <span *ngIf="ta.candidateNotes?.length >=40">...</span>
             </span>
           </div>
           <div [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pr-3"
                [disablePopover]="ta.answer?.length <=40">
-          <span *ngIf="ta.answer" class="font-r85">{{ta.answer | slice: 0 : 40}}
+          <span *ngIf="ta.answer" class="font-r80">{{ta.answer | slice: 0 : 40}}
             <span *ngIf="ta.answer?.length >=40">...</span>
           </span>
           </div>

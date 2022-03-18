@@ -56,15 +56,16 @@
 
   <ng-container *ngIf="selectedTask.task.taskType === 'Question'">
     <app-view-question-task
-      [form]="form">
+      [form]="form"
+      [selectedTask]="selectedTask">
     </app-view-question-task>
   </ng-container>
 
-  <ng-container *ngIf="selectedTask.task.taskType === 'YesNoQuestion'">
-    <app-view-yn-question-task
-      [form]="form">
-    </app-view-yn-question-task>
-  </ng-container>
+<!--  <ng-container *ngIf="selectedTask.task.taskType === 'YesNoQuestion'">-->
+<!--    <app-view-yn-question-task-->
+<!--      [form]="form">-->
+<!--    </app-view-yn-question-task>-->
+<!--  </ng-container>-->
 
   <!-- COMMENT -->
   <section>

@@ -4,11 +4,21 @@
   </div>
   <div class="card">
     <div class="form-group">
-      <label class="font-weight-bold" for="response">
+      <label class="font-weight-bold">
         {{ 'TASKS.QUESTION.LABEL' | translate }}
       </label>
-      <textarea id="response" class="md-textarea-auto form-control" rows="5"
-                [formControlName]="'response'"></textarea>
+
+      <div *ngIf="selectedTask.task?.allowedAnswers?.length > 0; else textBox">
+        <ng-select  id="responseDropdown" [formControlName]="'response'" [clearable]="false" [items]="selectedTask.task.allowedAnswers"
+                    bindLabel="displayName" bindValue="name" placeholder="Select...">
+        </ng-select>
+      </div>
+
+      <ng-template #textBox>
+        <textarea id="responseAnswer" class="md-textarea-auto form-control" rows="5"
+                  [formControlName]="'response'"></textarea>
+      </ng-template>
+
     </div>
   </div>
 </section>
