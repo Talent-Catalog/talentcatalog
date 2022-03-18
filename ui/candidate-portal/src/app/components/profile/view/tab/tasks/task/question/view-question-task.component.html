@@ -3,6 +3,13 @@
     <h5>{{ 'TASKS.QUESTION.HEADER' | translate }}</h5>
   </div>
   <div class="card">
+    <div *ngIf="selectedTask.completedDate != null || selectedTask.abandonedDate != null; else editable">
+      <div>
+        <p class="mb-0">{{selectedTask.answer}}</p>
+      </div>
+    </div>
+
+    <ng-template #editable>
       <div *ngIf="selectedTask.task?.allowedAnswers?.length > 0; else textBox">
         <div class="form-group">
           <label class="font-weight-bold" for="responseAnswer">
@@ -13,16 +20,16 @@
           </ng-select>
         </div>
       </div>
-
       <ng-template #textBox>
         <div class="form-group">
           <label class="font-weight-bold" for="responseDropdown">
             {{ 'TASKS.QUESTION.LABEL' | translate }}
           </label>
           <textarea id="responseAnswer" class="md-textarea-auto form-control" rows="5"
-                  [formControlName]="'response'"></textarea>
+                    [formControlName]="'response'"></textarea>
         </div>
       </ng-template>
+    </ng-template>
 
     </div>
 </section>
