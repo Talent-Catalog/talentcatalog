@@ -44,7 +44,6 @@ export class CandidateTaskComponent implements OnInit {
               public sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
-    console.log(this.selectedTask);
     this.form = this.fb.group({
       abandoned: [this.isAbandoned],
       comment: [this.selectedTask.candidateNotes]
