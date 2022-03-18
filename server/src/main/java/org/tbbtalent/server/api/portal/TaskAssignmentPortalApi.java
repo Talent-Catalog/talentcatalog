@@ -16,16 +16,7 @@
 
 package org.tbbtalent.server.api.portal;
 
-import java.io.IOException;
-import java.util.Map;
-import javax.validation.Valid;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.InvalidSessionException;
@@ -42,6 +33,10 @@ import org.tbbtalent.server.request.task.UpdateUploadTaskAssignmentRequestCandid
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Candidate portal API for TaskAssignment operations.
@@ -78,26 +73,6 @@ public class TaskAssignmentPortalApi {
     }
 
     /**
-     * Completes a candidate's simple task assignment.
-     * @param id Task assignment id
-     * @return The details of the updated task assignment
-     * @throws NoSuchObjectException if no task assignment is found with that id
-     * @throws UnauthorisedActionException if the task assignment does not belong to logged in candidate
-     */
-    @PostMapping("{id}/complete")
-    public Map<String, Object> completeSimpleTask(@PathVariable("id") long id)
-        throws NoSuchObjectException, UnauthorisedActionException {
-
-        TaskAssignment ta = taskAssignmentService.get(id);
-
-        checkAuthorisation(ta);
-
-        taskAssignmentService.completeTaskAssignment(ta);
-
-        return TaskDtoHelper.getTaskAssignmentDto().build(ta);
-    }
-
-    /**
      * Attempts completion of a candidate's upload task assignment.
      * <p/>
      * The given file will be added as an attachment to the candidate associated with the given task
@@ -121,6 +96,30 @@ public class TaskAssignmentPortalApi {
         checkAuthorisation(ta);
 
         taskAssignmentService.completeUploadTaskAssignment(ta, file);
+
+        return TaskDtoHelper.getTaskAssignmentDto().build(ta);
+    }
+
+    /**
+     * This is to update the upload tasks other fields (if it is abandoned and/or if there are candidate notes.
+     * The upload is processed separately see method above. So to update the other fields requires a separate API call.
+     * @param id Id of the task assignment to be updated.
+     * @param request A request that contains if task is abandoned and or candidate notes.
+     * @return The details of the updated task assignment
+     * @throws NoSuchObjectException
+     * @throws UnauthorisedActionException
+     */
+    @PutMapping("{id}/upload")
+    public Map<String, Object> updateUploadTaskAssignment(@PathVariable("id") long id,
+                                                          @Valid @RequestBody UpdateUploadTaskAssignmentRequestCandidate request)
+            throws NoSuchObjectException, UnauthorisedActionException {
+
+        TaskAssignmentImpl ta = taskAssignmentService.get(id);
+
+        checkAuthorisation(ta);
+
+        ta = taskAssignmentService.updateUploadTaskAssignment(ta, request.isAbandoned(),
+                request.getCandidateNotes(), null);
 
         return TaskDtoHelper.getTaskAssignmentDto().build(ta);
     }
@@ -167,21 +166,13 @@ public class TaskAssignmentPortalApi {
         return TaskDtoHelper.getTaskAssignmentDto().build(ta);
     }
 
-    @PutMapping("{id}/upload")
-    public Map<String, Object> updateUploadTaskAssignment(@PathVariable("id") long id,
-        @Valid @RequestBody UpdateUploadTaskAssignmentRequestCandidate request)
-        throws NoSuchObjectException, UnauthorisedActionException {
-
-        TaskAssignmentImpl ta = taskAssignmentService.get(id);
-
-        checkAuthorisation(ta);
-
-        ta = taskAssignmentService.updateUploadTaskAssignment(ta, request.isAbandoned(),
-            request.getCandidateNotes(), null);
-
-        return TaskDtoHelper.getTaskAssignmentDto().build(ta);
-    }
-
+    /**
+     * Completes a candidate's simple task assignment.
+     * @param id Task assignment id
+     * @return The details of the updated task assignment, is completed, is abandoned, and candidate notes.
+     * @throws NoSuchObjectException if no task assignment is found with that id
+     * @throws UnauthorisedActionException if the task assignment does not belong to logged in candidate
+     * */
     @PutMapping("{id}")
     public Map<String, Object> updateTaskAssignment(@PathVariable("id") long id,
         @Valid @RequestBody UpdateTaskAssignmentRequestCandidate request)

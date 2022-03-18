@@ -50,6 +50,7 @@
   <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null">
     <app-view-simple-doc-task
       [form]="form"
+      [selectedTask]="selectedTask"
       [docLink]="selectedTask.task.helpLink">
     </app-view-simple-doc-task>
   </ng-container>

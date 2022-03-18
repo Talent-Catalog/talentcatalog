@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormGroup} from "@angular/forms";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
+import {TaskAssignment} from "../../../../../../../model/candidate";
 
 @Component({
   selector: 'app-view-simple-doc-task',
@@ -9,6 +10,7 @@ import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 })
 export class ViewSimpleDocTaskComponent implements OnInit {
   @Input() form: FormGroup;
+  @Input() selectedTask: TaskAssignment;
   @Input() docLink: string;
   url: SafeResourceUrl;
 

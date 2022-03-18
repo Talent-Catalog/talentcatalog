@@ -16,11 +16,11 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate, TaskAssignment, TaskType} from "../../../../../../model/candidate";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {
   TaskAssignmentService,
   UpdateQuestionTaskAssignmentRequest,
-  UpdateSimpleTaskRequest,
+  UpdateTaskAssignmentRequest,
   UpdateUploadTaskAssignmentRequest
 } from "../../../../../../services/task-assignment.service";
 import {DomSanitizer} from "@angular/platform-browser";
@@ -44,23 +44,36 @@ export class CandidateTaskComponent implements OnInit {
               public sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
+    console.log(this.selectedTask);
     this.form = this.fb.group({
-      response: [this.selectedTask?.answer, this.taskTypeValidators()],
       abandoned: [this.isAbandoned],
       comment: [this.selectedTask.candidateNotes]
     })
 
-    // Set comment as required field if abandoned is checked, if unchecked reset validation on response field.
+    if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
+      this.form.addControl('response',
+        new FormControl(this.selectedTask?.answer,
+          Validators.required));
+    } else if (this.selectedTask.task.taskType === 'Simple') {
+      this.form.addControl('completed',
+        new FormControl({value: this.isComplete, disabled: this.selectedTask.completedDate != null},
+          Validators.requiredTrue));
+    }
+
+    // Validation requiring comment if abandoned, and resetting the required validation on the answer/completed fields.
     this.form.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
         this.form.get('comment').setValidators([Validators.required]);
-        this.form.get('response').clearValidators();
+        this.form.get('response')?.clearValidators();
+        this.form.get('completed')?.clearValidators();
       } else {
         this.form.get('comment').clearValidators();
-        this.form.get('response').setValidators(this.taskTypeValidators());
+        this.form.get('response')?.setValidators([Validators.required]);
+        this.form.get('completed')?.setValidators([Validators.requiredTrue]);
       }
       this.form.controls['comment'].updateValueAndValidity()
-      this.form.controls['response'].updateValueAndValidity()
+      this.form.controls['response']?.updateValueAndValidity()
+      this.form.controls['completed']?.updateValueAndValidity()
     });
   }
 
@@ -70,16 +83,6 @@ export class CandidateTaskComponent implements OnInit {
 
   get isComplete() {
     return this.selectedTask.completedDate != null;
-  }
-
-  taskTypeValidators() {
-    let validators = []
-    if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
-      validators = [Validators.required]
-    } else if (this.selectedTask.task.taskType === 'Simple') {
-      validators = [Validators.requiredTrue]
-    }
-    return validators;
   }
 
   goBack() {
@@ -127,12 +130,12 @@ export class CandidateTaskComponent implements OnInit {
 
   updateSimpleTask() {
     this.saving = true;
-    const request: UpdateSimpleTaskRequest = {
+    const request: UpdateTaskAssignmentRequest = {
       completed: this.form.value.response,
       abandoned: this.form.value.abandoned,
       candidateNotes: this.form.value.comment
     }
-    this.taskAssignmentService.updateSimpleTask(this.selectedTask.id, request).subscribe(
+    this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
         this.saving = false;
