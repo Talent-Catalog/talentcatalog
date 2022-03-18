@@ -51,12 +51,10 @@ export class CandidateTaskComponent implements OnInit {
     })
 
     if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
-      this.form.addControl('response',
-        new FormControl(this.selectedTask?.answer,
-          Validators.required));
+      this.form.addControl('response', new FormControl(this.selectedTask?.answer, Validators.required));
     } else if (this.selectedTask.task.taskType === 'Simple') {
-      this.form.addControl('completed',
-        new FormControl({value: this.isComplete, disabled: this.selectedTask.completedDate != null},
+      this.form.addControl('completed', new FormControl({value: this.isComplete,
+          disabled: this.selectedTask.completedDate != null || this.selectedTask.abandonedDate != null},
           Validators.requiredTrue));
     }
 
@@ -131,7 +129,7 @@ export class CandidateTaskComponent implements OnInit {
   updateSimpleTask() {
     this.saving = true;
     const request: UpdateTaskAssignmentRequest = {
-      completed: this.form.value.response,
+      completed: this.form.value.completed,
       abandoned: this.form.value.abandoned,
       candidateNotes: this.form.value.comment
     }
