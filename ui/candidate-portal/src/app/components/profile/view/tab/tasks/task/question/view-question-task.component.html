@@ -3,22 +3,33 @@
     <h5>{{ 'TASKS.QUESTION.HEADER' | translate }}</h5>
   </div>
   <div class="card">
-    <div class="form-group">
-      <label class="font-weight-bold">
-        {{ 'TASKS.QUESTION.LABEL' | translate }}
-      </label>
-
-      <div *ngIf="selectedTask.task?.allowedAnswers?.length > 0; else textBox">
-        <ng-select  id="responseDropdown" [formControlName]="'response'" [clearable]="false" [items]="selectedTask.task.allowedAnswers"
-                    bindLabel="displayName" bindValue="name" placeholder="Select...">
-        </ng-select>
+    <div *ngIf="selectedTask.completedDate != null || selectedTask.abandonedDate != null; else editable">
+      <div>
+        <p class="mb-0">{{selectedTask.answer}}</p>
       </div>
+    </div>
 
+    <ng-template #editable>
+      <div *ngIf="selectedTask.task?.allowedAnswers?.length > 0; else textBox">
+        <div class="form-group">
+          <label class="font-weight-bold" for="responseAnswer">
+            {{ 'TASKS.QUESTION.DROPDOWN.LABEL' | translate }}
+          </label>
+          <ng-select  id="responseDropdown" [formControlName]="'response'" [clearable]="false" [items]="selectedTask.task.allowedAnswers"
+                      bindLabel="displayName" bindValue="name" placeholder="Select...">
+          </ng-select>
+        </div>
+      </div>
       <ng-template #textBox>
-        <textarea id="responseAnswer" class="md-textarea-auto form-control" rows="5"
-                  [formControlName]="'response'"></textarea>
+        <div class="form-group">
+          <label class="font-weight-bold" for="responseDropdown">
+            {{ 'TASKS.QUESTION.LABEL' | translate }}
+          </label>
+          <textarea id="responseAnswer" class="md-textarea-auto form-control" rows="5"
+                    [formControlName]="'response'"></textarea>
+        </div>
       </ng-template>
+    </ng-template>
 
     </div>
-  </div>
 </section>

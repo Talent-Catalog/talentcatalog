@@ -719,10 +719,9 @@ const ALL_FIELDS = {
     "QUESTION": {
       "HEADER": null,
       "LABEL": null,
-    },
-    "YESNOQUESTION": {
-      "HEADER": null,
-      "LABEL": null,
+      "DROPDOWN": {
+        "LABEL": null
+      }
     },
     "SIMPLE": {
       "HEADER": null,

@@ -19,6 +19,31 @@ package org.tbbtalent.server.service.db.impl;
 import com.opencsv.CSVWriter;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -36,44 +61,111 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.exception.CountryRestrictionException;
+import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.EntityReferencedException;
+import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateDestination;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateExam;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateProperty;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.CandidateSubfolderType;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.DataRow;
+import org.tbbtalent.server.model.db.DependantRelations;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.Exam;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SearchJoin;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.SurveyType;
+import org.tbbtalent.server.model.db.TaskAssignmentImpl;
+import org.tbbtalent.server.model.db.UnhcrStatus;
+import org.tbbtalent.server.model.db.UploadTaskImpl;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.YesNoUnsure;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 import org.tbbtalent.server.model.db.task.Task;
+import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.repository.db.CandidateExamRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.EducationLevelRepository;
+import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
+import org.tbbtalent.server.repository.db.LanguageLevelRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
+import org.tbbtalent.server.repository.db.SurveyTypeRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateExternalIdSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.request.candidate.SavedListGetRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.SearchJoinRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRegistrationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.PasswordHelper;
-import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.CandidateCitizenshipService;
+import org.tbbtalent.server.service.db.CandidateDependantService;
+import org.tbbtalent.server.service.db.CandidateDestinationService;
+import org.tbbtalent.server.service.db.CandidateExamService;
+import org.tbbtalent.server.service.db.CandidateNoteService;
+import org.tbbtalent.server.service.db.CandidatePropertyService;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
+import org.tbbtalent.server.service.db.CandidateVisaService;
+import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.service.db.TaskService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.BeanHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 /**
@@ -500,19 +592,24 @@ public class CandidateServiceImpl implements CandidateService {
      */
     private void populateTransientTaskAssignmentFields(List<TaskAssignmentImpl> taskAssignments) {
         for (TaskAssignmentImpl taskAssignment : taskAssignments) {
+            populateTransientTaskAssignmentFields(taskAssignment);
+        }
+    }
 
-            taskService.populateTransientFields(taskAssignment.getTask());
+    private void populateTransientTaskAssignmentFields(TaskAssignment taskAssignment) {
 
-            //If task is completed, see if there is any transient data to be populated - eg the
-            //answer on a question task
-            if (taskAssignment.getCompletedDate() != null) {
-                if (taskAssignment instanceof QuestionTaskAssignmentImpl) {
-                    QuestionTaskAssignment qta = (QuestionTaskAssignmentImpl) taskAssignment;
-                    String answer = fetchCandidateAnswer(qta);
-                    qta.setAnswer(answer);
-                }
+        taskService.populateTransientFields(taskAssignment.getTask());
+
+        //If task is completed, see if there is any transient data to be populated - eg the
+        //answer on a question task
+        if (taskAssignment.getCompletedDate() != null) {
+            if (taskAssignment instanceof QuestionTaskAssignmentImpl) {
+                QuestionTaskAssignment qta = (QuestionTaskAssignmentImpl) taskAssignment;
+                String answer = fetchCandidateAnswer(qta);
+                qta.setAnswer(answer);
             }
         }
+
     }
 
     /**
@@ -1231,6 +1328,33 @@ public class CandidateServiceImpl implements CandidateService {
                 sourceCountryIds, dateFrom, dateTo, candidateIds));
     }
 
+    /**
+     * Computes and sets the given candidate's IeltsScore
+     * @param candidate Candidate whose score needs to be computed
+     */
+    private void computeIeltsScore(Candidate candidate) {
+        CandidateExam ieltsGen = candidate.getCandidateExams().stream()
+            .filter(ce -> Objects.nonNull(ce.getExam()) && ce.getExam().equals(Exam.IELTSGen))
+            .findAny().orElse(null);
+
+        CandidateExam ieltsAca = candidate.getCandidateExams().stream()
+            .filter(ce -> Objects.nonNull(ce.getExam()) && ce.getExam().equals(Exam.IELTSAca))
+            .findAny().orElse(null);
+
+        BigDecimal score;
+        // Setting Ielts Score in order of Ielts General, Ielts Academic, Ielts Estimated.
+        if (ieltsGen != null && ieltsGen.getScore() != null) {
+            score = new BigDecimal(ieltsGen.getScore());
+        } else if (ieltsAca != null && ieltsAca.getScore() != null) {
+            score = new BigDecimal(ieltsAca.getScore());
+        } else if (candidate.getLangAssessmentScore() != null) {
+            score = new BigDecimal(candidate.getLangAssessmentScore());
+        } else {
+            score = null;
+        }
+        candidate.setIeltsScore(score);
+    }
+
     @Override
     public List<DataRow> computeUnhcrRegisteredStats(LocalDate dateFrom, LocalDate dateTo,
         List<Long> sourceCountryIds) {
@@ -1921,8 +2045,7 @@ public class CandidateServiceImpl implements CandidateService {
         //is a exam update.
         final Exam exam = data.getExamType();
         if (exam != null) {
-            candidateExamService
-                    .updateIntakeData(candidate, data);
+            updateExamIntakeData(candidate, data);
         }
 
         //Get the partner candidate object from the id in the data request and pass into the populateIntakeData method
@@ -1969,10 +2092,356 @@ public class CandidateServiceImpl implements CandidateService {
             birthCountry = countryRepository.findById(birthCountryId).orElse(null);
         }
 
-        candidate.populateIntakeData(data, partnerCandidate, partnerEducationLevel,
+        populateIntakeData(candidate, data, partnerCandidate, partnerEducationLevel,
                 partnerOccupation, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry, birthCountry);
 
         save(candidate, true);
+
+    }
+
+    /**
+     * Updates the candidate exam intake data associated with the given
+     * nationality and given candidate.
+     * @param candidate Candidate
+     * @param data Partially populated CandidateIntakeData record. Null data
+     *             fields are ignored. Only non null fields are updated.
+     * @throws NoSuchObjectException if the there is no Nationality with the
+     * given id or no CandidateExam record with the id given in the data
+     */
+    private void updateExamIntakeData( @NonNull Candidate candidate, CandidateIntakeDataUpdate data)
+        throws NoSuchObjectException, EntityExistsException {
+        CandidateExam ce;
+        Long id = data.getExamId();
+        ce = candidateExamRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, id));
+
+        populateExamIntakeData(ce, candidate, data);
+
+        // Check that the requested exam type doesnt already exist to avoid duplicates of ielts exams
+        CandidateExam existingExam = candidateExamRepository.findDuplicateByExamType(ce.getExam(), candidate.getId(), ce.getId()).orElse(null);
+        if (existingExam != null) {
+            if (existingExam.getExam().equals(Exam.IELTSGen) || existingExam.getExam().equals(Exam.IELTSAca)) {
+                throw new EntityExistsException("exam type");
+            }
+        }
+
+        candidateExamRepository.save(ce);
+
+        computeIeltsScore(candidate);
+
+    }
+
+    private void populateExamIntakeData(@NonNull CandidateExam candidateExam,
+        @NonNull Candidate candidate, CandidateIntakeDataUpdate data) {
+        candidateExam.setCandidate(candidate);
+        if (data.getExamType() != null) {
+            candidateExam.setExam(data.getExamType());
+        }
+        if (data.getOtherExam() != null) {
+            candidateExam.setOtherExam(data.getOtherExam());
+        }
+        if (data.getExamScore() != null) {
+            candidateExam.setScore(data.getExamScore());
+        }
+        if (data.getExamYear() != null) {
+            candidateExam.setYear(data.getExamYear());
+        }
+        if (data.getExamNotes() != null) {
+            candidateExam.setNotes(data.getExamNotes());
+        }
+    }
+
+    public void populateIntakeData(Candidate candidate, CandidateIntakeDataUpdate data,
+        @Nullable Candidate partnerCandidate,
+        @Nullable EducationLevel partnerEduLevel,
+        @Nullable Occupation partnerOccupation,
+        @Nullable LanguageLevel partnerEnglishLevel,
+        @Nullable Country partnerCitizenship,
+        @Nullable Country drivingLicenseCountry,
+        @Nullable Country birthCountry) {
+        if (data.getAsylumYear() != null) {
+            candidate.setAsylumYear(data.getAsylumYear());
+        }
+        if (data.getAvailImmediate() != null) {
+            candidate.setAvailImmediate(data.getAvailImmediate());
+        }
+        if (data.getAvailImmediateJobOps() != null) {
+            candidate.setAvailImmediateJobOps(data.getAvailImmediateJobOps());
+        }
+        if (data.getAvailImmediateReason() != null) {
+            candidate.setAvailImmediateReason(data.getAvailImmediateReason());
+        }
+        if (data.getAvailImmediateNotes() != null) {
+            candidate.setAvailImmediateNotes(data.getAvailImmediateNotes());
+        }
+        if (data.getBirthCountryId() != null) {
+            candidate.setBirthCountry(birthCountry);
+        }
+        if (data.getCanDrive() != null) {
+            candidate.setCanDrive(data.getCanDrive());
+        }
+        if (data.getConflict() != null) {
+            candidate.setConflict(data.getConflict());
+        }
+        if (data.getConflictNotes() != null) {
+            candidate.setConflictNotes(data.getConflictNotes());
+        }
+        if (data.getCovidVaccinated() != null) {
+            candidate.setCovidVaccinated(data.getCovidVaccinated());
+        }
+        if (data.getCovidVaccinatedStatus() != null) {
+            candidate.setCovidVaccinatedStatus(data.getCovidVaccinatedStatus());
+        }
+        if (data.getCovidVaccinatedDate() != null) {
+            candidate.setCovidVaccinatedDate(data.getCovidVaccinatedDate());
+        }
+        if (data.getCovidVaccineName() != null) {
+            candidate.setCovidVaccineName(data.getCovidVaccineName());
+        }
+        if (data.getCovidVaccineNotes() != null) {
+            candidate.setCovidVaccineNotes(data.getCovidVaccineNotes());
+        }
+        if (data.getCrimeConvict() != null) {
+            candidate.setCrimeConvict(data.getCrimeConvict());
+        }
+        if (data.getCrimeConvictNotes() != null) {
+            candidate.setCrimeConvictNotes(data.getCrimeConvictNotes());
+        }
+        if (data.getDestLimit() != null) {
+            candidate.setDestLimit(data.getDestLimit());
+        }
+        if (data.getDestLimitNotes() != null) {
+            candidate.setDestLimitNotes(data.getDestLimitNotes());
+        }
+        if (data.getDrivingLicense() != null) {
+            candidate.setDrivingLicense(data.getDrivingLicense());
+        }
+        if (data.getDrivingLicenseExp() != null) {
+            candidate.setDrivingLicenseExp(data.getDrivingLicenseExp());
+        }
+        if (data.getDrivingLicenseCountryId() != null) {
+            candidate.setDrivingLicenseCountry(drivingLicenseCountry);
+        }
+        if (data.getFamilyMove() != null) {
+            candidate.setFamilyMove(data.getFamilyMove());
+        }
+        if (data.getFamilyMoveNotes() != null) {
+            candidate.setFamilyMoveNotes(data.getFamilyMoveNotes());
+        }
+        if (data.getHealthIssues() != null) {
+            candidate.setHealthIssues(data.getHealthIssues());
+        }
+        if (data.getHealthIssuesNotes() != null) {
+            candidate.setHealthIssuesNotes(data.getHealthIssuesNotes());
+        }
+        if (data.getHomeLocation() != null) {
+            candidate.setHomeLocation(data.getHomeLocation());
+        }
+        if (data.getHostChallenges() != null) {
+            candidate.setHostChallenges(data.getHostChallenges());
+        }
+        if (data.getHostEntryYear() != null) {
+            candidate.setHostEntryYear(data.getHostEntryYear());
+        }
+        if (data.getHostEntryYearNotes() != null) {
+            candidate.setHostEntryYearNotes(data.getHostEntryYearNotes());
+        }
+        if (data.getHostEntryLegally() != null) {
+            candidate.setHostEntryLegally(data.getHostEntryLegally());
+        }
+        if (data.getHostEntryLegallyNotes() != null) {
+            candidate.setHostEntryLegallyNotes(data.getHostEntryLegallyNotes());
+        }
+        if (data.getIntRecruitReasons() != null) {
+            candidate.setIntRecruitReasons(data.getIntRecruitReasons());
+        }
+        if (data.getIntRecruitOther() != null) {
+            candidate.setIntRecruitOther(data.getIntRecruitOther());
+        }
+        if (data.getIntRecruitRural() != null) {
+            candidate.setIntRecruitRural(data.getIntRecruitRural());
+        }
+        if (data.getIntRecruitRuralNotes() != null) {
+            candidate.setIntRecruitRuralNotes(data.getIntRecruitRuralNotes());
+        }
+        if (data.getLangAssessment() != null) {
+            candidate.setLangAssessment(data.getLangAssessment());
+        }
+
+        if (data.getLangAssessmentScore() != null) {
+            BigDecimal score;
+            // If the LangAssessmentScore is NoResponse set to null in database.
+            if (data.getLangAssessmentScore().equals("NoResponse")) {
+                candidate.setLangAssessmentScore(null);
+                score = null;
+            } else {
+                candidate.setLangAssessmentScore(data.getLangAssessmentScore());
+            }
+            computeIeltsScore(candidate);
+        }
+
+        if (data.getLeftHomeReasons() != null) {
+            candidate.setLeftHomeReasons(data.getLeftHomeReasons());
+        }
+        if (data.getLeftHomeNotes() != null) {
+            candidate.setLeftHomeNotes(data.getLeftHomeNotes());
+        }
+        if (data.getMilitaryService() != null) {
+            candidate.setMilitaryService(data.getMilitaryService());
+        }
+        if (data.getMilitaryWanted() != null) {
+            candidate.setMilitaryWanted(data.getMilitaryWanted());
+        }
+        if (data.getMilitaryNotes() != null) {
+            candidate.setMilitaryNotes(data.getMilitaryNotes());
+        }
+        if (data.getMilitaryStart() != null) {
+            candidate.setMilitaryStart(data.getMilitaryStart());
+        }
+        if (data.getMilitaryEnd() != null) {
+            candidate.setMilitaryEnd(data.getMilitaryEnd());
+        }
+        if (data.getMaritalStatus() != null) {
+            candidate.setMaritalStatus(data.getMaritalStatus());
+        }
+        if (data.getMaritalStatusNotes() != null) {
+            candidate.setMaritalStatusNotes(data.getMaritalStatusNotes());
+        }
+        if (data.getPartnerRegistered() != null) {
+            candidate.setPartnerRegistered(data.getPartnerRegistered());
+        }
+        if (data.getPartnerCandId() != null) {
+            candidate.setPartnerCandidate(partnerCandidate);
+        }
+        if (data.getPartnerEduLevelId() != null) {
+            candidate.setPartnerEduLevel(partnerEduLevel);
+        }
+        if (data.getPartnerEduLevelNotes() != null) {
+            candidate.setPartnerEduLevelNotes(data.getPartnerEduLevelNotes());
+        }
+        if (data.getPartnerOccupationId() != null) {
+            candidate.setPartnerOccupation(partnerOccupation);
+        }
+        if (data.getPartnerOccupationNotes() != null) {
+            candidate.setPartnerOccupationNotes(data.getPartnerOccupationNotes());
+        }
+        if (data.getPartnerEnglish() != null) {
+            candidate.setPartnerEnglish(data.getPartnerEnglish());
+        }
+        if (data.getPartnerEnglishLevelId() != null) {
+            candidate.setPartnerEnglishLevel(partnerEnglishLevel);
+        }
+        if (data.getPartnerIelts() != null) {
+            candidate.setPartnerIelts(data.getPartnerIelts());
+        }
+        if (data.getPartnerIeltsScore() != null) {
+            candidate.setPartnerIeltsScore(data.getPartnerIeltsScore());
+        }
+        if (data.getPartnerIeltsYr() != null) {
+            candidate.setPartnerIeltsYr(data.getPartnerIeltsYr());
+        }
+        if (data.getPartnerCitizenshipId() != null) {
+            candidate.setPartnerCitizenship(partnerCitizenship);
+        }
+        if (data.getResidenceStatus() != null) {
+            candidate.setResidenceStatus(data.getResidenceStatus());
+        }
+        if (data.getResidenceStatusNotes() != null) {
+            candidate.setResidenceStatusNotes(data.getResidenceStatusNotes());
+        }
+        if (data.getReturnedHome() != null) {
+            candidate.setReturnedHome(data.getReturnedHome());
+        }
+        if (data.getReturnedHomeReason() != null) {
+            candidate.setReturnedHomeReason(data.getReturnedHomeReason());
+        }
+        if (data.getReturnedHomeReasonNo() != null) {
+            candidate.setReturnedHomeReasonNo(data.getReturnedHomeReasonNo());
+        }
+        if (data.getReturnHomeSafe() != null) {
+            candidate.setReturnHomeSafe(data.getReturnHomeSafe());
+        }
+        if (data.getReturnHomeFuture() != null) {
+            candidate.setReturnHomeFuture(data.getReturnHomeFuture());
+        }
+        if (data.getReturnHomeWhen() != null) {
+            candidate.setReturnHomeWhen(data.getReturnHomeWhen());
+        }
+        if (data.getResettleThird() != null) {
+            candidate.setResettleThird(data.getResettleThird());
+        }
+        if (data.getResettleThirdStatus() != null) {
+            candidate.setResettleThirdStatus(data.getResettleThirdStatus());
+        }
+        if (data.getUnhcrRegistered() != null) {
+            candidate.setUnhcrRegistered(data.getUnhcrRegistered());
+        }
+        if (data.getUnhcrStatus() != null) {
+            candidate.setUnhcrStatus(data.getUnhcrStatus());
+        }
+        if (data.getUnhcrNotRegStatus() != null) {
+            candidate.setUnhcrNotRegStatus(data.getUnhcrNotRegStatus());
+        }
+        if (data.getUnhcrNumber() != null) {
+            candidate.setUnhcrNumber(data.getUnhcrNumber());
+        }
+        if (data.getUnhcrFile() != null) {
+            candidate.setUnhcrFile(data.getUnhcrFile());
+        }
+        if (data.getUnhcrConsent() != null) {
+            candidate.setUnhcrConsent(data.getUnhcrConsent());
+        }
+        if (data.getUnhcrNotes() != null) {
+            candidate.setUnhcrNotes(data.getUnhcrNotes());
+        }
+        if (data.getUnrwaRegistered() != null) {
+            candidate.setUnrwaRegistered(data.getUnrwaRegistered());
+        }
+        if (data.getUnrwaNumber() != null) {
+            candidate.setUnrwaNumber(data.getUnrwaNumber());
+        }
+        if (data.getUnrwaFile() != null) {
+            candidate.setUnrwaFile(data.getUnrwaFile());
+        }
+        if (data.getUnrwaNotRegStatus() != null) {
+            candidate.setUnrwaNotRegStatus(data.getUnrwaNotRegStatus());
+        }
+        if (data.getUnrwaNotes() != null) {
+            candidate.setUnrwaNotes(data.getUnrwaNotes());
+        }
+        if (data.getVisaReject() != null) {
+            candidate.setVisaReject(data.getVisaReject());
+        }
+        if (data.getVisaRejectNotes() != null) {
+            candidate.setVisaRejectNotes(data.getVisaRejectNotes());
+        }
+        if (data.getVisaIssues() != null) {
+            candidate.setVisaIssues(data.getVisaIssues());
+        }
+        if (data.getVisaIssuesNotes() != null) {
+            candidate.setVisaIssuesNotes(data.getVisaIssuesNotes());
+        }
+        if (data.getWorkAbroad() != null) {
+            candidate.setWorkAbroad(data.getWorkAbroad());
+        }
+        if (data.getWorkAbroadNotes() != null) {
+            candidate.setWorkAbroadNotes(data.getWorkAbroadNotes());
+        }
+        if (data.getWorkPermit() != null) {
+            candidate.setWorkPermit(data.getWorkPermit());
+        }
+        if (data.getWorkPermitDesired() != null) {
+            candidate.setWorkPermitDesired(data.getWorkPermitDesired());
+        }
+        if (data.getWorkPermitDesiredNotes() != null) {
+            candidate.setWorkPermitDesiredNotes(data.getWorkPermitDesiredNotes());
+        }
+        if (data.getWorkDesired() != null) {
+            candidate.setWorkDesired(data.getWorkDesired());
+        }
+        if (data.getWorkDesiredNotes() != null) {
+            candidate.setWorkDesiredNotes(data.getWorkDesiredNotes());
+        }
 
     }
 
@@ -2015,7 +2484,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidateExamRepository.deleteById(examId);
 
-        candidate.computeIeltsScore();
+        computeIeltsScore(candidate);
         save(candidate, true);
         return true;
     }

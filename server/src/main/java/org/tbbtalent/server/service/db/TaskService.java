@@ -52,13 +52,6 @@ public interface TaskService {
     List<TaskImpl> listTasks();
 
     /**
-     * Get the tasks assigned to a list of candidates (related list id)
-     * @param listId the list which we want the assigned tasks associated with
-     * @return List of tasks
-     */
-    List<TaskImpl> listTasksAssignedToList(long listId);
-
-    /**
      * Populate transient fields on given task
      * @param task Task to populate
      */
