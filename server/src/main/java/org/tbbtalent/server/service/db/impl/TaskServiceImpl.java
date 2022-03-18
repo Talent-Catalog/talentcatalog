@@ -78,16 +78,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskImpl> listTasksAssignedToList(long listId) {
-        // todo get the tasks that have been assigned through a list to display in assign to list modal
-        final List<TaskImpl> tasks = taskRepository.findAll();
-
-        populateTransientFields(tasks);
-
-        return tasks;
-    }
-
-    @Override
     public Page<TaskImpl> searchTasks(SearchTaskRequest request) {
         Page<TaskImpl> tasks = taskRepository.findAll(
                 TaskSpecification.buildSearchQuery(request), request.getPageRequest());
@@ -134,8 +124,13 @@ public class TaskServiceImpl implements TaskService {
                     //But if you want to have more descriptive display names, you can
                     //override an enum's toString as described here:
                     //https://www.baeldung.com/java-enum-values#1-overriding-tostring
-                    allowedAnswers.add(new AllowedQuestionTaskAnswer(
-                        enumConstant.name(), enumConstant.toString()));
+                    //See enum ResidenceStatus for an example of this.
+                    final String enumName = enumConstant.name();
+                    //Filter out "NoResponse" values - eg see values for enum YesNo
+                    if (!enumName.equals("NoResponse")) {
+                        allowedAnswers.add(new AllowedQuestionTaskAnswer(
+                            enumName, enumConstant.toString()));
+                    }
                 }
                 qt.setAllowedAnswers(allowedAnswers);
             }
