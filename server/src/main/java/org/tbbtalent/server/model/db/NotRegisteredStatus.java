@@ -17,9 +17,20 @@
 package org.tbbtalent.server.model.db;
 
 public enum NotRegisteredStatus {
-    NoResponse,
-    WasRegistered,
-    NeverRegistered,
-    Unsure,
-    NA
+    NoResponse("No response"),
+    WasRegistered("No longer registered, but was registered previously"),
+    NeverRegistered("Never been registered"),
+    Unsure("Unsure"),
+    NA("Not applicable");
+
+    public final String label;
+
+    NotRegisteredStatus(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public String toString() {
+        return label;
+    }
 }

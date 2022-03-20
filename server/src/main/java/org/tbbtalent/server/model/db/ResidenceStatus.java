@@ -30,6 +30,6 @@ public enum ResidenceStatus {
 
     @Override
     public String toString() {
-        return this.label;
+        return label;
     }
 }
