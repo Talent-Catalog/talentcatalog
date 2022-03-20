@@ -91,7 +91,15 @@ import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-revie
 import {Router} from '@angular/router';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
+import {
+  catchError,
+  concatAll,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
 import {SavedListService} from '../../../services/saved-list.service';
@@ -908,6 +916,30 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.error = err;
       }
     );
+  }
+
+  /**
+   * Opens window to user's configured email client (eg GMail) with a new email to be completed
+   * by the user, sent to a TBB account and BCCing the emails of all selected candidates.
+   */
+  emailSelection() {
+    const email = "candidates@talentbeyondboundaries.org";
+
+    //Concatenate all selected candidate emails.
+    let bcc: string = "";
+    for (const candidate of this.selectedCandidates) {
+      const email = candidate?.user.email;
+      if (email) {
+        bcc += email + ";";
+      }
+    }
+
+    //Mail will be to TBB account, BCCing all candidates.
+    const link = "mailto:"+ email + "?bcc=" + bcc;
+
+    //See https://stackoverflow.com/a/67715912/929968 for why we use window.open instead of
+    // window.location.href = link
+    window.open(link);
   }
 
   saveSelection() {

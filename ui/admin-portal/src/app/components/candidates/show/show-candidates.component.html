@@ -121,6 +121,12 @@
         </button>
 
         <button class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
+                (click)="emailSelection()" title="Send email to all selected candidates">
+          <i class="fas fa-user-check"></i> to
+          <i class="fa fa-envelope"></i>
+        </button>
+
+        <button class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
                 (click)="updateStatusOfSelection()" title="Update Statuses of Selection">
           <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
           <i class="fas fa-user-check"></i>
