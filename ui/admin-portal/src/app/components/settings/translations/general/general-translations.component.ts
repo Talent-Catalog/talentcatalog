@@ -692,6 +692,22 @@ const ALL_FIELDS = {
       "NAME": null,
       "DESCRIPTION": null,
     },
+    "VISARETURNED": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "COLLABORATIONAGREEMENTSIMPLE": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "UNHCRSTATUS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
+    "LIVINGRESTRICTIONS": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
   },
   "TASKS": {
     "TAB": null,
