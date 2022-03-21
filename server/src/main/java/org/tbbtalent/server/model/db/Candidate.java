@@ -16,6 +16,16 @@
 
 package org.tbbtalent.server.model.db;
 
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.annotations.Formula;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
+import org.tbbtalent.server.model.es.CandidateEs;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
+
+import javax.persistence.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,31 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import org.apache.commons.beanutils.NestedNullException;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.annotations.Formula;
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
-import org.tbbtalent.server.model.es.CandidateEs;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 @Entity
 @Table(name = "candidate")
@@ -686,6 +672,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         } else if (obj != null && "dob".equals(exportField)) {
             //Convert candidateNumber to a number
             obj = ((LocalDate) obj).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
+        } else if (obj != null && ("phone".equals(exportField) || "whatsapp".equals(exportField))) {
+            // Need to add a ' before the number in order to keep any starting '0's in the number
+            obj = "'" + obj;
         } else if (obj instanceof Enum) {
             obj = ((Enum<?>) obj).name();
         }
