@@ -708,6 +708,10 @@ const ALL_FIELDS = {
       "NAME": null,
       "DESCRIPTION": null,
     },
+    "PREDEPARTUREVIDEO": {
+      "NAME": null,
+      "DESCRIPTION": null,
+    },
   },
   "TASKS": {
     "TAB": null,
