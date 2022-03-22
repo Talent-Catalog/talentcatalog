@@ -157,7 +157,6 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   openFiles(ats: CandidateAttachment[]) {
     this.loadingResponse = true;
     for (let i = 0; i < ats.length; i++) {
-      console.log(ats[i]);
       window.open(ats[i].url);
     }
     this.loadingResponse = false;
