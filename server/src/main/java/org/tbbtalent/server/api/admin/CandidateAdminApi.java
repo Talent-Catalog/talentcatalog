@@ -287,4 +287,9 @@ public class CandidateAdminApi {
         candidateService.updateIntakeData(id, data);
     }
 
+    @PutMapping("resolve-tasks")
+    public void resolveOutstandingTasks(@RequestBody ResolveTaskAssignmentsRequest request) {
+        candidateService.resolveOutstandingTaskAssignments(request);
+    }
+
 }
