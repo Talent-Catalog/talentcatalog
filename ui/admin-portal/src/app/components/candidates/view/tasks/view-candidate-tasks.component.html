@@ -96,6 +96,7 @@
           </div>
           <div *ngIf="ta.completedDate && !ta.abandonedDate" class="text-success font-r80">Completed: {{ta.completedDate | date}}</div>
           <div *ngIf="ta.abandonedDate && !ta.completedDate" class="text-alert font-r80">Abandoned: {{ta.abandonedDate | date}}</div>
+          <div *ngIf="ta.abandonedDate < ta.completedDate" class="text-alert font-r80">Abandoned: {{ta.abandonedDate | date}}</div>
           <div *ngIf="ta.completedDate && ta.abandonedDate" class="text-tbb-primary font-r80">Resolved by TBB: {{ta.completedDate | date}}</div>
         </div>
 
