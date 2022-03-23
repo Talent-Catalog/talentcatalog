@@ -19,7 +19,7 @@
   </div>
 
   <div class="card-body">
-    <div *ngIf="ongoingTasks.length <= 0">
+    <div *ngIf="ongoingTasks?.length <= 0">
       <p class="text-center text-muted small mb-0">No ongoing tasks</p>
     </div>
     <div *ngFor="let ta of ongoingTasks; let i = index;">
@@ -74,7 +74,7 @@
   </div>
 
   <div class="card-body">
-    <div *ngIf="completedTasks.length <= 0">
+    <div *ngIf="completedTasks?.length <= 0">
       <p class="text-center text-muted small mb-0">No completed tasks</p>
     </div>
     <div *ngFor="let ta of completedTasks; let i = index;">
@@ -94,8 +94,9 @@
               <span *ngIf="ta.answer?.length >=40">...</span>
             </span>
           </div>
-          <div *ngIf="ta.completedDate" class="text-success font-r80">Completed: {{ta.completedDate | date}}</div>
+          <div *ngIf="ta.completedDate && !ta.abandonedDate" class="text-success font-r80">Completed: {{ta.completedDate | date}}</div>
           <div *ngIf="ta.abandonedDate && !ta.completedDate" class="text-alert font-r80">Abandoned: {{ta.abandonedDate | date}}</div>
+          <div *ngIf="ta.completedDate && ta.abandonedDate" class="text-tbb-primary font-r80">Resolved by TBB: {{ta.completedDate | date}}</div>
         </div>
 
         <!-- IF EDITABLE SHOW FULL RESULTS (COMMENTS, ANSWERS AND EDIT BUTTONS) -->
@@ -143,7 +144,7 @@
   </div>
 
   <div class="card-body">
-    <div *ngIf="inactiveTasks.length <= 0">
+    <div *ngIf="inactiveTasks?.length <= 0">
       <p class="text-center text-muted small mb-0">No inactive tasks</p>
     </div>
     <div *ngFor="let ta of inactiveTasks; let i = index;">

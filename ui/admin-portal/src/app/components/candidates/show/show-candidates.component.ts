@@ -91,15 +91,7 @@ import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-revie
 import {Router} from '@angular/router';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
-import {
-  catchError,
-  concatAll,
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  switchMap,
-  tap
-} from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
 import {SavedListService} from '../../../services/saved-list.service';
@@ -151,6 +143,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   publishing: boolean;
   updating: boolean;
   updatingStatuses: boolean;
+  updatingTasks: boolean;
   savingSelection: boolean;
   searchForm: FormGroup;
 
@@ -1643,4 +1636,30 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       .catch(() => { /* Isn't possible */
       });
   }
+
+  // When admins want to resolve outstanding tasks to bring the task count to all completed.
+  resolveTaskAssignments() {
+    this.error = null;
+    const nSelections = this.selectedCandidates.length;
+    if (nSelections === 0) {
+      this.error = this.noCandidatesMessage;
+    } else {
+      if (isSavedList(this.candidateSource)) {
+        this.updatingTasks = true;
+        const request = {
+          candidateIds: this.selectedCandidates.map(c => c.id)
+        };
+        this.candidateService.resolveOutstandingTasks(request).subscribe(
+          () => {
+            this.doSearch(true);
+            this.updatingTasks = false;
+          },
+          (error) => {
+            this.error = error;
+            this.updatingTasks = false;
+          });
+      }
+    }
+  }
+
 }
