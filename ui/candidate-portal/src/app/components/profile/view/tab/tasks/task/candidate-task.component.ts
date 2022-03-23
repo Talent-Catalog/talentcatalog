@@ -51,7 +51,7 @@ export class CandidateTaskComponent implements OnInit {
 
     this.addRequiredFormControls();
 
-    // todo this validation seems very messy! Must be a better way to handle this.
+    // todo this validation seems very messy! May be a better way to handle this. Perhaps use seperate forms?
     // Validation requiring comment if abandoned, and resetting the required validation on the answer/completed fields.
     this.form.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
