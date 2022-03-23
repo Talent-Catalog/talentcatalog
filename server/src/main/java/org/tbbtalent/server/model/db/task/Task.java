@@ -98,4 +98,14 @@ public interface Task extends Auditable {
         return TaskType.Simple;
     }
 
+    /**
+     * Set transient description field
+     */
+    void setDescription(@Nullable String description);
+
+    /**
+     * Set transient displayName field
+     */
+    void setDisplayName(@Nullable String displayName);
+
 }

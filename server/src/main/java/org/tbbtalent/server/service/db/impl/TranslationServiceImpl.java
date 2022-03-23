@@ -18,9 +18,18 @@ package org.tbbtalent.server.service.db.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -33,16 +42,8 @@ import org.tbbtalent.server.repository.db.TranslationRepository;
 import org.tbbtalent.server.request.translation.CreateTranslationRequest;
 import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.TaskService;
 import org.tbbtalent.server.service.db.TranslationService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class TranslationServiceImpl implements TranslationService {
@@ -50,38 +51,39 @@ public class TranslationServiceImpl implements TranslationService {
     private final TranslationRepository translationRepository;
     private final S3ResourceHelper s3ResourceHelper;
     private final AuthService authService;
-    private final TaskService taskService;
 
     @Autowired
     public TranslationServiceImpl(TranslationRepository translationRepository,
                                   S3ResourceHelper s3ResourceHelper,
-                                  AuthService authService,
-                                  TaskService taskService) {
+                                  AuthService authService) {
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
-        this.taskService = taskService;
         this.translationRepository = translationRepository;
     }
 
-    public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
-                                                                             String type) {
+    public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> entities,
+                                                                             String objectType) {
         String selectedLanguage = authService.getUserLanguage();
-        translate(items, type, selectedLanguage);
+        translate(entities, objectType, selectedLanguage);
     }
 
-    public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
-                                                                             String type, String selectedLanguage) {
-        // if the selected language is english, no need to load translations at all, just return original data
+    public <T extends AbstractTranslatableDomainObject<Long>> void translate(
+        List<T> entities, String objectType, String selectedLanguage) {
+        // if the selected language is english, no need to load translations at all, just return
+        // original data
         if ("en".equals(selectedLanguage) || selectedLanguage == null ) {
             return;
         }
 
-        if (CollectionUtils.isNotEmpty(items)) {
-            List<Long> itemIds = items.stream().map(c -> c.getId()).collect(Collectors.toList());
-            List<Translation> translations = translationRepository.findByIdsTypeLanguage(itemIds, type, selectedLanguage);
+        if (CollectionUtils.isNotEmpty(entities)) {
+            List<Long> itemIds = entities.stream().map(c -> c.getId()).collect(Collectors.toList());
+            List<Translation> translations = translationRepository.findByIdsTypeLanguage(itemIds,
+                objectType, selectedLanguage);
             if (CollectionUtils.isNotEmpty(translations)) {
-                Map<Long, Translation> translationsById = translations.stream().collect(Collectors.toMap(Translation::getObjectId, Function.identity()));
-                items.forEach(c -> {
+                Map<Long, Translation> translationsById =
+                    translations.stream().collect(
+                        Collectors.toMap(Translation::getObjectId, Function.identity()));
+                entities.forEach(c -> {
                     Translation translation = translationsById.get(c.getId());
                     if (translation != null) {
                         c.setTranslatedId(translation.getId());
@@ -138,18 +140,6 @@ public class TranslationServiceImpl implements TranslationService {
     @Override
     public void updateTranslationFile(String language, Map<String, Object> translations) {
         try {
-            if (Objects.equals(language, "en")) {
-                // Update the English name & description for tasks automatically. We already have the name/description defined
-                // in the task table, so should pull this automatically and avoid doubling up on entering this data.
-                // Other languages will need to be entered manually.
-                LinkedHashMap<String, Map<String, Object>> tasks = getNestedValue(translations, "TASK");
-                for (Map.Entry<String, Map<String, Object>> task : tasks.entrySet()) {
-                    Map<String, Object> taskTranslation = task.getValue();
-                    taskTranslation.putIfAbsent("NAME", taskService.getByName(task.getKey()).getDisplayName());
-                    taskTranslation.putIfAbsent("DESCRIPTION", taskService.getByName(task.getKey()).getDescription());
-                }
-            }
-
             String json = new ObjectMapper().writeValueAsString(translations);
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
@@ -168,14 +158,23 @@ public class TranslationServiceImpl implements TranslationService {
 
     }
 
-    public static <T> T getNestedValue(Map map, String... keys) {
+    @Override
+    public @Nullable String translate(Map<String, Object> translations, String... keys) {
+        return (String) getNestedValue(translations, keys);
+    }
+
+    @Nullable
+    private static Object getNestedValue(Map<String, Object> map, String... keys) {
         Object value = map;
 
         for (String key : keys) {
-            value = ((Map) value).get(key);
+            value = ((Map)value).get(key.toUpperCase());
+            if (value == null) {
+                break;
+            }
         }
 
-        return (T) value;
+        return value;
     }
 
 

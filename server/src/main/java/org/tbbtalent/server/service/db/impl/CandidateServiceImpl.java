@@ -633,7 +633,7 @@ public class CandidateServiceImpl implements CandidateService {
                     candidatePropertyService.findProperty(candidate, propertyName);
 
                 if (property == null) {
-                    throw new NoSuchObjectException("Answer not found to " + task.getDisplayName()
+                    throw new NoSuchObjectException("Answer not found to " + task.getName()
                         + ". No such candidate property: " + propertyName);
                 }
                 answer = property.getValue();
@@ -649,7 +649,7 @@ public class CandidateServiceImpl implements CandidateService {
                     throw new InvalidRequestException("Error while accessing '" + answerField
                         + "' field of candidate");
                 } catch (NoSuchMethodException e) {
-                    throw new NoSuchObjectException("Answer not found to " + task.getDisplayName()
+                    throw new NoSuchObjectException("Answer not found to " + task.getName()
                             + ". No such candidate field: " + answerField);
                 }
             }

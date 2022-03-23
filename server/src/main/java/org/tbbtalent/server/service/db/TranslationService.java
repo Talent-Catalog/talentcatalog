@@ -18,6 +18,7 @@ package org.tbbtalent.server.service.db;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.AbstractTranslatableDomainObject;
 import org.tbbtalent.server.model.db.Translation;
 import org.tbbtalent.server.model.db.User;
@@ -111,6 +112,15 @@ public interface TranslationService {
      * @return Map storing nested key/values
      */
     Map<String, Object> getTranslationFile(String language);
+
+    /**
+     * Look up the translation the given nesting keys
+     * @param translations Nested key translations
+     * @param keys Keys
+     * @return Translation if one found, otherwise null
+     */
+    @Nullable
+    String translate(Map<String, Object> translations, String... keys);
 
     /**
      * Updates the nested JSON translation file stored on Amazon for the given language with the
