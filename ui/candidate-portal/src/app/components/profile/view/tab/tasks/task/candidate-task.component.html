@@ -1,7 +1,10 @@
 <app-error [error]="error"></app-error>
 <div class="d-sm-flex justify-content-between">
   <div>
-    <h3>{{ 'TASK.'+  selectedTask?.task?.name + '.NAME' | uppercase | translate }} <span class="font-weight-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.REQUIRED' | translate }}</span></h3>
+    <h3>{{ 'TASK.'+  selectedTask?.task?.name + '.NAME' | uppercase | translate }}
+      <span class="font-weight-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.REQUIRED' | translate }}</span>
+      <span class="font-weight-bolder font-italic" *ngIf="selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.OPTIONAL' | translate }}</span>
+    </h3>
     <div class="mb-2">{{ 'TASK.'+  selectedTask?.task?.name + '.DESCRIPTION' | uppercase | translate }}</div>
 
     <ng-container *ngIf="!selectedTask?.completedDate && !selectedTask?.abandonedDate">
@@ -18,7 +21,7 @@
 
   </div>
 
-  <div class="mt-4 text-center flex-shrink-0">
+  <div class="mt-4 mx-3 text-center flex-shrink-0">
     <div class="mb-2" *ngIf="selectedTask?.task?.helpLink">
       <a class="btn btn-sm btn-primary" target="_blank" [href]="selectedTask?.task?.helpLink">{{ 'TASKS.TASK.VIEWHELP' | translate }} <fa-icon class="ml-1" icon="question-circle"></fa-icon></a>
     </div>
