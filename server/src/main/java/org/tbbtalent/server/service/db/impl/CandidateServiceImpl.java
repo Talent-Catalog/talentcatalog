@@ -2475,13 +2475,15 @@ public class CandidateServiceImpl implements CandidateService {
         List<TaskAssignmentImpl> taskAssignments = candidate.getTaskAssignments();
         for (TaskAssignmentImpl ta : taskAssignments) {
             // All outstanding required tasks, need to be set as completed. And if not abandoned, need to also be set as abandoned.
-            if (ta.getCompletedDate() == null && !ta.getTask().isOptional()) {
-                ta.setCompletedDate(OffsetDateTime.now());
-                if (ta.getAbandonedDate() == null) {
-                    ta.setAbandonedDate(OffsetDateTime.now());
+            if (ta.getStatus() != Status.deleted) {
+                if (ta.getCompletedDate() == null && !ta.getTask().isOptional()) {
+                    ta.setCompletedDate(OffsetDateTime.now());
+                    if (ta.getAbandonedDate() == null) {
+                        ta.setAbandonedDate(OffsetDateTime.now());
+                    }
                 }
+                taskAssignmentRepository.save(ta);
             }
-            taskAssignmentRepository.save(ta);
         }
     }
 }
