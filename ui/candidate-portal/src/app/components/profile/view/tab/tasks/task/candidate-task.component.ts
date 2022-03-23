@@ -49,14 +49,9 @@ export class CandidateTaskComponent implements OnInit {
       comment: [this.selectedTask.candidateNotes]
     })
 
-    if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
-      this.form.addControl('response', new FormControl(this.selectedTask?.answer, Validators.required));
-    } else if (this.selectedTask.task.taskType === 'Simple') {
-      this.form.addControl('completed', new FormControl({value: this.isComplete,
-          disabled: this.selectedTask.completedDate != null || this.selectedTask.abandonedDate != null},
-          Validators.requiredTrue));
-    }
+    this.addRequiredFormControls();
 
+    // todo this validation seems very messy! Must be a better way to handle this.
     // Validation requiring comment if abandoned, and resetting the required validation on the answer/completed fields.
     this.form.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
@@ -64,14 +59,32 @@ export class CandidateTaskComponent implements OnInit {
         this.form.get('response')?.clearValidators();
         this.form.get('completed')?.clearValidators();
       } else {
+        // If task isn't already abandoned, and the abandon checkbox is false. Set required validators. But don't set
+        // these required validators if we are unchecking an already abandoned task.
+        if (this.selectedTask.abandonedDate == null) {
+          this.form.get('response')?.setValidators([Validators.required]);
+          this.form.get('completed')?.setValidators([Validators.requiredTrue]);
+        } else {
+          this.form.get('response')?.clearValidators();
+          this.form.get('completed')?.clearValidators();
+        }
         this.form.get('comment').clearValidators();
-        this.form.get('response')?.setValidators([Validators.required]);
-        this.form.get('completed')?.setValidators([Validators.requiredTrue]);
       }
       this.form.controls['comment'].updateValueAndValidity()
       this.form.controls['response']?.updateValueAndValidity()
       this.form.controls['completed']?.updateValueAndValidity()
     });
+  }
+
+  addRequiredFormControls() {
+    if (!this.isAbandoned) {
+      if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
+        this.form.addControl('response', new FormControl(this.selectedTask?.answer, Validators.required));
+      } else if (this.selectedTask.task.taskType === 'Simple') {
+        this.form.addControl('completed', new FormControl({value: this.isComplete,
+          disabled: this.selectedTask.completedDate != null}, Validators.requiredTrue));
+      }
+    }
   }
 
   get isAbandoned() {
@@ -98,12 +111,16 @@ export class CandidateTaskComponent implements OnInit {
   submitTask() {
     // This handles the submission of the non upload tasks, including any comment or if abandoned.
     // If it is an upload task the task is completed separately on file upload, the submit button will then add a comment or if abandoned to the upload task.
-    if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
-      this.updateQuestionTask();
-    } else if (this.selectedTask.task.taskType === TaskType.Simple) {
-      this.updateSimpleTask();
+    if (!this.isAbandoned) {
+      if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
+        this.updateQuestionTask();
+      } else if (this.selectedTask.task.taskType === TaskType.Simple) {
+        this.updateSimpleTask();
+      } else {
+        this.updateUploadTask();
+      }
     } else {
-      this.updateUploadTask();
+      this.updateAbandonedTask();
     }
   }
 
@@ -154,6 +171,26 @@ export class CandidateTaskComponent implements OnInit {
     this.taskAssignmentService.updateUploadTaskAssignment(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+  }
+
+  // If we want to update an abandoned task, the completed field is false and we are only updating the abandoned/comment field.
+  updateAbandonedTask() {
+    this.saving = true;
+    const request: UpdateTaskAssignmentRequest = {
+      completed: false,
+      abandoned: this.form.value.abandoned,
+      candidateNotes: this.form.value.comment
+    }
+    this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
+      (taskAssignment) => {
+        this.selectedTask = taskAssignment;
+        this.addRequiredFormControls();
         this.saving = false;
       }, error => {
         this.error = error;

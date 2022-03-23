@@ -33,7 +33,7 @@
 </div>
 
 <!-- ACTION -->
-<ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
+<ng-container *ngIf="selectedTask.task.taskType === 'Upload' && !isAbandoned">
   <app-view-upload-task
     [form]="form"
     [selectedTask]="selectedTask"
@@ -42,7 +42,7 @@
 </ng-container>
 
 <form [formGroup]="form" (submit)="submitTask()">
-  <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink == null">
+  <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink == null && !isAbandoned">
     <app-view-simple-task
       [form]="form">
     </app-view-simple-task>
@@ -50,14 +50,14 @@
 
   <!-- If there is a help link with a simple task, the help link will be embedded into the component.
        This is to allow for documents to be displayed within the page and viewed easily by candidates. -->
-  <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null">
+  <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null && !isAbandoned">
     <app-view-simple-doc-task
       [form]="form"
       [docLink]="selectedTask.task.helpLink">
     </app-view-simple-doc-task>
   </ng-container>
 
-  <ng-container *ngIf="selectedTask.task.taskType === 'Question'">
+  <ng-container *ngIf="selectedTask.task.taskType === 'Question' && !isAbandoned">
     <app-view-question-task
       [form]="form"
       [selectedTask]="selectedTask">
