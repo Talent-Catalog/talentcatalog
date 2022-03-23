@@ -1,5 +1,5 @@
-<div class="d-inline-block ml-2">
-  <sup [ngClass]="{'text-danger' : hasOverdue,'text-alert' : hasAbandoned,'text-success' : hasCompleted}">
+<div class="d-inline-block ml-2" *ngIf="!hasCompleted">
+  <sup [ngClass]="{'text-danger' : hasOverdue,'text-alert' : hasAbandoned}">
     {{this.completedTaskAssignments.length}}
   </sup>
   &frasl;

@@ -766,6 +766,7 @@ const ALL_FIELDS = {
     },
     "TASK": {
       "REQUIRED": null,
+      "OPTIONAL": null,
       "DUEDATE": null,
       "ABANDONEDDATE": null,
       "COMPLETEDDATE": null,

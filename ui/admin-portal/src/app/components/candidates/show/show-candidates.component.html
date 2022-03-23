@@ -182,6 +182,13 @@
           <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
           Update <i class="fab fa-salesforce"></i>
         </button>
+
+        <button class="btn btn-sm btn-secondary" *ngIf="isSavedList()" [disabled]="!isSelection()"
+                (click)="resolveTaskAssignments()"
+                title="Remove Selection">
+          <i class="fas fa-spinner fa-spin" *ngIf=updatingTasks></i>
+          <i class="fas fa-user-check"></i> Resolve tasks
+        </button>
       </div>
 
       <div class="d-flex">

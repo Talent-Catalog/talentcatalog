@@ -43,6 +43,11 @@
         <!-- DAYS TO COMPLETE -->
         <div *ngIf="selectedTask">
           <div class="form-group">
+            <div>Description:
+              <span class="font-weight-light">{{selectedTask.description}}</span>
+            </div>
+          </div>
+          <div class="form-group">
             <div>Estimated Due Date:
               <span class="font-weight-light">{{estimatedDueDate | date}}</span>
             </div>

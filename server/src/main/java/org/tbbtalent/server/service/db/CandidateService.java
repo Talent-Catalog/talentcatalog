@@ -16,6 +16,20 @@
 
 package org.tbbtalent.server.service.db;
 
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.request.LoginRequest;
+import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.util.dto.DtoBuilder;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
@@ -24,51 +38,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.exception.CountryRestrictionException;
-import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.exception.ExportFailedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateSubfolderType;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.DataRow;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateExternalIdSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
-import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateMediaRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRegistrationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
-import org.tbbtalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
 
@@ -495,4 +464,11 @@ public interface CandidateService {
      * a QuestionTask
      */
     void storeCandidateTaskAnswer(QuestionTaskAssignment ta, String answer);
+
+    /**
+     * Allows admins to resolve candidates tasks within a list, turning any outstanding required tasks to completed & abandoned.
+     * Also turns abandoned tasks to completed. When a task has a completed & abandoned date we know it was resolved by TBB staff.
+     * @param request This request contains the list of candidate ids selected from a list. These are the candidates that are to have their tasks resolved.
+     */
+    void resolveOutstandingTaskAssignments(ResolveTaskAssignmentsRequest request);
 }

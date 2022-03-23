@@ -179,4 +179,8 @@ export class CandidateService {
   updateIntakeData(candidateId: number, formData: Object): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${candidateId}/intake`, formData);
   }
+
+  resolveOutstandingTasks(details): Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/resolve-tasks`, details);
+  }
 }
