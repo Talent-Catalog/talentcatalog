@@ -16,12 +16,12 @@
 
 package org.tbbtalent.server.repository.db;
 
-import javax.persistence.criteria.Predicate;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.request.language.level.SearchLanguageLevelRequest;
+
+import javax.persistence.criteria.Predicate;
 
 public class LanguageLevelSpecification {
 
@@ -36,7 +36,7 @@ public class LanguageLevelSpecification {
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                 conjunction.getExpressions().add(
                         builder.or(
-                                builder.like(builder.lower(languageLevel.get("level")), likeMatchTerm)
+                                builder.like(builder.lower(languageLevel.get("name")), likeMatchTerm)
                         ));
             }
 
