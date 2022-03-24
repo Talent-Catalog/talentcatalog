@@ -40,7 +40,9 @@ import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -136,20 +138,8 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public void updateTranslationFile(String language, Map<String, Object> translations) {
+    public void updateTranslationFile(String language, Map translations) {
         try {
-            if (Objects.equals(language, "en")) {
-                // Update the English name & description for tasks automatically. We already have the name/description defined
-                // in the task table, so should pull this automatically and avoid doubling up on entering this data.
-                // Other languages will need to be entered manually.
-                LinkedHashMap<String, Map<String, Object>> tasks = getNestedValue(translations, "TASK");
-                for (Map.Entry<String, Map<String, Object>> task : tasks.entrySet()) {
-                    Map<String, Object> taskTranslation = task.getValue();
-                    taskTranslation.putIfAbsent("NAME", taskService.getByName(task.getKey()).getDisplayName());
-                    taskTranslation.putIfAbsent("DESCRIPTION", taskService.getByName(task.getKey()).getDescription());
-                }
-            }
-
             String json = new ObjectMapper().writeValueAsString(translations);
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
@@ -166,16 +156,6 @@ public class TranslationServiceImpl implements TranslationService {
             throw new ServiceException("file_upload", "The JSON file could not be uploaded to s3", e);
         }
 
-    }
-
-    public static <T> T getNestedValue(Map map, String... keys) {
-        Object value = map;
-
-        for (String key : keys) {
-            value = ((Map) value).get(key);
-        }
-
-        return (T) value;
     }
 
 

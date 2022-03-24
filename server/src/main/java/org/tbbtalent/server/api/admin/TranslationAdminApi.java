@@ -140,7 +140,7 @@ public class TranslationAdminApi {
     @PutMapping("file/{language}")
     public Map<String, Object> updateTranslationFile(
             @PathVariable("language") String language,
-            @Valid @RequestBody Map<String, Object> translations) {
+            @Valid @RequestBody Map translations) {
         this.translationService.updateTranslationFile(language, translations);
         Map<String, Object> result = new HashMap<>();
         result.put("status", "success");
