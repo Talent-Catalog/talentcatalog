@@ -64,6 +64,7 @@
       <th class="col-2 text-center">Upload Type</th>
       <th class="col-2 text-center">Upload Subfolder</th>
       <th class="col-2">Help link</th>
+      <th class="col-1"></th>
     </tr>
     </thead>
 
@@ -79,6 +80,11 @@
       <td class="text-center">{{ta.uploadType}}</td>
       <td class="text-center">{{ta.uploadSubfolderName}}</td>
       <td>{{ta.helpLink}}</td>
+      <td class="align-middle">
+        <button *ngIf="(!loggedInUser.readOnly)" type="button" class="btn btn-default" (click)="editTask(ta)">
+          <i class="fas fa-edit"></i>
+        </button>
+      </td>
     </tr>
 
     <!-- loading -->

@@ -8,6 +8,7 @@ import {isAdminUser} from "../../../model/base";
 import {TaskService} from "../../../services/task.service";
 import {SearchResults} from "../../../model/search-results";
 import {Task} from "../../../model/task";
+import {EditTaskComponent} from "./edit/edit-task.component";
 
 @Component({
   selector: 'app-search-tasks',
@@ -74,6 +75,19 @@ export class SearchTasksComponent implements OnInit {
 
   isAnAdmin(): boolean {
     return isAdminUser(this.authService);
+  }
+
+  editTask(task: Task) {
+    const editTaskModal = this.modalService.open(EditTaskComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    editTaskModal.componentInstance.taskId = task.id;
+
+    editTaskModal.result
+      .then(() => this.search())
+      .catch(() => { /* Isn't possible */ });
   }
 
 }

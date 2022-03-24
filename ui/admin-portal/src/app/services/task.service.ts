@@ -1,9 +1,8 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {CandidateAttachment} from "../model/candidate-attachment";
 import {Task} from "../model/task";
 
 @Injectable({
@@ -23,5 +22,14 @@ export class TaskService {
   searchPaged(request): Observable<SearchResults<Task>> {
     return this.http.post<SearchResults<Task>>(`${this.apiUrl}/search-paged`, request);
   }
+
+  get(id: number): Observable<Task> {
+    return this.http.get<Task>(`${this.apiUrl}/${id}`);
+  }
+
+  update(id: number, details): Observable<Task>  {
+    return this.http.put<Task>(`${this.apiUrl}/${id}`, details);
+  }
+
 
 }

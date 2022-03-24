@@ -20,10 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.request.country.UpdateCountryRequest;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
+import org.tbbtalent.server.request.task.UpdateTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
 
 import javax.validation.Valid;
@@ -35,7 +37,7 @@ import java.util.Map;
 @RequestMapping("/api/admin/task")
 public class TaskAdminApi implements
     //todo Need to add in proper task request objects here
-        ITableApi<SearchTaskRequest, UpdateCountryRequest, UpdateCountryRequest> {
+        ITableApi<SearchTaskRequest, UpdateTaskRequest, UpdateTaskRequest> {
 
     private final TaskService taskService;
 
@@ -55,6 +57,20 @@ public class TaskAdminApi implements
         @Valid SearchTaskRequest request) {
         Page<TaskImpl> tasks = this.taskService.searchTasks(request);
         return TaskDtoHelper.getTaskDto().buildPage(tasks);
+    }
+
+    @Override
+    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
+        TaskImpl task = this.taskService.get(id);
+        return TaskDtoHelper.getTaskDto().build(task);
+    }
+
+    @Override
+    public @NotNull Map<String, Object> update(
+            long id, @Valid UpdateTaskRequest request)
+            throws EntityExistsException, NoSuchObjectException {
+        TaskImpl task = this.taskService.update(id, request);
+        return TaskDtoHelper.getTaskDto().build(task);
     }
 
 }
