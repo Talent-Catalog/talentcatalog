@@ -63,6 +63,8 @@ export class SearchTasksComponent implements OnInit {
     const request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
+    request.sortFields = ['id'];
+    request.sortDirection = 'ASC';
     this.taskService.searchPaged(request).subscribe(results => {
         this.results = results;
         this.loading = false;
