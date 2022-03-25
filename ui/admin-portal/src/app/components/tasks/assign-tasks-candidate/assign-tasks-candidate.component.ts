@@ -93,7 +93,7 @@ export class AssignTasksCandidateComponent implements OnInit {
 
   // Allow to search for either a task name or a task type.
   searchTypeOrName = (searchTerm: string, item: any) => {
-    return item.taskType.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || item.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+    return item.taskType.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || item.displayName.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
   }
 
 }
