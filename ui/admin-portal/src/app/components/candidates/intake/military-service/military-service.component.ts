@@ -37,11 +37,11 @@ export class MilitaryServiceComponent extends IntakeComponentBase implements OnI
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      militaryService: [this.candidateIntakeData?.militaryService],
-      militaryWanted: [this.candidateIntakeData?.militaryWanted],
-      militaryNotes: [this.candidateIntakeData?.militaryNotes],
-      militaryStart: [this.candidateIntakeData?.militaryStart],
-      militaryEnd: [this.candidateIntakeData?.militaryEnd],
+      militaryService: [{value: this.candidateIntakeData?.militaryService, disabled: !this.editable}],
+      militaryWanted: [{value: this.candidateIntakeData?.militaryWanted, disabled: !this.editable}],
+      militaryNotes: [{value: this.candidateIntakeData?.militaryNotes, disabled: !this.editable}],
+      militaryStart: [{value: this.candidateIntakeData?.militaryStart, disabled: !this.editable}],
+      militaryEnd: [{value: this.candidateIntakeData?.militaryEnd, disabled: !this.editable}],
     });
   }
 

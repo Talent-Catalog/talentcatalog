@@ -32,7 +32,7 @@ export class HostChallengesComponent extends IntakeComponentBase implements OnIn
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      hostChallenges: [this.candidateIntakeData?.hostChallenges],
+      hostChallenges: [{value: this.candidateIntakeData?.hostChallenges, disabled: !this.editable}],
     });
   }
 

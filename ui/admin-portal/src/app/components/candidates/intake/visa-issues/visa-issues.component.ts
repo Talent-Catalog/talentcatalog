@@ -37,8 +37,8 @@ export class VisaIssuesComponent extends IntakeComponentBase implements OnInit {
   ngOnInit(): void {
     //const options: EnumOption[] = enumKeysToEnumOptions(this.candidateIntakeData?.visaIssues, VisaIssue);
     this.form = this.fb.group({
-      visaIssues: [this.candidateIntakeData?.visaIssues],
-      visaIssuesNotes: [this.candidateIntakeData?.visaIssuesNotes],
+      visaIssues: [{value: this.candidateIntakeData?.visaIssues, disabled: !this.editable}],
+      visaIssuesNotes: [{value: this.candidateIntakeData?.visaIssuesNotes, disabled: !this.editable}],
     });
   }
 

@@ -15,7 +15,7 @@
   -->
 
 <div class="d-flex">
-  <ng-select class="w-50" [(ngModel)]="month" (ngModelChange)="updateMonth()" [items]="months" placeholder="Month"></ng-select>
-  <ng-select class="w-50" [(ngModel)]="year" (ngModelChange)="updateYear()" [items]="years" placeholder="Year"></ng-select>
+  <ng-select class="w-50" [(ngModel)]="month" (ngModelChange)="updateMonth()" [items]="months" placeholder="Month" [disabled]="control.disabled"></ng-select>
+  <ng-select class="w-50" [(ngModel)]="year" (ngModelChange)="updateYear()" [items]="years" placeholder="Year" [disabled]="control.disabled"></ng-select>
 </div>
 
