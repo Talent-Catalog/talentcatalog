@@ -20,7 +20,6 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -36,19 +35,15 @@ import org.tbbtalent.server.repository.db.TaskRepository;
 import org.tbbtalent.server.repository.db.TaskSpecification;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
-import org.tbbtalent.server.service.db.TranslationService;
 import org.tbbtalent.server.util.BeanHelper;
 
 
 @Service
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
-    private final TranslationService translationService;
 
-    public TaskServiceImpl(TaskRepository taskRepository,
-        TranslationService translationService) {
+    public TaskServiceImpl(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
-        this.translationService = translationService;
     }
 
     @NonNull
@@ -93,13 +88,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void populateTransientFields(List<TaskImpl> tasks) {
-        //Note that it is too slow to fetch this for each individual task
-        Map<String, Object> trans = translationService.getTranslationFile("en");
         for (TaskImpl task : tasks) {
-            //Populate transient displayName and description fields from English translations
-            task.setDescription(translationService.translate(trans, "task", task.getName(), "description"));
-            task.setDisplayName(translationService.translate(trans, "task", task.getName(), "name"));
-
             populateTransientFields(task);
         }
     }

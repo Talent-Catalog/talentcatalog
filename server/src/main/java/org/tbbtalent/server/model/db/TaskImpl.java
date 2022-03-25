@@ -24,10 +24,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskType;
 
@@ -45,19 +43,11 @@ import org.tbbtalent.server.model.db.task.TaskType;
 public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Task {
     private boolean admin;
     private Integer daysToComplete;
+    private String description;
+    private String displayName;
     private String helpLink;
     private String name;
     private boolean optional;
-
-    //Transient fields - these are populated for the admin portal only by looking up the English
-    //translations for displayName and description associated with the task name.
-    @Transient
-    @Nullable
-    private String displayName;
-
-    @Transient
-    @Nullable
-    private String description;
 
     /*
       Note that this should not be necessary because the interface provides a default implementation

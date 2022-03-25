@@ -40,7 +40,6 @@ import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
-import org.tbbtalent.server.service.db.TaskService;
 
 /**
  * Default implementation of a TaskAssignmentService
@@ -51,15 +50,12 @@ import org.tbbtalent.server.service.db.TaskService;
 public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final CandidateAttachmentService candidateAttachmentService;
     private final TaskAssignmentRepository taskAssignmentRepository;
-    private final TaskService taskService;
 
     public TaskAssigmentServiceImpl(
         CandidateAttachmentService candidateAttachmentService,
-        TaskAssignmentRepository taskAssignmentRepository,
-        TaskService taskService) {
+        TaskAssignmentRepository taskAssignmentRepository) {
         this.candidateAttachmentService = candidateAttachmentService;
         this.taskAssignmentRepository = taskAssignmentRepository;
-        this.taskService = taskService;
     }
 
     @Override
@@ -148,12 +144,7 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
             taskAssignment.setAbandonedDate(null);
         }
 
-
-        taskAssignment = taskAssignmentRepository.save(taskAssignment);
-
-        taskService.populateTransientFields(taskAssignment.getTask());
-
-        return taskAssignment;
+        return taskAssignmentRepository.save(taskAssignment);
     }
 
     @Override
