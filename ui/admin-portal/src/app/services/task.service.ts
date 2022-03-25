@@ -5,6 +5,15 @@ import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {Task} from "../model/task";
 
+export interface UpdateTaskRequest {
+  displayName: string;
+  description: string;
+  daysToComplete: number;
+  helpLink: string;
+  optional: boolean;
+
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,8 +36,8 @@ export class TaskService {
     return this.http.get<Task>(`${this.apiUrl}/${id}`);
   }
 
-  update(id: number, details): Observable<Task>  {
-    return this.http.put<Task>(`${this.apiUrl}/${id}`, details);
+  update(id: number, request: UpdateTaskRequest): Observable<Task>  {
+    return this.http.put<Task>(`${this.apiUrl}/${id}`, request);
   }
 
 

@@ -45,6 +45,19 @@
         <textarea type="text" class="md-textarea-auto form-control" rows="4"
                   id="description" [formControlName]="'description'"></textarea>
       </div>
+      <div class="form-group">
+        <label for="daysToComplete">Days to Complete</label>
+        <input type="number" class="form-control" id="daysToComplete" formControlName="daysToComplete">
+      </div>
+      <div class="form-group">
+        <label for="helpLink">Help Link</label>
+        <input type="text" class="form-control" id="helpLink" formControlName="helpLink">
+        <div *ngIf="taskForm.controls.helpLink.errors?.pattern">Please provide valid url</div>
+      </div>
+      <div class="form-group form-inline">
+        <label for="optional">Optional?</label>
+        <input type="checkbox" class="form-control" id="optional" formControlName="optional">
+      </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"

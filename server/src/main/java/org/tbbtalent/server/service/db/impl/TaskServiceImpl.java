@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -101,6 +102,13 @@ public class TaskServiceImpl implements TaskService {
 
         task.setDisplayName(request.getDisplayName());
         task.setDescription(request.getDescription());
+        task.setDaysToComplete(request.getDaysToComplete());
+        if (StringUtils.isNotBlank(request.getHelpLink())) {
+            task.setHelpLink(request.getHelpLink());
+        } else {
+            task.setHelpLink(null);
+        }
+        task.setOptional(request.isOptional());
         return taskRepository.save(task);
     }
 
