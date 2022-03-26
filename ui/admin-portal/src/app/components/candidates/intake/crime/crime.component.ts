@@ -36,8 +36,8 @@ export class CrimeComponent extends IntakeComponentBase implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      crimeConvict: [this.candidateIntakeData?.crimeConvict],
-      crimeConvictNotes: [this.candidateIntakeData?.crimeConvictNotes],
+      crimeConvict: [{value: this.candidateIntakeData?.crimeConvict, disabled: !this.editable}],
+      crimeConvictNotes: [{value: this.candidateIntakeData?.crimeConvictNotes, disabled: !this.editable}],
     });
   }
 

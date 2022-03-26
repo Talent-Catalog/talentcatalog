@@ -64,6 +64,7 @@
       <th class="col-2 text-center">Upload Type</th>
       <th class="col-2 text-center">Upload Subfolder</th>
       <th class="col-2">Help link</th>
+      <th class="col-1"></th>
     </tr>
     </thead>
 
@@ -78,7 +79,19 @@
       <td class="text-center">{{ta.daysToComplete}}</td>
       <td class="text-center">{{ta.uploadType}}</td>
       <td class="text-center">{{ta.uploadSubfolderName}}</td>
-      <td>{{ta.helpLink}}</td>
+      <td>
+        <div [ngbPopover]="ta.helpLink" triggers="mouseenter:mouseleave" container="body"
+             [disablePopover]="ta.helpLink?.length <=40">
+            <a *ngIf="ta.helpLink" [href]="ta.helpLink" target="_blank">
+              {{ta.helpLink | slice: 0 : 40}}<span *ngIf="ta.helpLink?.length >=40">...</span>
+            </a>
+        </div>
+      </td>
+      <td class="align-middle">
+        <button *ngIf="(!loggedInUser.readOnly)" type="button" class="btn btn-default" (click)="editTask(ta)">
+          <i class="fas fa-edit"></i>
+        </button>
+      </td>
     </tr>
 
     <!-- loading -->

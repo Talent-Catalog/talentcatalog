@@ -20,8 +20,8 @@ export class HealthIssuesComponent extends IntakeComponentBase implements OnInit
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      healthIssues: [this.candidateIntakeData?.healthIssues],
-      healthIssuesNotes: [this.candidateIntakeData?.healthIssuesNotes],
+      healthIssues: [{value: this.candidateIntakeData?.healthIssues, disabled: !this.editable}],
+      healthIssuesNotes: [{value: this.candidateIntakeData?.healthIssuesNotes, disabled: !this.editable}],
     });
   }
 

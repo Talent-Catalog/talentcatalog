@@ -16,13 +16,16 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
+import org.tbbtalent.server.request.task.UpdateTaskRequest;
+
+import java.util.List;
 
 /**
  * Service for managing {@link Task}
@@ -64,4 +67,14 @@ public interface TaskService {
          * @return Page of tasks
          */
     Page<TaskImpl> searchTasks(SearchTaskRequest request);
+
+    /**
+     * Update the task with the given ID. Only allows admins to update a task display name and description at the moment.
+     * @param id of task to update
+     * @param request Request contains updated display name and description
+     * @return Updated task
+     * @throws EntityExistsException if updated name request already exists.
+     * @throws NoSuchObjectException if there is not task with this id.
+     */
+    TaskImpl update(long id, UpdateTaskRequest request) throws EntityExistsException, NoSuchObjectException;
 }

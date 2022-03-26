@@ -80,9 +80,7 @@ public class TranslationServiceImpl implements TranslationService {
             List<Translation> translations = translationRepository.findByIdsTypeLanguage(itemIds,
                 objectType, selectedLanguage);
             if (CollectionUtils.isNotEmpty(translations)) {
-                Map<Long, Translation> translationsById =
-                    translations.stream().collect(
-                        Collectors.toMap(Translation::getObjectId, Function.identity()));
+                Map<Long, Translation> translationsById = translations.stream().collect(Collectors.toMap(Translation::getObjectId, Function.identity()));
                 entities.forEach(c -> {
                     Translation translation = translationsById.get(c.getId());
                     if (translation != null) {
@@ -159,7 +157,8 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public @Nullable String translate(Map<String, Object> translations, String... keys) {
+    @Nullable
+    public String translate(Map<String, Object> translations, String... keys) {
         return (String) getNestedValue(translations, keys);
     }
 

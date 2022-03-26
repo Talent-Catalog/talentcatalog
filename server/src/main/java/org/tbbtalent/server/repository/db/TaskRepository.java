@@ -31,4 +31,8 @@ public interface TaskRepository extends JpaRepository<TaskImpl, Long>, JpaSpecif
     @Query("select distinct t from Task t "
             + " where lower(t.name) = lower(:name) ")
     Optional<TaskImpl> findByLowerName(@Param("name") String name);
+
+    @Query(" select distinct t from Task t "
+            + " where lower(t.displayName) = lower(:displayName)")
+    TaskImpl findByLowerDisplayName(@Param("displayName") String displayName);
 }

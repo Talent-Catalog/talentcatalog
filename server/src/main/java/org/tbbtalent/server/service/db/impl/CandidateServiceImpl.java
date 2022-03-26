@@ -556,7 +556,7 @@ public class CandidateServiceImpl implements CandidateService {
                     throw new InvalidRequestException("Error while accessing '" + answerField
                         + "' field of candidate");
                 } catch (NoSuchMethodException e) {
-                    throw new NoSuchObjectException("Answer not found to " + task.getName()
+                    throw new NoSuchObjectException("Answer not found to " + task.getDisplayName()
                             + ". No such candidate field: " + answerField);
                 }
             }

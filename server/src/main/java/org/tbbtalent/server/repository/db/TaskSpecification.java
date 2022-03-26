@@ -36,7 +36,9 @@ public class TaskSpecification {
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                 conjunction.getExpressions().add(
                         builder.or(
-                                builder.like(builder.lower(task.get("name")), likeMatchTerm)
+                                builder.like(builder.lower(task.get("name")), likeMatchTerm),
+                                builder.like(builder.lower(task.get("displayName")), likeMatchTerm),
+                                builder.like(builder.lower(task.get("description")), likeMatchTerm)
                         ));
             }
 

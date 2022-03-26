@@ -164,9 +164,6 @@ aws:
     accessKey: ${AWS_CREDENTIALS_ACCESSKEY:}
     secretKey: ${AWS_CREDENTIALS_SECRETKEY:}
 
-#translation.password is used to switch on "In context" translation using Phrase. It is only set
-#in production on the AWS Task definition JSON
-
 #email:
 #   type: SMTP # STUB or SMTP
 #   host: smtp.gmail.com

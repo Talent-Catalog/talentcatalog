@@ -36,8 +36,8 @@ export class VisaRejectComponent extends IntakeComponentBase implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaReject: [this.candidateIntakeData?.visaReject],
-      visaRejectNotes: [this.candidateIntakeData?.visaRejectNotes],
+      visaReject: [{value: this.candidateIntakeData?.visaReject, disabled: !this.editable}],
+      visaRejectNotes: [{value: this.candidateIntakeData?.visaRejectNotes, disabled: !this.editable}],
     });
   }
 

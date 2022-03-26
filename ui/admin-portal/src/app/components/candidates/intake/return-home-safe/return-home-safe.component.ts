@@ -36,7 +36,7 @@ export class ReturnHomeSafeComponent extends IntakeComponentBase implements OnIn
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      returnHomeSafe: [this.candidateIntakeData?.returnHomeSafe]
+      returnHomeSafe: [{value: this.candidateIntakeData?.returnHomeSafe, disabled: !this.editable }]
     });
   }
 

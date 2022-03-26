@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+/*
+ * Copyright (c) 2022 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,6 +14,28 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.intake-data {
-  background-color: #f2f2f2;
+package org.tbbtalent.server.request.task;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+@Getter
+@Setter
+public class UpdateTaskRequest {
+    @NotBlank
+    private String displayName;
+
+    @NotBlank
+    private String description;
+
+    @NotNull
+    private Integer daysToComplete;
+
+    private String helpLink;
+
+    @NotNull
+    private boolean optional;
 }

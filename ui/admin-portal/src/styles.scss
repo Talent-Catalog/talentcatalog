@@ -133,3 +133,14 @@ a.is-link, a > i.is-link {
   }
 }
 
+// change disabled colour to display on visa intakes
+.ng-select.ng-select-disabled>.ng-select-container {
+  background-color: #f2f2f2;
+  .ng-value-label {
+    background-color: #f2f2f2;
+  }
+}
+
+.form-control:disabled {
+  background-color: #f2f2f2;
+}

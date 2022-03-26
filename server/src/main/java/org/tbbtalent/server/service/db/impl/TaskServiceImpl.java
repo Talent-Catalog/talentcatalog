@@ -16,17 +16,17 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.task.AllowedQuestionTaskAnswer;
 import org.tbbtalent.server.model.db.task.QuestionTask;
@@ -34,8 +34,14 @@ import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.repository.db.TaskRepository;
 import org.tbbtalent.server.repository.db.TaskSpecification;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
+import org.tbbtalent.server.request.task.UpdateTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
 import org.tbbtalent.server.util.BeanHelper;
+
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -87,6 +93,25 @@ public class TaskServiceImpl implements TaskService {
         return tasks;
     }
 
+    @Override
+    @Transactional
+    public TaskImpl update(long id, UpdateTaskRequest request) throws EntityExistsException, NoSuchObjectException {
+        TaskImpl task = this.taskRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(Occupation.class, id));
+        checkDuplicates(id, request.getDisplayName());
+
+        task.setDisplayName(request.getDisplayName());
+        task.setDescription(request.getDescription());
+        task.setDaysToComplete(request.getDaysToComplete());
+        if (StringUtils.isNotBlank(request.getHelpLink())) {
+            task.setHelpLink(request.getHelpLink());
+        } else {
+            task.setHelpLink(null);
+        }
+        task.setOptional(request.isOptional());
+        return taskRepository.save(task);
+    }
+
     private void populateTransientFields(List<TaskImpl> tasks) {
         for (TaskImpl task : tasks) {
             populateTransientFields(task);
@@ -134,6 +159,13 @@ public class TaskServiceImpl implements TaskService {
                 }
                 qt.setAllowedAnswers(allowedAnswers);
             }
+        }
+    }
+
+    private void checkDuplicates(Long id, String displayName) {
+        TaskImpl existing = taskRepository.findByLowerDisplayName(displayName);
+        if (existing != null && !existing.getId().equals(id)){
+            throw new EntityExistsException("task");
         }
     }
 }

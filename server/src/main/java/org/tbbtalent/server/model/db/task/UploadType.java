@@ -22,6 +22,7 @@ package org.tbbtalent.server.model.db.task;
  * @author John Cameron
  */
 public enum UploadType {
+    apcInterestForm,
     collaborationAgreement,
     conductEmployer,
     conductEmployerTrans,
