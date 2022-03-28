@@ -29,6 +29,7 @@ import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.security.CandidateTokenProvider;
 import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -50,6 +51,7 @@ public class CandidateAdminApi {
     private final SavedSearchService savedSearchService;
     private final DocPublisherService docPublisherService;
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
+    private final CandidateTokenProvider candidateTokenProvider;
 
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
@@ -57,7 +59,8 @@ public class CandidateAdminApi {
         AuthService authService,
         SavedListService savedListService,
         SavedSearchService savedSearchService,
-        DocPublisherService docPublisherService) {
+        DocPublisherService docPublisherService,
+        CandidateTokenProvider candidateTokenProvider) {
         this.candidateService = candidateService;
         this.candidateSavedListService = candidateSavedListService;
         builderSelector = new CandidateBuilderSelector(authService);
@@ -65,6 +68,7 @@ public class CandidateAdminApi {
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
         this.docPublisherService = docPublisherService;
+        this.candidateTokenProvider = candidateTokenProvider;
     }
 
     @PostMapping("search")
@@ -290,6 +294,12 @@ public class CandidateAdminApi {
     @PutMapping("resolve-tasks")
     public void resolveOutstandingTasks(@RequestBody ResolveTaskAssignmentsRequest request) {
         candidateService.resolveOutstandingTaskAssignments(request);
+    }
+
+    @GetMapping("/token/{cn}")
+    public String generateToken(@PathVariable("cn") String candidateNumber) {
+        String token = this.candidateTokenProvider.generateToken(candidateNumber, 365L);
+        return token;
     }
 
 }

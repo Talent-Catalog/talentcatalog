@@ -183,4 +183,8 @@ export class CandidateService {
   resolveOutstandingTasks(details): Observable<void>  {
     return this.http.put<void>(`${this.apiUrl}/resolve-tasks`, details);
   }
+
+  generateToken(cn: string): Observable<String> {
+    return this.http.get<String>(`${this.apiUrl}/token/${cn}`);
+  }
 }

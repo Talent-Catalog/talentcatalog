@@ -67,6 +67,9 @@
             *ngIf="isCVViewable()"
             [candidate]="candidate">
           </app-cv-icon>
+          <a [href]="'https://tbbtalent.org/public-portal/cv/' + generateToken()" target="_blank">
+            <i class="fas fa-users" title="View candidate's public CV"></i>
+          </a>
       </span>
       </h1>
 

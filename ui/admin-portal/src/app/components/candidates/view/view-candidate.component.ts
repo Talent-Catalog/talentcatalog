@@ -332,4 +332,16 @@ export class ViewCandidateComponent implements OnInit {
       })
   }
 
+  generateToken() {
+    let token;
+    this.candidateService.generateToken(this.candidate.candidateNumber).subscribe(
+      (result) => {
+        token = result;
+      },
+      (error) => {
+
+      }
+    )
+  }
+
 }
