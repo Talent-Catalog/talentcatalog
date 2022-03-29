@@ -46,7 +46,7 @@
 
 <div *ngIf="results">
   <div *ngIf="timestamp">
-    <button class="btn" *ngIf="timestamp" (click)="onRefreshRequest()"><i class="fas fa-sync" title="Refresh search"></i></button>
+    <button class="btn" *ngIf="timestamp" (click)="onRefreshRequest()"><i class="fas fa-sync" title="Refresh data"></i></button>
     {{results.totalElements}} results. Timestamp {{timestamp | date: 'customDateTime'}}
   </div>
 
