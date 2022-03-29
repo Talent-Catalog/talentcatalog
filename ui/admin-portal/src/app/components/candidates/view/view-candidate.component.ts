@@ -66,6 +66,7 @@ export class ViewCandidateComponent implements OnInit {
   attachments: CandidateAttachment[];
   cvs: CandidateAttachment[];
   s3BucketUrl = environment.s3BucketUrl;
+  token: string;
 
   constructor(private candidateService: CandidateService,
               private savedListService: SavedListService,
@@ -102,6 +103,7 @@ export class ViewCandidateComponent implements OnInit {
         } else {
           this.setCandidate(candidate);
           this.loadLists();
+          this.generateToken();
         }
       }, error => {
         this.loadingError = true;
@@ -333,13 +335,12 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   generateToken() {
-    let token;
-    this.candidateService.generateToken(this.candidate.candidateNumber).subscribe(
+    this.candidateService.generateToken(this.candidate?.candidateNumber).subscribe(
       (result) => {
-        token = result;
+        this.token = result;
       },
       (error) => {
-
+        this.error = error;
       }
     )
   }
