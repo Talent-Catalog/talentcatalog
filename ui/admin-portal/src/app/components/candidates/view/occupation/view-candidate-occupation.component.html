@@ -28,7 +28,7 @@
 
   <div class="dropdown my-2" ngbDropdown>
     <!-- ADD OCCUPATION BTN-->
-    <div class="float-right" *ngIf="editable">
+    <div class="float-right" *ngIf="editable && adminUser">
       <button class="btn btn-sm btn-primary" (click)="createCandidateOccupation()">
         <i class="fas fa-plus"></i> Occupation
       </button>
@@ -50,6 +50,7 @@
                                        [candidate]="candidate"
                                        [candidateOccupation]="occupation"
                                        [editable]="editable"
+                                       [adminUser]="adminUser"
                                        (deleteOccupation)="deleteCandidateOccupation($event)">
     </app-view-candidate-job-experience>
 

@@ -26,6 +26,7 @@ export class CandidateEducationTabComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  @Input() adminUser: boolean;
 
   loading: boolean;
   error;

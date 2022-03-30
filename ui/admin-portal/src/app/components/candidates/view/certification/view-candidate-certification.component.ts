@@ -32,6 +32,7 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  @Input() adminUser: boolean;
 
   candidateCertifications: CandidateCertification[];
   candidateCertification: CandidateCertification;

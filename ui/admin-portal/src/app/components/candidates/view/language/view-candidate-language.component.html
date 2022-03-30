@@ -43,14 +43,13 @@
           <div class="col-10 mb-2">
             {{language.language.name}}
           </div>
-          <div class="col-2 text-right">
+          <div class="col-2 text-right" *ngIf="editable">
             <button class="btn btn-default"
-                    *ngIf="editable"
                     (click)="editCandidateLanguage(language)">
               <i class="fas fa-edit"></i>
             </button>
             <button class="btn btn-default"
-                    *ngIf="editable"
+                    *ngIf="adminUser"
                     (click)="deleteCandidateLanguage(language)">
               <i class="fas fa-trash"></i>
             </button>

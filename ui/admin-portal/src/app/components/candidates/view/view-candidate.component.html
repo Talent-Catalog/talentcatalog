@@ -135,7 +135,7 @@
               <app-candidate-general-tab
                 [candidate]="candidate"
                 [editable]="!loggedInUser.readOnly"
-                [loggedInUser]="loggedInUser">
+                [adminUser]="isAnAdmin()">
               </app-candidate-general-tab>
             </ng-template>
           </ng-container>
@@ -146,7 +146,8 @@
             <ng-template ngbNavContent>
               <app-candidate-experience-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly">
+                [editable]="!loggedInUser.readOnly"
+                [adminUser]="isAnAdmin()">
               </app-candidate-experience-tab>
             </ng-template>
           </ng-container>
@@ -157,7 +158,8 @@
             <ng-template ngbNavContent>
               <app-candidate-education-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly">
+                [editable]="!loggedInUser.readOnly"
+                [adminUser]="isAnAdmin()">
               </app-candidate-education-tab>
             </ng-template>
           </ng-container>
@@ -169,6 +171,7 @@
               <app-candidate-additional-info-tab
                 [candidate]="candidate"
                 [editable]="!loggedInUser.readOnly"
+                [adminUser]="isAnAdmin()"
                 [loggedInUser]="loggedInUser"
                 (candidateChanged)="onCandidateChanged()">
               </app-candidate-additional-info-tab>

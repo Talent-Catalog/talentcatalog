@@ -33,19 +33,21 @@
   [editable]="editable">
 </app-view-candidate-media-willingness>
 
-<hr/>
+<ng-container *ngIf="adminUser">
+  <hr/>
 
-<app-view-candidate-special-links
-  [candidate]="candidate"
-  [editable]="editable">
-</app-view-candidate-special-links>
+  <app-view-candidate-special-links
+    [candidate]="candidate"
+    [editable]="editable">
+  </app-view-candidate-special-links>
 
-<hr/>
+  <hr/>
 
-<app-view-candidate-attachment
-  [candidate]="candidate"
-  [editable]="editable"
-  [loggedInUser]="loggedInUser"
-  (candidateChanged)="onCandidateChanged()"
-  *ngIf="loggedInUser.role === 'admin' || loggedInUser.role === 'sourcepartneradmin'">
-</app-view-candidate-attachment>
+  <app-view-candidate-attachment
+    [candidate]="candidate"
+    [editable]="editable"
+    [adminUser]="adminUser"
+    (candidateChanged)="onCandidateChanged()">
+  </app-view-candidate-attachment>
+</ng-container>
+

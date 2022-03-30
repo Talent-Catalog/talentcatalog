@@ -32,7 +32,6 @@ export class ViewCandidateAccountComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
-  @Input() loggedInUser: User;
 
   user: User;
   loading: boolean;

@@ -30,14 +30,13 @@
 
 <app-view-candidate-language
   [candidate]="candidate"
-  [editable]="editable">
+  [editable]="editable"
+  [adminUser]="adminUser">
 </app-view-candidate-language>
 
 <hr/>
 
-<app-view-candidate-account
+<app-view-candidate-account *ngIf="adminUser"
   [candidate]="candidate"
-  [editable]="editable"
-  [loggedInUser]="loggedInUser"
-  *ngIf="loggedInUser.role === 'admin' || loggedInUser.role === 'sourcepartneradmin'">
+  [editable]="editable">
 </app-view-candidate-account>

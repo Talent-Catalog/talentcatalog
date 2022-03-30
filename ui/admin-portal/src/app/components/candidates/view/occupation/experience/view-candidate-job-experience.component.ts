@@ -36,6 +36,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  @Input() adminUser: boolean;
   @Input() candidateOccupation: CandidateOccupation;
   @Output() deleteOccupation = new EventEmitter<CandidateOccupation>();
 

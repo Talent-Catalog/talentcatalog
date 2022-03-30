@@ -24,7 +24,6 @@ import {environment} from '../../../../../environments/environment';
 import {CreateCandidateAttachmentComponent} from './create/create-candidate-attachment.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {EditCandidateAttachmentComponent} from './edit/edit-candidate-attachment.component';
-import {User} from '../../../../model/user';
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -35,7 +34,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
-  @Input() loggedInUser: User;
+  @Input() adminUser: boolean;
   @Output() candidateChanged = new EventEmitter();
 
   loading: boolean;

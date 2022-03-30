@@ -39,7 +39,7 @@
       <button class="btn btn-sm btn-secondary mr-2" (click)="editOccupation()">
         <i class="fas fa-edit"></i>
       </button>
-      <button class="btn btn-sm btn-danger" (click)="deleteCandidateOccupation()">
+      <button class="btn btn-sm btn-danger" *ngIf="adminUser" (click)="deleteCandidateOccupation()">
         <i class="fas fa-trash"></i>
       </button>
     </div>
@@ -65,11 +65,11 @@
           <h6 class="card-title">{{experience.role}}</h6>
         </div>
 
-        <div class="col-2 text-right mb-2">
-          <button class="btn btn-default" *ngIf="editable" (click)="editCandidateJobExperience(experience)">
+        <div class="col-2 text-right mb-2" *ngIf="editable">
+          <button class="btn btn-default" (click)="editCandidateJobExperience(experience)">
             <i class="fas fa-edit"></i>
           </button>
-          <button class="btn btn-default" (click)="deleteCandidateJobExperience(experience)">
+          <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateJobExperience(experience)">
             <i class="fas fa-trash"></i>
           </button>
         </div>

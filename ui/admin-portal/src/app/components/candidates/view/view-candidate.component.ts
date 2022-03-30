@@ -39,6 +39,7 @@ import {CreateUpdateListComponent} from '../../list/create-update/create-update-
 import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
+import {isAdminUser} from "../../../model/base";
 
 @Component({
   selector: 'app-view-candidate',
@@ -234,7 +235,7 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   isAnAdmin(): boolean {
-    return this.candidateFieldService.isAnAdmin();
+    return isAdminUser(this.authService);
   }
 
   /*

@@ -33,6 +33,7 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  @Input() adminUser: boolean;
   @Input() accordion: boolean = false;
 
   candidateLanguages: CandidateLanguage[];
