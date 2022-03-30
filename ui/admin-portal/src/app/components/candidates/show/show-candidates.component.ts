@@ -1592,8 +1592,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   hasTaskAssignments(candidate: Candidate): boolean {
-    const active = candidate.taskAssignments.filter(ta => ta.status === Status.active);
-    return active.length > 0;
+    const active = candidate.taskAssignments?.filter(ta => ta.status === Status.active);
+    return active?.length > 0;
   }
 
   doCopySource() {

@@ -22,7 +22,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges, ViewChild
+  SimpleChanges,
+  ViewChild
 } from '@angular/core';
 import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
@@ -70,8 +71,8 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges, AfterVie
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.cvs = this.candidate.candidateAttachments.filter(a => a.cv === true);
-    this.other = this.candidate.candidateAttachments.filter(a => a.cv === false);
+    this.cvs = this.candidate.candidateAttachments?.filter(a => a.cv === true);
+    this.other = this.candidate.candidateAttachments?.filter(a => a.cv === false);
   }
 
   close() {
