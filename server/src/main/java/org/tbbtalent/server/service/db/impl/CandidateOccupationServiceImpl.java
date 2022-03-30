@@ -16,11 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +24,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.OccupationRepository;
@@ -45,6 +36,12 @@ import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
@@ -87,11 +84,11 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         CandidateOccupation candidateOccupation = new CandidateOccupation();
 
         Candidate candidate;
-        /* Check if request is coming from admin */
-        if (user.getRole().equals(Role.admin)) {
+        /* Check if request is coming from admin user */
+        if (user.getRole().equals(Role.admin) || user.getRole().equals(Role.sourcepartneradmin)) {
             candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
-            // Set verified if request coming from admin
+            // Set verified if request coming from admin user
             candidateOccupation.setVerified(request.isVerified());
 
             candidateOccupation.setAuditFields(user);
