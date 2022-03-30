@@ -41,11 +41,13 @@ export class CountryService {
          if (locale === 'en') {
            const jordan: Country = items.find(x => x.name === "Jordan");
            if (jordan) {
-             items.splice(0, 0, jordan);
+             items.splice(items.indexOf(jordan), 1);
+             items.unshift(jordan);
            }
            const lebanon: Country = items.find(x => x.name === "Lebanon");
            if (lebanon) {
-             items.splice(0, 0, lebanon);
+             items.splice(items.indexOf(lebanon), 1);
+             items.unshift(lebanon);
            }
          }
          return items;
