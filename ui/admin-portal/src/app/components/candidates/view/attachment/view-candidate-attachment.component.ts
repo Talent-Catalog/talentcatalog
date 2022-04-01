@@ -19,7 +19,10 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {AttachmentType, CandidateAttachment} from '../../../../model/candidate-attachment';
-import {CandidateAttachmentService} from '../../../../services/candidate-attachment.service';
+import {
+  CandidateAttachmentService,
+  SearchCandidateAttachmentsRequest
+} from '../../../../services/candidate-attachment.service';
 import {environment} from '../../../../../environments/environment';
 import {CreateCandidateAttachmentComponent} from './create/create-candidate-attachment.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
@@ -72,15 +75,42 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
       sortFields: [['createdDate']]
     });
 
-
-
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.doSearch();
+      this.doPagedSearch();
+      // Need to get Cvs and Other docs separately as we need them in a list for the dropdown (can't be paged)
+      this.getAllCvs();
+      this.getAllOther();
     }
 
   }
 
-  doSearch(refresh?: boolean) {
+  getAllCvs() {
+    let request: SearchCandidateAttachmentsRequest = {
+      candidateId: this.candidate.id,
+      cvOnly: true
+    }
+    this.candidateAttachmentService.search(request).subscribe(cvAttachments => {
+      this.cvs = cvAttachments;
+    },
+    (error) => {
+      this.error = error;
+    })
+  }
+
+  getAllOther() {
+    let request: SearchCandidateAttachmentsRequest = {
+      candidateId: this.candidate.id,
+      cvOnly: false
+    }
+    this.candidateAttachmentService.search(request).subscribe(otherAttachments => {
+        this.other = otherAttachments;
+      },
+      (error) => {
+        this.error = error;
+      })
+  }
+
+  doPagedSearch(refresh?: boolean) {
     this.loading = true;
     this.candidateAttachmentService.searchPaged(this.attachmentForm.value).subscribe(
       results => {
@@ -89,8 +119,6 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
         } else {
           this.attachments.push(...results.content);
         }
-        this.cvs = this.attachments.filter(a => a.cv === true);
-        this.other = this.attachments.filter(a => a.cv === false);
 
         this.hasMore = results.totalPages > results.number + 1;
         this.loading = false;
@@ -104,7 +132,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
   loadMore() {
     this.attachmentForm.controls['pageNumber'].patchValue(this.attachmentForm.value.pageNumber + 1);
-    this.doSearch();
+    this.doPagedSearch();
   }
 
   editCandidateAttachment(candidateAttachment: CandidateAttachment) {
@@ -125,7 +153,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
         } else {
           /* DEBUG */
           // console.log('updated', updated);
-          this.doSearch(true); // Shouldn't be necessary, but is here as a fail-safe
+          this.doPagedSearch(true); // Shouldn't be necessary, but is here as a fail-safe
         }
       })
       .catch(() => { /* Isn't possible */
@@ -143,7 +171,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
     createCandidateAttachmentModal.result
       .then(() => {
-        this.doSearch(true);
+        this.doPagedSearch(true);
         //Adding attachment should add a folder link if there was not one
         //there before. So emit a candidateChanged event.
         this.candidateChanged.emit();
@@ -164,10 +192,10 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
         if (result === true) {
           this.candidateAttachmentService.deleteAttachment(attachment.id).subscribe(
             () => {
-              this.doSearch(true);
+              this.doPagedSearch(true);
             },
             (error) => {
-              console.log('error', error);
+              this.error = error;
             });
         }
       })

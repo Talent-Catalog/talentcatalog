@@ -15,10 +15,6 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
-
 <div class="card">
 
   <!-- HEADER -->
@@ -44,6 +40,9 @@
 
   <!-- BODY -->
   <div class="card-body">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
     <!-- EMPTY STATE -->
     <div *ngIf="!attachments?.length">
       <p >
