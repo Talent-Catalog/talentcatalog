@@ -240,13 +240,23 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             if (!candidate.getUser().getId().equals(candidateAttachment.getCreatedBy().getId())) {
                 throw new InvalidRequestException("You can only delete your own uploads.");
             }
+            // todo can we handle the deletes differently if coming from candidate portal? Candidates should be able to delete their own atts?
+            // Try to delete the record from the database, but throw error if foreign key constraint and the attachment is used as a shareable doc.
+            try {
+                candidateAttachmentRepository.delete(candidateAttachment);
+            } catch (Exception e) {
+                throw new InvalidRequestException("Attachment cannot be deleted.");
+            }
         } else {
             candidate = candidateRepository.findById(candidateAttachment.getCandidate().getId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateAttachment.getCandidate().getId()));
+            // Try to delete the record from the database, but throw error if foreign key constraint and the attachment is used as a shareable doc.
+            try {
+                candidateAttachmentRepository.delete(candidateAttachment);
+            } catch (Exception e) {
+                throw new InvalidRequestException("This attachment is selected as a shareable attachment (either below, or within a list) and can't be deleted until deselected.");
+            }
         }
-
-        // Delete the record from the database
-        candidateAttachmentRepository.delete(candidateAttachment);
 
         // Update the candidate audit fields
         candidate.setAuditFields(candidate.getUser());
