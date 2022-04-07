@@ -84,7 +84,7 @@ export class CandidateTaskComponent implements OnInit {
   addRequiredFormControls() {
     if (!this.formAbandoned) {
       if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
-        this.form.addControl('response', new FormControl(this.selectedTask?.answer, Validators.required));
+        this.form.addControl('response', new FormControl(this.selectedTask?.answer ? this.answer : null, Validators.required));
       } else if (this.selectedTask.task.taskType === 'Simple') {
         this.form.addControl('completed', new FormControl({value: this.completedTask,
           disabled: this.completedTask}, Validators.requiredTrue));
@@ -102,6 +102,16 @@ export class CandidateTaskComponent implements OnInit {
 
   get completedTask() {
     return this.selectedTask?.completedDate != null;
+  }
+
+  get answer() {
+    let a: string;
+    if (this.selectedTask?.task?.allowedAnswers != null) {
+      a = this.selectedTask?.task?.allowedAnswers.find(value => value.displayName === this.selectedTask?.answer).name;
+    } else {
+      a = this.selectedTask?.answer;
+    }
+    return a;
   }
 
   goBack() {
