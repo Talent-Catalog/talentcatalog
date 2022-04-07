@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormGroup} from "@angular/forms";
+import {TaskAssignment} from "../../../../../../../model/candidate";
 
 @Component({
   selector: 'app-view-simple-task',
@@ -8,10 +9,13 @@ import {FormGroup} from "@angular/forms";
 })
 export class ViewSimpleTaskComponent implements OnInit {
   @Input() form: FormGroup;
+  @Input() selectedTask: TaskAssignment;
+  hasDoc: boolean;
 
   constructor() { }
 
   ngOnInit(): void {
+    this.hasDoc = this.selectedTask.task.helpLink != null;
   }
 
 }

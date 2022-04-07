@@ -150,6 +150,9 @@ public class TaskAssignmentPortalApi {
                 throw new InvalidRequestException("Missing answer to question");
             }
             completed = true;
+        } else {
+            // If the request has been abandoned, we want to set the completed value as false.
+            completed = false;
         }
 
         QuestionTaskAssignmentImpl ta = (QuestionTaskAssignmentImpl) taskAssignmentService.get(id);
@@ -178,11 +181,22 @@ public class TaskAssignmentPortalApi {
         @Valid @RequestBody UpdateTaskAssignmentRequestCandidate request)
         throws NoSuchObjectException, UnauthorisedActionException {
 
+        boolean completed;
+        boolean abandoned = request.isAbandoned();
+
+        // If the request has been abandoned, we want to override the completed value as false.
+        if (abandoned) {
+            completed = false;
+        } else {
+            // If not abandoned, we want to set the completed value to whatever is in the request.
+            completed = request.isCompleted();
+        }
+
         TaskAssignmentImpl ta = taskAssignmentService.get(id);
 
         checkAuthorisation(ta);
 
-        ta = taskAssignmentService.update(ta, request.isCompleted(), request.isAbandoned(),
+        ta = taskAssignmentService.update(ta, completed, abandoned,
             request.getCandidateNotes(), null);
 
         return TaskDtoHelper.getTaskAssignmentDto().build(ta);

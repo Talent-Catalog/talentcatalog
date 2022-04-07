@@ -29,11 +29,15 @@
       <fa-icon class="mr-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
     </button>
   </div>
-
 </div>
 
-<!-- ACTION -->
-<ng-container *ngIf="selectedTask.task.taskType === 'Upload' && !isAbandoned">
+<!-- DISPLAY DOC IF PRESENT -->
+<ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null">
+  <iframe [src]="url" style="width: 100%;height: 500px"></iframe>
+</ng-container>
+
+<!-- UPLOAD ACTION -->
+<ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
   <app-view-upload-task
     [form]="form"
     [candidate]="candidate"
@@ -43,26 +47,22 @@
 </ng-container>
 
 <form [formGroup]="form" (submit)="submitTask()">
-  <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink == null && !isAbandoned">
-    <app-view-simple-task
-      [form]="form">
-    </app-view-simple-task>
-  </ng-container>
+  <!-- OTHER ACTIONS -->
+  <!-- Only show these containers if the task is NOT abandoned. If the task is abandoned we want to hide these containers until the task is un-abandoned. -->
+  <ng-container *ngIf="!formAbandoned && !abandonedTask">
+    <ng-container *ngIf="selectedTask.task.taskType === 'Simple'">
+      <app-view-simple-task
+        [form]="form"
+        [selectedTask]="selectedTask">
+      </app-view-simple-task>
+    </ng-container>
 
-  <!-- If there is a help link with a simple task, the help link will be embedded into the component.
-       This is to allow for documents to be displayed within the page and viewed easily by candidates. -->
-  <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null && !isAbandoned">
-    <app-view-simple-doc-task
-      [form]="form"
-      [docLink]="selectedTask.task.helpLink">
-    </app-view-simple-doc-task>
-  </ng-container>
-
-  <ng-container *ngIf="selectedTask.task.taskType === 'Question' && !isAbandoned">
-    <app-view-question-task
-      [form]="form"
-      [selectedTask]="selectedTask">
-    </app-view-question-task>
+    <ng-container *ngIf="selectedTask.task.taskType === 'Question'">
+      <app-view-question-task
+        [form]="form"
+        [selectedTask]="selectedTask">
+      </app-view-question-task>
+    </ng-container>
   </ng-container>
 
   <!-- COMMENT -->
@@ -71,7 +71,7 @@
       <h5>{{ 'TASKS.COMMENT.HEADER' | translate }}</h5>
     </div>
     <div class="card">
-        <div *ngIf="!isComplete" class="form-group">
+        <div *ngIf="!completedTask" class="form-group">
           <div class="form-check-inline">
             <label class="form-check-label mb-0 mr-2" for="abandoned">{{ 'TASKS.COMMENT.ABANDONED.LABEL' | translate }}</label>
             <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">

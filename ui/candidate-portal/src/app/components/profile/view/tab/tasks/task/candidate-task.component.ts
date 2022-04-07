@@ -23,7 +23,7 @@ import {
   UpdateTaskAssignmentRequest,
   UpdateUploadTaskAssignmentRequest
 } from "../../../../../../services/task-assignment.service";
-import {DomSanitizer} from "@angular/platform-browser";
+import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-candidate-task',
@@ -35,6 +35,7 @@ export class CandidateTaskComponent implements OnInit {
   @Input() candidate: Candidate;
   @Output() back = new EventEmitter();
   form: FormGroup;
+  url: SafeResourceUrl;
   loading: boolean;
   saving: boolean;
   error;
@@ -45,11 +46,15 @@ export class CandidateTaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      abandoned: [this.isAbandoned],
+      abandoned: [this.abandonedTask],
       comment: [this.selectedTask.candidateNotes]
     })
 
     this.addRequiredFormControls();
+
+    if (this.selectedTask.task.helpLink && this.selectedTask.task.taskType == "Simple") {
+      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.helpLink);
+    }
 
     // todo this validation seems very messy! May be a better way to handle this. Perhaps use seperate forms?
     // Validation requiring comment if abandoned, and resetting the required validation on the answer/completed fields.
@@ -77,22 +82,26 @@ export class CandidateTaskComponent implements OnInit {
   }
 
   addRequiredFormControls() {
-    if (!this.isAbandoned) {
+    if (!this.formAbandoned) {
       if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
         this.form.addControl('response', new FormControl(this.selectedTask?.answer, Validators.required));
       } else if (this.selectedTask.task.taskType === 'Simple') {
-        this.form.addControl('completed', new FormControl({value: this.isComplete,
-          disabled: this.selectedTask.completedDate != null}, Validators.requiredTrue));
+        this.form.addControl('completed', new FormControl({value: this.completedTask,
+          disabled: this.completedTask}, Validators.requiredTrue));
       }
     }
   }
 
-  get isAbandoned() {
-    return this.selectedTask.abandonedDate != null;
+  get formAbandoned() {
+    return this.form.get('abandoned').value;
   }
 
-  get isComplete() {
-    return this.selectedTask.completedDate != null;
+  get abandonedTask() {
+    return this.selectedTask?.abandonedDate != null;
+  }
+
+  get completedTask() {
+    return this.selectedTask?.completedDate != null;
   }
 
   goBack() {
@@ -111,7 +120,7 @@ export class CandidateTaskComponent implements OnInit {
   submitTask() {
     // This handles the submission of the non upload tasks, including any comment or if abandoned.
     // If it is an upload task the task is completed separately on file upload, the submit button will then add a comment or if abandoned to the upload task.
-    if (!this.isAbandoned) {
+    if (!this.abandonedTask) {
       if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
         this.updateQuestionTask();
       } else if (this.selectedTask.task.taskType === TaskType.Simple) {

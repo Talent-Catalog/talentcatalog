@@ -104,7 +104,6 @@ import {DatePipe} from "@angular/common";
 import {ExtendDatePipe} from "./util/date-adapter/extend-date-pipe";
 import {ViewSimpleTaskComponent} from './components/profile/view/tab/tasks/task/simple/view-simple-task.component';
 import {ViewQuestionTaskComponent} from './components/profile/view/tab/tasks/task/question/view-question-task.component';
-import {ViewSimpleDocTaskComponent} from './components/profile/view/tab/tasks/task/simple-doc/view-simple-doc-task.component';
 import {ViewUploadTaskComponent} from './components/profile/view/tab/tasks/task/upload/view-upload-task.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
@@ -163,7 +162,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     ExtendDatePipe,
     ViewSimpleTaskComponent,
     ViewQuestionTaskComponent,
-    ViewSimpleDocTaskComponent,
     ViewUploadTaskComponent
   ],
   imports: [

@@ -4,15 +4,22 @@
   </div>
   <div class="card">
     <div class="form-group mb-0">
+
       <div class="form-check-inline">
         <label class="form-check-label mb-0 mr-2" for="completed">
-          {{ 'TASKS.SIMPLE.LABEL' | translate }}
+          <div *ngIf="hasDoc; else noDocLabel"> {{ 'TASKS.SIMPLE.DOC.LABEL' | translate }}</div>
+          <ng-template #noDocLabel>{{ 'TASKS.SIMPLE.LABEL' | translate }}</ng-template>
         </label>
         <input class="form-check-input" id="completed" [formControlName]="'completed'" type="checkbox">
       </div>
+
       <div>
-        <small class="text-muted">{{ 'TASKS.SIMPLE.NOTE' | translate }}</small>
+        <small class="text-muted">
+          <div *ngIf="hasDoc; else noDocNote">{{ 'TASKS.SIMPLE.DOC.NOTE' | translate }}</div>
+          <ng-template #noDocNote>{{ 'TASKS.SIMPLE.NOTE' | translate }}</ng-template>
+        </small>
       </div>
+
     </div>
   </div>
 </section>
