@@ -596,7 +596,8 @@ const ALL_FIELDS = {
     "UPLOAD" : {
       "HEADER": null,
       "LOADING": null,
-      "SUCCESS": null
+      "SUCCESS": null,
+      "VIEW": null
     },
     "QUESTION": {
       "HEADER": null,

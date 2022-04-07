@@ -1,7 +1,11 @@
 <app-error [error]="error"></app-error>
 <section>
-  <div class="section-heading">
+  <div class="section-heading d-flex justify-content-between">
     <h5>{{ 'TASKS.UPLOAD.HEADER' | translate }}</h5>
+
+    <button class="btn btn-sm btn-outline-secondary mb-2" [routerLink]="['edit', 'upload']">
+      {{ 'TASKS.UPLOAD.VIEW' | translate }} <fa-icon icon="folder-open" class="ml-1"></fa-icon>
+    </button>
   </div>
   <div class="card">
     <div>

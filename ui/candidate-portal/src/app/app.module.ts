@@ -81,6 +81,7 @@ import {
   faEdit,
   faEllipsisH,
   faExternalLinkAlt,
+  faFolderOpen,
   faGlobe,
   faQuestion,
   faQuestionCircle,
@@ -228,7 +229,8 @@ export class AppModule {
       faQuestion,
       faTimes,
       faArrowLeft,
-      faQuestionCircle
+      faQuestionCircle,
+      faFolderOpen
     );
   }
 }
