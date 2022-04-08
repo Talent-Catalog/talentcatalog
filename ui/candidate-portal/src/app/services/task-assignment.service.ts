@@ -37,6 +37,10 @@ export interface UpdateQuestionTaskAssignmentRequest {
   candidateNotes?: string,
 }
 
+export interface UpdateTaskCommentRequest {
+  candidateNotes: string,
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -65,6 +69,15 @@ export class TaskAssignmentService {
    */
   updateTaskAssignment(id: number, request: UpdateTaskAssignmentRequest) {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}`, request);
+  }
+
+  /**
+   * This is used when a task is already completed to update the comment only.
+   * @param id
+   * @param request
+   */
+  updateTaskComment(id: number, request: UpdateTaskCommentRequest) {
+    return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/comment`, request);
   }
 
 }

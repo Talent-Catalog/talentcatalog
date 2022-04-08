@@ -28,6 +28,7 @@ import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.request.task.UpdateQuestionTaskAssignmentRequestCandidate;
+import org.tbbtalent.server.request.task.UpdateTaskAssignmentCommentRequest;
 import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequestCandidate;
 import org.tbbtalent.server.request.task.UpdateUploadTaskAssignmentRequestCandidate;
 import org.tbbtalent.server.security.AuthService;
@@ -198,6 +199,31 @@ public class TaskAssignmentPortalApi {
 
         ta = taskAssignmentService.update(ta, completed, abandoned,
             request.getCandidateNotes(), null);
+
+        return TaskDtoHelper.getTaskAssignmentDto().build(ta);
+    }
+
+    /**
+     * Completes a task assignment's comment only.
+     * @param id Task assignment id
+     * @return The candidate notes of the task assignment
+     * @throws NoSuchObjectException if no task assignment is found with that id
+     * @throws UnauthorisedActionException if the task assignment does not belong to logged in candidate
+     * */
+    @PutMapping("{id}/comment")
+    public Map<String, Object> updateTaskComment(@PathVariable("id") long id,
+                                                    @Valid @RequestBody UpdateTaskAssignmentCommentRequest request)
+            throws NoSuchObjectException, UnauthorisedActionException {
+
+        TaskAssignmentImpl ta = taskAssignmentService.get(id);
+
+        checkAuthorisation(ta);
+
+        boolean completed = ta.getCompletedDate() != null;
+        boolean abandoned = ta.getAbandonedDate() != null;
+
+        ta = taskAssignmentService.update(ta, completed, abandoned,
+                request.getCandidateNotes(), null);
 
         return TaskDtoHelper.getTaskAssignmentDto().build(ta);
     }

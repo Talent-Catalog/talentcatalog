@@ -21,6 +21,7 @@ import {
   TaskAssignmentService,
   UpdateQuestionTaskAssignmentRequest,
   UpdateTaskAssignmentRequest,
+  UpdateTaskCommentRequest,
   UpdateUploadTaskAssignmentRequest
 } from "../../../../../../services/task-assignment.service";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
@@ -130,16 +131,21 @@ export class CandidateTaskComponent implements OnInit {
   submitTask() {
     // This handles the submission of the non upload tasks, including any comment or if abandoned.
     // If it is an upload task the task is completed separately on file upload, the submit button will then add a comment or if abandoned to the upload task.
-    if (!this.abandonedTask) {
-      if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
-        this.updateQuestionTask();
-      } else if (this.selectedTask.task.taskType === TaskType.Simple) {
-        this.updateSimpleTask();
-      } else {
-        this.updateUploadTask();
-      }
+    // If it is an already completed task, only can update the comment field.
+    if (this.completedTask) {
+      this.updateTaskComment();
     } else {
-      this.updateAbandonedTask();
+      if (!this.abandonedTask) {
+        if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
+          this.updateQuestionTask();
+        } else if (this.selectedTask.task.taskType === TaskType.Simple) {
+          this.updateSimpleTask();
+        } else {
+          this.updateUploadTask();
+        }
+      } else {
+        this.updateAbandonedTask();
+      }
     }
   }
 
@@ -210,6 +216,22 @@ export class CandidateTaskComponent implements OnInit {
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
         this.addRequiredFormControls();
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+  }
+
+  updateTaskComment() {
+    this.saving = true;
+    const request: UpdateTaskCommentRequest = {
+      candidateNotes: this.form.value.comment
+    }
+    this.taskAssignmentService.updateTaskComment(this.selectedTask.id, request).subscribe(
+      (taskAssignment) => {
+        this.selectedTask = taskAssignment;
         this.saving = false;
       }, error => {
         this.error = error;
