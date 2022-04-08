@@ -915,25 +915,24 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
    * Opens window to user's configured email client (eg GMail) with a new email to be completed
    * by the user, sent to a TBB account and BCCing the emails of all selected candidates.
    */
-  emailSelection() {
+  copyEmails() {
     if (isSavedList(this.candidateSource)) {
-      const email = "candidates@talentbeyondboundaries.org";
-
       //Concatenate all selected candidate emails.
-      let bcc: string = "";
+      let emails: string = "";
+      let numEmails: number = 0;
       for (const candidate of this.selectedCandidates) {
         const email = candidate?.user.email;
         if (email) {
-          bcc += email + ";";
+          emails += email + ";";
+          numEmails += 1;
         }
       }
-
-      //Mail will be to TBB account, BCCing all candidates.
-      const link = "mailto:" + email + "?bcc=" + bcc;
-
-      //See https://stackoverflow.com/a/67715912/929968 for why we use window.open instead of
-      // window.location.href = link
-      window.open(link);
+      copyToClipboard(emails);
+      const copyConfirm = this.modalService.open(ConfirmationComponent, {
+        centered: true, backdrop: 'static'});
+      copyConfirm.componentInstance.title = "Copied " + numEmails + " emails to clipboard";
+      copyConfirm.componentInstance.showCancel = false;
+      copyConfirm.componentInstance.message = "Paste the emails where you want.";
     }
   }
 

@@ -121,7 +121,7 @@
         </button>
 
         <button *ngIf="isSavedList()" class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
-                (click)="emailSelection()" title="Send email to all selected candidates">
+                (click)="copyEmails()" title="Copy emails of selected candidates">
           <i class="fas fa-user-check"></i> to
           <i class="fa fa-envelope"></i>
         </button>
