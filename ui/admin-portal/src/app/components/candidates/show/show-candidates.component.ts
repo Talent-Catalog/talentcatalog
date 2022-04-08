@@ -923,7 +923,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       for (const candidate of this.selectedCandidates) {
         const email = candidate?.user.email;
         if (email) {
-          emails += email + ";";
+          emails += email + "\n";
           numEmails += 1;
         }
       }
