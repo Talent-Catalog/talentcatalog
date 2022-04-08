@@ -231,7 +231,7 @@ export class CandidateTaskComponent implements OnInit {
     }
     this.taskAssignmentService.updateTaskComment(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
-        this.selectedTask = taskAssignment;
+        this.selectedTask.candidateNotes = taskAssignment.candidateNotes;
         this.saving = false;
       }, error => {
         this.error = error;
