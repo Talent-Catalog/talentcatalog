@@ -16,14 +16,17 @@
 
 package org.tbbtalent.server.api.admin;
 
-import org.springframework.lang.Nullable;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import javax.validation.constraints.NotNull;
+import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.validation.constraints.NotNull;
+import org.tbbtalent.server.util.dto.DtoPropertyFilter;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -34,151 +37,130 @@ import javax.validation.constraints.NotNull;
 public class CandidateBuilderSelector {
     private final AuthService authService;
 
+    private final Set<String> candidatePublicProperties =
+        new HashSet<>(Arrays.asList(
+            "id",
+            "status",
+            "candidateNumber",
+            "gender",
+            "dob",
+            "yearOfArrival",
+            "additionalInfo",
+            "mediaWillingness",
+            "candidateMessage",
+            "folderlink",
+            "sflink",
+            "selected",
+            "createdDate",
+            "updatedDate",
+            "contextNote",
+            "user",
+            "candidateReviewStatusItems"
+        ));
+
+    private final Set<String> candidateSemiLimitedExtraProperties =
+        new HashSet<>(Arrays.asList(
+            "city",
+            "state",
+            "address1",
+            "country",
+            "nationality"
+        ));
+
+    private final Set<String> userPublicProperties =
+        new HashSet<>(Arrays.asList(
+            "id",
+            "createdDate",
+            "updatedDate"
+        ));
+
     public CandidateBuilderSelector(AuthService authService) {
         this.authService = authService;
     }
 
-    private @Nullable Role getRole() {
+    @NonNull
+    private Role getRole() {
         User user = authService.getLoggedInUser().orElse(null);
-        return user == null ? null : user.getRole();
+
+        //A null user, returns the most restricted Role - ie limited.
+        return user == null ? Role.limited : user.getRole();
     }
 
     public @NotNull DtoBuilder selectBuilder() {
-        DtoBuilder builder;
-        Role role = getRole();
-        if (role == Role.admin || role == Role.sourcepartneradmin) {
-            builder = candidateBaseDto();
-        } else if (role == Role.semilimited){
-            builder = candidateSemiLimitedDto();
-        } else {
-            builder = candidateLimitedDto();
-        }
-        return builder;
+        DtoPropertyFilter candidatePropertyFilter = new RoleBasedDtoPropertyFilter(
+            getRole(), candidatePublicProperties, candidateSemiLimitedExtraProperties);
+        DtoPropertyFilter userPropertyFilter = new RoleBasedDtoPropertyFilter(
+            getRole(), userPublicProperties, null);
+        return candidateDto(candidatePropertyFilter, userPropertyFilter);
     }
 
-    private DtoBuilder candidateBaseDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("status")
-                .add("candidateNumber")
-                .add("gender")
-                .add("dob")
-                .add("phone")
-                .add("whatsapp")
-                .add("city")
-                .add("state")
-                .add("address1")
-                .add("yearOfArrival")
-                .add("externalId")
-                .add("externalIdSource")
-                .add("unhcrRegistered")
-                .add("unhcrNumber")
-                .add("unhcrStatus")
-                .add("unhcrConsent")
-                .add("unrwaRegistered")
-                .add("unrwaNumber")
-                .add("additionalInfo")
-                .add("mediaWillingness")
-                .add("linkedInLink")
-                .add("candidateMessage")
-                .add("folderlink")
-                .add("sflink")
-                .add("videolink")
-                .add("surveyComment")
-                .add("selected")
-                .add("createdDate")
-                .add("updatedDate")
-                .add("contextNote")
-                .add("maritalStatus")
-                .add("drivingLicense")
-                .add("langAssessmentScore")
-                .add("residenceStatus")
-                .add("ieltsScore")
-                .add("numberDependants")
-                .add("candidateExams", examsDto())
-                .add("maxEducationLevel", educationLevelDto())
-                .add("surveyType", surveyTypeDto())
-                .add("country", countryDto())
-                .add("nationality", countryDto())
-                .add("user", userDto())
-                .add("candidateReviewStatusItems", reviewDto())
+    private DtoBuilder candidateDto(
+        DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter) {
+        return new DtoBuilder(candidatePropertyFilter)
+            .add("id")
+            .add("status")
+            .add("candidateNumber")
+            .add("gender")
+            .add("dob")
+            .add("phone")
+            .add("whatsapp")
+            .add("city")
+            .add("state")
+            .add("address1")
+            .add("yearOfArrival")
+            .add("externalId")
+            .add("externalIdSource")
+            .add("unhcrRegistered")
+            .add("unhcrNumber")
+            .add("unhcrStatus")
+            .add("unhcrConsent")
+            .add("unrwaRegistered")
+            .add("unrwaNumber")
+            .add("additionalInfo")
+            .add("mediaWillingness")
+            .add("linkedInLink")
+            .add("candidateMessage")
+            .add("folderlink")
+            .add("sflink")
+            .add("videolink")
+            .add("surveyComment")
+            .add("selected")
+            .add("createdDate")
+            .add("updatedDate")
+            .add("contextNote")
+            .add("maritalStatus")
+            .add("drivingLicense")
+            .add("langAssessmentScore")
+            .add("residenceStatus")
+            .add("ieltsScore")
+            .add("numberDependants")
+            .add("candidateExams", examsDto())
+            .add("maxEducationLevel", educationLevelDto())
+            .add("surveyType", surveyTypeDto())
+            .add("country", countryDto())
+            .add("nationality", countryDto())
+            .add("user", userDto(userPropertyFilter))
+            .add("candidateReviewStatusItems", reviewDto())
 
-                .add("shareableCv", candidateAttachmentDto())
-                .add("shareableDoc", candidateAttachmentDto())
-                .add("listShareableCv", candidateAttachmentDto())
-                .add("listShareableDoc", candidateAttachmentDto())
-                .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
-                .add("candidateProperties", candidatePropertyDto())
-                .add("shareableNotes")
-                .add("stage")
-                .add("sfOpportunityLink")
+            .add("shareableCv", candidateAttachmentDto(userPropertyFilter))
+            .add("shareableDoc", candidateAttachmentDto(userPropertyFilter))
+            .add("listShareableCv", candidateAttachmentDto(userPropertyFilter))
+            .add("listShareableDoc", candidateAttachmentDto(userPropertyFilter))
+            .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
+            .add("candidateProperties", candidatePropertyDto())
+            .add("shareableNotes")
+            .add("stage")
+            .add("sfOpportunityLink")
 
             ;
     }
 
-    private DtoBuilder candidateSemiLimitedDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("status")
-                .add("candidateNumber")
-                .add("gender")
-                .add("dob")
-                .add("city")
-                .add("state")
-                .add("address1")
-                .add("yearOfArrival")
-                .add("additionalInfo")
-                .add("mediaWillingness")
-                .add("candidateMessage")
-                .add("folderlink")
-                .add("sflink")
-                .add("selected")
-                .add("createdDate")
-                .add("updatedDate")
-                .add("contextNote")
-                .add("country", countryDto())
-                .add("user",userSemiLimitedDto())
-                .add("nationality", countryDto())
-                .add("candidateReviewStatusItems", reviewDto())
-                ;
-    }
-
-    private DtoBuilder candidateLimitedDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("status")
-                .add("candidateNumber")
-                .add("gender")
-                .add("dob")
-                .add("yearOfArrival")
-                .add("additionalInfo")
-                .add("mediaWillingness")
-                .add("candidateMessage")
-                .add("folderlink")
-                .add("sflink")
-                .add("selected")
-                .add("createdDate")
-                .add("updatedDate")
-                .add("contextNote")
-                .add("user",userSemiLimitedDto())
-                .add("candidateReviewStatusItems", reviewDto())
-                ;
-    }
-
-    private DtoBuilder userDto() {
-        return new DtoBuilder()
+    private DtoBuilder userDto(DtoPropertyFilter propertyFilter) {
+        return new DtoBuilder(propertyFilter)
                 .add("id")
                 .add("firstName")
                 .add("lastName")
                 .add("email")
-                .add("createdDate")
-                .add("updatedDate")
-                ;
-    }
-
-    private DtoBuilder userSemiLimitedDto() {
-        return new DtoBuilder()
-                .add("id")
                 .add("createdDate")
                 .add("updatedDate")
                 ;
@@ -242,7 +224,7 @@ public class CandidateBuilderSelector {
                 ;
     }
 
-    private DtoBuilder candidateAttachmentDto() {
+    private DtoBuilder candidateAttachmentDto(DtoPropertyFilter userPropertyFilter) {
         return new DtoBuilder()
             .add("id")
             .add("type")
@@ -251,12 +233,9 @@ public class CandidateBuilderSelector {
             .add("fileType")
             .add("migrated")
             .add("cv")
-            .add("createdBy", userDto())
+            .add("createdBy", userDto(userPropertyFilter))
             .add("createdDate")
             .add("uploadType")
-
             ;
     }
-
-
 }

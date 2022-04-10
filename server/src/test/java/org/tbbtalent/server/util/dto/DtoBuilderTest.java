@@ -18,11 +18,13 @@ package org.tbbtalent.server.util.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,20 +36,28 @@ class DtoBuilderTest {
     void setUp() {
     }
 
-    @Test
-    void missingDiscriminatorProperty() {
-        builder = new DtoBuilder();
+    static public class DiscriminatorPropertyFilter implements DtoPropertyFilter {
+        private final String discriminatorProperty;
+        private final Set<String> ignorableProperties =
+            new HashSet<>(Arrays.asList("prop2", "prop3"));
 
-        try {
-            builder.add("prop1", DiscriminatorValues.type1);
-            fail("Expected DtoBuilderException noting missing discriminator property");
-        } catch (Exception ex) {
-            assertEquals(DtoBuilderException.class, ex.getClass());
+        public DiscriminatorPropertyFilter(String discriminatorProperty) {
+            this.discriminatorProperty = discriminatorProperty;
         }
-    }
+
+        public boolean ignoreProperty(Object o, String property) {
+            boolean ignore = false;
+            //Only type 2 discriminators have property prop2
+            if (ignorableProperties.contains(property)) {
+                Object discriminatorValue = getProperty(o, discriminatorProperty);
+                ignore = !DiscriminatorValues.type2.equals(discriminatorValue);
+            }
+            return ignore;
+        }
+    };
 
     @Test
-    void discriminators() {
+    void propertyFilter() {
         List<ClassWithDiscriminator> cwdList = new ArrayList<>();
 
         ClassWithDiscriminator cwd = new ClassWithDiscriminator();
@@ -58,11 +68,20 @@ class DtoBuilderTest {
         cwd2.setDiscriminator(DiscriminatorValues.type2);
         cwdList.add(cwd2);
 
-        builder = new DtoBuilder("discriminator");
-
+        DtoPropertyFilter propertyFilter = new DiscriminatorPropertyFilter("discriminator");
+        builder = new DtoBuilder(propertyFilter);
         builder.add("prop1");
-        builder.add("prop2", DiscriminatorValues.type2);
+        //Note that we don't make the property optional here - that happens in the filter
+        builder.add("prop2");
 
+        doCommonTest(cwd, cwd2, cwdList);
+
+
+    }
+
+    private void doCommonTest(
+        ClassWithDiscriminator cwd, SubClass cwd2,
+        List<ClassWithDiscriminator> cwdList) {
         Map<String, Object> map;
 
         map = builder.build(cwd);
@@ -75,6 +94,22 @@ class DtoBuilderTest {
         assertNotNull(map);
         assertEquals(1, map.entrySet().size());
 
+        map = builder.build(cwd2);
+        assertNotNull(map);
+        assertEquals(0, map.entrySet().size());
+
+        cwd2.setProp1("value1");
+
+        map = builder.build(cwd2);
+        assertNotNull(map);
+        assertEquals(1, map.entrySet().size());
+
+        cwd2.setProp2("value2");
+
+        map = builder.build(cwd2);
+        assertNotNull(map);
+        assertEquals(2, map.entrySet().size());
+
         List<Map<String, Object>> mapList;
 
         mapList = builder.buildList(cwdList);
@@ -86,8 +121,6 @@ class DtoBuilderTest {
         mapList = builder.buildList(cwdList);
         assertNotNull(mapList);
         assertEquals(2, mapList.size());
-
-
     }
 
     enum DiscriminatorValues {

@@ -16,8 +16,12 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+import org.tbbtalent.server.util.dto.DtoPropertyFilter;
 
 /**
  * DTOs for Tasks and TaskAssignments
@@ -26,8 +30,33 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
  */
 public class TaskDtoHelper {
 
+    /**
+     * Filters out properties in the DtoBuilder based on the taskType.
+     */
+    static private class TaskDtoPropertyFilter implements DtoPropertyFilter {
+
+        //These properties should only be extracted for taskType = Question
+        private final Set<String> questionOnlyProperties =
+            new HashSet<>(Arrays.asList("answer", "candidateAnswerField", "allowedAnswers"));
+
+        //These properties should only be extracted for taskType = Upload
+        private final Set<String> uploadOnlyProperties =
+            new HashSet<>(Arrays.asList("uploadType", "uploadSubfolderName", "uploadableFileTypes"));
+
+        public boolean ignoreProperty(Object o, String property) {
+            Object taskType = getProperty(o, "taskType");
+
+            //Ignore taskType dependent properties if taskType does not match
+            boolean ignore =
+                questionOnlyProperties.contains(property) && !TaskType.Question.equals(taskType) ||
+                uploadOnlyProperties.contains(property) && !TaskType.Upload.equals(taskType);
+
+            return ignore;
+        }
+    };
+
     public static DtoBuilder getTaskAssignmentDto() {
-        return new DtoBuilder("taskType")
+        return new DtoBuilder(new TaskDtoPropertyFilter())
             .add("id")
             .add("abandonedDate")
             .add("candidateNotes")
@@ -35,12 +64,12 @@ public class TaskDtoHelper {
             .add("dueDate")
             .add("status")
             .add("task", getTaskDto())
-            .add("answer", TaskType.Question)
+            .add("answer")
             ;
     }
 
     public static DtoBuilder getTaskDto() {
-        return new DtoBuilder("taskType")
+        return new DtoBuilder(new TaskDtoPropertyFilter())
             .add("id")
             .add("name")
             .add("daysToComplete")
@@ -49,11 +78,11 @@ public class TaskDtoHelper {
             .add("optional")
             .add("helpLink")
             .add("taskType")
-            .add("uploadType", TaskType.Upload)
-            .add("uploadSubfolderName", TaskType.Upload)
-            .add("uploadableFileTypes", TaskType.Upload)
-            .add("candidateAnswerField", TaskType.Question)
-            .add("allowedAnswers", TaskType.Question, getAllowedQuestionTaskAnswerDto())
+            .add("uploadType")
+            .add("uploadSubfolderName")
+            .add("uploadableFileTypes")
+            .add("candidateAnswerField")
+            .add("allowedAnswers", getAllowedQuestionTaskAnswerDto())
             .add("createdBy", getUserDto())
             .add("createdDate")
             ;
