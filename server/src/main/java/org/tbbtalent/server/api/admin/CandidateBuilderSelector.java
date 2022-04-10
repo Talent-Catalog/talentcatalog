@@ -19,7 +19,6 @@ package org.tbbtalent.server.api.admin;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.TaskDtoHelper;
@@ -86,7 +85,8 @@ public class CandidateBuilderSelector {
         return user == null ? Role.limited : user.getRole();
     }
 
-    public @NotNull DtoBuilder selectBuilder() {
+    @NonNull
+    public DtoBuilder selectBuilder() {
         DtoPropertyFilter candidatePropertyFilter = new RoleBasedDtoPropertyFilter(
             getRole(), candidatePublicProperties, candidateSemiLimitedExtraProperties);
         DtoPropertyFilter userPropertyFilter = new RoleBasedDtoPropertyFilter(
