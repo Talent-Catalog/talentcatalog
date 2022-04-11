@@ -16,18 +16,17 @@
 
 package org.tbbtalent.server.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.validation.constraints.NotNull;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
+
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Tbb's implementation of Spring's {@link UserDetails}, retrieving user data from database, setting
@@ -56,9 +55,6 @@ public class TbbUserDetails implements UserDetails {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_SEMILIMITED"));
         } else if (user.getRole().equals(Role.limited)) {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_LIMITED"));
-            //TODO JC Having readOnly as a Role does not make sense - it is additional to other roles
-        } else if (user.getRole().equals(Role.readonly)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_READONLY"));
         } else {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         }

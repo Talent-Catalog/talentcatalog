@@ -40,7 +40,5 @@ public enum Role {
 
     sourcepartneradmin,
     semilimited,
-    limited,
-    //TODO JC ReadOnly does not make sense as a role - all the values are mutually exclusive
-    readonly
+    limited
 }
