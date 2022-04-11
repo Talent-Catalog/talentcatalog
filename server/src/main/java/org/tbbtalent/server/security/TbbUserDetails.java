@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -31,7 +31,7 @@ import org.tbbtalent.server.model.db.User;
 
 /**
  * Tbb's implementation of Spring's {@link UserDetails}, retrieving user data from database, setting
- * authorities based on the user's {@link Role} and exposing the corresponding underlying 
+ * authorities based on the user's {@link Role} and exposing the corresponding underlying
  * {@link User} object through {@link #getUser()}.
  * <p/>
  * Note that this is what is returned by {@link Authentication#getPrincipal()}
@@ -56,6 +56,7 @@ public class TbbUserDetails implements UserDetails {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_SEMILIMITED"));
         } else if (user.getRole().equals(Role.limited)) {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_LIMITED"));
+            //TODO JC Having readOnly as a Role does not make sense - it is additional to other roles
         } else if (user.getRole().equals(Role.readonly)) {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_READONLY"));
         } else {
