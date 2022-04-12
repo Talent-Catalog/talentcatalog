@@ -633,32 +633,43 @@ public class CandidateServiceImpl implements CandidateService {
             if (candidate == null) {
                 log.error("updateCandidateStatus: No candidate exists for id " + id);
             } else {
-                CandidateStatus originalStatus = candidate.getStatus();
-                candidate.setStatus(info.getStatus());
-                candidate.setCandidateMessage(info.getCandidateMessage());
-                candidate = save(candidate, true);
-                if (!info.getStatus().equals(originalStatus)) {
-                    candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id,
-                        "Status change from " + originalStatus + " to " + info.getStatus(),
-                        info.getComment()));
-                    if (originalStatus.equals(CandidateStatus.draft) && !info.getStatus()
-                        .equals(CandidateStatus.deleted)) {
-                        emailHelper.sendRegistrationEmail(candidate.getUser());
-                        log.info("Registration email sent to " + candidate.getUser().getEmail());
-                    }
-                    if (info.getStatus().equals(CandidateStatus.incomplete)) {
-                        emailHelper.sendIncompleteApplication(candidate.getUser(),
-                            info.getCandidateMessage());
-                        log.info("Incomplete email sent to " + candidate.getUser().getEmail());
-                    }
-                }
-                if (candidate.getStatus().equals(CandidateStatus.deleted)) {
-                    User user = candidate.getUser();
-                    user.setStatus(Status.deleted);
-                    userRepository.save(user);
-                }
+                updateCandidateStatus(candidate, info);
             }
         }
+    }
+
+    /**
+     * Updates a candidate's status, creates note and sends registration or incomplete application email.
+     * @param candidate The candidate that needs the status update
+     * @param info Information regarding the candidate's status change, such as the new status, any message to candidate and comments for the note.
+     * @return Updated Candidate object
+     */
+    private Candidate updateCandidateStatus(Candidate candidate, UpdateCandidateStatusInfo info) {
+        CandidateStatus originalStatus = candidate.getStatus();
+        candidate.setStatus(info.getStatus());
+        candidate.setCandidateMessage(info.getCandidateMessage());
+        candidate = save(candidate, true);
+        if (!info.getStatus().equals(originalStatus)) {
+            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
+                    "Status change from " + originalStatus + " to " + info.getStatus(),
+                    info.getComment()));
+            if (originalStatus.equals(CandidateStatus.draft) && !info.getStatus()
+                    .equals(CandidateStatus.deleted)) {
+                emailHelper.sendRegistrationEmail(candidate.getUser());
+                log.info("Registration email sent to " + candidate.getUser().getEmail());
+            }
+            if (info.getStatus().equals(CandidateStatus.incomplete)) {
+                emailHelper.sendIncompleteApplication(candidate.getUser(),
+                        info.getCandidateMessage());
+                log.info("Incomplete email sent to " + candidate.getUser().getEmail());
+            }
+        }
+        if (candidate.getStatus().equals(CandidateStatus.deleted)) {
+            User user = candidate.getUser();
+            user.setStatus(Status.deleted);
+            userRepository.save(user);
+        }
+        return candidate;
     }
 
     @Override
@@ -930,21 +941,15 @@ public class CandidateServiceImpl implements CandidateService {
 
         // Change status if required, and create note.
         if (newStatus.equals("ineligible")) {
-            // Create note and change status to ineligible
-            final UpdateCandidateStatusRequest statusRequest =
-                    new UpdateCandidateStatusRequest(candidate.getId());
-            UpdateCandidateStatusInfo info = statusRequest.getInfo();
+            UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
             info.setStatus(CandidateStatus.ineligible);
             info.setComment("TBB criteria not met: Country located is same as country of nationality.");
-            updateCandidateStatus(statusRequest);
+            candidate = updateCandidateStatus(candidate, info);
         } else if (newStatus.equals("pending")) {
-            // Create note and change status to pending
-            final UpdateCandidateStatusRequest statusRequest =
-                    new UpdateCandidateStatusRequest(candidate.getId());
-            UpdateCandidateStatusInfo info = statusRequest.getInfo();
+            UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
             info.setStatus(CandidateStatus.pending);
             info.setComment("TBB criteria met: Country located different to country of nationality.");
-            updateCandidateStatus(statusRequest);
+            candidate = updateCandidateStatus(candidate, info);
         }
 
         return candidate;
@@ -1083,23 +1088,20 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate submitRegistration() {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        int afghanistanCountryId = 6180;
         // Don't update status to pending if status is already pending
         if (!candidate.getStatus().equals(CandidateStatus.pending)) {
             if (candidate.getNationality() != candidate.getCountry() ||
-                    candidate.getCountry().getId() == 6180 && candidate.getNationality().getId() == 6180) {
-                final UpdateCandidateStatusRequest request =
-                        new UpdateCandidateStatusRequest(candidate.getId());
-                UpdateCandidateStatusInfo info = request.getInfo();
+                    candidate.getCountry().getId() == afghanistanCountryId && candidate.getNationality().getId() == afghanistanCountryId) {
+                UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
                 info.setStatus(CandidateStatus.pending);
                 info.setComment("Candidate submitted");
-                updateCandidateStatus(request);
+                candidate = updateCandidateStatus(candidate, info);
             } else {
-                final UpdateCandidateStatusRequest request =
-                        new UpdateCandidateStatusRequest(candidate.getId());
-                UpdateCandidateStatusInfo info = request.getInfo();
+                UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
                 info.setStatus(CandidateStatus.ineligible);
                 info.setComment("TBB criteria not met: Country located is same as country of nationality.");
-                updateCandidateStatus(request);
+                candidate = updateCandidateStatus(candidate, info);
             }
         }
         candidate.setAuditFields(candidate.getUser());
@@ -2412,7 +2414,7 @@ public class CandidateServiceImpl implements CandidateService {
         // has nationality & country as different. We can change ineligible status to pending. This determines
         // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
         } else if (candidate.getStatus() == CandidateStatus.ineligible) {
-            if (candidate.getCountry() == candidate.getNationality() && countryReq != nationalityReq) {
+            if (candidate.getCountry().equals(candidate.getNationality()) && countryReq != nationalityReq) {
                 newStatus = "pending";
             }
             // EXCEPTION: IF AFGHAN IN AFGHANISTAN SET PENDING
