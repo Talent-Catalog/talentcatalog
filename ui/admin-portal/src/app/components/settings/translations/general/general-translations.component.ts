@@ -189,7 +189,6 @@ const ALL_FIELDS = {
     },
     "LANDING": {
       "TITLE": null,
-      "INTRO": null,
       "REGISTER": null,
       "LOGIN": null,
       "PARA1": null,
@@ -197,8 +196,6 @@ const ALL_FIELDS = {
       "PARA2": null,
       "HEADING3": null,
       "PARA3": null,
-      "HEADING4": null,
-      "PARA4": null,
       "USAFGHAN": {
         "HEADING1": null,
         "HEADING2": null
@@ -223,8 +220,7 @@ const ALL_FIELDS = {
         "BUTTON": null
       },
       "EMPLOYED": {
-        "EXPLANATION": null,
-        "BUTTON": null
+        "EXPLANATION": null
       },
       "INACTIVE": {
         "EXPLANATION": null
