@@ -87,7 +87,13 @@ export class PublishedDocColumnService {
     this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"))
     .width = PublishedDocColumnWidth.Narrow;
 
+    // English exams
     this.addColumn("ieltsScore", "IELTS Score", new PublishedDocFieldSource("ieltsScore"));
+    this.addColumn("OETOverall", "OET Overall", new PublishedDocFieldSource("oetOverall"));
+    this.addColumn("OETRead", "OET Reading", new PublishedDocFieldSource("oetReading"));
+    this.addColumn("OETList", "OET Listening", new PublishedDocFieldSource("oetListening"));
+    this.addColumn("OETLang", "OET Language", new PublishedDocFieldSource("oetLanguage"));
+
     this.addColumn("lastName", "Last Name", new PublishedDocFieldSource("user.lastName"));
     this.addColumn("location", "Location", new PublishedDocFieldSource("country.name"));
     this.addColumn("city", "City", new PublishedDocFieldSource("city"));
