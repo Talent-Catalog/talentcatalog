@@ -517,7 +517,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (taskAssignment.getCompletedDate() != null) {
             if (taskAssignment instanceof QuestionTaskAssignmentImpl) {
                 QuestionTaskAssignment qta = (QuestionTaskAssignmentImpl) taskAssignment;
-                String answer = fetchCandidateAnswer(qta);
+                String answer = fetchCandidateTaskAnswer(qta);
                 qta.setAnswer(answer);
             }
         }
@@ -530,8 +530,9 @@ public class CandidateServiceImpl implements CandidateService {
      * @return Candidate's answer to the question
      * @throws NoSuchObjectException if the answer could not be retrieved because the answer has
      * been specified as being located in a non existent candidate field or property.
+     * @see #storeCandidateTaskAnswer
      */
-    private String fetchCandidateAnswer(QuestionTaskAssignment questionTaskAssignment)
+    private String fetchCandidateTaskAnswer(QuestionTaskAssignment questionTaskAssignment)
         throws NoSuchObjectException {
         String answer;
         Task task = questionTaskAssignment.getTask();
@@ -1047,7 +1048,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         //Fetch answer back to capture any reformatting (eg answers stored as Enums, return their
         //display name) in the transient answer attached to the task assignment.
-        answer = fetchCandidateAnswer(questionTaskAssignment);
+        answer = fetchCandidateTaskAnswer(questionTaskAssignment);
 
         questionTaskAssignment.setAnswer(answer);
     }
