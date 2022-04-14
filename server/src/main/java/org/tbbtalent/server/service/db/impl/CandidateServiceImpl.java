@@ -532,6 +532,7 @@ public class CandidateServiceImpl implements CandidateService {
      * been specified as being located in a non existent candidate field or property.
      * @see #storeCandidateTaskAnswer
      */
+    @Nullable
     private String fetchCandidateTaskAnswer(QuestionTaskAssignment questionTaskAssignment)
         throws NoSuchObjectException {
         String answer;
@@ -547,18 +548,46 @@ public class CandidateServiceImpl implements CandidateService {
                 answer = property != null ? property.getValue() : null;
             } else {
                 //Get answer from candidate field
-                try {
-                    Object value = PropertyUtils.getProperty(candidate, answerField);
-                    answer = value != null ? value.toString() : null;
-                } catch (IllegalAccessException e) {
-                    throw new InvalidRequestException("Unable to access '" + answerField
-                        + "' field of candidate");
-                } catch (InvocationTargetException e) {
-                    throw new InvalidRequestException("Error while accessing '" + answerField
-                        + "' field of candidate");
-                } catch (NoSuchMethodException e) {
-                    throw new NoSuchObjectException("Answer not found to " + task.getDisplayName()
-                            + ". No such candidate field: " + answerField);
+
+                //TODO JC This is a bit of a hack - we need a better way of processing things like candidateExams
+                String candidateExamsFieldName = "candidateExams";
+                if (answerField.startsWith(candidateExamsFieldName + ".")) {
+                    //Special code for candidate exams
+                    //Extract the exam name from the answerField
+                    String examName = answerField.substring(candidateExamsFieldName.length() + 1);
+                    Exam examType = Exam.valueOf(examName);
+
+                    //See if we already have an entry for this exam
+                    Optional<CandidateExam> examO = Optional.empty();
+                    final List<CandidateExam> candidateExams = candidate.getCandidateExams();
+                    if (candidateExams != null) {
+                        examO = candidateExams.stream().filter(
+                            e -> e.getExam().equals(examType)).findFirst();
+                    }
+
+                    //Fetch the answer
+                    CandidateExam exam;
+                    if (examO.isPresent()) {
+                        exam = examO.get();
+                        answer = exam.getScore();
+                    } else {
+                        answer = null;
+                    }
+                } else {
+                    try {
+                        Object value = PropertyUtils.getProperty(candidate, answerField);
+                        answer = value != null ? value.toString() : null;
+                    } catch (IllegalAccessException e) {
+                        throw new InvalidRequestException("Unable to access '" + answerField
+                            + "' field of candidate");
+                    } catch (InvocationTargetException e) {
+                        throw new InvalidRequestException("Error while accessing '" + answerField
+                            + "' field of candidate");
+                    } catch (NoSuchMethodException e) {
+                        throw new NoSuchObjectException(
+                            "Answer not found to " + task.getDisplayName()
+                                + ". No such candidate field: " + answerField);
+                    }
                 }
             }
         } else {
@@ -1026,21 +1055,58 @@ public class CandidateServiceImpl implements CandidateService {
                     candidate, propertyName, answer, questionTaskAssignment);
             } else {
                 //Store answer in the candidate field
-                Object answerValue = convertAnswerToCorrectType(answerField, answer);
-                try {
-                    PropertyUtils.setProperty(candidate, answerField, answerValue);
-                } catch (IllegalAccessException e) {
-                    throw new InvalidRequestException("Unable to access '" + answerField
-                        + "' field of candidate");
-                } catch (InvocationTargetException e) {
-                    throw new InvalidRequestException("Error while accessing '" + answerField
-                        + "' field of candidate");
-                } catch (NoSuchMethodException e) {
-                    throw new InvalidRequestException("Candidate field does not exist: '" + answerField
-                        + "'");
-                }
 
-                save(candidate, true);
+                //TODO JC This is a bit of a hack - we need a better way of processing things like candidateExams
+                String candidateExamsFieldName = "candidateExams";
+                if (answerField.startsWith(candidateExamsFieldName + ".")) {
+                    //Special code for storing to candidate exams
+                    //Extract the exam name from the answerField
+                    String examName = answerField.substring(candidateExamsFieldName.length() + 1);
+                    Exam examType = Exam.valueOf(examName);
+
+                    //See if we already have an entry for this exam
+                    Optional<CandidateExam> examO = Optional.empty();
+                    final List<CandidateExam> candidateExams = candidate.getCandidateExams();
+                    if (candidateExams != null) {
+                        examO = candidateExams.stream().filter(
+                            e -> e.getExam().equals(examType)).findFirst();
+                    }
+
+                    //Get or create the CandidateExam object
+                    CandidateExam exam;
+                    if (examO.isPresent()) {
+                        exam = examO.get();
+                    } else {
+                        //Create new exam
+                        exam = new CandidateExam();
+                        exam.setCandidate(candidate);
+                        exam.setExam(examType);
+                        exam.setYear((long) OffsetDateTime.now().getYear());
+                    }
+
+                    //Update existing exam result
+                    exam.setScore(answer);
+
+                    //Save the exam
+                    candidateExamRepository.save(exam);
+                } else {
+                    Object answerValue = convertAnswerToCorrectType(answerField, answer);
+                    try {
+                        PropertyUtils.setProperty(candidate, answerField, answerValue);
+                    } catch (IllegalAccessException e) {
+                        throw new InvalidRequestException("Unable to access '" + answerField
+                            + "' field of candidate");
+                    } catch (InvocationTargetException e) {
+                        throw new InvalidRequestException("Error while accessing '" + answerField
+                            + "' field of candidate");
+                    } catch (NoSuchMethodException e) {
+                        throw new InvalidRequestException(
+                            "Candidate field does not exist: '" + answerField
+                                + "'");
+                    }
+
+                    save(candidate, true);
+                }
             }
         } else {
             throw new InvalidRequestException("Task is not a QuestionTask: " + task.getName());

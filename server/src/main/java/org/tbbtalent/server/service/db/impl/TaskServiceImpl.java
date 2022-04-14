@@ -126,7 +126,9 @@ public class TaskServiceImpl implements TaskService {
 
     private void populateTransientQuestionFields(QuestionTask qt) {
         final String field = qt.getCandidateAnswerField();
-        if (field != null) {
+
+        //TODO JC This is a bit of a hack - we need a better way of processing things like candidateExams
+        if (field != null && !field.startsWith("candidateExams.")) {
             final PropertyDescriptor descriptor;
             try {
                 descriptor = BeanHelper.getPropertyDescriptor(Candidate.class, field);
