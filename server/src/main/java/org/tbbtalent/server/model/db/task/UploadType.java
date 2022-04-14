@@ -38,6 +38,7 @@ public enum UploadType {
     infoReleaseForm,
     licencing,
     licencingTrans,
+    OETPulseResults,
     offer,
     otherId,
     otherIdTrans,
