@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -36,7 +36,7 @@ public interface CandidateExamRepository
             + " left join e.candidate c "
             + " where c.id = :candidateId"
             + " and e.exam = :examType"
-            + " and e.id != :id")
+            + " and e.id <> :id")
     Optional<CandidateExam> findDuplicateByExamType(@Param("examType") Exam examType,
                                            @Param("candidateId") Long candidateId,
                                                     @Param("id") Long id);
