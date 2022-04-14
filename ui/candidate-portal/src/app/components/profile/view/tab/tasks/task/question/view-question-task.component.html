@@ -23,7 +23,7 @@
       <ng-template #textBox>
         <div class="form-group">
           <label class="font-weight-bold" for="responseDropdown">
-            {{ 'TASKS.QUESTION.LABEL' | translate }}
+            {{ selectedTask.task.description }}
           </label>
           <textarea id="responseAnswer" class="md-textarea-auto form-control" rows="5"
                     [formControlName]="'response'"></textarea>
