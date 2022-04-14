@@ -19,6 +19,9 @@ package org.tbbtalent.server.model.db;
 public enum Exam {
     NoResponse,
     OET,
+    OETRead,
+    OETList,
+    OETLang,
     IELTSGen,
     IELTSAca,
     TOEFL,

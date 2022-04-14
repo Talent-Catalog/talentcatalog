@@ -759,6 +759,48 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return null;
     }
 
+    // todo : is there a better way to get this value for published doc by consolidating into one method and passing in a Exam type?
+    public String getOetOverall() {
+        String score = null;
+        for (CandidateExam exam : candidateExams) {
+            if (exam.getExam().equals(Exam.OET)) {
+                score = exam.getScore();
+                break;
+            }
+        }
+        return score;
+    }
+    public String getOetReading() {
+        String score = null;
+        for (CandidateExam exam : candidateExams) {
+            if (exam.getExam().equals(Exam.OETRead)) {
+                score = exam.getScore();
+                break;
+            }
+        }
+        return score;
+    }
+    public String getOetListening() {
+        String score = null;
+        for (CandidateExam exam : candidateExams) {
+            if (exam.getExam().equals(Exam.OETList)) {
+                score = exam.getScore();
+                break;
+            }
+        }
+        return score;
+    }
+    public String getOetLanguage() {
+        String score = null;
+        for (CandidateExam exam : candidateExams) {
+            if (exam.getExam().equals(Exam.OETLang)) {
+                score = exam.getScore();
+                break;
+            }
+        }
+        return score;
+    }
+
     public String getOccupationSummary() {
         StringBuilder s = new StringBuilder();
         for (CandidateOccupation occupation : candidateOccupations) {

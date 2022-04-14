@@ -537,7 +537,10 @@ export enum YesNoUnsureLearn {
 }
 
 export enum Exam {
-  OET = "OET",
+  OET = "OET Overall",
+  OETRead = "OET Reading",
+  OETList = "OET Listening",
+  OETLang = "OET Language Knowledge",
   IELTSGen = "IELTS General",
   IELTSAca = "IELTS Academic",
   TOEFL = "TOEFL",
