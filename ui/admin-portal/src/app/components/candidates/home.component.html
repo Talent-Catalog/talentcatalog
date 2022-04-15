@@ -18,7 +18,7 @@
 
   <ng-container *ngFor="let typeInfo of savedSearchTypeInfos">
     <ng-container ngbNavItem="type:{{SavedSearchType[typeInfo.savedSearchType]}}">
-      <a ngbNavLink>{{typeInfo.title}}</a>
+      <a ngbNavLink title="Searches of {{typeInfo.title}}">{{typeInfo.title}}</a>
 
       <ng-template ngbNavContent>
 
@@ -50,7 +50,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="AllSearches">
-    <a ngbNavLink>All</a>
+    <a ngbNavLink title="All searches that I currently see">All</a>
     <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedSearch"
@@ -60,7 +60,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="MyWatchedSearches">
-    <a ngbNavLink>My Watches</a>
+    <a ngbNavLink title="Searches that I want to be notified of new candidates">My Watches</a>
     <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedSearch"
@@ -70,7 +70,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="MySearches">
-    <a ngbNavLink>My Searches</a>
+    <a ngbNavLink title="Searches that I created">My Searches</a>
     <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedSearch"
@@ -80,7 +80,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="SearchesSharedWithMe">
-    <a ngbNavLink>Searches Shared With Me</a>
+    <a ngbNavLink title="Searches created by others that I have saved">Searches Shared With Me</a>
     <ng-template ngbNavContent>
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedSearch"
@@ -89,8 +89,10 @@
     </ng-template>
   </ng-container>
 
+<!--  todo insert new Job Opps tab here-->
+
   <ng-container ngbNavItem="MyLists">
-    <a ngbNavLink>My Lists</a>
+    <a ngbNavLink title="Lists that I created">My Lists</a>
     <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedList"
@@ -100,7 +102,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="ListsSharedWithMe">
-    <a ngbNavLink>Lists Shared With Me</a>
+    <a ngbNavLink title="Lists created by others that I have saved">Lists Shared With Me</a>
     <ng-template ngbNavContent>
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedList"
@@ -110,7 +112,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="PublicLists">
-    <a ngbNavLink>Lists With External Links</a>
+    <a ngbNavLink title="Lists associated with a public web link">Lists With External Links</a>
     <ng-template ngbNavContent>
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedList"
@@ -118,13 +120,5 @@
         </app-browse-candidate-sources>
     </ng-template>
   </ng-container>
-
-<!--  <ng-container ngbNavItem="Tasks">-->
-<!--    <a ngbNavLink>Tasks</a>-->
-<!--    <ng-template ngbNavContent>-->
-<!--        <app-browse-tasks>-->
-<!--        </app-browse-tasks>-->
-<!--    </ng-template>-->
-<!--  </ng-container>-->
 </nav>
 <div [ngbNavOutlet]="nav" class="mt-2"></div>
