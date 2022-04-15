@@ -119,6 +119,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final String candidateOpportunityRetrievalFields =
         "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName,"
             + candidateOpportunitySFFieldName;
+    private final String jobOpportunityRetrievalFields =
+        "Id,RecordTypeId,Name,AccountId,AccountCountry__c,StageName";
 
 
     private final EmailHelper emailHelper;
@@ -521,6 +523,28 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         ClientResponse response = executeRecordFieldsGet(objectType, id, fields);
         T result = response.bodyToMono(cl).block();
         return result;
+    }
+
+    @Override
+    public List<Opportunity> findJobOpportunities()
+        throws GeneralSecurityException, WebClientException {
+        String query =
+            "SELECT " + jobOpportunityRetrievalFields +
+                " FROM Opportunity WHERE RecordType.Name='Employer job' "
+                + "and IsClosed=false and Probability >= 60 and AccountCountry__c != 'USA'";
+
+        ClientResponse response = executeQuery(query);
+
+        OpportunityQueryResult result =
+            response.bodyToMono(OpportunityQueryResult.class).block();
+
+        //Retrieve the contact from the response
+        List<Opportunity> opps = null;
+        if (result != null) {
+            opps = result.records;
+        }
+
+        return opps;
     }
 
     @Override
