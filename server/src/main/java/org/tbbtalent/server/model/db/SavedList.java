@@ -93,7 +93,11 @@ public class SavedList extends AbstractCandidateSource {
     private String publishedDocLink;
 
     /**
-     * Url link to published list doc, if one exists.
+     * This is the suffix to used to construct a TBB hosted published url link, if one exists.
+     * <p/>
+     * For example in this public link...
+     *   https://tbbtalent.org/published/physios
+     * probably associated with a list of physiotherapists, the short name is "physios"
      */
     @Nullable
     private String tbbShortName;
