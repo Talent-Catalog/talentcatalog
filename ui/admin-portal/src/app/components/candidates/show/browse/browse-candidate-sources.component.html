@@ -41,7 +41,7 @@
       <li *ngFor="let source of results?.content; let i = index"
           [class.selected]="source === selectedSource"
           (click)="onSelect(source)"  >
-        {{source.name}}
+        {{getBrowserDisplayString(source)}}
       </li>
 
     </ul>

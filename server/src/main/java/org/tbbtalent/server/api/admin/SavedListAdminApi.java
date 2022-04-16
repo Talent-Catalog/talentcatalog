@@ -32,6 +32,7 @@ import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -50,14 +51,17 @@ public class SavedListAdminApi implements
     private final CandidateService candidateService;
     private final SavedListService savedListService;
     private final CandidateSavedListService candidateSavedListService;
+    private final SalesforceService salesforceService;
     private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
 
     @Autowired
     public SavedListAdminApi(SavedListService savedListService,
-        CandidateService candidateService, CandidateSavedListService candidateSavedListService) {
+        CandidateService candidateService, CandidateSavedListService candidateSavedListService,
+        SalesforceService salesforceService) {
         this.candidateService = candidateService;
         this.savedListService = savedListService;
         this.candidateSavedListService = candidateSavedListService;
+        this.salesforceService = salesforceService;
     }
 
     /*
@@ -134,6 +138,13 @@ public class SavedListAdminApi implements
     public @NotNull Map<String, Object> searchPaged(
             @Valid SearchSavedListRequest request) {
         Page<SavedList> savedLists = savedListService.searchSavedLists(request);
+
+        //For now, just add extra info when registeredJob's have been explicitly requested.
+        //Saves unnecessary Salesforce access when the data is not expected to be displayed
+        if (request.getRegisteredJob() != null && request.getRegisteredJob()) {
+            salesforceService.addJobOpportunityInfo(savedLists);
+        }
+
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(savedLists);
     }

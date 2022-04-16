@@ -31,7 +31,12 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {AuthService} from '../../../../services/auth.service';
 import {User} from '../../../../model/user';
 import {CandidateSource, CandidateSourceType, isMine, isSharedWithMe, SearchBy} from '../../../../model/base';
-import {ContentUpdateType, CopySourceContentsRequest, SearchSavedListRequest} from '../../../../model/saved-list';
+import {
+  ContentUpdateType,
+  CopySourceContentsRequest,
+  isSavedList,
+  SearchSavedListRequest
+} from '../../../../model/saved-list';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CreateUpdateListComponent} from '../../../list/create-update/create-update-list.component';
@@ -109,6 +114,16 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         this.search();
       }
     }
+  }
+
+  getBrowserDisplayString(source: CandidateSource) {
+    let s = source.name;
+    if (this.searchBy === SearchBy.registeredJob) {
+      if (isSavedList(source)) {
+        s += "(" + source.sfJobCountry + ") - " + source.sfJobStage;
+      }
+    }
+    return s;
   }
 
   subscribeToFilterChanges(): void {

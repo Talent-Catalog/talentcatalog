@@ -22,6 +22,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 
@@ -51,6 +52,14 @@ public interface SalesforceService {
      */
     void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfJoblink)
         throws SalesforceException;
+
+    /**
+     * Updates each of the given saved lists if it has an associated link to a Salesforce job
+     * opportunity (sfJoblink) with job related information: job country and stage.
+     * @param savedLists Saved lists to process
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    void addJobOpportunityInfo(Iterable<SavedList> savedLists);
 
     /**
      * Searches Salesforce for all Contact records relating to TBB

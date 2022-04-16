@@ -46,6 +46,8 @@ export interface SavedList extends CandidateSource {
   folderjdlink?: string;
   publishedDocLink?: string;
   tbbShortName?: string;
+  sfJobCountry?: string;
+  sfJobStage?: string;
   tasks?: Task[];
 }
 

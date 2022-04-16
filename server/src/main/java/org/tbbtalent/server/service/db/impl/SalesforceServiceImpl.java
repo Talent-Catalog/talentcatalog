@@ -58,6 +58,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
@@ -195,6 +196,35 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
         }
 
+    }
+
+    @Override
+    public void addJobOpportunityInfo(Iterable<SavedList> savedLists) throws SalesforceException {
+        //Retrieve the sfJobLinks the given lists
+        Map<String, SavedList> sfIdListMap = new HashMap<>();
+        for (SavedList savedList : savedLists) {
+            final String sfJoblink = savedList.getSfJoblink();
+            if (sfJoblink != null) {
+                //Get id from link.
+                sfIdListMap.put(extractIdFromSfUrl(sfJoblink), savedList);
+            }
+        }
+
+        //Process if we have any lists with job links.
+        if (sfIdListMap.size() > 0) {
+            //Fetch the opps from their ids taken from the above map.
+            List<Opportunity> opps = fetchOpportunities(sfIdListMap.keySet());
+
+            //Now loop through the opps, adding the list info
+            for (Opportunity opp : opps) {
+                SavedList savedList = sfIdListMap.get(opp.getId());
+                if (savedList == null) {
+                    throw new SalesforceException("Bug in SalesforceService.addJobOpportunityInfo");
+                }
+                savedList.setSfJobCountry(opp.getAccountCountry__c());
+                savedList.setSfJobStage(opp.getStageName());
+            }
+        }
     }
 
     private Map<String, Candidate> buildCandidateOppsMap(Iterable<Candidate> candidates,
@@ -487,6 +517,33 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     static class ContactQueryResult extends QueryResult {
 
         public List<Contact> records;
+    }
+
+    private List<Opportunity> fetchOpportunities(Collection<String> ids) throws SalesforceException {
+
+        try {
+            //Construct the String of ids for the WHERE clause
+            final String idsAsString = ids.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
+
+            String query =
+                "SELECT " + jobOpportunityRetrievalFields +
+                    " FROM Opportunity WHERE Id IN (" + idsAsString + ")";
+
+            ClientResponse response = executeQuery(query);
+
+            OpportunityQueryResult result =
+                response.bodyToMono(OpportunityQueryResult.class).block();
+
+            //Retrieve the contact from the response
+            List<Opportunity> opps = null;
+            if (result != null) {
+                opps = result.records;
+            }
+
+            return opps;
+        } catch (GeneralSecurityException ex) {
+            throw new SalesforceException("Failed to fetch Opportunities: " + ex);
+        }
     }
 
     private List<Opportunity> findCandidateOpportunities(String jobOpportunityId)

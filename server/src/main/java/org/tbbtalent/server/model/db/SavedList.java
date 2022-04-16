@@ -110,6 +110,23 @@ public class SavedList extends AbstractCandidateSource {
     private Boolean registeredJob = false;
 
     /**
+     * Salesforce Job opportunity account country. Can be retrieved from Salesforce to be displayed
+     * when a list has a non null sfJobLink
+     *
+     */
+    @Transient
+    @Nullable
+    private String sfJobCountry;
+
+    /**
+     * Salesforce Job opportunity stage. Can be retrieved from Salesforce to be displayed
+     * when a list has a non null sfJobLink
+     */
+    @Transient
+    @Nullable
+    private String sfJobStage;
+
+    /**
      * Non null if this is the selection list for the given saved search.
      * <p/>
      * For "normal" saved lists (ie not selection lists) this will always be
@@ -232,6 +249,24 @@ public class SavedList extends AbstractCandidateSource {
         if (registeredJob != null) {
             this.registeredJob = registeredJob;
         }
+    }
+
+    @Nullable
+    public String getSfJobCountry() {
+        return sfJobCountry;
+    }
+
+    public void setSfJobCountry(@Nullable String sfJobCountry) {
+        this.sfJobCountry = sfJobCountry;
+    }
+
+    @Nullable
+    public String getSfJobStage() {
+        return sfJobStage;
+    }
+
+    public void setSfJobStage(@Nullable String sfJobStage) {
+        this.sfJobStage = sfJobStage;
     }
 
     @Nullable
