@@ -89,7 +89,17 @@
     </ng-template>
   </ng-container>
 
-<!--  todo insert new Job Opps tab here-->
+  <ng-container ngbNavItem="JobOpps">
+    <a ngbNavLink
+       title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
+    >Registered Job Opps</a>
+    <ng-template ngbNavContent>
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.SavedList"
+        [searchBy]="SearchBy.registeredJob" >
+      </app-browse-candidate-sources>
+    </ng-template>
+  </ng-container>
 
   <ng-container ngbNavItem="MyLists">
     <a ngbNavLink title="Lists that I created">My Lists</a>

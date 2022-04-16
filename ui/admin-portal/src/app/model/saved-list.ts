@@ -207,6 +207,7 @@ export class PublishListRequest {
 
 export class SearchSavedListRequest extends SearchCandidateSourcesRequest {
   shortName?: boolean;
+  registeredJob?: boolean;
 }
 
 export class SavedListGetRequest extends PagedSearchRequest {

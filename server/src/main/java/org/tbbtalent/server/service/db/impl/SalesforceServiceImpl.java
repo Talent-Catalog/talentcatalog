@@ -154,6 +154,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      */
     private String accessToken = null;
 
+    //TODO JC Need lazily populated Map of RecordTypeId's to RecordType.Name's which can be used to
+    // populate Opportunity RecordType field - which then be used (on Angular end) to check for job opps when needed
+    //Just needs one SOQL Query to upload all RecordTypes
+
     @Autowired
     public SalesforceServiceImpl(EmailHelper emailHelper) {
         this.emailHelper = emailHelper;

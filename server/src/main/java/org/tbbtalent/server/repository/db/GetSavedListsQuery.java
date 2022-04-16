@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -40,18 +40,18 @@ import java.util.Set;
 public class GetSavedListsQuery implements Specification<SavedList> {
     final private SearchSavedListRequest request;
     @Nullable final private User loggedInUser;
-    
+
     @Override
     public Predicate toPredicate(
             Root<SavedList> savedList, CriteriaQuery<?> query, CriteriaBuilder cb) {
         Predicate conjunction = cb.conjunction();
         query.distinct(true);
 
-        //Only return lists which are not Selection lists - 
+        //Only return lists which are not Selection lists -
         //ie lists with no associated saved search.
         conjunction.getExpressions().add(
                 cb.isNull(savedList.get("savedSearch")));
-        
+
         // KEYWORD SEARCH
         if (!StringUtils.isBlank(request.getKeyword())){
             String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
@@ -60,14 +60,19 @@ public class GetSavedListsQuery implements Specification<SavedList> {
                      cb.like(cb.lower(savedList.get("name")), likeMatchTerm));
         }
 
-        //If fixed is specified, only supply matching saved searches
+        //If fixed is specified, only supply matching saved lists
         if (request.getFixed() != null && request.getFixed()) {
-            conjunction.getExpressions().add(
-                    cb.equal(savedList.get("fixed"), request.getFixed())
+            conjunction.getExpressions().add(cb.equal(savedList.get("fixed"), true)
             );
         }
 
-        //If short name is specified, only supply matching saved searches. If false, remove
+        //If registeredJob is specified and true, only supply matching saved lists
+        if (request.getRegisteredJob() != null && request.getRegisteredJob()) {
+            conjunction.getExpressions().add(cb.equal(savedList.get("registeredJob"), true)
+            );
+        }
+
+        //If short name is specified, only supply matching saved lists. If false, remove
         if (request.getShortName() != null && request.getShortName()) {
             conjunction.getExpressions().add(
                     cb.isNotNull(savedList.get("tbbShortName"))

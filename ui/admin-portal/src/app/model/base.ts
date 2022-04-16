@@ -94,7 +94,8 @@ export enum SearchBy {
   mine,
   sharedWithMe,
   watched,
-  externalLink
+  externalLink,
+  registeredJob
 }
 
 /**

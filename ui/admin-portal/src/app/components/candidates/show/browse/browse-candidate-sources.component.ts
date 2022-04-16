@@ -167,6 +167,9 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         req.shared = true;
         req.shortName = true;
         break;
+      case SearchBy.registeredJob:
+        req.registeredJob = true;
+        break;
     }
     if (this.savedSearchType !== undefined) {
       if (req instanceof SearchSavedSearchRequest) {
