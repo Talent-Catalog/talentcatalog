@@ -144,9 +144,9 @@ public class SavedListCandidateAdminApi implements
         Page<Candidate> candidates = this.candidateService
                 .getSavedListCandidates(savedListId, request);
 
-        this.savedListService.setCandidateContext(savedListId, candidates);
+        savedListService.setCandidateContext(savedListId, candidates);
 
-        this.savedListService.addOpportunityStages(savedListId, candidates);
+        savedListService.addOpportunityStages(savedListId, candidates);
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder();
         return builder.buildPage(candidates);
