@@ -947,7 +947,18 @@ public class SavedListServiceImpl implements SavedListService {
     public void updateJobOpportunityInfo(Iterable<SavedList> savedLists) {
         for (SavedList savedList : savedLists) {
             Opportunity opp = savedList.getSfJobOpportunity();
-            if (opp != null) {
+            if (opp == null) {
+                //No opportunity.
+                //But if the savedList has a job link and is marked as having an unclosed opp
+                //close it.
+                //This can happen if the job opp is deleted on Salesforce, so the job link is
+                //no longer valid and Salesforce will return a null opportunity object.
+                //All such opportunities should be considered as closed.
+                if (savedList.getSfJoblink() != null && !savedList.isSfOppIsClosed()) {
+                    savedList.setSfOppIsClosed(true);
+                    savedList = saveIt(savedList);
+                }
+            } else {
                 if (savedList.isSfOppIsClosed() != opp.IsClosed) {
                     savedList.setSfOppIsClosed(opp.IsClosed);
                     savedList = saveIt(savedList);
