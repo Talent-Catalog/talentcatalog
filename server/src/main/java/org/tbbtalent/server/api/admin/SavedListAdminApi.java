@@ -139,11 +139,15 @@ public class SavedListAdminApi implements
             @Valid SearchSavedListRequest request) {
         Page<SavedList> savedLists = savedListService.searchSavedLists(request);
 
-        //For now, just add extra info when registeredJob's have been explicitly requested.
-        //Saves unnecessary Salesforce access when the data is not expected to be displayed
-        if (request.getRegisteredJob() != null && request.getRegisteredJob()) {
-            salesforceService.addJobOpportunityInfo(savedLists);
-        }
+        //Retrieve any associated job opportunities from Salesforce and add it to the SavedList objects
+        salesforceService.addJobOpportunity(savedLists);
+
+        //Populate the savedLists which have associated job opportunities with info related to the
+        //opp. This includes transient data such as stage and job country, but also updates the
+        //database stored sfOppIsClosed attribute if necessary.
+        //This attribute is needed so that we can filter out lists associated with closed
+        //opportunities in normal database queries.
+        savedListService.updateJobOpportunityInfo(savedLists);
 
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(savedLists);

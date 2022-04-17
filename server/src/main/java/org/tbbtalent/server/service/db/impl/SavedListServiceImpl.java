@@ -61,6 +61,7 @@ import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
+import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
@@ -940,6 +941,21 @@ public class SavedListServiceImpl implements SavedListService {
                     .orElseThrow(() -> new NoSuchObjectException(SavedList.class, sourceListId));
         }
         return sourceList;
+    }
+
+    @Override
+    public void updateJobOpportunityInfo(Iterable<SavedList> savedLists) {
+        for (SavedList savedList : savedLists) {
+            Opportunity opp = savedList.getSfJobOpportunity();
+            if (opp != null) {
+                if (savedList.isSfOppIsClosed() != opp.IsClosed) {
+                    savedList.setSfOppIsClosed(opp.IsClosed);
+                    savedList = saveIt(savedList);
+                }
+                savedList.setSfJobCountry(opp.getAccountCountry__c());
+                savedList.setSfJobStage(opp.getStageName());
+            }
+        }
     }
 
     /**

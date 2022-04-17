@@ -31,9 +31,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -199,30 +201,41 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public void addJobOpportunityInfo(Iterable<SavedList> savedLists) throws SalesforceException {
+    public void addJobOpportunity(Iterable<SavedList> savedLists) throws SalesforceException {
+
         //Retrieve the sfJobLinks the given lists
-        Map<String, SavedList> sfIdListMap = new HashMap<>();
+        Set<String> sfIds = new HashSet<>();
         for (SavedList savedList : savedLists) {
             final String sfJoblink = savedList.getSfJoblink();
             if (sfJoblink != null) {
                 //Get id from link.
-                sfIdListMap.put(extractIdFromSfUrl(sfJoblink), savedList);
+                sfIds.add(extractIdFromSfUrl(sfJoblink));
             }
         }
 
         //Process if we have any lists with job links.
-        if (sfIdListMap.size() > 0) {
+        if (sfIds.size() > 0) {
             //Fetch the opps from their ids taken from the above map.
-            List<Opportunity> opps = fetchOpportunities(sfIdListMap.keySet());
+            List<Opportunity> opps = fetchOpportunities(sfIds);
 
-            //Now loop through the opps, adding the list info
+            //Construct map of opps by id.
+            Map<String, Opportunity> idOppMap = new HashMap<>();
+            //Now loop through the opps, adding the opportunity
             for (Opportunity opp : opps) {
-                SavedList savedList = sfIdListMap.get(opp.getId());
-                if (savedList == null) {
-                    throw new SalesforceException("Bug in SalesforceService.addJobOpportunityInfo");
+                idOppMap.put(opp.getId(), opp);
+            }
+
+            //Now populate opps on all lists with sfJobLinks.
+            for (SavedList savedList : savedLists) {
+                String sfJoblink = savedList.getSfJoblink();
+                if (sfJoblink != null) {
+                    String sfId = extractIdFromSfUrl(sfJoblink);
+                    Opportunity opp = idOppMap.get(sfId);
+                    if (opp == null) {
+                        log.warn("Saved List " + savedList.getName() + " with invalid sfJobLink " + sfJoblink);
+                    }
+                    savedList.setSfJobOpportunity(opp);
                 }
-                savedList.setSfJobCountry(opp.getAccountCountry__c());
-                savedList.setSfJobStage(opp.getStageName());
             }
         }
     }

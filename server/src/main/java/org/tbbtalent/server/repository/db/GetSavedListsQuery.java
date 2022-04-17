@@ -68,8 +68,15 @@ public class GetSavedListsQuery implements Specification<SavedList> {
 
         //If registeredJob is specified and true, only supply matching saved lists
         if (request.getRegisteredJob() != null && request.getRegisteredJob()) {
-            conjunction.getExpressions().add(cb.equal(savedList.get("registeredJob"), true)
-            );
+            conjunction.getExpressions().add(cb.equal(savedList.get("registeredJob"), true));
+        }
+
+        //If sfOppIsClosed is specified, and sfJoblink is not null, only supply saved list with
+        // matching job closed.
+        if (request.getSfOppClosed() != null) {
+            //Closed condition is only meaningful if sfJoblink is present
+            conjunction.getExpressions().add(cb.isNotNull(savedList.get("sfJoblink")));
+            conjunction.getExpressions().add(cb.equal(savedList.get("sfOppIsClosed"), request.getSfOppClosed()));
         }
 
         //If short name is specified, only supply matching saved lists. If false, remove

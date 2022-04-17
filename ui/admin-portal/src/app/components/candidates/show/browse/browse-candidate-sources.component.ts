@@ -184,6 +184,9 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         break;
       case SearchBy.registeredJob:
         req.registeredJob = true;
+
+        //In this browsing display we want to filter out closed jobs
+        req.sfOppClosed = false;
         break;
     }
     if (this.savedSearchType !== undefined) {

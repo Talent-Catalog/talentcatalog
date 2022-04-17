@@ -16,16 +16,27 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
-
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * There are two kinds of SavedList:
@@ -119,12 +130,25 @@ public class SavedList extends AbstractCandidateSource {
     private String sfJobCountry;
 
     /**
+     * Salesforce Job opportunity. Can be retrieved from Salesforce when a list has a non null
+     * sfJobLink
+     */
+    @Transient
+    @Nullable
+    private Opportunity sfJobOpportunity;
+
+    /**
      * Salesforce Job opportunity stage. Can be retrieved from Salesforce to be displayed
      * when a list has a non null sfJobLink
      */
     @Transient
     @Nullable
     private String sfJobStage;
+
+    /**
+     * True if the associated Salesforce job opportunity - specified by sfJobLink is closed.
+     */
+    private boolean sfOppIsClosed;
 
     /**
      * Non null if this is the selection list for the given saved search.
@@ -261,12 +285,29 @@ public class SavedList extends AbstractCandidateSource {
     }
 
     @Nullable
+    public Opportunity getSfJobOpportunity() {
+        return sfJobOpportunity;
+    }
+
+    public void setSfJobOpportunity(@Nullable Opportunity sfJobOpportunity) {
+        this.sfJobOpportunity = sfJobOpportunity;
+    }
+
+    @Nullable
     public String getSfJobStage() {
         return sfJobStage;
     }
 
     public void setSfJobStage(@Nullable String sfJobStage) {
         this.sfJobStage = sfJobStage;
+    }
+
+    public boolean isSfOppIsClosed() {
+        return sfOppIsClosed;
+    }
+
+    public void setSfOppIsClosed(boolean sfOppIsClosed) {
+        this.sfOppIsClosed = sfOppIsClosed;
     }
 
     @Nullable

@@ -55,11 +55,12 @@ public interface SalesforceService {
 
     /**
      * Updates each of the given saved lists if it has an associated link to a Salesforce job
-     * opportunity (sfJoblink) with job related information: job country and stage.
+     * opportunity (sfJoblink) with the corresponding Opportunity object retrieved from Salesforce
+     * using {@link SavedList#setSfJobOpportunity(Opportunity)}
      * @param savedLists Saved lists to process
      * @throws SalesforceException if there are issues contacting Salesforce
      */
-    void addJobOpportunityInfo(Iterable<SavedList> savedLists);
+    void addJobOpportunity(Iterable<SavedList> savedLists);
 
     /**
      * Searches Salesforce for all Contact records relating to TBB

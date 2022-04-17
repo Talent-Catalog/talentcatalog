@@ -412,4 +412,14 @@ public interface SavedListService {
      */
     @Nullable
     SavedList fetchSourceList(UpdateSavedListContentsRequest request) throws NoSuchObjectException;
+
+    /**
+     * Updates lists in the given SavedLists with opportunity info taken from any opportunity
+     * objects found by calling {@link SavedList#getSfJobOpportunity()}.
+     * <p/>
+     * This includes transient fields such as {@link SavedList#getSfJobStage()} and
+     * {@link SavedList#getSfJobCountry()} but also the database field sfOppIsClosed.
+     * @param savedLists Lists to be processed.
+     */
+    void updateJobOpportunityInfo(Iterable<SavedList> savedLists);
 }

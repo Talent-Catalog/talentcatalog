@@ -36,5 +36,13 @@ public class SearchSavedListRequest extends SearchCandidateSourceRequestPaged {
      * that are the registered list for a Salesforce job opportunity.
      */
     private Boolean registeredJob;
+
+    /**
+     * Only affects search for SavedLists where sfJoblink is not null - ie SavedList's which have
+     * an associated job opportunity. Otherwise its value is ignored.
+     * Lists which have associated job opportunities will be selected based on whether or not the
+     * opportunity is closed.
+     */
+    private Boolean sfOppClosed;
 }
 
