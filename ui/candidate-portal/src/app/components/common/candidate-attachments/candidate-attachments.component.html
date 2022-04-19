@@ -68,9 +68,9 @@
         </div>
 
         <div *ngIf="editTarget?.id == attachment.id" class="form-group">
-          <label for="courseName">Change name? </label>
+          <label for="attachmentName">{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</label>
           <div class="d-flex">
-            <input type="text" class="form-control" placeholder="" id="courseName" [(ngModel)]="attachment.name">
+            <input type="text" class="form-control" placeholder="" id="attachmentName" [(ngModel)]="attachment.name">
             <div>
               <button class="btn btn-sm"
                       (click)="updateAttachmentName(attachment, i)">
