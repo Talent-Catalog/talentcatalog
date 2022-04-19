@@ -74,7 +74,7 @@
             <div>
               <button class="btn btn-sm"
                       (click)="updateAttachmentName(attachment, i)">
-                <span *ngIf="!saving">Save</span>
+                <span *ngIf="!saving">{{ 'FORM.LABEL.SAVE' | translate }}</span>
                 <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
               </button>
 

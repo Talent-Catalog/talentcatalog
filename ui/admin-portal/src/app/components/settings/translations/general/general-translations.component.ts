@@ -593,6 +593,10 @@ const ALL_FIELDS = {
       "DUEDATE": null,
       "COMPLETED": null,
       "ABANDONED": null,
+      "NONE": {
+        "ACTIVETASKS": null,
+        "COMPLETEDTASKS": null,
+      }
     },
     "UPLOAD" : {
       "HEADER": null,
