@@ -371,6 +371,7 @@ const ALL_FIELDS = {
         "EMPTYSTATE": null,
         "LABEL": {
           "NAME": null,
+          "EDIT": null,
           "CREATEDBY": null,
           "CREATEDDATE": null
         },
@@ -388,6 +389,10 @@ const ALL_FIELDS = {
       }
     },
     "PROFILE": {
+      "TAB": {
+        "PROFILE": null,
+        "TASKS": null
+      },
       "CONTACT": {
         "TITLE": null,
         "EMAIL": null,

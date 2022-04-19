@@ -11,7 +11,7 @@
 
       <!-- PROFILE -->
       <ng-container ngbNavItem="Profile">
-        <a ngbNavLink>My Profile</a>
+        <a ngbNavLink>{{ 'PROFILE.TAB.PROFILE' | translate }}</a>
         <ng-template ngbNavContent>
           <app-candidate-profile
             [candidate]="candidate">
@@ -21,7 +21,7 @@
 
       <!-- TASKS -->
       <ng-container ngbNavItem="Tasks">
-        <a ngbNavLink>Tasks</a>
+        <a ngbNavLink>{{ 'PROFILE.TAB.TASKS' | translate }}</a>
         <ng-template ngbNavContent>
           <app-candidate-tasks
             [candidate]="candidate"
