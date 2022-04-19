@@ -49,13 +49,13 @@
           <!-- loading -->
           <tr *ngIf="loading">
             <td colspan="42">
-              <i class="fas fa-spinner fa-spin"></i> Loading...
+              <i class="fas fa-spinner fa-spin"></i> {{ 'LOADING' | translate }}
             </td>
           </tr>
           <!-- no results -->
           <tr *ngIf="!loading && !ongoingTasks?.length">
             <td colspan="42" class="text-center">
-              <span class="text-muted">(no tasks to complete)</span>
+              <span class="text-muted">({{ 'TASKS.TABLE.NONE.ACTIVETASKS' | translate }})</span>
             </td>
           </tr>
           </tbody>
@@ -89,13 +89,13 @@
           <!-- loading -->
           <tr *ngIf="loading">
             <td colspan="42">
-              <i class="fas fa-spinner fa-spin"></i> Loading...
+              <i class="fas fa-spinner fa-spin"></i> {{ 'LOADING' | translate }}
             </td>
           </tr>
           <!-- no results -->
           <tr *ngIf="!loading && !completedOrAbandonedTasks?.length">
             <td colspan="42" class="text-center">
-              <span class="text-muted">(no completed tasks)</span>
+              <span class="text-muted">({{ 'TASKS.TABLE.NONE.COMPLETEDTASKS' | translate }})</span>
             </td>
           </tr>
           </tbody>
