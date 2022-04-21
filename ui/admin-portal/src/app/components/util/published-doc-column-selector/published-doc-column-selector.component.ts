@@ -16,7 +16,7 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
   availableColumns: PublishedDocColumnConfig[];
   dragulaGroupName: string = "COLUMNS";
   error: string;
-  private _selectedColumns: PublishedDocColumnConfig[];
+  selectedColumns: PublishedDocColumnConfig[];
   private candidateSource: CandidateSource;
   private longFormat: boolean;
   updating: boolean;
@@ -33,46 +33,11 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
 
   ngOnInit(): void {
     const dragulaGroup = this.dragulaService.find(this.dragulaGroupName);
-    if (!dragulaGroup) {
-      this.dragulaService.createGroup(this.dragulaGroupName, {
-        copy: (el, source) => {
-          return source.id === 'availableColumns';
-        },
-        copyItem: (item: PublishedDocColumnConfig) => {
-          const copy = new PublishedDocColumnConfig();
-          copy.columnDef = item.columnDef;
-          copy.columnProps = new PublishedDocColumnProps();
-          copy.columnProps.header = null;
-          copy.columnProps.constant = null;
-          return copy;
-        },
-        accepts: (el, target, source, sibling) => {
-          // To avoid dragging from right to left container
-          return target.id !== 'availableColumns';
-        },
-        removeOnSpill: true
-      });
-    }
 
     // Set default columns if no columns selected.
     if (this.selectedColumns.length === 0) {
       this.default();
     }
-
-    // Pull out empty column and put at bottom + alphabetise columns
-    const emptyCol = this.availableColumns.shift();
-    this.availableColumns = this.availableColumns.sort(
-      (field1, field2) =>
-        field1.columnDef.header.localeCompare(field2.columnDef.header));
-    this.availableColumns.push(emptyCol);
-  }
-
-  get selectedColumns(): PublishedDocColumnConfig[] {
-    return this._selectedColumns;
-  }
-
-  set selectedColumns(fields: PublishedDocColumnConfig[]) {
-    this._selectedColumns = fields;
   }
 
   cancel() {
@@ -88,7 +53,6 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
   }
 
   update(field: PublishedDocColumnConfig) {
-    console.log(field);
     return field;
   }
 
@@ -107,5 +71,18 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
       hasFieldName = false;
     }
     return hasFieldName;
+  }
+
+  addColumn(field: PublishedDocColumnConfig) {
+    field.columnProps = new PublishedDocColumnProps();
+    field.columnProps.header = null;
+    field.columnProps.constant = null;
+    this.selectedColumns.push(field);
+  }
+
+  removeColumn($event) {
+    let col : PublishedDocColumnConfig = $event.value;
+    let index = this.selectedColumns.findIndex(c => c.columnDef.key === col.columnDef.key)
+    this.selectedColumns.splice(index, 1);
   }
 }
