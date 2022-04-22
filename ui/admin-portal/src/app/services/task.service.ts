@@ -3,7 +3,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {Task} from "../model/task";
+import {Task, TaskType} from "../model/task";
 
 export interface UpdateTaskRequest {
   displayName: string;
@@ -11,7 +11,16 @@ export interface UpdateTaskRequest {
   daysToComplete: number;
   helpLink: string;
   optional: boolean;
+}
 
+export interface CreateTaskRequest {
+  taskType: TaskType;
+  name: string;
+  displayName: string;
+  description: string;
+  daysToComplete: number;
+  helpLink: string;
+  optional: boolean;
 }
 
 @Injectable({

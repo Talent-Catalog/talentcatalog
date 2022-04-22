@@ -9,6 +9,7 @@ import {TaskService} from "../../../services/task.service";
 import {SearchResults} from "../../../model/search-results";
 import {Task} from "../../../model/task";
 import {EditTaskComponent} from "./edit/edit-task.component";
+import {CreateTaskComponent} from "./create/create-task.component";
 
 @Component({
   selector: 'app-search-tasks',
@@ -77,6 +78,17 @@ export class SearchTasksComponent implements OnInit {
 
   isAnAdmin(): boolean {
     return isAdminUser(this.authService);
+  }
+
+  addTask() {
+    const addTaskModal = this.modalService.open(CreateTaskComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    addTaskModal.result
+      .then((user) => this.search())
+      .catch(() => { /* Isn't possible */ });
   }
 
   editTask(task: Task) {
