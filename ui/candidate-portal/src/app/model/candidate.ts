@@ -121,7 +121,6 @@ export interface Task {
   helpLink: string;
   optional: boolean;
   taskType: TaskType;
-  uploadType?: UploadType;
   uploadSubfolderName?: string;
   uploadableFileTypes?: string;
   candidateAnswerField?: string;

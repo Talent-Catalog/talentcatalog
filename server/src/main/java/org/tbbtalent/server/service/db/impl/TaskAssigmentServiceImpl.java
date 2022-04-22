@@ -16,31 +16,24 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
-import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.UploadTaskAssignmentImpl;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.model.db.task.UploadTask;
-import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.service.db.TaskService;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 /**
  * Default implementation of a TaskAssignmentService
@@ -187,8 +180,8 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     }
 
     private String computeUploadFileName
-        (Candidate candidate, UploadType uploadType, String baseFileName) {
-        return candidate.getCandidateNumber() + "-" + uploadType + "-" + baseFileName;
+        (Candidate candidate, String name, String baseFileName) {
+        return candidate.getCandidateNumber() + "-" + name + "-" + baseFileName;
     }
 
     @Override
@@ -197,10 +190,10 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         UploadTask uploadTask = (UploadTask) ta.getTask();
 
         Candidate candidate = ta.getCandidate();
-        UploadType uploadType = uploadTask.getUploadType();
-        String uploadedName = computeUploadFileName(candidate, uploadType, file.getOriginalFilename());
+        String name = uploadTask.getName();
+        String uploadedName = computeUploadFileName(candidate, name, file.getOriginalFilename());
         String subFolderName = uploadTask.getUploadSubfolderName();
-        candidateAttachmentService.uploadAttachment(candidate, uploadedName, subFolderName, file, uploadType);
+        candidateAttachmentService.uploadAttachment(candidate, uploadedName, subFolderName, file, null);
 
         completeTaskAssignment(ta);
     }

@@ -16,12 +16,13 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.dto.DtoPropertyFilter;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * DTOs for Tasks and TaskAssignments
@@ -78,7 +79,6 @@ public class TaskDtoHelper {
             .add("optional")
             .add("helpLink")
             .add("taskType")
-            .add("uploadType")
             .add("uploadSubfolderName")
             .add("uploadableFileTypes")
             .add("candidateAnswerField")
