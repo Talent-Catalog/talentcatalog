@@ -80,7 +80,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="SearchesSharedWithMe">
-    <a ngbNavLink title="Searches created by others that I have saved">Searches Shared With Me</a>
+    <a ngbNavLink title="Searches that I am currently working with">Searches Tagged By Me</a>
     <ng-template ngbNavContent>
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedSearch"
@@ -112,7 +112,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="ListsSharedWithMe">
-    <a ngbNavLink title="Lists created by others that I have saved">Lists Shared With Me</a>
+    <a ngbNavLink title="Lists that I am currently working with">Lists Tagged By Me</a>
     <ng-template ngbNavContent>
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedList"
