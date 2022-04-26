@@ -94,8 +94,12 @@ export interface IHasSetOfCandidates {
   candidateIds: number[];
 }
 
+/**
+ * See Java PublishedDocValueSource for documentation
+ */
 export class PublishedDocValueSource {
   fieldName?: string;
+  propertyName?: string;
   constant?: any;
 }
 
@@ -110,6 +114,13 @@ export class PublishedDocConstantSource extends PublishedDocValueSource {
   constructor(constant: any) {
     super();
     super.constant = constant;
+  }
+}
+
+export class PublishedDocPropertySource extends PublishedDocValueSource {
+  constructor(propertyName: string) {
+    super();
+    super.propertyName = this.propertyName;
   }
 }
 

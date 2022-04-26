@@ -22,6 +22,7 @@ import {
   PublishedDocColumnProps,
   PublishedDocConstantSource,
   PublishedDocFieldSource,
+  PublishedDocPropertySource,
   PublishedDocValueSource
 } from "../model/saved-list";
 import {PublishedDocColumnType, PublishedDocColumnWidth} from "../model/base";
@@ -106,6 +107,9 @@ export class PublishedDocColumnService {
     this.addColumn("englishExams", "English Exams", new PublishedDocFieldSource("englishExamsSummary"));
     this.addColumn("educations", "Education", new PublishedDocFieldSource("educationsSummary"));
     this.addColumn("certifications", "Certifications", new PublishedDocFieldSource("certificationsSummary"));
+
+    // Candidate property fields
+    this.addColumn("englishUniversityAnswers", "Did you study in English at University?", new PublishedDocPropertySource("englishUniversityAnswers"));
 
     this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"))
     .width = PublishedDocColumnWidth.Wide;

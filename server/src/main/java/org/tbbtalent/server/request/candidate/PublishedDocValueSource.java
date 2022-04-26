@@ -21,13 +21,14 @@ import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 /**
- * Values can come from one of two sources:
+ * Values can come from one of three sources:
  * <ul>
  *   <li>The field of a candidate object</li>
  *   <li>A constant value</li>
+ *   <li>The name of a candidate property</li>
  * </ul>
  * <p/>
- * It has to be one or other - it cannot be both. If the field name is not null, that is what is
+ * It has to be one or other - it cannot be more than one. If the field name is not null, that is what is
  * used, otherwise the constant is used.
  * <p/>
  * Note that this could be better designed in Java with a value source interface with two
@@ -53,5 +54,11 @@ public class PublishedDocValueSource {
    */
   @Nullable
   private Object constant;
+
+  /**
+   * If not null, this is the name of the candidate property which we want to extract the corresponding value.
+   */
+  @Nullable
+  private String propertyName;
 
 }
