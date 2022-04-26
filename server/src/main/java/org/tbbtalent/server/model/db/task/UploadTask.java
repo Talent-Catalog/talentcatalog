@@ -16,9 +16,10 @@
 
 package org.tbbtalent.server.model.db.task;
 
-import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+
+import java.util.List;
 
 /**
  * Task where candidate is required to upload a file.
@@ -46,7 +47,7 @@ public interface UploadTask extends Task {
      */
     @Nullable
     //todo This really needs to be known by Angular - maybe lose this. Or keep and throw Exception for bad suffixes
-    Set<String> getUploadableFileTypes();
+    List<String> getUploadableFileTypes();
 
 
     default TaskType getTaskType() {

@@ -16,16 +16,18 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.util.List;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.task.AllowedQuestionTaskAnswer;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.TaskType;
+
+import javax.persistence.Convert;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
+import java.util.List;
 
 /**
  * Default Implementation
@@ -38,6 +40,19 @@ import org.tbbtalent.server.model.db.task.TaskType;
 @Setter
 public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
 
+    /**
+     * Explicitly set allowed answers that come from the task creation.
+     * If exist the question task answer format will be a dropdown.
+     */
+    @Nullable
+    @Convert(converter = DelimitedStringsConverter.class)
+    private List<String> explicitAllowedAnswers;
+
+    /**
+     * Set by candidate answer field if present, otherwise if explicit answer is not null will be set as the explicit answers.
+     * If allowedAnswers is not null, the quesiton task answer format will be a dropdown.
+     * If allowedAnswers is null, the question answer format will be a text box.
+     */
     @Transient
     @Nullable
     List<AllowedQuestionTaskAnswer> allowedAnswers;

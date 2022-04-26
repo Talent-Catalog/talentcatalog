@@ -16,9 +16,10 @@
 
 package org.tbbtalent.server.model.db.task;
 
-import java.util.List;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
+
+import java.util.List;
 
 /**
  * Particular kind of task which simply involves the candidate answering a given question.
@@ -28,6 +29,12 @@ import org.tbbtalent.server.model.db.Candidate;
  * @author John Cameron
  */
 public interface QuestionTask extends Task {
+
+    /**
+     * Allowable answers provided (eg Yes, No, Needs further discussion etc).
+     */
+    @Nullable
+    List<String> getExplicitAllowedAnswers();
 
     /**
      * Get allowed answers to this question, or null if there are no restrictions on the answers.

@@ -16,12 +16,6 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.util.Set;
-import javax.persistence.Convert;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
@@ -29,6 +23,9 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.model.db.task.UploadType;
+
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * Default Implementation
@@ -59,7 +56,7 @@ public class UploadTaskImpl extends TaskImpl implements UploadTask {
      */
     @Nullable
     @Convert(converter = DelimitedStringsConverter.class)
-    private Set<String> uploadableFileTypes;
+    private List<String> uploadableFileTypes;
 
     /*
       Note that this should not be necessary because the interface provides a default implementation
