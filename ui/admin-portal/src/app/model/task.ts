@@ -31,18 +31,31 @@ export interface Task extends Auditable {
   helpLink: string;
   taskType: TaskType;
   uploadType: UploadType;
-  uploadSubfolderName: string;
+  uploadSubfolderName: CandidateSubfolderType;
   uploadableFileTypes: string;
   candidateAnswerField: string;
   allowedAnswers?: AllowedQuestionTaskAnswer[];
+}
 
+export enum CandidateSubfolderType {
+  address = "Address",
+  character = "Character",
+  employer = "Employer",
+  engagement = "Engagement",
+  experience = "Experience",
+  family = "Family",
+  identity = "Identity",
+  immigration = "Immigration",
+  language = "Language",
+  medical = "Medical",
+  qualification = "Qualification",
+  registration = "Registration"
 }
 
 export enum TaskType {
   Question = "Question",
   Simple = "Simple",
-  Upload = "Upload",
-  YesNoQuestion = "YesNoQuestion"
+  Upload = "Upload"
 }
 
 export enum UploadType {

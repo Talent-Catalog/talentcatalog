@@ -49,8 +49,9 @@
         </ng-select>
       </div>
       <div class="form-group">
-        <label for="displayName">Name</label>
-        <input type="text" class="form-control" id="displayName" formControlName="displayName">
+        <label for="name">Name (no spaces allowed)</label>
+        <input type="text" class="form-control" id="name" formControlName="name">
+        <small>This can't be changed once created, the display name however is editable. This name is used in the file name for upload tasks.</small>
       </div>
       <div class="form-group">
         <label for="displayName">Display Name</label>
@@ -76,21 +77,35 @@
       </div>
 
       <ng-container *ngIf="taskType === 'Question'">
-        Question fields
+        <div class="form-group">
+          <label for="candidateAnswerField">Answer field (if applicable)</label>
+          <input type="text" class="form-control" id="candidateAnswerField" formControlName="candidateAnswerField">
+        </div>
+        <!-- todo figure out how to store allowed answers -->
+<!--        <div class="form-group">-->
+<!--          <label for="allowedAnswers">Allowed Answers</label>-->
+<!--          <input type="text" class="form-control" id="allowedAnswers" formControlName="allowedAnswers">-->
+<!--        </div>-->
       </ng-container>
 
       <ng-container *ngIf="taskType === 'Upload'">
         <div class="form-group">
-          <label for="role">Upload Type</label>
+          <label for="role">Candidate's subfolder in Google Drive</label>
           <ng-select
-            id="uploadType"
-            [items]="taskTypes"
-            [formControlName]="'taskType'"
+            id="uploadSubfolderName"
+            [items]="subFolderNames"
+            [formControlName]="'uploadSubfolderName'"
             [clearable]="false"
             placeholder="Select"
             bindValue="value"
             bindLabel="displayText">
           </ng-select>
+          <small>See file naming conventions <a href="https://docs.google.com/document/d/1ytIH3LQ40ICrKa2YM-eIVp09THpHHbEI8kBeWQXjAEQ/edit" target="_blank">here</a>.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="uploadableFileTypes">Uploadable file types</label>
+          <input type="text" class="form-control" id="uploadableFileTypes" formControlName="uploadableFileTypes">
         </div>
       </ng-container>
 

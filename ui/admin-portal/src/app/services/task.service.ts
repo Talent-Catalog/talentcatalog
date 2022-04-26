@@ -3,7 +3,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {Task, TaskType} from "../model/task";
+import {CandidateSubfolderType, Task, TaskType} from "../model/task";
 
 export interface UpdateTaskRequest {
   displayName: string;
@@ -21,6 +21,10 @@ export interface CreateTaskRequest {
   daysToComplete: number;
   helpLink: string;
   optional: boolean;
+  uploadSubfolderName?: CandidateSubfolderType;
+  uploadableFileTypes?: string,
+  candidateAnswerField?: string,
+  allowedAnswers?: string
 }
 
 @Injectable({
@@ -49,5 +53,7 @@ export class TaskService {
     return this.http.put<Task>(`${this.apiUrl}/${id}`, request);
   }
 
-
+  create(request: CreateTaskRequest): Observable<Task>  {
+    return this.http.put<Task>(`${this.apiUrl}`, request);
+  }
 }

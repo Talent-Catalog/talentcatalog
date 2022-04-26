@@ -22,6 +22,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.task.Task;
+import org.tbbtalent.server.request.task.CreateTaskRequest;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
 import org.tbbtalent.server.request.task.UpdateTaskRequest;
 
@@ -77,4 +78,12 @@ public interface TaskService {
      * @throws NoSuchObjectException if there is not task with this id.
      */
     TaskImpl update(long id, UpdateTaskRequest request) throws EntityExistsException, NoSuchObjectException;
+
+    /**
+     * Create a new task with the request provided. Only allows full admins to create a task at the moment.
+     * @param request CreateTaskRequest contains all task fields (including those only for question and upload tasks)
+     * @return New created task
+     * @throws EntityExistsException if updated name request already exists.
+     */
+    TaskImpl create(CreateTaskRequest request) throws EntityExistsException;
 }

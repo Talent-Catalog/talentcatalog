@@ -24,6 +24,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.request.task.CreateTaskRequest;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
 import org.tbbtalent.server.request.task.UpdateTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
@@ -36,7 +37,7 @@ import java.util.Map;
 @RestController()
 @RequestMapping("/api/admin/task")
 public class TaskAdminApi implements
-        ITableApi<SearchTaskRequest, UpdateTaskRequest, UpdateTaskRequest> {
+        ITableApi<SearchTaskRequest, CreateTaskRequest, UpdateTaskRequest> {
 
     private final TaskService taskService;
 
@@ -69,6 +70,13 @@ public class TaskAdminApi implements
             long id, @Valid UpdateTaskRequest request)
             throws EntityExistsException, NoSuchObjectException {
         TaskImpl task = this.taskService.update(id, request);
+        return TaskDtoHelper.getTaskDto().build(task);
+    }
+
+    @Override
+    public @NotNull Map<String, Object> create(@Valid CreateTaskRequest request)
+            throws EntityExistsException {
+        TaskImpl task = this.taskService.create(request);
         return TaskDtoHelper.getTaskDto().build(task);
     }
 

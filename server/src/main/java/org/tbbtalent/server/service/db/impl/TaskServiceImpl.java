@@ -25,14 +25,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.TaskImpl;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.task.AllowedQuestionTaskAnswer;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.Task;
+import org.tbbtalent.server.model.db.task.TaskType;
 import org.tbbtalent.server.repository.db.TaskRepository;
 import org.tbbtalent.server.repository.db.TaskSpecification;
+import org.tbbtalent.server.request.task.CreateTaskRequest;
 import org.tbbtalent.server.request.task.SearchTaskRequest;
 import org.tbbtalent.server.request.task.UpdateTaskRequest;
 import org.tbbtalent.server.service.db.TaskService;
@@ -110,6 +110,32 @@ public class TaskServiceImpl implements TaskService {
         }
         task.setOptional(request.isOptional());
         return taskRepository.save(task);
+    }
+
+    @Override
+    @Transactional
+    public TaskImpl create(CreateTaskRequest request) throws EntityExistsException {
+        // todo how to handle different types of tasks? And setting their specific task fields? Should we seperate these into seperate methods and then return the task object?
+        if (request.getTaskType().equals(TaskType.Question)) {
+            QuestionTaskImpl task = new QuestionTaskImpl();
+        } else if (request.getTaskType().equals(TaskType.Upload)) {
+            UploadTaskImpl task = new UploadTaskImpl();
+        } else {
+            TaskImpl task = new TaskImpl();
+        }
+//        // Check no double ups of name
+//        task.setName(request.getName());
+//        task.setDisplayName(request.getDisplayName());
+//        task.setDescription(request.getDescription());
+//        task.setDaysToComplete(request.getDaysToComplete());
+//        if (StringUtils.isNotBlank(request.getHelpLink())) {
+//            task.setHelpLink(request.getHelpLink());
+//        } else {
+//            task.setHelpLink(null);
+//        }
+//        task.setOptional(request.isOptional());
+//
+//        return taskRepository.save(task);
     }
 
     private void populateTransientFields(List<TaskImpl> tasks) {

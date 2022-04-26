@@ -27,7 +27,7 @@
         <div [ngClass]="{'custom-flex-40 pr-3' : editable, 'custom-flex-75' : !editable}">
           <p class="mb-0" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">
             <span *ngIf="!ta.task.optional">*</span> {{ta.task.displayName}}
-            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ml-1"></i>
+            <i *ngIf="ta.task.taskType === 'Question'" class="far fa-question-circle fa-sm ml-1"></i>
             <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ml-1"></i>
           </p>
           <div class="font-r80" [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date}}</div>
@@ -83,7 +83,7 @@
         <div [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">
           <p class="mb-0 pr-3">
             <span *ngIf="!ta.task.optional">*</span> {{ta.task.displayName}}
-            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ml-1"></i>
+            <i *ngIf="ta.task.taskType === 'Question'" class="far fa-question-circle fa-sm ml-1"></i>
             <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ml-1"></i>
           </p>
           <!-- SEARCH CARD DISPLAY ANSWER -->
