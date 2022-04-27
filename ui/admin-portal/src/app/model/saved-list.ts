@@ -118,9 +118,9 @@ export class PublishedDocConstantSource extends PublishedDocValueSource {
 }
 
 export class PublishedDocPropertySource extends PublishedDocValueSource {
-  constructor(propertyName: string) {
+  constructor(propertyName: any) {
     super();
-    super.propertyName = this.propertyName;
+    super.propertyName = propertyName;
   }
 }
 

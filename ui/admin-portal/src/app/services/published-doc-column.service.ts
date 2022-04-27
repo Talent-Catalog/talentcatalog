@@ -109,8 +109,7 @@ export class PublishedDocColumnService {
     this.addColumn("certifications", "Certifications", new PublishedDocFieldSource("certificationsSummary"));
 
     // Candidate property fields
-    this.addColumn("studiedEnglishUniversity", "Did you study in English at University?",
-      new PublishedDocPropertySource("studiedEnglishUniversity"));
+    this.addColumn("studiedEnglishUniversity", "Did you study in English at University?", new PublishedDocPropertySource("studiedEnglishUniversity"));
 
     this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"))
     .width = PublishedDocColumnWidth.Wide;

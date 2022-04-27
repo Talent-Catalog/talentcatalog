@@ -21,10 +21,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateProperty;
 import org.tbbtalent.server.security.CandidateTokenProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Used to build the published Google sheet doc
@@ -86,6 +89,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
   private Object fetchData(Candidate candidate, PublishedDocValueSource valueSource) {
     Object val = null;
     final String fieldName = valueSource.getFieldName();
+    final String propertyName = valueSource.getPropertyName();
     if (fieldName != null) {
       if (candidate == null) {
         log.error("Cannot extract field " + fieldName + " from null candidate");
@@ -115,6 +119,19 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
         } catch (Exception e) {
           log.error("Error extracting field " + fieldName + " from candidate " + candidate.getCandidateNumber());
         }
+      }
+    } else if (propertyName != null) {
+      //Check for the specific candidate property with the property name provided
+      Optional<CandidateProperty> propO = Optional.empty();
+      Set<CandidateProperty> properties = candidate.getCandidateProperties();
+      if (properties != null) {
+        propO = properties.stream().filter(p -> p.getName().equals(propertyName)).findFirst();
+      }
+      //Fetch the value
+      CandidateProperty property;
+      if (propO.isPresent()) {
+        property = propO.get();
+        val = property.getValue();
       }
     } else {
       val = valueSource.getConstant();
