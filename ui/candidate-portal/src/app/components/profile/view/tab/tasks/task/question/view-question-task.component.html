@@ -12,8 +12,8 @@
     <ng-template #editable>
       <div *ngIf="selectedTask.task?.allowedAnswers?.length > 0; else textBox">
         <div class="form-group">
-          <label class="font-weight-bold" for="responseAnswer">
-            {{ 'TASKS.QUESTION.DROPDOWN.LABEL' | translate }}
+          <label class="font-weight-bold" for="responseDropdown">
+            {{ selectedTask.task.description }}
           </label>
           <ng-select  id="responseDropdown" [formControlName]="'response'" [clearable]="false" [items]="selectedTask.task.allowedAnswers"
                       bindLabel="displayName" bindValue="name" placeholder="Select...">
@@ -22,7 +22,7 @@
       </div>
       <ng-template #textBox>
         <div class="form-group">
-          <label class="font-weight-bold" for="responseDropdown">
+          <label class="font-weight-bold" for="responseAnswer">
             {{ selectedTask.task.description }}
           </label>
           <textarea id="responseAnswer" class="md-textarea-auto form-control" rows="5"
