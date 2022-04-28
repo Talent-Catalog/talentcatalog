@@ -109,7 +109,20 @@ export class PublishedDocColumnService {
     this.addColumn("certifications", "Certifications", new PublishedDocFieldSource("certificationsSummary"));
 
     // Candidate property fields
-    this.addColumn("studiedEnglishUniversity", "Did you study in English at University?", new PublishedDocPropertySource("studiedEnglishUniversity"));
+    this.addColumn("studiedEnglishUniversity", "Did you study in English at University?",
+      new PublishedDocPropertySource("studiedEnglishUniversity"));
+    this.addColumn("spouseJobUk", "Is your spouse also applying for a job in the UK?",
+      new PublishedDocPropertySource("spouseJobUk"));
+    this.addColumn("validPassport", "Do you have a valid passport?",
+      new PublishedDocPropertySource("validPassport"));
+    this.addColumn("minBachelorsDegree", "Did you get at least a Bachelors degree?",
+      new PublishedDocPropertySource("minBachelorsDegree"));
+    this.addColumn("colleaguesKnowRefugeeStatus", "Are you happy for colleagues to know you are a refugee/displaced talent at work?",
+      new PublishedDocPropertySource("colleaguesKnowRefugeeStatus"));
+    this.addColumn("ownLaptopUK", "Do you have a laptop you can bring to the UK?",
+      new PublishedDocPropertySource("ownLaptopUK"));
+    this.addColumn("shareDetailsTbbPartners", "Do you agree to TBB sharing your contact details with our partners?",
+      new PublishedDocPropertySource("shareDetailsTbbPartners"));
 
     this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"))
     .width = PublishedDocColumnWidth.Wide;
