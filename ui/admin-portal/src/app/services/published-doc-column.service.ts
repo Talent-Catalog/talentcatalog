@@ -108,21 +108,39 @@ export class PublishedDocColumnService {
     this.addColumn("educations", "Education", new PublishedDocFieldSource("educationsSummary"));
     this.addColumn("certifications", "Certifications", new PublishedDocFieldSource("certificationsSummary"));
 
-    // Candidate property fields
-    this.addColumn("studiedEnglishUniversity", "Did you study in English at University?",
-      new PublishedDocPropertySource("studiedEnglishUniversity"));
+    // Candidate healthcare pre-employment questionaire fields
+    this.addColumn("maritalStatus", "What is your marital status?",
+      new PublishedDocFieldSource("maritalStatus"));
+    this.addColumn("childrenToUk", "How many children do you want to bring to the UK?",
+      new PublishedDocPropertySource("childrenToUk"));
     this.addColumn("spouseJobUk", "Is your spouse also applying for a job in the UK?",
       new PublishedDocPropertySource("spouseJobUk"));
     this.addColumn("validPassport", "Do you have a valid passport?",
       new PublishedDocPropertySource("validPassport"));
+    this.addColumn("covidVaccinatedStatus", "Are you fully vaccinated (double dose) or partially vaccinated (1st dose only) against Covid-19?",
+      new PublishedDocFieldSource("covidVaccinatedStatus"));
+    this.addColumn("covidVaccinatedDate", "What was the date of your last Covid-19 vaccination?",
+      new PublishedDocFieldSource("covidVaccinatedDate"));
+    this.addColumn("covidVaccinatedName", "What was the name of your last Covid-19 vaccination?",
+      new PublishedDocFieldSource("covidVaccineName"));
+    this.addColumn("familyFriendsUkLoc", "If you have family/friends in the UK where are they located?",
+      new PublishedDocPropertySource("familyFriendsUkLoc"));
+    this.addColumn("placedTbbCandidate", "Do you want to be placed with another TBB candidate?",
+      new PublishedDocPropertySource("placedTbbCandidate"));
+    this.addColumn("studiedEnglishUniversity", "Did you study in English at University?",
+      new PublishedDocPropertySource("studiedEnglishUniversity"));
     this.addColumn("minBachelorsDegree", "Did you get at least a Bachelors degree?",
       new PublishedDocPropertySource("minBachelorsDegree"));
+    this.addColumn("noticePeriod", "How long is your notice period?",
+      new PublishedDocPropertySource("noticePeriod"));
     this.addColumn("colleaguesKnowRefugeeStatus", "Are you happy for colleagues to know you are a refugee/displaced talent at work?",
       new PublishedDocPropertySource("colleaguesKnowRefugeeStatus"));
     this.addColumn("ownLaptopUK", "Do you have a laptop you can bring to the UK?",
       new PublishedDocPropertySource("ownLaptopUK"));
     this.addColumn("shareDetailsTbbPartners", "Do you agree to TBB sharing your contact details with our partners?",
       new PublishedDocPropertySource("shareDetailsTbbPartners"));
+    this.addColumn("mediaWillingness", "Do you agree to be included in media that is shared by TBB and partners on social media? ",
+      new PublishedDocFieldSource("mediaWillingness"));
 
     this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"))
     .width = PublishedDocColumnWidth.Wide;
