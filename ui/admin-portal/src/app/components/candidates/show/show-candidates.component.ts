@@ -825,7 +825,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return isSavedList(this.candidateSource);
   }
 
-  isSharedWithMe(): boolean {
+  isTaggedByMe(): boolean {
+    //todo Need to replace this "shared by" idea with "tagged by" in both Angular and Spring code.
     return isSharedWithMe(this.candidateSource, this.authService);
   }
 

@@ -43,14 +43,14 @@
 
   <div class="results-area">
     <div class="text-right">
-      <button *ngIf="isShareable() && !isSharedWithMe() && !isGlobal()"
+      <button *ngIf="!isTaggedByMe()"
               class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
-        <i class="far fa-handshake"></i> Add to {{pluralType}} shared with me
+        <i class="far fa-handshake"></i> Add to {{pluralType}} tagged by me
       </button>
       <button
-        *ngIf="isShareable() && isSharedWithMe() && !isGlobal()"
+        *ngIf="isTaggedByMe()"
               class="btn btn-outline-secondary" (click)="removeFromSharedWithMe()">
-        <i class="fas fa-handshake-slash"></i> Remove from {{pluralType}} shared with me
+        <i class="fas fa-handshake-slash"></i> Remove from {{pluralType}} tagged by me
       </button>
     </div>
 
