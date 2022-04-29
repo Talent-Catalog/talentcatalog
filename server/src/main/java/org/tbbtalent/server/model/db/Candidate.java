@@ -669,8 +669,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         } else if (obj != null && "candidateNumber".equals(exportField)) {
             //Convert candidateNumber to a number
             obj = Long.parseLong((String) obj);
-        } else if (obj != null && "dob".equals(exportField)) {
-            //Convert candidateNumber to a number
+        } else if (obj != null && obj.getClass().equals(LocalDate.class)) {
+            //Convert all local dates to a string
             obj = ((LocalDate) obj).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
         } else if (obj != null && ("phone".equals(exportField) || "whatsapp".equals(exportField))) {
             // Need to add a ' before the number in order to keep any starting '0's in the number
