@@ -1141,10 +1141,34 @@ public class CandidateServiceImpl implements CandidateService {
             val = answer;
         } else {
             Class clz = pd.getPropertyType();
+            // Need to cater for the different classes of the objects that are stored in the database and convert from
+            // the string sent from the front end (e.g. Big Decimals, Integers, LocalDates). There may be some missing
+            // classes, which will need to be added. - CC
             if (clz.isEnum()) {
                 val = Enum.valueOf(clz, answer);
+            } else if (clz.equals(BigDecimal.class)) {
+                try {
+                    val = new BigDecimal(answer);
+                } catch (Exception e) {
+                    throw new InvalidRequestException("Incorrect format, please enter in a numeric eg. 9 instead of nine");
+                }
+            } else if(clz.equals(Integer.class)) {
+                try {
+                    val = Integer.parseInt(answer);
+                } catch (Exception e) {
+                    throw new InvalidRequestException("Incorrect format, please enter in a numeric eg. 9 instead of nine");
+                }
+            } else if (clz.equals(LocalDate.class)) {
+                try {
+                    val = LocalDate.parse(answer);
+                } catch (Exception e) {
+                    throw new InvalidRequestException("Incorrect format, please enter in yyyy-mm-dd. eg. 2022-04-29");
+                }
+            } else if (clz.equals(String.class)) {
+                val = answer;
             } else {
-                //TODO JC What about numerics
+                // If we don't have the class type to convert the string to, it will throw this error.
+                // A new class type may need to be added (as other else if's).
                 throw new InvalidRequestException("Could not convert answer to candidate field: " + answerField);
             }
         }
