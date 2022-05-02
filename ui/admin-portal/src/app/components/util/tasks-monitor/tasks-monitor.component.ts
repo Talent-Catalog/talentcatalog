@@ -10,10 +10,9 @@ import {checkForAbandoned, checkForOverdue, TaskAssignment} from "../../../model
 export class TasksMonitorComponent implements OnInit {
   // Required Input
   @Input() candidate: Candidate;
+  @Input() completed: TaskAssignment[];
+  @Input() total: TaskAssignment[];
   activeTaskAssignments: TaskAssignment[];
-  requiredTaskAssignments: TaskAssignment[];
-  // Includes abandoned task assignments
-  completedTaskAssignments: TaskAssignment[];
 
   hasOverdue: boolean;
   hasAbandoned: boolean;
@@ -22,19 +21,11 @@ export class TasksMonitorComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    // Only run through active tasks.
-    this.activeTaskAssignments = this.candidate.taskAssignments.filter(
-      ta => ta.status === Status.active);
-    this.requiredTaskAssignments = this.activeTaskAssignments.filter(
-       ta => !ta.task.optional);
-    this.completedTaskAssignments = this.activeTaskAssignments.filter(
-      ta => (ta.completedDate != null || ta.abandonedDate != null) && !ta.task.optional);
-
+    this.activeTaskAssignments = this.candidate.taskAssignments.filter(ta => ta.status === Status.active);
     this.hasOverdue = checkForOverdue(this.activeTaskAssignments);
     this.hasAbandoned = checkForAbandoned(this.activeTaskAssignments);
     // Want to show green for all completed (only if there isn't any abandoned tasks also)
-    this.hasCompleted = this.completedTaskAssignments.length === this.requiredTaskAssignments.length
-                        && !checkForAbandoned(this.activeTaskAssignments);
+    this.hasCompleted = this.completed.length === this.total.length && !checkForAbandoned(this.activeTaskAssignments);
   }
 
 }

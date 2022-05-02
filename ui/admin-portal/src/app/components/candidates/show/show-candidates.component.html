@@ -332,7 +332,9 @@
                 </app-cv-icon>
                 <app-tasks-monitor
                   *ngIf="hasTaskAssignments(candidate)"
-                 [candidate]="candidate">
+                  [candidate]="candidate"
+                  [completed]="getCompletedRequiredTasks(candidate)"
+                  [total]="getTotalRequiredTasks(candidate)">
                 </app-tasks-monitor>
               </td>
               <td *ngIf="isShowStage()">

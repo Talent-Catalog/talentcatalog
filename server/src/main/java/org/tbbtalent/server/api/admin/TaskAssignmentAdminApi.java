@@ -16,27 +16,12 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.Map;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
-import org.tbbtalent.server.model.db.TaskDtoHelper;
-import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.request.task.TaskListRequest;
+import org.springframework.web.bind.annotation.*;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.request.task.CreateTaskAssignmentRequest;
+import org.tbbtalent.server.request.task.TaskListRequest;
 import org.tbbtalent.server.request.task.UpdateTaskAssignmentRequestAdmin;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
@@ -44,14 +29,15 @@ import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
 import org.tbbtalent.server.service.db.TaskService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
+
 @RestController()
 @RequestMapping("/api/admin/task-assignment")
 public class TaskAssignmentAdminApi implements
-        ITableApi<
-            //todo replace with search request
-            CreateTaskAssignmentRequest,
-
-            CreateTaskAssignmentRequest, UpdateTaskAssignmentRequestAdmin> {
+        ITableApi<TaskListRequest, CreateTaskAssignmentRequest, UpdateTaskAssignmentRequestAdmin> {
 
     private final AuthService authService;
     private final CandidateService candidateService;
@@ -70,6 +56,20 @@ public class TaskAssignmentAdminApi implements
         this.savedListService = savedListService;
         this.taskAssignmentService = taskAssignmentService;
         this.taskService = taskService;
+    }
+
+    /**
+     * Returns all saved lists matching the request.
+     * <p/>
+     * See also {@link #searchPaged} .
+     * @param request Defines which lists should be returned. Any paging or
+     *                sorting fields in the request are ignored.
+     * @return All matching SavedLists
+     */
+    @Override
+    public @NotNull List<Map<String, Object>> search(@Valid TaskListRequest request) {
+        List<TaskAssignmentImpl> taskAssignments = taskAssignmentService.listTaskAssignments(request);
+        return TaskDtoHelper.getTaskAssignmentDto().buildList(taskAssignments);
     }
 
     @Override

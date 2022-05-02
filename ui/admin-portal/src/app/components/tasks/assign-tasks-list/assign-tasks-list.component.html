@@ -64,15 +64,20 @@
 <div class="modal-body">
   <input type="text" class="form-control mb-3" placeholder="Search..." aria-label="Search" (keyup)="search($event.target)"
          id="keyword">
-<!--  <ng-select id="searchListTasks" class="mb-3" appendTo="body" [items]="taskAssociations" [(ngModel)]="selectedTaskAssociation"-->
-<!--             [clearable]="false" placeholder="Search tasks associated to this list..." bindValue="id" bindLabel="name"></ng-select>-->
   <div *ngFor="let t of filteredTaskAssociations;">
     <div class="card mt-2 grey-bg">
       <div class="d-flex justify-content-between align-items-center mx-2 my-1">
-        <p class="small font-weight-light mb-0">{{t.displayName}}</p>
-        <button type="button" class="float-right close" aria-label="Close" (click)="removeTask(t)">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <p class="small font-weight-light mb-0 w-75">{{t.displayName}}</p>
+        <div class="d-flex flex-grow-1 align-items-end">
+          <app-tasks-monitor-list
+            class="flex-grow-1"
+            [task]="t"
+            [list]="savedList">
+          </app-tasks-monitor-list>
+          <button type="button" class="float-right close ml-2" aria-label="Close" (click)="removeTask(t)">
+            <i class="far fa-times-circle fa-xs"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>

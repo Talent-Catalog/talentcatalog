@@ -36,6 +36,10 @@ export class TaskAssignmentService {
     return this.http.put<void>(`${this.apiUrl}/assign-to-list`, request);
   }
 
+  search(request: TaskListRequest): Observable<TaskAssignment[]> {
+    return this.http.post<TaskAssignment[]>(`${this.apiUrl}/search`, request);
+  }
+
   removeTaskFromList(request: TaskListRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/remove-from-list`, request);
   }

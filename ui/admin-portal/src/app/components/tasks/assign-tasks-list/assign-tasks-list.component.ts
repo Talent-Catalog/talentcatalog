@@ -162,4 +162,11 @@ export class AssignTasksListComponent implements OnInit {
     return item.taskType.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || item.displayName.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
   }
 
+  getCompleted(task: Task) {
+
+  }
+
+  getTotal(task: Task) {
+
+  }
 }

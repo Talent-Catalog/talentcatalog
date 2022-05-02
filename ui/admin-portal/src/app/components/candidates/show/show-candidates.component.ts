@@ -1662,4 +1662,16 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  getCompletedRequiredTasks(candidate: Candidate) {
+    // Only run through active tasks.
+    let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
+    return activeTaskAssignments.filter(ta => (ta.completedDate != null || ta.abandonedDate != null) && !ta.task.optional);
+  }
+
+  getTotalRequiredTasks(candidate: Candidate) {
+    // Only run through active tasks.
+    let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
+    return activeTaskAssignments.filter(ta => !ta.task.optional);
+  }
+
 }

@@ -16,18 +16,17 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.IOException;
-import java.time.LocalDate;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
-import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
+import org.tbbtalent.server.request.task.TaskListRequest;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Service for managing {@link TaskAssignment}s.
@@ -142,4 +141,12 @@ public interface TaskAssignmentService {
      */
     void completeUploadTaskAssignment(TaskAssignment ta, MultipartFile file)
         throws IOException, ClassCastException;
+
+    /**
+     * Return all Task Assignment's that match the given request, ordered by name.
+     * <p/>
+     * @param request Defines which TaskAssignment's to return (in what saved list, and what task)
+     * @return Matching Task Assignment's
+     */
+    List<TaskAssignmentImpl> listTaskAssignments(TaskListRequest request);
 }

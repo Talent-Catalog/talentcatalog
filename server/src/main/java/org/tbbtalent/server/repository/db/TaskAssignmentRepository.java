@@ -18,9 +18,17 @@ package org.tbbtalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
 
-public interface TaskAssignmentRepository extends
-    JpaRepository<TaskAssignmentImpl, Long>, JpaSpecificationExecutor<TaskAssignmentImpl> {
+import java.util.List;
 
+public interface TaskAssignmentRepository extends JpaRepository<TaskAssignmentImpl, Long>, JpaSpecificationExecutor<TaskAssignmentImpl> {
+    @Query("select ta from TaskAssignment ta "
+            + " left join fetch ta.task t"
+            + " where t.id = :taskId"
+            + " and ta.relatedList.id = :savedListId"
+            + " and ta.status = 'active'")
+    List<TaskAssignmentImpl> findByTaskAndList(@Param("taskId") Long taskId, @Param("savedListId") Long savedListId);
 }

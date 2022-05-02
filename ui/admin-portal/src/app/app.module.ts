@@ -255,6 +255,7 @@ import {ViewResponseComponent} from './components/candidates/view/tasks/view-res
 import {ViewCandidateRegistrationComponent} from './components/candidates/view/registration/view-candidate-registration.component';
 import {EditCandidateRegistrationComponent} from './components/candidates/view/registration/edit/edit-candidate-registration.component';
 import {EditTaskComponent} from './components/settings/tasks/edit/edit-task.component';
+import {TasksMonitorListComponent} from './components/util/tasks-monitor-list/tasks-monitor-list.component';
 
 @NgModule({
   declarations: [
@@ -487,7 +488,8 @@ import {EditTaskComponent} from './components/settings/tasks/edit/edit-task.comp
     ViewResponseComponent,
     ViewCandidateRegistrationComponent,
     EditCandidateRegistrationComponent,
-    EditTaskComponent
+    EditTaskComponent,
+    TasksMonitorListComponent
   ],
   imports: [
     BrowserModule,
