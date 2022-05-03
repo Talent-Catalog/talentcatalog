@@ -1,9 +1,9 @@
 <div class="d-inline-block ml-2" *ngIf="!hasCompleted">
   <sup [ngClass]="{'text-danger' : hasOverdue,'text-alert' : hasAbandoned}">
-    {{this.completed.length}}
+    {{this.completedTasks.length}}
   </sup>
   &frasl;
   <sub class="text-muted">
-    {{this.total.length}}
+    {{this.totalTasks.length}}
   </sub>
 </div>

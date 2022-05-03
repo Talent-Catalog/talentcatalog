@@ -105,6 +105,7 @@ import {FileSelectorComponent} from "../../util/file-selector/file-selector.comp
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {PublishedDocColumnSelectorComponent} from "../../util/published-doc-column-selector/published-doc-column-selector.component";
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
+import {Task} from "../../../model/task";
 
 interface CachedTargetList {
   sourceID: number;
@@ -146,6 +147,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   updatingTasks: boolean;
   savingSelection: boolean;
   searchForm: FormGroup;
+  monitoredTask: Task;
+  tasksAssignedToList: Task[];
 
   results: SearchResults<Candidate>;
   subscription: Subscription;
@@ -1579,14 +1582,20 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   assignTasks() {
-    const modal = this.modalService.open(AssignTasksListComponent, {scrollable: true});
+    const modal = this.modalService.open(AssignTasksListComponent, {scrollable: true, size: "xl"});
     if (isSavedList(this.candidateSource)) {
       modal.componentInstance.setTasks(this.candidateSource);
     }
 
-    modal.result
-      .then(
-        () => this.doSearch(true)
+    modal.result.then(
+        (result) => {
+          if (result != null) {
+            this.monitoredTask = result;
+            this.doSearch(true);
+          } else {
+            this.doSearch(true);
+          }
+        }
       )
       .catch();
   }
@@ -1663,15 +1672,33 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getCompletedRequiredTasks(candidate: Candidate) {
-    // Only run through active tasks.
-    let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
-    return activeTaskAssignments.filter(ta => (ta.completedDate != null || ta.abandonedDate != null) && !ta.task.optional);
+    if (this.monitoredTask != null) {
+      let monitoredTask = candidate.taskAssignments.filter(ta => ta.task.id === this.monitoredTask.id && ta.status === Status.active);
+      return monitoredTask.filter(ta => (ta.completedDate != null || ta.abandonedDate != null));
+    } else {
+      // DEFAULT tasks to monitor are required tasks
+      // Only run through active tasks.
+      let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
+      return activeTaskAssignments.filter(ta => (ta.completedDate != null || ta.abandonedDate != null) && !ta.task.optional);
+    }
   }
 
   getTotalRequiredTasks(candidate: Candidate) {
-    // Only run through active tasks.
-    let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
-    return activeTaskAssignments.filter(ta => !ta.task.optional);
+    if (this.monitoredTask != null) {
+      return candidate.taskAssignments.filter(ta => ta.task.id === this.monitoredTask.id && ta.status === Status.active);
+    } else {
+      // DEFAULT tasks to monitor are required tasks
+      // Only run through active tasks.
+      let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
+      return activeTaskAssignments.filter(ta => !ta.task.optional);
+    }
+  }
+
+  hasTasksAssigned() {
+    if (isSavedList(this.candidateSource)) {
+      this.tasksAssignedToList = this.candidateSource.tasks;
+      return this.candidateSource.tasks.length > 0;
+    }
   }
 
 }

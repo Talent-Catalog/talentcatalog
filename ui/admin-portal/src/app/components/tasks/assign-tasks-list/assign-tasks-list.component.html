@@ -69,13 +69,16 @@
       <div class="d-flex justify-content-between align-items-center mx-2 my-1">
         <p class="small font-weight-light mb-0 w-75">{{t.displayName}}</p>
         <div class="d-flex flex-grow-1 align-items-end">
+          <button type="button" class="float-right close mr-2" aria-label="Close" (click)="monitorTask(t)">
+            <i class="fas fa-search-plus fa-xs"></i>
+          </button>
           <app-tasks-monitor-list
             class="flex-grow-1"
             [task]="t"
             [list]="savedList">
           </app-tasks-monitor-list>
           <button type="button" class="float-right close ml-2" aria-label="Close" (click)="removeTask(t)">
-            <i class="far fa-times-circle fa-xs"></i>
+            <i class="far fa-trash-alt fa-xs"></i>
           </button>
         </div>
       </div>
