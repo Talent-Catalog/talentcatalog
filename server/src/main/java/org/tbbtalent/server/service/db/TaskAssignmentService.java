@@ -143,7 +143,7 @@ public interface TaskAssignmentService {
         throws IOException, ClassCastException;
 
     /**
-     * Return all Task Assignment's that match the given request, ordered by name.
+     * Return all Task Assignment's that match the given request.
      * <p/>
      * @param request Defines which TaskAssignment's to return (in what saved list, and what task)
      * @return Matching Task Assignment's

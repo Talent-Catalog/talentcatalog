@@ -59,12 +59,9 @@ public class TaskAssignmentAdminApi implements
     }
 
     /**
-     * Returns all saved lists matching the request.
-     * <p/>
-     * See also {@link #searchPaged} .
-     * @param request Defines which lists should be returned. Any paging or
-     *                sorting fields in the request are ignored.
-     * @return All matching SavedLists
+     * Returns all task assignments matching the request.
+     * @param request Defines which task assignments should be returned (belonging to what list and what task).
+     * @return All matching TaskAssignmentImpls
      */
     @Override
     public @NotNull List<Map<String, Object>> search(@Valid TaskListRequest request) {

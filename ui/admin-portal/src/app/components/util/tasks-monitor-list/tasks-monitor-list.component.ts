@@ -15,19 +15,14 @@ export class TasksMonitorListComponent implements OnInit {
   @Input() list: SavedList;
   error: any;
 
-  hasOverdue: boolean;
-  hasAbandoned: boolean;
-  hasCompleted: boolean;
   taskAssignments: TaskAssignment[];
   completed: TaskAssignment[];
   abandoned: TaskAssignment[];
   outstanding: TaskAssignment[];
 
   constructor(private taskAssignmentService: TaskAssignmentService) { }
-  // GET all task assignments for a particular task belonging to a list.
-  // All the task assignments belonging to list, and then filter by task type
-  // SHOW TOTAL INCOMPLETE
 
+  // This component displays the number of completed/abandoned/outstanding task assignments in the list for each task.
   ngOnInit(): void {
     let request: TaskListRequest = {
       taskId: this.task.id,
@@ -43,7 +38,6 @@ export class TasksMonitorListComponent implements OnInit {
       error => {
         this.error = error;
       })
-
 
   }
 }

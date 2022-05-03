@@ -342,8 +342,8 @@
                 <app-tasks-monitor
                   *ngIf="hasTaskAssignments(candidate)"
                   [candidate]="candidate"
-                  [completedTasks]="getCompletedRequiredTasks(candidate)"
-                  [totalTasks]="getTotalRequiredTasks(candidate)">
+                  [completedTasks]="getCompletedMonitoredTasks(candidate)"
+                  [totalTasks]="getTotalMonitoredTasks(candidate)">
                 </app-tasks-monitor>
               </td>
               <td *ngIf="isShowStage()">

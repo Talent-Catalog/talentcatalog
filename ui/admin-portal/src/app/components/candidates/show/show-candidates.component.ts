@@ -1671,7 +1671,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  getCompletedRequiredTasks(candidate: Candidate) {
+  getCompletedMonitoredTasks(candidate: Candidate) {
     if (this.monitoredTask != null) {
       let monitoredTask = candidate.taskAssignments.filter(ta => ta.task.id === this.monitoredTask.id && ta.status === Status.active);
       return monitoredTask.filter(ta => (ta.completedDate != null || ta.abandonedDate != null));
@@ -1683,7 +1683,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  getTotalRequiredTasks(candidate: Candidate) {
+  getTotalMonitoredTasks(candidate: Candidate) {
     if (this.monitoredTask != null) {
       return candidate.taskAssignments.filter(ta => ta.task.id === this.monitoredTask.id && ta.status === Status.active);
     } else {

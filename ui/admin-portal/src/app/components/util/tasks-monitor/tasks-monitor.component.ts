@@ -22,7 +22,7 @@ export class TasksMonitorComponent implements OnInit {
   ngOnInit(): void {
     this.hasOverdue = checkForOverdue(this.totalTasks);
     this.hasAbandoned = checkForAbandoned(this.totalTasks);
-    // Want to show green for all completed (only if there isn't any abandoned tasks also)
+    // Only show the monitor if there are incomplete tasks, if hasCompleted is true then hide.
     this.hasCompleted = this.completedTasks.length === this.totalTasks.length && !checkForAbandoned(this.totalTasks);
   }
 
