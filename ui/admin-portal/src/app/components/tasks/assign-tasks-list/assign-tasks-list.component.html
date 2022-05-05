@@ -65,9 +65,12 @@
   <input type="text" class="form-control mb-3" placeholder="Search..." aria-label="Search" (keyup)="search($event.target)"
          id="keyword">
   <div *ngFor="let t of filteredTaskAssociations;">
-    <div class="card mt-2 grey-bg">
+    <div class="card mt-2 grey-bg" [ngClass]="{'required-task-bg': !t.optional, 'optional-task-bg': t.optional}">
       <div class="d-flex justify-content-between align-items-center mx-2 my-1">
-        <p class="small font-weight-light mb-0 w-75">{{t.displayName}}</p>
+        <p class="small font-weight-light mb-0 w-75">
+          <span *ngIf="!t.optional">*</span>
+          {{t.displayName}}
+        </p>
         <div class="d-flex flex-grow-1 align-items-end">
           <button type="button" class="float-right close mr-2" aria-label="Close" (click)="monitorTask(t)">
             <i class="fas fa-search-plus fa-xs"></i>
