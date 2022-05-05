@@ -1,5 +1,6 @@
 <div class="d-flex justify-content-around small">
-  <span class="text-success" [ngbTooltip]="this.completed?.length + ' completed'">{{this.completed?.length}}</span>
-  <span class="text-alert" [ngbTooltip]="this.abandoned?.length + ' abandoned'">{{this.abandoned?.length}}</span>
-  <span [ngbTooltip]="this.outstanding?.length + ' outstanding'">{{this.outstanding?.length}}</span>
+  <span class="text-success font-weight-bold" [ngbTooltip]="this.completed?.length + ' completed'">{{this.completed?.length}}</span>
+  <span class="text-alert font-weight-bold" [ngbTooltip]="this.abandoned?.length + ' abandoned'">{{this.abandoned?.length}}</span>
+  <span class="font-weight-bold" [ngbTooltip]="this.outstandingNotOverdue?.length + ' outstanding not overdue'">{{this.outstandingNotOverdue?.length}}</span>
+  <span class="text-danger font-weight-bold" [ngbTooltip]="this.overdue?.length + ' outstanding overdue'">{{this.overdue?.length}}</span>
 </div>

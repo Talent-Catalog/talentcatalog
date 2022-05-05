@@ -19,6 +19,8 @@ export class TasksMonitorListComponent implements OnInit {
   completed: TaskAssignment[];
   abandoned: TaskAssignment[];
   outstanding: TaskAssignment[];
+  outstandingNotOverdue: TaskAssignment[];
+  overdue: TaskAssignment[];
 
   constructor(private taskAssignmentService: TaskAssignmentService) { }
 
@@ -34,6 +36,8 @@ export class TasksMonitorListComponent implements OnInit {
         this.completed = this.taskAssignments?.filter(ta => ta.completedDate != null);
         this.abandoned = this.taskAssignments?.filter(ta => ta.abandonedDate != null);
         this.outstanding = this.taskAssignments?.filter(ta => ta.completedDate == null && ta.abandonedDate == null);
+        this.outstandingNotOverdue = this.taskAssignments?.filter(ta => new Date(ta.dueDate) > new Date() && (!ta.abandonedDate && !ta.completedDate));
+        this.overdue = this.taskAssignments?.filter(ta => new Date(ta.dueDate) < new Date() && (!ta.abandonedDate && !ta.completedDate));
       },
       error => {
         this.error = error;
