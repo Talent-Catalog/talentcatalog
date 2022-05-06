@@ -24,7 +24,6 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {CreateOccupationComponent} from "./create/create-occupation.component";
 import {EditOccupationComponent} from "./edit/edit-occupation.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
@@ -104,14 +103,7 @@ export class SearchOccupationsComponent implements OnInit {
 
 
   addOccupation() {
-    const addOccupationModal = this.modalService.open(CreateOccupationComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    addOccupationModal.result
-      .then((occupation) => this.search())
-      .catch(() => { /* Isn't possible */ });
+    // Removed this for now, as we are only adding ISCO occupations and do not want people adding other occupations
   }
 
   editOccupation(occupation: Occupation) {
