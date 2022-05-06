@@ -65,7 +65,7 @@
       <div class="row position-relative mb-3" *ngFor="let attachment of attachments; let i = index">
 
         <!-- EDIT -->
-        <div class="actions" *ngIf="editable">
+        <div class="actions" *ngIf="editable && adminUser">
           <button class="btn btn-sm btn-outline-primary" (click)="editCandidateAttachment(attachment)">
             <i class="fas fa-edit"></i>
           </button>
