@@ -18,6 +18,7 @@ package org.tbbtalent.server.model.db.task;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.Auditable;
 
 /**
  * Describes a task which can be assigned to candidates.

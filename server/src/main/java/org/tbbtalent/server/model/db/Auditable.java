@@ -14,21 +14,40 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db.task;
+package org.tbbtalent.server.model.db;
 
 import java.time.OffsetDateTime;
-import org.tbbtalent.server.model.db.User;
 
 /**
- * TODO JC Doc
+ * Interface implemented by objects who want to record audit information about when they were
+ * created and when they were last updated - and by whom.
  *
  * @author John Cameron
  */
-// TODO: 4/1/22 This could move into db package and AbstractAuditableDomainObject could implement it
 public interface Auditable {
+
+    /**
+     * Who created this object
+     * @return User responsible for creating the object
+     */
     User getCreatedBy();
+
+    /**
+     * Date time of object creation
+     * @return Date time of object creation
+     */
     OffsetDateTime getCreatedDate();
+
+    /**
+     * Who last updated this object
+     * @return Last user who updated the object
+     */
     User getUpdatedBy();
+
+    /**
+     * Date time of last update
+     * @return Date time of last update
+     */
     OffsetDateTime getUpdatedDate();
 
 }
