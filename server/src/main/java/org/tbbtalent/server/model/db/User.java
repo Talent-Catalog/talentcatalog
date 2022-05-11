@@ -74,6 +74,10 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_id")
+    private SourcePartnerImpl sourcePartner;
+
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
@@ -301,6 +305,14 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public Set<Country> getSourceCountries() { return sourceCountries; }
 
     public void setSourceCountries(Set<Country> sourceCountries) { this.sourceCountries = sourceCountries; }
+
+    public SourcePartnerImpl getSourcePartner() {
+        return sourcePartner;
+    }
+
+    public void setSourcePartner(SourcePartnerImpl sourcePartner) {
+        this.sourcePartner = sourcePartner;
+    }
 
     @Transient
     public String getDisplayName() {

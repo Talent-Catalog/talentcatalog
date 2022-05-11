@@ -18,7 +18,6 @@ package org.tbbtalent.server.model.db.partner;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.Auditable;
 import org.tbbtalent.server.model.db.Status;
 
 /**
@@ -28,7 +27,7 @@ import org.tbbtalent.server.model.db.Status;
  *
  * @author John Cameron
  */
-public interface Partner extends Auditable {
+public interface Partner {
 
     /**
      * Unique id identifying this partner
