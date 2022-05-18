@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -31,6 +31,13 @@ public class AuthService {
 
     /**
      * Return logged in user. Optional empty id not logged in.
+     * <p/>
+     * Note that this User object is not fetched from the database - so if you need a live
+     * entity associated with a session, you need to fetch user entity object from the DB using
+     * the id of the object returned from this call.
+     * For example:
+     * userService.getUser(getLoggedInUser().get().getId());
+     *
      * @return Logged in user or empty if not logged in.
      */
     public Optional<User> getLoggedInUser() {
@@ -72,7 +79,7 @@ public class AuthService {
         User user = getLoggedInUser().orElse(null);
         return user == null ? null : user.getCandidate();
     }
-    
+
     public @Nullable String getUserLanguage() {
         User user = getLoggedInUser().orElse(null);
         return user == null ? null : user.getSelectedLanguage();
