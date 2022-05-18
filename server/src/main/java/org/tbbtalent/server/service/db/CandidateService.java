@@ -103,8 +103,6 @@ public interface CandidateService {
 
     Candidate getCandidate(long id) throws NoSuchObjectException;
 
-    Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException;
-
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);
 
     Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request);
@@ -125,7 +123,16 @@ public interface CandidateService {
 
     boolean deleteCandidate(long id);
 
-    LoginRequest register(RegisterCandidateRequest request);
+    /**
+     * Registers a new candidate by creating a new candidate and user.
+     * It returns a login request for thegereated candidate so that they are processed as
+     * a normal login.
+     * @param request Registration request
+     * @param hostDomain Url from which login request originated. This used to identify the partner
+     *                   to which the candidate belongs.
+     * @return A login request generated for the newly created candidate.
+     */
+    LoginRequest register(RegisterCandidateRequest request, String hostDomain);
 
     Candidate updateContact(UpdateCandidateContactRequest request);
 

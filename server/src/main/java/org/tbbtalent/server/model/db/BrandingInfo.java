@@ -19,7 +19,6 @@ package org.tbbtalent.server.model.db;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
@@ -35,7 +34,7 @@ public class BrandingInfo {
     /**
      * Host domain associated with this branding - eg tbbtalent.org or unhcrtalent.org
      */
-    @NonNull
+    @Nullable
     private String hostDomain;
 
     /**
@@ -55,5 +54,4 @@ public class BrandingInfo {
     @Nullable
     private String logo;
 
-    // TODO: 11/12/21 Need to add extra params - eg landing page.
 }

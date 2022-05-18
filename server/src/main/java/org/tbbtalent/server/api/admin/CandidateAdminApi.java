@@ -16,29 +16,56 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.GeneralSecurityException;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateExternalIdSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.DownloadCvRequest;
+import org.tbbtalent.server.request.candidate.ResolveTaskAssignmentsRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRegistrationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateShareableDocsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.CandidateTokenProvider;
-import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.DocPublisherService;
+import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.GeneralSecurityException;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate")
@@ -132,13 +159,6 @@ public class CandidateAdminApi {
         //preferences and visa checks.
         candidate = candidateService.addMissingDestinations(candidate);
         DtoBuilder builder = intakeDataBuilderSelector.selectBuilder();
-        return builder.build(candidate);
-    }
-
-    @PostMapping
-    public Map<String, Object> create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
-        Candidate candidate = this.candidateService.createCandidate(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
 

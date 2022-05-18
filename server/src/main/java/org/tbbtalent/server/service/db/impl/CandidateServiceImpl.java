@@ -36,6 +36,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 import org.tbbtalent.server.model.db.task.Task;
@@ -141,6 +142,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidatePropertyService candidatePropertyService;
     private final SurveyTypeRepository surveyTypeRepository;
     private final OccupationRepository occupationRepository;
+    private final PartnerService partnerService;
     private final LanguageLevelRepository languageLevelRepository;
     private final CandidateExamRepository candidateExamRepository;
     private final TaskAssignmentRepository taskAssignmentRepository;
@@ -171,6 +173,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidatePropertyService candidatePropertyService,
         SurveyTypeRepository surveyTypeRepository,
         OccupationRepository occupationRepository,
+        PartnerService partnerService,
         LanguageLevelRepository languageLevelRepository,
         CandidateExamRepository candidateExamRepository,
         TaskAssignmentRepository taskAssignmentRepository,
@@ -196,6 +199,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidatePropertyService = candidatePropertyService;
         this.surveyTypeRepository = surveyTypeRepository;
         this.occupationRepository = occupationRepository;
+        this.partnerService = partnerService;
         this.languageLevelRepository = languageLevelRepository;
         this.candidateExamRepository = candidateExamRepository;
         this.taskAssignmentRepository = taskAssignmentRepository;
@@ -605,9 +609,8 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
 
-    @Override
-    @Transactional
-    public Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException {
+    private Candidate createCandidate(CreateCandidateRequest request,
+        Partner partner, String passwordEncrypted) throws UsernameTakenException {
         User user = new User(
                 StringUtils.isNotBlank(request.getUsername()) ? request.getUsername() : request.getEmail(),
                 request.getFirstName(),
@@ -620,7 +623,14 @@ public class CandidateServiceImpl implements CandidateService {
             throw new UsernameTakenException("A user already exists with username: " + existing.getUsername());
         }
 
-        user = this.userRepository.save(user);
+        //Add partner
+        user.setSourcePartner((SourcePartnerImpl) partner);
+
+        /* Set the password */
+        user.setPasswordEnc(passwordEncrypted);
+
+        //Save the user
+        user = userRepository.save(user);
 
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
@@ -866,7 +876,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(RegisterCandidateRequest request) {
+    public LoginRequest register(RegisterCandidateRequest request, String hostDomain) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }
@@ -891,22 +901,30 @@ public class CandidateServiceImpl implements CandidateService {
         /* Validate the password before account creation */
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
 
+        //Compute and assign partner.
+        //Find partner matching host
+        Partner partner = partnerService.getPartnerFromHost(hostDomain);
+        if (partner == null) {
+            //Log an error - shouldn't really happen in production unless we have forgotten
+            //to set up a partner for this domain in the database.
+            log.error("Could not find partner matching domain: " + hostDomain + ". Add partner for this domain to database.");
+
+            //But let it through, setting default partner. This makes running in test easier, where
+            //the domain will come through typically as localhost:8080
+            partner = partnerService.getDefaultSourcePartner();
+        }
+
         /* Create the candidate */
         CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();
         createCandidateRequest.setUsername(request.getUsername());
         createCandidateRequest.setEmail(request.getEmail());
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
-        Candidate candidate = createCandidate(createCandidateRequest);
-
-        /* Update the password */
-        User user = candidate.getUser();
-        user.setPasswordEnc(passwordEncrypted);
-        user = this.userRepository.save(user);
+        Candidate candidate = createCandidate(createCandidateRequest, partner, passwordEncrypted);
 
         /* Log the candidate in */
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername(user.getUsername());
+        loginRequest.setUsername( candidate.getUser().getUsername());
         loginRequest.setPassword(request.getPassword());
         return loginRequest;
     }

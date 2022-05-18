@@ -29,8 +29,7 @@ public interface BrandingService {
     /**
      * Returns the branding info to be displayed to a user.
      * <p/>
-     * If the user is logged in, the branding associated with the host domain that the user
-     * last logged in with is used.
+     * If the user is logged in, the branding of the user's associated partner is used.
      * If the user is not logged in, the branding associated with the given host domain is used.
      * <p/>
      * If no branding is found associated with a particular host domain, the default branding is

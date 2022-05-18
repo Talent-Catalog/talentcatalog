@@ -34,6 +34,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     private String email;
 
     /**
+     * //TODO JC Is this still needed when every user has a partner? Host domain comes from partner
      * This is the host domain that was used in the user's last login.
      */
     private String hostDomain;

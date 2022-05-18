@@ -16,17 +16,18 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.BrandingService;
+import org.tbbtalent.server.service.db.PartnerService;
+import org.tbbtalent.server.service.db.UserService;
 
 /**
  * Implements BrandingService
@@ -36,67 +37,46 @@ import org.tbbtalent.server.service.db.BrandingService;
 @Service
 public class BrandingServiceImpl implements BrandingService {
     private final AuthService authService;
+    private final PartnerService partnerService;
+    private final UserService userService;
 
-    private final static String DEFAULT_BRANDING_DOMAIN = "tbbtalent.org";
-    private final Map<String, BrandingInfo> domainToBrandingMap = new HashMap<>();
-
-    public BrandingServiceImpl(AuthService authService) {
+    public BrandingServiceImpl(AuthService authService,
+        PartnerService partnerService, UserService userService) {
         this.authService = authService;
-
-        initializeBrandingInfos();
-    }
-
-    private void initializeBrandingInfos() {
-        BrandingInfo info;
-
-        info = new BrandingInfo();
-        info.setHostDomain(DEFAULT_BRANDING_DOMAIN);
-        info.setLogo("assets/images/tbbLogo.png");
-        info.setLandingPage("https://www.talentbeyondboundaries.org/talentcatalog/");
-        domainToBrandingMap.put(info.getHostDomain(), info);
-
-        info = new BrandingInfo();
-        info.setHostDomain("unhcrtalent.org");
-        info.setLogo("assets/images/unhcrLogo.png");
-        domainToBrandingMap.put(info.getHostDomain(), info);
-
-        info = new BrandingInfo();
-        info.setHostDomain("hiastalent.org");
-        info.setLogo("assets/images/hiasLogo.png");
-        domainToBrandingMap.put(info.getHostDomain(), info);
-
-        info = new BrandingInfo();
-        info.setHostDomain("iomtalent.org");
-        info.setLogo("assets/images/iomLogo.png");
-        domainToBrandingMap.put(info.getHostDomain(), info);
+        this.partnerService = partnerService;
+        this.userService = userService;
     }
 
     @Override
     @NonNull
     public BrandingInfo getBrandingInfo(String hostDomain) {
 
-        String activeDomain;
         Optional<User> user = authService.getLoggedInUser();
+
+        Partner sourcePartner;
         if (user.isPresent()) {
-            //Logged in - use domain they logged in on
-            User loggedInUser = user.get();
-            activeDomain = loggedInUser.getHostDomain();
+            //Logged in - set partner associated with user
+
+            User loggedInUser = userService.getUser(user.get().getId());
+            sourcePartner = loggedInUser.getSourcePartner();
         } else {
-            //Not logged in - use domain passed in.
-            activeDomain = hostDomain;
+            //Not logged in - use domain to lookup partner
+            sourcePartner = partnerService.getPartnerFromHost(hostDomain);
         }
 
-        return selectBrandingInfoByDomain(activeDomain);
+        if (sourcePartner == null) {
+            //Used default partner if none found so far
+            sourcePartner = partnerService.getDefaultSourcePartner();
+        }
+
+        return extractBrandingInfoFromPartner((SourcePartner) sourcePartner);
     }
 
-    private @NotNull BrandingInfo selectBrandingInfoByDomain(@Nullable String hostDomain) {
-        BrandingInfo info = null;
-        if (hostDomain != null) {
-            info = domainToBrandingMap.get(hostDomain);
-        }
-        if (info == null) {
-            info = domainToBrandingMap.get(DEFAULT_BRANDING_DOMAIN);
-        }
+    private @NotNull BrandingInfo extractBrandingInfoFromPartner(@NonNull SourcePartner partner) {
+        BrandingInfo info = new BrandingInfo();
+        info.setHostDomain(partner.getRegistrationUrl());
+        info.setLogo(partner.getLogo());
+        info.setLandingPage(partner.getRegistrationLandingPage());
         return info;
     }
 }

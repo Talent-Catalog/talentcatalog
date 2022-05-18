@@ -101,7 +101,8 @@ public class AuthPortalApi {
         //automated.
         captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "registration");
 
-        LoginRequest loginRequest = candidateService.register(request);
+        LoginRequest loginRequest = candidateService.register(request, host);
+
         JwtAuthenticationResponse jwt = userService.login(loginRequest, host);
         return jwtDto().build(jwt);
     }

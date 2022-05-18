@@ -67,8 +67,10 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SourcePartnerImpl;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.repository.db.SavedSearchRepository;
@@ -88,6 +90,7 @@ import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
+import org.tbbtalent.server.service.db.PartnerService;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.util.qr.EncodedQrImage;
@@ -105,6 +108,7 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider tokenProvider;
     private final AuthService authService;
     private final EmailHelper emailHelper;
+    private final PartnerService partnerService;
     private final SavedSearchRepository savedSearchRepository;
 
     @Value("${web.portal}")
@@ -125,14 +129,14 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-                           CandidateRepository candidateRepository,
-                           CountryRepository countryRepository,
-                           SavedSearchRepository savedSearchRepository,
-                           PasswordHelper passwordHelper,
-                           AuthenticationManager authenticationManager,
-                           JwtTokenProvider tokenProvider,
-                           AuthService authService,
-                           EmailHelper emailHelper) {
+        CandidateRepository candidateRepository,
+        CountryRepository countryRepository,
+        SavedSearchRepository savedSearchRepository,
+        PasswordHelper passwordHelper,
+        AuthenticationManager authenticationManager,
+        JwtTokenProvider tokenProvider,
+        AuthService authService,
+        EmailHelper emailHelper, PartnerService partnerService) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
@@ -142,6 +146,7 @@ public class UserServiceImpl implements UserService {
         this.tokenProvider = tokenProvider;
         this.authService = authService;
         this.emailHelper = emailHelper;
+        this.partnerService = partnerService;
     }
 
     @Override
@@ -185,6 +190,16 @@ public class UserServiceImpl implements UserService {
             request.getRole());
         user.setReadOnly(request.getReadOnly());
         user.setUsingMfa(request.getUsingMfa());
+
+        //Set the user's source partner
+        Partner sourcePartner;
+        if (creatingUser == null) {
+            //If we do not know who created this user, set up a default partner
+            sourcePartner = partnerService.getDefaultSourcePartner();
+        } else {
+            sourcePartner = creatingUser.getSourcePartner();
+        }
+        user.setSourcePartner((SourcePartnerImpl) sourcePartner);
 
         //Avoid checks if there is no creating user (ie the currently logged in user)
         if (creatingUser != null) {

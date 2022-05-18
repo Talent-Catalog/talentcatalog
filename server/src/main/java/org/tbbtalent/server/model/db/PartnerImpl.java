@@ -17,9 +17,13 @@
 package org.tbbtalent.server.model.db;
 
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -31,8 +35,10 @@ import org.tbbtalent.server.model.db.partner.Partner;
 @Setter
 @ToString
 @Entity
+@Table(name = "partner")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "partner_type")
+@DiscriminatorValue("Partner")
 public abstract class PartnerImpl extends AbstractDomainObject<Long>
     implements Partner {
 
@@ -44,6 +50,7 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     @NonNull
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @NonNull
     private Status status;
 
