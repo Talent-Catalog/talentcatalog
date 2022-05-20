@@ -23,7 +23,8 @@ import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.TaskDtoHelper;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.dto.DtoPropertyFilter;
 
@@ -34,7 +35,7 @@ import org.tbbtalent.server.util.dto.DtoPropertyFilter;
  * @author John Cameron
  */
 public class CandidateBuilderSelector {
-    private final AuthService authService;
+    private final UserService userService;
 
     private final Set<String> candidatePublicProperties =
         new HashSet<>(Arrays.asList(
@@ -73,24 +74,21 @@ public class CandidateBuilderSelector {
             "updatedDate"
         ));
 
-    public CandidateBuilderSelector(AuthService authService) {
-        this.authService = authService;
-    }
-
-    @NonNull
-    private Role getRole() {
-        User user = authService.getLoggedInUser().orElse(null);
-
-        //A null user, returns the most restricted Role - ie limited.
-        return user == null ? Role.limited : user.getRole();
+    public CandidateBuilderSelector(UserService userService) {
+        this.userService = userService;
     }
 
     @NonNull
     public DtoBuilder selectBuilder() {
-        DtoPropertyFilter candidatePropertyFilter = new RoleBasedDtoPropertyFilter(
-            getRole(), candidatePublicProperties, candidateSemiLimitedExtraProperties);
-        DtoPropertyFilter userPropertyFilter = new RoleBasedDtoPropertyFilter(
-            getRole(), userPublicProperties, null);
+        User user = userService.getLoggedInUser();
+        Partner partner = user == null ? null : user.getSourcePartner();
+
+        //Default to Role.limited if user is null.
+        Role role = user == null ? Role.limited : user.getRole();
+        DtoPropertyFilter candidatePropertyFilter = new PartnerAndRoleBasedDtoPropertyFilter(
+            partner, role, candidatePublicProperties, candidateSemiLimitedExtraProperties);
+        DtoPropertyFilter userPropertyFilter = new PartnerAndRoleBasedDtoPropertyFilter(
+            partner, role, userPublicProperties, null);
         return candidateDto(candidatePropertyFilter, userPropertyFilter);
     }
 

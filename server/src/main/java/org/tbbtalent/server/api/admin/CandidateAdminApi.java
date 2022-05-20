@@ -58,13 +58,12 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateShareableDocsReques
 import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
-import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.CandidateTokenProvider;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.DocPublisherService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -76,25 +75,22 @@ public class CandidateAdminApi {
     private final CandidateBuilderSelector builderSelector;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
-    private final DocPublisherService docPublisherService;
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
     private final CandidateTokenProvider candidateTokenProvider;
 
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
         CandidateSavedListService candidateSavedListService,
-        AuthService authService,
         SavedListService savedListService,
         SavedSearchService savedSearchService,
-        DocPublisherService docPublisherService,
+        UserService userService,
         CandidateTokenProvider candidateTokenProvider) {
         this.candidateService = candidateService;
         this.candidateSavedListService = candidateSavedListService;
-        builderSelector = new CandidateBuilderSelector(authService);
-        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(authService);
+        builderSelector = new CandidateBuilderSelector(userService);
+        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector();
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
-        this.docPublisherService = docPublisherService;
         this.candidateTokenProvider = candidateTokenProvider;
     }
 

@@ -19,6 +19,7 @@ package org.tbbtalent.server.service.db;
 import java.util.List;
 import java.util.Set;
 import javax.security.auth.login.AccountLockedException;
+import org.tbbtalent.server.security.AuthService;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
@@ -45,7 +46,17 @@ public interface UserService {
     JwtAuthenticationResponse login(LoginRequest request, String hostDomain) throws AccountLockedException;
 
     void logout();
-    User getMyUser();
+
+    /**
+     * Returns a live JPA entity representing the logged in user.
+     * <p/>
+     * Use this instead of {@link AuthService#getLoggedInUser()} when you want to access entity
+     * properties of the user.
+     * @return Logged in user or null if there is none.
+     */
+    @Nullable
+    User getLoggedInUser();
+
     User getSystemAdminUser();
 
     void resetPassword(ResetPasswordRequest request);

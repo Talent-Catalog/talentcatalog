@@ -5,24 +5,19 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.api.admin;
 
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.util.dto.DtoBuilder;
-
 import javax.validation.constraints.NotNull;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -31,15 +26,8 @@ import javax.validation.constraints.NotNull;
  * @author John Cameron
  */
 public class CandidateIntakeDataBuilderSelector {
-    private final AuthService authService;
 
-    public CandidateIntakeDataBuilderSelector(AuthService authService) {
-        this.authService = authService;
-    }
-
-    private @Nullable Role getRole() {
-        User user = authService.getLoggedInUser().orElse(null);
-        return user == null ? null : user.getRole();
+    public CandidateIntakeDataBuilderSelector() {
     }
 
     public @NotNull DtoBuilder selectBuilder() {
@@ -61,7 +49,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("candidateDestinations", candidateDestinationDto())
 
                 .add("candidateExams", candidateExamDto())
-                
+
                 .add("candidateVisaChecks", candidateVisaCheckDto())
 
                 .add("canDrive")

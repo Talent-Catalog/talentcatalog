@@ -228,7 +228,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User createUser(CreateUserRequest request) throws UsernameTakenException, InvalidRequestException {
-        User loggedInUser = getLoggedInUser();
+        User loggedInUser = fetchLoggedInUser();
         boolean authSuccess;
 
         if (loggedInUser.getReadOnly()) {
@@ -250,7 +250,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User updateUser(long id, UpdateUserRequest request) throws UsernameTakenException, InvalidRequestException {
-        User loggedInUser = getLoggedInUser();
+        User loggedInUser = fetchLoggedInUser();
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
 
@@ -295,7 +295,7 @@ public class UserServiceImpl implements UserService {
      */
     private boolean authoriseAdminUser(User user) {
         boolean authSuccess;
-        User loggedInUser =getLoggedInUser();
+        User loggedInUser = fetchLoggedInUser();
         if (loggedInUser.getReadOnly()) {
             authSuccess = false;
         } else if (loggedInUser.getRole() == Role.admin) {
@@ -318,7 +318,7 @@ public class UserServiceImpl implements UserService {
      * @param requestCountries The list of countries from the request. Can be empty.
      */
     private void addSourceCountriesIfValid(User user, List<Country> requestCountries) throws InvalidRequestException {
-        User loggedInUser = getLoggedInUser();
+        User loggedInUser = fetchLoggedInUser();
         // Only update source countries if they are different from existing.
         List<Country> currentUserCountries = new ArrayList<>(user.getSourceCountries());
         //todo This comparison will always be unequal - doesn't compare contents of lists
@@ -350,7 +350,7 @@ public class UserServiceImpl implements UserService {
      * @param requestedRole - The role to change to in the request.
      */
     private void addRoleIfValid(User user, Role requestedRole) throws InvalidRequestException {
-        User loggedInUser = getLoggedInUser();
+        User loggedInUser = fetchLoggedInUser();
         Role loggedInRole = loggedInUser.getRole();
         if (loggedInRole == Role.admin) {
             user.setRole(requestedRole);
@@ -367,7 +367,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User updateUsername(long id, UpdateUsernameRequest request) throws NoSuchObjectException, InvalidRequestException {
-        User loggedInUser = getLoggedInUser();
+        User loggedInUser = fetchLoggedInUser();
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
         if (authoriseAdminUser(user)) {
@@ -419,7 +419,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(long id) throws NoSuchObjectException, InvalidRequestException {
-        User loggedInUser = getLoggedInUser();
+        User loggedInUser = fetchLoggedInUser();
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
         if (authoriseAdminUser(user)) {
@@ -490,7 +490,7 @@ public class UserServiceImpl implements UserService {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    private User getLoggedInUser() {
+    private User fetchLoggedInUser() {
         User user = authService.getLoggedInUser().orElse(null);
         if (user == null) {
             throw new InvalidSessionException("Can not find an active session for a user with this token");
@@ -499,8 +499,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getMyUser() {
-        return authService.getLoggedInUser().orElse(null);
+    public User getLoggedInUser() {
+        User user = authService.getLoggedInUser().orElse(null);
+        if (user != null) {
+            //Fetch user from database
+            user = getUser(user.getId());
+        }
+        return user;
     }
 
     @Override
@@ -619,7 +624,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void mfaReset(long id) throws NoSuchObjectException, InvalidRequestException {
-        User loggedInUser = getLoggedInUser();
+        User loggedInUser = fetchLoggedInUser();
         User user = this.userRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(User.class, id));
         if (authoriseAdminUser(user)) {
@@ -634,7 +639,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public EncodedQrImage mfaSetup() {
 
-        User user = getLoggedInUser();
+        User user = fetchLoggedInUser();
 
         // Generate and store the secret
         String secret = totpSecretGenerator.generate();
@@ -665,7 +670,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void mfaVerify(String mfaCode) throws InvalidCredentialsException {
-        User user = getLoggedInUser();
+        User user = fetchLoggedInUser();
         if (user.getUsingMfa()) {
             if (mfaCode == null || mfaCode.length() == 0) {
                 throw new InvalidCredentialsException("You need to enter an authentication code for this user");

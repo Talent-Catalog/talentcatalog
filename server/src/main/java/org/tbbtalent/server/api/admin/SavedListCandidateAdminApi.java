@@ -16,11 +16,24 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.ExportFailedException;
@@ -32,19 +45,11 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
 import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Web API for managing the association between a SavedList and its associated
@@ -80,11 +85,11 @@ public class SavedListCandidateAdminApi implements
         CandidateService candidateService,
         CandidateSavedListService candidateSavedListService,
         SavedListService savedListService,
-        AuthService authService) {
+        UserService userService) {
         this.candidateService = candidateService;
         this.candidateSavedListService = candidateSavedListService;
         this.savedListService = savedListService;
-        candidateBuilderSelector = new CandidateBuilderSelector(authService);
+        candidateBuilderSelector = new CandidateBuilderSelector(userService);
     }
 
     @Override

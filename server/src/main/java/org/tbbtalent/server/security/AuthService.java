@@ -30,13 +30,11 @@ import java.util.Optional;
 public class AuthService {
 
     /**
-     * Return logged in user. Optional empty id not logged in.
+     * Return logged in user. Optional empty if not logged in.
      * <p/>
      * Note that this User object is not fetched from the database - so if you need a live
-     * entity associated with a session, you need to fetch user entity object from the DB using
-     * the id of the object returned from this call.
-     * For example:
-     * userService.getUser(getLoggedInUser().get().getId());
+     * entity associated with a JPA session (so you can fetch linked properties), you should use
+     * UserService.getLoggedInUser.
      *
      * @return Logged in user or empty if not logged in.
      */

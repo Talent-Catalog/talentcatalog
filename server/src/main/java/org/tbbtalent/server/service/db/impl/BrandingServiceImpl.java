@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.db.partner.SourcePartner;
-import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.BrandingService;
 import org.tbbtalent.server.service.db.PartnerService;
 import org.tbbtalent.server.service.db.UserService;
@@ -36,13 +34,10 @@ import org.tbbtalent.server.service.db.UserService;
  */
 @Service
 public class BrandingServiceImpl implements BrandingService {
-    private final AuthService authService;
     private final PartnerService partnerService;
     private final UserService userService;
 
-    public BrandingServiceImpl(AuthService authService,
-        PartnerService partnerService, UserService userService) {
-        this.authService = authService;
+    public BrandingServiceImpl(PartnerService partnerService, UserService userService) {
         this.partnerService = partnerService;
         this.userService = userService;
     }
@@ -51,14 +46,12 @@ public class BrandingServiceImpl implements BrandingService {
     @NonNull
     public BrandingInfo getBrandingInfo(String hostDomain) {
 
-        Optional<User> user = authService.getLoggedInUser();
+        User user = userService.getLoggedInUser();
 
         Partner sourcePartner;
-        if (user.isPresent()) {
+        if (user != null) {
             //Logged in - set partner associated with user
-
-            User loggedInUser = userService.getUser(user.get().getId());
-            sourcePartner = loggedInUser.getSourcePartner();
+            sourcePartner = user.getSourcePartner();
         } else {
             //Not logged in - use domain to lookup partner
             sourcePartner = partnerService.getPartnerFromHost(hostDomain);
