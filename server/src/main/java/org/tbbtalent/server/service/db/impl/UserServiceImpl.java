@@ -233,7 +233,7 @@ public class UserServiceImpl implements UserService {
 
         if (loggedInUser.getReadOnly()) {
             authSuccess = false;
-        } else if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+        } else if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
             authSuccess = true;
         } else {
             authSuccess = false;
@@ -287,6 +287,8 @@ public class UserServiceImpl implements UserService {
     /**
      * Check that the logged in user is authorized to create or update a user.
      * Admin users can create or update users (unless they are read only).
+     *
+     * //TODO JC These source partner restrictions are not implemented
      * Source partner admins can create users, but only for their source countries.
      * Source partner admins can also only create users that arent admins or source partner admins.
      * Source partner admins can only update users who they created.
@@ -298,12 +300,8 @@ public class UserServiceImpl implements UserService {
         User loggedInUser = fetchLoggedInUser();
         if (loggedInUser.getReadOnly()) {
             authSuccess = false;
-        } else if (loggedInUser.getRole() == Role.admin) {
+        } else if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
             authSuccess = true;
-        } else if (loggedInUser.getRole() == Role.sourcepartneradmin) {
-            authSuccess = true;
-//            // Only allowed to update/delete if user belongs to logged in user.
-//            authSuccess = user.getCreatedBy().getId().equals(loggedInUser.getId());
         } else {
             authSuccess = false;
         }
@@ -352,11 +350,17 @@ public class UserServiceImpl implements UserService {
     private void addRoleIfValid(User user, Role requestedRole) throws InvalidRequestException {
         User loggedInUser = fetchLoggedInUser();
         Role loggedInRole = loggedInUser.getRole();
-        if (loggedInRole == Role.admin) {
+        if (loggedInRole == Role.systemadmin) {
             user.setRole(requestedRole);
+        } else if (loggedInRole == Role.admin) {
+            if (requestedRole != Role.systemadmin) {
+                user.setRole(requestedRole);
+            } else {
+                throw new InvalidRequestException("You don't have permission to save this role type.");
+            }
         } else {
             // Check that source partner admin is only saving roles that are allowed (not admin or source partner admin)
-            if (requestedRole != Role.admin && requestedRole != Role.sourcepartneradmin) {
+            if (!authService.hasAdminPrivileges(requestedRole)) {
                 user.setRole(requestedRole);
             } else {
                 throw new InvalidRequestException("You don't have permission to save this role type.");
@@ -510,7 +514,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getSystemAdminUser() {
-        return findByUsernameAndRole(SystemAdminConfiguration.SYSTEM_ADMIN_NAME, Role.admin);
+        return findByUsernameAndRole(SystemAdminConfiguration.SYSTEM_ADMIN_NAME, Role.systemadmin);
     }
 
     /**

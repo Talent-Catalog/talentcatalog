@@ -16,6 +16,10 @@
 
 package org.tbbtalent.server.security;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,10 +28,10 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 
-import java.util.Optional;
-
 @Service
 public class AuthService {
+    private final Set<Role> adminRoles = new HashSet<>(Arrays.asList(
+        Role.sourcepartneradmin, Role.admin, Role.systemadmin));
 
     /**
      * Return logged in user. Optional empty if not logged in.
@@ -83,12 +87,37 @@ public class AuthService {
         return user == null ? null : user.getSelectedLanguage();
     }
 
+    /**
+     * Authorizes the logged in user to operate on something that the given user owns.
+     * <p/>
+     * Currently it is only used to seek authorization for updating a candidate
+     * attachment or delete a candidate education record.
+     * <ul>
+     *     <li>
+     *          Readonly users are never authorized.
+     *     </li>
+     *     <li>
+     *          Admins or systemadmins are always authorized
+     *     </li>
+     *     <li>
+     *          sourcepartneradmins which have no country restrictions are always authorized. If they
+     *          have country restrictions the candidate must be located in one of those countries.
+     *     </li>
+     *     <li>
+     *          If the candidate is also the logged in user, then they are authorized
+     *     </li>
+     * </ul>
+     *
+     * @param owner Candidate that owns something that the logged in user is seeking to do something
+     *              to.
+     * @return True if authorization is granted
+     */
     public boolean authoriseLoggedInUser(Candidate owner) {
         User user = getLoggedInUser().orElse(null);
         if (user != null) {
             if (user.getReadOnly()) {
                 return false;
-            } else if (user.getRole().equals(Role.admin)) {
+            } else if (user.getRole().equals(Role.admin) || user.getRole().equals(Role.systemadmin)) {
                 return true;
             } else if (user.getRole().equals(Role.sourcepartneradmin)) {
                 if (!user.getSourceCountries().isEmpty()) {
@@ -104,5 +133,14 @@ public class AuthService {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Returns true if role is one of the admin roles
+     * @param role Role
+     * @return True if an admin role
+     */
+    public boolean hasAdminPrivileges(Role role) {
+        return adminRoles.contains(role);
     }
 }

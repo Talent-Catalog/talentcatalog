@@ -56,18 +56,18 @@ public class SystemAdminConfiguration {
   }
 
   /**
-   * Run at startup to check whether we have a system admin user, creating one if necessary
+   * Run at startup to check whether we have a master system admin user, creating one if necessary
    */
   @EventListener(ApplicationReadyEvent.class)
   public void autoCreateSystemAdmin() {
-    User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.admin);
+    User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
     if (systemAdmin == null) {
       CreateUserRequest req = new CreateUserRequest();
       req.setUsername(SYSTEM_ADMIN_NAME);
       req.setFirstName("System");
       req.setLastName("Admin");
       req.setEmail(sysAdminEmail);
-      req.setRole(Role.admin);
+      req.setRole(Role.systemadmin);
       req.setReadOnly(false);
       req.setUsingMfa(true);
       req.setPassword("password");

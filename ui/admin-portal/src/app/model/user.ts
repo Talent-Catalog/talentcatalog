@@ -47,7 +47,8 @@ export interface UpdateUserRequest {
 }
 
 export enum AdminRole {
-  admin= "Full Admin",
+  systemadmin = "System Admin",
+  admin = "Full Admin",
   sourcepartneradmin = "Source Partner Admin",
   semilimited = "Semi Limited",
   limited = "Limited"

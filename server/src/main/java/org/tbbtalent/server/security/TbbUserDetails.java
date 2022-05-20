@@ -47,6 +47,8 @@ public class TbbUserDetails implements UserDetails {
         // If read only is checked assign the read only role
         if(user.getReadOnly()){
             this.authorities.add(new SimpleGrantedAuthority("ROLE_READONLY"));
+        } else if (user.getRole().equals(Role.systemadmin)) {
+            this.authorities.add(new SimpleGrantedAuthority("ROLE_SYSTEMADMIN"));
         } else if (user.getRole().equals(Role.admin)) {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         } else if (user.getRole().equals(Role.sourcepartneradmin)) {

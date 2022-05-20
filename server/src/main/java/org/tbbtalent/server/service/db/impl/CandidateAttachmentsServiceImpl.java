@@ -274,7 +274,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                     break;
                 case googlefile:
                     GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getLocation());
-                    if (!user.getRole().equals(Role.admin)) {
+                    if (!authService.hasAdminPrivileges(user.getRole())) {
                         fsf.setName("RemovedByCandidate_" + candidateAttachment.getName());
                         try {
                             fileSystemService.renameFile(fsf);

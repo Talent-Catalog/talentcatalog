@@ -5,31 +5,41 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.Map;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.request.user.*;
+import org.tbbtalent.server.request.user.CreateUserRequest;
+import org.tbbtalent.server.request.user.SearchUserRequest;
+import org.tbbtalent.server.request.user.UpdateSharingRequest;
+import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
+import org.tbbtalent.server.request.user.UpdateUserRequest;
+import org.tbbtalent.server.request.user.UpdateUsernameRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/user")
@@ -56,12 +66,13 @@ public class UserAdminApi {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        if (loggedInUser.getRole() == Role.admin) {
-            return userDto().build(user);
-        } else if (loggedInUser.getRole() == Role.sourcepartneradmin) {
-            return userDto().build(user);
-        } else {
-            return userDtoSemiLimited().build(user);
+        switch (loggedInUser.getRole()) {
+            case systemadmin:
+            case admin:
+            case sourcepartneradmin:
+                return userDto().build(user);
+            default:
+                return userDtoSemiLimited().build(user);
         }
 
     }

@@ -85,7 +85,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
         Candidate candidate;
         /* Check if request is coming from admin user */
-        if (user.getRole().equals(Role.admin) || user.getRole().equals(Role.sourcepartneradmin)) {
+        if (authService.hasAdminPrivileges(user.getRole())) {
             candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
             // Set verified if request coming from admin user
@@ -129,7 +129,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         Candidate candidate;
 
         // If request is coming from admin portal
-        if (user.getRole().equals(Role.admin)) {
+        if (authService.hasAdminPrivileges(user.getRole())) {
             candidate = candidateRepository.findById(candidateOccupation.getCandidate().getId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateOccupation.getCandidate().getId()));
         } else {

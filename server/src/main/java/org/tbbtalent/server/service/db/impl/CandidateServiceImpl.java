@@ -369,7 +369,7 @@ public class CandidateServiceImpl implements CandidateService {
         String s = request.getCandidateEmail();
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+        if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
             Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
             Page<Candidate> candidates;
 
@@ -428,7 +428,7 @@ public class CandidateServiceImpl implements CandidateService {
                         s +'%', sourceCountries,
                     request.getPageRequestWithoutSort());
         } else {
-            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+            if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
                 candidates = candidateRepository.searchCandidateName(
                         '%' + s + '%', sourceCountries,
                         request.getPageRequestWithoutSort());
@@ -447,7 +447,7 @@ public class CandidateServiceImpl implements CandidateService {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin){
+        if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
             Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
             Page<Candidate> candidates;
 
