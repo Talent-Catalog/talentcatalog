@@ -29,7 +29,7 @@ import org.tbbtalent.server.util.dto.DtoPropertyFilter;
  * Filters out properties in a DtoBuilder based on a user's role and associated partner.
  * <p/>
  * Broadly, a user can only see public properties of candidates who do not belong to the user's
- * partner.
+ * partner. The one exception is users with role systemadmin - they can always see everything.
  * If a candidate does belong to the user's partner, then the properties can be viewed depend on
  * the role of that user.
  *
@@ -54,43 +54,47 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
     public boolean ignoreProperty(Object o, String property) {
         boolean ignore;
 
-        if (publicProperties != null && publicProperties.contains(property)) {
-            //Public properties are never ignored
+        if (role == Role.systemadmin) {
             ignore = false;
         } else {
-            //It is not a public property - so could be ignored.
-
-            //It is ignored if the candidate's partner do not match the given partner, or either
-            //partner is null.
-            Partner candidatePartner = fetchPartner(o);
-            if (partner == null || candidatePartner == null ||
-                !partner.getId().equals(candidatePartner.getId())) {
-                ignore = true;
+            if (publicProperties != null && publicProperties.contains(property)) {
+                //Public properties are never ignored
+                ignore = false;
             } else {
-                //Partner matches.
-                //Whether it is ignored depends on the user's role.
-                switch (role) {
+                //It is not a public property - so could be ignored.
 
-                    case admin:
-                    case sourcepartneradmin:
-                        //Admins see all candidate properties
-                        ignore = false;
-                        break;
+                //It is ignored if the candidate's partner do not match the given partner, or either
+                //partner is null.
+                Partner candidatePartner = fetchPartner(o);
+                if (partner == null || candidatePartner == null ||
+                    !partner.getId().equals(candidatePartner.getId())) {
+                    ignore = true;
+                } else {
+                    //Partner matches.
+                    //Whether it is ignored depends on the user's role.
+                    switch (role) {
 
-                    case limited:
-                        //Limited roles can only see public properties
-                        ignore = true;
-                        break;
+                        case admin:
+                        case sourcepartneradmin:
+                            //Admins see all candidate properties
+                            ignore = false;
+                            break;
 
-                    case semilimited:
-                        //Ignore if property is not one of the extra semilimited properties
-                        ignore = semiLimitedExtraProperties == null
-                            || !semiLimitedExtraProperties.contains(property);
-                        break;
+                        case limited:
+                            //Limited roles can only see public properties
+                            ignore = true;
+                            break;
 
-                    default:
-                        //To be safe, ignore if null or unexpected new roles
-                        ignore = true;
+                        case semilimited:
+                            //Ignore if property is not one of the extra semilimited properties
+                            ignore = semiLimitedExtraProperties == null
+                                || !semiLimitedExtraProperties.contains(property);
+                            break;
+
+                        default:
+                            //To be safe, ignore if null or unexpected new roles
+                            ignore = true;
+                    }
                 }
             }
         }
