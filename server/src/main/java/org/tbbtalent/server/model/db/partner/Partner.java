@@ -30,6 +30,13 @@ import org.tbbtalent.server.model.db.Status;
 public interface Partner {
 
     /**
+     * Abbreviated name of partner, if any.
+     * @return Abbreviated name of partner - eg "TBB", or null if no abbreviation.
+     */
+    @Nullable
+    String getAbbreviation();
+
+    /**
      * Unique id identifying this partner
      * @return partner id
      */

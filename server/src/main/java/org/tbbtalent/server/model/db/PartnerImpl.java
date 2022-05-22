@@ -45,6 +45,9 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     private Long id;
 
     @Nullable
+    private String abbreviation;
+
+    @Nullable
     private String logo;
 
     @NonNull
