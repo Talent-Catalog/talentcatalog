@@ -19,7 +19,8 @@ package org.tbbtalent.server.model.db;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.tbbtalent.server.model.db.task.TaskType;
+import org.tbbtalent.server.model.db.task.QuestionTask;
+import org.tbbtalent.server.model.db.task.UploadTask;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.dto.DtoPropertyFilter;
 
@@ -31,25 +32,23 @@ import org.tbbtalent.server.util.dto.DtoPropertyFilter;
 public class TaskDtoHelper {
 
     /**
-     * Filters out properties in the DtoBuilder based on the taskType.
+     * Filters out properties in the DtoBuilder not appropriate to the task type
      */
     static private class TaskDtoPropertyFilter implements DtoPropertyFilter {
 
-        //These properties should only be extracted for taskType = Question
+        //These properties should only be extracted for QuestionTask's
         private final Set<String> questionOnlyProperties =
             new HashSet<>(Arrays.asList("answer", "candidateAnswerField", "allowedAnswers"));
 
-        //These properties should only be extracted for taskType = Upload
+        //These properties should only be extracted for UploadTask's
         private final Set<String> uploadOnlyProperties =
             new HashSet<>(Arrays.asList("uploadType", "uploadSubfolderName", "uploadableFileTypes"));
 
         public boolean ignoreProperty(Object o, String property) {
-            Object taskType = getProperty(o, "taskType");
-
-            //Ignore taskType dependent properties if taskType does not match
+            //Ignore properties which do not exist on task class
             boolean ignore =
-                questionOnlyProperties.contains(property) && !TaskType.Question.equals(taskType) ||
-                uploadOnlyProperties.contains(property) && !TaskType.Upload.equals(taskType);
+                questionOnlyProperties.contains(property) && ! (o instanceof QuestionTask) ||
+                uploadOnlyProperties.contains(property) && ! (o instanceof UploadTask);
 
             return ignore;
         }
