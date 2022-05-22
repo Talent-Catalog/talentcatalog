@@ -52,22 +52,25 @@ public interface SourcePartner extends Partner {
      */
     @Nullable
     String getRegistrationLandingPage();
+    void setRegistrationLandingPage(@Nullable String s);
 
     /**
-     * Optional branded candidate login url associated with this source partner.
+     * Optional branded candidate login/registration domain associated with this source partner.
      * <p/>
-     * This is optional. If specified it typically is a url branded to reflect the source partner.
-     * For example, for Talent Beyond Boundaries the url is currently based on https://tbbtalent.org/.
+     * This is optional. If specified it typically is a domain branded to reflect the source partner
+     * and it must be unique.
+     * For example, for Talent Beyond Boundaries it is currently tbbtalent.org.
      * <p/>
-     * All source partner candidate login url's, even though they may be different, point to this
-     * application.
+     * All source partner candidate login/registration urls, even though they may be different,
+     * point to this application.
      * <p/>
-     * If no special branded url has been specified this call returns null, and the calling code
+     * If no special branded domain has been specified this call returns null, and the calling code
      * will default to using the registration url of the default source partner.
-     * @return Candidate login url.
+     * @return Candidate login/registration domain.
      */
     @Nullable
     String getRegistrationUrl();
+    void setRegistrationUrl(@Nullable String s);
 
     /**
      * Source countries that this source partner operates in.
@@ -79,6 +82,7 @@ public interface SourcePartner extends Partner {
      */
     @NonNull
     Set<Country> getSourceCountries();
+    void setSourceCountries(@NonNull Set<Country> countries);
 
     /**
      * True if this partner is the default source partner - associated with candidates who are
@@ -88,4 +92,5 @@ public interface SourcePartner extends Partner {
      * @return True if this is the default source partner
      */
     boolean isDefaultSourcePartner();
+    void setDefaultSourcePartner(boolean b);
 }

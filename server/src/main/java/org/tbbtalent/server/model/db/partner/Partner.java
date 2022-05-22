@@ -35,12 +35,14 @@ public interface Partner {
      */
     @Nullable
     String getAbbreviation();
+    void setAbbreviation(@Nullable String s);
 
     /**
      * Unique id identifying this partner
      * @return partner id
      */
     Long getId();
+    void setId(Long id);
 
     /**
      * Partner's logo.
@@ -51,6 +53,7 @@ public interface Partner {
      */
     @Nullable
     String getLogo();
+    void setLogo(@Nullable String s);
 
     /**
      * Name of partner.
@@ -58,6 +61,7 @@ public interface Partner {
      */
     @NonNull
     String getName();
+    void setName(@NonNull String s);
 
     /**
      * Status of partner. Partners may be inactivated or deleted.
@@ -65,6 +69,7 @@ public interface Partner {
      */
     @NonNull
     Status getStatus();
+    void setStatus(@NonNull Status s);
 
     /**
      * Url of partner's website (optional)
@@ -72,5 +77,6 @@ public interface Partner {
      */
     @Nullable
     String getWebsiteUrl();
+    void setWebsiteUrl(@Nullable String s);
 
 }
