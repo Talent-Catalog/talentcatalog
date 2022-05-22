@@ -25,6 +25,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -144,7 +145,8 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     }
 
     @Override
-    public Country getCountry(long id) {
+    @NonNull
+    public Country getCountry(long id) throws NoSuchObjectException {
         loadCache();
         Country country = cache.get(id);
         if (country == null) {

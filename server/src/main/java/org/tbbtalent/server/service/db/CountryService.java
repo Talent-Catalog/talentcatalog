@@ -17,8 +17,10 @@
 package org.tbbtalent.server.service.db;
 
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.request.country.SearchCountryRequest;
 import org.tbbtalent.server.request.country.UpdateCountryRequest;
@@ -31,7 +33,14 @@ public interface CountryService {
 
     Page<Country> searchCountries(SearchCountryRequest request);
 
-    Country getCountry(long id);
+    /**
+     * Return country with given id
+     * @param id ID of country
+     * @return Country corresponding to id
+     * @throws NoSuchObjectException if no country is found with that id.
+     */
+    @NonNull
+    Country getCountry(long id) throws NoSuchObjectException;
 
     Country createCountry(UpdateCountryRequest request) throws EntityExistsException;
 
