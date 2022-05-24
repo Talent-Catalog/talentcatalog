@@ -14,13 +14,36 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+/**
+ * Represents the value of String enum
+ * (https://www.typescriptlang.org/docs/handbook/enums.html#string-enums)
+ * as a simple structure displaying the "key" or "name" of the value, and its associated string.
+ * For example, consider the following enum.
+       export enum CandidateStatus {
+           draft = "draft (inactive)",
+           :
+        }
+ * For the "draft" value of the above enumeration, the EnumOption.value would be "draft"
+ * and the EnumOption.displayText would be "draft (inactive)".
+ * <p/>
+ * (Note that if it was a numeric enum EnumOption.displayText will be numeric value associated with
+ * that enum value).
+ */
 export interface EnumOption {
+  /**
+   * This is the actual enumeration value name (also known as key).
+   */
   value: string;
+
+  /**
+   * This is the string value associated with a "string enumeration".
+   */
   displayText: string
 }
 
 /**
- * Takes a string enumeration and returns a corresponding array of values and
+ * Takes a string enumeration (https://www.typescriptlang.org/docs/handbook/enums.html#string-enums)
+ * and returns a corresponding array of values and
  * display text suitable for options in an html <select>.
  * @param enumeration String enumeration object
  */
