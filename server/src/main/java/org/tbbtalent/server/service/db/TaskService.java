@@ -60,12 +60,11 @@ public interface TaskService {
      */
     void populateTransientFields(Task task);
 
-
-        /**
-         * Get the tasks as a paged search request
-         * @param request - Paged Search Request
-         * @return Page of tasks
-         */
+    /**
+     * Get the tasks as a paged search request
+     * @param request - Paged Search Request
+     * @return Page of tasks
+     */
     Page<TaskImpl> searchTasks(SearchTaskRequest request);
 
     /**

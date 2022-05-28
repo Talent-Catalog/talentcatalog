@@ -23,14 +23,17 @@ export class CandidateStatusSelectorComponent implements OnInit, OnChanges {
 
   candidateStatusInfoForm: FormGroup;
 
-  //Filter out the draft option. Users should not be able to set a candidate's status to draft.
-  candidateStatusOptions: EnumOption[] =
-    enumOptions(CandidateStatus).filter(option => option.displayText !== CandidateStatus.draft);
+  candidateStatusOptions: EnumOption[];
 
   constructor(private fb: FormBuilder) {
   }
 
   ngOnInit(): void {
+
+    //Filter out the draft option. Users should not be able to set a candidate's status to draft.
+    this.candidateStatusOptions =
+      enumOptions(CandidateStatus).filter(option => option.key !== CandidateStatus.draft);
+
     this.candidateStatusInfoForm = this.fb.group({
       status: [this.candidateStatus, Validators.required],
       comment: [null, Validators.required],

@@ -12,7 +12,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="visaSecurityRisk" [formControlName]="'visaSecurityRisk'" [items]="securityRiskOptions"
-               placeholder="Select" bindValue="value" bindLabel="displayText"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="form-group">
     <label for="visaSecurityRiskNotes">Notes</label>

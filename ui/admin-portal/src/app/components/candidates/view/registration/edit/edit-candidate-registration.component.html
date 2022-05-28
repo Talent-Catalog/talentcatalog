@@ -56,7 +56,7 @@
         <label for="unhcrRegistered">UNHCR Registered?</label>
         <ng-select id="unhcrRegistered" [formControlName]="'unhcrRegistered'"
                    [items]="registeredOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <!-- UNHCR NUMBER -->
@@ -71,7 +71,7 @@
         <label for="unhcrStatus">What is your registration status with UNHCR?</label>
         <ng-select id="unhcrStatus" [formControlName]="'unhcrStatus'"
                    [items]="unhcrStatusOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <!-- UNHCR CONSENT -->
@@ -79,7 +79,7 @@
         <label for="unhcrConsent">UNHCR Consent?</label>
         <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'"
                    [items]="unhcrConsentOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <!-- UNRWA REGISTERED -->
@@ -87,7 +87,7 @@
         <label for="unrwaRegistered">UNRWA Registered?</label>
         <ng-select id="unrwaRegistered" [formControlName]="'unrwaRegistered'"
                    [items]="registeredOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <!-- UNRWA NUMBER -->

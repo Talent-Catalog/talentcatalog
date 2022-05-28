@@ -5,7 +5,7 @@ import {
   CandidateSource,
   CandidateSourceType,
   PagedSearchRequest,
-  SearchBy
+  SearchBy, SearchTaskRequest
 } from "../../../model/base";
 import {User} from "../../../model/user";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -55,7 +55,7 @@ export class BrowseTasksComponent implements OnInit {
 
   search() {
 
-    const req: PagedSearchRequest = {
+    const req: SearchTaskRequest = {
       pageNumber: this.pageNumber - 1,
       pageSize: this.pageSize,
       sortFields: ['name'],

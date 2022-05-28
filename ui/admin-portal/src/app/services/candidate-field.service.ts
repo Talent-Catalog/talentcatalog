@@ -18,13 +18,11 @@ import {Injectable} from '@angular/core';
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
-import {CandidateSource} from "../model/base";
-import {enumKeysToEnumOptions} from "../util/enum";
+import {CandidateSource, Status} from "../model/base";
 import {
   Candidate,
   checkIeltsScoreType,
-  ResidenceStatus,
-  Status
+  ResidenceStatus
 } from "../model/candidate";
 import {
   checkForAbandoned,
@@ -44,9 +42,10 @@ export class CandidateFieldService {
   private dateFormatter = (value) => this.datePipe.transform(value, "yyyy-MM-dd");
   private titleCaseFormatter = (value) => this.titleCasePipe.transform(value);
   private levelGetNameFormatter = (value) => value.name;
-  private getDisplayEnum = (value) => {
-    return enumKeysToEnumOptions([value], ResidenceStatus)[0].displayText;
-  }
+
+  //Residence status is a string enum - you can display the string value of the enum like this.
+  private residenceStatusFormatter = (value) => ResidenceStatus[value];
+
   private getIeltsScoreType = (value) => {
     return this.getIeltsScore(value);
   }
@@ -88,7 +87,7 @@ export class CandidateFieldService {
     new CandidateFieldInfo("IELTS Score", "ieltsScore",
       this.getIeltsScoreType, null),
     new CandidateFieldInfo("Legal status", "residenceStatus",
-      this.getDisplayEnum, null),
+      this.residenceStatusFormatter, null),
     new CandidateFieldInfo("Dependants", "numberDependants",
       null, null),
     // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.

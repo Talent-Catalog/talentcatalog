@@ -28,7 +28,7 @@
     </div>
     <ng-select id="returnedHome" [formControlName]="'returnedHome'" (clear)="setNoResponse('returnedHome')"
                [items]="returnedHomeOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
   <div *ngIf="returnedHome === 'Yes'">

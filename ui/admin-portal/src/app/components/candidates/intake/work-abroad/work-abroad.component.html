@@ -30,7 +30,7 @@
     </div>
     <ng-select id="workAbroad" [formControlName]="'workAbroad'" (clear)="setNoResponse('workAbroad')"
                [items]="workAbroadOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="workAbroad === 'Yes'">
     <div class="form-group">

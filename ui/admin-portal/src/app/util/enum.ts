@@ -14,38 +14,43 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import {CandidateSource} from "../model/base";
+import {SavedSearch} from "../model/saved-search";
+
 /**
  * Represents the value of String enum
  * (https://www.typescriptlang.org/docs/handbook/enums.html#string-enums)
- * as a simple structure displaying the "key" or "name" of the value, and its associated string.
+ * as a simple structure displaying the "key" of the value, and its associated string value.
  * For example, consider the following enum.
        export enum CandidateStatus {
            draft = "draft (inactive)",
            :
         }
- * For the "draft" value of the above enumeration, the EnumOption.value would be "draft"
- * and the EnumOption.displayText would be "draft (inactive)".
+ * For the "draft" value of the above enumeration, the EnumOption.key would be "draft"
+ * and the EnumOption.stringValue would be "draft (inactive)".
  * <p/>
- * (Note that if it was a numeric enum EnumOption.displayText will be numeric value associated with
- * that enum value).
+ * (Note that if it was a numeric enum, EnumOption.stringValue will be the same as EnumOption.key).
  */
 export interface EnumOption {
   /**
-   * This is the actual enumeration value name (also known as key).
+   * This is the actual enumeration value key.
    */
-  value: string;
+  key: string;
 
   /**
-   * This is the string value associated with a "string enumeration".
+   * This is the string value associated with a "string enumeration". For a normal numeric enum,
+   * stringValue will be the same as key.
    */
-  displayText: string
+  stringValue: string
 }
 
 /**
  * Takes a string enumeration (https://www.typescriptlang.org/docs/handbook/enums.html#string-enums)
- * and returns a corresponding array of values and
- * display text suitable for options in an html <select>.
+ * and returns a corresponding array of keys and
+ * stringValue's suitable for options in an html <select>.
  * @param enumeration String enumeration object
+ * @return Array of EnumOptions containing the key and string value associated with each enumeration
+ * value
  */
 export function enumOptions(enumeration): EnumOption[] {
   return enumKeysToEnumOptions(Object.keys(enumeration), enumeration);
@@ -53,13 +58,60 @@ export function enumOptions(enumeration): EnumOption[] {
 
 /**
  * Takes an array of strings and interprets them as keys of the given string
- * enumeration, returning an  array of values and display text suitable for
+ * enumeration, returning an array of keys and string values suitable for
  * options in an html <select>.
  * @param keys Array of strings treated as enumeration keys
  * @param enumeration String enumeration object
+ * @return Array of EnumOptions containing the key and string value associated with each enumeration
+ * value
  */
 export function enumKeysToEnumOptions(keys: string[], enumeration): EnumOption[] {
-  return keys?.map(key => ({ value: key, displayText: enumeration[key] }));
+  return keys?.map(key => ({ key: key, stringValue: enumeration[key] }));
 }
+
+/**
+ * Returns all the keys in the given enumeration object
+ * @param enumeration Enumeration type
+ */
+export function enumKeys(enumeration): string[] {
+  return Object.keys(enumeration);
+}
+
+/**
+ * Returns all the String values in the given enumeration object
+ * @param enumeration Enumeration type
+ */
+export function enumStringValues(enumeration): string[] {
+  return Object.keys(enumeration).map(k => enumeration[k]);
+}
+
+/**
+ * True if the given object is not null or undefined and is an EnumOption
+ * @param obj Object to be tested
+ */
+export function isEnumOption(obj): obj is EnumOption {
+  return obj ? ("key" in obj && "stringValue" in obj) : false;
+}
+
+/**
+ * True if the given object is not null or undefined and is an array of EnumOption
+ * @param obj Object to be tested
+ */
+export function isEnumOptionArray(obj: Object): obj is EnumOption[] {
+  let gotOne: boolean = false;
+
+  //Needs to be an array (note isArray returns false if passed a null or undefined value)
+  if (Array.isArray(obj)) {
+    //With something in it
+    if (obj.length > 0) {
+      //Look at first item in array and check its type
+      const item = obj[0];
+      //EnumOption objects have a key and a stringValue property.
+      gotOne = isEnumOption(item);
+    }
+  }
+  return gotOne;
+}
+
 
 

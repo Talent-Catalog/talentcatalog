@@ -28,7 +28,7 @@
     </div>
     <ng-select id="availImmediate" [formControlName]="'availImmediate'" (clear)="setNoResponse('availImmediate')"
                [items]="availImmediateOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
   <div *ngIf="availImmediate === 'Yes'|| availImmediate == 'Unsure'">
@@ -45,7 +45,7 @@
       <label for="availImmediateReason">Factors preventing immediate availability for international work.</label>
       <ng-select id="availImmediateReason" [formControlName]="'availImmediateReason'" (clear)="setNoResponse('availImmediateReason')"
                  [items]="availImmediateReasonOptions" [clearOnBackspace]="false"
-                 placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
     <div class="form-group">
       <label for="availImmediateNotes">If Other, or if you have additional notes please describe here.</label>

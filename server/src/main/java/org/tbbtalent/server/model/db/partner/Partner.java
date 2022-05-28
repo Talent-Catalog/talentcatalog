@@ -63,6 +63,8 @@ public interface Partner {
     String getName();
     void setName(@NonNull String s);
 
+    String getPartnerType();
+
     /**
      * Status of partner. Partners may be inactivated or deleted.
      * @return Status of partner

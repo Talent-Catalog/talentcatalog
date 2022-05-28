@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Candidate, Status} from "../../../../model/candidate";
+import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AssignTasksCandidateComponent} from "../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component";
@@ -11,6 +11,7 @@ import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../s
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
+import {Status} from "../../../../model/base";
 
 @Component({
   selector: 'app-view-candidate-tasks',

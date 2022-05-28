@@ -30,7 +30,7 @@
     </div>
     <ng-select id="hostEntryLegally" [formControlName]="'hostEntryLegally'" (clear)="setNoResponse('hostEntryLegally')"
                [items]="hostEntryLegallyOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="enterLegally === 'No'" class="form-group">
     <label for="hostEntryLegallyNotes">Notes</label>

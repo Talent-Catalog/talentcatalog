@@ -30,7 +30,7 @@
     </div>
     <ng-select id="residenceStatus" [formControlName]="'residenceStatus'" (clear)="setNoResponse('residenceStatus')"
                [items]="residenceStatusOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes">
     <div class="form-group">

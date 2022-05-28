@@ -28,7 +28,7 @@
     </div>
     <ng-select id="workDesired" [formControlName]="'workDesired'" (clear)="setNoResponse('workDesired')"
                [items]="workDesiredOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value">
+               placeholder="Select" bindLabel="stringValue" bindValue="key">
     </ng-select>
   </div>
   <div *ngIf="hasWorkDesired">

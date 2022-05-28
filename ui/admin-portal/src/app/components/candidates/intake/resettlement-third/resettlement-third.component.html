@@ -28,7 +28,7 @@
     </div>
     <ng-select id="resettleThird" [formControlName]="'resettleThird'" (clear)="setNoResponse('resettleThird')"
                [items]="resettlementThirdOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="resettlementThird === 'Yes'">
     <div class="form-group">

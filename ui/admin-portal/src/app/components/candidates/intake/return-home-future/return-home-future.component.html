@@ -30,7 +30,7 @@
     </div>
     <ng-select id="returnHomeFuture" [formControlName]="'returnHomeFuture'" (clear)="setNoResponse('returnHomeFuture')"
                [items]="returnHomeFutureOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
   <div *ngIf="returnHomeFuture === 'Yes'">

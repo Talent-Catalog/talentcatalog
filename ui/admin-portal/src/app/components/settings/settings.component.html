@@ -25,7 +25,15 @@
     </ng-template>
   </ng-container>
 
-  <ng-container *ngIf="loggedInUser.role == 'admin'">
+  <ng-container *ngIf="loggedInUser.role === 'systemadmin'">
+    <!-- Partners -->
+    <ng-container ngbNavItem="Partners">
+      <a ngbNavLink>Partners</a>
+      <ng-template ngbNavContent>
+        <app-search-partners>
+        </app-search-partners>
+      </ng-template>
+    </ng-container>
 
     <!-- Languages -->
     <ng-container ngbNavItem="languages">
@@ -36,21 +44,26 @@
       </ng-template>
     </ng-container>
 
-    <!-- Language Levels -->
-    <ng-container ngbNavItem="langlevels">
-      <a ngbNavLink>Language Levels</a>
-      <ng-template ngbNavContent>
-        <app-search-language-levels [loggedInUser]="loggedInUser">
-        </app-search-language-levels>
-      </ng-template>
-    </ng-container>
-
     <!-- Occupations -->
     <ng-container ngbNavItem="occupations">
       <a ngbNavLink>Occupations</a>
       <ng-template ngbNavContent>
         <app-search-occupations [loggedInUser]="loggedInUser">
         </app-search-occupations>
+      </ng-template>
+    </ng-container>
+
+
+  </ng-container>
+
+  <ng-container *ngIf="loggedInUser.role === 'systemadmin' || loggedInUser.role == 'admin'">
+
+    <!-- Language Levels -->
+    <ng-container ngbNavItem="langlevels">
+      <a ngbNavLink>Language Levels</a>
+      <ng-template ngbNavContent>
+        <app-search-language-levels [loggedInUser]="loggedInUser">
+        </app-search-language-levels>
       </ng-template>
     </ng-container>
 
@@ -91,7 +104,7 @@
     </ng-container>
   </ng-container>
 
-  <ng-container *ngIf="loggedInUser.role === 'admin' || loggedInUser.role === 'sourcepartneradmin'">
+  <ng-container *ngIf="loggedInUser.role === 'systemadmin' || loggedInUser.role === 'admin' || loggedInUser.role === 'sourcepartneradmin'">
     <!-- External Links -->
     <ng-container ngbNavItem="links">
       <a ngbNavLink>External Links</a>

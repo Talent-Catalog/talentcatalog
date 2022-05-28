@@ -1,0 +1,137 @@
+import {Component, OnInit} from '@angular/core';
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {PartnerService} from "../../../../services/partner.service";
+import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
+import {Status} from "../../../../model/base";
+import {Country} from "../../../../model/country";
+import {CountryService} from "../../../../services/country.service";
+import {enumOptions} from "../../../../util/enum";
+import {CandidateStatus} from "../../../../model/candidate";
+
+/*
+  MODEL - latest best practice on this kind of component
+
+  - shows how to combine create and update into a single component, reducing unnecessary duplication
+
+  - shows how to display arrays of objects in a drop down (countries), displaying one attribute
+  (name) but just sending id's of the selected object(s) back down to the server. There is no point
+  sending the whole objects back down. The server code will just want the id's so that they can
+  retrieve fresh object details from the database using the id.
+
+  - shows how to display enumerated type values in a drop down, then send an enumerated type value
+  back to the server. Trick is to work with EnumOptions everywhere - converting the real Enum at
+  just prior to sending to server. Relies on fact that
+ */
+
+@Component({
+  selector: 'app-create-update-partner',
+  templateUrl: './create-update-partner.component.html',
+  styleUrls: ['./create-update-partner.component.scss']
+})
+export class CreateUpdatePartnerComponent implements OnInit {
+
+  countries: Country[];
+  error = null;
+  form: FormGroup;
+  partner: Partner;
+  statuses = enumOptions(Status);
+  working: boolean;
+
+
+  constructor(private activeModal: NgbActiveModal,
+              private fb: FormBuilder,
+              private countryService: CountryService,
+              private partnerService: PartnerService) { }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      abbreviation: [this.partner?.abbreviation],
+      logo: [this.partner?.logo],
+      name: [this.partner?.name, Validators.required],
+      registrationLandingPage: [this.partner?.registrationLandingPage],
+      registrationDomain: [this.partner?.registrationUrl],
+      sourceCountries: [this.partner?.sourceCountries],
+
+      //Note that if you initialize with the actual Enum directly, ng-select will display the
+      //string value of that enum if it finds one. Bascially means that you don't need to
+      //convert to EnumOption here - but can pass enumeration value in directly.
+      status: [this.partner?.status, Validators.required],
+      websiteUrl: [this.partner?.websiteUrl],
+    });
+
+    this.countryService.listCountriesRestricted().subscribe(
+      (response) => {
+        this.countries = response;
+      },
+      (error) => {
+        this.error = error;
+        this.working = false;
+      }
+    );
+
+  }
+
+  get create(): boolean {
+    return !this.partner;
+  }
+
+  get title(): string {
+    return this.create ? "Add New Partner"
+      : "Update Partner";
+  }
+
+  save() {
+    this.error = null;
+    this.working = true;
+
+    const request: UpdatePartnerRequest = {
+      abbreviation: this.form.value.abbreviation,
+      logo: this.form.value.logo,
+      name: this.form.value.name,
+      partnerType: 'SourcePartner',
+      registrationLandingPage: this.form.value.registrationLandingPage,
+      registrationUrl: this.form.value.registrationDomain,
+
+      //Convert countries to country ids
+      sourceCountryIds: this.form.value.sourceCountries?.map(c => c.id),
+
+      //Convert EnumOption to status
+      status: CandidateStatus[this.form.value.status?.key],
+
+      websiteUrl: this.form.value.websiteUrl,
+
+    };
+
+    if (this.create) {
+      this.partnerService.create(request).subscribe(
+        (partner: Partner) => {
+          this.closeModal(partner);
+          this.working = false;
+        },
+        (error) => {
+          this.error = error;
+          this.working = false;
+        });
+    } else {
+      this.partnerService.update(this.partner.id, request).subscribe(
+        (partner: Partner) => {
+          this.closeModal(partner);
+          this.working = false;
+        },
+        (error) => {
+          this.error = error;
+          this.working = false;
+        });
+    }
+  }
+
+  closeModal(partner: Partner) {
+    this.activeModal.close(partner);
+  }
+
+  dismiss() {
+    this.activeModal.dismiss(false);
+  }
+
+}

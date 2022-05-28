@@ -103,7 +103,7 @@
               [closeOnSelect]="false"
               [clearSearchOnAdd]="true"
               placeholder="Select or type..."
-              bindLabel="displayText"
+              bindLabel="stringValue"
               [formControlName]="'statusesDisplay'">
               <ng-template ng-header-tmp>
                 <div class="d-flex justify-content-between">
@@ -113,7 +113,7 @@
               </ng-template>
               <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                 <div *ngFor="let item of items | slice:0:3" class="ng-value">
-                  <span class="ng-value-label">{{item.displayText}}</span>
+                  <span class="ng-value-label">{{item.stringValue}}</span>
                   <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
                 </div>
                 <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('statusesDisplay')" popoverTitle="Statuses"
@@ -245,8 +245,8 @@
                   [items]="genderOptions"
                   [searchable]="false"
                   placeholder="Select"
-                  bindLabel="displayText"
-                  bindValue="value"
+                  bindLabel="stringValue"
+                  bindValue="key"
                   [formControlName]="'gender'">
                 </ng-select>
               </div>

@@ -20,6 +20,7 @@ import {FormBuilder} from '@angular/forms';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
+import {isEnumOption, isEnumOptionArray} from "../../../util/enum";
 
 /**
  * Base class for all candidate intake components.
@@ -116,7 +117,7 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
 
   /**
    * Converts the data returned by multiselected enums to a simple array of
-   * enum names suitable for sending to the server.
+   * enum keys suitable for sending to the server.
    * <p/>
    * We use ng-multiselect-dropdown for multiselect dropdowns, and given the
    * way that we have configured it for selecting enums, that component returns
@@ -133,30 +134,15 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
     //Look through all the formValue object properties looking for a
     //property with a EnumOption array as a value.
     for (const [key, value] of Object.entries(formValue)) {
-      if (IntakeComponentBase.isEnumOptionArray(value)) {
+      if (isEnumOptionArray(value)) {
         //Convert EnumOption array to a simple string array.
         const enums: string[] = [];
-        for (const item of value) {
-          enums.push(item.value);
+        for (const enumOption of value) {
+          enums.push(enumOption.key);
         }
         formValue[key] = enums;
       }
     }
     return formValue;
-  }
-
-  private static isEnumOptionArray(value: Object): boolean {
-    let gotOne: boolean = false;
-    //Needs to be an array
-    if (Array.isArray(value)) {
-      //With something in it
-      if (value.length > 0) {
-        //Look at first item in array and check its type
-        const item = value[0];
-        //EnumOption objects have a value and a displayText property.
-        gotOne = ("value" in item && "displayText" in item);
-      }
-    }
-    return gotOne;
   }
 }

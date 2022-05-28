@@ -67,7 +67,7 @@
       <div class="form-group">
         <label for="fullTime">Contract Type *</label>
         <ng-select id="fullTime" [formControlName]="'fullTime'" [clearable]="false" [items]="fullTime"
-                   bindValue="value" bindLabel="displayText">
+                   bindLabel="stringValue" bindValue="key">
         </ng-select>
       </div>
 
@@ -75,7 +75,7 @@
       <div class="form-group">
         <label for="paid">Employment Type *</label>
         <ng-select id="paid" [formControlName]="'paid'" [clearable]="false" [items]="paid"
-                   bindValue="value" bindLabel="displayText">
+                   bindLabel="stringValue" bindValue="key">
         </ng-select>
       </div>
 

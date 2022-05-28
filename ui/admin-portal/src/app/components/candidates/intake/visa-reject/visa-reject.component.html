@@ -31,7 +31,7 @@
     </div>
     <ng-select id="visaReject" [formControlName]="'visaReject'" (clear)="setNoResponse('visaReject')"
                [items]="visaRejectOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="visaReject === 'Yes' || visaReject === 'Unsure'" class="form-group">
     <label for="visaRejectNotes">Notes</label>

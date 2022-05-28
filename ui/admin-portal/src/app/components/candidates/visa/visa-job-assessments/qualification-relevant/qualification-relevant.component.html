@@ -11,7 +11,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="visaJobQualification" [formControlName]="'visaJobQualification'" [items]="relevantQualificationOptions"
-               placeholder="Select" bindValue="value" bindLabel="displayText"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="editable" class="form-group">
     <label for="visaJobQualificationNotes">Notes on qualification (eg. relevant experience) </label>

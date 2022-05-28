@@ -30,7 +30,7 @@
     </div>
     <ng-select id="destLimit" [formControlName]="'destLimit'" (clear)="setNoResponse('destLimit')"
                [items]="destLimitOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="destLimit === 'Yes'" class="form-group">
     <label for="destLimitNotes">Notes</label>

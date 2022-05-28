@@ -28,7 +28,7 @@
     </div>
     <ng-select id="covidVaccinated" [formControlName]="'covidVaccinated'" (clear)="setNoResponse('covidVaccinated')"
                [items]="vaccinationOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
   <div *ngIf="covidVaccinated === 'Yes'">
@@ -36,7 +36,7 @@
       <label for="covidVaccinatedStatus">Are you fully vaccinated or partially vaccinated (1st dose only)?</label>
       <ng-select id="covidVaccinatedStatus" [formControlName]="'covidVaccinatedStatus'" (clear)="setNoResponse('covidVaccinatedStatus')"
                  [items]="vaccinationStatusOptions" [clearOnBackspace]="false"
-                 placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
 
     <div class="form-group">

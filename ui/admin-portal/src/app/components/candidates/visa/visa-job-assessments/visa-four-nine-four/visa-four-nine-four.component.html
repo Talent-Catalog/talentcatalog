@@ -12,7 +12,7 @@
     </div>
     <ng-select id="visaJobEligible494" [formControlName]="'visaJobEligible494'" (clear)="setNoResponse('visaJobEligible494')"
                [items]="visa494Options" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="form-group">
     <label for="visaJobEligible494Notes">Notes</label>

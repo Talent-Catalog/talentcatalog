@@ -75,7 +75,7 @@ export class EditUserComponent implements OnInit {
     );
 
     if (this.authService.getLoggedInUser().role === "sourcepartneradmin") {
-      this.roleOptions = this.roleOptions.filter(r => r.value !== "admin" && r.value !== "sourcepartneradmin" );
+      this.roleOptions = this.roleOptions.filter(r => r.key !== "admin" && r.key !== "sourcepartneradmin" );
     }
 
   }

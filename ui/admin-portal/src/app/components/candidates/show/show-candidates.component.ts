@@ -29,7 +29,6 @@ import {
 import {
   Candidate,
   SalesforceOppParams,
-  Status,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
@@ -62,7 +61,7 @@ import {
   indexOfHasId,
   isMine,
   isSharedWithMe,
-  ReviewStatus
+  ReviewStatus, Status
 } from '../../../model/base';
 import {
   CachedSourceResults,

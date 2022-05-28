@@ -30,7 +30,7 @@
     </div>
     <ng-select id="conflict" [formControlName]="'conflict'" (clear)="setNoResponse('conflict')"
                [items]="conflictOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value">
+               placeholder="Select" bindLabel="stringValue" bindValue="key">
     </ng-select>
   </div>
   <div *ngIf="conflict === 'Yes'" class="form-group">

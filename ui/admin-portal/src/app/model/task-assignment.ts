@@ -14,9 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Status} from "./candidate";
 import {Task} from "./task";
 import {toDateOnly} from "../util/date-adapter/date-adapter";
+import {Status} from "./base";
 
 export interface TaskAssignment {
   id: number;

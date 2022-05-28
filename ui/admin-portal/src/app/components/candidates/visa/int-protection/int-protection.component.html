@@ -13,7 +13,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="visaProtection" [formControlName]="'visaProtection'" [items]="visaProtectionOptions"
-               placeholder="Select" bindValue="value" bindLabel="displayText"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="form.controls.visaProtection.value === 'Yes'" class="form-group">
     <label for="visaProtectionGrounds">If yes, on what grounds? (refer to <a href="https://drive.google.com/file/d/1U1KjoOXlITTWaucNvJXQSh9movNWEPTu/view" target="_blank">TBB eligibility policy</a>)</label>

@@ -60,7 +60,7 @@
         </label>
         <ng-select id="hostEntryLegally" [formControlName]="'hostEntryLegally'" (clear)="setNoResponse('hostEntryLegally')"
                    [items]="hostEntryLegallyOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <div *ngIf="enterLegally === 'No'" class="form-group">
@@ -74,7 +74,7 @@
         <label for="returnedHome">Have you returned to your home country since entering {{candidate.country.name}} and claiming asylum?</label>
         <ng-select id="returnedHome" [formControlName]="'returnedHome'" (clear)="setNoResponse('returnedHome')"
                    [items]="returnedHomeOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <div *ngIf="returnedHome === 'Yes'">
@@ -98,7 +98,7 @@
         <label for="returnHomeSafe">Do you feel it is safe to permanently return to your home country?</label>
         <ng-select id="returnHomeSafe" [formControlName]="'returnHomeSafe'" (clear)="setNoResponse('returnHomeSafe')"
                    [items]="homeSafeOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <div class="form-group">
@@ -107,7 +107,7 @@
         </label>
         <ng-select id="leftHomeReasons" [formControlName]="'leftHomeReasons'" [items]="leftHomeReasonOptions"
                    [multiple]="true" [closeOnSelect]="false" [searchable]="false"
-                   placeholder="Select one or more" bindLabel="displayText">
+                   placeholder="Select one or more" bindLabel="stringValue">
         </ng-select>
       </div>
 
@@ -126,7 +126,7 @@
         </label>
         <ng-select id="returnHomeFuture" [formControlName]="'returnHomeFuture'" (clear)="setNoResponse('returnHomeFuture')"
                    [items]="returnHomeFutureOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <div *ngIf="returnHomeFuture === 'Yes'">

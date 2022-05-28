@@ -28,7 +28,7 @@
     </div>
     <ng-select id="workPermit" [formControlName]="'workPermit'" (clear)="setNoResponse('workPermit')"
                [items]="workPermitOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value">
+               placeholder="Select" bindLabel="stringValue" bindValue="key">
     </ng-select>
   </div>
   <div *ngIf="workPermit === 'YesNotDesired' || workPermit === 'No'">
@@ -36,7 +36,7 @@
       <label for="workPermitDesired">Are you legally able to obtain a work permit in your desired field?</label>
       <ng-select id="workPermitDesired" [formControlName]="'workPermitDesired'" (clear)="setNoResponse('workPermitDesired')"
                  [items]="workPermitDesiredOptions" [clearOnBackspace]="false"
-                 placeholder="Select" bindLabel="displayText" bindValue="value">
+                 placeholder="Select" bindLabel="stringValue" bindValue="key">
       </ng-select>
     </div>
     <div *ngIf="workPermitDesired === 'No'">

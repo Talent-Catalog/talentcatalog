@@ -47,7 +47,7 @@
           <label [for]="'hasPassport'+myRecordIndex">Passport?</label>
           <ng-select [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'" (clear)="setNoResponse('citizenHasPassport')"
                      [items]="hasPassportOptions" [clearOnBackspace]="false"
-                     placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                     placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
         </div>
         <div *ngIf="hasPassport === 'ValidPassport'">
           <div class="form-group">

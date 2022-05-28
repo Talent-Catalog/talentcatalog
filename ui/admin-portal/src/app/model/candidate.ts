@@ -91,12 +91,6 @@ export interface CandidateProperty {
   value: string;
 }
 
-export enum Status {
-  active = "active",
-  inactive = "inactive",
-  deleted = "deleted"
-}
-
 export interface CandidateIntakeData {
   asylumYear?: string;
   availImmediate?: YesNoUnsure;

@@ -4,7 +4,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthService} from "../../../services/auth.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {isAdminUser} from "../../../model/base";
+import {isAdminUser, SearchTaskRequest} from "../../../model/base";
 import {TaskService} from "../../../services/task.service";
 import {SearchResults} from "../../../model/search-results";
 import {Task} from "../../../model/task";
@@ -60,11 +60,13 @@ export class SearchTasksComponent implements OnInit {
 
   search() {
     this.loading = true;
-    const request = this.searchForm.value;
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize = this.pageSize;
-    request.sortFields = ['id'];
-    request.sortDirection = 'ASC';
+    const request: SearchTaskRequest =  {
+      keyword: this.searchForm.value.keyword,
+      pageNumber: this.pageNumber - 1,
+      pageSize: this.pageSize,
+      sortFields: ['id'],
+      sortDirection: 'ASC',
+    };
     this.taskService.searchPaged(request).subscribe(results => {
         this.results = results;
         this.loading = false;

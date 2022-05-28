@@ -28,7 +28,7 @@
     </div>
     <ng-select id="militaryService" [formControlName]="'militaryService'" (clear)="setNoResponse('militaryService')"
                [items]="militaryServiceOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="served">
     <div>
@@ -63,7 +63,7 @@
     </label>
     <ng-select id="militaryWanted" [formControlName]="'militaryWanted'" (clear)="setNoResponse('militaryWanted')"
                [items]="militaryWantedOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 </form>
 

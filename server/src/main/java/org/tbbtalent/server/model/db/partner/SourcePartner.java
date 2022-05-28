@@ -65,7 +65,7 @@ public interface SourcePartner extends Partner {
      * point to this application.
      * <p/>
      * If no special branded domain has been specified this call returns null, and the calling code
-     * will default to using the registration url of the default source partner.
+     * will default to using the registration domain of the default source partner.
      * @return Candidate login/registration domain.
      */
     @Nullable

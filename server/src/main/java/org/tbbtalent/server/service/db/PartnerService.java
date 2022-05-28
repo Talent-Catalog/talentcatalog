@@ -16,10 +16,16 @@
 
 package org.tbbtalent.server.service.db;
 
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.request.partner.SearchPartnerRequest;
+import org.tbbtalent.server.request.partner.UpdatePartnerRequest;
 
 /**
  * Service for managing {@link Partner}
@@ -52,5 +58,38 @@ public interface PartnerService {
      */
     @Nullable
     Partner getPartnerFromHost(String hostDomain);
+
+    /**
+     * Get the tasks as a paged search request
+     * @param request - Paged Search Request
+     * @return Page of tasks
+     */
+    Page<PartnerImpl> searchPartners(SearchPartnerRequest request);
+
+    /**
+     * Create a partner.
+     * @param request Request contains partner data
+     * @return Created partner
+     * @throws EntityExistsException if registration_url already exists
+     * @throws InvalidRequestException if required attribute, name, is not present or partner type
+     * is unrecognized.
+     * @throws NoSuchObjectException if there is an unknown country id in the request
+     */
+    @NonNull
+    PartnerImpl create(UpdatePartnerRequest request)
+        throws EntityExistsException, InvalidRequestException, NoSuchObjectException;
+
+    /**
+     * Update the partner with the given ID.
+     * @param id of partner to update
+     * @param request Request contains updated data
+     * @return Updated partner
+     * @throws EntityExistsException if updated registration_url already exists.
+     * @throws InvalidRequestException if partner type is unrecognized.
+     * @throws NoSuchObjectException if there is not a partner with this id.
+     */
+    @NonNull
+    PartnerImpl update(long id, UpdatePartnerRequest request) throws EntityExistsException, NoSuchObjectException;
+
 
 }

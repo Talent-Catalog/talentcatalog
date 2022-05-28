@@ -256,6 +256,8 @@ import {ViewCandidateRegistrationComponent} from './components/candidates/view/r
 import {EditCandidateRegistrationComponent} from './components/candidates/view/registration/edit/edit-candidate-registration.component';
 import {EditTaskComponent} from './components/settings/tasks/edit/edit-task.component';
 import {TasksMonitorListComponent} from './components/util/tasks-monitor-list/tasks-monitor-list.component';
+import { SearchPartnersComponent } from './components/settings/partners/search-partners/search-partners.component';
+import { CreateUpdatePartnerComponent } from './components/settings/partners/create-update-partner/create-update-partner.component';
 
 @NgModule({
   declarations: [
@@ -489,7 +491,9 @@ import {TasksMonitorListComponent} from './components/util/tasks-monitor-list/ta
     ViewCandidateRegistrationComponent,
     EditCandidateRegistrationComponent,
     EditTaskComponent,
-    TasksMonitorListComponent
+    TasksMonitorListComponent,
+    SearchPartnersComponent,
+    CreateUpdatePartnerComponent
   ],
   imports: [
     BrowserModule,

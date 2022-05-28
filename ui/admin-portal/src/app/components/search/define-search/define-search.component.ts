@@ -59,7 +59,7 @@ import {canEditSource} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
-import {enumKeysToEnumOptions, EnumOption, enumOptions} from "../../../util/enum";
+import {enumKeysToEnumOptions, EnumOption, enumOptions, isEnumOption} from "../../../util/enum";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
@@ -328,7 +328,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (request.statusesDisplay != null) {
-      request.statuses = request.statusesDisplay.map(s => s.value);
+      //Pick up key values from EnumOptions
+      request.statuses = request.statusesDisplay.map(s => s.key);
       delete request.statusesDisplay;
     }
 
@@ -650,9 +651,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     let tooltip: string = '';
     const control = this.searchForm.controls[formControlName];
     const item = control.value[0];
-    //If enum get the display text from value, else get name.
-    if (("value" in item && "displayText" in item)) {
-      control.value.forEach(i => tooltip += i.displayText + ', ');
+
+    //If enum get the string value from each item, else get name.
+    if (isEnumOption(item)) {
+      control.value.forEach(i => tooltip += i.stringValue + ', ');
     } else {
       control.value.forEach(i => tooltip += i.name + ', ');
     }

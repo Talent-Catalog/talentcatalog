@@ -53,6 +53,8 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     @NonNull
     private String name;
 
+    abstract public String getPartnerType();
+
     @Enumerated(EnumType.STRING)
     @NonNull
     private Status status;

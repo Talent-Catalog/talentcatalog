@@ -13,7 +13,7 @@
     </div>
     <ng-select id="visaValidTravelDocs" [formControlName]="'visaValidTravelDocs'" (clear)="setNoResponse('visaValidTravelDocs')"
                [items]="travelDocumentOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="form-group">
     <label for="visaValidTravelDocsNotes">Notes</label>

@@ -15,7 +15,7 @@
     </div>
     <ng-select id="healthIssues" [formControlName]="'healthIssues'" (clear)="setNoResponse('healthIssues')"
                [items]="healthIssuesOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value">
+               placeholder="Select" bindLabel="stringValue" bindValue="key">
     </ng-select>
   </div>
 

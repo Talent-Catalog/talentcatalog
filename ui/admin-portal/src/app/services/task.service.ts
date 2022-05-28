@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {Task} from "../model/task";
+import {SearchTaskRequest} from "../model/base";
 
 export interface UpdateTaskRequest {
   displayName: string;
@@ -28,7 +29,7 @@ export class TaskService {
     return this.http.get<Task[]>(`${this.apiUrl}`);
   }
 
-  searchPaged(request): Observable<SearchResults<Task>> {
+  searchPaged(request: SearchTaskRequest): Observable<SearchResults<Task>> {
     return this.http.post<SearchResults<Task>>(`${this.apiUrl}/search-paged`, request);
   }
 

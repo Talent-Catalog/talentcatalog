@@ -69,8 +69,11 @@ export class CreateUserComponent implements OnInit {
         this.loading = false;
       }
     );
+    if (this.authService.getLoggedInUser().role === "admin") {
+      this.roleOptions = this.roleOptions.filter(r => r.key !== "systemadmin" );
+    }
     if (this.authService.getLoggedInUser().role === "sourcepartneradmin") {
-      this.roleOptions = this.roleOptions.filter(r => r.value !== "admin" && r.value !== "sourcepartneradmin" );
+      this.roleOptions = this.roleOptions.filter(r => r.key !== "systemadmin" && r.key !== "admin" && r.key !== "sourcepartneradmin" );
     }
 
   }

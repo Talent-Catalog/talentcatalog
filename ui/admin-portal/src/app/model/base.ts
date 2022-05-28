@@ -190,6 +190,15 @@ export class PagedSearchRequest {
   sortDirection?: string;
 }
 
+export class PagedFilteredSearchRequest extends PagedSearchRequest {
+  keyword?: string;
+  status?: string;
+}
+
+export class SearchPartnerRequest extends PagedFilteredSearchRequest {}
+
+export class SearchTaskRequest extends PagedFilteredSearchRequest {}
+
 export class SearchCandidateSourcesRequest extends PagedSearchRequest {
   keyword?: string;
   fixed?: boolean;
@@ -266,3 +275,8 @@ export function isAdminUser(auth: AuthService) {
   return role !== 'semilimited' && role !== 'limited';
 }
 
+export enum Status {
+  active = "active",
+  inactive = "inactive",
+  deleted = "deleted"
+}

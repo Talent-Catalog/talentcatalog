@@ -31,7 +31,7 @@
     </div>
     <ng-select id="canDrive" [formControlName]="'canDrive'" (clear)="setNoResponse('canDrive')"
                [items]="canDriveOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
   <div *ngIf="canDrive === 'Yes'">
@@ -41,7 +41,7 @@
       </label>
       <ng-select id="drivingLicense" [formControlName]="'drivingLicense'" (clear)="setNoResponse('drivingLicense')"
                  [items]="drivingLicenseOptions" [clearOnBackspace]="false"
-                 placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
 
     <div *ngIf="hasDrivingLicense">
