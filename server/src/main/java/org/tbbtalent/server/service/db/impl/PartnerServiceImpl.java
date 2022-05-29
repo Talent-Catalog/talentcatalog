@@ -65,10 +65,10 @@ public class PartnerServiceImpl implements PartnerService {
             case "SourcePartner":
                 SourcePartnerImpl sourcePartner = new SourcePartnerImpl();
 
-                //Check that registrationUrl is unique
-                String registrationUrl = request.getRegistrationUrl();
-                if (registrationUrl != null) {
-                    if (getPartnerFromHost(registrationUrl) != null) {
+                //Check that registrationDomain is unique
+                String registrationDomain = request.getRegistrationDomain();
+                if (registrationDomain != null) {
+                    if (getPartnerFromHost(registrationDomain) != null) {
                         throw new EntityExistsException("registration domain");
                     }
                 }
@@ -88,7 +88,7 @@ public class PartnerServiceImpl implements PartnerService {
 
                 //Source partner attributes
                 sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
-                sourcePartner.setRegistrationUrl(registrationUrl);
+                sourcePartner.setRegistrationDomain(registrationDomain);
                 sourcePartner.setSourceCountries(sourceCountries);
 
                 partner = sourcePartner;
@@ -155,11 +155,11 @@ public class PartnerServiceImpl implements PartnerService {
         if (partner instanceof SourcePartner) {
             SourcePartner sourcePartner = (SourcePartner) partner;
 
-            //Check that any changed registrationUrl is unique
-            String registrationUrl = request.getRegistrationUrl();
-            if (registrationUrl != null
-                && !registrationUrl.equals(sourcePartner.getRegistrationUrl())) {
-                if (getPartnerFromHost(registrationUrl) != null) {
+            //Check that any changed registrationDomain is unique
+            String registrationDomain = request.getRegistrationDomain();
+            if (registrationDomain != null
+                && !registrationDomain.equals(sourcePartner.getRegistrationDomain())) {
+                if (getPartnerFromHost(registrationDomain) != null) {
                     throw new EntityExistsException("registration domain");
                 }
             }
@@ -179,7 +179,7 @@ public class PartnerServiceImpl implements PartnerService {
 
             //Source partner attributes
             sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
-            sourcePartner.setRegistrationUrl(registrationUrl);
+            sourcePartner.setRegistrationDomain(registrationDomain);
             sourcePartner.setSourceCountries(sourceCountries);
         }
 

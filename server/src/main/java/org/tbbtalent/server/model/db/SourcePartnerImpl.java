@@ -47,7 +47,7 @@ public class SourcePartnerImpl extends PartnerImpl
     private String registrationLandingPage;
 
     @Nullable
-    private String registrationUrl;
+    private String registrationDomain;
 
     //TODO JC Note - unidirectional - no mapping from Country
     //TODO JC Eager necessary? Test.

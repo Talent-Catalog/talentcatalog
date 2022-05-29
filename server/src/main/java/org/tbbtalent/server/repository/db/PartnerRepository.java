@@ -29,6 +29,6 @@ public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, Jpa
     @Query("select p from SourcePartner p where p.defaultSourcePartner = :defaultSourcePartner")
     Optional<PartnerImpl> findByDefaultSourcePartner(@Param("defaultSourcePartner") boolean defaultSourcePartner);
 
-    @Query("select p from SourcePartner p where p.registrationUrl = :hostDomain")
+    @Query("select p from SourcePartner p where p.registrationDomain = :hostDomain")
     Optional<PartnerImpl> findByRegistrationUrl(@Param("hostDomain") String hostDomain);
 }

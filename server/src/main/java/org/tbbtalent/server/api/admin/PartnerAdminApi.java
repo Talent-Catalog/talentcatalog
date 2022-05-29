@@ -84,7 +84,7 @@ public class PartnerAdminApi implements
         //These properties should only be extracted for QuestionTask's
         private final Set<String> sourcePartnerOnlyProperties =
             new HashSet<>(Arrays.asList(
-                "registrationLandingPage", "registrationUrl", "sourceCountries",
+                "registrationLandingPage", "registrationDomain", "sourceCountries",
                 "defaultSourcePartner"));
 
         public boolean ignoreProperty(Object o, String property) {
@@ -106,7 +106,7 @@ public class PartnerAdminApi implements
             .add("status")
             .add("websiteUrl")
             .add("registrationLandingPage")
-            .add("registrationUrl")
+            .add("registrationDomain")
             .add("sourceCountries", countryDto())
             ;
     }

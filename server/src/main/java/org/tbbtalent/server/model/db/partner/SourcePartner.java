@@ -43,7 +43,7 @@ public interface SourcePartner extends Partner {
      * <p/>
      * Typically this page is located somewhere on the partner's website, providing information
      * about the partner and the Talent Catalog. It will contain a button or some other link
-     * directing the user to the {@link #getRegistrationUrl()} which is the entry point for this
+     * directing the user to the {@link #getRegistrationDomain()} which is the entry point for this
      * application.
      * <p/>
      * For example, Talent Beyond Boundaries currently has a registration landing page at
@@ -69,8 +69,8 @@ public interface SourcePartner extends Partner {
      * @return Candidate login/registration domain.
      */
     @Nullable
-    String getRegistrationUrl();
-    void setRegistrationUrl(@Nullable String s);
+    String getRegistrationDomain();
+    void setRegistrationDomain(@Nullable String s);
 
     /**
      * Source countries that this source partner operates in.

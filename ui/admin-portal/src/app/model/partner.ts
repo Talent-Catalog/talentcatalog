@@ -28,7 +28,7 @@ export interface PartnerSimpleAttributes {
   name: string;
   partnerType: string;
   registrationLandingPage: string;
-  registrationUrl: string;
+  registrationDomain: string;
   status: Status;
   websiteUrl: string;
 }

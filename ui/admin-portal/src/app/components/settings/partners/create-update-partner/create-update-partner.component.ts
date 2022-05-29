@@ -50,7 +50,7 @@ export class CreateUpdatePartnerComponent implements OnInit {
       logo: [this.partner?.logo],
       name: [this.partner?.name, Validators.required],
       registrationLandingPage: [this.partner?.registrationLandingPage],
-      registrationDomain: [this.partner?.registrationUrl],
+      registrationDomain: [this.partner?.registrationDomain],
       sourceCountries: [this.partner?.sourceCountries],
 
       //Note that if you initialize with the actual Enum directly, ng-select will display the
@@ -91,7 +91,7 @@ export class CreateUpdatePartnerComponent implements OnInit {
       name: this.form.value.name,
       partnerType: 'SourcePartner',
       registrationLandingPage: this.form.value.registrationLandingPage,
-      registrationUrl: this.form.value.registrationDomain,
+      registrationDomain: this.form.value.registrationDomain,
 
       //Convert countries to country ids
       sourceCountryIds: this.form.value.sourceCountries?.map(c => c.id),
