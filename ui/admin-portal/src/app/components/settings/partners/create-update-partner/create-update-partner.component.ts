@@ -20,8 +20,8 @@ import {CandidateStatus} from "../../../../model/candidate";
   retrieve fresh object details from the database using the id.
 
   - shows how to display enumerated type values in a drop down, then send an enumerated type value
-  back to the server. Trick is to work with EnumOptions everywhere - converting the real Enum at
-  just prior to sending to server. Relies on fact that
+  back to the server. Trick is to work with EnumOptions everywhere - converting to the real Enum
+  just prior to sending to server.
  */
 
 @Component({
@@ -54,8 +54,8 @@ export class CreateUpdatePartnerComponent implements OnInit {
       sourceCountries: [this.partner?.sourceCountries],
 
       //Note that if you initialize with the actual Enum directly, ng-select will display the
-      //string value of that enum if it finds one. Bascially means that you don't need to
-      //convert to EnumOption here - but can pass enumeration value in directly.
+      //string value of that enum if it finds one. Basically means that you don't need to
+      //convert to EnumOption here - but can pass enumeration in directly.
       status: [this.partner?.status, Validators.required],
       websiteUrl: [this.partner?.websiteUrl],
     });
@@ -96,8 +96,15 @@ export class CreateUpdatePartnerComponent implements OnInit {
       //Convert countries to country ids
       sourceCountryIds: this.form.value.sourceCountries?.map(c => c.id),
 
-      //Convert EnumOption to status
-      status: CandidateStatus[this.form.value.status?.key],
+      //Convert returned enum key to Status enum.
+      //Note that this not really necessary. Because the form value is typed as an "any" it will
+      //assign directly to the status attribute even though the status attribute is an Enum and
+      //the form value is actually a string. Type checking is disabled for "any"s and a string
+      //value is what actually gets sent in the JSON version of the request, even if an Enum is
+      //assigned. But it is more correct to assign an Enum, and if we do that the code will continue
+      //to work even if stronger type checking is enabled one day (by turning on "noImplicitAny"
+      //- see https://www.typescriptlang.org/tsconfig#noImplicitAny )
+      status: Status[this.form.value.status as string],
 
       websiteUrl: this.form.value.websiteUrl,
 
