@@ -31,7 +31,6 @@ export class SearchPartnersComponent implements OnInit {
     private modalService: NgbModal,
     private authService: AuthService) { }
 
-  //todo Use Status enum?
   ngOnInit(): void {
     this.searchForm = this.fb.group({
       keyword: [''],
