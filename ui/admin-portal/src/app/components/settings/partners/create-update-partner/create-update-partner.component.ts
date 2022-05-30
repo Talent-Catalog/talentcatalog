@@ -7,7 +7,6 @@ import {Status} from "../../../../model/base";
 import {Country} from "../../../../model/country";
 import {CountryService} from "../../../../services/country.service";
 import {enumOptions} from "../../../../util/enum";
-import {CandidateStatus} from "../../../../model/candidate";
 
 /*
   MODEL - latest best practice on this kind of component
@@ -22,6 +21,16 @@ import {CandidateStatus} from "../../../../model/candidate";
   - shows how to display enumerated type values in a drop down, then send an enumerated type value
   back to the server. Trick is to work with EnumOptions everywhere - converting to the real Enum
   just prior to sending to server.
+
+  NOTE - Why Enumerations are better than strings
+
+  - Enumerations add "type safety", eliminating a whole range of errors coming from typing errors
+  when typing in strings - eg "admni" instead of "admin". With enum's those sort of typos are
+  picked up at compile time. Role.admni doesn't exist and will cause a compile error.
+
+  - Enumerations make coding quicker because IDE's like Intellij can automatically prompt you for
+  the value you want. For example, just type "Role." and Intellij will prompt you for all legal
+  values.
  */
 
 @Component({
