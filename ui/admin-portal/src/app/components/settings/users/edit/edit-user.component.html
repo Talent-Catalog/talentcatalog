@@ -48,6 +48,23 @@
         <label for="lastName">Last Name</label>
         <input type="text" class="form-control" id="lastName" formControlName="lastName">
       </div>
+
+      <!-- Partner  -->
+      <div class="form-group" *ngIf="canManagePartner()">
+        <label>Partner</label>
+        <ng-select
+          id="partner"
+          [items]="partners"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          bindValue="id"
+          [formControlName]="'partnerId'">
+        </ng-select>
+      </div>
+
       <div class="form-group">
         <label for="status">Status</label>
         <ng-select id="status" [formControlName]="'status'" placeholder="Select">

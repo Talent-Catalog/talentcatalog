@@ -191,6 +191,8 @@ public class UserServiceImpl implements UserService {
         user.setReadOnly(request.getReadOnly());
         user.setUsingMfa(request.getUsingMfa());
 
+
+       //TODO JC Need to respect any specified partnerId if it is present
         //Set the user's source partner
         Partner sourcePartner;
         if (creatingUser == null) {
@@ -261,6 +263,13 @@ public class UserServiceImpl implements UserService {
                 if (existing != null){
                     throw new UsernameTakenException("email");
                 }
+            }
+
+            Long partnerId = request.getPartnerId();
+            if (partnerId != null) {
+                //Only set partner if one specified (otherwise partner remains unchanged)
+                Partner partner = partnerService.get(partnerId);
+                user.setSourcePartner((SourcePartnerImpl) partner);
             }
 
             //Check source countries aren't restricted, and add to user.

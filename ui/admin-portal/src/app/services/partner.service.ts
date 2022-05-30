@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {environment} from "../../environments/environment";
@@ -23,6 +23,11 @@ export class PartnerService {
   create(request: UpdatePartnerRequest): Observable<Partner> {
     return this.http.post<Partner>(`${this.apiUrl}`, request);
   }
+
+  listPartners(): Observable<Partner[]> {
+    //If we already have the data return it, otherwise get it.
+    return this.http.get<Partner[]>(`${this.apiUrl}`);
+ }
 
   update(id: number, request: UpdatePartnerRequest): Observable<Partner>  {
     return this.http.put<Partner>(`${this.apiUrl}/${id}`, request);

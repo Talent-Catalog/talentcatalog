@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -60,9 +61,15 @@ public interface PartnerService {
     Partner getPartnerFromHost(String hostDomain);
 
     /**
-     * Get the tasks as a paged search request
+     * Get all partners
+     * @return List of partners
+     */
+    List<PartnerImpl> listPartners();
+
+    /**
+     * Get the partners as a paged search request
      * @param request - Paged Search Request
-     * @return Page of tasks
+     * @return Page of partners
      */
     Page<PartnerImpl> searchPartners(SearchPartnerRequest request);
 
@@ -90,6 +97,4 @@ public interface PartnerService {
      */
     @NonNull
     PartnerImpl update(long id, UpdatePartnerRequest request) throws EntityExistsException, NoSuchObjectException;
-
-
 }

@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db.impl;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
@@ -137,6 +138,12 @@ public class PartnerServiceImpl implements PartnerService {
             .orElse(null);
 
         return partner;
+    }
+
+    @Override
+    public List<PartnerImpl> listPartners() {
+        List<PartnerImpl> partners = partnerRepository.findByStatus(Status.active);
+        return partners;
     }
 
     @Override

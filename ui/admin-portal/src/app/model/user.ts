@@ -15,6 +15,7 @@
  */
 
 import {Country} from "./country";
+import {Partner} from "./partner";
 
 export interface User {
   id: number;
@@ -32,6 +33,7 @@ export interface User {
   lastLogin: number;
   usingMfa: boolean;
   mfaConfigured: boolean;
+  sourcePartner: Partner;
 }
 
 export interface UpdateUserRequest {

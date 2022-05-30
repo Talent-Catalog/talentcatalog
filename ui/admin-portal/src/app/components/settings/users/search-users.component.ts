@@ -217,7 +217,7 @@ export class SearchUsersComponent implements OnInit {
 
   canEdit(user: User): boolean {
     let editable: boolean = false;
-    if (this.loggedInUser.role === 'admin') {
+    if (['admin', 'systemadmin'].includes(this.loggedInUser.role)) {
       editable = true;
     } else if (this.loggedInUser.role === 'sourcepartneradmin') {
       user?.createdBy?.id === this.loggedInUser?.id ? editable = true : editable = false;

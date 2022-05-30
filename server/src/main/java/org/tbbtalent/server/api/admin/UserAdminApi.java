@@ -146,6 +146,7 @@ public class UserAdminApi {
                 .add("lastLogin")
                 .add("usingMfa")
                 .add("mfaConfigured")
+                .add("sourcePartner", partnerDto())
                 ;
     }
 
@@ -153,6 +154,15 @@ public class UserAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                ;
+    }
+
+    private DtoBuilder partnerDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("abbreviation")
+                .add("websiteUrl")
                 ;
     }
 

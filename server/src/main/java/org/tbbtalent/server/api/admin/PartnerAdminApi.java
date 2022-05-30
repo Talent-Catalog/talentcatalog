@@ -18,6 +18,7 @@ package org.tbbtalent.server.api.admin;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.validation.Valid;
@@ -59,6 +60,12 @@ public class PartnerAdminApi implements
     public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
         Partner partner = partnerService.get(id);
         return partnerDto().build(partner);
+    }
+
+    @Override
+    public List<Map<String, Object>> list() {
+        List<PartnerImpl> partners = partnerService.listPartners();
+        return partnerDto().buildList(partners);
     }
 
     @Override

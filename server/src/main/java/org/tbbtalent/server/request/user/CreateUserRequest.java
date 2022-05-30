@@ -5,23 +5,22 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.request.user;
 
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.Role;
-
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.Role;
 
 public class CreateUserRequest {
 
@@ -38,6 +37,7 @@ public class CreateUserRequest {
     @NotNull
     private Role role;
 
+    //TODO JC Just ids
     private List<Country> sourceCountries;
 
     private Boolean readOnly;

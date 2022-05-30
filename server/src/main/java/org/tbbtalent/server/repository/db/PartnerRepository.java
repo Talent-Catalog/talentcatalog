@@ -16,12 +16,14 @@
 
 package org.tbbtalent.server.repository.db;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.PartnerImpl;
+import org.tbbtalent.server.model.db.Status;
 
 public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, JpaSpecificationExecutor<PartnerImpl> {
 
@@ -31,4 +33,8 @@ public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, Jpa
 
     @Query("select p from SourcePartner p where p.registrationDomain = :hostDomain")
     Optional<PartnerImpl> findByRegistrationUrl(@Param("hostDomain") String hostDomain);
+
+    @Query(" select p from SourcePartner p "
+        + " where p.status = :status order by p.name asc")
+    List<PartnerImpl> findByStatus(@Param("status") Status status);
 }

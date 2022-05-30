@@ -23,6 +23,8 @@ import {AuthService} from "../../../../services/auth.service";
 import {CountryService} from "../../../../services/country.service";
 import {Country} from "../../../../model/country";
 import {EnumOption, enumOptions} from "../../../../util/enum";
+import {PartnerService} from "../../../../services/partner.service";
+import {Partner} from "../../../../model/partner";
 
 @Component({
   selector: 'app-edit-user',
@@ -39,9 +41,11 @@ export class EditUserComponent implements OnInit {
 
   roleOptions: EnumOption[] = enumOptions(AdminRole);
   countries: Country[];
+  partners: Partner[];
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
+              private partnerService: PartnerService,
               private userService: UserService,
               private authService: AuthService,
               private countryService: CountryService) {
@@ -50,7 +54,7 @@ export class EditUserComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.userService.get(this.userId).subscribe(user => {
-      this.userForm = this.fb.group({
+      let controlsConfig = {
         email: [user.email, [Validators.required, Validators.email]],
         username: [user.username, Validators.required],
         firstName: [user.firstName, Validators.required],
@@ -60,9 +64,15 @@ export class EditUserComponent implements OnInit {
         sourceCountries: [user.sourceCountries],
         readOnly: [user.readOnly],
         usingMfa: [user.usingMfa]
-      });
+      };
+      if (this.canManagePartner()) {
+        controlsConfig["partnerId"] = [user.sourcePartner.id];
+      }
+      this.userForm = this.fb.group(controlsConfig);
       this.loading = false;
     });
+
+    //todo group these uploads
 
     this.countryService.listCountriesRestricted().subscribe(
       (response) => {
@@ -74,8 +84,24 @@ export class EditUserComponent implements OnInit {
       }
     );
 
+    this.partnerService.listPartners().subscribe(
+      (response) => {
+        this.partners = response;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
+
+    if (this.authService.getLoggedInUser().role === "admin") {
+      this.roleOptions = this.roleOptions.filter(
+        r => !["systemadmin", "admin"].includes(r.key));
+    }
+
     if (this.authService.getLoggedInUser().role === "sourcepartneradmin") {
-      this.roleOptions = this.roleOptions.filter(r => r.key !== "admin" && r.key !== "sourcepartneradmin" );
+      this.roleOptions = this.roleOptions.filter(
+        r => !["systemadmin", "admin", "sourcepartneradmin"].includes(r.key));
     }
 
   }
@@ -101,4 +127,8 @@ export class EditUserComponent implements OnInit {
     this.activeModal.dismiss(false);
   }
 
+  canManagePartner(): boolean {
+    //todo depends on logged in user role
+     return true;
+  }
 }
