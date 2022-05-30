@@ -72,8 +72,6 @@ export class EditUserComponent implements OnInit {
       this.loading = false;
     });
 
-    //todo group these uploads
-
     this.countryService.listCountriesRestricted().subscribe(
       (response) => {
         this.countries = response;
@@ -94,6 +92,7 @@ export class EditUserComponent implements OnInit {
       }
     );
 
+    //Filter who can set which roles
     if (this.authService.getLoggedInUser().role === "admin") {
       this.roleOptions = this.roleOptions.filter(
         r => !["systemadmin", "admin"].includes(r.key));
