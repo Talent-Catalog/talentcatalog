@@ -87,8 +87,7 @@ import {CreateCandidateCertificationComponent} from './components/candidates/vie
 import {EditCandidateCertificationComponent} from './components/candidates/view/certification/edit/edit-candidate-certification.component';
 import {ViewCandidateOccupationComponent} from './components/candidates/view/occupation/view-candidate-occupation.component';
 import {ViewCandidateJobExperienceComponent} from './components/candidates/view/occupation/experience/view-candidate-job-experience.component';
-import {EditUserComponent} from './components/settings/users/edit/edit-user.component';
-import {CreateUserComponent} from './components/settings/users/create/create-user.component';
+import {CreateUpdateUserComponent} from './components/settings/users/create-update-user/create-update-user.component';
 import {CandidateEducationTabComponent} from './components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component';
 import {JoinSavedSearchComponent} from './components/search/join-search/join-saved-search.component';
 import {CandidateSourceComponent} from './components/util/candidate-source/candidate-source.component';
@@ -107,7 +106,6 @@ import {SortedByComponent} from './components/util/sort/sorted-by.component';
 import {EditCandidateLanguageComponent} from './components/candidates/view/language/edit/edit-candidate-language.component';
 import {ViewCandidateAccountComponent} from './components/candidates/view/account/view-candidate-account.component';
 import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
-import {ChangeUsernameComponent} from './components/account/change-username/change-username.component';
 import {CreateCandidateAttachmentComponent} from './components/candidates/view/attachment/create/create-candidate-attachment.component';
 import {EditCandidateAttachmentComponent} from './components/candidates/view/attachment/edit/edit-candidate-attachment.component';
 import {FileUploadComponent} from './components/util/file-upload/file-upload.component';
@@ -256,8 +254,8 @@ import {ViewCandidateRegistrationComponent} from './components/candidates/view/r
 import {EditCandidateRegistrationComponent} from './components/candidates/view/registration/edit/edit-candidate-registration.component';
 import {EditTaskComponent} from './components/settings/tasks/edit/edit-task.component';
 import {TasksMonitorListComponent} from './components/util/tasks-monitor-list/tasks-monitor-list.component';
-import { SearchPartnersComponent } from './components/settings/partners/search-partners/search-partners.component';
-import { CreateUpdatePartnerComponent } from './components/settings/partners/create-update-partner/create-update-partner.component';
+import {SearchPartnersComponent} from './components/settings/partners/search-partners/search-partners.component';
+import {CreateUpdatePartnerComponent} from './components/settings/partners/create-update-partner/create-update-partner.component';
 
 @NgModule({
   declarations: [
@@ -300,8 +298,7 @@ import { CreateUpdatePartnerComponent } from './components/settings/partners/cre
     SearchEducationMajorsComponent,
     CreateEducationMajorComponent,
     EditEducationMajorComponent,
-    EditUserComponent,
-    CreateUserComponent,
+    CreateUpdateUserComponent,
     EditEducationMajorComponent,
     ViewCandidateContactComponent,
     EditCandidateContactComponent,
@@ -337,7 +334,6 @@ import { CreateUpdatePartnerComponent } from './components/settings/partners/cre
     EditCandidateLanguageComponent,
     ViewCandidateAccountComponent,
     ChangePasswordComponent,
-    ChangeUsernameComponent,
     CreateCandidateAttachmentComponent,
     EditCandidateAttachmentComponent,
     FileUploadComponent,

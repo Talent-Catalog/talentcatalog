@@ -33,7 +33,6 @@ import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.request.user.CreateUserRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.PasswordHelper;
@@ -78,7 +77,7 @@ class UserServiceImplTest {
 
     //@Test
     void testCreateUserSourceCountries(){
-        CreateUserRequest request = new CreateUserRequest();
+        UpdateUserRequest request = new UpdateUserRequest();
         request.setFirstName("first");
         request.setLastName("last");
         request.setUsername("username2");

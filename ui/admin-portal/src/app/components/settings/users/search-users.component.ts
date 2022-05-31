@@ -23,13 +23,11 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {AdminRole, User} from "../../../model/user";
 import {UserService} from "../../../services/user.service";
-import {CreateUserComponent} from "./create/create-user.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {EditUserComponent} from "./edit/edit-user.component";
+import {CreateUpdateUserComponent} from "./create-update-user/create-update-user.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {AuthService} from '../../../services/auth.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
-import {ChangeUsernameComponent} from "../../account/change-username/change-username.component";
 import {isAdminUser} from "../../../model/base";
 import {EnumOption, enumOptions} from "../../../util/enum";
 
@@ -106,7 +104,7 @@ export class SearchUsersComponent implements OnInit {
   }
 
   addUser() {
-    const addUserModal = this.modalService.open(CreateUserComponent, {
+    const addUserModal = this.modalService.open(CreateUpdateUserComponent, {
       centered: true,
       backdrop: 'static'
     });
@@ -117,12 +115,12 @@ export class SearchUsersComponent implements OnInit {
   }
 
   editUser(user) {
-    const editUserModal = this.modalService.open(EditUserComponent, {
+    const editUserModal = this.modalService.open(CreateUpdateUserComponent, {
       centered: true,
       backdrop: 'static'
     });
 
-    editUserModal.componentInstance.userId = user.id;
+    editUserModal.componentInstance.user = user;
 
     editUserModal.result
       .then((updatedUser) => {
@@ -174,25 +172,6 @@ export class SearchUsersComponent implements OnInit {
       .then(() => console.log('password updated'))
       .catch(() => { /* Isn't possible */ });
 
-  }
-
-  updateUsername(user: User) {
-    const updateUsernameModal = this.modalService.open(ChangeUsernameComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    updateUsernameModal.componentInstance.user = user;
-
-    updateUsernameModal.result
-      .then(() => {
-          this.loading = false;
-          this.search();
-        },
-        (error) => {
-          this.error = error;
-          this.loading = false;
-        });
   }
 
   resetAuthentication(user: User) {

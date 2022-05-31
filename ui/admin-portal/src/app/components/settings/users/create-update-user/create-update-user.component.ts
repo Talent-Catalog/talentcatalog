@@ -25,19 +25,19 @@ import {Country} from "../../../../model/country";
 import {EnumOption, enumOptions} from "../../../../util/enum";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
+import {forkJoin} from "rxjs";
 
 @Component({
-  selector: 'app-edit-user',
-  templateUrl: './edit-user.component.html',
-  styleUrls: ['./edit-user.component.scss']
+  selector: 'app-create-update-user',
+  templateUrl: './create-update-user.component.html',
+  styleUrls: ['./create-update-user.component.scss']
 })
-export class EditUserComponent implements OnInit {
+export class CreateUpdateUserComponent implements OnInit {
 
-  userId: number;
+  user: User;
   userForm: FormGroup;
   error;
-  loading: boolean;
-  saving: boolean;
+  working: boolean;
 
   roleOptions: EnumOption[] = enumOptions(AdminRole);
   countries: Country[];
@@ -52,46 +52,45 @@ export class EditUserComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loading = true;
-    this.userService.get(this.userId).subscribe(user => {
-      let controlsConfig = {
-        email: [user.email, [Validators.required, Validators.email]],
-        username: [user.username, Validators.required],
-        firstName: [user.firstName, Validators.required],
-        lastName: [user.lastName, Validators.required],
-        status: [user.status, Validators.required],
-        role: [user.role, Validators.required],
-        sourceCountries: [user.sourceCountries],
-        readOnly: [user.readOnly],
-        usingMfa: [user.usingMfa]
-      };
-      if (this.canManagePartner()) {
-        controlsConfig["partnerId"] = [user.sourcePartner.id];
-      }
-      this.userForm = this.fb.group(controlsConfig);
-      this.loading = false;
-    });
+    let formControlsConfig = {
+      email: [this.user?.email, [Validators.required, Validators.email]],
+      username: [this.user?.username, Validators.required],
+      firstName: [this.user?.firstName, Validators.required],
+      lastName: [this.user?.lastName, Validators.required],
+      partnerId: [this.user?.sourcePartner.id],
+      status: [this.user?.status],
+      role: [this.user?.role, Validators.required],
+      sourceCountries: [this.user?.sourceCountries],
+      readOnly: [this.user ? this.user.readOnly : false],
+      usingMfa: [this.user ? this.user.usingMfa : true]
+    }
 
-    this.countryService.listCountriesRestricted().subscribe(
-      (response) => {
-        this.countries = response;
+    //Password is required field in user creation only
+    if (this.create) {
+      formControlsConfig["password"] = [null, Validators.required];
+    }
+
+    this.userForm = this.fb.group(formControlsConfig);
+
+    this.working = true;
+    this.error = null;
+
+    forkJoin({
+      'countries': this.countryService.listCountriesRestricted(),
+      'partners': this.partnerService.listPartners()
+    }).subscribe(
+      results => {
+        this.working = false;
+        this.countries = results['countries'];
+        this.partners = results['partners'];
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this.working = false;
       }
     );
 
-    this.partnerService.listPartners().subscribe(
-      (response) => {
-        this.partners = response;
-      },
-      (error) => {
-        this.error = error;
-        this.loading = false;
-      }
-    );
-
+    //todo move to this  this.roleOptions = this.authService.assignableUserRoles().map(r => AdminRole[r]);
     //Filter who can set which roles
     if (this.authService.getLoggedInUser().role === "admin") {
       this.roleOptions = this.roleOptions.filter(
@@ -105,17 +104,42 @@ export class EditUserComponent implements OnInit {
 
   }
 
+  get create(): boolean {
+    return !this.user;
+  }
+
+  get title(): string {
+    return this.create ? "Add New User"
+      : "Update User";
+  }
+
   onSave() {
-    this.saving = true;
-    this.userService.update(this.userId, this.userForm.value).subscribe(
-      (user) => {
-        this.closeModal(user);
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      });
+    this.working = true;
+
+    //todo populate UpdateUserRequest from form. - see create-update-partner
+
+    if (this.create) {
+      this.userService.create(this.userForm.value).subscribe(
+        (user) => {
+          this.closeModal(user);
+          this.working = false;
+        },
+        (error) => {
+          this.error = error;
+          this.working = false;
+        });
+
+    } else {
+      this.userService.update(this.user.id, this.userForm.value).subscribe(
+        (user) => {
+          this.closeModal(user);
+          this.working = false;
+        },
+        (error) => {
+          this.error = error;
+          this.working = false;
+        });
+    }
   }
 
   closeModal(user: User) {
@@ -126,8 +150,7 @@ export class EditUserComponent implements OnInit {
     this.activeModal.dismiss(false);
   }
 
-  canManagePartner(): boolean {
-    //todo depends on logged in user role
-     return true;
+  canAssignPartner(): boolean {
+    return this.authService.canAssignPartner();
   }
 }

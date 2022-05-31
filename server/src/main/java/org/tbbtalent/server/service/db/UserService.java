@@ -19,7 +19,6 @@ package org.tbbtalent.server.service.db;
 import java.util.List;
 import java.util.Set;
 import javax.security.auth.login.AccountLockedException;
-import org.tbbtalent.server.security.AuthService;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
@@ -30,15 +29,14 @@ import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
-import org.tbbtalent.server.request.user.CreateUserRequest;
 import org.tbbtalent.server.request.user.ResetPasswordRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;
 import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tbbtalent.server.request.user.UpdateSharingRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
-import org.tbbtalent.server.request.user.UpdateUsernameRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.util.qr.EncodedQrImage;
 
 public interface UserService {
@@ -76,12 +74,10 @@ public interface UserService {
      */
     Set<Country> getDefaultSourceCountries(User user);
 
-    User createUser(CreateUserRequest request, @Nullable User creatingUser) throws UsernameTakenException;
-    User createUser(CreateUserRequest request) throws UsernameTakenException;
+    User createUser(UpdateUserRequest request, @Nullable User creatingUser) throws UsernameTakenException;
+    User createUser(UpdateUserRequest request) throws UsernameTakenException;
 
     User updateUser(long id, UpdateUserRequest request);
-
-    User updateUsername(long id, UpdateUsernameRequest request);
 
     void deleteUser(long id);
 

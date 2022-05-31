@@ -22,7 +22,7 @@ import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
-import {User} from "../model/user";
+import {AdminRole, User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {Observable} from "rxjs/index";
 import {EncodedQrImage} from "../util/qr";
@@ -52,6 +52,37 @@ export class AuthService {
         }
       )
     );
+  }
+
+  //Can be used when we switch to user providing AdminRole enum
+  assignableUserRoles(): AdminRole[] {
+    const userRole: AdminRole = this.currentRole();
+    let assignableRoles: AdminRole[] = [];
+    switch (userRole) {
+      case AdminRole.sourcepartneradmin:
+        assignableRoles.push(AdminRole.limited, AdminRole.semilimited);
+        break;
+
+      case AdminRole.admin:
+        assignableRoles.push(AdminRole.limited, AdminRole.semilimited, AdminRole.sourcepartneradmin);
+        break;
+
+      case AdminRole.systemadmin:
+        //System admin can assign all roles
+        assignableRoles = Object.values(AdminRole);
+        break;
+    }
+    return assignableRoles;
+  }
+
+  canAssignPartner(): boolean {
+    const loggedInUser = this.getLoggedInUser();
+    return loggedInUser == null ? false : loggedInUser.role === 'systemadmin';
+  }
+
+  currentRole(): AdminRole {
+    const loggedInUser = this.getLoggedInUser();
+    return loggedInUser == null ? AdminRole.limited : AdminRole[loggedInUser.role];
   }
 
   isAuthenticated(): boolean {

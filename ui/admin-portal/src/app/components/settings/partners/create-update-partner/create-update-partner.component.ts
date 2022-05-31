@@ -106,11 +106,17 @@ export class CreateUpdatePartnerComponent implements OnInit {
       sourceCountryIds: this.form.value.sourceCountries?.map(c => c.id),
 
       //Convert returned enum key to Status enum.
-      //Note that this not really necessary. Because the form value is typed as an "any" it will
+      //Note that code below is a bit more complicated than needed. The following would work:
+      //
+      //     status: this.form.value.status
+      //
+      //This is because the form value is typed as an "any" and so it will
       //assign directly to the status attribute even though the status attribute is an Enum and
       //the form value is actually a string. Type checking is disabled for "any"s and a string
       //value is what actually gets sent in the JSON version of the request, even if an Enum is
-      //assigned. But it is more correct to assign an Enum, and if we do that the code will continue
+      //assigned.
+      //
+      //But it is more correct to assign an Enum, and if we do that the code will continue
       //to work even if stronger type checking is enabled one day (by turning on "noImplicitAny"
       //- see https://www.typescriptlang.org/tsconfig#noImplicitAny )
       status: Status[this.form.value.status as string],

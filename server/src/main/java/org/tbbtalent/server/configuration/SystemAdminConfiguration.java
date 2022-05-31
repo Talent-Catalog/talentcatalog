@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
-import org.tbbtalent.server.request.user.CreateUserRequest;
+import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.UserService;
 
@@ -62,7 +62,7 @@ public class SystemAdminConfiguration {
   public void autoCreateSystemAdmin() {
     User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
     if (systemAdmin == null) {
-      CreateUserRequest req = new CreateUserRequest();
+      UpdateUserRequest req = new UpdateUserRequest();
       req.setUsername(SYSTEM_ADMIN_NAME);
       req.setFirstName("System");
       req.setLastName("Admin");

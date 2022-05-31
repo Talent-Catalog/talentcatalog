@@ -78,14 +78,12 @@ import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.repository.db.UserSpecification;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
-import org.tbbtalent.server.request.user.CreateUserRequest;
 import org.tbbtalent.server.request.user.ResetPasswordRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;
 import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tbbtalent.server.request.user.UpdateSharingRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
-import org.tbbtalent.server.request.user.UpdateUsernameRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.JwtTokenProvider;
@@ -180,8 +178,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(CreateUserRequest request, @Nullable User creatingUser)
+    public User createUser(UpdateUserRequest request, @Nullable User creatingUser)
         throws UsernameTakenException {
+
         User user = new User(
             request.getUsername(),
             request.getFirstName(),
@@ -193,6 +192,8 @@ public class UserServiceImpl implements UserService {
 
 
        //TODO JC Need to respect any specified partnerId if it is present
+        //TODO JC Also check aithorization - partner assignment systemadmin only
+
         //Set the user's source partner
         Partner sourcePartner;
         if (creatingUser == null) {
@@ -229,7 +230,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User createUser(CreateUserRequest request) throws UsernameTakenException, InvalidRequestException {
+    public User createUser(UpdateUserRequest request) throws UsernameTakenException, InvalidRequestException {
         User loggedInUser = fetchLoggedInUser();
         boolean authSuccess;
 
@@ -265,6 +266,8 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
+            //TODO JC Also check aithorization - partner assignment systemadmin only
+
             Long partnerId = request.getPartnerId();
             if (partnerId != null) {
                 //Only set partner if one specified (otherwise partner remains unchanged)
@@ -281,6 +284,7 @@ public class UserServiceImpl implements UserService {
             user.setReadOnly(request.getReadOnly());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
+            user.setUsername(request.getUsername());
             user.setEmail(request.getEmail());
             user.setStatus(request.getStatus());
             user.setUsingMfa(request.getUsingMfa());
@@ -375,28 +379,6 @@ public class UserServiceImpl implements UserService {
                 throw new InvalidRequestException("You don't have permission to save this role type.");
             }
         }
-    }
-
-    @Override
-    @Transactional
-    public User updateUsername(long id, UpdateUsernameRequest request) throws NoSuchObjectException, InvalidRequestException {
-        User loggedInUser = fetchLoggedInUser();
-        User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-        if (authoriseAdminUser(user)) {
-            if (!user.getUsername().equalsIgnoreCase(request.getUsername())){
-                User existing = userRepository.findByUsernameIgnoreCase(request.getUsername());
-                if (existing != null){
-                    throw new UsernameTakenException("username");
-                }
-            }
-            user.setUsername(request.getUsername());
-            user.setAuditFields(loggedInUser);
-            userRepository.save(user);
-        } else {
-            throw new InvalidRequestException("You don't have permission to update this user's username.");
-        }
-        return user;
     }
 
     @Override

@@ -17,8 +17,6 @@
 package org.tbbtalent.server.request.user;
 
 import java.util.List;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.tbbtalent.server.model.db.Country;
@@ -29,29 +27,25 @@ import org.tbbtalent.server.model.db.Status;
 @Setter
 public class UpdateUserRequest {
 
-    @NotBlank
     private String email;
 
-    @NotBlank
     private String firstName;
 
-    @NotBlank
     private String lastName;
 
     private Long partnerId;
 
+    private String password;
+
     private Boolean readOnly;
 
-    @NotNull
     private Role role;
 
     //TODO JC Just ids
     private List<Country> sourceCountries;
 
-    @NotNull
     private Status status;
 
-    @NotBlank
     private String username;
 
     private Boolean usingMfa;

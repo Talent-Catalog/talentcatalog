@@ -21,7 +21,6 @@ import {User} from '../../../../model/user';
 import {CandidateService} from '../../../../services/candidate.service';
 import {UserService} from '../../../../services/user.service';
 import {ChangePasswordComponent} from '../../../account/change-password/change-password.component';
-import {ChangeUsernameComponent} from '../../../account/change-username/change-username.component';
 
 @Component({
   selector: 'app-view-candidate-account',
@@ -69,20 +68,6 @@ export class ViewCandidateAccountComponent implements OnInit, OnChanges {
     updatePasswordModal.componentInstance.user = user;
 
     updatePasswordModal.result
-      .then((user) => this.user = user)
-      .catch(() => { /* Isn't possible */ });
-
-  }
-
-  updateUsername(user: User) {
-    const updateUsernameModal = this.modalService.open(ChangeUsernameComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    updateUsernameModal.componentInstance.user = user;
-
-    updateUsernameModal.result
       .then((user) => this.user = user)
       .catch(() => { /* Isn't possible */ });
 

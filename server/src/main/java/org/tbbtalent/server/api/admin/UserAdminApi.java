@@ -31,12 +31,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.request.user.CreateUserRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;
 import org.tbbtalent.server.request.user.UpdateSharingRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
-import org.tbbtalent.server.request.user.UpdateUsernameRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -78,7 +76,7 @@ public class UserAdminApi {
     }
 
     @PostMapping
-    public Map<String, Object> create(@Valid @RequestBody CreateUserRequest request) throws UsernameTakenException {
+    public Map<String, Object> create(@Valid @RequestBody UpdateUserRequest request) throws UsernameTakenException {
         User user = this.userService.createUser(request);
         return userDto().build(user);
     }
@@ -87,13 +85,6 @@ public class UserAdminApi {
     public Map<String, Object> update(@PathVariable("id") long id,
                             @RequestBody UpdateUserRequest request) {
         User user = this.userService.updateUser(id, request);
-        return userDto().build(user);
-    }
-
-    @PutMapping("/username/{id}")
-    public Map<String, Object> updateUsername(@PathVariable("id") long id,
-                                      @RequestBody UpdateUsernameRequest request) {
-        User user = this.userService.updateUsername(id, request);
         return userDto().build(user);
     }
 
