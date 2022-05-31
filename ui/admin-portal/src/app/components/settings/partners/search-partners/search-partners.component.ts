@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../../../../services/auth.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
@@ -6,10 +6,14 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SearchResults} from "../../../../model/search-results";
 import {Partner} from "../../../../model/partner";
 import {PartnerService} from "../../../../services/partner.service";
-import {SearchPartnerRequest, SearchTaskRequest, Status} from "../../../../model/base";
+import {SearchPartnerRequest} from "../../../../model/base";
 import {CreateUpdatePartnerComponent} from "../create-update-partner/create-update-partner.component";
 
-//MODEL - latest best practice on this kind of component
+/*
+   MODEL - latest best practice on this kind of component
+
+   - Delegate all authentication logic to authService
+ */
 
 @Component({
   selector: 'app-search-partners',
@@ -39,8 +43,7 @@ export class SearchPartnersComponent implements OnInit {
     this.pageNumber = 1;
     this.pageSize = 50;
 
-    const loggedInUser = this.authService.getLoggedInUser();
-    this.readOnly = loggedInUser == null ? true : loggedInUser.readOnly;
+    this.readOnly = this.authService.isReadOnly();
 
     //Monitor form changes
     this.searchForm.valueChanges

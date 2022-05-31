@@ -25,7 +25,6 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {Observable} from "rxjs/index";
-import {Candidate} from "../model/candidate";
 import {EncodedQrImage} from "../util/qr";
 
 @Injectable({
@@ -57,6 +56,11 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return this.getLoggedInUser() != null;
+  }
+
+  isReadOnly(): boolean {
+    const loggedInUser = this.getLoggedInUser();
+    return loggedInUser == null ? true : loggedInUser.readOnly;
   }
 
   getLoggedInUser(): User {
