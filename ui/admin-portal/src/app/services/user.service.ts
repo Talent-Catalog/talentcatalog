@@ -37,16 +37,12 @@ export class UserService {
     return this.http.get<User>(`${this.apiUrl}/${id}`);
   }
 
-  create(details): Observable<User>  {
+  create(details: UpdateUserRequest): Observable<User>  {
     return this.http.post<User>(`${this.apiUrl}`, details);
   }
 
   update(id: number, details: UpdateUserRequest): Observable<User>  {
     return this.http.put<User>(`${this.apiUrl}/${id}`, details);
-  }
-
-  updateUsername(id: number, details): Observable<User>  {
-    return this.http.put<User>(`${this.apiUrl}/username/${id}`, details);
   }
 
   updatePassword(id: number, request) {

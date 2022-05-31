@@ -66,6 +66,7 @@
       <th>Last Name</th>
       <th>Email</th>
       <th>Role</th>
+      <th>Partner</th>
       <th>Source Countries</th>
       <th>Read Only?</th>
       <th>Status</th>
@@ -80,6 +81,8 @@
       <td>{{user.lastName}}</td>
       <td>{{user.email}}</td>
       <td>{{user.role}}</td>
+      <td><a [href]="user.sourcePartner.websiteUrl" target="_blank"
+             [title]="user.sourcePartner.name">{{user.sourcePartner.abbreviation}}</a></td>
       <td>{{getSourceCountries(user)}}</td>
       <td>{{user.readOnly}}</td>
       <td>{{user.status}}</td>

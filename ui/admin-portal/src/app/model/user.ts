@@ -40,6 +40,8 @@ export interface UpdateUserRequest {
   email: string;
   firstName: string;
   lastName: string;
+  partnerId: number;
+  password?: string;
   readOnly: boolean;
   role: string;
   sourceCountries: Country[];

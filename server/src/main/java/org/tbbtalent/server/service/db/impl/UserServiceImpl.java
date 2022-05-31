@@ -25,7 +25,6 @@ import dev.samstevens.totp.qr.QrDataFactory;
 import dev.samstevens.totp.qr.QrGenerator;
 import dev.samstevens.totp.secret.SecretGenerator;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -181,51 +180,88 @@ public class UserServiceImpl implements UserService {
     public User createUser(UpdateUserRequest request, @Nullable User creatingUser)
         throws UsernameTakenException {
 
-        User user = new User(
-            request.getUsername(),
-            request.getFirstName(),
-            request.getLastName(),
-            request.getEmail(),
-            request.getRole());
-        user.setReadOnly(request.getReadOnly());
-        user.setUsingMfa(request.getUsingMfa());
+        User user = new User();
 
-
-       //TODO JC Need to respect any specified partnerId if it is present
-        //TODO JC Also check aithorization - partner assignment systemadmin only
-
-        //Set the user's source partner
-        Partner sourcePartner;
-        if (creatingUser == null) {
-            //If we do not know who created this user, set up a default partner
-            sourcePartner = partnerService.getDefaultSourcePartner();
-        } else {
-            sourcePartner = creatingUser.getSourcePartner();
-        }
-        user.setSourcePartner((SourcePartnerImpl) sourcePartner);
-
-        //Avoid checks if there is no creating user (ie the currently logged in user)
-        if (creatingUser != null) {
-            //Validate source countries aren't restricted, and add to user.
-            addSourceCountriesIfValid(user, request.getSourceCountries());
-            // Validate the role requested, and add to user.
-            addRoleIfValid(user, request.getRole());
-        }
+        populateUserFields(user, request, creatingUser);
 
         /* Validate the password before account creation */
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
         user.setPasswordEnc(passwordEncrypted);
-        User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
-        if (existing != null){
-            throw new UsernameTakenException("username");
+        return this.userRepository.save(user);
+    }
+
+    private void populateUserFields(User user, UpdateUserRequest request, @Nullable User creatingUser) {
+        //Check for changes to something existing which must be unique
+
+        final String requestedUsername = request.getUsername();
+        final String requestedEmail = request.getEmail();
+
+        String currentUsername = user.getUsername();
+        if (currentUsername == null || !currentUsername.equals(requestedUsername)) {
+            User existing = userRepository.findByUsernameIgnoreCase(requestedUsername);
+            if (existing != null) {
+                throw new UsernameTakenException("username");
+            }
+        }
+        user.setUsername(requestedUsername);
+
+        String currentEmail = user.getEmail();
+        if (currentEmail == null || !currentEmail.equals(requestedEmail)) {
+            User existing = userRepository.findByEmailIgnoreCase(requestedEmail);
+            if (existing != null) {
+                throw new UsernameTakenException("email");
+            }
+        }
+        user.setEmail(requestedEmail);
+
+        //Possibly update the user's source partner
+        Partner currentPartner = user.getSourcePartner();
+        Long currentPartnerId = currentPartner == null ? null : currentPartner.getId();
+        Partner newSourcePartner = null;
+        Long partnerId = request.getPartnerId();
+        if (partnerId != null) {
+            //Partner specified - is it a new one?
+            if (!partnerId.equals(currentPartnerId)) {
+                if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
+                    //Only system admins can change partners
+                    throw new InvalidRequestException("You don't have permission to assign a partner.");
+                } else {
+                    //Changing partner
+                    newSourcePartner = partnerService.get(partnerId);
+                }
+            }
+        } else {
+            //If user does not already have a source partner, assign one
+            if (currentPartner == null) {
+                if (creatingUser == null) {
+                    //If we do not know who created this user, set up a default partner
+                    newSourcePartner = partnerService.getDefaultSourcePartner();
+                } else {
+                    newSourcePartner = creatingUser.getSourcePartner();
+                }
+            }
+        }
+        //If we have a new source partner, update it.
+        if (newSourcePartner != null) {
+            user.setSourcePartner((SourcePartnerImpl) newSourcePartner);
         }
 
-        existing = userRepository.findByEmailIgnoreCase(user.getEmail());
-        if (existing != null){
-            throw new UsernameTakenException("email");
+
+        user.setReadOnly(request.getReadOnly());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setStatus(request.getStatus());
+        user.setUsingMfa(request.getUsingMfa());
+
+        if (creatingUser == null) {
+            user.setRole(request.getRole());
+        } else {
+            addRoleIfValid(user, request.getRole(), creatingUser);
+
+            //Validate source countries aren't restricted, and add to user.
+            addSourceCountriesIfValid(user, request.getSourceCountries(), creatingUser);
         }
         user.setAuditFields(creatingUser == null ? user : creatingUser);
-        return this.userRepository.save(user);
     }
 
     @Override
@@ -258,37 +294,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
 
         // Only update if logged in user role is admin OR source partner admin AND they created the user.
-        if (authoriseAdminUser(user)) {
-            if (!user.getEmail().equalsIgnoreCase(request.getEmail())){
-                User existing = userRepository.findByEmailIgnoreCase(request.getEmail());
-                if (existing != null){
-                    throw new UsernameTakenException("email");
-                }
-            }
-
-            //TODO JC Also check aithorization - partner assignment systemadmin only
-
-            Long partnerId = request.getPartnerId();
-            if (partnerId != null) {
-                //Only set partner if one specified (otherwise partner remains unchanged)
-                Partner partner = partnerService.get(partnerId);
-                user.setSourcePartner((SourcePartnerImpl) partner);
-            }
-
-            //Check source countries aren't restricted, and add to user.
-            addSourceCountriesIfValid(user, request.getSourceCountries());
-
-            //Check role type isn't restricted, and add to user.
-            addRoleIfValid(user, request.getRole());
-
-            user.setReadOnly(request.getReadOnly());
-            user.setFirstName(request.getFirstName());
-            user.setLastName(request.getLastName());
-            user.setUsername(request.getUsername());
-            user.setEmail(request.getEmail());
-            user.setStatus(request.getStatus());
-            user.setUsingMfa(request.getUsingMfa());
-            user.setAuditFields(loggedInUser);
+        if (authoriseAdminUser()) {
+            populateUserFields(user, request, loggedInUser);
             userRepository.save(user);
         } else {
             throw new InvalidRequestException("You don't have permission to edit this user.");
@@ -300,15 +307,9 @@ public class UserServiceImpl implements UserService {
     /**
      * Check that the logged in user is authorized to create or update a user.
      * Admin users can create or update users (unless they are read only).
-     *
-     * //TODO JC These source partner restrictions are not implemented
-     * Source partner admins can create users, but only for their source countries.
-     * Source partner admins can also only create users that arent admins or source partner admins.
-     * Source partner admins can only update users who they created.
-     * @param user It is the user to be updated.
      * @return True if authorised
      */
-    private boolean authoriseAdminUser(User user) {
+    private boolean authoriseAdminUser() {
         boolean authSuccess;
         User loggedInUser = fetchLoggedInUser();
         if (loggedInUser.getReadOnly()) {
@@ -324,32 +325,28 @@ public class UserServiceImpl implements UserService {
     /**
      * Validates that if restricted source countries are present,
      * and if valid it adds those source countries are added to new or updated users.
-     * If logged in users source countries is empty, it means no restrictions.
+     * If creating users source countries is empty, it means no restrictions.
      * @param user User to add source countries to.
      * @param requestCountries The list of countries from the request. Can be empty.
+     * @param creatingUser User which is assigning countries to the given user
      */
-    private void addSourceCountriesIfValid(User user, List<Country> requestCountries) throws InvalidRequestException {
-        User loggedInUser = fetchLoggedInUser();
-        // Only update source countries if they are different from existing.
-        List<Country> currentUserCountries = new ArrayList<>(user.getSourceCountries());
-        //todo This comparison will always be unequal - doesn't compare contents of lists
-        if (!currentUserCountries.equals(requestCountries)) {
-            // Clear old source country joins before adding again
-            user.getSourceCountries().clear();
-            if (CollectionUtils.isNotEmpty(requestCountries)) {
-                for (Country sourceCountry : requestCountries) {
-                    if (loggedInUser.getSourceCountries().isEmpty() || loggedInUser.getSourceCountries().contains(sourceCountry)) {
-                        user.getSourceCountries().add(sourceCountry);
-                    } else {
-                        throw new InvalidRequestException("You don't have permission to add this country.");
-                    }
+    private void addSourceCountriesIfValid(User user, List<Country> requestCountries,
+        User creatingUser) throws InvalidRequestException {
+        // Clear old source country joins before adding again
+        user.getSourceCountries().clear();
+        if (CollectionUtils.isNotEmpty(requestCountries)) {
+            for (Country sourceCountry : requestCountries) {
+                if (creatingUser.getSourceCountries().isEmpty() || creatingUser.getSourceCountries().contains(sourceCountry)) {
                     user.getSourceCountries().add(sourceCountry);
+                } else {
+                    throw new InvalidRequestException("You don't have permission to add this country.");
                 }
-            } else {
-                if (loggedInUser.getRole().equals(Role.sourcepartneradmin) && !loggedInUser.getSourceCountries().isEmpty()) {
-                    for (Country sourceCountry : loggedInUser.getSourceCountries()) {
-                        user.getSourceCountries().add(sourceCountry);
-                    }
+                user.getSourceCountries().add(sourceCountry);
+            }
+        } else {
+            if (creatingUser.getRole().equals(Role.sourcepartneradmin) && !creatingUser.getSourceCountries().isEmpty()) {
+                for (Country sourceCountry : creatingUser.getSourceCountries()) {
+                    user.getSourceCountries().add(sourceCountry);
                 }
             }
         }
@@ -359,13 +356,14 @@ public class UserServiceImpl implements UserService {
      * Validates that source partner admins can only set roles that aren't admin or source partner admin.
      * @param user User - the user to add or update role type to.
      * @param requestedRole - The role to change to in the request.
+     * @param creatingUser User that is assigning role to given user
      */
-    private void addRoleIfValid(User user, Role requestedRole) throws InvalidRequestException {
-        User loggedInUser = fetchLoggedInUser();
-        Role loggedInRole = loggedInUser.getRole();
-        if (loggedInRole == Role.systemadmin) {
+    private void addRoleIfValid(User user, Role requestedRole,
+        User creatingUser) throws InvalidRequestException {
+        Role creatingUserRole = creatingUser.getRole();
+        if (creatingUserRole == Role.systemadmin) {
             user.setRole(requestedRole);
-        } else if (loggedInRole == Role.admin) {
+        } else if (creatingUserRole == Role.admin) {
             if (requestedRole != Role.systemadmin) {
                 user.setRole(requestedRole);
             } else {
@@ -417,7 +415,7 @@ public class UserServiceImpl implements UserService {
         User loggedInUser = fetchLoggedInUser();
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-        if (authoriseAdminUser(user)) {
+        if (authoriseAdminUser()) {
             user.setStatus(Status.deleted);
             user.setAuditFields(loggedInUser);
             userRepository.save(user);
@@ -547,7 +545,7 @@ public class UserServiceImpl implements UserService {
         /* Get user */
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-        if (authoriseAdminUser(user)) {
+        if (authoriseAdminUser()) {
             /* Check that the new passwords match */
             if (!request.getPassword().equals(request.getPasswordConfirmation())) {
                 throw new PasswordMatchException();
@@ -622,7 +620,7 @@ public class UserServiceImpl implements UserService {
         User loggedInUser = fetchLoggedInUser();
         User user = this.userRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-        if (authoriseAdminUser(user)) {
+        if (authoriseAdminUser()) {
             user.setMfaSecret(null);
             user.setAuditFields(loggedInUser);
             userRepository.save(user);

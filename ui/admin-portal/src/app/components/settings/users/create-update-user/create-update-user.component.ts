@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AdminRole, User} from "../../../../model/user";
+import {AdminRole, UpdateUserRequest, User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {AuthService} from "../../../../services/auth.service";
@@ -26,6 +26,7 @@ import {EnumOption, enumOptions} from "../../../../util/enum";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
 import {forkJoin} from "rxjs";
+import {Status} from "../../../../model/base";
 
 @Component({
   selector: 'app-create-update-user',
@@ -58,7 +59,7 @@ export class CreateUpdateUserComponent implements OnInit {
       firstName: [this.user?.firstName, Validators.required],
       lastName: [this.user?.lastName, Validators.required],
       partnerId: [this.user?.sourcePartner.id],
-      status: [this.user?.status],
+      status: [this.user ? this.user.status : Status.active],
       role: [this.user?.role, Validators.required],
       sourceCountries: [this.user?.sourceCountries],
       readOnly: [this.user ? this.user.readOnly : false],
@@ -116,10 +117,22 @@ export class CreateUpdateUserComponent implements OnInit {
   onSave() {
     this.working = true;
 
-    //todo populate UpdateUserRequest from form. - see create-update-partner
+    const request: UpdateUserRequest = {
+      email: this.userForm.value.email,
+      firstName: this.userForm.value.firstName,
+      lastName: this.userForm.value.lastName,
+      partnerId: this.userForm.value.partnerId,
+      readOnly: this.userForm.value.readOnly,
+      role: this.userForm.value.role,
+      sourceCountries: this.userForm.value.sourceCountries,
+      status: this.userForm.value.status,
+      username: this.userForm.value.username,
+      usingMfa: this.userForm.value.usingMfa
+    }
 
     if (this.create) {
-      this.userService.create(this.userForm.value).subscribe(
+      request.password = this.userForm.value.password;
+      this.userService.create(request).subscribe(
         (user) => {
           this.closeModal(user);
           this.working = false;
@@ -130,7 +143,7 @@ export class CreateUpdateUserComponent implements OnInit {
         });
 
     } else {
-      this.userService.update(this.user.id, this.userForm.value).subscribe(
+      this.userService.update(this.user.id, request).subscribe(
         (user) => {
           this.closeModal(user);
           this.working = false;
