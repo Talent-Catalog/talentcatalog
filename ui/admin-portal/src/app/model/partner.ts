@@ -13,7 +13,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {Status} from "./base";
 import {Country} from "./country";
 
 /*
@@ -21,6 +20,7 @@ import {Country} from "./country";
 
   - Avoid duplicating lists of attributes by using inheritance (ie extends).
   - Link update request to partner attributes (ie don't duplicate attributes)
+  - Map Java enums to strings.
 */
 export interface PartnerSimpleAttributes {
   abbreviation: string;
@@ -29,7 +29,12 @@ export interface PartnerSimpleAttributes {
   partnerType: string;
   registrationLandingPage: string;
   registrationDomain: string;
-  status: Status;
+
+  //Note that status is a Java Status enum on the server, but it maps to the string value of
+  //enum by the JSON processing (Javascript does not know about enums).
+  //However we do create a matching Typescript Status enum, and use that to process this
+  //value in a type safe way. See other MODEL's for details.
+  status: string;
   websiteUrl: string;
 }
 
