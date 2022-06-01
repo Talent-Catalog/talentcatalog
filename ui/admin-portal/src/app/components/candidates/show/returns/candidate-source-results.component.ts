@@ -14,8 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
-import {getCandidateSourceNavigation, isSavedSearch, SavedSearchGetRequest} from '../../../../model/saved-search';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import {
+  getCandidateSourceNavigation,
+  isSavedSearch,
+  SavedSearchGetRequest
+} from '../../../../model/saved-search';
 import {Subscription} from 'rxjs';
 import {CandidateService} from '../../../../services/candidate.service';
 import {Candidate} from '../../../../model/candidate';
@@ -31,7 +44,7 @@ import {CandidateSourceCandidateService} from '../../../../services/candidate-so
 import {SavedListGetRequest} from '../../../../model/saved-list';
 import {AuthService} from '../../../../services/auth.service';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
-import {User} from '../../../../model/user';
+import {Role} from '../../../../model/user';
 import {CandidateFieldInfo} from "../../../../model/candidate-field-info";
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
 import {CandidateColumnSelectorComponent} from "../../../util/candidate-column-selector/candidate-column-selector.component";
@@ -48,7 +61,6 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
   pageSize: number;
   results: SearchResults<Candidate>;
   @Input() candidateSource: CandidateSource;
-  @Input() loggedInUser: User;
   @Output() toggleWatch = new EventEmitter<CandidateSource>();
   @Output() copySource = new EventEmitter<CandidateSource>();
   @Output() deleteSource = new EventEmitter<CandidateSource>();
@@ -255,12 +267,10 @@ constructor(
   }
 
   isCandidateNameViewable(): boolean {
-    const role = this.loggedInUser ? this.loggedInUser.role : null;
-    return role !== 'semilimited' && role !== 'limited';
+    return ![Role.semilimited, Role.limited].includes(this.authService.getLoggedInRole());
   }
 
   isCountryViewable(): boolean {
-    const role = this.loggedInUser ? this.loggedInUser.role : null;
-    return role !== 'limited';
+    return this.authService.getLoggedInRole() !== Role.limited;
   }
 }

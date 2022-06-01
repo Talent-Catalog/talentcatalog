@@ -16,14 +16,18 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
-import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
+import {
+  Candidate,
+  UpdateCandidateStatusInfo,
+  UpdateCandidateStatusRequest
+} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
 import {AuthService} from '../../../services/auth.service';
-import {User} from '../../../model/user';
+import {Role, User} from '../../../model/user';
 import {ListItem} from 'ng-multiselect-dropdown/multiselect.model';
 import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
@@ -231,7 +235,7 @@ export class ViewCandidateComponent implements OnInit {
 
   isCVViewable(): boolean {
     const role = this.loggedInUser ? this.loggedInUser.role : null;
-    return role !== 'semilimited' && role !== 'limited';
+    return Role[role] !== Role.semilimited && Role[role] !== Role.limited;
   }
 
   isAnAdmin(): boolean {

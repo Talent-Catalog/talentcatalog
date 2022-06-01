@@ -123,7 +123,6 @@ import {NotFoundComponent} from './not-found/not-found.component';
 import {GeneralTranslationsComponent} from './components/settings/translations/general/general-translations.component';
 import {ViewCandidateSpecialLinksComponent} from './components/candidates/view/special-links/view-candidate-special-links.component';
 import {EditCandidateSpecialLinksComponent} from './components/candidates/view/special-links/edit/edit-candidate-special-links.component';
-import {RoleGuardService} from './services/role-guard.service';
 import {NgxWigModule} from 'ngx-wig';
 import {ViewCandidateSurveyComponent} from './components/candidates/view/survey/view-candidate-survey.component';
 import {EditCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/edit/edit-candidate-additional-info.component';
@@ -256,6 +255,7 @@ import {EditTaskComponent} from './components/settings/tasks/edit/edit-task.comp
 import {TasksMonitorListComponent} from './components/util/tasks-monitor-list/tasks-monitor-list.component';
 import {SearchPartnersComponent} from './components/settings/partners/search-partners/search-partners.component';
 import {CreateUpdatePartnerComponent} from './components/settings/partners/create-update-partner/create-update-partner.component';
+import {RoleGuardService} from "./services/role-guard.service";
 
 @NgModule({
   declarations: [

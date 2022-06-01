@@ -50,7 +50,7 @@ export interface UpdateUserRequest {
   usingMfa: boolean;
 }
 
-export enum AdminRole {
+export enum Role {
   systemadmin = "System Admin",
   admin = "Full Admin",
   sourcepartneradmin = "Source Partner Admin",

@@ -22,7 +22,7 @@ import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
-import {AdminRole, User} from "../model/user";
+import {Role, User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {Observable} from "rxjs/index";
 import {EncodedQrImage} from "../util/qr";
@@ -54,22 +54,22 @@ export class AuthService {
     );
   }
 
-  //Can be used when we switch to user providing AdminRole enum
-  assignableUserRoles(): AdminRole[] {
-    const userRole: AdminRole = this.currentRole();
-    let assignableRoles: AdminRole[] = [];
+  //Can be used when we switch to user providing Role enum
+  assignableUserRoles(): Role[] {
+    const userRole: Role = this.currentRole();
+    let assignableRoles: Role[] = [];
     switch (userRole) {
-      case AdminRole.sourcepartneradmin:
-        assignableRoles.push(AdminRole.limited, AdminRole.semilimited);
+      case Role.sourcepartneradmin:
+        assignableRoles.push(Role.limited, Role.semilimited);
         break;
 
-      case AdminRole.admin:
-        assignableRoles.push(AdminRole.limited, AdminRole.semilimited, AdminRole.sourcepartneradmin);
+      case Role.admin:
+        assignableRoles.push(Role.limited, Role.semilimited, Role.sourcepartneradmin);
         break;
 
-      case AdminRole.systemadmin:
+      case Role.systemadmin:
         //System admin can assign all roles
-        assignableRoles = Object.values(AdminRole);
+        assignableRoles = Object.values(Role);
         break;
     }
     return assignableRoles;
@@ -77,12 +77,12 @@ export class AuthService {
 
   canAssignPartner(): boolean {
     const loggedInUser = this.getLoggedInUser();
-    return loggedInUser == null ? false : loggedInUser.role === 'systemadmin';
+    return loggedInUser == null ? false : Role[loggedInUser.role] === Role.systemadmin;
   }
 
-  currentRole(): AdminRole {
+  currentRole(): Role {
     const loggedInUser = this.getLoggedInUser();
-    return loggedInUser == null ? AdminRole.limited : AdminRole[loggedInUser.role];
+    return loggedInUser == null ? Role.limited : Role[loggedInUser.role];
   }
 
   isAuthenticated(): boolean {
@@ -94,30 +94,44 @@ export class AuthService {
     return loggedInUser == null ? true : loggedInUser.readOnly;
   }
 
+  getLoggedInRole(): Role {
+    return Role[this.getLoggedInUser().role];
+  }
+
   getLoggedInUser(): User {
-    if (!this.loggedInUser){
+    if (!this.loggedInUser) {
       this.loggedInUser = this.localStorageService.get('user');
     }
 
-    if (!this.isValidUserInfo(this.loggedInUser)){
+    if (!AuthService.isValidUserInfo(this.loggedInUser)) {
       console.log("invalid user");
       this.logout();
       this.router.navigate(['login']);
-      return this.loggedInUser = null;
-    }else {
-      return this.loggedInUser;
+      this.loggedInUser = null;
     }
+
+    return this.loggedInUser;
   }
 
   setNewLoggedInUser(new_user) {
     this.localStorageService.set('user', new_user);
   }
 
-  isValidUserInfo(user: User){
+  /**
+   * Check that user - possibly retrieved from cache - is not junk
+   * @param user User object to check
+   */
+  private static isValidUserInfo(user: User){
+
+    //Null user is OK
     if (user == null) {
       return true;
     }
+
+    //If user exists it should have a role
     if (user.role) {
+      //It should also have a non null readOnly indicator (as an example of another field that
+      //should be there and not null
       return user.readOnly != null;
     } else {
       return false;

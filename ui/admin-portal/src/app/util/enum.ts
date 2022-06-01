@@ -14,9 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {CandidateSource} from "../model/base";
-import {SavedSearch} from "../model/saved-search";
-
 /**
  * Represents the value of String enum
  * (https://www.typescriptlang.org/docs/handbook/enums.html#string-enums)
@@ -66,7 +63,7 @@ export function enumOptions(enumeration): EnumOption[] {
  * value
  */
 export function enumKeysToEnumOptions(keys: string[], enumeration): EnumOption[] {
-  return keys?.map(key => ({ key: key, stringValue: enumeration[key] }));
+  return keys?.map(key => ({ key: key, stringValue: enumeration[key]}));
 }
 
 /**

@@ -23,10 +23,11 @@ import {SettingsComponent} from "./components/settings/settings.component";
 import {HomeComponent} from "./components/candidates/home.component";
 import {InfographicComponent} from "./components/infographics/infographic.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
-import {RoleGuardService} from "./services/role-guard.service";
 import {CandidatesSearchComponent} from "./components/candidates/candidates-search/candidates-search.component";
 import {CandidatesListComponent} from "./components/candidates/candidates-list/candidates-list.component";
 import {NewJobComponent} from "./components/job/new-job/new-job.component";
+import {Role} from "./model/user";
+import {RoleGuardService} from "./services/role-guard.service";
 
 const routes: Routes = [
   {
@@ -99,7 +100,7 @@ const routes: Routes = [
         path: 'settings',
         canActivate: [RoleGuardService],
         data: {
-          expectedRoles: ['systemadmin', 'admin', 'sourcepartneradmin']
+          expectedRoles: [Role.systemadmin, Role.admin, Role.sourcepartneradmin]
         },
         children: [
           {

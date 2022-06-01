@@ -21,7 +21,7 @@ import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {AdminRole, User} from "../../../model/user";
+import {Role, User} from "../../../model/user";
 import {UserService} from "../../../services/user.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CreateUpdateUserComponent} from "./create-update-user/create-update-user.component";
@@ -47,7 +47,7 @@ export class SearchUsersComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
   results: SearchResults<User>;
-  roleOptions: EnumOption[] = enumOptions(AdminRole);
+  roleOptions: EnumOption[] = enumOptions(Role);
 
   constructor(private fb: FormBuilder,
               private userService: UserService,
@@ -59,14 +59,14 @@ export class SearchUsersComponent implements OnInit {
   /* SET UP FORM */
     this.searchForm = this.fb.group({
       keyword: [''],
-      role: [['limited', 'semilimited', 'sourcepartneradmin', 'admin']],
+      role: [],
       status: ['active']
     });
     this.pageNumber = 1;
     this.pageSize = 50;
 
     this.onChanges();
-    if (this.authService.getLoggedInUser().role === "sourcepartneradmin") {
+    if (this.authService.getLoggedInRole() === Role.sourcepartneradmin) {
       this.roleOptions = this.roleOptions.filter(r => r.key !== "admin" && r.key !== "sourcepartneradmin" );
     }
   }
@@ -196,10 +196,12 @@ export class SearchUsersComponent implements OnInit {
 
   canEdit(user: User): boolean {
     let editable: boolean = false;
-    if (['admin', 'systemadmin'].includes(this.loggedInUser.role)) {
+    if ([Role.systemadmin].includes(Role[this.loggedInUser.role])) {
       editable = true;
-    } else if (this.loggedInUser.role === 'sourcepartneradmin') {
-      user?.createdBy?.id === this.loggedInUser?.id ? editable = true : editable = false;
+    } else if ([Role.admin, Role.sourcepartneradmin].includes(Role[this.loggedInUser.role])) {
+      //Can only edit my user or users that I created
+      user?.createdBy?.id === this.loggedInUser?.id || user?.id === this.loggedInUser?.id
+        ? editable = true : editable = false;
     }
     return editable;
   }

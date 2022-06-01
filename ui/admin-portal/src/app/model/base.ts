@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {User} from './user';
+import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
 
@@ -272,7 +272,7 @@ export function isAdminUser(auth: AuthService) {
   const loggedInUser =
     auth ? auth.getLoggedInUser() : null;
   const role = loggedInUser ? loggedInUser.role : null;
-  return role !== 'semilimited' && role !== 'limited';
+  return Role[role] !== Role.semilimited && Role[role] !== Role.limited;
 }
 
 export enum Status {

@@ -15,7 +15,7 @@
  */
 
 import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
-import {User} from "../../model/user";
+import {Role, User} from "../../model/user";
 import {AuthService} from "../../services/auth.service";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -65,4 +65,15 @@ export class SettingsComponent implements OnInit, AfterViewChecked {
     this.setActiveTabId(defaultActiveTabID == null ? "users" : defaultActiveTabID);
   }
 
+  systemAdminOnly(): boolean {
+    return Role[this.loggedInUser.role] === Role.systemadmin;
+  }
+
+  adminOrGreater(): boolean {
+    return [Role.systemadmin, Role.admin].includes(Role[this.loggedInUser.role]);
+  }
+
+  sourcePartnerAdminOrGreater(): boolean {
+    return [Role.systemadmin, Role.admin, Role.sourcepartneradmin].includes(Role[this.loggedInUser.role]);
+  }
 }

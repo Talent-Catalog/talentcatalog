@@ -18,9 +18,8 @@ import {enumOptions} from "../../../../util/enum";
   sending the whole objects back down. The server code will just want the id's so that they can
   retrieve fresh object details from the database using the id.
 
-  - shows how to display enumerated type values in a drop down, then send an enumerated type value
-  back to the server. Trick is to work with EnumOptions everywhere - converting to the real Enum
-  just prior to sending to server.
+  - shows how to display enumerated type values in a drop down, then send the string key of the
+  back to the server. Trick is to work with EnumOptions for display purposes in drop downs.
 
   NOTE - Why Enumerations are better than strings
 
@@ -62,9 +61,11 @@ export class CreateUpdatePartnerComponent implements OnInit {
       registrationDomain: [this.partner?.registrationDomain],
       sourceCountries: [this.partner?.sourceCountries],
 
-      //Note that if you initialize with the actual Enum directly, ng-select will display the
-      //string value of that enum if it finds one. Basically means that you don't need to
-      //convert to EnumOption here - but can pass enumeration in directly.
+      //Note that the value passed in here is the string key of the enum. In the html the
+      //of the drop down the EnumOptions of the enum is passed in as allowable value
+      //(see statuses above) and the drop down is configured with the "bindValue" set to the
+      //enum key and the "bindLabel" set to the enum stringValue (which is what is displayed to
+      //the user).
       status: [this.partner?.status, Validators.required],
       websiteUrl: [this.partner?.websiteUrl],
     });
@@ -105,21 +106,11 @@ export class CreateUpdatePartnerComponent implements OnInit {
       //Convert countries to country ids
       sourceCountryIds: this.form.value.sourceCountries?.map(c => c.id),
 
-      //Convert returned enum key to Status enum.
-      //Note that code below is a bit more complicated than needed. The following would work:
-      //
-      //     status: this.form.value.status
-      //
-      //This is because the form value is typed as an "any" and so it will
-      //assign directly to the status attribute even though the status attribute is an Enum and
-      //the form value is actually a string. Type checking is disabled for "any"s and a string
-      //value is what actually gets sent in the JSON version of the request, even if an Enum is
-      //assigned.
-      //
-      //But it is more correct to assign an Enum, and if we do that the code will continue
-      //to work even if stronger type checking is enabled one day (by turning on "noImplicitAny"
-      //- see https://www.typescriptlang.org/tsconfig#noImplicitAny )
-      status: Status[this.form.value.status as string],
+      //The for status contains the key of the associated enum. On the server side, that field
+      //of the corresponding Java UpdatePartnerRequest will be typed as the Java enum Status.
+      //The JSON processing code automatically converts the string value sent to the corresponding
+      //Status Java enumeration value.
+      status: this.form.value.status,
 
       websiteUrl: this.form.value.websiteUrl,
 

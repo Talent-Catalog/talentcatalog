@@ -19,17 +19,15 @@ import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
 import {CandidateSource, Status} from "../model/base";
-import {
-  Candidate,
-  checkIeltsScoreType,
-  ResidenceStatus
-} from "../model/candidate";
+import {Candidate, checkIeltsScoreType, ResidenceStatus} from "../model/candidate";
 import {
   checkForAbandoned,
-  checkForCompleted, checkForOngoing,
+  checkForCompleted,
+  checkForOngoing,
   checkForOverdue,
   TaskAssignment
 } from "../model/task-assignment";
+import {Role} from "../model/user";
 
 @Injectable({
   providedIn: 'root'
@@ -190,21 +188,21 @@ export class CandidateFieldService {
     const loggedInUser =
       this.authService ? this.authService.getLoggedInUser() : null;
     const role = loggedInUser ? loggedInUser.role : null;
-    return role !== 'semilimited' && role !== 'limited';
+    return Role[role] !== Role.semilimited && Role[role] !== Role.limited;
   }
 
   isCountryViewable(): boolean {
     const loggedInUser =
       this.authService ? this.authService.getLoggedInUser() : null;
     const role = loggedInUser ? loggedInUser.role : null;
-    return role !== 'limited';
+    return Role[role] !== Role.limited;
   }
 
   isAnAdmin(): boolean {
     const loggedInUser =
       this.authService ? this.authService.getLoggedInUser() : null;
     const role = loggedInUser ? loggedInUser.role : null;
-    return role !== 'semilimited' && role !== 'limited';
+    return Role[role] !== Role.semilimited && Role[role] !== Role.limited;
   }
 
   isDefault(fieldPaths: string[], longFormat: boolean) {

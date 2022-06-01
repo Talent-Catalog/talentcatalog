@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AdminRole, UpdateUserRequest, User} from "../../../../model/user";
+import {Role, UpdateUserRequest, User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {AuthService} from "../../../../services/auth.service";
@@ -40,7 +40,7 @@ export class CreateUpdateUserComponent implements OnInit {
   error;
   working: boolean;
 
-  roleOptions: EnumOption[] = enumOptions(AdminRole);
+  roleOptions: EnumOption[] = enumOptions(Role);
   countries: Country[];
   partners: Partner[];
 
@@ -91,16 +91,15 @@ export class CreateUpdateUserComponent implements OnInit {
       }
     );
 
-    //todo move to this  this.roleOptions = this.authService.assignableUserRoles().map(r => AdminRole[r]);
     //Filter who can set which roles
-    if (this.authService.getLoggedInUser().role === "admin") {
+    if (Role[this.authService.getLoggedInUser().role] === Role.admin) {
       this.roleOptions = this.roleOptions.filter(
-        r => !["systemadmin", "admin"].includes(r.key));
+        r => ![Role.systemadmin, Role.admin].includes(Role[r.key]));
     }
 
-    if (this.authService.getLoggedInUser().role === "sourcepartneradmin") {
+    if (Role[this.authService.getLoggedInUser().role] === Role.sourcepartneradmin) {
       this.roleOptions = this.roleOptions.filter(
-        r => !["systemadmin", "admin", "sourcepartneradmin"].includes(r.key));
+        r => ![Role.systemadmin, Role.admin, Role.sourcepartneradmin].includes(Role[r.key]));
     }
 
   }
