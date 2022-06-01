@@ -4,7 +4,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthService} from "../../../services/auth.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {isAdminUser, SearchTaskRequest} from "../../../model/base";
+import {SearchTaskRequest} from "../../../model/base";
 import {TaskService} from "../../../services/task.service";
 import {SearchResults} from "../../../model/search-results";
 import {Task} from "../../../model/task";
@@ -78,7 +78,7 @@ export class SearchTasksComponent implements OnInit {
   }
 
   isAnAdmin(): boolean {
-    return isAdminUser(this.authService);
+    return this.authService.isAnAdmin();
   }
 
   editTask(task: Task) {

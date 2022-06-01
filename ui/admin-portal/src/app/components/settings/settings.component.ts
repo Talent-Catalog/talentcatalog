@@ -15,7 +15,7 @@
  */
 
 import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
-import {Role, User} from "../../model/user";
+import {User} from "../../model/user";
 import {AuthService} from "../../services/auth.service";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -66,14 +66,14 @@ export class SettingsComponent implements OnInit, AfterViewChecked {
   }
 
   systemAdminOnly(): boolean {
-    return Role[this.loggedInUser.role] === Role.systemadmin;
+    return this.authService.isSystemAdminOnly();
   }
 
   adminOrGreater(): boolean {
-    return [Role.systemadmin, Role.admin].includes(Role[this.loggedInUser.role]);
+    return this.authService.isAdminOrGreater();
   }
 
   sourcePartnerAdminOrGreater(): boolean {
-    return [Role.systemadmin, Role.admin, Role.sourcepartneradmin].includes(Role[this.loggedInUser.role]);
+    return this.authService.isSourcePartnerAdminOrGreater();
   }
 }

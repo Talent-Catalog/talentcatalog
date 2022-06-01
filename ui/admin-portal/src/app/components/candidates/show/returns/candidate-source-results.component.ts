@@ -44,7 +44,6 @@ import {CandidateSourceCandidateService} from '../../../../services/candidate-so
 import {SavedListGetRequest} from '../../../../model/saved-list';
 import {AuthService} from '../../../../services/auth.service';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
-import {Role} from '../../../../model/user';
 import {CandidateFieldInfo} from "../../../../model/candidate-field-info";
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
 import {CandidateColumnSelectorComponent} from "../../../util/candidate-column-selector/candidate-column-selector.component";
@@ -267,10 +266,10 @@ constructor(
   }
 
   isCandidateNameViewable(): boolean {
-    return ![Role.semilimited, Role.limited].includes(this.authService.getLoggedInRole());
+    return this.authService.canViewCandidateName();
   }
 
   isCountryViewable(): boolean {
-    return this.authService.getLoggedInRole() !== Role.limited;
+    return this.authService.canViewCandidateCountry();
   }
 }

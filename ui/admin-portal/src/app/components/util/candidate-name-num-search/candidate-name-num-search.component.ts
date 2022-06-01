@@ -18,9 +18,10 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Candidate} from '../../../model/candidate';
-import {Role, User} from '../../../model/user';
+import {User} from '../../../model/user';
 import {CandidateService} from '../../../services/candidate.service';
 import {Router} from '@angular/router';
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-candidate-name-num-search',
@@ -40,7 +41,8 @@ export class CandidateNameNumSearchComponent implements OnInit {
   loggedInUser: User;
   placeholder: string;
 
-  constructor(private candidateService: CandidateService,
+  constructor(private authService: AuthService,
+    private candidateService: CandidateService,
               private router: Router) { }
 
   ngOnInit(): void {
@@ -92,8 +94,7 @@ export class CandidateNameNumSearchComponent implements OnInit {
   }
 
   isUserLimited(): boolean {
-    const role = this.loggedInUser ? this.loggedInUser.role : null;
-    return Role[role] === Role.semilimited || Role[role] === Role.limited;
+    return !this.authService.isAnAdmin();
   }
 
 }

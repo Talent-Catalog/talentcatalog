@@ -22,7 +22,6 @@ import {LanguageService} from "../../../services/language.service";
 import {CreateLanguageComponent} from "./create/create-language.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {User} from "../../../model/user";
-import {isAdminUser} from "../../../model/base";
 import {AuthService} from "../../../services/auth.service";
 
 @Component({
@@ -95,6 +94,6 @@ export class SearchLanguagesComponent implements OnInit {
   }
 
   isAnAdmin(): boolean {
-    return isAdminUser(this.authService);
+    return this.authService.isAnAdmin();
   }
 }

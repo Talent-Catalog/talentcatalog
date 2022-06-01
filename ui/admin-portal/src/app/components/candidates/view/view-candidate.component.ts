@@ -27,7 +27,7 @@ import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
 import {AuthService} from '../../../services/auth.service';
-import {Role, User} from '../../../model/user';
+import {User} from '../../../model/user';
 import {ListItem} from 'ng-multiselect-dropdown/multiselect.model';
 import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
@@ -43,7 +43,6 @@ import {CreateUpdateListComponent} from '../../list/create-update/create-update-
 import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
-import {isAdminUser} from "../../../model/base";
 
 @Component({
   selector: 'app-view-candidate',
@@ -234,12 +233,11 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   isCVViewable(): boolean {
-    const role = this.loggedInUser ? this.loggedInUser.role : null;
-    return Role[role] !== Role.semilimited && Role[role] !== Role.limited;
+    return this.authService.canViewCandidateCV();
   }
 
   isAnAdmin(): boolean {
-    return isAdminUser(this.authService);
+    return this.authService.isAnAdmin();
   }
 
   /*

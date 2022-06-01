@@ -21,7 +21,7 @@ import {CandidateService} from "../../services/candidate.service";
 import {Candidate} from "../../model/candidate";
 import {Observable, of} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
-import {Role, User} from "../../model/user";
+import {User} from "../../model/user";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
 
 @Component({
@@ -142,7 +142,6 @@ export class HeaderComponent implements OnInit {
   }
 
   isUserLimited(): boolean {
-    const role = this.loggedInUser ? this.loggedInUser.role : null;
-    return Role[role] === Role.semilimited || Role[role] === Role.limited;
+    return !this.authService.isAnAdmin();
   }
 }

@@ -56,7 +56,7 @@ export class AuthService {
 
   //Can be used when we switch to user providing Role enum
   assignableUserRoles(): Role[] {
-    const userRole: Role = this.currentRole();
+    const userRole: Role = this.getLoggedInRole();
     let assignableRoles: Role[] = [];
     switch (userRole) {
       case Role.sourcepartneradmin:
@@ -80,9 +80,49 @@ export class AuthService {
     return loggedInUser == null ? false : Role[loggedInUser.role] === Role.systemadmin;
   }
 
-  currentRole(): Role {
-    const loggedInUser = this.getLoggedInUser();
-    return loggedInUser == null ? Role.limited : Role[loggedInUser.role];
+  canViewCandidateCountry(): boolean {
+    let result: boolean = false;
+    switch (this.getLoggedInRole()) {
+       case Role.systemadmin:
+       case Role.admin:
+       case Role.sourcepartneradmin:
+       case Role.semilimited:
+        result = true;
+     }
+     return result;
+  }
+
+  canViewCandidateCV(): boolean {
+    let result: boolean = false;
+    switch (this.getLoggedInRole()) {
+       case Role.systemadmin:
+       case Role.admin:
+       case Role.sourcepartneradmin:
+        result = true;
+     }
+     return result;
+  }
+
+  canViewCandidateName(): boolean {
+    let result: boolean = false;
+    switch (this.getLoggedInRole()) {
+       case Role.systemadmin:
+       case Role.admin:
+       case Role.sourcepartneradmin:
+        result = true;
+     }
+     return result;
+  }
+
+  isAnAdmin(): boolean {
+    let admin: boolean = false;
+    switch (this.getLoggedInRole()) {
+       case Role.systemadmin:
+       case Role.admin:
+       case Role.sourcepartneradmin:
+        admin = true;
+     }
+     return admin;
   }
 
   isAuthenticated(): boolean {
@@ -94,8 +134,21 @@ export class AuthService {
     return loggedInUser == null ? true : loggedInUser.readOnly;
   }
 
+  isSystemAdminOnly(): boolean {
+    return this.getLoggedInRole() === Role.systemadmin;
+  }
+
+  isAdminOrGreater(): boolean {
+    return [Role.systemadmin, Role.admin].includes(this.getLoggedInRole());
+  }
+
+  isSourcePartnerAdminOrGreater(): boolean {
+    return [Role.systemadmin, Role.admin, Role.sourcepartneradmin].includes(this.getLoggedInRole());
+  }
+
   getLoggedInRole(): Role {
-    return Role[this.getLoggedInUser().role];
+    const loggedInUser = this.getLoggedInUser();
+    return loggedInUser == null ? Role.limited : Role[loggedInUser.role];
   }
 
   getLoggedInUser(): User {

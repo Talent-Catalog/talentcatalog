@@ -6,11 +6,15 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthService} from "../../../services/auth.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
-import {isAdminUser} from "../../../model/base";
 import {SavedListService} from "../../../services/saved-list.service";
 import {CreateExternalLinkComponent} from "./create/create-external-link.component";
 import {EditExternalLinkComponent} from "./edit/edit-external-link.component";
-import {externalDocLink, SavedList, SearchSavedListRequest, UpdateShortNameRequest} from "../../../model/saved-list";
+import {
+  externalDocLink,
+  SavedList,
+  SearchSavedListRequest,
+  UpdateShortNameRequest
+} from "../../../model/saved-list";
 import {copyToClipboard} from "../../../util/clipboard";
 
 @Component({
@@ -130,7 +134,7 @@ export class SearchExternalLinksComponent implements OnInit {
   }
 
   isAnAdmin(): boolean {
-    return isAdminUser(this.authService);
+    return this.authService.isAnAdmin();
   }
 
   externalDocLink(savedList: SavedList) {

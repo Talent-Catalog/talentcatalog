@@ -29,7 +29,6 @@ import {EditIndustryComponent} from "./edit/edit-industry.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
-import {isAdminUser} from "../../../model/base";
 
 @Component({
   selector: 'app-search-industries',
@@ -145,6 +144,6 @@ export class SearchIndustriesComponent implements OnInit {
   }
 
   isAnAdmin(): boolean {
-    return isAdminUser(this.authService);
+    return this.authService.isAnAdmin();
   }
 }

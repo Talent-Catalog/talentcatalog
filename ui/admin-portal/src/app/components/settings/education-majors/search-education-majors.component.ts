@@ -29,7 +29,6 @@ import {EditEducationMajorComponent} from "./edit/edit-education-major.component
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
-import {isAdminUser} from "../../../model/base";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
 @Component({
@@ -155,7 +154,7 @@ export class SearchEducationMajorsComponent implements OnInit {
   }
 
   isAnAdmin(): boolean {
-    return isAdminUser(this.authService);
+    return this.authService.isAnAdmin();
   }
 
   importTranslations() {

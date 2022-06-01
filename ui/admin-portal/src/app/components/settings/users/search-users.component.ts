@@ -28,7 +28,6 @@ import {CreateUpdateUserComponent} from "./create-update-user/create-update-user
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {AuthService} from '../../../services/auth.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
-import {isAdminUser} from "../../../model/base";
 import {EnumOption, enumOptions} from "../../../util/enum";
 
 
@@ -187,7 +186,7 @@ export class SearchUsersComponent implements OnInit {
   }
 
   isAnAdmin(): boolean {
-    return isAdminUser(this.authService);
+    return this.authService.isAnAdmin();
   }
 
   getSourceCountries(user: User): string[] {
@@ -195,10 +194,11 @@ export class SearchUsersComponent implements OnInit {
   }
 
   canEdit(user: User): boolean {
+    const role = this.authService.getLoggedInRole();
     let editable: boolean = false;
-    if ([Role.systemadmin].includes(Role[this.loggedInUser.role])) {
+    if ([Role.systemadmin].includes(role)) {
       editable = true;
-    } else if ([Role.admin, Role.sourcepartneradmin].includes(Role[this.loggedInUser.role])) {
+    } else if ([Role.admin, Role.sourcepartneradmin].includes(role)) {
       //Can only edit my user or users that I created
       user?.createdBy?.id === this.loggedInUser?.id || user?.id === this.loggedInUser?.id
         ? editable = true : editable = false;

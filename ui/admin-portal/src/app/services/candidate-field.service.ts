@@ -27,7 +27,6 @@ import {
   checkForOverdue,
   TaskAssignment
 } from "../model/task-assignment";
-import {Role} from "../model/user";
 
 @Injectable({
   providedIn: 'root'
@@ -185,24 +184,15 @@ export class CandidateFieldService {
   }
 
   isCandidateNameViewable(): boolean {
-    const loggedInUser =
-      this.authService ? this.authService.getLoggedInUser() : null;
-    const role = loggedInUser ? loggedInUser.role : null;
-    return Role[role] !== Role.semilimited && Role[role] !== Role.limited;
+    return this.authService.canViewCandidateName()
   }
 
   isCountryViewable(): boolean {
-    const loggedInUser =
-      this.authService ? this.authService.getLoggedInUser() : null;
-    const role = loggedInUser ? loggedInUser.role : null;
-    return Role[role] !== Role.limited;
+    return this.authService.canViewCandidateCountry()
   }
 
   isAnAdmin(): boolean {
-    const loggedInUser =
-      this.authService ? this.authService.getLoggedInUser() : null;
-    const role = loggedInUser ? loggedInUser.role : null;
-    return Role[role] !== Role.semilimited && Role[role] !== Role.limited;
+    return this.authService.isAnAdmin();
   }
 
   isDefault(fieldPaths: string[], longFormat: boolean) {

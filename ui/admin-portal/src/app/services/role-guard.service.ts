@@ -17,7 +17,6 @@
 import {Injectable} from "@angular/core";
 import {ActivatedRouteSnapshot, CanActivate, Router} from "@angular/router";
 import {AuthService} from "./auth.service";
-import {Role} from "../model/user";
 
 @Injectable()
 export class RoleGuardService implements CanActivate {
@@ -29,7 +28,6 @@ export class RoleGuardService implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot): boolean {
     // this will be passed from the route config
     // on the data property
-    const user = this.auth.getLoggedInUser();
-    return route.data.expectedRoles.includes(Role[user.role])
+    return route.data.expectedRoles.includes(this.auth.getLoggedInRole())
   }
 }

@@ -92,14 +92,15 @@ export class CreateUpdateUserComponent implements OnInit {
     );
 
     //Filter who can set which roles
-    if (Role[this.authService.getLoggedInUser().role] === Role.admin) {
+    const role = this.authService.getLoggedInRole();
+    if (role === Role.admin) {
       this.roleOptions = this.roleOptions.filter(
-        r => ![Role.systemadmin, Role.admin].includes(Role[r.key]));
+        r => ![Role.systemadmin].includes(Role[r.key]));
     }
 
-    if (Role[this.authService.getLoggedInUser().role] === Role.sourcepartneradmin) {
+    if (role === Role.sourcepartneradmin) {
       this.roleOptions = this.roleOptions.filter(
-        r => ![Role.systemadmin, Role.admin, Role.sourcepartneradmin].includes(Role[r.key]));
+        r => ![Role.systemadmin, Role.admin].includes(Role[r.key]));
     }
 
   }

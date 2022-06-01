@@ -28,10 +28,8 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditLanguageLevelComponent} from "./edit/edit-language-level.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
-import {isAdminUser} from "../../../model/base";
 import {AuthService} from "../../../services/auth.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
-import {LanguageService} from "../../../services/language.service";
 
 @Component({
   selector: 'app-search-language-levels',
@@ -155,7 +153,7 @@ export class SearchLanguageLevelsComponent implements OnInit {
   }
 
   isAnAdmin(): boolean {
-    return isAdminUser(this.authService);
+    return this.authService.isAnAdmin();
   }
 
   importTranslations() {

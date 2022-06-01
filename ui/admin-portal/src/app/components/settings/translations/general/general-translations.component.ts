@@ -17,7 +17,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TranslationService} from '../../../../services/translation.service';
 import {User} from '../../../../model/user';
-import {isAdminUser} from "../../../../model/base";
 import {AuthService} from "../../../../services/auth.service";
 import {LanguageService} from "../../../../services/language.service";
 import {SystemLanguage} from "../../../../model/language";
@@ -125,7 +124,7 @@ export class GeneralTranslationsComponent implements OnInit {
   }
 
   isAnAdmin(): boolean {
-    return isAdminUser(this.authService);
+    return this.authService.isAnAdmin();
   }
 
   filterItems($event) {
