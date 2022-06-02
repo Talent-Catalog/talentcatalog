@@ -71,7 +71,8 @@ public class CandidateBuilderSelector {
         new HashSet<>(Arrays.asList(
             "id",
             "createdDate",
-            "updatedDate"
+            "updatedDate",
+            "sourcePartner"
         ));
 
     public CandidateBuilderSelector(UserService userService) {
