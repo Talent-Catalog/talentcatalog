@@ -50,47 +50,7 @@ export class CandidateFieldService {
     return this.getTasksStatus(value);
   }
 
-  private allDisplayableFields = [
-    new CandidateFieldInfo("First Name", "user.firstName",
-      null, this.isCandidateNameViewable),
-    new CandidateFieldInfo("Driving License", "drivingLicense",
-      null, null),
-    new CandidateFieldInfo("Gender", "gender",
-      this.titleCaseFormatter, null),
-    new CandidateFieldInfo("Last Name", "user.lastName",
-      null, this.isCandidateNameViewable),
-    new CandidateFieldInfo("Location", "country.name",
-      null, this.isCountryViewable),
-    new CandidateFieldInfo("State", "state",
-      null, this.isCountryViewable),
-    new CandidateFieldInfo("City", "city",
-      null, this.isCountryViewable),
-    new CandidateFieldInfo("Married?", "maritalStatus",
-      null, null),
-    new CandidateFieldInfo("Nationality", "nationality.name",
-      null, this.isCountryViewable),
-    new CandidateFieldInfo("Phone", "phone",
-      null, null),
-    new CandidateFieldInfo("Status", "status",
-      this.titleCaseFormatter, null),
-    new CandidateFieldInfo("UNHCR Status", "unhcrStatus",
-      null, null),
-    new CandidateFieldInfo("Updated", "updatedDate",
-      this.dateFormatter, null),
-    new CandidateFieldInfo("DOB", "dob",
-      this.dateFormatter, null),
-    new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level",
-      this.levelGetNameFormatter, null),
-    new CandidateFieldInfo("IELTS Score", "ieltsScore",
-      this.getIeltsScoreType, null),
-    new CandidateFieldInfo("Legal status", "residenceStatus",
-      this.residenceStatusFormatter, null),
-    new CandidateFieldInfo("Dependants", "numberDependants",
-      null, null),
-    // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
-    // new CandidateFieldInfo("Tasks Status", "taskAssignments",
-    //   this.getOverallTasksStatus, null),
-  ];
+  private allDisplayableFields = [];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
 
@@ -117,6 +77,48 @@ export class CandidateFieldService {
     private datePipe: DatePipe,
     private titleCasePipe: TitleCasePipe
   ) {
+
+  this.allDisplayableFields = [
+      new CandidateFieldInfo("First Name", "user.firstName",
+        null, this.isCandidateNameViewable),
+      new CandidateFieldInfo("Driving License", "drivingLicense",
+        null, null),
+      new CandidateFieldInfo("Gender", "gender",
+        this.titleCaseFormatter, null),
+      new CandidateFieldInfo("Last Name", "user.lastName",
+        null, this.isCandidateNameViewable),
+      new CandidateFieldInfo("Location", "country.name",
+        null, this.isCountryViewable),
+      new CandidateFieldInfo("State", "state",
+        null, this.isCountryViewable),
+      new CandidateFieldInfo("City", "city",
+        null, this.isCountryViewable),
+      new CandidateFieldInfo("Married?", "maritalStatus",
+        null, null),
+      new CandidateFieldInfo("Nationality", "nationality.name",
+        null, this.isCountryViewable),
+      new CandidateFieldInfo("Phone", "phone",
+        null, null),
+      new CandidateFieldInfo("Status", "status",
+        this.titleCaseFormatter, null),
+      new CandidateFieldInfo("UNHCR Status", "unhcrStatus",
+        null, null),
+      new CandidateFieldInfo("Updated", "updatedDate",
+        this.dateFormatter, null),
+      new CandidateFieldInfo("DOB", "dob",
+        this.dateFormatter, null),
+      new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level",
+        this.levelGetNameFormatter, null),
+      new CandidateFieldInfo("IELTS Score", "ieltsScore",
+        this.getIeltsScoreType, null),
+      new CandidateFieldInfo("Legal status", "residenceStatus",
+        this.residenceStatusFormatter, null),
+      new CandidateFieldInfo("Dependants", "numberDependants",
+        null, null),
+      // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
+      // new CandidateFieldInfo("Tasks Status", "taskAssignments",
+      //   this.getOverallTasksStatus, null),
+    ];
 
     for (const field of this.allDisplayableFields) {
       this.allDisplayableFieldsMap.set(field.fieldPath, field);
@@ -183,11 +185,26 @@ export class CandidateFieldService {
     return fields;
   }
 
-  isCandidateNameViewable(): boolean {
+  /**
+   * Normally would be declared as:
+   *    isCandidateNameViewable(): boolean {
+   *
+   * This odd syntax is necessary because of Javascript bug/oddity. The bug arises when we refer
+   * to this method above in the allDisplayableFields CandidateFieldInfo definitions.
+   * When you do that Javascript loses track of what "this" refers to - and inside the method ends
+   * up returning undefined for this.authService.
+   * <p/>
+   * This solution to that problem is suggested here:
+   * https://github.com/Microsoft/TypeScript/wiki/'this'-in-TypeScript#use-instance-functions
+   */
+  isCandidateNameViewable = (): boolean => {
     return this.authService.canViewCandidateName()
   }
 
-  isCountryViewable(): boolean {
+  /**
+   * Regarding funny syntax, see above comments for isCandidateNameViewable
+   */
+  isCountryViewable = (): boolean => {
     return this.authService.canViewCandidateCountry()
   }
 

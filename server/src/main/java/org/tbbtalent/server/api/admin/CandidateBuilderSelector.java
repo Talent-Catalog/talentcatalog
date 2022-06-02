@@ -161,6 +161,7 @@ public class CandidateBuilderSelector {
                 .add("email")
                 .add("createdDate")
                 .add("updatedDate")
+                .add("sourcePartner", partnerDto())
                 ;
     }
 
@@ -169,6 +170,15 @@ public class CandidateBuilderSelector {
                 .add("id")
                 .add("name")
                 ;
+    }
+
+    private DtoBuilder partnerDto() {
+        return new DtoBuilder()
+            .add("abbreviation")
+            .add("id")
+            .add("name")
+            .add("websiteUrl")
+            ;
     }
 
     private DtoBuilder reviewDto() {
