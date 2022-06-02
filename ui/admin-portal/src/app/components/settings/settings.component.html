@@ -53,11 +53,6 @@
       </ng-template>
     </ng-container>
 
-
-  </ng-container>
-
-  <ng-container *ngIf="adminOrGreater()">
-
     <!-- Language Levels -->
     <ng-container ngbNavItem="langlevels">
       <a ngbNavLink>Language Levels</a>
@@ -102,6 +97,10 @@
         </app-dropdown-translations>
       </ng-template>
     </ng-container>
+
+  </ng-container>
+
+  <ng-container *ngIf="adminOrGreater()">
   </ng-container>
 
   <ng-container *ngIf="sourcePartnerAdminOrGreater()">
