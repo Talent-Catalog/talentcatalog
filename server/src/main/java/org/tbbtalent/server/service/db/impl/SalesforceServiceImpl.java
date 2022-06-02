@@ -185,19 +185,20 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         throws SalesforceException {
 
         String id = extractIdFromSfUrl(sfJoblink);
-        Map<String, Candidate> oppIdCandidateMap = buildCandidateOppsMap(candidates, id);
+        if (id != null) {
+            Map<String, Candidate> oppIdCandidateMap = buildCandidateOppsMap(candidates, id);
 
-        //Now find the candidate opp ids we actually have for candidate opportunities for this job.
-        List<Opportunity> candidateOpps = findCandidateOpportunities(id);
-        for (Opportunity candidateOpp : candidateOpps) {
-            Candidate candidate = oppIdCandidateMap.get(
-                candidateOpp.getTBBCandidateExternalId__c());
-            if (candidate != null) {
-                candidate.setStage(candidateOpp.getStageName());
-                candidate.setSfOpportunityLink(candidateOpp.getUrl());
+            //Now find the candidate opp ids we actually have for candidate opportunities for this job.
+            List<Opportunity> candidateOpps = findCandidateOpportunities(id);
+            for (Opportunity candidateOpp : candidateOpps) {
+                Candidate candidate = oppIdCandidateMap.get(
+                    candidateOpp.getTBBCandidateExternalId__c());
+                if (candidate != null) {
+                    candidate.setStage(candidateOpp.getStageName());
+                    candidate.setSfOpportunityLink(candidateOpp.getUrl());
+                }
             }
         }
-
     }
 
     @Override
@@ -209,7 +210,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             final String sfJoblink = savedList.getSfJoblink();
             if (sfJoblink != null) {
                 //Get id from link.
-                sfIds.add(extractIdFromSfUrl(sfJoblink));
+                final String id = extractIdFromSfUrl(sfJoblink);
+                if (id != null) {
+                    sfIds.add(id);
+                }
             }
         }
 
@@ -230,7 +234,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 String sfJoblink = savedList.getSfJoblink();
                 if (sfJoblink != null) {
                     String sfId = extractIdFromSfUrl(sfJoblink);
-                    Opportunity opp = idOppMap.get(sfId);
+                    Opportunity opp = sfId == null ? null : idOppMap.get(sfId);
                     if (opp == null) {
                         log.warn("Saved List " + savedList.getName() + " with invalid sfJobLink " + sfJoblink);
                     }
@@ -638,7 +642,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Get id from link.
         String id = extractIdFromSfUrl(linkUrl);
 
-        Opportunity opportunity = findOpportunity(id);
+        Opportunity opportunity = id == null ? null : findOpportunity(id);
         if (opportunity == null) {
             throw new SalesforceException("Could not find opportunity " + linkUrl);
         }
@@ -782,9 +786,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Get id of job opportunity.
         String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
 
-        EmployerOpportunityRequest sfRequest = new EmployerOpportunityRequest(request);
+        if (jobOpportunityId != null) {
+            EmployerOpportunityRequest sfRequest = new EmployerOpportunityRequest(request);
 
-        executeUpdate(jobOpportunityId, sfRequest);
+            executeUpdate(jobOpportunityId, sfRequest);
+        }
     }
 
     /**
