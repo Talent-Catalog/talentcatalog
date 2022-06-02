@@ -127,8 +127,14 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  loggedInUserName(): string {
-    return this.loggedInUser?.username;
+  loggedInUserInfo(): string {
+    let info: string;
+    if (this.loggedInUser == null) {
+      info = "Not logged in";
+    } else {
+      info = this.loggedInUser.username + " (" + this.loggedInUser.role + ")";
+    }
+    return info;
   }
 
   logout() {

@@ -85,11 +85,11 @@
         <li class="nav-item dropdown" ngbDropdown>
 
           <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-            <i class="fas fa-user" [title]="loggedInUserName()"></i>
+            <i class="fas fa-user" [title]="loggedInUserInfo()"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <div>
-              Logged in: {{loggedInUserName()}}
+              {{loggedInUserInfo()}}
             </div>
             <hr/>
             <a class="dropdown-item" (click)="logout()">Logout</a>
