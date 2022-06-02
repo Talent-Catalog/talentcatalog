@@ -34,6 +34,26 @@
 
     <div class="row">
 
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-id-badge"></i>Partner</label>
+
+        <div class="form-control-plaintext">
+          <span>
+            <a target="_blank" [href]="candidate.user.sourcePartner.websiteUrl">
+            {{candidate.user.sourcePartner.name}} ({{candidate.user.sourcePartner.abbreviation}})
+            </a>
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-id-badge"></i>Partner's id for candidate</label>
+
+        <div class="form-control-plaintext">
+          <span *ngIf="candidate.partnerRef">{{candidate.partnerRef}}</span>
+        </div>
+      </div>
+
       <div *ngIf="candidate.externalId" class="form-group col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-id-badge"></i>External Id</label>
 

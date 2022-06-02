@@ -24,8 +24,10 @@ import {Country} from "./country";
 */
 export interface PartnerSimpleAttributes {
   abbreviation: string;
+  defaultPartnerRef: boolean;
   logo: string;
   name: string;
+  notificationEmail: string;
   partnerType: string;
   registrationLandingPage: string;
   registrationDomain: string;

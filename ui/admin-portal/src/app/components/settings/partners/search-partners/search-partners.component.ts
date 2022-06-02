@@ -8,6 +8,7 @@ import {Partner} from "../../../../model/partner";
 import {PartnerService} from "../../../../services/partner.service";
 import {SearchPartnerRequest} from "../../../../model/base";
 import {CreateUpdatePartnerComponent} from "../create-update-partner/create-update-partner.component";
+import {Country} from "../../../../model/country";
 
 /*
    MODEL - latest best practice on this kind of component
@@ -108,4 +109,12 @@ export class SearchPartnersComponent implements OnInit {
     .catch(() => {});
   }
 
+  sourceCountries(partner: Partner) {
+    let s = '';
+    const countries: Country[] = partner.sourceCountries;
+    if (countries != null) {
+      s = countries.map(c => c.name).join(",");
+    }
+    return s;
+  }
 }

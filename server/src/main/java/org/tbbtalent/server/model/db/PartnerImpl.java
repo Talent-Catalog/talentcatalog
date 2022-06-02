@@ -47,11 +47,16 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     @Nullable
     private String abbreviation;
 
+    private boolean defaultPartnerRef;
+
     @Nullable
     private String logo;
 
     @NonNull
     private String name;
+
+    @Nullable
+    private String notificationEmail;
 
     abstract public String getPartnerType();
 

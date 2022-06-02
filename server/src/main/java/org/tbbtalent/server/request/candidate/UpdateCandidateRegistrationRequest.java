@@ -16,57 +16,22 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.tbbtalent.server.model.db.UnhcrStatus;
 import org.tbbtalent.server.model.db.YesNo;
 import org.tbbtalent.server.model.db.YesNoUnsure;
 
+@Getter
+@Setter
 public class UpdateCandidateRegistrationRequest {
     private String externalId;
     private String externalIdSource;
+    private String partnerRef;
     private YesNoUnsure unhcrRegistered;
     private UnhcrStatus unhcrStatus;
     private YesNo unhcrConsent;
     private String unhcrNumber;
     private YesNoUnsure unrwaRegistered;
     private String unrwaNumber;
-
-    public String getExternalId() {return externalId;}
-
-    public void setExternalId(String externalId) {this.externalId = externalId;}
-
-    public String getExternalIdSource() {return externalIdSource;}
-
-    public void setExternalIdSource(String externalIdSource) {this.externalIdSource = externalIdSource;}
-
-    public UnhcrStatus getUnhcrStatus() {
-        return unhcrStatus;
-    }
-
-    public void setUnhcrStatus(UnhcrStatus unhcrStatus) {
-        this.unhcrStatus = unhcrStatus;
-    }
-
-    public String getUnhcrNumber() {
-        return unhcrNumber;
-    }
-
-    public void setUnhcrNumber(String unhcrNumber) {
-        this.unhcrNumber = unhcrNumber;
-    }
-
-    public YesNoUnsure getUnhcrRegistered() {return unhcrRegistered;}
-
-    public void setUnhcrRegistered(YesNoUnsure unhcrRegistered) {this.unhcrRegistered = unhcrRegistered;}
-
-    public YesNo getUnhcrConsent() {return unhcrConsent;}
-
-    public void setUnhcrConsent(YesNo unhcrConsent) {this.unhcrConsent = unhcrConsent;}
-
-    public YesNoUnsure getUnrwaRegistered() {return unrwaRegistered;}
-
-    public void setUnrwaRegistered(YesNoUnsure unrwaRegistered) {this.unrwaRegistered = unrwaRegistered;}
-
-    public String getUnrwaNumber() {return unrwaNumber;}
-
-    public void setUnrwaNumber(String unrwaNumber) {this.unrwaNumber = unrwaNumber;}
 }

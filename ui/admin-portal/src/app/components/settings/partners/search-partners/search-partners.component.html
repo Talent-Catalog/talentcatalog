@@ -47,11 +47,14 @@
     <tr>
       <th>Partner</th>
       <th>Abbreviation</th>
+      <th>Email</th>
       <th>Type</th>
+      <th>Source countries</th>
       <th>Logo</th>
       <th>Website</th>
       <th>Rego Landing page</th>
       <th>Registration domain</th>
+      <th>Default partner ref?</th>
       <th>Status</th>
     </tr>
     </thead>
@@ -60,13 +63,15 @@
     <tr *ngFor="let partner of results?.content">
       <td>{{partner.name}}</td>
       <td>{{partner.abbreviation}}</td>
+      <td>{{partner.notificationEmail}}</td>
       <td>{{partner.partnerType}}</td>
+      <td>{{sourceCountries(partner)}}</td>
       <td>{{partner.logo}}</td>
       <td>{{partner.websiteUrl}}</td>
       <td>{{partner.registrationLandingPage}}</td>
       <td>{{partner.registrationDomain}}</td>
+      <td>{{partner.defaultPartnerRef}}</td>
       <td>{{partner.status}}</td>
-<!--      todo source countries-->
       <td>
         <div class="btn-group" *ngIf="(!readOnly)">
           <button type="button" class="btn btn-default" (click)="editPartner(partner)"><i

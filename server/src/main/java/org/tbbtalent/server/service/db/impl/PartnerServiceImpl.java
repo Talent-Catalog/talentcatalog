@@ -185,6 +185,8 @@ public class PartnerServiceImpl implements PartnerService {
             populateCommonAttributes(request, sourcePartner);
 
             //Source partner attributes
+            sourcePartner.setNotificationEmail(request.getNotificationEmail());
+            sourcePartner.setDefaultPartnerRef(request.isDefaultPartnerRef());
             sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
             sourcePartner.setRegistrationDomain(registrationDomain);
             sourcePartner.setSourceCountries(sourceCountries);

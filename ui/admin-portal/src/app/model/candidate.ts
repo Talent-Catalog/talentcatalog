@@ -45,6 +45,7 @@ export interface Candidate extends HasId {
   whatsapp: string;
   externalId: string;
   externalIdSource: string;
+  partnerRef: string;
   unhcrRegistered: YesNoUnsure;
   unhcrNumber: string;
   unhcrConsent: YesNo;

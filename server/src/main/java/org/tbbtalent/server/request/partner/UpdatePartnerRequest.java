@@ -29,9 +29,13 @@ public class UpdatePartnerRequest {
 
     private String abbreviation;
 
+    private boolean defaultPartnerRef;
+
     private String logo;
 
     private String name;
+
+    private String notificationEmail;
 
     private Status status;
 

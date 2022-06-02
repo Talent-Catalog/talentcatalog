@@ -122,7 +122,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="userForm.invalid || loading || working">
+                [disabled]="userForm.invalid || working">
           <i class="fas fa-spinner fa-spin" *ngIf="working"></i>
           Save
         </button>

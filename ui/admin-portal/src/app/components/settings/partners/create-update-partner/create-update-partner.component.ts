@@ -55,8 +55,10 @@ export class CreateUpdatePartnerComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       abbreviation: [this.partner?.abbreviation],
+      defaultPartnerRef: [this.partner?.defaultPartnerRef],
       logo: [this.partner?.logo],
       name: [this.partner?.name, Validators.required],
+      notificationEmail: [this.partner?.notificationEmail],
       registrationLandingPage: [this.partner?.registrationLandingPage],
       registrationDomain: [this.partner?.registrationDomain],
       sourceCountries: [this.partner?.sourceCountries],
@@ -97,8 +99,10 @@ export class CreateUpdatePartnerComponent implements OnInit {
 
     const request: UpdatePartnerRequest = {
       abbreviation: this.form.value.abbreviation,
+      defaultPartnerRef: this.form.value.defaultPartnerRef,
       logo: this.form.value.logo,
       name: this.form.value.name,
+      notificationEmail: this.form.value.notificationEmail,
       partnerType: 'SourcePartner',
       registrationLandingPage: this.form.value.registrationLandingPage,
       registrationDomain: this.form.value.registrationDomain,

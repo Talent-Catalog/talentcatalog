@@ -37,6 +37,13 @@
 
     <form [formGroup]="candidateForm">
 
+      <!-- Partner reference -->
+      <div class="form-group">
+        <label for="partnerRef">Partner's internal id for candidate</label>
+        <input type="text" class="form-control" id="partnerRef" placeholder=""
+               [formControlName]="'partnerRef'">
+      </div>
+
       <!-- EXTERNAL ID -->
       <div class="form-group">
         <label for="externalId">External Id</label>
