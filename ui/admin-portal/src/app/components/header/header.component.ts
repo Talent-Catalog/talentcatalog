@@ -127,6 +127,9 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  loggedInUserName(): string {
+    return this.loggedInUser?.username;
+  }
 
   logout() {
     this.authService.logout();
