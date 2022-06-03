@@ -5,24 +5,27 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.repository.db;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Root;
 import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.PagedSearchRequest;
-
-import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Extract some common utility methods
@@ -35,6 +38,7 @@ public class CandidateSpecificationUtil {
                                                Root<Candidate> candidate,
                                                CriteriaBuilder builder,
                                                Join<Object, Object> user,
+                                               Join<Object, Object> partner,
                                                Join<Object, Object> nationality,
                                                Join<Object, Object> country,
                                                Join<Object, Object> educationLevel) {
@@ -46,7 +50,10 @@ public class CandidateSpecificationUtil {
 
                 Join<Object, Object> join = null;
                 String subProperty;
-                if (property.startsWith("user.")) {
+                if (property.startsWith("user.sourcePartner.")) {
+                    join = partner;
+                    subProperty = property.replaceAll("user.sourcePartner.", "");
+                } else if (property.startsWith("user.")) {
                     join = user;
                     subProperty = property.replaceAll("user.", "");
                 } else if (property.startsWith("nationality.")) {
@@ -75,7 +82,7 @@ public class CandidateSpecificationUtil {
                         ? builder.asc(path) : builder.desc(path));
             }
         }
-        
+
         //Need at least one id sort so that ordering is stable.
         //Otherwise sorts with equal values will come out in random order,
         //which means that the contents of pages - computed at different times -
@@ -85,5 +92,5 @@ public class CandidateSpecificationUtil {
         }
         return orders;
     }
-    
+
 }

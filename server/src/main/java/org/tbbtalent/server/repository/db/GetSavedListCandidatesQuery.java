@@ -5,17 +5,29 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.repository.db;
 
+import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
+
+import java.util.List;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
@@ -23,11 +35,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-
-import javax.persistence.criteria.*;
-import java.util.List;
-
-import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
 
 /**
  * "Specification" which defines the database query to retrieve all candidates
@@ -45,14 +52,14 @@ import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getO
  * <p>
  *     Note that this Specification query handles the sorting internally
  *     so the {@link PageRequest} passed in should not provide any sorts.
- *     You can get this by calling 
- *     {@link SavedListGetRequest#getPageRequestWithoutSort()} 
+ *     You can get this by calling
+ *     {@link SavedListGetRequest#getPageRequestWithoutSort()}
  * </p>
  *     eg:
  *     <code>
  *     PageRequest pageRequest = request.getPageRequestWithoutSort();
  *     Page<Candidate> candidatesPage = candidateRepository.findAll(
- *                 new GetSavedListCandidatesQuery(request), pageRequest);         
+ *                 new GetSavedListCandidatesQuery(request), pageRequest);
  *     </code>
  */
 @RequiredArgsConstructor
@@ -61,7 +68,7 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
     private final SavedListGetRequest request;
 
     @Override
-    public Predicate toPredicate(Root<Candidate> candidate, 
+    public Predicate toPredicate(Root<Candidate> candidate,
                                  CriteriaQuery<?> query, CriteriaBuilder cb) {
 
         //Start by adding fetches and Order by
@@ -69,6 +76,7 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
         if (!isCountQuery) {
             //Fetch to populate the key linked entities
             Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.LEFT);
+            Fetch<Object, Object> partnerFetch = userFetch.fetch("sourcePartner", JoinType.LEFT);
             Fetch<Object, Object> nationalityFetch = candidate.fetch("nationality", JoinType.LEFT);
             Fetch<Object, Object> countryFetch = candidate.fetch("country", JoinType.LEFT);
             Fetch<Object, Object> educationLevelFetch = candidate.fetch("maxEducationLevel", JoinType.LEFT);
@@ -76,6 +84,7 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
             //Do sorting by passing in the equivalent joins
             List<Order> orders = getOrderByOrders(request, candidate, cb,
                     (Join<Object, Object>) userFetch,
+                    (Join<Object, Object>) partnerFetch,
                     (Join<Object, Object>) nationalityFetch,
                     (Join<Object, Object>) countryFetch,
                     (Join<Object, Object>) educationLevelFetch);
@@ -84,9 +93,9 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
 
         //Now construct the actual query
         /*
-        select candidate from candidate 
-        where candidate in  
-            (select candidate from candidateSavedList 
+        select candidate from candidate
+        where candidate in
+            (select candidate from candidateSavedList
                 where savedList.id = savedListID)
          */
         Subquery<Candidate> sq = query.subquery(Candidate.class);

@@ -71,6 +71,7 @@ public class CandidateSpecification {
             //Some joins are always needed - eg the user one, and the joins needed to support
             //sorting.
             Join<Object, Object> user = null;
+            Join<Object, Object> partner = null;
             Join<Object, Object> nationality = null;
             Join<Object, Object> country = null;
             Join<Object, Object> maxEducationLevel = null;
@@ -99,6 +100,9 @@ public class CandidateSpecification {
                 Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.INNER);
                 user = (Join<Object, Object>) userFetch;
 
+                Fetch<Object, Object> partnerFetch = user.fetch("sourcePartner", JoinType.INNER);
+                partner = (Join<Object, Object>) partnerFetch;
+
                 Fetch<Object, Object> nationalityFetch = candidate.fetch("nationality");
                 nationality = (Join<Object, Object>) nationalityFetch;
 
@@ -109,13 +113,14 @@ public class CandidateSpecification {
                 maxEducationLevel = (Join<Object, Object>) educationLevelFetch;
 
                 List<Order> orders = getOrderByOrders(request, candidate, builder,
-                        user, nationality, country, maxEducationLevel);
+                        user, partner, nationality, country, maxEducationLevel);
 
                 query.orderBy(orders);
 
             } else {
                 //Count query - sort doesn't matter
                 user = candidate.join("user");
+                partner = user.join("sourcePartner");
                 nationality = candidate.join("nationality");
                 country = candidate.join("country");
                 maxEducationLevel = candidate.join("maxEducationLevel");
