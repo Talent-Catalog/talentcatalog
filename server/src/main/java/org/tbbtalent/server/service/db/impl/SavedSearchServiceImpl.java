@@ -114,6 +114,7 @@ import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.PartnerService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 
 @Service
@@ -130,6 +131,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final ElasticsearchOperations elasticsearchOperations;
     private final EmailHelper emailHelper;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final SavedListRepository savedListRepository;
     private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
@@ -170,6 +172,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         ElasticsearchOperations elasticsearchOperations,
         EmailHelper emailHelper,
         UserRepository userRepository,
+        UserService userService,
         SavedListRepository savedListRepository,
         SavedListService savedListService,
         SavedSearchRepository savedSearchRepository,
@@ -192,6 +195,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.elasticsearchOperations = elasticsearchOperations;
         this.emailHelper = emailHelper;
         this.userRepository = userRepository;
+        this.userService = userService;
         this.savedListRepository = savedListRepository;
         this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
@@ -1387,6 +1391,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         List<CandidateStatus> requestedStatuses = request.getStatuses();
         if (requestedStatuses == null || requestedStatuses.isEmpty()) {
             request.setStatuses(defaultSearchStatuses);
+        }
+
+        //Modify request, defaulting blank partners
+        List<Long> requestedPartners = request.getPartnerIds();
+        if (requestedPartners == null || requestedPartners.isEmpty()) {
+            Partner partner = userService.getLoggedInSourcePartner();
+            if (partner != null) {
+                request.setPartnerIds(List.of(partner.getId()));
+            }
         }
 
         String simpleQueryString = request.getSimpleQueryString();

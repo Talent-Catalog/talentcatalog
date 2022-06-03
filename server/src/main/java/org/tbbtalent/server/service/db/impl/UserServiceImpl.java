@@ -502,6 +502,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Partner getLoggedInSourcePartner() {
+        Partner partner = null;
+        User user = authService.getLoggedInUser().orElse(null);
+        if (user != null) {
+            //Fetch user from database
+            user = getUser(user.getId());
+            partner = user.getSourcePartner();
+        }
+        return partner;
+    }
+
+    @Override
     public User getSystemAdminUser() {
         return findByUsernameAndRole(SystemAdminConfiguration.SYSTEM_ADMIN_NAME, Role.systemadmin);
     }

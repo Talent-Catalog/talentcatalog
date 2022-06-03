@@ -27,6 +27,7 @@ import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
 import org.tbbtalent.server.request.user.ResetPasswordRequest;
@@ -54,6 +55,12 @@ public interface UserService {
      */
     @Nullable
     User getLoggedInUser();
+
+    /**
+     * Returns a live JPA entity representing the logged in partner.
+     * @return Partner associated with logged in partner or null if no user.
+     */
+    Partner getLoggedInSourcePartner();
 
     User getSystemAdminUser();
 
