@@ -14,7 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
@@ -25,12 +33,21 @@ import {
   SavedSearchType,
   SearchSavedSearchRequest
 } from '../../../../model/saved-search';
-import {SavedSearchService, SavedSearchTypeSubInfo} from '../../../../services/saved-search.service';
+import {
+  SavedSearchService,
+  SavedSearchTypeSubInfo
+} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AuthService} from '../../../../services/auth.service';
 import {User} from '../../../../model/user';
-import {CandidateSource, CandidateSourceType, isMine, isSharedWithMe, SearchBy} from '../../../../model/base';
+import {
+  CandidateSource,
+  CandidateSourceType,
+  isMine,
+  isSharedWithMe,
+  SearchBy
+} from '../../../../model/base';
 import {
   ContentUpdateType,
   CopySourceContentsRequest,
@@ -173,9 +190,6 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         req.shared = true;
         break;
       case SearchBy.externalLink:
-        req.global = true;
-        req.owned = true;
-        req.shared = true;
         req.shortName = true;
         break;
       case SearchBy.registeredJob:
