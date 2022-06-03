@@ -5,18 +5,23 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.request.candidate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
+import java.util.List;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,60 +32,54 @@ import org.tbbtalent.server.model.db.ReviewStatus;
 import org.tbbtalent.server.model.db.SearchType;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.util.List;
-
 /*
   TODO Fix this whole messy confusion around the relationships between SavedSearch
   SavedSearchRequest and what is transmitted up to the browser and received from the browser
   when transferring those objects in each direction.
-  
+
   Here are some of the messiest parts of the code:
-  
+
   * All the Transient fields in SavedSearch - which are populated by the getSavedSearch method
     in SavedSearchServiceImpl. Instead of all that copying and Transient fields, the SavedSearch
-    should not be storing ids, but other entities. Ids can be transferred in the Dto 
+    should not be storing ids, but other entities. Ids can be transferred in the Dto
     (if necessary for performance reasons)
     and populated using browser look ups of id to values from those static lists (eg of countries).
   * Static lists should be uploaded to the browser once on login, then accessed in services.
     On the rare occasions when static lists change - eg new occupation, users are asked to logout
-    and in again. Or - a failed local lookup could trigger an automatic reload before failing hard.     
-  * The addition of the above transient fields in the savedSearchDtoExtended method of SavedSearchAdminApi    
-  * convertToSearchCandidateRequest method on SavedSearchServiceImpl, and its cloned version 
+    and in again. Or - a failed local lookup could trigger an automatic reload before failing hard.
+  * The addition of the above transient fields in the savedSearchDtoExtended method of SavedSearchAdminApi
+  * convertToSearchCandidateRequest method on SavedSearchServiceImpl, and its cloned version
     in CandidateServiceImpl
   * The only partially successful attempt to impose some type checking on the browser by including
-    a SavedSearch type which extends SearchCandidateRequest. The problem being that 
+    a SavedSearch type which extends SearchCandidateRequest. The problem being that
     SavedSearchRequest data sent from the browser is different to SavedSearchRequest data
     sent up to the browser.
   * One of the key anomalies at the moment is the difference between the server and browser versions
     of the SearchCandidateRequest class. On the server, it has minimal fields - reflecting the
     data that is actually stored in the data base - as fields on the SavedSearch class (entity).
-    On the browser the class has a whole bunch of redundant fields corresponding to the 
+    On the browser the class has a whole bunch of redundant fields corresponding to the
     transient fields of SavedSearch.
   * On the browser, the SavedSearch class extends the SearchCandidateRequest class, but on the
-    server it doesn't. Instead SavedSearch should contain SearchCandidateRequest as a property 
-    (@Embedded in the @Entity) in both browser and server. That avoids a lot of pointless field 
+    server it doesn't. Instead SavedSearch should contain SearchCandidateRequest as a property
+    (@Embedded in the @Entity) in both browser and server. That avoids a lot of pointless field
     copying.
-  * The redundant fields are on the browser version of SearchCandidateRequest because the 
-    inheriting browser SavedSearch makes use of those redundant fields (names instead of ids). 
-    But the browser version of SearchCandidateRequest probably doesn't need them in the Define 
-    Search screen for example. It would be good to find another way of supplying those extra fields 
+  * The redundant fields are on the browser version of SearchCandidateRequest because the
+    inheriting browser SavedSearch makes use of those redundant fields (names instead of ids).
+    But the browser version of SearchCandidateRequest probably doesn't need them in the Define
+    Search screen for example. It would be good to find another way of supplying those extra fields
     to SavedSearch - maybe as methods which fetch names by looking up from the SS id through
     a local browser service. Or a subclassed SavedSearchEnriched object which adds them.
     Ideally we would have a basic SavedSearch object that extended a basic SearchCandidateRequest
-    identical on both server and browser. Then add extra fields as needed as subclasses or 
-    methods.    
-    
-  Approach: 
-  
+    identical on both server and browser. Then add extra fields as needed as subclasses or
+    methods.
+
+  Approach:
+
     1. Figure out exactly what data needs to travel in both directions
     2. Make that data transfer type safe and consistent on browser and server.
     3. Do all the extra creation of redundant data (eg names from ids etc) in a single logical
-       place - eg in DTO code on the server, or lookup services on the browser.  
-   
+       place - eg in DTO code on the server, or lookup services on the browser.
+
  */
 
 @Getter
@@ -99,6 +98,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Integer maxYrs;
     private List<Long> verifiedOccupationIds;
     private SearchType verifiedOccupationSearchType;
+    private List<Long> partnerIds;
     private List<Long> nationalityIds;
     private SearchType nationalitySearchType;
     private List<Long> countryIds;
@@ -138,7 +138,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     public void merge(SavedSearchGetRequest request) {
         //Copy across the reviewStatusFilter
         setReviewStatusFilter(request.getReviewStatusFilter());
-        
+
         //Copy paging request across to search request
         setPageNumber(request.getPageNumber());
         setPageSize(request.getPageSize());

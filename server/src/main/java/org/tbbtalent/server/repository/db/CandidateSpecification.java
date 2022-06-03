@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -57,15 +57,15 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 public class CandidateSpecification {
 
     public static Specification<Candidate> buildSearchQuery(
-            final SearchCandidateRequest request, @Nullable User loggedInUser, 
+            final SearchCandidateRequest request, @Nullable User loggedInUser,
             final @Nullable Collection<Candidate> excludedCandidates) {
         return (candidate, query, builder) -> {
-            
+
             //To better understand this code, look at the simpler but similar
             //GetSavedListCandidatesQuery. JC - The Programmer's Friend.
-            
+
             Predicate conjunction = builder.conjunction();
-            
+
             //These joins are only created as needed - depending on the query.
             //eg candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
             //Some joins are always needed - eg the user one, and the joins needed to support
@@ -84,16 +84,16 @@ public class CandidateSpecification {
             query.distinct(true);
 
             /*
-              Those fetches are performed by a join, which can also be reused 
+              Those fetches are performed by a join, which can also be reused
               to do the sorting and other filters.
 
-              This is much more efficient than making those attributes fetched 
+              This is much more efficient than making those attributes fetched
               EAGERLY. Not 100% sure why, but it is.
-              
+
               See https://thorben-janssen.com/hibernate-tip-left-join-fetch-join-criteriaquery/
-              which uses this kind of code.   
+              which uses this kind of code.
              */
-            boolean isCountQuery = query.getResultType().equals(Long.class); 
+            boolean isCountQuery = query.getResultType().equals(Long.class);
             if (!isCountQuery) {
                 //Manage sorting
                 Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.INNER);
@@ -104,7 +104,7 @@ public class CandidateSpecification {
 
                 Fetch<Object, Object> countryFetch = candidate.fetch("country");
                 country = (Join<Object, Object>) countryFetch;
-                
+
                 Fetch<Object, Object> educationLevelFetch = candidate.fetch("maxEducationLevel");
                 maxEducationLevel = (Join<Object, Object>) educationLevelFetch;
 
@@ -120,7 +120,7 @@ public class CandidateSpecification {
                 country = candidate.join("country");
                 maxEducationLevel = candidate.join("maxEducationLevel");
             }
-            
+
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())) {
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
@@ -218,6 +218,13 @@ public class CandidateSpecification {
                 }
             }
 
+            // PARTNER SEARCH
+            if (!Collections.isEmpty(request.getPartnerIds())) {
+                conjunction.getExpressions().add(
+                        builder.isTrue(user.get("sourcePartner").in(request.getPartnerIds()))
+                );
+            }
+
             // COUNTRY SEARCH
             // If request ids is NOT EMPTY (these will only be selected if allowed source countries)
             if (!Collections.isEmpty(request.getCountryIds())) {
@@ -240,7 +247,7 @@ public class CandidateSpecification {
                 boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == 6178);
                 if (!us) {
                     //This is not a US user, so don't show US Afghans
-                  Join<Candidate, SurveyType> surveyType 
+                  Join<Candidate, SurveyType> surveyType
                       = candidate.join("surveyType", JoinType.LEFT);
                   conjunction.getExpressions()
                       .add(builder.or(

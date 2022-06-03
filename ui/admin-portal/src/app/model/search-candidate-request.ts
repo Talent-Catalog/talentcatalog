@@ -25,6 +25,7 @@ export interface SearchCandidateRequest {
   orProfileKeyword?: string;
   verifiedOccupationIds?: number[];
   verifiedOccupationSearchType?: string;
+  partnerIds?: number[];
   nationalityIds?: number[];
   nationalitySearchType?: string;
   countryIds?: number[];
@@ -43,6 +44,7 @@ export interface SearchCandidateRequest {
   educationMajorIds?: number[];
   surveyTypeIds?: number[];
   countryNames?: string[];
+  partnerNames?: string[];
   nationalityNames?: string[];
   vettedOccupationNames?: string[];
   occupationNames?: string[];

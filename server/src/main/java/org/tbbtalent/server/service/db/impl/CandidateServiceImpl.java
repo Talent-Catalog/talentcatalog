@@ -408,6 +408,7 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setMaxYrs(savedSearch.getMaxYrs());
         searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(savedSearch.getVerifiedOccupationIds()));
         searchCandidateRequest.setVerifiedOccupationSearchType(savedSearch.getVerifiedOccupationSearchType());
+        searchCandidateRequest.setPartnerIds(getIdsFromString(savedSearch.getPartnerIds()));
         searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(savedSearch.getNationalitySearchType());
         searchCandidateRequest.setCountryIds(getIdsFromString(savedSearch.getCountryIds()));

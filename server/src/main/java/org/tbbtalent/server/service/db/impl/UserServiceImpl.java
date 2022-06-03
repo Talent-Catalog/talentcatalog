@@ -227,7 +227,7 @@ public class UserServiceImpl implements UserService {
                     throw new InvalidRequestException("You don't have permission to assign a partner.");
                 } else {
                     //Changing partner
-                    newSourcePartner = partnerService.get(partnerId);
+                    newSourcePartner = partnerService.getPartner(partnerId);
                 }
             }
         } else {

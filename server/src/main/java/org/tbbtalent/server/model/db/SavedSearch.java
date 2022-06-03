@@ -5,27 +5,38 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.model.db;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
-
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "saved_search")
@@ -34,9 +45,9 @@ public class SavedSearch extends AbstractCandidateSource {
     private static final Logger log = LoggerFactory.getLogger(SavedSearch.class);
 
     private String type;
-    
-    private Boolean defaultSearch = false; 
-    
+
+    private Boolean defaultSearch = false;
+
     private String simpleQueryString;
     private String keyword;
     private String statuses;
@@ -50,6 +61,7 @@ public class SavedSearch extends AbstractCandidateSource {
     @Enumerated(EnumType.STRING)
     private SearchType verifiedOccupationSearchType;
 
+    private String partnerIds;
     private String nationalityIds;
     @Enumerated(EnumType.STRING)
     private SearchType nationalitySearchType;
@@ -99,9 +111,9 @@ public class SavedSearch extends AbstractCandidateSource {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
-    
+
     //Note use of Set rather than List as strongly recommended for Many to Many
-    //relationships here: 
+    //relationships here:
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedSearches", cascade = CascadeType.MERGE)
     private Set<User> users = new HashSet<>();
@@ -111,6 +123,7 @@ public class SavedSearch extends AbstractCandidateSource {
     private List<ExportColumn> exportColumns;
 
     @Transient private List<String> countryNames;
+    @Transient private List<String> partnerNames;
     @Transient private List<String> nationalityNames;
     @Transient private List<String> surveyTypeNames;
     @Transient private List<String> vettedOccupationNames;
@@ -201,6 +214,14 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setVerifiedOccupationIds(String verifiedOccupationIds) {
         this.verifiedOccupationIds = verifiedOccupationIds;
+    }
+
+    public String getPartnerIds() {
+        return partnerIds;
+    }
+
+    public void setPartnerIds(String partnerIds) {
+        this.partnerIds = partnerIds;
     }
 
     public String getNationalityIds() {
@@ -367,6 +388,14 @@ public class SavedSearch extends AbstractCandidateSource {
         this.nationalityNames = nationalityNames;
     }
 
+    public List<String> getPartnerNames() {
+        return partnerNames;
+    }
+
+    public void setPartnerNames(List<String> partnerNames) {
+        this.partnerNames = partnerNames;
+    }
+
     public List<String> getSurveyTypeNames() {return surveyTypeNames;}
 
     public void setSurveyTypeNames(List<String> surveyTypeNames) {this.surveyTypeNames = surveyTypeNames;}
@@ -505,11 +534,11 @@ public class SavedSearch extends AbstractCandidateSource {
             }
         }
     }
-    
+
     public Boolean getReviewable() {
         return reviewable;
       }
-    
+
     public void setReviewable(Boolean reviewable) {
         if (reviewable != null) {
             this.reviewable = reviewable;

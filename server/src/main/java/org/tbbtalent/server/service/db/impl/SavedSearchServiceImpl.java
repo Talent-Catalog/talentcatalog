@@ -17,7 +17,27 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
-import org.elasticsearch.index.query.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.validation.constraints.NotNull;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,24 +57,64 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.exception.CircularReferencedException;
+import org.tbbtalent.server.exception.CountryRestrictionException;
+import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.Language;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SavedSearchType;
+import org.tbbtalent.server.model.db.SearchJoin;
+import org.tbbtalent.server.model.db.SearchType;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.es.CandidateEs;
-import org.tbbtalent.server.repository.db.*;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CandidateReviewStatusRepository;
+import org.tbbtalent.server.repository.db.CandidateSpecification;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.EducationLevelRepository;
+import org.tbbtalent.server.repository.db.EducationMajorRepository;
+import org.tbbtalent.server.repository.db.LanguageLevelRepository;
+import org.tbbtalent.server.repository.db.LanguageRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
+import org.tbbtalent.server.repository.db.PartnerRepository;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.repository.db.SavedSearchSpecification;
+import org.tbbtalent.server.repository.db.SearchJoinRepository;
+import org.tbbtalent.server.repository.db.SurveyTypeRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.SearchJoinRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
+import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
-import org.tbbtalent.server.request.search.*;
+import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
+import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
+import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.PartnerService;
+import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class SavedSearchServiceImpl implements SavedSearchService {
@@ -66,6 +126,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
+    private final PartnerService partnerService;
     private final ElasticsearchOperations elasticsearchOperations;
     private final EmailHelper emailHelper;
     private final UserRepository userRepository;
@@ -76,6 +137,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final LanguageLevelRepository languageLevelRepository;
     private final LanguageRepository languageRepository;
     private final CountryRepository countryRepository;
+    private final PartnerRepository partnerRepository;
     private final OccupationRepository occupationRepository;
     private final SurveyTypeRepository surveyTypeRepository;
     private final EducationMajorRepository educationMajorRepository;
@@ -104,6 +166,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         CandidateReviewStatusRepository candidateReviewStatusRepository,
         CandidateSavedListService candidateSavedListService,
         CountryService countryService,
+        PartnerService partnerService,
         ElasticsearchOperations elasticsearchOperations,
         EmailHelper emailHelper,
         UserRepository userRepository,
@@ -114,6 +177,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         LanguageLevelRepository languageLevelRepository,
         LanguageRepository languageRepository,
         CountryRepository countryRepository,
+        PartnerRepository partnerRepository,
         OccupationRepository occupationRepository,
         SurveyTypeRepository surveyTypeRepository,
         EducationMajorRepository educationMajorRepository,
@@ -124,6 +188,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.candidateReviewStatusRepository = candidateReviewStatusRepository;
         this.candidateSavedListService = candidateSavedListService;
         this.countryService = countryService;
+        this.partnerService = partnerService;
         this.elasticsearchOperations = elasticsearchOperations;
         this.emailHelper = emailHelper;
         this.userRepository = userRepository;
@@ -133,6 +198,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.searchJoinRepository = searchJoinRepository;
         this.languageLevelRepository = languageLevelRepository;
         this.languageRepository = languageRepository;
+        this.partnerRepository = partnerRepository;
         this.countryRepository = countryRepository;
         this.occupationRepository = occupationRepository;
         this.surveyTypeRepository = surveyTypeRepository;
@@ -357,6 +423,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         if (!StringUtils.isEmpty(savedSearch.getCountryIds())){
             savedSearch.setCountryNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getCountryIds())));
+        }
+        if (!StringUtils.isEmpty(savedSearch.getPartnerIds())){
+            savedSearch.setPartnerNames(partnerRepository.getNamesForIds(getIdsFromString(savedSearch.getPartnerIds())));
         }
         if (!StringUtils.isEmpty(savedSearch.getNationalityIds())){
             savedSearch.setNationalityNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getNationalityIds())));
@@ -887,6 +956,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     null,"country.keyword", reqCountries);
         }
 
+        //Partners
+        final List<Long> partnerIds = request.getPartnerIds();
+        if (partnerIds != null) {
+            //Look up names from ids.
+            List<Object> reqPartners = new ArrayList<>();
+            for (Long id : partnerIds) {
+                final Partner partner = partnerService.getPartner(id);
+                reqPartners.add(partner.getName());
+            }
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                null,"partner.keyword", reqPartners);
+        }
+
         //Nationalities
         final List<Long> nationalityIds = request.getNationalityIds();
         if (nationalityIds != null) {
@@ -1156,6 +1238,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     getListAsString(request.getVerifiedOccupationIds()));
             savedSearch.setVerifiedOccupationSearchType(
                     request.getVerifiedOccupationSearchType());
+            savedSearch.setPartnerIds(getListAsString(request.getPartnerIds()));
             savedSearch.setNationalityIds(
                     getListAsString(request.getNationalityIds()));
             savedSearch.setNationalitySearchType(request.getNationalitySearchType());
@@ -1206,6 +1289,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMaxYrs(request.getMaxYrs());
         searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
         searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
+        searchCandidateRequest.setPartnerIds(getIdsFromString(request.getPartnerIds()));
         searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
         searchCandidateRequest.setSurveyTypeIds(getIdsFromString(request.getSurveyTypeIds()));
         searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());

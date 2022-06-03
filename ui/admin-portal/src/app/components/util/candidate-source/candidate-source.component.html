@@ -99,6 +99,8 @@
         <span *ngIf="savedSearch.otherSpokenLevel">Spoken:{{savedSearch.otherSpokenLevel}}</span>
         <span *ngIf="savedSearch.otherWrittenLevel">Written:{{savedSearch.otherWrittenLevel}}</span>
       </div>
+      <div class="w-100" *ngIf="savedSearch.partnerNames">Partners: <span
+        *ngFor="let name of savedSearch.partnerNames">{{name}},</span></div>
       <div class="w-100" *ngIf="savedSearch.nationalityNames">Nationalities: <span
         *ngFor="let name of savedSearch.nationalityNames">{{name}},</span></div>
       <div class="w-100" *ngIf="savedSearch.gender">Gender: {{savedSearch.gender}},</div>

@@ -34,6 +34,10 @@ public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, Jpa
     @Query("select p from SourcePartner p where p.registrationDomain = :hostDomain")
     Optional<PartnerImpl> findByRegistrationUrl(@Param("hostDomain") String hostDomain);
 
+    @Query(" select p.name from SourcePartner p "
+        + " where p.id in (:ids) order by p.name asc" )
+    List<String> getNamesForIds(@Param("ids") List<Long> ids);
+
     @Query(" select p from SourcePartner p "
         + " where p.status = :status order by p.name asc")
     List<PartnerImpl> findByStatus(@Param("status") Status status);

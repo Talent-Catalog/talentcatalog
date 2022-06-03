@@ -42,7 +42,7 @@ public interface PartnerService {
      * @throws NoSuchObjectException if there is no Partner with this id.
      */
     @NonNull
-    Partner get(long partnerId) throws NoSuchObjectException;
+    Partner getPartner(long partnerId) throws NoSuchObjectException;
 
     /**
      * Get the default source partner (eg TBB).

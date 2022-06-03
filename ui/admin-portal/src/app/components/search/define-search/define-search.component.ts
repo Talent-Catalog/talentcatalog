@@ -14,7 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate, CandidateStatus, Gender} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -65,6 +74,8 @@ import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
 import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
+import {Partner} from "../../../model/partner";
+import {PartnerService} from "../../../services/partner.service";
 
 @Component({
   selector: 'app-define-search',
@@ -99,6 +110,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   /* DATA - these are all drop down options for each select field*/
   nationalities: Country[];
   countries: Country[];
+  partners: Partner[];
   languages: Language[];
   lists: SavedList[] = [];
   educationLevels: EducationLevel[];
@@ -125,6 +137,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
               private candidateService: CandidateService,
               private countryService: CountryService,
               private languageService: LanguageService,
+              private partnerService: PartnerService,
               private savedSearchService: SavedSearchService,
               private educationLevelService: EducationLevelService,
               private educationMajorService: EducationMajorService,
@@ -149,6 +162,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       maxYrs: [null],
       verifiedOccupationIds: [[]],
       verifiedOccupationSearchType: ['or'],
+      partnerIds: [[]],
       nationalityIds: [[]],
       nationalitySearchType: ['or'],
       countryIds: [[]],
@@ -172,6 +186,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       occupations: [[]],
       verifiedOccupations: [[]],
       countries: [[]],
+      partners: [[]],
       educationMajors: [[]],
       nationalities: [[]],
       statusesDisplay: [[]],
@@ -199,6 +214,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       'languageLevels': this.languageLevelService.listLanguageLevels(),
       'educationLevels': this.educationLevelService.listEducationLevels(),
       'majors': this.educationMajorService.listMajors(),
+      'partners': this.partnerService.listPartners(),
       'verifiedOccupation': this.candidateOccupationService.listVerifiedOccupations(),
       'occupations': this.candidateOccupationService.listOccupations(),
       'surveyTypes': this.surveyTypeService.listSurveyTypes()
@@ -207,6 +223,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       this.nationalities = results['nationalities'];
       this.countries = results['countriesRestricted'];
       this.languages = results['languages'];
+      this.partners = results['partners'];
       this.languageLevels = results['languageLevels'];
       this.educationLevels = results['educationLevels'];
       this.educationMajors = results['majors'];
@@ -310,6 +327,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     if (request.countries != null) {
       request.countryIds = request.countries.map(c => c.id);
       delete request.countries;
+    }
+
+    if (request.partners != null) {
+      request.partnerIds = request.partners.map(n => n.id);
+      delete request.partners;
     }
 
     if (request.nationalities != null) {
@@ -510,6 +532,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       countries = this.countries.filter(c => request.countryIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['countries'].patchValue(countries);
+
+    /* PARTNERS */
+    let partners = [];
+    if (request.partnerIds && this.partners) {
+      partners = this.partners.filter(c => request.partnerIds.indexOf(c.id) !== -1);
+    }
+    this.searchForm.controls['partners'].patchValue(partners);
 
     /* EDUCATION MAJORS */
     let educationMajors = [];

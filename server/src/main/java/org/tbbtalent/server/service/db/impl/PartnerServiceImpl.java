@@ -115,7 +115,7 @@ public class PartnerServiceImpl implements PartnerService {
 
     @NonNull
     @Override
-    public Partner get(long partnerId) throws NoSuchObjectException {
+    public Partner getPartner(long partnerId) throws NoSuchObjectException {
         final PartnerImpl partner = partnerRepository.findById(partnerId)
             .orElseThrow(() -> new NoSuchObjectException(Partner.class, partnerId));
 
@@ -157,7 +157,7 @@ public class PartnerServiceImpl implements PartnerService {
     public @NonNull PartnerImpl update(long id, UpdatePartnerRequest request)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
 
-        Partner partner = get(id);
+        Partner partner = getPartner(id);
 
         if (partner instanceof SourcePartner) {
             SourcePartner sourcePartner = (SourcePartner) partner;

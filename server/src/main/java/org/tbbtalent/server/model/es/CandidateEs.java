@@ -5,17 +5,24 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.model.es;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -25,16 +32,21 @@ import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateCertification;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateJobExperience;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateSkill;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.DocumentStatus;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.MaritalStatus;
+import org.tbbtalent.server.model.db.ResidenceStatus;
+import org.tbbtalent.server.model.db.UnhcrStatus;
 import org.tbbtalent.server.request.PagedSearchRequest;
-
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This defines the fields which are stored in Elasticsearch "documents"
@@ -56,6 +68,7 @@ public class CandidateEs {
             "firstName",
             "lastName",
             "nationality",
+            "partner",
             "status",
             "updated",
             "phone",
@@ -68,7 +81,7 @@ public class CandidateEs {
             "residenceStatus",
             "numberDependants",
     };
-   
+
     @Id
     private String id;
 
@@ -141,6 +154,9 @@ public class CandidateEs {
     @Field(type = FieldType.Keyword)
     private String nationality;
 
+    @Field(type = FieldType.Keyword)
+    private String partner;
+
     @Field(type = FieldType.Text)
     private List<String> occupations;
 
@@ -174,23 +190,25 @@ public class CandidateEs {
         this();
         copy(candidate);
     }
-    
+
     public void copy(Candidate candidate) {
 
         this.additionalInfo = candidate.getAdditionalInfo();
-        this.firstName = candidate.getUser() == null ? null 
+        this.firstName = candidate.getUser() == null ? null
                 : candidate.getUser().getFirstName();
         this.gender = candidate.getGender();
-        this.country = candidate.getCountry() == null ? null 
+        this.country = candidate.getCountry() == null ? null
                 : candidate.getCountry().getName();
         this.state = candidate.getState();
         this.city = candidate.getCity();
-        this.lastName = candidate.getUser() == null ? null 
+        this.lastName = candidate.getUser() == null ? null
                 : candidate.getUser().getLastName();
         this.masterId = candidate.getId();
         this.updated = candidate.getUpdatedDate().toInstant().toEpochMilli();
         this.nationality = candidate.getNationality() == null ? null
                 : candidate.getNationality().getName();
+        this.partner = candidate.getUser() == null ? null
+                : candidate.getUser().getSourcePartner().getName();
         this.status = candidate.getStatus();
 
         this.phone = candidate.getPhone();
@@ -226,7 +244,7 @@ public class CandidateEs {
                 }
             }
         }
-        
+
         this.certifications = new ArrayList<>();
         List<CandidateCertification> certifications = candidate.getCandidateCertifications();
         if (certifications != null) {
@@ -259,7 +277,7 @@ public class CandidateEs {
                 }
             }
         }
-        
+
         this.jobExperiences = new ArrayList<>();
         List<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
         if (jobs != null) {
@@ -278,13 +296,13 @@ public class CandidateEs {
                         text += " " + description;
                     }
                 }
-                
+
                 if (text != null) {
                     this.jobExperiences.add(text);
                 }
             }
         }
-        
+
         this.occupations = new ArrayList<>();
         this.migrationOccupation = null;
         List<CandidateOccupation> occupations = candidate.getCandidateOccupations();
@@ -316,7 +334,7 @@ public class CandidateEs {
     /**
      * Elasticsearch only supports a subset of sort fields. This method
      * takes a standard PagedSearchRequest and returns a PageRequest which will
-     * only containing a sort field if is supported by Elasticsearch
+     * only contain a sort field if is supported by Elasticsearch
      * (as defined in {@link this#sortingFields})
      * @param request Incoming request which may contain a sort field.
      * @return PageRequest with modified sort fields suitable for Elasticsearch
@@ -327,12 +345,12 @@ public class CandidateEs {
 
         int pageNumber = request.getPageNumber() == null ? 0 : request.getPageNumber();
         int pageSize = request.getPageSize() == null ? 25 : request.getPageSize();
-        
+
         String[] sortFields = request.getSortFields();
 
         if (sortFields != null && sortFields.length > 0) {
             String sortField = sortFields[0];
-            
+
             //Special hack for id field - which is masterId in CandidateEs.
             //Sort by candidate's id even though displayed as candidate number on front end.
             //Candidate Number is a text field so can't be sorted in a sensible numeric way.
@@ -340,7 +358,7 @@ public class CandidateEs {
             if (sortField.equals("id")) {
                 sortField = "masterId";
             }
-            
+
             boolean matched = false;
 
             //Type to match field with a sortable field
@@ -351,22 +369,22 @@ public class CandidateEs {
                     break;
                 }
             }
-            
+
             if (!matched) {
                 requestAdj = PageRequest.of(pageNumber, pageSize);
             } else {
                 //todo extract this logic into a method that Candidate Service Impl can also call.
-                //This logic assumes that sorting field, apart from masterId 
+                //This logic assumes that sorting field, apart from masterId
                 //and updated, is assumed to be a keyword field.
-                //This will need to change if we add other sorting fields 
+                //This will need to change if we add other sorting fields
                 //that are not keyword fields (eg numeric fields).
                 String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel", "ieltsScore", "numberDependants"};
 
                 boolean keywordField = Arrays.stream(nonKeywordFields).noneMatch(sortField::equals);
-                
+
                 String esFieldSpec = sortField;
                 if (keywordField) {
-                    //Keyword fields can be stored in ES as both text and 
+                    //Keyword fields can be stored in ES as both text and
                     //keyword types. For sorting purposes, we need to explicitly
                     //specify "keyword" otherwise it will try and sort by
                     //the text version of the field which will result in an

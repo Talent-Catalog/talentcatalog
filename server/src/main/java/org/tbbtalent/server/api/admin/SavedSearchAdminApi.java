@@ -368,6 +368,7 @@ public class SavedSearchAdminApi implements
                 .add("maxYrs")
                 .add("verifiedOccupationIds")
                 .add("verifiedOccupationSearchType")
+                .add("partnerIds")
                 .add("nationalityIds")
                 .add("nationalitySearchType")
                 .add("countryIds")
@@ -406,6 +407,7 @@ public class SavedSearchAdminApi implements
     public DtoBuilder savedSearchDtoExtended(){
         return savedSearchDto()
                 .add("countryNames")
+                .add("partnerNames")
                 .add("nationalityNames")
                 .add("vettedOccupationNames")
                 .add("occupationNames")
