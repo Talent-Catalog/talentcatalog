@@ -303,6 +303,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SearchCandidateRequest searchRequest =
             loadSavedSearch(savedSearchId);
 
+        //TODO JC Existing bug - document and leave.
+        //TODO JC This does not do defaulting - it is called from the stats.
+        //TODO JC One difference is that this does not do paging or sorting or review status
+
         Set<Long> candidateIds = new HashSet<>();
         String simpleQueryString = searchRequest.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
@@ -1373,6 +1377,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         Page<Candidate> candidates;
 
+        //TODO JC All this needs to be factored out and reused in searchCandidatesMethod above.
         Set<Candidate> excludedCandidates = new HashSet<>();
 
         final Long exclusionListId = request.getExclusionListId();
