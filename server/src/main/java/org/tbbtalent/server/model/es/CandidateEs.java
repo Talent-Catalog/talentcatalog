@@ -91,13 +91,20 @@ public class CandidateEs {
     @Field(type = FieldType.Text)
     private List<String> certifications;
 
-    @Field(type = FieldType.Keyword)
+    /*
+       NOTE: Do NOT add @Field(type = FieldType.Keyword) - that messes up the new automatic
+       defaulting of Strings to be both text AND keyword which can cause problems with our
+       queries.
+       See https://www.elastic.co/blog/strings-are-dead-long-live-strings
+       The mess up happens in the Spring Data Elasticsearch support which on connection
+       (in ElasticsearchConfiguration.java) will force the mapping strictly according to any
+       @Field annotation - which means that Elasticsearch's own clever defaulting never happens.
+       - JC
+     */
     private String country;
 
-    @Field(type = FieldType.Keyword)
     private String state;
 
-    @Field(type = FieldType.Keyword)
     private String city;
 
     @Field(type = FieldType.Text)
@@ -106,40 +113,30 @@ public class CandidateEs {
     @Field(type = FieldType.Text)
     private List<String> educations;
 
-    @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Field(type = FieldType.Keyword)
     private String firstName;
 
     @Field(type = FieldType.Text)
     private List<String> jobExperiences;
 
-    @Field(type = FieldType.Keyword)
     private String lastName;
 
-    @Field(type = FieldType.Keyword)
     private Integer minEnglishSpokenLevel;
 
-    @Field(type = FieldType.Keyword)
     private Integer minEnglishWrittenLevel;
 
-    @Field(type = FieldType.Keyword)
     private Long updated;
 
-    @Field(type = FieldType.Keyword)
     private String phone;
 
-    @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
     private UnhcrStatus unhcrStatus;
 
-    @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
     private MaritalStatus maritalStatus;
 
-    @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
     private DocumentStatus drivingLicense;
 
@@ -151,10 +148,8 @@ public class CandidateEs {
      */
     private Long masterId;
 
-    @Field(type = FieldType.Keyword)
     private String nationality;
 
-    @Field(type = FieldType.Keyword)
     private String partner;
 
     @Field(type = FieldType.Text)
@@ -166,14 +161,11 @@ public class CandidateEs {
     @Field(type = FieldType.Text)
     private List<String> skills;
 
-    @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
 
-    @Field(type = FieldType.Keyword)
     private Integer maxEducationLevel;
 
-    @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
     private ResidenceStatus residenceStatus;
 
