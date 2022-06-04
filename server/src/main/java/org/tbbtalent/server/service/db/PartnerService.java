@@ -77,7 +77,7 @@ public interface PartnerService {
      * Create a partner.
      * @param request Request contains partner data
      * @return Created partner
-     * @throws EntityExistsException if registration_url already exists
+     * @throws EntityExistsException if registrationDomain already exists
      * @throws InvalidRequestException if required attribute, name, is not present or partner type
      * is unrecognized.
      * @throws NoSuchObjectException if there is an unknown country id in the request
@@ -91,7 +91,7 @@ public interface PartnerService {
      * @param id of partner to update
      * @param request Request contains updated data
      * @return Updated partner
-     * @throws EntityExistsException if updated registration_url already exists.
+     * @throws EntityExistsException if updated registrationDomain already exists.
      * @throws InvalidRequestException if partner type is unrecognized.
      * @throws NoSuchObjectException if there is not a partner with this id.
      */
