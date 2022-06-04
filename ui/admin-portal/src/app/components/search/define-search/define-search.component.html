@@ -434,6 +434,12 @@
               placeholder="Select or type..."
               bindLabel="name"
               [formControlName]="'partners'">
+              <ng-template ng-header-tmp>
+                <div class="d-flex justify-content-between">
+                  <button class="btn btn-sm btn-link" (click)="onSelectAll(partners, 'partners'); $event.preventDefault()">Select All</button>
+                  <button class="btn btn-sm btn-link" (click)="onClearAll('partners'); $event.preventDefault()">Clear All</button>
+                </div>
+              </ng-template>
               <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                 <div *ngFor="let item of items | slice:0:3" class="ng-value">
                   <span class="ng-value-label">{{item.name}}</span>
