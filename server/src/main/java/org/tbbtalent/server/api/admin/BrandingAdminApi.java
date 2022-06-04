@@ -55,6 +55,7 @@ public class BrandingAdminApi {
     DtoBuilder brandingInfoDto() {
         return new DtoBuilder()
                 .add("logo")
+                .add("websiteUrl")
                 ;
     }
 }

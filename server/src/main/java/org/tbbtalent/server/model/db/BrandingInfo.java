@@ -54,4 +54,10 @@ public class BrandingInfo {
     @Nullable
     private String logo;
 
+    /**
+     * Website associated with logo
+     */
+    @Nullable
+    private String websiteUrl;
+
 }

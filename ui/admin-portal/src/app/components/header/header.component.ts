@@ -40,6 +40,7 @@ export class HeaderComponent implements OnInit {
   error;
   loggedInUser: User;
   logo: string;
+  websiteUrl: string;
 
 
   constructor(private authService: AuthService,
@@ -50,7 +51,10 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
 
     this.brandingService.getBrandingInfo().subscribe(
-      (response: BrandingInfo) => this.logo = response.logo,
+      (response: BrandingInfo) => {
+        this.logo = response.logo;
+        this.websiteUrl = response.websiteUrl;
+      },
       (error) => this.error = error
     );
 
