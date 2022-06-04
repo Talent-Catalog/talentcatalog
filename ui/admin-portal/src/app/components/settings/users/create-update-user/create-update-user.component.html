@@ -26,11 +26,11 @@
 
 <div class="modal-body">
 
-  <div *ngIf="loading">
+  <div *ngIf="working">
     <i class="fas fa-spinner fa-spin"></i>
   </div>
 
-  <div *ngIf="!loading">
+  <div *ngIf="!working">
     <div class="alert alert-danger" *ngIf="error">
       {{error}}
     </div>
