@@ -24,7 +24,6 @@ import lombok.Setter;
 @Setter
 public class CreateLinkRequest {
 
-    @NonNull
     private long SavedListId;
 
     @NonNull
