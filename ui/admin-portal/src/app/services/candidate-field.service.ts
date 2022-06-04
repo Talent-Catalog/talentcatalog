@@ -97,7 +97,7 @@ export class CandidateFieldService {
         null, null),
       new CandidateFieldInfo("Nationality", "nationality.name",
         null, this.isCountryViewable),
-      new CandidateFieldInfo("Partner", "user.sourcePartner.name",
+      new CandidateFieldInfo("Partner", "user.sourcePartner.abbreviation",
         null, null),
       new CandidateFieldInfo("Phone", "phone",
         null, null),
