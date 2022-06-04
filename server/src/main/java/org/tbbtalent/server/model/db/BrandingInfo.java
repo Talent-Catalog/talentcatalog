@@ -32,13 +32,13 @@ import org.springframework.lang.Nullable;
 public class BrandingInfo {
 
     /**
-     * Host domain associated with this branding - eg tbbtalent.org or unhcrtalent.org
+     * Host domain associated with this branding - eg tbbtalent.org or unhcr.displacedtalent.org
      */
     @Nullable
     private String hostDomain;
 
     /**
-     * Optional landing page associated with branding - eg for tbbtalent.org we redirect to
+     * Optional landing page associated with branding - eg TBB redirects to
      * https://www.talentbeyondboundaries.org/talentcatalog/.
      * <p/>
      * If no landing page is configured, the default is to automatically go to candidate-portal

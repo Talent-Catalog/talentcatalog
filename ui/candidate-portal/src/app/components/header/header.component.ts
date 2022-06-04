@@ -35,6 +35,7 @@ export class HeaderComponent implements OnInit {
 
   languages: SystemLanguage[];
   logo: string;
+  websiteUrl: string;
   error: any;
 
   constructor(public authService: AuthService,
@@ -50,7 +51,10 @@ export class HeaderComponent implements OnInit {
     );
 
     this.brandingService.getBrandingInfo().subscribe(
-      (response: BrandingInfo) => this.logo = response.logo,
+      (response: BrandingInfo) => {
+        this.logo = response.logo;
+        this.websiteUrl = response.websiteUrl;
+      },
       (error) => this.error = error
     );
   }

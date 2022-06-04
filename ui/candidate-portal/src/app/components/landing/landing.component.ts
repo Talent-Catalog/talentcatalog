@@ -19,6 +19,7 @@ import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LanguageService} from '../../services/language.service';
 import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
+import {BrandingInfo, BrandingService} from "../../services/branding.service";
 
 @Component({
   selector: 'app-landing',
@@ -28,7 +29,10 @@ import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
 
 export class LandingComponent implements OnInit {
 
+  showUSAfghanInfo:boolean = false;
+
   constructor(private authService: AuthService,
+              private brandingService: BrandingService,
               private router: Router,
               private route: ActivatedRoute,
               private languageService: LanguageService) { }
@@ -44,6 +48,14 @@ export class LandingComponent implements OnInit {
     setTimeout(
       () => this.languageService.changeLanguage(lang), 1000
     )
+
+    this.brandingService.getBrandingInfo().subscribe(
+      (response: BrandingInfo) => {
+        this.showUSAfghanInfo = response.websiteUrl?.includes("talentbeyondboundaries.org");
+      },
+      (error) => console.log(error)
+    );
+
 
     /**
      * Look for xlate query parameter which requests "in context" translation.
