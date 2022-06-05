@@ -21,10 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
-import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.UserService;
 
@@ -60,34 +56,37 @@ public class SystemAdminConfiguration {
    */
   @EventListener(ApplicationReadyEvent.class)
   public void autoCreateSystemAdmin() {
-    User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
-    if (systemAdmin == null) {
-      UpdateUserRequest req = new UpdateUserRequest();
-      req.setUsername(SYSTEM_ADMIN_NAME);
-      req.setFirstName("System");
-      req.setLastName("Admin");
-      req.setEmail(sysAdminEmail);
-      req.setRole(Role.systemadmin);
-      req.setReadOnly(false);
-      req.setUsingMfa(true);
-      req.setPassword("password");
 
-      //Self create system admin
-      systemAdmin = userService.createUser(req, null);
-    }
-
-    //Create global lists
-    for (String listName : GLOBAL_LIST_NAMES) {
-      //Don't create if already exists.
-      if (savedListService.get(systemAdmin, listName) == null) {
-        //Create the global list
-        UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
-        req.setGlobal(true);
-        req.setFixed(true);
-        req.setName(listName);
-        savedListService.createSavedList(systemAdmin, req);
-      }
-    }
+    //TODO JC Comment this out for backward compatibility until new Role.systemadmin is in a stable release
+    //TODO Surround this with try catch? Or let it prevent startup?
+//    User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
+//    if (systemAdmin == null) {
+//      UpdateUserRequest req = new UpdateUserRequest();
+//      req.setUsername(SYSTEM_ADMIN_NAME);
+//      req.setFirstName("System");
+//      req.setLastName("Admin");
+//      req.setEmail(sysAdminEmail);
+//      req.setRole(Role.systemadmin);
+//      req.setReadOnly(false);
+//      req.setUsingMfa(true);
+//      req.setPassword("password");
+//
+//      //Self create system admin
+//      systemAdmin = userService.createUser(req, null);
+//    }
+//
+//    //Create global lists
+//    for (String listName : GLOBAL_LIST_NAMES) {
+//      //Don't create if already exists.
+//      if (savedListService.get(systemAdmin, listName) == null) {
+//        //Create the global list
+//        UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
+//        req.setGlobal(true);
+//        req.setFixed(true);
+//        req.setName(listName);
+//        savedListService.createSavedList(systemAdmin, req);
+//      }
+//    }
   }
 
 }
