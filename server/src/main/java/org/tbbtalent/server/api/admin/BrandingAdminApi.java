@@ -17,6 +17,8 @@
 package org.tbbtalent.server.api.admin;
 
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -32,6 +34,7 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 @RestController()
 @RequestMapping("/api/admin/branding")
 public class BrandingAdminApi {
+    private static final Logger log = LoggerFactory.getLogger(BrandingAdminApi.class);
 
     private final BrandingService brandingService;
 
@@ -47,6 +50,8 @@ public class BrandingAdminApi {
     @GetMapping()
     public Map<String, Object> getBrandingInfo(
         @RequestHeader(name="Host", required=false) final String host) {
+        log.info("BrandingAdminApi.getBrandingInfo - Host: " + host);
+
         //If logged in, use the host associated with the login, otherwise use the incoming host
         BrandingInfo info = brandingService.getBrandingInfo(host);
         return brandingInfoDto().build(info);

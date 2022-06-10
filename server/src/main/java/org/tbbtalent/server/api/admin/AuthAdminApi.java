@@ -18,6 +18,8 @@ package org.tbbtalent.server.api.admin;
 
 import java.util.Map;
 import javax.security.auth.login.AccountLockedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +41,7 @@ import org.tbbtalent.server.util.qr.EncodedQrImage;
 @RestController()
 @RequestMapping("/api/admin/auth")
 public class AuthAdminApi {
+    private static final Logger log = LoggerFactory.getLogger(AuthAdminApi.class);
 
     private final UserService userService;
     private final CaptchaService captchaService;
@@ -54,6 +57,8 @@ public class AuthAdminApi {
         @RequestHeader(name="Host", required=false) final String host)
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
             InvalidPasswordFormatException {
+
+        log.info("AuthAdminApi.login - Host: " + host);
 
         JwtAuthenticationResponse response = this.userService.login(request, host);
 

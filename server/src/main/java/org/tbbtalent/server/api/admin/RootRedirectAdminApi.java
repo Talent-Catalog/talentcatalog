@@ -16,7 +16,8 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.net.URI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,7 @@ import org.tbbtalent.server.service.db.BrandingService;
 @RestController()
 @RequestMapping("/")
 public class RootRedirectAdminApi {
+    private static final Logger log = LoggerFactory.getLogger(RootRedirectAdminApi.class);
 
     private final BrandingService brandingService;
 
@@ -58,6 +60,10 @@ public class RootRedirectAdminApi {
         //If we have a landing page, go there, otherwise go straight to candidate-portal.
         String redirectUrl = landingPage != null ? landingPage : "/candidate-portal/";
 
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
+        log.info("Redirect requested on host: " + host + ". Associated landing page = '" + (landingPage == null ? "null" : landingPage) + "'. Redirecting to " + redirectUrl);
+
+        //TODO JC Don't actually do redirect
+        //return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

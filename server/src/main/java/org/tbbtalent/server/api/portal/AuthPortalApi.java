@@ -19,6 +19,8 @@ package org.tbbtalent.server.api.portal;
 import java.util.Map;
 import javax.security.auth.login.AccountLockedException;
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +46,7 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 @RestController()
 @RequestMapping("/api/portal/auth")
 public class AuthPortalApi {
+    private static final Logger log = LoggerFactory.getLogger(AuthPortalApi.class);
 
     private final UserService userService;
     private final CandidateService candidateService;
@@ -77,6 +80,8 @@ public class AuthPortalApi {
             InvalidPasswordFormatException, UserDeactivatedException,
             ReCaptchaInvalidException {
 
+        log.info("AuthPortalApi.login - Host: " + host);
+
         //Do check for automated logins. Throws exception if it looks
         //automated.
         captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "login");
@@ -96,6 +101,8 @@ public class AuthPortalApi {
             @Valid @RequestBody RegisterCandidateRequest request,
         @RequestHeader(name="Host", required=false) final String host)
             throws AccountLockedException, ReCaptchaInvalidException {
+
+        log.info("AuthPortalApi.register - Host: " + host);
 
         //Do check for automated registrations. Throws exception if it looks
         //automated.
