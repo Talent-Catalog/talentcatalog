@@ -971,7 +971,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             List<Object> reqPartners = new ArrayList<>();
             for (Long id : partnerIds) {
                 final Partner partner = partnerService.getPartner(id);
-                reqPartners.add(partner.getName());
+                reqPartners.add(partner.getAbbreviation());
             }
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
                 null,"partner.keyword", reqPartners);
