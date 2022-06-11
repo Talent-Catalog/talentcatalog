@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +63,6 @@ public class RootRedirectAdminApi {
 
         log.info("Redirect requested on host: " + host + ". Associated landing page = '" + (landingPage == null ? "null" : landingPage) + "'. Redirecting to " + redirectUrl);
 
-        //TODO JC Don't actually do redirect
-        //return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
     }
 }
