@@ -102,9 +102,10 @@ slack:
   token: ${SLACK_TOKEN}
 
 server:
+#  See https://docs.spring.io/spring-boot/docs/2.7.0/reference/htmlsingle/#howto.webserver.use-behind-a-proxy-server
+  forward-headers-strategy: native
   tomcat:
-    remote_ip_header: x-forwarded-for
-    protocol_header: x-forwarded-proto
+    redirect-context-root: false
   url: https://tbbtalent-staging.herokuapp.com
 web:
   portal: ${WEB_PORTAL:https://tbbtalent-staging.herokuapp.com/candidate-portal}
