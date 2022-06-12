@@ -55,6 +55,12 @@ public class BrandingInfo {
     private String logo;
 
     /**
+     * Partner name associated with branding, if known. Null if unknown.
+     */
+    @Nullable
+    private String partnerName;
+
+    /**
      * Website associated with logo
      */
     @Nullable

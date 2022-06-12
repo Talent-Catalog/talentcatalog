@@ -5,6 +5,7 @@ import {Observable} from "rxjs";
 
 export interface BrandingInfo {
   logo: string;
+  partnerName: string;
   websiteUrl: string;
 }
 

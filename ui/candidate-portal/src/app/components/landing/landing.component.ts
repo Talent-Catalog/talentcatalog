@@ -29,6 +29,7 @@ import {BrandingInfo, BrandingService} from "../../services/branding.service";
 
 export class LandingComponent implements OnInit {
 
+  private brandingInfo: BrandingInfo;
   showUSAfghanInfo:boolean = false;
 
   constructor(private authService: AuthService,
@@ -50,12 +51,9 @@ export class LandingComponent implements OnInit {
     )
 
     this.brandingService.getBrandingInfo().subscribe(
-      (response: BrandingInfo) => {
-        this.showUSAfghanInfo = response.websiteUrl?.includes("talentbeyondboundaries.org");
-      },
+      (response: BrandingInfo) => this.setBrandingInfo(response),
       (error) => console.log(error)
     );
-
 
     /**
      * Look for xlate query parameter which requests "in context" translation.
@@ -85,6 +83,11 @@ export class LandingComponent implements OnInit {
     }
   }
 
+  private setBrandingInfo(brandingInfo:BrandingInfo) {
+    this.brandingInfo = brandingInfo;
+    this.showUSAfghanInfo = brandingInfo.websiteUrl?.includes("talentbeyondboundaries.org");
+  }
+
   private proceed() {
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/home']);
@@ -111,5 +114,13 @@ export class LandingComponent implements OnInit {
     };
 
     initializePhraseAppEditor(config);
+  }
+
+  getPartnerName(): string {
+    let name = '';
+    if (this.brandingInfo?.partnerName) {
+      name = this.brandingInfo.partnerName;
+    }
+    return name;
   }
 }

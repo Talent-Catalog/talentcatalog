@@ -48,9 +48,12 @@
 
       <hr/>
 
-      <h5>{{ 'LANDING.HEADING3' | translate }}</h5>
+      <h5><a target="_blank" href="https://talentbeyondboundaries.org/s/TBB-Talent-Catalog-Privacy-Policy.pdf">
+        {{ 'LANDING.HEADING3' | translate }}
+      </a>
+      </h5>
 
-      <p [innerHTML]="'LANDING.PARA3' | translate"></p>
+      <div [innerHTML]="'LANDING.PARA3' | translate:{partner: getPartnerName()}"></div>
 
     </div>
 

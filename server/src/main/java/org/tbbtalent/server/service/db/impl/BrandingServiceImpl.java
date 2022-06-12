@@ -70,6 +70,7 @@ public class BrandingServiceImpl implements BrandingService {
         info.setHostDomain(partner.getRegistrationDomain());
         info.setLogo(partner.getLogo());
         info.setLandingPage(partner.getRegistrationLandingPage());
+        info.setPartnerName(partner.getName());
         info.setWebsiteUrl(partner.getWebsiteUrl());
         return info;
     }

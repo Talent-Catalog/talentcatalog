@@ -60,6 +60,7 @@ public class BrandingPortalApi {
     DtoBuilder brandingInfoDto() {
         return new DtoBuilder()
                 .add("logo")
+                .add("partnerName")
                 .add("websiteUrl")
                 ;
     }
