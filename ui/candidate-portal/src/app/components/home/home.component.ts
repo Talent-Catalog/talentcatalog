@@ -69,5 +69,21 @@ export class HomeComponent implements OnInit {
     );
 
   }
+
+  /**
+   * Return candidate's first name and last name, or empty string if unknown.
+   */
+  getCandidateName(): string {
+    let name = '';
+    if (this.user) {
+      if (this.user.firstName) {
+        name += this.user.firstName.trim();
+      }
+      if (this.user.lastName) {
+        name += ' ' + this.user.lastName.trim();
+      }
+    }
+    return name;
+  }
 }
 
