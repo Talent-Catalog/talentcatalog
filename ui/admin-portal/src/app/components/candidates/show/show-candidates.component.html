@@ -61,7 +61,9 @@
                       [pageSize]="pageSize"
                       [collectionSize]="results?.totalElements"
                       [(page)]="pageNumber"
-                      maxSize="5"
+                      [maxSize]="5"
+                      [ellipses]="true"
+                      [rotate]="true"
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
