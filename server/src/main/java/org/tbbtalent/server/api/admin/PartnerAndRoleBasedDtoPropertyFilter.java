@@ -54,7 +54,10 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
     public boolean ignoreProperty(Object o, String property) {
         boolean ignore;
 
-        if (role == Role.systemadmin) {
+        if (role == Role.systemadmin
+//todo This may come out when we make inter partner visibility more rigorous
+            || role == Role.admin || role == Role.sourcepartneradmin
+        ) {
             ignore = false;
         } else {
             if (publicProperties != null && publicProperties.contains(property)) {
