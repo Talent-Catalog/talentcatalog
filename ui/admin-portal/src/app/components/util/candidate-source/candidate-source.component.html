@@ -55,6 +55,9 @@
              [href]="candidateSource.sfJoblink">
             <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
           </a>
+          <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">
+            <i class="fab fa-google-drive" title="Create/show Google folder"></i>
+          </button>
           <button class="btn" *ngIf="showRunStats" (click)="doRunStats()"><i class="fas fa-chart-bar" title="Run stats"></i></button>
 
           <!--         todo - Copy Source for Saved Searches should be implemented-->

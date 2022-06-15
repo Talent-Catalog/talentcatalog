@@ -14,7 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {
   getCandidateSourceExternalHref,
   getCandidateSourceStatsNavigation,
@@ -33,6 +41,7 @@ import {copyToClipboard} from '../../../util/clipboard';
 import {externalDocLink, isSavedList} from "../../../model/saved-list";
 import {ConfirmationComponent} from "../confirm/confirmation.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {SavedListService} from "../../../services/saved-list.service";
 
 
 /**
@@ -84,6 +93,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
 
   constructor(
     private savedSearchService: SavedSearchService,
+    private savedListService: SavedListService,
     private location: Location,
     private modalService: NgbModal,
     private router: Router,
@@ -232,6 +242,33 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
       return this.candidateSource.publishedDocLink;
     } else {
       return null;
+    }
+  }
+
+  isSavedList() {
+    return isSavedList(this.candidateSource);
+  }
+
+  doShowListFolder() {
+    if (isSavedList(this.candidateSource)) {
+      const folderlink = this.candidateSource.folderlink;
+      if (folderlink) {
+        //Open link in new window
+        window.open(folderlink, "_blank");
+      } else {
+        this.error = null;
+        this.loading = true;
+        this.savedListService.createFolder(this.candidateSource.id).subscribe(
+          savedList => {
+            this.candidateSource = savedList;
+            this.loading = false;
+            window.open(savedList.folderlink, "_blank");
+          },
+          error => {
+            this.error = error;
+            this.loading = false;
+          });
+      }
     }
   }
 }
