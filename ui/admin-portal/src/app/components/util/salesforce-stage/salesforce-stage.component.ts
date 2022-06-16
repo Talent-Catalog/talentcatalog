@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {CandidateOpportunityStage, SalesforceOppParams} from "../../../model/candidate";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -39,7 +39,9 @@ export class SalesforceStageComponent implements OnInit {
 
   onSave() {
     const info: SalesforceOppParams = {
-      stageName: this.stage,
+      //Note that this is an unusual case where we pass back the string value - rather that the key
+      //of the enum.
+      stageName: this.stage ? CandidateOpportunityStage[this.stage]: null,
       nextStep: this.nextStep
     }
     this.activeModal.close(info)
