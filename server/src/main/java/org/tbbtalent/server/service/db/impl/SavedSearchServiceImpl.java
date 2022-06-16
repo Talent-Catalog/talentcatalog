@@ -51,6 +51,7 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -303,9 +304,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SearchCandidateRequest searchRequest =
             loadSavedSearch(savedSearchId);
 
-        //TODO JC Existing bug - document and leave.
-        //TODO JC This does not do defaulting - it is called from the stats.
-        //TODO JC One difference is that this does not do paging or sorting or review status
+        //Compute the candidates which should be excluded from search
+        Set<Candidate> excludedCandidates = computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
+
+        //Modify request, doing standard defaults
+        addDefaultsToSearchCandidateRequest(searchRequest);
 
         Set<Long> candidateIds = new HashSet<>();
         String simpleQueryString = searchRequest.getSimpleQueryString();
@@ -313,7 +316,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //This is an elastic search request.
 
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
-                simpleQueryString, null);
+                simpleQueryString, excludedCandidates);
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
@@ -328,7 +331,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
         } else {
             //Compute the normal query
-            final Specification<Candidate> query = computeQuery(searchRequest, null);
+            final Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
 
             List<Candidate> candidates = candidateRepository.findAll(query);
 
@@ -1377,35 +1380,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         Page<Candidate> candidates;
 
-        //TODO JC All this needs to be factored out and reused in searchCandidatesMethod above.
-        Set<Candidate> excludedCandidates = new HashSet<>();
+        //Compute the candidates which should be excluded from search
+        Set<Candidate> excludedCandidates = computeCandidatesExcludedFromSearchCandidateRequest(request);
 
-        final Long exclusionListId = request.getExclusionListId();
-        if (exclusionListId != null) {
-            SavedList exclusionList = savedListService.get(exclusionListId);
-            excludedCandidates.addAll(exclusionList.getCandidates());
-        }
-        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
-            //Compute excluded candidates based on review statuses
-            excludedCandidates.addAll(candidateReviewStatusRepository
-                .findCandidatesExcludedFromSearch(request.getSavedSearchId(),
-                    request.getReviewStatusFilter()));
-        }
-
-        //Modify request, defaulting blank statuses
-        List<CandidateStatus> requestedStatuses = request.getStatuses();
-        if (requestedStatuses == null || requestedStatuses.isEmpty()) {
-            request.setStatuses(defaultSearchStatuses);
-        }
-
-        //Modify request, defaulting blank partners
-        List<Long> requestedPartners = request.getPartnerIds();
-        if (requestedPartners == null || requestedPartners.isEmpty()) {
-            Partner partner = userService.getLoggedInSourcePartner();
-            if (partner != null) {
-                request.setPartnerIds(List.of(partner.getId()));
-            }
-        }
+        //Modify request, doing standard defaults
+        addDefaultsToSearchCandidateRequest(request);
 
         String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
@@ -1453,6 +1432,42 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
+    }
+
+    @NonNull
+    private Set<Candidate> computeCandidatesExcludedFromSearchCandidateRequest(SearchCandidateRequest request) {
+        Set<Candidate> excludedCandidates = new HashSet<>();
+
+        final Long exclusionListId = request.getExclusionListId();
+        if (exclusionListId != null) {
+            SavedList exclusionList = savedListService.get(exclusionListId);
+            excludedCandidates.addAll(exclusionList.getCandidates());
+        }
+
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
+            //Compute excluded candidates based on review statuses
+            excludedCandidates.addAll(candidateReviewStatusRepository
+                .findCandidatesExcludedFromSearch(request.getSavedSearchId(),
+                    request.getReviewStatusFilter()));
+        }
+        return excludedCandidates;
+    }
+
+    private void addDefaultsToSearchCandidateRequest(SearchCandidateRequest request) {
+        //Modify request, defaulting blank statuses
+        List<CandidateStatus> requestedStatuses = request.getStatuses();
+        if (requestedStatuses == null || requestedStatuses.isEmpty()) {
+            request.setStatuses(defaultSearchStatuses);
+        }
+
+        //Modify request, defaulting blank partners
+        List<Long> requestedPartners = request.getPartnerIds();
+        if (requestedPartners == null || requestedPartners.isEmpty()) {
+            Partner partner = userService.getLoggedInSourcePartner();
+            if (partner != null) {
+                request.setPartnerIds(List.of(partner.getId()));
+            }
+        }
     }
 
 }
