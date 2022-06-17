@@ -1395,6 +1395,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(request);
 
+            log.info("Elasticsearch query:\n" + boolQueryBuilder);
+            log.info("Elasticsearch sort:\n" + req);
+
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
                 .withPageable(req)
