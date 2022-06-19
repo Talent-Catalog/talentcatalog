@@ -51,7 +51,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   candidate: Candidate;
   countries: Country[];
   nationalities: Country[];
-  states: string[] = [];
+  states: string[] = null;
   years: number[];
   subscription;
   lang: string;
