@@ -51,6 +51,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   candidate: Candidate;
   countries: Country[];
   nationalities: Country[];
+  states: string[] = [];
   years: number[];
   subscription;
   lang: string;
@@ -252,4 +253,15 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  onCountryChange() {
+    this.loadStates();
+  }
+
+  private loadStates() {
+    this.countryService.listStates(this.country).subscribe(
+      (states) => {
+        this.states = states;
+      }
+    );
+  }
 }

@@ -70,6 +70,7 @@
       <div class="form-group">
         <label for="countryId">{{ 'REGISTRATION.PERSONAL.LABEL.COUNTRYID' | translate }} <sup>*</sup></label>
         <ng-select id="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
+                   (ngModelChange)="onCountryChange()"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindValue="id" bindLabel="name">
         </ng-select>
         <app-form-control-error [control]="form.controls.countryId"></app-form-control-error>
@@ -105,7 +106,15 @@
         <label for="state">
           {{ 'REGISTRATION.PERSONAL.LABEL.STATE' | translate }}
         </label>
-        <input type="text" class="form-control" id="state" placeholder="" [formControlName]="'state'">
+        <div *ngIf="states; else state_as_text">
+          <ng-select id="state" [formControlName]="'state'" [items]="states" [clearable]="true" [searchable]="true"
+                     placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
+            <!--                     bindLabel="name" bindValue="name">-->
+          </ng-select>
+        </div>
+        <ng-template #state_as_text>
+          <input type="text" class="form-control" id="state" placeholder="" [formControlName]="'state'">
+        </ng-template>
       </div>
     </div>
 
