@@ -46,8 +46,8 @@ export class IntRecruitmentComponent extends IntakeComponentBase implements OnIn
   get hasOther(): boolean {
     let found: boolean;
     // Check if reasons is an array of objects or strings (changes the way we handle the search for Other)
-    if (this.form?.value?.intRecruitReasons?.some(r => r.value)) {
-      found = this.form?.value?.intRecruitReasons?.find(r => r.value === 'Other');
+    if (this.form?.value?.intRecruitReasons?.some((r: EnumOption) => r.key)) {
+      found = this.form?.value?.intRecruitReasons?.find((r: EnumOption) => r.key === 'Other');
     } else {
       found = this.form?.value?.intRecruitReasons?.includes('Other')
     }
