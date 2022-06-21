@@ -21,7 +21,7 @@ import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {Role, User} from "../../../model/user";
+import {Role, roleGreaterThan, User} from "../../../model/user";
 import {UserService} from "../../../services/user.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CreateUpdateUserComponent} from "./create-update-user/create-update-user.component";
@@ -194,15 +194,26 @@ export class SearchUsersComponent implements OnInit {
   }
 
   canEdit(user: User): boolean {
-    const role = this.authService.getLoggedInRole();
-    let editable: boolean = false;
-    if ([Role.systemadmin].includes(role)) {
-      editable = true;
-    } else if ([Role.admin, Role.sourcepartneradmin].includes(role)) {
-      //Can only edit my user or users that I created
-      user?.createdBy?.id === this.loggedInUser?.id || user?.id === this.loggedInUser?.id
-        ? editable = true : editable = false;
+    const myRole = this.authService.getLoggedInRole();
+
+    let editable: boolean;
+    switch (myRole) {
+      case Role.systemadmin:
+        editable = true;
+        break;
+
+      case Role.admin:
+      case Role.sourcepartneradmin:
+        let userRole = Role[user?.role];
+        //Can't edit users whose role is greater than mine.
+        editable = !roleGreaterThan(userRole, myRole);
+        break;
+
+      default:
+        //Other user roles can't edit at all.
+        editable = false;
     }
+
     return editable;
   }
 }

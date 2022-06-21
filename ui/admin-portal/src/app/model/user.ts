@@ -57,3 +57,32 @@ export enum Role {
   semilimited = "Semi Limited",
   limited = "Limited"
 }
+
+export function roleGreaterThan(role1: Role, role2: Role): boolean {
+
+  //Populate this array with roles that are greater than role2
+  let greaterRoles: Role[];
+  switch (role2) {
+    case Role.systemadmin:
+      greaterRoles = [];
+      break;
+
+    case Role.admin:
+      greaterRoles = [Role.systemadmin]
+      break;
+
+    case Role.sourcepartneradmin:
+      greaterRoles = [Role.admin, Role.systemadmin]
+      break;
+
+    case Role.semilimited:
+      greaterRoles = [Role.sourcepartneradmin, Role.admin, Role.systemadmin]
+      break;
+
+    case Role.limited:
+      greaterRoles = [Role.semilimited, Role.sourcepartneradmin, Role.admin, Role.systemadmin]
+      break;
+  }
+
+  return greaterRoles.includes(role1);
+}
