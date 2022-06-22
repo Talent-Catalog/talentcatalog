@@ -205,7 +205,7 @@ export class SearchUsersComponent implements OnInit {
 
       case Role.admin:
       case Role.sourcepartneradmin:
-        if (user.sourcePartner.id !== myUser.sourcePartner.id) {
+        if (user.sourcePartner?.id !== myUser.sourcePartner?.id) {
           //Can't edit another partner's user.
           editable = false;
         } else {
