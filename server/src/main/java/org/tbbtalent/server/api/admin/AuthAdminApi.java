@@ -129,6 +129,17 @@ public class AuthAdminApi {
                 .add("lastName")
                 .add("usingMfa")
                 .add("mfaConfigured")
+                .add("sourcePartner", partnerDto())
                 ;
     }
+
+    private DtoBuilder partnerDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("abbreviation")
+            .add("websiteUrl")
+            ;
+    }
+
 }

@@ -194,6 +194,7 @@ export class SearchUsersComponent implements OnInit {
   }
 
   canEdit(user: User): boolean {
+    const myUser = this.loggedInUser;
     const myRole = this.authService.getLoggedInRole();
 
     let editable: boolean;
@@ -204,9 +205,13 @@ export class SearchUsersComponent implements OnInit {
 
       case Role.admin:
       case Role.sourcepartneradmin:
-        let userRole = Role[user?.role];
-        //Can't edit users whose role is greater than mine.
-        editable = !roleGreaterThan(userRole, myRole);
+        if (user.sourcePartner.id !== myUser.sourcePartner.id) {
+          //Can't edit another partner's user.
+          editable = false;
+        } else {
+          //Can't edit users whose role is greater than mine.
+          editable = !roleGreaterThan(Role[user?.role], myRole);
+        }
         break;
 
       default:
