@@ -120,15 +120,17 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //We want to catch changes of sub type (eg Professions/Business to Professions/Healthcare)
-    if (changes.savedSearchSubtype) {
-      //The very first call of this is before ngOnInit. See https://angular.io/guide/lifecycle-hooks
-      //We only want to catch changes after we have started the component.
-      if (!changes.savedSearchSubtype.isFirstChange()) {
-        //Pick up filter for this new sub type and update search
-        const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
-        this.searchForm?.controls['keyword'].patchValue(filter);
-        this.search();
+    if (this.sourceType === CandidateSourceType.SavedSearch) {
+      //We want to catch changes of sub type (eg Professions/Business to Professions/Healthcare)
+      if (changes.savedSearchSubtype) {
+        //The very first call of this is before ngOnInit. See https://angular.io/guide/lifecycle-hooks
+        //We only want to catch changes after we have started the component.
+        if (!changes.savedSearchSubtype.isFirstChange()) {
+          //Pick up filter for this new sub type and update search
+          const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
+          this.searchForm?.controls['keyword'].patchValue(filter);
+          this.search();
+        }
       }
     }
   }
@@ -197,6 +199,10 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
         //In this browsing display we want to filter out closed jobs
         req.sfOppClosed = false;
+
+        //We also want to sort with most recent job first - ie descending order of id
+        req.sortFields = ['id'];
+        req.sortDirection = 'DESC';
         break;
     }
     if (this.savedSearchType !== undefined) {
