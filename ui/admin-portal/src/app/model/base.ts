@@ -242,7 +242,7 @@ export function isMine(source: CandidateSource, auth: AuthService) {
   return mine;
 }
 
-export function isSharedWithMe(source: CandidateSource, auth: AuthService) {
+export function isStarredByMe(source: CandidateSource, auth: AuthService) {
   let sharedWithMe: boolean = false;
   const me: User = auth.getLoggedInUser();
   if (source && me) {

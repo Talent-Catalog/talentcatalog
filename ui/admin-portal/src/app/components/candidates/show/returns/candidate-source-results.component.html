@@ -18,8 +18,9 @@
   <app-candidate-source
           [candidateSource]="candidateSource" [seeMore]="false" [showMore]="true"
           [showOpen]="true" [showDelete]="true" [showEdit]="true" [showCopy]="true"
-          [showRunStats]="true"
+          [showRunStats]="true" [showStarred]="true"
           (openSource)="onOpenSource()"
+          (toggleStarred)="onToggleStarred($event)"
           (toggleWatch)="onToggleWatch($event)"
           (deleteSource)="onDeleteSource($event)"
           (editSource)="onEditSource($event)"

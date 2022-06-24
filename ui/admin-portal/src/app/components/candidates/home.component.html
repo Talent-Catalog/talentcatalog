@@ -80,7 +80,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="SearchesSharedWithMe">
-    <a ngbNavLink title="Searches that I am currently working with">Searches Tagged By Me</a>
+    <a ngbNavLink title="Starred Searches (eg those I am working with)"><i class="fas fa-star"></i>Searches</a>
     <ng-template ngbNavContent>
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedSearch"
@@ -92,7 +92,7 @@
   <ng-container ngbNavItem="JobOpps">
     <a ngbNavLink
        title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
-    >Registered Job Opps</a>
+    >Registered Job Lists</a>
     <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedList"
@@ -112,7 +112,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="ListsSharedWithMe">
-    <a ngbNavLink title="Lists that I am currently working with">Lists Tagged By Me</a>
+    <a ngbNavLink title="Starred Lists (eg those I am working with)"><i class="fas fa-star"></i>Lists</a>
     <ng-template ngbNavContent>
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedList"

@@ -34,7 +34,7 @@ import {
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {AuthService} from '../../../services/auth.service';
 import {User} from '../../../model/user';
-import {CandidateSource, canEditSource, isMine} from '../../../model/base';
+import {CandidateSource, canEditSource, isMine, isStarredByMe} from '../../../model/base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
@@ -73,6 +73,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   @Input() showOpen: boolean = true;
   @Input() showRunStats: boolean = true;
   @Input() showWatch: boolean = true;
+  @Input() showStarred: boolean = true;
   @Input() showSelect: boolean = false;
   @Input() showCopy: boolean = false;
   @Input() showEdit: boolean = false;
@@ -85,6 +86,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   @Output() editSource = new EventEmitter<CandidateSource>();
   @Output() deleteSource = new EventEmitter<CandidateSource>();
   @Output() selectColumns = new EventEmitter<CandidateSource>();
+  @Output() toggleStarred = new EventEmitter<CandidateSource>();
   @Output() toggleWatch = new EventEmitter<CandidateSource>();
 
   loading;
@@ -167,6 +169,14 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
 
   doSelectColumns() {
     this.selectColumns.emit(this.candidateSource);
+  }
+
+  doToggleStarred() {
+    this.toggleStarred.emit(this.candidateSource);
+  }
+
+  isStarred(): boolean {
+    return isStarredByMe(this.candidateSource, this.authService);
   }
 
   doToggleWatch() {

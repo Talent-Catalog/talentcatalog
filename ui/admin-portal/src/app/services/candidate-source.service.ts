@@ -22,7 +22,8 @@ import {SearchResults} from "../model/search-results";
 import {
   CandidateSource,
   SearchCandidateSourcesRequest,
-  UpdateCandidateContextNoteRequest, UpdateCandidateSourceDescriptionRequest,
+  UpdateCandidateContextNoteRequest,
+  UpdateCandidateSourceDescriptionRequest,
   UpdateDisplayedFieldPathsRequest
 } from "../model/base";
 import {isSavedSearch, SearchSavedSearchRequest} from "../model/saved-search";
@@ -41,18 +42,6 @@ export class CandidateSourceService {
               private candidateFieldService: CandidateFieldService
   ) {}
 
-  addSharedUser(source: CandidateSource, request: { userId: number }):
-    Observable<CandidateSource> {
-
-    const apiUrl = isSavedSearch(source) ?
-      this.savedSearchApiUrl : this.savedListApiUrl;
-
-    return this.http.put<CandidateSource>(`${apiUrl}/shared-add/${source.id}`, request)
-      .pipe(
-        map(result => this.processPostResult(result))
-      );
-  }
-
   copy(source: CandidateSource, selection: CopySourceContentsRequest): Observable<CandidateSource> {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
@@ -67,12 +56,26 @@ export class CandidateSourceService {
     return this.http.delete<boolean>(`${apiUrl}/${source.id}`);
   }
 
-  removeSharedUser(source: CandidateSource, request: { userId: number }):
+  starSourceForUser(source: CandidateSource, request: { userId: number }):
     Observable<CandidateSource> {
 
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
 
+    //todo Need to replace this "shared by" idea with "tagged by" in both API and Spring code.
+    return this.http.put<CandidateSource>(`${apiUrl}/shared-add/${source.id}`, request)
+    .pipe(
+      map(result => this.processPostResult(result))
+    );
+  }
+
+  unstarSourceForUser(source: CandidateSource, request: { userId: number }):
+    Observable<CandidateSource> {
+
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    //todo Need to replace this "shared by" idea with "tagged by" in both API and Spring code.
     return this.http.put<CandidateSource>(`${apiUrl}/shared-remove/${source.id}`, request)
       .pipe(
         map(result => this.processPostResult(result))

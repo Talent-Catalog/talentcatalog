@@ -45,7 +45,7 @@ import {
   CandidateSource,
   CandidateSourceType,
   isMine,
-  isSharedWithMe,
+  isStarredByMe,
   SearchBy
 } from '../../../../model/base';
 import {
@@ -354,13 +354,9 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   onDeleteSource(source: CandidateSource) {
     this.loading = true;
-    //If shared remove from my shared searches/lists
-    if (isSharedWithMe(source, this.authService)) {
-      this.removeFromShared(source);
-      // Else if it's mine I can delete it from the database
-    } else if (isMine(source, this.authService)) {
+    if (isMine(source, this.authService)) {
       this.deleteOwnedSource(source)
-      // If it's not shared or it's not mine (e.g. it's global) it cannot be deleted from the TC. No delete icon, but security.
+      // If it's not mine I can't delete it.
     } else {
       this.error = 'You can not delete this saved search/list.';
       this.loading = false;
@@ -394,6 +390,38 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         });
     }
 
+  }
+
+  onToggleStarred(source: CandidateSource) {
+    this.loading = true;
+    this.error = null
+    if (isStarredByMe(source, this.authService)) {
+      this.candidateSourceService.unstarSourceForUser(
+        source, {userId: this.loggedInUser.id}).subscribe(
+        result => {
+          //Update local copy
+          this.updateLocalCandidateSourceCopy(result);
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+      );
+    } else {
+      this.candidateSourceService.starSourceForUser(
+        source, {userId: this.loggedInUser.id}).subscribe(
+        result => {
+          //Update local copy
+          this.updateLocalCandidateSourceCopy(result);
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+      );
+    }
   }
 
   onToggleWatch(source: CandidateSource) {
@@ -437,36 +465,6 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     if (this.selectedIndex === index) {
       this.selectedSource = source;
     }
-  }
-
-  private removeFromShared(source: CandidateSource) {
-    const loggedInUser = this.authService.getLoggedInUser();
-
-    const removeCandidateSourceModal = this.modalService.open(ConfirmationComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    removeCandidateSourceModal.componentInstance.message =
-      'Are you sure you want to remove "' + source.name + '" from your shared searches or lists?';
-
-    removeCandidateSourceModal.result
-      .then((result) => {
-        if (result === true) {
-          this.candidateSourceService.removeSharedUser(
-            source, {userId: loggedInUser.id}).subscribe(
-            () => {
-              //Refresh display which will remove source if displayed.
-              this.search();
-              this.loading = false;
-            },
-            error => {
-              this.error = error;
-              this.loading = false;
-            })
-        }
-      })
-      .catch(() => { });
   }
 
   private deleteOwnedSource(source: CandidateSource) {

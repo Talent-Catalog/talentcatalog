@@ -41,11 +41,15 @@
         <div class="btn-toolbar">
           <button class="btn" *ngIf="showOpen" (click)="doOpenSource()"><i class="fas fa-expand" title="Open"></i></button>
           <button class="btn" *ngIf="showLink" (click)="doCopyLink()"><i class="fas fa-link" title="Copy shareable link"></i></button>
-          <button class="btn" *ngIf="showOpen && hasSavedSearchSource()" (click)="doShowSearch()"><i class="fas fa-search" title="Show Search"></i></button>
+          <button class="btn" *ngIf="showStarred" (click)="doToggleStarred()">
+            <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
+            <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
+          </button>
           <button class="btn" *ngIf="showWatch && savedSearch" (click)="doToggleWatch()">
             <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch"></i>
             <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
           </button>
+          <button class="btn" *ngIf="showOpen && hasSavedSearchSource()" (click)="doShowSearch()"><i class="fas fa-search" title="Show Search"></i></button>
           <button class="btn" *ngIf="showEdit && isEditable()" (click)="doEditSource()"><i class="fas fa-edit" title="Rename"></i></button>
 
           <button class="btn" *ngIf="showEdit && isEditable()" (click)="doSelectColumns()">

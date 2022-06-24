@@ -35,7 +35,10 @@ import {
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
+import {
+  CreateFromDefaultSavedSearchRequest,
+  SavedSearchService
+} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
@@ -60,8 +63,9 @@ import {
   defaultReviewStatusFilter,
   indexOfHasId,
   isMine,
-  isSharedWithMe,
-  ReviewStatus, Status
+  isStarredByMe,
+  ReviewStatus,
+  Status
 } from '../../../model/base';
 import {
   CachedSourceResults,
@@ -747,30 +751,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.doSearch(false, false);
   }
 
-  addToSharedWithMe() {
-    this.candidateSourceService.addSharedUser(
-      this.candidateSource, {userId: this.loggedInUser.id}).subscribe(
-      result => {
-        this.candidateSource = result;
-      },
-      error => {
-        this.error = error;
-      }
-    );
-  }
-
-  removeFromSharedWithMe() {
-    this.candidateSourceService.removeSharedUser(
-      this.candidateSource, {userId: this.loggedInUser.id}).subscribe(
-      result => {
-        this.candidateSource = result;
-      },
-      error => {
-        this.error = error;
-      }
-    );
-  }
-
   haveTargetList(): boolean {
     return this.targetListName && this.targetListName.length > 0;
   }
@@ -827,9 +807,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return isSavedList(this.candidateSource);
   }
 
-  isTaggedByMe(): boolean {
-    //todo Need to replace this "shared by" idea with "tagged by" in both Angular and Spring code.
-    return isSharedWithMe(this.candidateSource, this.authService);
+  isStarred(): boolean {
+    return isStarredByMe(this.candidateSource, this.authService);
   }
 
   isShowStage(): boolean {
@@ -1700,4 +1679,34 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  doToggleStarred() {
+    this.loading = true;
+    this.error = null
+    if (this.isStarred()) {
+      this.candidateSourceService.unstarSourceForUser(
+        this.candidateSource, {userId: this.loggedInUser.id}).subscribe(
+        result => {
+          this.candidateSource = result;
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+      );
+    } else {
+      this.candidateSourceService.starSourceForUser(
+        this.candidateSource, {userId: this.loggedInUser.id}).subscribe(
+        result => {
+          //Update local copy
+          this.candidateSource = result;
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+      );
+    }
+  }
 }

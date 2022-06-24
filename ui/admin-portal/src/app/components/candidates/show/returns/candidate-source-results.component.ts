@@ -60,6 +60,7 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
   pageSize: number;
   results: SearchResults<Candidate>;
   @Input() candidateSource: CandidateSource;
+  @Output() toggleStarred = new EventEmitter<CandidateSource>();
   @Output() toggleWatch = new EventEmitter<CandidateSource>();
   @Output() copySource = new EventEmitter<CandidateSource>();
   @Output() deleteSource = new EventEmitter<CandidateSource>();
@@ -222,6 +223,13 @@ constructor(
       this.sortDirection = 'ASC';
     }
     this.search(true);
+  }
+
+  //Pass toggle watch up to BrowseCandidateSourcesComponent for it to
+  //do the update and refresh its copy of the candidate source details
+  // (which is passed through to all contained components)
+  onToggleStarred(source: CandidateSource) {
+    this.toggleStarred.emit(source);
   }
 
   //Pass toggle watch up to BrowseCandidateSourcesComponent for it to

@@ -35,6 +35,15 @@ label {
   cursor: not-allowed;
 }
 
+.starred {
+  color: red;
+}
+
+.notstarred {
+  color: grey;
+}
+
+
 .filter-form {
   //background-color: #efefef;
   //padding: 1em;
