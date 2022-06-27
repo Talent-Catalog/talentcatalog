@@ -28,7 +28,6 @@ public class UpdateCandidateRegistrationRequest {
     private String externalId;
     private String externalIdSource;
     private String partnerRef;
-    private YesNoUnsure unhcrRegistered;
     private UnhcrStatus unhcrStatus;
     private YesNo unhcrConsent;
     private String unhcrNumber;

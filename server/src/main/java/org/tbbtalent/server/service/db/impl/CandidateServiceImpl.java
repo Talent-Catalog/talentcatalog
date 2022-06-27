@@ -951,13 +951,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setExternalId(request.getExternalId());
         candidate.setExternalIdSource(request.getExternalIdSource());
         candidate.setPartnerRef(request.getPartnerRef());
-
-        //Note that you should set unhcrStatus first because it will take precedence if there
-        //is an inconsistency with setUnhcrRegistered - they are both effectively modifying the
-        //same data. See logic in Candidate.setUnhcrRegistered
         candidate.setUnhcrStatus(request.getUnhcrStatus());
-        candidate.setUnhcrRegistered(request.getUnhcrRegistered());
-
         candidate.setUnhcrConsent(request.getUnhcrConsent());
         candidate.setUnhcrNumber(request.getUnhcrNumber());
         candidate.setUnrwaRegistered(request.getUnrwaRegistered());
