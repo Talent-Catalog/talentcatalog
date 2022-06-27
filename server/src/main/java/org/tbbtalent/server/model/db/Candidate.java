@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +42,8 @@ import javax.persistence.Transient;
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.annotations.Formula;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
@@ -51,6 +54,7 @@ import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 @Table(name = "candidate")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
 public class Candidate extends AbstractAuditableDomainObject<Long> {
+    private static final Logger log = LoggerFactory.getLogger(Candidate.class);
 
     private String candidateNumber;
 
@@ -401,8 +405,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String hostEntryYearNotes;
 
-    @Enumerated(EnumType.STRING)
-    @Nullable
+
+    /**
+     * Computed from {@link #unhcrStatus}
+     */
+    @Transient
     private YesNoUnsure unhcrRegistered;
 
     @Enumerated(EnumType.STRING)
@@ -1406,9 +1413,67 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setHostEntryYearNotes(@Nullable String hostEntryYearNotes) { this.hostEntryYearNotes = hostEntryYearNotes; }
 
     @Nullable
-    public YesNoUnsure getUnhcrRegistered() { return unhcrRegistered; }
+    public YesNoUnsure getUnhcrRegistered() {
+        UnhcrStatus status = getUnhcrStatus();
+        YesNoUnsure registered;
+        if (status == null) {
+            registered = YesNoUnsure.NoResponse;
+        } else {
+            switch (status) {
+                case NotRegistered:
+                case NA:
+                    registered = YesNoUnsure.No;
+                    break;
+                case RegisteredAsylum:
+                case RegisteredStateless:
+                case RegisteredStatusUnknown:
+                case MandateRefugee:
+                    registered = YesNoUnsure.Yes;
+                    break;
+                case Unsure:
+                    registered = YesNoUnsure.Unsure;
+                    break;
+                case NoResponse:
+                    registered = YesNoUnsure.NoResponse;
+                    break;
+                default:
+                    registered = null;
+                    log.error("Unhandled UNHCRStatus: " + status);
+            }
+        }
+        return registered;
+    }
 
-    public void setUnhcrRegistered(@Nullable YesNoUnsure unhcrRegistered) { this.unhcrRegistered = unhcrRegistered; }
+    public void setUnhcrRegistered(@Nullable YesNoUnsure unhcrRegistered) {
+        this.unhcrRegistered = unhcrRegistered;
+
+        if (unhcrRegistered != null) {
+            //Only update UnhcrStatus if the unhcrRegistered value is providing additional info,
+            //ie if the current status is null, noResponse or unsure
+            UnhcrStatus status = getUnhcrStatus();
+            if (status == null ||
+                Arrays.asList(UnhcrStatus.NoResponse, UnhcrStatus.Unsure).contains(status) ) {
+                UnhcrStatus newStatus = null;
+                switch (unhcrRegistered) {
+                    case Yes:
+                        newStatus = UnhcrStatus.RegisteredStatusUnknown;
+                        break;
+                    case No:
+                        newStatus = UnhcrStatus.NotRegistered;
+                        break;
+                    case NoResponse:
+                        newStatus = UnhcrStatus.NoResponse;
+                        break;
+                    case Unsure:
+                        newStatus = UnhcrStatus.Unsure;
+                        break;
+                }
+                if (newStatus != null) {
+                    setUnhcrStatus(newStatus);
+                }
+            }
+        }
+    }
 
     @Nullable
     public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }

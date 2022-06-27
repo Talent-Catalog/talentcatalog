@@ -42,7 +42,6 @@ export class EditCandidateRegistrationComponent implements OnInit {
         externalId: [candidate.externalId ? candidate.externalId : null],
         externalIdSource: [candidate.externalIdSource ? candidate.externalIdSource : null],
         partnerRef: [candidate.partnerRef ? candidate.partnerRef : null],
-        unhcrRegistered: [candidate.unhcrRegistered ? candidate.unhcrRegistered : null],
         unhcrNumber: [candidate.unhcrNumber ? candidate.unhcrNumber : null],
         unhcrStatus: [candidate.unhcrStatus ? candidate.unhcrStatus : null],
         unhcrConsent: [candidate.unhcrConsent ? candidate.unhcrConsent : null],

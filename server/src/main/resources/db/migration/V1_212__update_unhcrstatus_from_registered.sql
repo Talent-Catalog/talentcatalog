@@ -14,26 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
+update candidate set unhcr_status =
+                         case
+                             when unhcr_registered = 'No' then 'NotRegistered'
+                             when unhcr_registered = 'Yes' then 'RegisteredStatusUnknown'
+                             when unhcr_registered = 'NoResponse' then 'NoResponse'
+                             when unhcr_registered = 'Unsure' then 'Unsure'
+                             end
+where unhcr_registered is not null and
+    (unhcr_status is null or unhcr_status in ('NoResponse', 'Unsure'));
 
-public enum UnhcrStatus {
-    NoResponse("No response"),
-    MandateRefugee("Assessed by UNHCR as a mandate refugee (RSD)"),
-    RegisteredAsylum("Registered with UNHCR as asylum seeker"),
-    RegisteredStateless("Registered with UNHCR as stateless"),
-    RegisteredStatusUnknown("Registered with UNHCR but status unknown"),
-    NotRegistered("Not registered"),
-    Unsure("Unsure"),
-    NA("Not applicable");
-
-    public final String label;
-
-    UnhcrStatus(String label) {
-        this.label = label;
-    }
-
-    @Override
-    public String toString() {
-        return label;
-    }
-}

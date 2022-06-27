@@ -58,11 +58,11 @@
                [formControlName]="'externalIdSource'">
       </div>
 
-      <!-- UNHCR REGISTERED -->
+      <!-- UNHCR STATUS -->
       <div class="form-group">
-        <label for="unhcrRegistered">UNHCR Registered?</label>
-        <ng-select id="unhcrRegistered" [formControlName]="'unhcrRegistered'"
-                   [items]="registeredOptions" [clearOnBackspace]="false"
+        <label for="unhcrStatus">What is your registration status with UNHCR?</label>
+        <ng-select id="unhcrStatus" [formControlName]="'unhcrStatus'"
+                   [items]="unhcrStatusOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
@@ -71,14 +71,6 @@
         <label for="unhcrNumber">UNHCR Number</label>
         <input type="text" class="form-control" id="unhcrNumber" placeholder=""
                [formControlName]="'unhcrNumber'">
-      </div>
-
-      <!-- UNHCR STATUS -->
-      <div class="form-group">
-        <label for="unhcrStatus">What is your registration status with UNHCR?</label>
-        <ng-select id="unhcrStatus" [formControlName]="'unhcrStatus'"
-                   [items]="unhcrStatusOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <!-- UNHCR CONSENT -->
