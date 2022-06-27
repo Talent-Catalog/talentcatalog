@@ -1447,13 +1447,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnhcrRegistered(@Nullable YesNoUnsure unhcrRegistered) {
         this.unhcrRegistered = unhcrRegistered;
 
-        if (unhcrRegistered != null) {
+        UnhcrStatus status = getUnhcrStatus();
+        UnhcrStatus newStatus = null;
+
+        if (unhcrRegistered == null) {
+            if (status == null) {
+                newStatus = UnhcrStatus.NoResponse;
+            }
+        } else {
             //Only update UnhcrStatus if the unhcrRegistered value is providing additional info,
             //ie if the current status is null, noResponse or unsure
-            UnhcrStatus status = getUnhcrStatus();
             if (status == null ||
                 Arrays.asList(UnhcrStatus.NoResponse, UnhcrStatus.Unsure).contains(status) ) {
-                UnhcrStatus newStatus = null;
                 switch (unhcrRegistered) {
                     case Yes:
                         newStatus = UnhcrStatus.RegisteredStatusUnknown;
@@ -1468,10 +1473,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                         newStatus = UnhcrStatus.Unsure;
                         break;
                 }
-                if (newStatus != null) {
-                    setUnhcrStatus(newStatus);
-                }
             }
+        }
+        if (newStatus != null) {
+            setUnhcrStatus(newStatus);
         }
     }
 

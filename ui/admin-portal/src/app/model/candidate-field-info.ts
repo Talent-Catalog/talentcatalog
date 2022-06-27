@@ -31,17 +31,30 @@ export class CandidateFieldInfo {
    * Create an info
    * @param displayName see doc above
    * @param fieldPath see doc above
-   * @param fieldFormatter Function which returns the field's displayed value. If null, the field
-   * displays in the default way. Useful for formatting dates, for example.
+   * @param tooltipSupplier Optional function which returns a tooltip for the given value. If null
+   * no tooltip is available.
+   * @param fieldFormatter Optional function which takes the field's value and returns the field's
+   * displayed value. If null, the field displays in the default way.
+   * Useful for formatting dates, for example.
    * @param fieldSelector If null, field is always available for display. If not null, field is
    * only available for display if this function returns true. For example, candidate names are
    * only displayable to user admins.
    */
   constructor(displayName: string, fieldPath: string,
+              private tooltipSupplier: (value: any) => string,
               private fieldFormatter: (value: any) => string,
               public fieldSelector: () => boolean) {
     this.displayName = displayName;
     this.fieldPath = fieldPath;
+  }
+
+  getTooltip(candidate: Candidate): string {
+    let tooltip: string = '';
+    if (this.tooltipSupplier != null) {
+      const value = this.getValue(candidate);
+      tooltip = this.tooltipSupplier(value);
+    }
+    return tooltip;
   }
 
   getValue(candidate: Candidate): string {

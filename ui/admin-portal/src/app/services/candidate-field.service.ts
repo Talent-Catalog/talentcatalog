@@ -19,7 +19,7 @@ import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
 import {CandidateSource, Status} from "../model/base";
-import {Candidate, checkIeltsScoreType, ResidenceStatus} from "../model/candidate";
+import {Candidate, checkIeltsScoreType, ResidenceStatus, UnhcrStatus} from "../model/candidate";
 import {
   checkForAbandoned,
   checkForCompleted,
@@ -50,6 +50,8 @@ export class CandidateFieldService {
     return this.getTasksStatus(value);
   }
 
+  private unhcrStatusTooltip = (value) => UnhcrStatus[value];
+
   private allDisplayableFields = [];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
@@ -79,46 +81,46 @@ export class CandidateFieldService {
   ) {
 
   this.allDisplayableFields = [
-      new CandidateFieldInfo("First Name", "user.firstName",
+      new CandidateFieldInfo("First Name", "user.firstName", null,
         null, this.isCandidateNameViewable),
-      new CandidateFieldInfo("Driving License", "drivingLicense",
+      new CandidateFieldInfo("Driving License", "drivingLicense", null,
         null, null),
-      new CandidateFieldInfo("Gender", "gender",
+      new CandidateFieldInfo("Gender", "gender", null,
         this.titleCaseFormatter, null),
-      new CandidateFieldInfo("Last Name", "user.lastName",
+      new CandidateFieldInfo("Last Name", "user.lastName", null,
         null, this.isCandidateNameViewable),
-      new CandidateFieldInfo("Location", "country.name",
+      new CandidateFieldInfo("Location", "country.name", null,
         null, this.isCountryViewable),
-      new CandidateFieldInfo("State", "state",
+      new CandidateFieldInfo("State", "state", null,
         null, this.isCountryViewable),
-      new CandidateFieldInfo("City", "city",
+      new CandidateFieldInfo("City", "city", null,
         null, this.isCountryViewable),
-      new CandidateFieldInfo("Married?", "maritalStatus",
+      new CandidateFieldInfo("Married?", "maritalStatus", null,
         null, null),
-      new CandidateFieldInfo("Nationality", "nationality.name",
+      new CandidateFieldInfo("Nationality", "nationality.name", null,
         null, this.isCountryViewable),
-      new CandidateFieldInfo("Partner", "user.sourcePartner.abbreviation",
+      new CandidateFieldInfo("Partner", "user.sourcePartner.abbreviation", null,
         null, null),
-      new CandidateFieldInfo("Phone", "phone",
+      new CandidateFieldInfo("Phone", "phone", null,
         null, null),
-      new CandidateFieldInfo("Status", "status",
+      new CandidateFieldInfo("Status", "status", null,
         this.titleCaseFormatter, null),
-      new CandidateFieldInfo("UNHCR Status", "unhcrStatus",
+      new CandidateFieldInfo("UNHCR Status", "unhcrStatus", this.unhcrStatusTooltip,
         null, null),
-      new CandidateFieldInfo("Updated", "updatedDate",
+      new CandidateFieldInfo("Updated", "updatedDate", null,
         this.dateFormatter, null),
-      new CandidateFieldInfo("DOB", "dob",
+      new CandidateFieldInfo("DOB", "dob", null,
         this.dateFormatter, null),
-      new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level",
+      new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level", null,
         this.levelGetNameFormatter, null),
-      new CandidateFieldInfo("IELTS Score", "ieltsScore",
+      new CandidateFieldInfo("IELTS Score", "ieltsScore", null,
         this.getIeltsScoreType, null),
-      new CandidateFieldInfo("Legal status", "residenceStatus",
+      new CandidateFieldInfo("Legal status", "residenceStatus", null,
         this.residenceStatusFormatter, null),
-      new CandidateFieldInfo("Dependants", "numberDependants",
+      new CandidateFieldInfo("Dependants", "numberDependants", null,
         null, null),
       // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
-      // new CandidateFieldInfo("Tasks Status", "taskAssignments",
+      // new CandidateFieldInfo("Tasks Status", "taskAssignments", null,
       //   this.getOverallTasksStatus, null),
     ];
 

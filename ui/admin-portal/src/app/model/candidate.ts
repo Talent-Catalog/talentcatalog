@@ -485,12 +485,13 @@ export enum IntRecruitReason {
 }
 
 export enum UnhcrStatus {
+  NoResponse= "No response received from candidate",
   MandateRefugee = "Assessed by UNHCR as a mandate refugee (RSD)",
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
   RegisteredStatusUnknown = "Registered with UNHCR but status unknown",
-  NotRegistered = "Not registered",
-  Unsure = "Unsure",
+  NotRegistered = "Not registered with UNHCR",
+  Unsure = "Candidate was unsure",
   NA = "Not applicable"
 }
 

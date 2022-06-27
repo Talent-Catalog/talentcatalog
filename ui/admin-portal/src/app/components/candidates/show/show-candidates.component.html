@@ -356,7 +356,8 @@
                        [checked]="isSelected(candidate)">
               </td>
               <td *ngFor="let field of selectedFields">
-                <span [ngClass]="{
+
+                <span [title]="field.getTooltip(candidate)" [ngClass]="{
                 'text-danger': field.getValue(candidate) === 'Overdue',
                 'text-success' : field.getValue(candidate) == 'Completed',
                 'text-alert' : field.getValue(candidate) == 'Abandoned'}">
