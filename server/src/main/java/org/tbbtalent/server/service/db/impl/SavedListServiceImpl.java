@@ -558,10 +558,12 @@ public class SavedListServiceImpl implements SavedListService {
         GetSavedListsQuery getSavedListsQuery =
                 new GetSavedListsQuery(request, userWithSharedSearches);
 
-        //The incoming request will have paging info but no sorting.
-        //So set standard ascending sort by name.
-        request.setSortDirection(Sort.Direction.ASC);
-        request.setSortFields(new String[] {"name"});
+        //The incoming request will have paging info but may have no sorting.
+        //If not, default the sort to ascending by name.
+        if (request.getSortDirection() == null) {
+            request.setSortDirection(Sort.Direction.ASC);
+            request.setSortFields(new String[]{"name"});
+        }
 
         PageRequest pageRequest = request.getPageRequest();
         return savedListRepository.findAll(getSavedListsQuery, pageRequest);
