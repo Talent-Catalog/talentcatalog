@@ -342,13 +342,11 @@ public class SavedListServiceImpl implements SavedListService {
     /**
      * Finds folder for the given list on Google Drive, creating one if none found.
      *
-     * @param id ID of list
-     * @throws NoSuchObjectException if no list is found with that id
+     * @param savedList List
      * @throws IOException           if there is a problem creating the folder.
      */
-    private void findOrCreateListFolder(long id)
-        throws NoSuchObjectException, IOException {
-        SavedList savedList = get(id);
+    private void findOrCreateListFolder(SavedList savedList) throws IOException {
+        long id = savedList.getId();
 
         GoogleFileSystemDrive foldersDrive = googleDriveConfig.getListFoldersDrive();
         GoogleFileSystemFolder foldersRoot = googleDriveConfig.getListFoldersRoot();
@@ -380,7 +378,7 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedList createListFolder(long id) throws NoSuchObjectException, IOException {
         SavedList savedList = get(id);
 
-        findOrCreateListFolder(id);
+        findOrCreateListFolder(savedList);
 
         saveIt(savedList);
         return savedList;
