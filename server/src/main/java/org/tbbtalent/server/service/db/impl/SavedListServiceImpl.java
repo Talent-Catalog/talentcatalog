@@ -371,6 +371,24 @@ public class SavedListServiceImpl implements SavedListService {
             // CREATE JOB OPPORTUNITY INTAKE FILE IN JD FOLDER
             String joiFileName = "JobOpportunityIntake - " + savedList.getName();
             fileSystemService.copyFile(jdfolder, joiFileName, jobOppIntakeTemplate);
+        } else {
+            //Cope with cases where the list folder exists, but sub folders don't.
+            //This is unusual but if it does happen, we should handle it and create those subfolders.
+            GoogleFileSystemFolder subfolder = fileSystemService.findAFolder(foldersDrive, folder, folderName);
+            if (subfolder == null) {
+                subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
+            }
+            savedList.setFolderlink(subfolder.getUrl());
+
+            // JD folder
+            GoogleFileSystemFolder jdfolder =
+                fileSystemService.findAFolder(foldersDrive, subfolder,
+                    LIST_JOB_DESCRIPTION_SUBFOLDER);
+            if (jdfolder == null) {
+                jdfolder =
+                    fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
+            }
+            savedList.setFolderjdlink(jdfolder.getUrl());
         }
     }
 
