@@ -60,6 +60,9 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
 
     abstract public String getPartnerType();
 
+    @Nullable
+    private String sflink;
+
     @Enumerated(EnumType.STRING)
     @NonNull
     private Status status;

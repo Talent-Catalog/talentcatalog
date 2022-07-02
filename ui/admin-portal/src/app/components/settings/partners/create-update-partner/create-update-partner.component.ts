@@ -61,6 +61,7 @@ export class CreateUpdatePartnerComponent implements OnInit {
       notificationEmail: [this.partner?.notificationEmail],
       registrationLandingPage: [this.partner?.registrationLandingPage],
       registrationDomain: [this.partner?.registrationDomain],
+      sflink: [this.partner?.sflink],
       sourceCountries: [this.partner?.sourceCountries],
 
       //Note that the value passed in here is the string key of the enum. In the html the
@@ -106,6 +107,7 @@ export class CreateUpdatePartnerComponent implements OnInit {
       partnerType: 'SourcePartner',
       registrationLandingPage: this.form.value.registrationLandingPage,
       registrationDomain: this.form.value.registrationDomain,
+      sflink: this.form.value.sflink,
 
       //Convert countries to country ids
       sourceCountryIds: this.form.value.sourceCountries?.map(c => c.id),

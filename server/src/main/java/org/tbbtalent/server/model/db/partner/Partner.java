@@ -86,6 +86,13 @@ public interface Partner {
     String getPartnerType();
 
     /**
+     * Url link to corresponding Salesforce Account record, if one exists.
+     */
+    @Nullable
+    String getSflink();
+    void setSflink(@Nullable String sflink);
+
+    /**
      * Status of partner. Partners may be inactivated or deleted.
      * @return Status of partner
      */

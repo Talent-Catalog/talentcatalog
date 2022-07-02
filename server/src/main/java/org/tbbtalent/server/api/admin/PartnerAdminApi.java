@@ -116,6 +116,7 @@ public class PartnerAdminApi implements
             .add("websiteUrl")
             .add("registrationLandingPage")
             .add("registrationDomain")
+            .add("sflink")
             .add("sourceCountries", countryDto())
             ;
     }

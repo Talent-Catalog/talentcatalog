@@ -31,6 +31,7 @@ export interface PartnerSimpleAttributes {
   partnerType: string;
   registrationLandingPage: string;
   registrationDomain: string;
+  sflink: string;
 
   //Note that status is a Java Status enum on the server, but it maps to the string value of
   //enum by the JSON processing (Javascript does not know about enums).

@@ -45,6 +45,8 @@ public class UpdatePartnerRequest {
 
     private String registrationDomain;
 
+    private String sflink;
+
     private Set<Long> sourceCountryIds;
 
 }

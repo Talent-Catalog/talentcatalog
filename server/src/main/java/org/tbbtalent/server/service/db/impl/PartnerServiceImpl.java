@@ -110,6 +110,7 @@ public class PartnerServiceImpl implements PartnerService {
         Status status = request.getStatus();
         partner.setStatus(status == null ? Status.active : status);
 
+        partner.setSflink(request.getSflink());
         partner.setWebsiteUrl(request.getWebsiteUrl());
     }
 
