@@ -3,10 +3,11 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
-import {Status} from "../../../../model/base";
+import {salesforceUrlPattern, Status} from "../../../../model/base";
 import {Country} from "../../../../model/country";
 import {CountryService} from "../../../../services/country.service";
 import {enumOptions} from "../../../../util/enum";
+import {FormComponentBase} from "../../../util/form/FormComponentBase";
 
 /*
   MODEL - latest best practice on this kind of component
@@ -37,7 +38,7 @@ import {enumOptions} from "../../../../util/enum";
   templateUrl: './create-update-partner.component.html',
   styleUrls: ['./create-update-partner.component.scss']
 })
-export class CreateUpdatePartnerComponent implements OnInit {
+export class CreateUpdatePartnerComponent extends FormComponentBase implements OnInit {
 
   countries: Country[];
   error = null;
@@ -47,10 +48,12 @@ export class CreateUpdatePartnerComponent implements OnInit {
   working: boolean;
 
 
-  constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+  constructor(fb: FormBuilder,
+              private activeModal: NgbActiveModal,
               private countryService: CountryService,
-              private partnerService: PartnerService) { }
+              private partnerService: PartnerService) {
+    super(fb);
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -61,7 +64,7 @@ export class CreateUpdatePartnerComponent implements OnInit {
       notificationEmail: [this.partner?.notificationEmail],
       registrationLandingPage: [this.partner?.registrationLandingPage],
       registrationDomain: [this.partner?.registrationDomain],
-      sflink: [this.partner?.sflink],
+      sflink: [this.partner?.sflink, [Validators.pattern(salesforceUrlPattern)]],
       sourceCountries: [this.partner?.sourceCountries],
 
       //Note that the value passed in here is the string key of the enum. In the html the

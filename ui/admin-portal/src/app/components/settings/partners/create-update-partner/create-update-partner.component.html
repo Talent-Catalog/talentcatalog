@@ -43,6 +43,11 @@
 
       <label for="sflink">Salesforce account link</label>
       <input class="form-control" id="sflink" formControlName="sflink">
+      <div *ngIf="isInvalid(form.controls.sflink)" class="alert alert-danger">
+        This doesn't look like a Salesforce link to me!
+        <br/>
+        Copy and paste from Salesforce.
+      </div>
 
       <label for="notificationEmail">Email</label>
       <input class="form-control" id="notificationEmail" formControlName="notificationEmail">

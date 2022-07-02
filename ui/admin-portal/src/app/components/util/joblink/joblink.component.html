@@ -13,6 +13,12 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
+/*
+MODEL - use of subclassing FormComponentBase to inherit common standard form functionality
+
+- shows how to check for invalid control values using inherited isInvalid method.
+- use of "pending" control attribute when waiting on async validation
+*/
 
 <form [formGroup]="form">
 
@@ -20,13 +26,12 @@
     <label>Link to Salesforce Job Opportunity</label>
     <input type="text" class="form-control" formControlName="sfJoblink">
   </div>
-  <div *ngIf="sfJoblink.invalid && (sfJoblink.dirty || sfJoblink.touched)"
-       class="alert alert-danger">
+  <div *ngIf="isInvalid(form.controls.sfJoblink)" class="alert alert-danger">
     Doesn't look like a TBB Salesforce Job opportunity link to me!
     <br/>
     Copy and paste from Salesforce.
   </div>
-  <div *ngIf="sfJoblink.pending">
+  <div *ngIf="form.controls.sfJoblink.pending">
     <i class="fas fa-spinner fa-spin"></i>Waiting validation from Salesforce...
   </div>
 </form>

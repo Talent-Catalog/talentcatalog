@@ -15,27 +15,42 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
 import {salesforceUrlPattern} from '../../../model/base';
 import {Observable, of} from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
 import {SalesforceService} from "../../../services/salesforce.service";
+import {FormComponentBase} from "../form/FormComponentBase";
+
+/*
+  MODEL
+  - use of subclassing FormComponentBase to inherit common standard form functionality
+  - shows how to check for invalid control values using inherited isInvalid method.
+  - use of both sync and async form validators
+ */
 
 @Component({
   selector: 'app-joblink',
   templateUrl: './joblink.component.html',
   styleUrls: ['./joblink.component.scss']
 })
-export class JoblinkComponent implements OnInit {
+export class JoblinkComponent extends FormComponentBase implements OnInit {
   form: FormGroup;
   @Input() joblink: string;
   @Output() updateError =  new EventEmitter();
   @Output() joblinkValidation =  new EventEmitter();
 
-  constructor(
-    private fb: FormBuilder,
-    private salesforceService: SalesforceService
-  ) { }
+  constructor(fb: FormBuilder,
+    private salesforceService: SalesforceService) {
+    super(fb);
+  }
 
   ngOnInit(): void {
 
@@ -46,8 +61,6 @@ export class JoblinkComponent implements OnInit {
       ],
     });
   }
-
-  get sfJoblink() { return this.form.get('sfJoblink'); }
 
   private sfJoblinkValidator(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
@@ -68,7 +81,7 @@ export class JoblinkComponent implements OnInit {
             const valid = opportunity && opportunity.name !== null;
             const validationEvent = new JoblinkValidationEvent(valid);
             if (valid) {
-              validationEvent.sfJoblink = this.sfJoblink.value;
+              validationEvent.sfJoblink = this.form.controls.sfJoblink.value;
               validationEvent.jobname = opportunity.name;
             }
             this.joblinkValidation.emit(validationEvent);
