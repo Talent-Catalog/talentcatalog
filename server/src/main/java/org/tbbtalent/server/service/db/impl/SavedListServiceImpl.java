@@ -360,13 +360,16 @@ public class SavedListServiceImpl implements SavedListService {
             // CREATE FOLDERS
             // List ID folder
             folder = fileSystemService.createFolder(foldersDrive, foldersRoot, folderName);
-            // Job name folder
+            // List name folder
             folderName = savedList.getName();
             GoogleFileSystemFolder subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
             savedList.setFolderlink(subfolder.getUrl());
             // JD folder
             GoogleFileSystemFolder jdfolder =
                 fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
+            //The job description folder and its contents are viewable by anyone with the link.
+            fileSystemService.publishFolder(jdfolder);
+
             savedList.setFolderjdlink(jdfolder.getUrl());
             // CREATE JOB OPPORTUNITY INTAKE FILE IN JD FOLDER
             String joiFileName = "JobOpportunityIntake - " + savedList.getName();
@@ -387,7 +390,10 @@ public class SavedListServiceImpl implements SavedListService {
             if (jdfolder == null) {
                 jdfolder =
                     fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
+                //The job description folder and its contents are viewable by anyone with the link.
+                fileSystemService.publishFolder(jdfolder);
             }
+
             savedList.setFolderjdlink(jdfolder.getUrl());
         }
     }
