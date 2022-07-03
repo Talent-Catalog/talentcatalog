@@ -217,8 +217,14 @@ public class SystemAdminApi {
                             subsubfolder.getWebViewLink());
                         final String name = subsubfolder.getName();
                         if (name.equals("JobDescription")) {
-                            fileSystemService.publishFile(gsf);
-                            log.info("List " + folder.getName() + ": Made JobDescription viewable" );
+                            try {
+                                fileSystemService.publishFile(gsf);
+                                log.info(
+                                    "List " + folder.getName() + ": Made JobDescription viewable");
+                            } catch (Exception ex) {
+                                log.error(
+                                    "List " + folder.getName() + ": Failed to make JobDescription viewable");
+                            }
                         }
                     }
                 }
