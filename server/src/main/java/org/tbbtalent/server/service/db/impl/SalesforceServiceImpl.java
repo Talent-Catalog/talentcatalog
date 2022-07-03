@@ -62,6 +62,7 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
@@ -111,6 +112,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private static final String apiVersion = "v51.0";
     private static final String candidateNumberSFFieldName = "TBBid__c";
     private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
+    private static final String candidateContactTypeSFFieldValue = "Candidate";
 
     private boolean alertedDuplicateSFRecord = false;
 
@@ -156,10 +158,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * Access tokens expire so they need to be rerequested periodically.
      */
     private String accessToken = null;
-
-    //TODO JC Need lazily populated Map of RecordTypeId's to RecordType.Name's which can be used to
-    // populate Opportunity RecordType field - which then be used (on Angular end) to check for job opps when needed
-    //Just needs one SOQL Query to upload all RecordTypes
 
     @Autowired
     public SalesforceServiceImpl(EmailHelper emailHelper) {
@@ -271,7 +269,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Upsert request bodies should not include the TBBid because it is used as the unique key
         //used to identify the record to be updated - specified in the PATCH uri, not in the
         //request body.
-        contactRequest.remove("TBBid__c");
+        contactRequest.remove(candidateNumberSFFieldName);
 
         //Execute and decode the response
         UpsertResult result = executeUpsert(candidateNumberSFFieldName,
@@ -349,7 +347,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         String recordType = getCandidateOpportunityRecordType(jobOpportunity);
 
-        //Now build requests of candidate opportunities we want to create
+        //Now build requests of candidate opportunities we want to create or update
         List<CandidateOpportunityRecordComposite> opportunityRequests = new ArrayList<>();
         for (Candidate candidate : candidates) {
             boolean create = candidatesWithNoOpp.contains(candidate);
@@ -408,10 +406,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * Extracts the Salesforce record id from the Salesforce url of a record.
      *
      * @param url Url of a Salesforce record
-     * @return Salesforce id or null if the url wasn't a valid record url
+     * @return Salesforce id or null if the url was null or wasn't a valid record url
      */
     public static @Nullable
-    String extractIdFromSfUrl(String url) {
+    String extractIdFromSfUrl(@Nullable String url) {
         return extractFieldFromSfUrl(url, 2);
     }
 
@@ -420,10 +418,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * url of a record.
      *
      * @param url Url of a Salesforce record
-     * @return Salesforce object type or null if the url wasn't a valid record url
+     * @return Salesforce object type or null if the url was null or wasn't a valid record url
      */
     public static @Nullable
-    String extractObjectTypeFromSfUrl(String url) {
+    String extractObjectTypeFromSfUrl(@Nullable String url) {
         return extractFieldFromSfUrl(url, 1);
     }
 
@@ -431,10 +429,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * Extracts the Salesforce record id from the Salesforce url of a record.
      *
      * @param url Url of a Salesforce record
-     * @return Salesforce id or null if the url wasn't a valid record url
+     * @return Salesforce id or null if the url was null or wasn't a valid record url
      */
     private static @Nullable
-    String extractFieldFromSfUrl(String url, int fieldNum) {
+    String extractFieldFromSfUrl(@Nullable String url, int fieldNum) {
         if (url == null) {
             return null;
         }
@@ -508,7 +506,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Override
     public List<Contact> findCandidateContacts()
         throws GeneralSecurityException, WebClientException {
-        return findContacts("TBBid__c > 0");
+        return findContacts(candidateNumberSFFieldName + " > 0");
     }
 
     @Override
@@ -743,7 +741,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 requests.add(request);
 
                 if (notes != null) {
-                    request.setEmployer_Feedback__c(notes);
+                    request.setEmployerFeedback(notes);
                 }
 
                 if (decision == null) {
@@ -1249,6 +1247,19 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setFirstName(user.getFirstName());
             setLastName(user.getLastName());
 
+            //Set Contact type = candidate
+            setContactType(candidateContactTypeSFFieldValue);
+
+            //Add partner account id
+            SourcePartner partner = user.getSourcePartner();
+            //Update candidate partner Salesforce account id
+            if (partner != null) {
+                String partnerSfAccountId = partner.getSfId();
+                if (partnerSfAccountId != null) {
+                    setSourcePartnerAccountId(partnerSfAccountId);
+                }
+            }
+
             final String email = user.getEmail();
             setEmail(email);
 
@@ -1275,7 +1286,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                     setAccountId(tbbOtherAccountId);
             }
 
-            setTBBid__c(Long.valueOf(candidate.getCandidateNumber()));
+            setTBBid(Long.valueOf(candidate.getCandidateNumber()));
         }
 
         public void setAccountId(String accountId) {
@@ -1284,6 +1295,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         public void setAttributes(CompositeAttributes attributes) {
             put("attributes", attributes);
+        }
+
+        public void setContactType(String contactType) {
+            super.put("Contact_Type__c", contactType);
         }
 
         public void setEmail(String email) {
@@ -1314,8 +1329,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             super.put("Id", id);
         }
 
-        public void setTBBid__c(Long TBBid__c) {
-            super.put("TBBid__c", TBBid__c);
+        public void setSourcePartnerAccountId(String sourcePartnerAccountId) {
+            super.put("Source_Partner__c", sourcePartnerAccountId);
+        }
+
+        public void setTBBid(Long tbbId) {
+            super.put(candidateNumberSFFieldName, tbbId);
         }
     }
 
@@ -1420,17 +1439,27 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setRecordType(new RecordTypeField(recordType));
 
             String candidateNumber = candidate.getCandidateNumber();
-            setTBBCandidateExternalId__c(makeExternalId(candidateNumber, jobOpportunity.getId()));
+            setExternalCandidateOppId(makeExternalId(candidateNumber, jobOpportunity.getId()));
+
+            User user = candidate.getUser();
+            SourcePartner partner = user.getSourcePartner();
+
+            //Update candidate partner Salesforce account id
+            if (partner != null) {
+                String partnerSfAccountId = partner.getSfId();
+                if (partnerSfAccountId != null) {
+                    setSourcePartnerAccountId(partnerSfAccountId);
+                }
+            }
 
             if (create) {
-                User user = candidate.getUser();
                 setName(user.getFirstName() +
                     "(" + candidateNumber + ")-" + jobOpportunity.getName());
 
                 setAccountId(jobOpportunity.getAccountId());
-                setCandidate_Contact__c(candidate.getSfId());
+                setCandidateContactId(candidate.getSfId());
                 setOwnerId(jobOpportunity.getOwnerId());
-                setParent_Opportunity__c(jobOpportunity.getId());
+                setParentOpportunityId(jobOpportunity.getId());
 
                 LocalDateTime close = LocalDateTime.now().plusYears(1);
                 setCloseDate(close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -1466,8 +1495,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         /**
          * Id of associated Candidate contact record
          */
-        public void setCandidate_Contact__c(String candidate_Contact__c) {
-            put("Candidate_Contact__c", candidate_Contact__c);
+        public void setCandidateContactId(String candidateContactId) {
+            put("Candidate_Contact__c", candidateContactId);
         }
 
         /**
@@ -1480,7 +1509,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         /**
          * Employer feedback notes
          */
-        public void setEmployer_Feedback__c(String employerFeedback) {
+        public void setEmployerFeedback(String employerFeedback) {
             put("Employer_Feedback__c", employerFeedback);
         }
 
@@ -1501,8 +1530,15 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         /**
          * Id of associated Job opportunity record
          */
-        public void setParent_Opportunity__c(String parent_Opportunity__c) {
-            put("Parent_Opportunity__c", parent_Opportunity__c);
+        public void setParentOpportunityId(String jobOpportunityId) {
+            put("Parent_Opportunity__c", jobOpportunityId);
+        }
+
+        /**
+         * Id of associated source partner account record
+         */
+        public void setSourcePartnerAccountId(String sourcePartnerAccountId) {
+            put("Source_Partner__c", sourcePartnerAccountId);
         }
 
         /**
@@ -1524,8 +1560,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          * are going to "upsert". It is constructed from the candidate id and the job opportunity
          * id.
          */
-        public void setTBBCandidateExternalId__c(String TBBCandidateExternalId__c) {
-            put("TBBCandidateExternalId__c", TBBCandidateExternalId__c);
+        public void setExternalCandidateOppId(String externalCandidateOppId) {
+            put(candidateOpportunitySFFieldName, externalCandidateOppId);
         }
     }
 
