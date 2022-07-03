@@ -18,6 +18,33 @@ package org.tbbtalent.server.api.admin;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
+import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +55,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateNote;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.EducationType;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateNoteRepository;
@@ -43,20 +79,6 @@ import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
-
-import java.io.File;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.sql.Date;
-import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -100,6 +122,12 @@ public class SystemAdminApi {
     @Value("${google.drive.candidateRootFolderId}")
     private String candidateRootFolderId;
 
+    @Value("${google.drive.listFoldersDriveId}")
+    private String listFoldersDriveId;
+
+    @Value("${google.drive.listFoldersRootId}")
+    private String listFoldersRootId;
+
     @Autowired
     public SystemAdminApi(
         DataSharingService dataSharingService,
@@ -129,7 +157,86 @@ public class SystemAdminApi {
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
-    @GetMapping("rename-candidate-folders")
+    @GetMapping("jd-folders-viewable")
+    public String makeJobDescriptionFoldersViewable() throws GeneralSecurityException, IOException {
+        log.info("Making jd folders viewable. About to get folders.");
+        String nextPageToken = null;
+        int count = 0;
+        do {
+            // Getting folders
+            FileList result = googleDriveConfig.getGoogleDriveService().files().list()
+                .setQ("'" + listFoldersRootId + "' in parents" +
+                    " and mimeType='application/vnd.google-apps.folder'")
+                .setSupportsAllDrives(true)
+                .setIncludeItemsFromAllDrives(true)
+                .setCorpora("drive")
+                .setDriveId(listFoldersDriveId)
+                .setPageToken(nextPageToken)
+                .setPageSize(100)
+                .setFields("nextPageToken, files(id,name,webViewLink)")
+                .execute();
+            List<com.google.api.services.drive.model.File> folders = result.getFiles();
+            nextPageToken = result.getNextPageToken();
+            // Looping over folders
+            int size = folders.size();
+            log.info("Got " + size + " ID folders. About to loop through.");
+            for(com.google.api.services.drive.model.File folder: folders) {
+
+                String folderId = folder.getId();
+                //Get subfolders
+                FileList result2 = googleDriveConfig.getGoogleDriveService().files().list()
+                    .setQ("'" + folderId + "' in parents" +
+                        " and mimeType='application/vnd.google-apps.folder'")
+                    .setSupportsAllDrives(true)
+                    .setIncludeItemsFromAllDrives(true)
+                    .setCorpora("drive")
+                    .setDriveId(listFoldersDriveId)
+                    .setFields("files(id,name,webViewLink)")
+                    .execute();
+                List<com.google.api.services.drive.model.File> subfolders = result2.getFiles();
+
+                //Should only be one subfolder - the list name folder - but loop anyway looking for
+                //a folder with a JobDescription subfolder
+                for (com.google.api.services.drive.model.File subfolder : subfolders) {
+
+                    String subfolderId = subfolder.getId();
+                    //Get subsubfolders
+                    FileList result3 = googleDriveConfig.getGoogleDriveService().files().list()
+                        .setQ("'" + subfolderId + "' in parents" +
+                            " and mimeType='application/vnd.google-apps.folder'")
+                        .setSupportsAllDrives(true)
+                        .setIncludeItemsFromAllDrives(true)
+                        .setCorpora("drive")
+                        .setDriveId(listFoldersDriveId)
+                        .setFields("files(id,name,webViewLink)")
+                        .execute();
+                    List<com.google.api.services.drive.model.File> subsubfolders = result3.getFiles();
+
+                    for (com.google.api.services.drive.model.File subsubfolder : subsubfolders) {
+                        GoogleFileSystemFile gsf = new GoogleFileSystemFile(
+                            subsubfolder.getWebViewLink());
+                        final String name = subsubfolder.getName();
+                        if (name.equals("JobDescription")) {
+                            fileSystemService.publishFile(gsf);
+                            log.info("List " + folder.getName() + ": Made JobDescription viewable" );
+                        }
+                    }
+                }
+
+                if (count%100 == 0) {
+                    log.info("Folders processed:" + count);
+                }
+                count++;
+            }
+        } while(
+            nextPageToken != null
+        );
+
+        log.info("Completed processing. Total: " + count);
+        return "Done";
+    }
+
+//    @GetMapping("rename-candidate-folders")
     public String renameCandidateFolders() throws GeneralSecurityException, IOException {
         log.info("Starting candidate folder re-name. About to get folders.");
         Map<String, String> renames = new HashMap<>();
