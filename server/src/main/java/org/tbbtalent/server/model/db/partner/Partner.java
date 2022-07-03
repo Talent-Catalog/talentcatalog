@@ -86,6 +86,12 @@ public interface Partner {
     String getPartnerType();
 
     /**
+     * Salesforce ID (extracted from {@link #getSflink()}).
+     */
+    @Nullable
+    String getSfId();
+
+    /**
      * Url link to corresponding Salesforce Account record, if one exists.
      */
     @Nullable
