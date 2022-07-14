@@ -43,8 +43,8 @@ public interface SourcePartner extends Partner {
      * <p/>
      * Typically this page is located somewhere on the partner's website, providing information
      * about the partner and the Talent Catalog. It will contain a button or some other link
-     * directing the user to the {@link #getRegistrationDomain()} which is the entry point for this
-     * application.
+     * directing the user to the registration url - eg https://tctalent.org?p=tbb which is the entry
+     * point for this application.
      * <p/>
      * For example, Talent Beyond Boundaries currently has a registration landing page at
      * https://www.talentbeyondboundaries.org/talentcatalog/register
@@ -53,25 +53,6 @@ public interface SourcePartner extends Partner {
     @Nullable
     String getRegistrationLandingPage();
     void setRegistrationLandingPage(@Nullable String s);
-
-    //TODO JC Get rid of this
-    /**
-     * Optional branded candidate login/registration domain associated with this source partner.
-     * <p/>
-     * This is optional. If specified it typically is a domain branded to reflect the source partner
-     * and it must be unique.
-     * For example, for Talent Beyond Boundaries it is currently tbbtalent.org.
-     * <p/>
-     * All source partner candidate login/registration urls, even though they may be different,
-     * point to this application.
-     * <p/>
-     * If no special branded domain has been specified this call returns null, and the calling code
-     * will default to using the registration domain of the default source partner.
-     * @return Candidate login/registration domain.
-     */
-    @Nullable
-    String getRegistrationDomain();
-    void setRegistrationDomain(@Nullable String s);
 
     /**
      * Source countries that this source partner operates in.

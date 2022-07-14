@@ -69,7 +69,6 @@ public class BrandingServiceImpl implements BrandingService {
 
     private @NotNull BrandingInfo extractBrandingInfoFromPartner(@NonNull SourcePartner partner) {
         BrandingInfo info = new BrandingInfo();
-        info.setHostDomain(partner.getRegistrationDomain());
         info.setLogo(partner.getLogo());
         info.setLandingPage(partner.getRegistrationLandingPage());
         info.setPartnerName(partner.getName());

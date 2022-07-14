@@ -30,7 +30,6 @@ export interface PartnerSimpleAttributes {
   notificationEmail: string;
   partnerType: string;
   registrationLandingPage: string;
-  registrationDomain: string;
   sflink: string;
 
   //Note that status is a Java Status enum on the server, but it maps to the string value of

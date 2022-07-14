@@ -63,7 +63,6 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       name: [this.partner?.name, Validators.required],
       notificationEmail: [this.partner?.notificationEmail],
       registrationLandingPage: [this.partner?.registrationLandingPage],
-      registrationDomain: [this.partner?.registrationDomain],
       sflink: [this.partner?.sflink, [Validators.pattern(salesforceUrlPattern)]],
       sourceCountries: [this.partner?.sourceCountries],
 
@@ -109,7 +108,6 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       notificationEmail: this.form.value.notificationEmail,
       partnerType: 'SourcePartner',
       registrationLandingPage: this.form.value.registrationLandingPage,
-      registrationDomain: this.form.value.registrationDomain,
       sflink: this.form.value.sflink,
 
       //Convert countries to country ids

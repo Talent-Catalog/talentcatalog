@@ -88,11 +88,10 @@ public class PartnerAdminApi implements
      */
     static private class PartnerDtoPropertyFilter implements DtoPropertyFilter {
 
-        //These properties should only be extracted for QuestionTask's
+        //These properties should only be extracted for source partner's
         private final Set<String> sourcePartnerOnlyProperties =
             new HashSet<>(Arrays.asList(
-                "registrationLandingPage", "registrationDomain", "sourceCountries",
-                "defaultSourcePartner"));
+                "registrationLandingPage", "sourceCountries", "defaultSourcePartner"));
 
         public boolean ignoreProperty(Object o, String property) {
             //Ignore properties which do not exist on type of partner
@@ -115,7 +114,6 @@ public class PartnerAdminApi implements
             .add("status")
             .add("websiteUrl")
             .add("registrationLandingPage")
-            .add("registrationDomain")
             .add("sflink")
             .add("sourceCountries", countryDto())
             ;
