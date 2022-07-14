@@ -977,7 +977,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(RegisterCandidateRequest request, String hostDomain) {
+    public LoginRequest register(RegisterCandidateRequest request) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }
@@ -1003,15 +1003,15 @@ public class CandidateServiceImpl implements CandidateService {
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
 
         //Compute and assign partner.
-        //Find partner matching host
-        Partner partner = partnerService.getPartnerFromHost(hostDomain);
-        if (partner == null) {
-            //Log an error - shouldn't really happen in production unless we have forgotten
-            //to set up a partner for this domain in the database.
-            log.error("Could not find partner matching domain: " + hostDomain + ". Add partner for this domain to database.");
+        //A non null partner abbreviation can define partner
+        final String partnerAbbreviation = request.getPartnerAbbreviation();
+        if (partnerAbbreviation != null) {
+            log.info("Registration with partner abbreviation: " + partnerAbbreviation);
+        }
 
-            //But let it through, setting default partner. This makes running in test easier, where
-            //the domain will come through typically as localhost:8080
+        Partner partner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+        if (partner == null) {
+            //Use default partner.
             partner = partnerService.getDefaultSourcePartner();
         }
 

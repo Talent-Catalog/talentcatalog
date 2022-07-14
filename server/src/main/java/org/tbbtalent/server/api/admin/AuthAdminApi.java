@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
@@ -53,14 +52,11 @@ public class AuthAdminApi {
     }
 
     @PostMapping("login")
-    public Map<String, Object> login(@RequestBody LoginRequest request,
-        @RequestHeader(name="Host", required=false) final String host)
+    public Map<String, Object> login(@RequestBody LoginRequest request)
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
             InvalidPasswordFormatException {
 
-        log.info("AuthAdminApi.login - Host: " + host);
-
-        JwtAuthenticationResponse response = this.userService.login(request, host);
+        JwtAuthenticationResponse response = this.userService.login(request);
 
         //If we are using mfa don't worry about Captcha stuff
         //It is sometimes not reliable (especially in test from localhost) - and unnecessary with MFA

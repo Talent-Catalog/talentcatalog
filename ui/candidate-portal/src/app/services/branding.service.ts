@@ -14,10 +14,19 @@ export interface BrandingInfo {
 })
 export class BrandingService {
   apiUrl: string = environment.apiUrl + '/branding';
+  partnerAbbreviation: string;
 
   constructor(private http: HttpClient) { }
 
   getBrandingInfo(): Observable<BrandingInfo> {
-    return this.http.get<BrandingInfo>(`${this.apiUrl}`);
+    let url = `${this.apiUrl}`;
+    if (this.partnerAbbreviation) {
+      url += `?p=${this.partnerAbbreviation}`;
+    }
+    return this.http.get<BrandingInfo>(url);
+  }
+
+  setPartnerAbbreviation(partnerAbbreviation: string) {
+    this.partnerAbbreviation = partnerAbbreviation;
   }
 }

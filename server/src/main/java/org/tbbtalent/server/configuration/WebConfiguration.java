@@ -23,7 +23,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
@@ -39,31 +38,6 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 public class WebConfiguration implements WebMvcConfigurer {
 
     private static final Logger log = LoggerFactory.getLogger(WebConfiguration.class);
-
-    /**
-     * We need to redirect for two reasons:
-     * <ul>
-     *   <li>
-     *     When people type tbbtalent.org in a browser we want to assume that they are a
-     *     candidate (front end user) rather than a TBB admin (back end user).
-     *     This means we want them to redirect to tbbtalent.org/candidate-portal/
-     *     (rather than tbbtalent.org/admin-portal/)
-     *   </li>
-     *   <li>
-     *     Rather than going direct to the tbbtalent.org website, we would prefer that they go
-     *     to a nicely formatted landing page, which are much easier to create and format on our
-     *     talentbeyondboundaries.org website (built using Squarespace). So we redirect to
-     *     appropriate talentbeyondboundaries.org pages.
-     *     Those pages will eventually lead the user to a tbbtalent.org/candidate-portal/ link.
-     *   </li>
-     * </ul>
-     * @param registry Used to add some redirect controllers.
-     */
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController(
-            "/us", "https://www.talentbeyondboundaries.org/talentcatalog/us-afghan");
-    }
 
     /**
      * This defines the location of the compiled Angular for the candidate (front end,

@@ -24,6 +24,7 @@ import {RegistrationService} from "../../../services/registration.service";
 import {ReCaptchaV3Service} from "ng-recaptcha";
 import {LanguageService} from "../../../services/language.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
+import {BrandingService} from "../../../services/branding.service";
 
 @Component({
   selector: 'app-registration-contact',
@@ -51,6 +52,7 @@ export class RegistrationContactComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private router: Router,
               private route: ActivatedRoute,
+              private brandingService: BrandingService,
               private candidateService: CandidateService,
               private authService: AuthService,
               private reCaptchaV3Service: ReCaptchaV3Service,
@@ -170,6 +172,7 @@ export class RegistrationContactComponent implements OnInit {
     req.password = this.password;
     req.passwordConfirmation = this.passwordConfirmation;
     req.reCaptchaV3Token = token;
+    req.partnerAbbreviation = this.brandingService.partnerAbbreviation;
 
     this.authService.register(req).subscribe(
       (response) => {

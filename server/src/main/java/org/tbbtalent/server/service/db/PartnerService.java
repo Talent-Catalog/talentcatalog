@@ -53,12 +53,13 @@ public interface PartnerService {
     Partner getDefaultSourcePartner() throws NoSuchObjectException;
 
     /**
-     * Get the partner associated with the given domain name.
-     * @param hostDomain Domain name - eg tbbtalent.org
-     * @return Partner associated with domain or null if no partner is found associated with that domain
+     * Get the partner associated with the given partner abbreviation (case insensitive)
+     * @param partnerAbbreviation eg TBB
+     * @return Partner associated with partnerAbbreviation or null if abbreviation is null or no
+     * partner is found with that abbreviation
      */
     @Nullable
-    Partner getPartnerFromHost(String hostDomain);
+    Partner getPartnerFromAbbreviation(@Nullable String partnerAbbreviation);
 
     /**
      * Get all partners

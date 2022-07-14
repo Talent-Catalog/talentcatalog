@@ -211,6 +211,7 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
   password: string;
   passwordConfirmation: string;
   reCaptchaV3Token: string;
+  partnerAbbreviation: string;
 }
 
 export class LoginRequest {

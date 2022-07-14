@@ -23,45 +23,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.service.db.BrandingService;
 
 /**
- * Handle redirections when user just types in a domain - eg just tbbtalent.org
+ * Handle rerouting when user just types in a domain - eg just tctalent.org
  */
 @RestController()
 @RequestMapping("/")
-public class RootRedirectAdminApi {
-    private static final Logger log = LoggerFactory.getLogger(RootRedirectAdminApi.class);
+public class RootRouteAdminApi {
+    private static final Logger log = LoggerFactory.getLogger(RootRouteAdminApi.class);
 
     private final BrandingService brandingService;
 
     @Autowired
-    public RootRedirectAdminApi(BrandingService brandingService) {
+    public RootRouteAdminApi(BrandingService brandingService) {
         this.brandingService = brandingService;
     }
 
     /**
-     * Logic is to go to landing page associated with branding if one has been configured.
-     * Otherwise just go to candidate-portal.
-     * @param host Host domain of request.
-     * @return Redirected url
+     * Logic is to go to landing page associated with branding if one has been configured,
+     * otherwise just go to candidate-portal.
+     * @return Rerouted url
      */
     @GetMapping()
-    public ResponseEntity<Void> redirect(
-        @RequestHeader(name="Host", required=false) final String host) {
+    public ResponseEntity<Void> route(
+        @RequestParam(value = "p", required = false) final String partnerAbbreviation) {
 
-        BrandingInfo info = brandingService.getBrandingInfo(host);
+        //TODO JC This is where a tctalent.org subdomain url can redirect to a plain url with p= query
+        //eg crs.tctalent.org --> tctalent.org?p=crs
+
+        BrandingInfo info = brandingService.getBrandingInfo(partnerAbbreviation);
 
         String landingPage = info.getLandingPage();
 
         //If we have a landing page, go there, otherwise go straight to candidate-portal.
         String redirectUrl = landingPage != null ? landingPage : "/candidate-portal/";
 
-        log.info("Redirect requested on host: " + host + ". Associated landing page = '" + (landingPage == null ? "null" : landingPage) + "'. Redirecting to " + redirectUrl);
+        if (partnerAbbreviation != null) {
+            log.info("Root routing: Partner specified 'p=" + partnerAbbreviation + "'");
+
+            if (landingPage != null) {
+                log.info("Routed to landing page: " + landingPage);
+            }
+        }
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
     }

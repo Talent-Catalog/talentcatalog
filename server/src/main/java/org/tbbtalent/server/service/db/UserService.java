@@ -42,7 +42,7 @@ import org.tbbtalent.server.util.qr.EncodedQrImage;
 
 public interface UserService {
 
-    JwtAuthenticationResponse login(LoginRequest request, String hostDomain) throws AccountLockedException;
+    JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException;
 
     void logout();
 

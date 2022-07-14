@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.configuration.TranslationConfig;
@@ -74,19 +73,16 @@ public class AuthPortalApi {
     }
 
     @PostMapping("login")
-    public Map<String, Object> login(@RequestBody LoginRequest request,
-        @RequestHeader(name="Host", required=false) final String host)
+    public Map<String, Object> login(@RequestBody LoginRequest request)
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
             InvalidPasswordFormatException, UserDeactivatedException,
             ReCaptchaInvalidException {
-
-        log.info("AuthPortalApi.login - Host: " + host);
 
         //Do check for automated logins. Throws exception if it looks
         //automated.
         captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "login");
 
-        JwtAuthenticationResponse response = userService.login(request, host);
+        JwtAuthenticationResponse response = userService.login(request);
         return jwtDto().build(response);
     }
 
@@ -98,19 +94,16 @@ public class AuthPortalApi {
 
     @PostMapping("register")
     public Map<String, Object> register(
-            @Valid @RequestBody RegisterCandidateRequest request,
-        @RequestHeader(name="Host", required=false) final String host)
+            @Valid @RequestBody RegisterCandidateRequest request)
             throws AccountLockedException, ReCaptchaInvalidException {
-
-        log.info("AuthPortalApi.register - Host: " + host);
 
         //Do check for automated registrations. Throws exception if it looks
         //automated.
         captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "registration");
 
-        LoginRequest loginRequest = candidateService.register(request, host);
+        LoginRequest loginRequest = candidateService.register(request);
 
-        JwtAuthenticationResponse jwt = userService.login(loginRequest, host);
+        JwtAuthenticationResponse jwt = userService.login(loginRequest);
         return jwtDto().build(jwt);
     }
 

@@ -54,6 +54,7 @@ public interface SourcePartner extends Partner {
     String getRegistrationLandingPage();
     void setRegistrationLandingPage(@Nullable String s);
 
+    //TODO JC Get rid of this
     /**
      * Optional branded candidate login/registration domain associated with this source partner.
      * <p/>

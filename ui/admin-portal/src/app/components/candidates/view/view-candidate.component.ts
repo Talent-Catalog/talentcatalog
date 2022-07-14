@@ -223,6 +223,11 @@ export class ViewCandidateComponent implements OnInit {
     this.setActiveTabId(event.nextId);
   }
 
+  publicCvUrl() {
+    //todo use document.location.origin - see url.ts
+    return 'https://tbbtalent.org/public-portal/cv/' + this.token;
+  }
+
   private setActiveTabId(id: string) {
     this.activeTabId = id;
     this.localStorageService.set(this.lastTabKey, id);

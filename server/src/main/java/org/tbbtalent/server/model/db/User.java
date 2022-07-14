@@ -16,12 +16,24 @@
 
 package org.tbbtalent.server.model.db;
 
-import org.apache.commons.lang3.StringUtils;
-
-import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Table(name = "users")
@@ -34,7 +46,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     private String email;
 
     /**
-     * //TODO JC Is this still needed when every user has a partner? Host domain comes from partner
+     * //TODO JC Get rid of this
      * This is the host domain that was used in the user's last login.
      */
     private String hostDomain;

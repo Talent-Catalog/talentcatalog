@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.BrandingInfo;
 
 /**
@@ -30,14 +31,14 @@ public interface BrandingService {
      * Returns the branding info to be displayed to a user.
      * <p/>
      * If the user is logged in, the branding of the user's associated partner is used.
-     * If the user is not logged in, the branding associated with the given host domain is used.
+     * If the user is not logged in, the branding associated with the given partner abbreviation
+     * is used.
      * <p/>
-     * If no branding is found associated with a particular host domain, the default branding is
-     * returned (TBB's branding).
-     * @param hostDomain Host domain with which the current HTTP request is associated.
+     * If no branding is found, the default branding is returned (TBB's branding).
+     * @param partnerAbbreviation Optional partner abbreviation
      * @return Branding information.
      */
     @NonNull
-    BrandingInfo getBrandingInfo(String hostDomain);
+    BrandingInfo getBrandingInfo(@Nullable String partnerAbbreviation);
 
 }

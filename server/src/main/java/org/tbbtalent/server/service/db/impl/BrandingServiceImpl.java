@@ -18,6 +18,7 @@ package org.tbbtalent.server.service.db.impl;
 
 import javax.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.model.db.User;
@@ -44,7 +45,7 @@ public class BrandingServiceImpl implements BrandingService {
 
     @Override
     @NonNull
-    public BrandingInfo getBrandingInfo(String hostDomain) {
+    public BrandingInfo getBrandingInfo(@Nullable String partnerAbbreviation) {
 
         User user = userService.getLoggedInUser();
 
@@ -53,8 +54,9 @@ public class BrandingServiceImpl implements BrandingService {
             //Logged in - set partner associated with user
             sourcePartner = user.getSourcePartner();
         } else {
-            //Not logged in - use domain to lookup partner
-            sourcePartner = partnerService.getPartnerFromHost(hostDomain);
+            //Not logged in - try and determine partner
+            //Look up any partnerAbbreviation
+            sourcePartner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
         }
 
         if (sourcePartner == null) {

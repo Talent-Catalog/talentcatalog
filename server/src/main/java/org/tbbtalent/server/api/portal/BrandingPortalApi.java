@@ -21,8 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.service.db.BrandingService;
@@ -49,11 +49,12 @@ public class BrandingPortalApi {
      */
     @GetMapping()
     public Map<String, Object> getBrandingInfo(
-        @RequestHeader(name="Host", required=false) final String host) {
-        log.info("BrandingPortalApi.getBrandingInfo - Host: " + host);
+        @RequestParam(value = "p", required = false) final String partnerAbbreviation) {
 
-        //If logged in, use the host associated with the login, otherwise use the incoming host
-        BrandingInfo info = brandingService.getBrandingInfo(host);
+        if (partnerAbbreviation != null) {
+            log.info("Branding Info fetched with partner query param: 'p=" + partnerAbbreviation + "'");
+        }
+        BrandingInfo info = brandingService.getBrandingInfo(partnerAbbreviation);
         return brandingInfoDto().build(info);
     }
 

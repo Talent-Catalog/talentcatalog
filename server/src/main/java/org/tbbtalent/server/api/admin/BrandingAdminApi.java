@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.BrandingInfo;
@@ -48,12 +47,9 @@ public class BrandingAdminApi {
      * @return branding information
      */
     @GetMapping()
-    public Map<String, Object> getBrandingInfo(
-        @RequestHeader(name="Host", required=false) final String host) {
-        log.info("BrandingAdminApi.getBrandingInfo - Host: " + host);
+    public Map<String, Object> getBrandingInfo() {
 
-        //If logged in, use the host associated with the login, otherwise use the incoming host
-        BrandingInfo info = brandingService.getBrandingInfo(host);
+        BrandingInfo info = brandingService.getBrandingInfo(null);
         return brandingInfoDto().build(info);
     }
 

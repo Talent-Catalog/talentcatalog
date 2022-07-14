@@ -46,6 +46,7 @@ public class SourcePartnerImpl extends PartnerImpl
     @Nullable
     private String registrationLandingPage;
 
+    //TODO JC Get rid of this
     @Nullable
     private String registrationDomain;
 

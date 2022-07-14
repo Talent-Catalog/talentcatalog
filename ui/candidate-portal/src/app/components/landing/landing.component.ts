@@ -50,6 +50,9 @@ export class LandingComponent implements OnInit {
       () => this.languageService.changeLanguage(lang), 1000
     )
 
+    //Pick up any partner abbreviation set by the p query param. This will determine the branding
+    //that is loaded.
+    this.brandingService.setPartnerAbbreviation(this.route.snapshot.queryParams['p']);
     this.brandingService.getBrandingInfo().subscribe(
       (response: BrandingInfo) => this.setBrandingInfo(response),
       (error) => console.log(error)

@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -26,4 +26,9 @@ public class RegisterCandidateRequest extends BaseCandidateContactRequest {
     private String password;
     private String passwordConfirmation;
     private String reCaptchaV3Token;
+
+    /**
+     * If not null, can be used to look up partner to which the candidate belongs.
+     */
+    private String partnerAbbreviation;
 }

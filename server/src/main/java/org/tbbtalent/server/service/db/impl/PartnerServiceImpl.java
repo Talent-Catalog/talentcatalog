@@ -19,6 +19,8 @@ package org.tbbtalent.server.service.db.impl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -43,6 +45,7 @@ import org.tbbtalent.server.service.db.PartnerService;
 public class PartnerServiceImpl implements PartnerService {
     private final PartnerRepository partnerRepository;
     private final CountryService countryService;
+    private static final Logger log = LoggerFactory.getLogger(PartnerServiceImpl.class);
 
     public PartnerServiceImpl(
         PartnerRepository partnerRepository,
@@ -66,14 +69,6 @@ public class PartnerServiceImpl implements PartnerService {
             case "SourcePartner":
                 SourcePartnerImpl sourcePartner = new SourcePartnerImpl();
 
-                //Check that registrationDomain is unique
-                String registrationDomain = request.getRegistrationDomain();
-                if (registrationDomain != null) {
-                    if (getPartnerFromHost(registrationDomain) != null) {
-                        throw new EntityExistsException("registration domain");
-                    }
-                }
-
                 Set<Country> sourceCountries = new HashSet<>();
                 Set<Long> sourceCountryIds = request.getSourceCountryIds();
                 if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
@@ -89,7 +84,6 @@ public class PartnerServiceImpl implements PartnerService {
 
                 //Source partner attributes
                 sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
-                sourcePartner.setRegistrationDomain(registrationDomain);
                 sourcePartner.setSourceCountries(sourceCountries);
 
                 partner = sourcePartner;
@@ -134,10 +128,15 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Nullable
     @Override
-    public Partner getPartnerFromHost(String hostDomain) {
-        final PartnerImpl partner = partnerRepository.findByRegistrationUrl(hostDomain)
-            .orElse(null);
-
+    public Partner getPartnerFromAbbreviation(@Nullable String partnerAbbreviation) {
+        Partner partner = null;
+        if (partnerAbbreviation != null) {
+            partner = partnerRepository.findByAbbreviation(partnerAbbreviation).orElse(null);
+            if (partner == null) {
+                //Log a warning.
+                log.warn("Could not find partner matching abbreviation: " + partnerAbbreviation);
+            }
+        }
         return partner;
     }
 
@@ -163,15 +162,6 @@ public class PartnerServiceImpl implements PartnerService {
         if (partner instanceof SourcePartner) {
             SourcePartner sourcePartner = (SourcePartner) partner;
 
-            //Check that any changed registrationDomain is unique
-            String registrationDomain = request.getRegistrationDomain();
-            if (registrationDomain != null
-                && !registrationDomain.equals(sourcePartner.getRegistrationDomain())) {
-                if (getPartnerFromHost(registrationDomain) != null) {
-                    throw new EntityExistsException("registration domain");
-                }
-            }
-
             Set<Country> sourceCountries = new HashSet<>();
             Set<Long> sourceCountryIds = request.getSourceCountryIds();
             if (sourceCountryIds != null) {
@@ -189,7 +179,6 @@ public class PartnerServiceImpl implements PartnerService {
             sourcePartner.setNotificationEmail(request.getNotificationEmail());
             sourcePartner.setDefaultPartnerRef(request.isDefaultPartnerRef());
             sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
-            sourcePartner.setRegistrationDomain(registrationDomain);
             sourcePartner.setSourceCountries(sourceCountries);
         }
 

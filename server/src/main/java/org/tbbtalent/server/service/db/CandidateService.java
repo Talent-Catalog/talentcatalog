@@ -155,14 +155,12 @@ public interface CandidateService {
 
     /**
      * Registers a new candidate by creating a new candidate and user.
-     * It returns a login request for thegereated candidate so that they are processed as
+     * It returns a login request for the generated candidate so that they are processed as
      * a normal login.
      * @param request Registration request
-     * @param hostDomain Url from which login request originated. This used to identify the partner
-     *                   to which the candidate belongs.
      * @return A login request generated for the newly created candidate.
      */
-    LoginRequest register(RegisterCandidateRequest request, String hostDomain);
+    LoginRequest register(RegisterCandidateRequest request);
 
     Candidate updateContact(UpdateCandidateContactRequest request);
 
