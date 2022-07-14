@@ -13,7 +13,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+/*
+   MODEL
 
+   Shows how to cache static data (countries in this case) so that we don't have to repeatedly
+   fetch it from server. See listCountries.
+
+   Local attribute returned by "of", plus a pipe and tap saving to local attribute on initial fetch.
+ */
 import {Injectable} from '@angular/core';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
