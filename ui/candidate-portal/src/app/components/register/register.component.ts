@@ -19,7 +19,6 @@ import {RegistrationService} from "../../services/registration.service";
 import {AuthService} from "../../services/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LanguageService} from "../../services/language.service";
-import {BrandingService} from "../../services/branding.service";
 
 @Component({
   selector: 'app-register',
@@ -29,7 +28,6 @@ import {BrandingService} from "../../services/branding.service";
 export class RegisterComponent implements OnInit, OnDestroy {
 
   constructor(public registrationService: RegistrationService,
-              private brandingService: BrandingService,
               public authService: AuthService,
               private route: ActivatedRoute,
               private languageService: LanguageService,
@@ -46,10 +44,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     setTimeout(
       () => this.languageService.changeLanguage(lang), 1000
     )
-
-    //Pick up any partner abbreviation set by the p query param. This will determine the branding
-    //that is loaded.
-    this.brandingService.setPartnerAbbreviation(this.route.snapshot.queryParams['p']);
 
     this.registrationService.start();
   }

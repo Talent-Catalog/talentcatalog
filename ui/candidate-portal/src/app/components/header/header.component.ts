@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {SystemLanguage} from '../../model/language';
 import {LanguageService} from '../../services/language.service';
 import {CandidateService} from "../../services/candidate.service";
@@ -42,6 +42,7 @@ export class HeaderComponent implements OnInit {
               private brandingService: BrandingService,
               public candidateService: CandidateService,
               private router: Router,
+              private route: ActivatedRoute,
               public languageService: LanguageService) { }
 
   ngOnInit() {
@@ -50,19 +51,16 @@ export class HeaderComponent implements OnInit {
       (error) => this.error = error
     );
 
-    //Need to delay showing branding until it has been set.
-    //We can't set it here because this header component seems to be initialized before
-    //ActivatedRoute is set - which means that we can't pick up the partner query param from
-    //the url.
-    //That partner query parameter is picked up in either landing.component.ts or
-    //register.component.ts and stored in the BrandingService so that it can affect the branding
-    //that is loaded. So this clunky solution is just to delay showing the branding.
-    setTimeout(
-      () => this.showBranding(), 1000
-    )
+    //Check for the partner query param and use it to configure the branding service
+    this.route.queryParamMap.subscribe(
+      (params) => {
+        this.brandingService.setPartnerAbbreviation(params.get('p'));
+        this.showBranding();
+      }
+    );
   }
 
-  showBranding(): void {
+  private showBranding(): void {
     this.brandingService.getBrandingInfo().subscribe(
       (response: BrandingInfo) => {
         this.logo = response.logo;
