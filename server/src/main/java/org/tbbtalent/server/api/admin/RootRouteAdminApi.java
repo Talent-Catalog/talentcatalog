@@ -77,8 +77,8 @@ public class RootRouteAdminApi {
         String infoMess = "RootRouting: Host " + host + ", :authority " + authority;
         if (partnerAbbreviation != null) {
             infoMess += ", Partner specified 'p=" + partnerAbbreviation + "'";
-            log.info(infoMess);
         }
+        log.info(infoMess);
         log.info("Routing to landing page: " + routingUrl);
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(routingUrl)).build();
