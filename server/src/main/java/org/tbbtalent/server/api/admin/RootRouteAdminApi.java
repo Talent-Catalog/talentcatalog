@@ -17,7 +17,6 @@
 package org.tbbtalent.server.api.admin;
 
 import java.net.URI;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,22 +57,19 @@ public class RootRouteAdminApi {
     public Object route(
         @RequestHeader MultiValueMap<String, String> headers,
         @RequestHeader(name="Host", required=false) final String host,
-        @RequestHeader(name=":authority", required=false) final String authority,
         @RequestParam(value = "p", required = false) final String partnerAbbreviation,
         @RequestParam(value = "h", required = false) final String showHeaders) {
 
-        //TODO JC This is where a tctalent.org subdomain url can redirect to a plain url with p= query
-        //eg crs.tctalent.org --> tctalent.org?p=crs
 
         if (showHeaders != null) {
             headers.forEach((key, value) -> {
                 log.info(String.format(
-                    "Header '%s' = %s", key, value.stream().collect(Collectors.joining("|"))));
+                    "Header '%s' = %s", key, String.join("|", value)));
             });
         }
 
-        //TODO JC Install filter - see https://tomgregory.com/spring-boot-behind-load-balancer-using-x-forwarded-headers/
-
+        //Check for partner tctalent.org subdomains url can redirect to a plain url with p= query
+        //eg crs.tctalent.org --> tctalent.org?p=crs
         String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
         if (redirectUrl != null) {
             log.info("Redirecting to: " + redirectUrl);
@@ -95,12 +91,12 @@ public class RootRouteAdminApi {
             }
         }
 
-        String infoMess = "RootRouting: Host " + host + ", :authority " + authority;
         if (partnerAbbreviation != null) {
+            String infoMess = "RootRouting: Host " + host;
             infoMess += ", Partner specified 'p=" + partnerAbbreviation + "'";
+            log.info(infoMess);
+            log.info("Routing to landing page: " + routingUrl);
         }
-        log.info(infoMess);
-        log.info("Routing to landing page: " + routingUrl);
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(routingUrl)).build();
     }

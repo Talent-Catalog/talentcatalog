@@ -33,7 +33,9 @@ public class SubdomainRedirectHelper {
         String suffix = "." + rootDomain;
         if (host != null && host.endsWith(suffix)) {
             String subdomain = host.substring(0, host.indexOf(suffix));
-            redirectUrl = "https://" + rootDomain + "?p=" + subdomain;
+            if (subdomain.length() > 0) {
+                redirectUrl = "https://" + rootDomain + "?p=" + subdomain;
+            }
         }
         return redirectUrl;
     }

@@ -31,6 +31,9 @@ class SubdomainRedirectHelperTest {
         assertNotNull(s);
         assertEquals("https://tctalent.org?p=rp", s);
 
+        s = SubdomainRedirectHelper.computeRedirectUrl(".tctalent.org");
+        assertNull(s);
+
         s = SubdomainRedirectHelper.computeRedirectUrl("tctalent.org");
         assertNull(s);
     }
