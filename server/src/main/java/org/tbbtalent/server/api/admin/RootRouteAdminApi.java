@@ -17,11 +17,13 @@
 package org.tbbtalent.server.api.admin;
 
 import java.net.URI;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,12 +54,35 @@ public class RootRouteAdminApi {
      */
     @GetMapping()
     public ResponseEntity<Void> route(
+        @RequestHeader MultiValueMap<String, String> headers,
         @RequestHeader(name="Host", required=false) final String host,
         @RequestHeader(name=":authority", required=false) final String authority,
-        @RequestParam(value = "p", required = false) final String partnerAbbreviation) {
+        @RequestParam(value = "p", required = false) final String partnerAbbreviation,
+        @RequestParam(value = "h", required = false) final String showHeaders) {
 
         //TODO JC This is where a tctalent.org subdomain url can redirect to a plain url with p= query
         //eg crs.tctalent.org --> tctalent.org?p=crs
+
+        if (showHeaders != null) {
+            headers.forEach((key, value) -> {
+                log.info(String.format(
+                    "Header '%s' = %s", key, value.stream().collect(Collectors.joining("|"))));
+            });
+        }
+
+        //TODO JC Install filter - see https://tomgregory.com/spring-boot-behind-load-balancer-using-x-forwarded-headers/
+
+//        String domain = "tctalent.org";
+//        String subdomain = null;
+//        String suffix = "." + subdomain;
+//        if (host != null && host.endsWith(suffix)) {
+//            subdomain = host.substring(0, host.indexOf(suffix));
+//        }
+//        if (subdomain != null) {
+//            //Redirect to url using query param
+//            String redirectUrl = domain + "/?p=" + subdomain;
+//            return null; //TODO JC
+//        }
 
         BrandingInfo info = brandingService.getBrandingInfo(partnerAbbreviation);
 
