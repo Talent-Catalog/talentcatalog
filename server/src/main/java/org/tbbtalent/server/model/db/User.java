@@ -45,12 +45,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
     private String lastName;
     private String email;
 
-    /**
-     * //TODO JC Get rid of this
-     * This is the host domain that was used in the user's last login.
-     */
-    private String hostDomain;
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -166,14 +160,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getHostDomain() {
-        return hostDomain;
-    }
-
-    public void setHostDomain(String hostDomain) {
-        this.hostDomain = hostDomain;
     }
 
     public Role getRole() {
