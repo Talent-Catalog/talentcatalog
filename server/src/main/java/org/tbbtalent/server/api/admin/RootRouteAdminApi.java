@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,6 +52,8 @@ public class RootRouteAdminApi {
      */
     @GetMapping()
     public ResponseEntity<Void> route(
+        @RequestHeader(name="Host", required=false) final String host,
+        @RequestHeader(name=":authority", required=false) final String authority,
         @RequestParam(value = "p", required = false) final String partnerAbbreviation) {
 
         //TODO JC This is where a tctalent.org subdomain url can redirect to a plain url with p= query
@@ -61,16 +64,23 @@ public class RootRouteAdminApi {
         String landingPage = info.getLandingPage();
 
         //If we have a landing page, go there, otherwise go straight to candidate-portal.
-        String redirectUrl = landingPage != null ? landingPage : "/candidate-portal/";
-
-        if (partnerAbbreviation != null) {
-            log.info("Root routing: Partner specified 'p=" + partnerAbbreviation + "'");
-
-            if (landingPage != null) {
-                log.info("Routed to landing page: " + landingPage);
+        String routingUrl;
+        if (landingPage != null) {
+            routingUrl = landingPage;
+        } else {
+            routingUrl = "/candidate-portal/";
+            if (partnerAbbreviation != null) {
+                routingUrl += "?p=" + partnerAbbreviation;
             }
         }
 
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
+        String infoMess = "RootRouting: Host " + host + ", :authority " + authority;
+        if (partnerAbbreviation != null) {
+            infoMess += ", Partner specified 'p=" + partnerAbbreviation + "'";
+            log.info(infoMess);
+        }
+        log.info("Routing to landing page: " + routingUrl);
+
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(routingUrl)).build();
     }
 }
