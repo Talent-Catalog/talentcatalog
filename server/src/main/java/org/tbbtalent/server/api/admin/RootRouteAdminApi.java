@@ -29,8 +29,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.service.db.BrandingService;
+import org.tbbtalent.server.util.SubdomainRedirectHelper;
 
 /**
  * Handle rerouting when user just types in a domain - eg just tctalent.org
@@ -53,7 +55,7 @@ public class RootRouteAdminApi {
      * @return Rerouted url
      */
     @GetMapping()
-    public ResponseEntity<Void> route(
+    public Object route(
         @RequestHeader MultiValueMap<String, String> headers,
         @RequestHeader(name="Host", required=false) final String host,
         @RequestHeader(name=":authority", required=false) final String authority,
@@ -72,17 +74,11 @@ public class RootRouteAdminApi {
 
         //TODO JC Install filter - see https://tomgregory.com/spring-boot-behind-load-balancer-using-x-forwarded-headers/
 
-//        String domain = "tctalent.org";
-//        String subdomain = null;
-//        String suffix = "." + subdomain;
-//        if (host != null && host.endsWith(suffix)) {
-//            subdomain = host.substring(0, host.indexOf(suffix));
-//        }
-//        if (subdomain != null) {
-//            //Redirect to url using query param
-//            String redirectUrl = domain + "/?p=" + subdomain;
-//            return null; //TODO JC
-//        }
+        String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
+        if (redirectUrl != null) {
+            log.info("Redirecting to: " + redirectUrl);
+            return new ModelAndView("redirect:" + redirectUrl);
+        }
 
         BrandingInfo info = brandingService.getBrandingInfo(partnerAbbreviation);
 
