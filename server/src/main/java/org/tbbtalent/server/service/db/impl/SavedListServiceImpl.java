@@ -360,15 +360,17 @@ public class SavedListServiceImpl implements SavedListService {
             // CREATE FOLDERS
             // List ID folder
             folder = fileSystemService.createFolder(foldersDrive, foldersRoot, folderName);
+
             // List name folder
             folderName = savedList.getName();
             GoogleFileSystemFolder subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
+            //The named list folder and its contents are viewable by anyone with the link.
+            fileSystemService.publishFolder(subfolder);
             savedList.setFolderlink(subfolder.getUrl());
-            // JD folder
+
+            // JD folder (note that this folder will inherit the published status of its parent)
             GoogleFileSystemFolder jdfolder =
                 fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
-            //The job description folder and its contents are viewable by anyone with the link.
-            fileSystemService.publishFolder(jdfolder);
 
             savedList.setFolderjdlink(jdfolder.getUrl());
             // CREATE JOB OPPORTUNITY INTAKE FILE IN JD FOLDER
@@ -377,9 +379,12 @@ public class SavedListServiceImpl implements SavedListService {
         } else {
             //Cope with cases where the list folder exists, but sub folders don't.
             //This is unusual but if it does happen, we should handle it and create those subfolders.
+            folderName = savedList.getName();
             GoogleFileSystemFolder subfolder = fileSystemService.findAFolder(foldersDrive, folder, folderName);
             if (subfolder == null) {
                 subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
+                //The named list folder and its contents are viewable by anyone with the link.
+                fileSystemService.publishFolder(subfolder);
             }
             savedList.setFolderlink(subfolder.getUrl());
 
@@ -390,8 +395,6 @@ public class SavedListServiceImpl implements SavedListService {
             if (jdfolder == null) {
                 jdfolder =
                     fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
-                //The job description folder and its contents are viewable by anyone with the link.
-                fileSystemService.publishFolder(jdfolder);
             }
 
             savedList.setFolderjdlink(jdfolder.getUrl());

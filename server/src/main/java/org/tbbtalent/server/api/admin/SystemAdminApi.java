@@ -157,7 +157,7 @@ public class SystemAdminApi {
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
-    @GetMapping("jd-folders-viewable")
+//    @GetMapping("jd-folders-viewable")
     public String makeJobDescriptionFoldersViewable() throws GeneralSecurityException, IOException {
         log.info("Making jd folders viewable. About to get folders.");
         String nextPageToken = null;
@@ -227,6 +227,69 @@ public class SystemAdminApi {
                             }
                         }
                     }
+                }
+
+                if (count%100 == 0) {
+                    log.info("Folders processed:" + count);
+                }
+                count++;
+            }
+        } while(
+            nextPageToken != null
+        );
+
+        log.info("Completed processing. Total: " + count);
+        return "Done";
+    }
+
+    @GetMapping("namedlist-folders-viewable")
+    public String makeNamedListFoldersViewable() throws GeneralSecurityException, IOException {
+        log.info("Making named list folders viewable. About to get folders.");
+        String nextPageToken = null;
+        int count = 0;
+        do {
+            // Getting folders
+            FileList result = googleDriveConfig.getGoogleDriveService().files().list()
+                .setQ("'" + listFoldersRootId + "' in parents" +
+                    " and mimeType='application/vnd.google-apps.folder'")
+                .setSupportsAllDrives(true)
+                .setIncludeItemsFromAllDrives(true)
+                .setCorpora("drive")
+                .setDriveId(listFoldersDriveId)
+                .setPageToken(nextPageToken)
+                .setPageSize(100)
+                .setFields("nextPageToken, files(id,name,webViewLink)")
+                .execute();
+            List<com.google.api.services.drive.model.File> folders = result.getFiles();
+            nextPageToken = result.getNextPageToken();
+            // Looping over folders
+            int size = folders.size();
+            log.info("Got " + size + " ID folders. About to loop through.");
+            for(com.google.api.services.drive.model.File folder: folders) {
+
+                String folderId = folder.getId();
+                //Get subfolders
+                FileList result2 = googleDriveConfig.getGoogleDriveService().files().list()
+                    .setQ("'" + folderId + "' in parents" +
+                        " and mimeType='application/vnd.google-apps.folder'")
+                    .setSupportsAllDrives(true)
+                    .setIncludeItemsFromAllDrives(true)
+                    .setCorpora("drive")
+                    .setDriveId(listFoldersDriveId)
+                    .setFields("files(id,name,webViewLink)")
+                    .execute();
+                List<com.google.api.services.drive.model.File> subfolders = result2.getFiles();
+
+                //Should only be one subfolder - the list name folder
+                if (subfolders.size() != 1) {
+                    log.warn("List " + folder.getName() + " has " + subfolders.size() + " subfolders");
+                }
+                for (com.google.api.services.drive.model.File subfolder : subfolders) {
+                    GoogleFileSystemFile gsf = new GoogleFileSystemFile(
+                        subfolder.getWebViewLink());
+                    fileSystemService.publishFile(gsf);
+                    final String name = subfolder.getName();
+                    log.info("List " + folder.getName() + ": Made " + name + " viewable");
                 }
 
                 if (count%100 == 0) {
