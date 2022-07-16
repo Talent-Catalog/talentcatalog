@@ -50,8 +50,8 @@ public class RootRouteAdminApi {
 
     /**
      * Logic is to go to landing page associated with branding if one has been configured,
-     * otherwise just go to candidate-portal.
-     * @return Rerouted url
+     * otherwise just go to candidate-portal/login.
+     * @return Rerouted url or redirect for partner subdomains
      */
     @GetMapping()
     public Object route(
@@ -80,12 +80,12 @@ public class RootRouteAdminApi {
 
         String landingPage = info.getLandingPage();
 
-        //If we have a landing page, go there, otherwise go straight to candidate-portal.
+        //If we have a landing page, go there, otherwise go straight to candidate-portal/login.
         String routingUrl;
         if (landingPage != null) {
             routingUrl = landingPage;
         } else {
-            routingUrl = "/candidate-portal/";
+            routingUrl = "/candidate-portal/login";
             if (partnerAbbreviation != null) {
                 routingUrl += "?p=" + partnerAbbreviation;
             }
