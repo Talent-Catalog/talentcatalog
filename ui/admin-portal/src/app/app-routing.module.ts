@@ -23,8 +23,12 @@ import {SettingsComponent} from "./components/settings/settings.component";
 import {HomeComponent} from "./components/candidates/home.component";
 import {InfographicComponent} from "./components/infographics/infographic.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
-import {CandidatesSearchComponent} from "./components/candidates/candidates-search/candidates-search.component";
-import {CandidatesListComponent} from "./components/candidates/candidates-list/candidates-list.component";
+import {
+  CandidatesSearchComponent
+} from "./components/candidates/candidates-search/candidates-search.component";
+import {
+  CandidatesListComponent
+} from "./components/candidates/candidates-list/candidates-list.component";
 import {NewJobComponent} from "./components/job/new-job/new-job.component";
 import {Role} from "./model/user";
 import {RoleGuardService} from "./services/role-guard.service";
@@ -47,7 +51,7 @@ const routes: Routes = [
         path: '',
         pathMatch: 'full',
         component: HomeComponent,
-        data: {title: 'TBB Home'}
+        data: {title: 'TC Home'}
       },
       {
         path: 'search',
@@ -56,19 +60,19 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full',
             component: CandidatesSearchComponent,
-            data: {title: 'TBB Search'}
+            data: {title: 'TC Search'}
           },
           {
             path: ':id',
             component: CandidatesSearchComponent,
-            data: {title: 'TBB Search'}
+            data: {title: 'TC Search'}
           },
         ]
       },
       {
         path: 'job',
         component: NewJobComponent,
-        data: {title: 'TBB Job'}
+        data: {title: 'TC Job'}
       },
       {
         path: 'list',
@@ -77,12 +81,12 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full',
             component: CandidatesListComponent,
-            data: {title: 'TBB List'}
+            data: {title: 'TC List'}
           },
           {
             path: ':id',
             component: CandidatesListComponent,
-            data: {title: 'TBB List'}
+            data: {title: 'TC List'}
           },
         ]
       },
@@ -92,7 +96,7 @@ const routes: Routes = [
           {
             path: ':candidateNumber',
             component: ViewCandidateComponent,
-            data: {title: 'TBB Candidate'}
+            data: {title: 'TC Candidate'}
           },
         ]
       },
@@ -107,7 +111,7 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full',
             component: SettingsComponent,
-            data: {title: 'TBB Settings'}
+            data: {title: 'TC Settings'}
           },
         ]
       },
@@ -118,12 +122,12 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full',
             component: InfographicComponent,
-            data: {title: 'TBB Stats'}
+            data: {title: 'TC Stats'}
           },
           {
             path: ':source/:id',
             component: InfographicComponent,
-            data: {title: 'TBB Stats'}
+            data: {title: 'TC Stats'}
           },
         ]
       },

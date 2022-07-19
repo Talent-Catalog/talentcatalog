@@ -24,7 +24,9 @@ import {
   CreateCandidateVisaCheckRequest
 } from '../../../../../services/candidate-visa-check.service';
 import {Country} from '../../../../../model/country';
-import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
+import {
+  HasNameSelectorComponent
+} from '../../../../util/has-name-selector/has-name-selector.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {CandidateVisa} from '../../../../../model/candidate';
@@ -94,7 +96,7 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
   addRecord() {
     const modal = this.modalService.open(HasNameSelectorComponent);
     modal.componentInstance.hasNames = this.filteredDestinations;
-    modal.componentInstance.label = "TBB Destinations";
+    modal.componentInstance.label = "TC Destinations";
 
     modal.result
       .then((selection: Country) => {
