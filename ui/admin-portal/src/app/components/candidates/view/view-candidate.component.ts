@@ -225,7 +225,7 @@ export class ViewCandidateComponent implements OnInit {
 
   publicCvUrl() {
     //todo use document.location.origin - see url.ts
-    return 'https://tbbtalent.org/public-portal/cv/' + this.token;
+    return 'https://tctalent.org/public-portal/cv/' + this.token;
   }
 
   private setActiveTabId(id: string) {

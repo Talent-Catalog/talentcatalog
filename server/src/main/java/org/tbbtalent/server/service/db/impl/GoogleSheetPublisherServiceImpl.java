@@ -283,8 +283,9 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
 
         log.info(res2.getReplies().size() + " batch update responses received");
 
-        //Make file public - ie viewable by anyone with the link.
-        fileSystemService.publishFile(file);
+        //File is already public - ie viewable by anyone with the link - because of the folder where
+        //it is located
+        //Setting it public when it is already causes Google to throw a permissions error
 
         return file.getUrl();
 
