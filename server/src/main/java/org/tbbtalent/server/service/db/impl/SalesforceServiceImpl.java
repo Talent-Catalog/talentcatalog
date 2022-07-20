@@ -361,9 +361,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             //Now set any requested stage name and next step
             String stageName = null;
             String nextStep = null;
+            String employerFeedback = null;
             if (salesforceOppParams != null) {
                 stageName = salesforceOppParams.getStageName();
                 nextStep = salesforceOppParams.getNextStep();
+                employerFeedback = salesforceOppParams.getEmployerFeedback();
             }
 
             //Always need to specify a stage name when creating a new opp
@@ -376,6 +378,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
             if (nextStep != null) {
                 opportunityRequest.setNextStep(nextStep);
+            }
+            if (employerFeedback != null) {
+                opportunityRequest.setEmployerFeedback(employerFeedback);
             }
         }
 

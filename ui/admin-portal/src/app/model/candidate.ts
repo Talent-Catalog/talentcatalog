@@ -391,6 +391,7 @@ export enum CandidateStatus {
 export interface SalesforceOppParams {
   stageName?: string;
   nextStep?: string;
+  employerFeedback?: string;
 }
 
 export interface UpdateCandidateOppsRequest {

@@ -44,4 +44,10 @@ public class SalesforceOppParams {
    */
   @Nullable
   private String nextStep;
+
+  /**
+   * Employer feedback on a candidate
+   */
+  @Nullable
+  private String employerFeedback;
 }
