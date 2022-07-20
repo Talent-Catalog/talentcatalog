@@ -27,9 +27,11 @@ export class SalesforceStageComponent implements OnInit {
     this.salesforceStageForm = this.fb.group({
       stage: [null],
       nextStep: [null],
+      employerFeedback: [null]
     });
   }
 
+  get employerFeedback(): string { return this.salesforceStageForm.value?.employerFeedback; }
   get nextStep(): string { return this.salesforceStageForm.value?.nextStep; }
   get stage(): string { return this.salesforceStageForm.value?.stage; }
 
@@ -42,7 +44,8 @@ export class SalesforceStageComponent implements OnInit {
       //Note that this is an unusual case where we pass back the string value - rather that the key
       //of the enum.
       stageName: this.stage ? CandidateOpportunityStage[this.stage]: null,
-      nextStep: this.nextStep
+      nextStep: this.nextStep,
+      employerFeedback: this.employerFeedback
     }
     this.activeModal.close(info)
   }

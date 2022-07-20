@@ -21,6 +21,12 @@
       <label for="nextStep">Next step - please start with date: eg 9Nov21 next step goes here</label>
       <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
     </div>
+
+    <div class="form-group">
+      <label for="employerFeedback">Employer feedback</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="employerFeedback" [formControlName]="'employerFeedback'"></textarea>
+    </div>
   </form>
 </div>
 
