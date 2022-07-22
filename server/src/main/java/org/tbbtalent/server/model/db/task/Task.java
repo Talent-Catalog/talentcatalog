@@ -82,6 +82,7 @@ public interface Task extends Auditable {
 
     /**
      * Optional tasks do not trigger alerts if they are overdue.
+     * Default to false (ie not optional) if it has not explicitly been set.
      * @return True if optional
      */
     boolean isOptional();
