@@ -111,6 +111,8 @@ export class PublishedDocColumnService {
     // Candidate healthcare pre-employment questionaire fields
     this.addColumn("maritalStatus", "What is your marital status?",
       new PublishedDocFieldSource("maritalStatus"));
+    this.addColumn("nmcPrn", "What is your NMC PRN?",
+      new PublishedDocPropertySource("nmcPrn"));
     this.addColumn("childrenToUk", "How many children do you want to bring to the UK?",
       new PublishedDocPropertySource("childrenToUk"));
     this.addColumn("spouseJobUk", "Is your spouse also applying for a job in the UK?",

@@ -20,7 +20,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.tbbtalent.server.model.db.task.QuestionTask;
+import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 import org.tbbtalent.server.model.db.task.UploadTask;
+import org.tbbtalent.server.model.db.task.UploadTaskAssignment;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.dto.DtoPropertyFilter;
 
@@ -47,8 +49,10 @@ public class TaskDtoHelper {
         public boolean ignoreProperty(Object o, String property) {
             //Ignore properties which do not exist on task class
             boolean ignore =
-                questionOnlyProperties.contains(property) && ! (o instanceof QuestionTask) ||
-                uploadOnlyProperties.contains(property) && ! (o instanceof UploadTask);
+                questionOnlyProperties.contains(property) &&
+                    ! (o instanceof QuestionTask || o instanceof QuestionTaskAssignment) ||
+                uploadOnlyProperties.contains(property) &&
+                    ! (o instanceof UploadTask || o instanceof UploadTaskAssignment);
 
             return ignore;
         }
