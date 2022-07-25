@@ -1300,11 +1300,23 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         int afghanistanCountryId = 6180;
         // Don't update status to pending if status is already pending
-        if (!candidate.getStatus().equals(CandidateStatus.pending)) {
+        final CandidateStatus candidateStatus = candidate.getStatus();
+        if (!candidateStatus.equals(CandidateStatus.pending)) {
             if (candidate.getNationality() != candidate.getCountry() ||
-                    candidate.getCountry().getId() == afghanistanCountryId && candidate.getNationality().getId() == afghanistanCountryId) {
+                    candidate.getCountry().getId() == afghanistanCountryId &&
+                        candidate.getNationality().getId() == afghanistanCountryId) {
                 UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
-                info.setStatus(CandidateStatus.pending);
+
+                //Only set status to pending if current status is draft. This addresses the case
+                //where a candidate's status has been changed from draft (the normal status during
+                //registration) by an admin while the candidate is still in the process of registering.
+                //In that case we don't want to override the admin's status with pending once
+                //the submission (at the end of registration) finally happens.
+                if (candidateStatus.equals(CandidateStatus.draft)) {
+                    info.setStatus(CandidateStatus.pending);
+                } else {
+                    info.setStatus(candidateStatus);
+                }
                 info.setComment("Candidate submitted");
                 candidate = updateCandidateStatus(candidate, info);
             } else {
