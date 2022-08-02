@@ -41,6 +41,10 @@ export class CountryService {
 
   constructor(private http: HttpClient) { }
 
+  isPalestine(country: Country): boolean {
+    return country && country.name.startsWith("Palest");
+  }
+
   listCountries(): Observable<Country[]> {
     //If we already have the data return it, otherwise get it.
     return this.countries.length > 0 ?
