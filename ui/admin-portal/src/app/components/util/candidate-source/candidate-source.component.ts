@@ -255,6 +255,14 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     }
   }
 
+  truncatedSourceDescription(maxLen: number = 120):string {
+    let s = this.candidateSource?.description;
+    if (s && s.length > maxLen) {
+      s = s.substring(0, maxLen) + "..."
+    }
+    return s;
+  }
+
   isSavedList() {
     return isSavedList(this.candidateSource);
   }

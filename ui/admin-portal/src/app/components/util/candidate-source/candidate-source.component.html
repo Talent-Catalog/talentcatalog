@@ -28,8 +28,8 @@
             <i *ngIf="isShared()" title="Shared" class="fas fa-gift"></i>
             <span *ngIf="isShared()" class="small">Shared by: {{candidateSource?.createdBy.firstName}} {{candidateSource?.createdBy.lastName}}</span>
           </span>
-          <div *ngIf="candidateSource?.description">
-            {{candidateSource?.description}}
+          <div *ngIf="truncatedSourceDescription()">
+            {{truncatedSourceDescription()}}
           </div>
         </div>
         <div *ngIf="publishedLink()" class="position-absolute mt-2">
