@@ -26,7 +26,7 @@
             <i *ngIf="candidateSource?.fixed" title="Fixed - can't change" class="fas fa-lock"></i>
             <i *ngIf="candidateSource?.global" title="Global - all users can see" class="fas fa-globe"></i>
             <i *ngIf="isShared()" title="Shared" class="fas fa-gift"></i>
-            <span *ngIf="isShared()" class="small">Shared by: {{candidateSource?.createdBy.firstName}} {{candidateSource?.createdBy.lastName}}</span>
+            <span *ngIf="isShared()" class="small">Shared by: {{candidateSource?.createdBy?.firstName}} {{candidateSource?.createdBy?.lastName}}</span>
           </span>
           <div *ngIf="truncatedSourceDescription()">
             {{truncatedSourceDescription()}}
