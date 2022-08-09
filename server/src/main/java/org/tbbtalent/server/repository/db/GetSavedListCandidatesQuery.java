@@ -37,6 +37,8 @@ import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 
 /**
+ * MODEL - Alternate way of creating JPA Specifications
+ *
  * "Specification" which defines the database query to retrieve all candidates
  * in a Saved List based on a {@link SavedListGetRequest}.
  * <p>
