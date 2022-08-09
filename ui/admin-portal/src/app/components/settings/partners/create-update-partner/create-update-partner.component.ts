@@ -20,7 +20,7 @@ import {FormComponentBase} from "../../../util/form/FormComponentBase";
   retrieve fresh object details from the database using the id.
 
   - shows how to display enumerated type values in a drop down, then send the string key of the
-  back to the server. Trick is to work with EnumOptions for display purposes in drop downs.
+  enum back to the server. Trick is to work with EnumOptions for display purposes in drop downs.
 
   NOTE - Why Enumerations are better than strings
 
