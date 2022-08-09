@@ -58,9 +58,14 @@ import {CandidateSourceService} from '../../../../services/candidate-source.serv
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CreateUpdateListComponent} from '../../../list/create-update/create-update-list.component';
 import {SelectListComponent, TargetListSelection} from '../../../list/select/select-list.component';
-import {CandidateSourceResultsCacheService} from '../../../../services/candidate-source-results-cache.service';
-import {CreateUpdateSearchComponent} from '../../../search/create-update/create-update-search.component';
+import {
+  CandidateSourceResultsCacheService
+} from '../../../../services/candidate-source-results-cache.service';
+import {
+  CreateUpdateSearchComponent
+} from '../../../search/create-update/create-update-search.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
+import {isJob, SearchJobRequest} from "../../../../model/job";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -138,7 +143,9 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   getBrowserDisplayString(source: CandidateSource) {
     let s = source.name;
     if (this.searchBy === SearchBy.registeredJob) {
-      if (isSavedList(source)) {
+      if (isJob(source)) {
+        s += "(" + source.country + ") - " + source.stage;
+      } else if (isSavedList(source)) {
         s += "(" + source.sfJobCountry + ") - " + source.sfJobStage;
       }
     }
@@ -162,48 +169,60 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
 
     let req;
-    if (this.sourceType === CandidateSourceType.SavedSearch) {
-      req = new SearchSavedSearchRequest();
-    } else {
-      req = new SearchSavedListRequest();
+    switch (this.sourceType) {
+      case CandidateSourceType.SavedSearch:
+        req = new SearchSavedSearchRequest();
+        break;
+
+      case CandidateSourceType.SavedList:
+        req = new SearchSavedListRequest();
+        break;
+
+      case CandidateSourceType.Job:
+        req = new SearchJobRequest();
+        break;
     }
+
     req.keyword = this.keyword;
     req.pageNumber = this.pageNumber - 1;
     req.pageSize = this.pageSize;
-    req.sortFields = ['name'];
-    req.sortDirection = 'ASC';
-    req.pageNumber = this.pageNumber - 1;
-    req.pageSize = this.pageSize;
-    req.sortFields = ['name'];
-    req.sortDirection = 'ASC';
-    switch (this.searchBy) {
-      case SearchBy.mine:
-        req.owned = true;
-        break;
-      case SearchBy.sharedWithMe:
-        req.shared = true;
-        break;
-      case SearchBy.watched:
-        req.watched = true;
-        break;
-      case SearchBy.all:
-        req.global = true;
-        req.owned = true;
-        req.shared = true;
-        break;
-      case SearchBy.externalLink:
-        req.shortName = true;
-        break;
-      case SearchBy.registeredJob:
-        req.registeredJob = true;
 
-        //In this browsing display we want to filter out closed jobs
-        req.sfOppClosed = false;
+    if (this.sourceType === CandidateSourceType.Job) {
+      //This is Jobs
+      //We sort them with most recent job first - ie descending order of id
+      req.sortFields = ['id'];
+      req.sortDirection = 'DESC';
 
-        //We also want to sort with most recent job first - ie descending order of id
-        req.sortFields = ['id'];
-        req.sortDirection = 'DESC';
-        break;
+      //Don't want to see closed jobs
+      req.sfOppClosed = false;
+    } else {
+      //These are lists and searches (ie not CandidateSourceType.Job's)
+      //Default sort for them is alpha
+      req.sortFields = ['name'];
+      req.sortDirection = 'ASC';
+
+      switch (this.searchBy) {
+        case SearchBy.mine:
+          req.owned = true;
+          break;
+        case SearchBy.sharedWithMe:
+          req.shared = true;
+          break;
+        case SearchBy.watched:
+          req.watched = true;
+          break;
+        case SearchBy.all:
+          req.global = true;
+          req.owned = true;
+          req.shared = true;
+          break;
+        case SearchBy.externalLink:
+          req.shortName = true;
+          break;
+        case SearchBy.registeredJob:
+          req.registeredJob = true;
+          break;
+      }
     }
     if (this.savedSearchType !== undefined) {
       if (req instanceof SearchSavedSearchRequest) {
@@ -217,7 +236,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
     this.loading = true;
 
-    this.candidateSourceService.searchPaged(req).subscribe(results => {
+    this.candidateSourceService.searchPaged(this.sourceType, req).subscribe(results => {
       this.results = results;
 
       if (results.content.length > 0) {
@@ -496,5 +515,22 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   subtypeChangeEvent($event: SavedSearchTypeSubInfo) {
     this.subtypeChange.emit($event);
+  }
+
+  /**
+   * Returns the candidate source which should be displayed when a particular candidate source
+   * has been selected from the browsed sources.
+   * <p/>
+   * Normally we simply display the selected candidate source. But when the selected source is a job
+   * we select the job's submission list instead
+   */
+  selectedSourceDetail(): CandidateSource {
+    let sourceDetail;
+    if (isJob(this.selectedSource)) {
+      sourceDetail = this.selectedSource.submissionList
+    } else {
+      sourceDetail = this.selectedSource
+    }
+    return sourceDetail;
   }
 }

@@ -2,7 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 import {SavedList, UpdateSavedListInfoRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
-import {PostJobToSlackRequest, Progress, UpdateEmployerOpportunityRequest} from "../../../model/base";
+import {
+  PostJobToSlackRequest,
+  Progress,
+  UpdateEmployerOpportunityRequest
+} from "../../../model/base";
 import {getCandidateSourceExternalHref} from "../../../model/saved-search";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
@@ -87,8 +91,11 @@ export class NewJobComponent implements OnInit {
   }
 
 
-  createRegisteredList() {
+  private createRegisteredJob() {
     this.errorCreatingList = null;
+
+    //todo This should be simplified to use UpdateJobRequest and call jobService in Angular and server
+
     this.creatingList = Progress.Started;
     const request: UpdateSavedListInfoRequest = {
       registeredJob: true,
@@ -98,6 +105,7 @@ export class NewJobComponent implements OnInit {
     };
     this.savedListService.create(request).subscribe(
       (savedList) => {
+        //todo Should return job
         this.creatingList = Progress.Finished;
         this.savedList = savedList;
         this.createFolders();
@@ -173,6 +181,6 @@ export class NewJobComponent implements OnInit {
   }
 
   doRegistration() {
-    this.createRegisteredList();
+    this.createRegisteredJob();
   }
 }
