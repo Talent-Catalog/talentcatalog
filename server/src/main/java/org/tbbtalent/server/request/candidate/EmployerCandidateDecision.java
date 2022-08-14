@@ -21,7 +21,8 @@ import java.util.List;
 
 /**
  * Employer decisions on candidates
- *
+ * <p/>
+ * MODEL - look up enum from display name
  * @author John Cameron
  */
 public enum EmployerCandidateDecision {
@@ -30,7 +31,7 @@ public enum EmployerCandidateDecision {
   NoJobOffer("No Offer");
 
   private final String displayText;
-  
+
   EmployerCandidateDecision(String displayText) {
     this.displayText = displayText;
   }
