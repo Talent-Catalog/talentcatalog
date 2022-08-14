@@ -20,6 +20,7 @@ export interface Job extends CandidateSource {
   employer: string;
   country: string;
   stage: JobOpportunityStage;
+  submissionDueDate: Date;
   submissionList: SavedList;
 }
 

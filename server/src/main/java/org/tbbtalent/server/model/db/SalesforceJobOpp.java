@@ -16,11 +16,17 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.time.OffsetDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
 
-//TODO JC Link SalesforceJobOpp to DB
 /**
  * This is a copy of an Employer Job Opportunity on Salesforce
  *
@@ -29,7 +35,19 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Entity
+@Table(name = "salesforce_job_opp")
 public class SalesforceJobOpp {
+
+    @Id
+    @javax.persistence.Id
+    @Column(name = "id")
+    private String id;
+
+    /**
+     * True if opportunity is closed
+     */
+    private boolean closed;
 
     /**
      * Name of country where job is located
@@ -49,6 +67,30 @@ public class SalesforceJobOpp {
     /**
      * Stage of job opportunity
      */
+    @Enumerated(EnumType.STRING)
     private JobOpportunityStage stage;
 
+    /**
+     * Stage of job opportunity expressed as number - 0 being first stage.
+     * <p/>
+     * Used for sorting by stage.
+     * <p/>
+     * This is effectively a computed field, computed by calling the ordinal() method of the
+     * {@link #stage} enum.
+     */
+    private int stageOrder;
+
+    /**
+     * Last time that this was updated from Salesforce (which holds the master copy)
+     */
+    private OffsetDateTime lastUpdate;
+
+    /**
+     * Override standard setStage to automatically also update stageOrder
+     * @param stage New job opportunity stage
+     */
+    public void setStage(JobOpportunityStage stage) {
+        this.stage = stage;
+        setStageOrder(stage.ordinal());
+    }
 }

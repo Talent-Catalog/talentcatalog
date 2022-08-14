@@ -29,11 +29,6 @@ import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @RestController()
 @RequestMapping("/api/admin/job")
 public class JobAdminApi implements
@@ -56,31 +51,9 @@ public class JobAdminApi implements
 
     @Override
     public @NotNull Map<String, Object> searchPaged(@Valid SearchJobRequest request) {
-
         Page<Job> jobs = jobService.searchJobs(request);
         final Map<String, Object> objectMap = jobDto().buildPage(jobs);
         return objectMap;
-        //TODO JC Returns Page of Jobs
-        //TODO JC delegate to JobService
-        //TODO JC Job service loads all registered jobs from SF to Jobs table, then applies search
-        //params to jobs table and returns jobs.
-        /* From SavedListAdminApi - but should go into Job Service
-        Page<SavedList> savedLists = savedListService.searchSavedLists(request);
-
-        //Retrieve any associated job opportunities from Salesforce and add it to the SavedList objects
-        salesforceService.addJobOpportunity(savedLists);
-
-        //Populate the savedLists which have associated job opportunities with info related to the
-        //opp. This includes transient data such as stage and job country, but also updates the
-        //database stored sfOppIsClosed attribute if necessary.
-        //This attribute is needed so that we can filter out lists associated with closed
-        //opportunities in normal database queries.
-        savedListService.updateJobOpportunityInfo(savedLists);
-
-        DtoBuilder builder = builderSelector.selectBuilder();
-        return builder.buildPage(savedLists);
-
-         */
     }
 
     private DtoBuilder jobDto() {
@@ -89,6 +62,7 @@ public class JobAdminApi implements
             .add("employer")
             .add("name")
             .add("stage")
+            .add("submissionDueDate")
             .add("submissionList", builderSelector.selectBuilder())
             ;
     }

@@ -21,6 +21,8 @@ package org.tbbtalent.server.model.db;
  * opportunities on Salesforce.
  * <p/>
  * See https://docs.google.com/document/d/1B6DmpYaONV_yNmyAqL76cu0TUQcpNgKtOmKELCkpRoc/edit#heading=h.qx7je1tuwoqv
+ * <p/>
+ * MODEL - Enum's with String labels. Looking up enum from label.
  */
 public enum JobOpportunityStage {
         prospect ("Prospect"),
@@ -50,6 +52,15 @@ public enum JobOpportunityStage {
         @Override
         public String toString() {
                 return label;
+        }
+
+        public static JobOpportunityStage textToEnum(String label) {
+                for (JobOpportunityStage stage : JobOpportunityStage.values()) {
+                        if (stage.label.equals(label)) {
+                                return stage;
+                        }
+                }
+                throw new IllegalArgumentException("Unrecognized JobOpportunityStage: " + label);
         }
 
 }

@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
@@ -51,6 +52,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.exception.SalesforceException;
+import org.tbbtalent.server.model.db.AbstractCandidateSource;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.ExportColumn;
@@ -337,6 +339,14 @@ public class SavedListServiceImpl implements SavedListService {
                 }
             }
         }
+    }
+
+    @Override
+    public List<String> collectSfJoblinks(List<SavedList> savedLists) {
+        return savedLists.stream()
+            .map(AbstractCandidateSource::getSfJoblink)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     /**
