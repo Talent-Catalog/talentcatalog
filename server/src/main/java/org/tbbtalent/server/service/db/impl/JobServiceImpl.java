@@ -65,7 +65,7 @@ public class JobServiceImpl implements JobService {
 
         final SearchSavedListRequest savedListRequest = new SearchSavedListRequest();
         savedListRequest.setRegisteredJob(true);
-        List<SavedList> jobLists = savedListService.searchSavedLists(savedListRequest).getContent();
+        List<SavedList> jobLists = savedListService.listSavedLists(savedListRequest);
 
         //Registered jobs should have a corresponding Job object - create if necessary.
         for (SavedList jobList : jobLists) {
