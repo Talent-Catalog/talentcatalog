@@ -32,6 +32,7 @@ import org.tbbtalent.server.request.candidate.AbstractUpdateCandidateSourceReque
 @ToString(callSuper = true)
 public class UpdateSavedListInfoRequest extends AbstractUpdateCandidateSourceRequest {
 
+  //TODO JC Should this go. Create jobs are done elsewhere. And you shouldnt be able to modify any old list to registered.
   /**
    * @see SavedList
    */

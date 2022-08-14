@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -46,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -56,6 +56,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.configuration.SalesforceConfig;
+import org.tbbtalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
@@ -125,27 +127,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName,IsClosed,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
-        "Id,RecordTypeId,Name,AccountId,AccountCountry__c,StageName,IsClosed";
-
+        "Id,RecordTypeId,Name,AccountId,AccountCountry__c,AccountName__c,StageName,IsClosed";
 
     private final EmailHelper emailHelper;
 
-    @Value("${salesforce.privatekey}")
-    private String privateKeyStr;
+    private final SalesforceConfig salesforceConfig;
+    private final SalesforceTbbAccountsConfig salesforceTbbAccountsConfig;
 
     private PrivateKey privateKey;
-
-    @Value("${salesforce.tbb.jordanAccount}")
-    private String tbbJordanAccountId;
-
-    @Value("${salesforce.tbb.lebanonAccount}")
-    private String tbbLebanonAccountId;
-
-    @Value("${salesforce.tbb.otherAccount}")
-    private String tbbOtherAccountId;
-
-    @Value("${salesforce.tbb.tbbAccount}")
-    private String tbbAccountId;
 
     private final WebClient webClient;
 
@@ -160,8 +149,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private String accessToken = null;
 
     @Autowired
-    public SalesforceServiceImpl(EmailHelper emailHelper) {
+    public SalesforceServiceImpl(EmailHelper emailHelper, SalesforceConfig salesforceConfig,
+        SalesforceTbbAccountsConfig salesforceTbbAccountsConfig) {
         this.emailHelper = emailHelper;
+        this.salesforceConfig = salesforceConfig;
+        this.salesforceTbbAccountsConfig = salesforceTbbAccountsConfig;
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
@@ -254,7 +246,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        privateKey = privateKeyFromPkcs8(privateKeyStr);
+        privateKey = privateKeyFromPkcs8(salesforceConfig.getPrivatekey());
     }
 
     @Override
@@ -419,6 +411,18 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     /**
+     * Extracts the Salesforce record ids from Salesforce record urls.
+     * <p/>
+     * List version go {@link #extractIdFromSfUrl(String)}
+     */
+    public static @NotNull
+    List<String> extractIdFromSfUrl(@NotNull List<String> urls) {
+        return urls.stream()
+            .map(SalesforceServiceImpl::extractIdFromSfUrl)
+            .collect(Collectors.toList());
+    }
+
+    /**
      * Extracts the Salesforce object type (ag Account, Contact, Opportunity) from the Salesforce
      * url of a record.
      *
@@ -539,31 +543,33 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public List<Contact> records;
     }
 
-    private List<Opportunity> fetchOpportunities(Collection<String> ids) throws SalesforceException {
+    @Override
+    public List<Opportunity> fetchOpportunities(Collection<String> ids) throws SalesforceException {
+        List<Opportunity> opps = new ArrayList<>();
+        if (ids.size() > 0) {
+            try {
+                //Construct the String of ids for the WHERE clause
+                final String idsAsString = ids.stream().map(s -> "'" + s + "'")
+                    .collect(Collectors.joining(","));
 
-        try {
-            //Construct the String of ids for the WHERE clause
-            final String idsAsString = ids.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
+                String query =
+                    "SELECT " + jobOpportunityRetrievalFields +
+                        " FROM Opportunity WHERE Id IN (" + idsAsString + ")";
 
-            String query =
-                "SELECT " + jobOpportunityRetrievalFields +
-                    " FROM Opportunity WHERE Id IN (" + idsAsString + ")";
+                ClientResponse response = executeQuery(query);
 
-            ClientResponse response = executeQuery(query);
+                OpportunityQueryResult result =
+                    response.bodyToMono(OpportunityQueryResult.class).block();
 
-            OpportunityQueryResult result =
-                response.bodyToMono(OpportunityQueryResult.class).block();
-
-            //Retrieve the contact from the response
-            List<Opportunity> opps = null;
-            if (result != null) {
-                opps = result.records;
+                //Retrieve the contact from the response
+                if (result != null) {
+                    opps = result.records;
+                }
+            } catch (GeneralSecurityException ex) {
+                throw new SalesforceException("Failed to fetch Opportunities: " + ex);
             }
-
-            return opps;
-        } catch (GeneralSecurityException ex) {
-            throw new SalesforceException("Failed to fetch Opportunities: " + ex);
         }
+        return opps;
     }
 
     private List<Opportunity> findCandidateOpportunities(String jobOpportunityId)
@@ -1282,13 +1288,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             //Set account id based on candidate's country
             switch (country) {
                 case "Jordan":
-                    setAccountId(tbbJordanAccountId);
+                    setAccountId(salesforceTbbAccountsConfig.getJordanAccount());
                     break;
                 case "Lebanon":
-                    setAccountId(tbbLebanonAccountId);
+                    setAccountId(salesforceTbbAccountsConfig.getLebanonAccount());
                     break;
                 default:
-                    setAccountId(tbbOtherAccountId);
+                    setAccountId(salesforceTbbAccountsConfig.getOtherAccount());
             }
 
             setTBBid(Long.valueOf(candidate.getCandidateNumber()));

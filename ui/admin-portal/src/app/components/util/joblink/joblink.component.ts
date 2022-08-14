@@ -30,7 +30,7 @@ import {SalesforceService} from "../../../services/salesforce.service";
 import {FormComponentBase} from "../form/FormComponentBase";
 
 /*
-  MODEL
+  MODEL - subclass FormComponentBase, invalid values, sync and async validators
   - use of subclassing FormComponentBase to inherit common standard form functionality
   - shows how to check for invalid control values using inherited isInvalid method.
   - use of both sync and async form validators

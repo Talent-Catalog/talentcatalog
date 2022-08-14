@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2022 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,27 +14,33 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
+package org.tbbtalent.server.configuration;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-//TODO JC Is this Zombie code - SavedListLink?
+/**
+ * Salesforce configuration - read from application.yml
+ * <p/>
+ * MODEL - Loading application.yml configuration into a Java object
+ *
+ * @author John Cameron
+ */
 @Getter
 @Setter
-@ToString
-@Entity
-@Table(name = "saved_list_link")
-public class SavedListLink extends AbstractAuditableDomainObject<Long>{
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "saved_list_id")
-    private SavedList savedList;
+@ConfigurationProperties("salesforce")
+public class SalesforceConfig {
 
-    private String link;
+    /**
+     * Private key used for accessing Salesforce
+     */
+    private String privatekey;
+
+    /**
+     * Maximum number seconds that cached Salesforce data should live before being refreshed from
+     * Salesforce.
+     */
+    private int timeToLive;
+
 }

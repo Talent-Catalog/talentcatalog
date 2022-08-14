@@ -16,7 +16,7 @@
 import {Country} from "./country";
 
 /*
-  MODEL - latest best practice on this kind of file
+  MODEL - extending interfaces, update request extend object attributes, mapping enums
 
   - Avoid duplicating lists of attributes by using inheritance (ie extends).
   - Link update request to partner attributes (ie don't duplicate attributes)

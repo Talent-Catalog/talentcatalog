@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2022 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,27 +14,31 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
+package org.tbbtalent.server.request.job;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import java.util.List;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
+import org.tbbtalent.server.request.candidate.source.SearchCandidateSourceRequestPaged;
 
-//TODO JC Is this Zombie code - SavedListLink?
 @Getter
 @Setter
 @ToString
-@Entity
-@Table(name = "saved_list_link")
-public class SavedListLink extends AbstractAuditableDomainObject<Long>{
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "saved_list_id")
-    private SavedList savedList;
+public class SearchJobRequest extends SearchCandidateSourceRequestPaged {
 
-    private String link;
+    /**
+     * If specified, job opportunities will be selected based on whether the opportunity is closed.
+     */
+    @Nullable
+    private Boolean sfOppClosed;
+
+    /**
+     * If specified, job opportunities are selected if they match any of the stages
+     */
+    @Nullable
+    private List<JobOpportunityStage> stages;
+
 }

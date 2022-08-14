@@ -21,12 +21,13 @@ import {HttpClient} from '@angular/common/http';
 import {SearchResults} from "../model/search-results";
 import {
   CandidateSource,
+  CandidateSourceType,
   SearchCandidateSourcesRequest,
   UpdateCandidateContextNoteRequest,
   UpdateCandidateSourceDescriptionRequest,
   UpdateDisplayedFieldPathsRequest
 } from "../model/base";
-import {isSavedSearch, SearchSavedSearchRequest} from "../model/saved-search";
+import {isSavedSearch} from "../model/saved-search";
 import {map} from "rxjs/operators";
 import {SavedSearchService} from "./saved-search.service";
 import {CandidateFieldService} from "./candidate-field.service";
@@ -37,6 +38,7 @@ export class CandidateSourceService {
 
   private savedListApiUrl = environment.apiUrl + '/saved-list';
   private savedSearchApiUrl = environment.apiUrl + '/saved-search';
+  private jobApiUrl = environment.apiUrl + '/job';
 
   constructor(private http: HttpClient,
               private candidateFieldService: CandidateFieldService
@@ -82,11 +84,22 @@ export class CandidateSourceService {
       );
   }
 
-  searchPaged(request: SearchCandidateSourcesRequest):
+  searchPaged(sourceType: CandidateSourceType, request: SearchCandidateSourcesRequest):
     Observable<SearchResults<CandidateSource>> {
 
-    const apiUrl = request instanceof SearchSavedSearchRequest ?
-      this.savedSearchApiUrl : this.savedListApiUrl;
+    let apiUrl;
+
+    switch (sourceType) {
+      case CandidateSourceType.SavedSearch:
+        apiUrl = this.savedSearchApiUrl;
+        break;
+      case CandidateSourceType.SavedList:
+        apiUrl = this.savedListApiUrl;
+        break;
+      case CandidateSourceType.Job:
+        apiUrl = this.jobApiUrl;
+        break;
+    }
 
     return this.http.post<SearchResults<CandidateSource>>(
       `${apiUrl}/search-paged`, request)

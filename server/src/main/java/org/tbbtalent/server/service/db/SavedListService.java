@@ -137,6 +137,13 @@ public interface SavedListService {
     void deassociateTaskFromList(User user, TaskImpl task, SavedList list);
 
     /**
+     * Extracts all non null sfJoblink field values in the given SavedLists
+     * @param savedLists SavedLists to be scanned
+     * @return List of Salesforce urls
+     */
+    List<String> collectSfJoblinks(List<SavedList> savedLists);
+
+    /**
      * Creates a folder for the given list on Google Drive with two subfolders, one for CVs and
      * the other for Job Description (JD) docs.
      * <p/>

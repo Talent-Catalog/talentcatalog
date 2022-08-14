@@ -16,7 +16,9 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.security.GeneralSecurityException;
 import java.util.Collection;
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -25,9 +27,6 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
-
-import java.security.GeneralSecurityException;
-import java.util.List;
 import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
@@ -61,6 +60,14 @@ public interface SalesforceService {
      * @throws SalesforceException if there are issues contacting Salesforce
      */
     void addJobOpportunity(Iterable<SavedList> savedLists);
+
+    /**
+     * Fetches opportunities with the given ids from Salesforce.
+     * @param ids Salesforce id (not url)
+     * @return Opportunities
+     * @throws SalesforceException if there is a problem accessing Salesforce
+     */
+    List<Opportunity> fetchOpportunities(Collection<String> ids) throws SalesforceException;
 
     /**
      * Searches Salesforce for all Contact records relating to TBB
