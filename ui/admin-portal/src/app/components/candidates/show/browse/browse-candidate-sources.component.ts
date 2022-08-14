@@ -65,7 +65,8 @@ import {
   CreateUpdateSearchComponent
 } from '../../../search/create-update/create-update-search.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
-import {isJob, SearchJobRequest} from "../../../../model/job";
+import {isJob, JobOpportunityStage, SearchJobRequest} from "../../../../model/job";
+import {enumOptions} from "../../../../util/enum";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -93,6 +94,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   selectedSource: CandidateSource;
   selectedIndex = 0;
   loggedInUser: User;
+  stages = enumOptions(JobOpportunityStage);
 
   constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
@@ -111,7 +113,8 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     //Pick up any previous keyword filter
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
     this.searchForm = this.fb.group({
-      keyword: [filter]
+      keyword: [filter],
+      selectedStages: [["candidateSearch"]]
     });
     this.pageNumber = 1;
     this.pageSize = 50;
@@ -122,6 +125,10 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   get keyword(): string {
     return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  get selectedStages(): string[] {
+    return this.searchForm ? this.searchForm.value.selectedStages : "";
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -192,6 +199,8 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       //We sort them with most recent job first - ie descending order of id
       req.sortFields = ['id'];
       req.sortDirection = 'DESC';
+
+      req.stages = this.selectedStages;
 
       //Don't want to see closed jobs
       req.sfOppClosed = false;
@@ -532,5 +541,9 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       sourceDetail = this.selectedSource
     }
     return sourceDetail;
+  }
+
+  showStageFilter() {
+    return this.sourceType === CandidateSourceType.Job;
   }
 }

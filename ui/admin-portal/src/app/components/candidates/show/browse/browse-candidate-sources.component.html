@@ -33,6 +33,19 @@
         <div class="form-group">
           <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
                  id="keyword">
+          <div *ngIf="showStageFilter()">
+            <label>Stage</label>
+            <ng-select
+              id="stage"
+              [items]="stages"
+              [multiple]="true"
+              [closeOnSelect]="true"
+              [searchable]="false"
+              bindLabel="stringValue"
+              bindValue="key"
+              [formControlName]="'selectedStages'">
+            </ng-select>
+          </div>
         </div>
       </form>
 
