@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.repository.db;
 
+import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -30,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.Job;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 
@@ -62,11 +64,19 @@ public class JobSpecification {
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                 conjunction.getExpressions().add(
                         builder.or(
-                                builder.like(builder.lower(sfJobOpp.get("name")), likeMatchTerm)
+                                builder.like(builder.lower(sfJobOpp.get("name")), likeMatchTerm),
+                                builder.like(builder.lower(sfJobOpp.get("country")), likeMatchTerm)
                         ));
             }
 
-            if (request.getSfOppClosed() != null){
+            // STAGE
+            List<JobOpportunityStage> stages = request.getStages();
+            if (!Collections.isEmpty(stages)) {
+                conjunction.getExpressions().add(builder.isTrue(sfJobOpp.get("stage").in(stages)));
+            }
+
+            //CLOSED
+            if (request.getSfOppClosed() != null) {
                 conjunction.getExpressions().add(builder.equal(sfJobOpp.get("closed"), request.getSfOppClosed()));
             }
 

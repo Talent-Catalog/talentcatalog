@@ -56,6 +56,7 @@ export enum JobOpportunityStage {
 
 export class SearchJobRequest extends SearchCandidateSourcesRequest {
   sfOppClosed?: boolean;
+  stages?: string[];
 }
 
 export interface UpdateJobRequest {

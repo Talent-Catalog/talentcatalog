@@ -16,9 +16,12 @@
 
 package org.tbbtalent.server.request.job;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.request.candidate.source.SearchCandidateSourceRequestPaged;
 
 @Getter
@@ -27,8 +30,15 @@ import org.tbbtalent.server.request.candidate.source.SearchCandidateSourceReques
 public class SearchJobRequest extends SearchCandidateSourceRequestPaged {
 
     /**
-     * Job opportunities will be selected based on whether the opportunity is closed.
+     * If specified, job opportunities will be selected based on whether the opportunity is closed.
      */
+    @Nullable
     private Boolean sfOppClosed;
+
+    /**
+     * If specified, job opportunities are selected if they match any of the stages
+     */
+    @Nullable
+    private List<JobOpportunityStage> stages;
 
 }
