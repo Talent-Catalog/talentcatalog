@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -21,18 +21,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.persistence.Convert;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Base class for sources for candidates. 
+ * Base class for sources for candidates.
  * Sub classes include SavedSearches and SavedLists.
  * <p/>
  * Common base class functionality includes:
@@ -63,17 +64,17 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      */
     @Nullable
     private String description;
-    
+
     /**
      * If not null (or empty) this is the list of candidate fields which are
      * displayed for each candidate.
      * <p/>
      * Each candidate field is defined as the name of the candidate attribute,
-     * or if a candidate attribute is a reference to another entity, then 
+     * or if a candidate attribute is a reference to another entity, then
      * the name of the candidate attribute followed by "." then the name of the
      * attribute of the nested entity.
      * For example, "updatedDate" for the candidate's updated date field,
-     * or "user.firstName" for the candidate's first name (the "firstName" 
+     * or "user.firstName" for the candidate's first name (the "firstName"
      * attribute of the candidate's "user" attribute).
      * <p/>
      * If null or empty, a default set of fields are displayed (as defined
@@ -105,14 +106,22 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     private Boolean global = false;
 
     /**
-     * Url link to Salesforce EmployerJob opportunity, if one exists, associated 
-     * with this source of candidates. 
+     * Url link to Salesforce EmployerJob opportunity, if one exists, associated
+     * with this source of candidates.
      */
     @Nullable
     private String sfJoblink;
 
     /**
-     * Stored as comma separated list of watching user ids 
+     * Optional link to an associated Job.
+     */
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id")
+    Job job;
+
+    /**
+     * Stored as comma separated list of watching user ids
      */
     private String watcherIds;
 
@@ -130,7 +139,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * SavedList or SavedSearch implementations have slightly different ways of storing
      * export columns on the database - so the actual database mapping has to be done in those
      * subclasses.
-     * @return Set of columns. Note that the ordering is defined by the 
+     * @return Set of columns. Note that the ordering is defined by the
      * {@link ExportColumn#getIndex()} attribute in each ExportColumn.
      */
     @Nullable
@@ -139,8 +148,8 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     /**
      * @see #getExportColumns()
      * <p/>
-     * Note: You can't call setExportColumns and assuming that previous columns on the database 
-     * are deleted. You need to explicitly do that using 
+     * Note: You can't call setExportColumns and assuming that previous columns on the database
+     * are deleted. You need to explicitly do that using
      * {@link org.tbbtalent.server.service.db.ExportColumnsService}
      */
     public abstract void setExportColumns(@Nullable List<ExportColumn> exportColumns);
@@ -153,7 +162,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
             }
         }
     }
-    
+
     @Nullable
     public String getDescription() {
         return description;
@@ -218,6 +227,15 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         this.sfJoblink = sfJoblink;
     }
 
+    @Nullable
+    public Job getJob() {
+        return job;
+    }
+
+    public void setJob(@Nullable Job job) {
+        this.job = job;
+    }
+
     public Status getStatus() {
         return status;
     }
@@ -228,7 +246,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
 
     //Support for watchers
-    
+
     public String getWatcherIds() {
         return watcherIds;
     }
@@ -282,7 +300,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         setWatcherUserIds(ids);
     }
 
-    
+
     //Support for sharing
 
     /**
@@ -290,7 +308,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      */
     private void clearUsers() {
         Set<User> users = getUsers();
-        
+
         //First update each user object to no longer refer to this candidate source
         for (User user : users) {
             getUsersCollection(user).remove(this);
@@ -299,11 +317,11 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         //Finally clear the collection of users
         users.clear();
     }
-    
+
     /**
      * This is the collection of users who share this candidate source.
      * It will return the field on the entity corresponding to a many to many
-     * mapping in the database of user ids to the ids of these candidate sources. 
+     * mapping in the database of user ids to the ids of these candidate sources.
      * @return Set of users
      */
     public abstract Set<User> getUsers();
@@ -324,7 +342,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     }
 
     /**
-     * Return the given user's collection of shared instances of this class of 
+     * Return the given user's collection of shared instances of this class of
      * candidate source.
      * <p/>
      * This is the user side of the many to many sharing relationship.
@@ -335,8 +353,8 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * </code>
      * where [getSharesCollection] is the User method which returns the
      * collection of candidate source instances the user is sharing.
-     * 
-     * @param user User who can share this class of candidate source 
+     *
+     * @param user User who can share this class of candidate source
      * @param <T> A subclass of this class - eg a Saved Search
      * @return Given user's collection of shared instances
      */
@@ -349,7 +367,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     public void addUser(User user) {
         //Add user to the collection of users sharing this candidate source
         getUsers().add(user);
-        //Also update other side of many to many relationship, adding this 
+        //Also update other side of many to many relationship, adding this
         //instance to the user's collection of shared instances.
         getUsersCollection(user).add(this);
     }
@@ -361,9 +379,9 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     public void removeUser(User user) {
         //Remove user from the collection of users sharing this candidate source
         getUsers().remove(user);
-        //Also update other side of many to many relationship, removing this 
+        //Also update other side of many to many relationship, removing this
         //instance from the user's collection of shared instances.
         getUsersCollection(user).remove(this);
     }
-    
+
 }
