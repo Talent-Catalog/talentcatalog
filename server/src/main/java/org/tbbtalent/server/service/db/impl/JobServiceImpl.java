@@ -18,6 +18,8 @@ package org.tbbtalent.server.service.db.impl;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,8 @@ public class JobServiceImpl implements JobService {
     private final JobRepository jobRepository;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
+
+    private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
     public JobServiceImpl(JobRepository jobRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService) {
         this.jobRepository = jobRepository;
@@ -65,9 +69,12 @@ public class JobServiceImpl implements JobService {
 
         final SearchSavedListRequest savedListRequest = new SearchSavedListRequest();
         savedListRequest.setRegisteredJob(true);
-        List<SavedList> jobLists = savedListService.searchSavedLists(savedListRequest).getContent();
+        List<SavedList> jobLists = savedListService.listSavedLists(savedListRequest);
 
         //Registered jobs should have a corresponding Job object - create if necessary.
+        //TODO JC Note that this will be an increasing overhead as number of old registered job lists grows
+        int nJobsCreated = 0;
+        int nSfJobOppsCreated = 0;
         for (SavedList jobList : jobLists) {
             final String url = jobList.getSfJoblink();
             if (url != null) {
@@ -82,13 +89,17 @@ public class JobServiceImpl implements JobService {
                     if (jobOpp == null) {
                         //Create dummy expired one - will be updated later
                         jobOpp = salesforceJobOppService.createExpiringOpp(url);
+                        nSfJobOppsCreated++;
                     }
                     job.setSfJobOpp(jobOpp);
 
                     jobRepository.save(job);
+                    nJobsCreated++;
                 }
             }
         }
+        log.info("Created " + nJobsCreated + " jobs and " +
+            nSfJobOppsCreated + " sfJobOpps from registered job lists");
 
         //We want to make sure that our cache of Salesforce Job Opportunity details corresponding
         //to these job lists are up to date.
