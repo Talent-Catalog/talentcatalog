@@ -10,7 +10,7 @@ import {enumOptions} from "../../../../util/enum";
 import {FormComponentBase} from "../../../util/form/FormComponentBase";
 
 /*
-  MODEL - latest best practice on this kind of component
+  MODEL - mapping enums, display text send ids, create/update component
 
   - shows how to combine create and update into a single component, reducing unnecessary duplication
 
@@ -113,7 +113,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       //Convert countries to country ids
       sourceCountryIds: this.form.value.sourceCountries?.map(c => c.id),
 
-      //The for status contains the key of the associated enum. On the server side, that field
+      //The form status contains the key of the associated enum. On the server side, that field
       //of the corresponding Java UpdatePartnerRequest will be typed as the Java enum Status.
       //The JSON processing code automatically converts the string value sent to the corresponding
       //Status Java enumeration value.
