@@ -89,7 +89,7 @@
     </ng-template>
   </ng-container>
 
-  <ng-container ngbNavItem="JobOpps">
+  <ng-container *ngIf="isExperimental" ngbNavItem="JobOpps">
     <a ngbNavLink
        title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
     >Registered Job Lists</a>
@@ -101,7 +101,7 @@
     </ng-template>
   </ng-container>
 
-  <ng-container *ngIf="isExperimental()" ngbNavItem="JobOppsNew">
+  <ng-container ngbNavItem="JobOppsNew">
     <a ngbNavLink
        title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
     >Registered Jobs</a>
