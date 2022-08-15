@@ -22,7 +22,6 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -47,12 +46,44 @@ public class JobSpecification {
             Predicate conjunction = builder.conjunction();
             query.distinct(true);
 
-            Fetch<Object, Object> sfJobOppFetch = job.fetch("sfJobOpp", JoinType.INNER);
-            Join<Object, Object> sfJobOpp = (Join<Object, Object>) sfJobOppFetch;
+            //This will hold the joined sfJobOpp entity. We determine the join differently
+            //depending on whether this is a count query.
+            //(When paging results, query specification code always gets
+            //called twice for any given search request: once to retrieve the results and again
+            //to count the total number of results across all pages).
+            Join<Object, Object> sfJobOpp;
 
-            //Manage sorting for non count queries
+            /*
+              Note that there are two ways of retrieving a join.
+              One is simply to call the join method - and that is what we use for Count queries.
+
+              The other way is to use the "fetch" method, and then cast that to a join.
+              This way is used for non count queries where we want to retrieve and optionally
+              sort the results.
+
+              This is much more efficient than making those attributes fetched EAGERLY.
+              Not 100% sure why, but it is.
+
+              See https://thorben-janssen.com/hibernate-tip-left-join-fetch-join-criteriaquery/
+              which uses this kind of code.
+
+              You might naturally think that we should always use the fetch way of getting a join
+              but unfortunately the database does not like doing a fetch with count queries.
+              The DB throws an exception if you try it. So we need to use both ways of getting
+              the join depending on whether the request is a count query.
+             */
+
             boolean isCountQuery = query.getResultType().equals(Long.class);
-            if (!isCountQuery) {
+            if (isCountQuery) {
+                //Just use simple join
+                sfJobOpp = job.join("sfJobOpp");
+            } else {
+                //Manage sorting for non count queries
+
+                //Set join from a fetch - see notes above.
+                Fetch<Object, Object> sfJobOppFetch = job.fetch("sfJobOpp");
+                sfJobOpp = (Join<Object, Object>) sfJobOppFetch;
+
                 //Manage order of results
                 List<Order> ordering = getOrdering(request, job, builder, sfJobOpp);
                 query.orderBy(ordering);
