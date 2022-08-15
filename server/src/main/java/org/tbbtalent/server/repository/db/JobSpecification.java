@@ -84,7 +84,7 @@ public class JobSpecification {
                 Fetch<Object, Object> sfJobOppFetch = job.fetch("sfJobOpp");
                 sfJobOpp = (Join<Object, Object>) sfJobOppFetch;
 
-                //Manage order of results
+                //Manage sort order of results
                 List<Order> ordering = getOrdering(request, job, builder, sfJobOpp);
                 query.orderBy(ordering);
             }
