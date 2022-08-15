@@ -117,7 +117,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       selectedStages: [["candidateSearch"]]
     });
     this.pageNumber = 1;
-    this.pageSize = 50;
+    this.pageSize = 30;
 
     this.subscribeToFilterChanges();
     this.search();
