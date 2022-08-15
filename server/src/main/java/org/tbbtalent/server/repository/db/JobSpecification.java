@@ -69,7 +69,7 @@ public class JobSpecification {
 
               You might naturally think that we should always use the fetch way of getting a join
               but unfortunately the database does not like doing a fetch with count queries.
-              The DB throws an exception if you try it. So we need to use both ways of getting
+              An exception is thrown if you try it. So we need to use both ways of getting
               the join depending on whether the request is a count query.
              */
 
