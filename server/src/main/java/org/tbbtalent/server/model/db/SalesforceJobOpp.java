@@ -39,6 +39,9 @@ import org.springframework.data.annotation.Id;
 @Table(name = "salesforce_job_opp")
 public class SalesforceJobOpp {
 
+    /**
+     * ID of copied Salesforce job opportunity is also used as id of this copy.
+     */
     @Id
     @javax.persistence.Id
     @Column(name = "id")
