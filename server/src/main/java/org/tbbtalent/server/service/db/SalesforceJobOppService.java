@@ -30,6 +30,25 @@ import org.tbbtalent.server.model.db.SalesforceJobOpp;
 public interface SalesforceJobOppService {
 
     /**
+     * Creates an empty SalesforceJobOpp associated with Salesforce record with given id configured
+     * to expire immediately - at which time it will be populated with data taken from Salesforce.
+     * @param sfId Salesforce opportunity record id
+     * @return SalesforceJobOpp cache record
+     */
+    @NotNull
+    SalesforceJobOpp createExpiringOpp(String sfId);
+
+    /**
+     * Creates a SalesforceJobOpp associated with Salesforce record with given id
+     * and populates it with data taken from Salesforce.
+     * @param sfId Salesforce opportunity record id
+     * @return SalesforceJobOpp cache record
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    @NotNull
+    SalesforceJobOpp createJobOpp(String sfId) throws SalesforceException;
+
+    /**
      * Look up the SalesforceJobOpp associated with the Salesforce opportunity record with the
      * given id.
      * @param sfId Salesforce opportunity record id
@@ -58,15 +77,7 @@ public interface SalesforceJobOppService {
      * this if we have a brand new id. That is because a Job also needs to be created to go with the
      * SalesforceJobOpp
      * @param sfIds Salesforce ids of cache records to be updated from Salesforce
+     * @throws SalesforceException if there are issues contacting Salesforce
      */
     void update(List<String> sfIds) throws SalesforceException;
-
-    /**
-     * Creates an empty SalesforceJobOpp associated with Salesforce record with given url configured
-     * to expire immediately - at which time it will be populated with data taken from Salesforce.
-     * @param url Url of Salesforce job opportunity record
-     * @return SalesforceJobOpp cache record
-     */
-    @NotNull
-    SalesforceJobOpp createExpiringOpp(String url);
 }

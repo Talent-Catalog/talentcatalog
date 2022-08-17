@@ -60,9 +60,20 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     }
 
     @Override
-    public SalesforceJobOpp createExpiringOpp(String url) {
+    public SalesforceJobOpp createExpiringOpp(String sfId) {
         SalesforceJobOpp salesforceJobOpp = new SalesforceJobOpp();
-        salesforceJobOpp.setId(SalesforceServiceImpl.extractIdFromSfUrl(url));
+        salesforceJobOpp.setId(sfId);
+        return salesforceJobOppRepository.save(salesforceJobOpp);
+    }
+
+    @Override
+    public SalesforceJobOpp createJobOpp(String sfId) throws SalesforceException {
+        SalesforceJobOpp salesforceJobOpp = new SalesforceJobOpp();
+        salesforceJobOpp.setId(sfId);
+
+        Opportunity op = salesforceService.fetchOpportunity(sfId);
+        copyOpportunityToJobOpp(op, salesforceJobOpp);
+
         return salesforceJobOppRepository.save(salesforceJobOpp);
     }
 
@@ -95,24 +106,32 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
                 SalesforceJobOpp salesforceJobOpp = salesforceJobOppRepository.findById(id)
                     .orElse(null);
                 if (salesforceJobOpp != null) {
-                    //Update DB with data from op
-                    salesforceJobOpp.setName(op.getName());
-                    salesforceJobOpp.setCountry(op.getAccountCountry__c());
-                    salesforceJobOpp.setEmployer(op.getAccountName__c());
-                    JobOpportunityStage stage;
-                    try {
-                        stage = JobOpportunityStage.textToEnum(op.getStageName());
-                    } catch (IllegalArgumentException e) {
-                        log.error("Error decoding stage in update: " + op.getStageName(), e);
-                        stage = JobOpportunityStage.prospect;
-                    }
-                    salesforceJobOpp.setStage(stage);
-                    salesforceJobOpp.setLastUpdate(OffsetDateTime.now());
-
+                    copyOpportunityToJobOpp(op, salesforceJobOpp);
                     salesforceJobOppRepository.save(salesforceJobOpp);
                 }
             }
         }
+    }
+
+    /**
+     * Copies a Salesforce opportunity record to a SalesforceJobOpp
+     * @param op Salesforce opportunity retrieved from Salesforce
+     * @param salesforceJobOpp Cached job opp on our DB
+     */
+    private void copyOpportunityToJobOpp(Opportunity op, SalesforceJobOpp salesforceJobOpp) {
+        //Update DB with data from op
+        salesforceJobOpp.setName(op.getName());
+        salesforceJobOpp.setCountry(op.getAccountCountry__c());
+        salesforceJobOpp.setEmployer(op.getAccountName__c());
+        JobOpportunityStage stage;
+        try {
+            stage = JobOpportunityStage.textToEnum(op.getStageName());
+        } catch (IllegalArgumentException e) {
+            log.error("Error decoding stage in update: " + op.getStageName(), e);
+            stage = JobOpportunityStage.prospect;
+        }
+        salesforceJobOpp.setStage(stage);
+        salesforceJobOpp.setLastUpdate(OffsetDateTime.now());
     }
 
     private boolean isExpired(SalesforceJobOpp salesforceJobOpp) {

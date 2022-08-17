@@ -23,8 +23,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.NotImplementedException;
+import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Job;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
@@ -33,6 +34,7 @@ import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SavedListService;
@@ -52,9 +54,42 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public Job createJob(UpdateJobRequest request) {
-        //TODO JC createJob not implemented in JobServiceImpl
-        throw new NotImplementedException("JobServiceImpl", "createJob");
+    public Job createJob(UpdateJobRequest request)
+        throws InvalidRequestException, SalesforceException {
+        //Only one job can be associated with a Salesforce job opportunity
+        //Check if we already have a job for this Salesforce job opp.
+        final String sfJoblink = request.getSfJoblink();
+        String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfJoblink);
+        Job job = jobRepository.findBySfId(sfId);
+        if (job != null) {
+            throw new InvalidRequestException(
+                "Salesforce job opportunity " + sfJoblink +
+                    " is already associated with job " + job.getId());
+        }
+
+        //Search for existing SalesforceJobOpp associated with this Salesforce record
+        SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppById(sfId);
+        if (jobOpp == null) {
+            //Create one if none exists
+            jobOpp = salesforceJobOppService.createJobOpp(sfId);
+            if (jobOpp == null) {
+                throw new InvalidRequestException("No such Salesforce opportunity: " + sfJoblink);
+            }
+        }
+
+        //Create job
+        job = new Job();
+        job.setSfJobOpp(jobOpp);
+
+        //Create submission list
+        UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
+        savedListInfoRequest.setRegisteredJob(true);
+        savedListInfoRequest.setName(job.getName());
+        savedListInfoRequest.setSfJoblink(sfJoblink);
+        SavedList savedList = savedListService.createSavedList(savedListInfoRequest);
+
+        job.setSubmissionList(savedList);
+        return jobRepository.save(job);
     }
 
     @NonNull
@@ -87,13 +122,14 @@ public class JobServiceImpl implements JobService {
 
             final String url = jobList.getSfJoblink();
             if (url != null) {
+                final String sfId = SalesforceServiceImpl.extractIdFromSfUrl(url);
                 Job job = jobList.getJob();
                 if (job != null) {
                     //All looking good. Just do integrity check.
                     //Assert that the id associated list's job link url should match the id of
                     //the job's sfJobOpp.
                     SalesforceJobOpp sfJobOpp = job.getSfJobOpp();
-                    if (!sfJobOpp.getId().equals(SalesforceServiceImpl.extractIdFromSfUrl(url))) {
+                    if (!sfJobOpp.getId().equals(sfId)) {
                         log.error("Saved list " + jobList.getName() + " has sfJobLink " + url +
                             " which does not match id of cached job opp: " + sfJobOpp.getId());
                     }
@@ -113,10 +149,10 @@ public class JobServiceImpl implements JobService {
                         job.setSubmissionList(jobList);
 
                         //Search for SalesforceJobOpp from sfJoblink
-                        SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppByUrl(url);
+                        SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppById(sfId);
                         if (jobOpp == null) {
                             //Create dummy expired one - will be updated later
-                            jobOpp = salesforceJobOppService.createExpiringOpp(url);
+                            jobOpp = salesforceJobOppService.createExpiringOpp(sfId);
                             nSfJobOppsCreated++;
                         }
                         job.setSfJobOpp(jobOpp);

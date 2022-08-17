@@ -28,4 +28,9 @@ public interface JobRepository extends JpaRepository<Job, Long>,JpaSpecification
     @Query("select distinct j from Job j left join j.submissionList list "
         + " where list = :jobList")
     Job getJobBySubmissionList(@Param("jobList") SavedList jobList);
+
+    @Query(" select j from Job j "
+        + " where j.sfJobOpp.id = :sfId ")
+    Job findBySfId(@Param("sfId") String sfId);
+
 }
