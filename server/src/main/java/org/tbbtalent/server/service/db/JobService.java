@@ -18,7 +18,9 @@ package org.tbbtalent.server.service.db;
 
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Job;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
@@ -30,8 +32,16 @@ import org.tbbtalent.server.request.job.UpdateJobRequest;
  */
 public interface JobService {
 
-    //TODO JC Doc createJob
-    Job createJob(UpdateJobRequest request);
+    /**
+     * Registered a new job matching a job opportunity on Salesforce
+     * @param request Request which includes a link to the associated Salesforce job opportunity
+     * @return Created job
+     * @throws InvalidRequestException if there is already a job associated with the requested
+     * Salesforce job opportunity.
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    Job createJob(UpdateJobRequest request)
+        throws InvalidRequestException, SalesforceException;
 
     /**
      * Get the Job with the given id.

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
-import {SavedList, UpdateSavedListInfoRequest} from "../../../model/saved-list";
+import {SavedList} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
 import {
   PostJobToSlackRequest,
@@ -12,6 +12,9 @@ import {Location} from "@angular/common";
 import {Router} from "@angular/router";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {SlackService} from "../../../services/slack.service";
+import {AuthService} from "../../../services/auth.service";
+import {UpdateJobRequest} from "../../../model/job";
+import {JobService} from "../../../services/job.service";
 
 @Component({
   selector: 'app-new-job',
@@ -23,18 +26,20 @@ export class NewJobComponent implements OnInit {
   savedList: SavedList;
   sfJoblink: string;
   slacklink: string;
-  creatingList: Progress = Progress.NotStarted;
+  creatingJob: Progress = Progress.NotStarted;
   creatingFolders: Progress = Progress.NotStarted;
   creatingSFLinks: Progress = Progress.NotStarted;
   postingToSlack: Progress = Progress.NotStarted;
   findingJob: boolean;
   errorFindingJob: string = null;
   errorCreatingFolders: string = null;
-  errorCreatingList: string = null;
+  errorCreatingJob: string = null;
   errorCreatingSFLinks: string = null;
   errorPostingToSlack: string = null;
 
   constructor(
+    private authService: AuthService,
+    private jobService: JobService,
     private salesforceService: SalesforceService,
     private savedListService: SavedListService,
     private slackService: SlackService,
@@ -53,7 +58,7 @@ export class NewJobComponent implements OnInit {
 
   get progressPercent(): number {
     let pct = 0;
-    if (this.creatingList === Progress.Finished) {
+    if (this.creatingJob === Progress.Finished) {
       pct += 25;
     }
     if (this.creatingFolders === Progress.Finished) {
@@ -70,7 +75,7 @@ export class NewJobComponent implements OnInit {
 
 
   onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
-    this.creatingList = Progress.NotStarted;
+    this.creatingJob = Progress.NotStarted;
     this.creatingFolders = Progress.NotStarted;
     this.creatingSFLinks = Progress.NotStarted;
     this.postingToSlack = Progress.NotStarted;
@@ -92,27 +97,21 @@ export class NewJobComponent implements OnInit {
 
 
   private createRegisteredJob() {
-    this.errorCreatingList = null;
+    this.errorCreatingJob = null;
 
-    //todo This should be simplified to use UpdateJobRequest and call jobService in Angular and server
-
-    this.creatingList = Progress.Started;
-    const request: UpdateSavedListInfoRequest = {
-      registeredJob: true,
-      name: this.jobName,
-      fixed: true,
+    this.creatingJob = Progress.Started;
+    const request: UpdateJobRequest = {
       sfJoblink: this.sfJoblink ? this.sfJoblink : null
     };
-    this.savedListService.create(request).subscribe(
-      (savedList) => {
-        //todo Should return job
-        this.creatingList = Progress.Finished;
-        this.savedList = savedList;
+    this.jobService.create(request).subscribe(
+      (job) => {
+        this.creatingJob = Progress.Finished;
+        this.savedList = job.submissionList;
         this.createFolders();
       },
       (error) => {
-        this.errorCreatingList = error;
-        this.creatingList = Progress.NotStarted;
+        this.errorCreatingJob = error;
+        this.creatingJob = Progress.NotStarted;
       });
   }
 
@@ -181,6 +180,6 @@ export class NewJobComponent implements OnInit {
   }
 
   doRegistration() {
-    this.createRegisteredJob();
+    this.createRegisteredJob()
   }
 }

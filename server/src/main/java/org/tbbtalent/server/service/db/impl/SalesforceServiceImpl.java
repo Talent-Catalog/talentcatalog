@@ -572,6 +572,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return opps;
     }
 
+    @Nullable
+    @Override
+    public Opportunity fetchOpportunity(String id) throws SalesforceException {
+        List<Opportunity> opportunities = fetchOpportunities(Collections.singletonList(id));
+        return opportunities.isEmpty() ? null : opportunities.get(0);
+    }
+
     private List<Opportunity> findCandidateOpportunities(String jobOpportunityId)
         throws SalesforceException {
         try {

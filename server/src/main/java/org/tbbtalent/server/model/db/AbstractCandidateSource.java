@@ -24,10 +24,7 @@ import java.util.stream.Stream;
 import javax.persistence.Convert;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
@@ -111,14 +108,6 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      */
     @Nullable
     private String sfJoblink;
-
-    /**
-     * Optional link to an associated Job.
-     */
-    @Nullable
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_id")
-    Job job;
 
     /**
      * Stored as comma separated list of watching user ids
@@ -225,15 +214,6 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     public void setSfJoblink(@Nullable String sfJoblink) {
         this.sfJoblink = sfJoblink;
-    }
-
-    @Nullable
-    public Job getJob() {
-        return job;
-    }
-
-    public void setJob(@Nullable Job job) {
-        this.job = job;
     }
 
     public Status getStatus() {

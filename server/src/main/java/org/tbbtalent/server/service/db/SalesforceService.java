@@ -70,6 +70,15 @@ public interface SalesforceService {
     List<Opportunity> fetchOpportunities(Collection<String> ids) throws SalesforceException;
 
     /**
+     * Fetches opportunity with the given id from Salesforce.
+     * @param id Salesforce id (not url)
+     * @return Opportunity or null if none found
+     * @throws SalesforceException if there is a problem accessing Salesforce
+     */
+    @Nullable
+    Opportunity fetchOpportunity(String id) throws SalesforceException;
+
+    /**
      * Searches Salesforce for all Contact records relating to TBB
      * candidates.
      * <p/>
