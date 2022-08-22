@@ -12,6 +12,9 @@ import {Location} from "@angular/common";
 import {Router} from "@angular/router";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {SlackService} from "../../../services/slack.service";
+import {AuthService} from "../../../services/auth.service";
+import {UpdateJobRequest} from "../../../model/job";
+import {JobService} from "../../../services/job.service";
 
 @Component({
   selector: 'app-new-job',
@@ -35,6 +38,8 @@ export class NewJobComponent implements OnInit {
   errorPostingToSlack: string = null;
 
   constructor(
+    private authService: AuthService,
+    private jobService: JobService,
     private salesforceService: SalesforceService,
     private savedListService: SavedListService,
     private slackService: SlackService,
@@ -91,10 +96,28 @@ export class NewJobComponent implements OnInit {
   }
 
 
-  private createRegisteredJob() {
+  private createRegisteredJobNew() {
+    //todo rename errorCreatingList
     this.errorCreatingList = null;
 
-    //todo This should be simplified to use UpdateJobRequest and call jobService in Angular and server
+    this.creatingList = Progress.Started;
+    const request: UpdateJobRequest = {
+      sfJoblink: this.sfJoblink ? this.sfJoblink : null
+    };
+    this.jobService.create(request).subscribe(
+      (job) => {
+        this.creatingList = Progress.Finished;
+        this.savedList = job.submissionList;
+        this.createFolders();
+      },
+      (error) => {
+        this.errorCreatingList = error;
+        this.creatingList = Progress.NotStarted;
+      });
+  }
+
+  private createRegisteredJob() {
+    this.errorCreatingList = null;
 
     this.creatingList = Progress.Started;
     const request: UpdateSavedListInfoRequest = {
@@ -105,7 +128,6 @@ export class NewJobComponent implements OnInit {
     };
     this.savedListService.create(request).subscribe(
       (savedList) => {
-        //todo Should return job
         this.creatingList = Progress.Finished;
         this.savedList = savedList;
         this.createFolders();
@@ -181,6 +203,11 @@ export class NewJobComponent implements OnInit {
   }
 
   doRegistration() {
-    this.createRegisteredJob();
+    //todo debug
+    if (this.authService.isSystemAdminOnly()) {
+      this.createRegisteredJobNew()
+    } else {
+      this.createRegisteredJob();
+    }
   }
 }

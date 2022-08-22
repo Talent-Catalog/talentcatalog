@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.List;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,6 @@ import org.tbbtalent.server.repository.db.JobRepository;
 import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
-import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
@@ -101,88 +99,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public Page<Job> searchJobs(SearchJobRequest request) {
-
-        final SearchSavedListRequest savedListRequest = new SearchSavedListRequest();
-        savedListRequest.setRegisteredJob(true);
-        List<SavedList> jobLists = savedListService.listSavedLists(savedListRequest);
-
-        //Registered jobs should have a corresponding Job object - create if necessary.
-        int nJobsCreated = 0;
-        int nSfJobOppsCreated = 0;
-        for (SavedList jobList : jobLists) {
-
-            /*
-             * Reminder of relationships:
-             * - Job links to SubmissionList
-             * - SubmissionList links back to Job
-             * - SubmissionList has url of Salesforce job opp record
-             * - sfJobOpp is indexed by id extracted from url of Salesforce job opp record
-             * - Job links to sfJobOpp
-             */
-
-            final String url = jobList.getSfJoblink();
-            if (url != null) {
-                final String sfId = SalesforceServiceImpl.extractIdFromSfUrl(url);
-                Job job = jobList.getJob();
-                if (job != null) {
-                    //All looking good. Just do integrity check.
-                    //Assert that the id associated list's job link url should match the id of
-                    //the job's sfJobOpp.
-                    SalesforceJobOpp sfJobOpp = job.getSfJobOpp();
-                    if (!sfJobOpp.getId().equals(sfId)) {
-                        log.error("Saved list " + jobList.getName() + " has sfJobLink " + url +
-                            " which does not match id of cached job opp: " + sfJobOpp.getId());
-                    }
-                } else {
-                    //jobList has no link to job
-                    //Is there a job associated with this jobList?
-                    job = getJobBySubmissionList(jobList);
-                    if (job != null) {
-                        //We do have a job for this list. We need to add missing link from list
-                        //back to job
-                        jobList.setJob(job);
-                    } else {
-                        //There is no job associated this list - create one.
-
-                        //Create job
-                        job = new Job();
-                        job.setSubmissionList(jobList);
-
-                        //Search for SalesforceJobOpp from sfJoblink
-                        SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppById(sfId);
-                        if (jobOpp == null) {
-                            //Create dummy expired one - will be updated later
-                            jobOpp = salesforceJobOppService.createExpiringOpp(sfId);
-                            nSfJobOppsCreated++;
-                        }
-                        job.setSfJobOpp(jobOpp);
-
-                        jobRepository.save(job);
-                        nJobsCreated++;
-
-                        //Link to job from list
-                        jobList.setJob(job);
-                    }
-                    //jobList should now have job associated: save it.
-                    savedListService.saveIt(jobList);
-                }
-            }
-        }
-        log.info("Created " + nJobsCreated + " jobs and " +
-            nSfJobOppsCreated + " sfJobOpps from registered job lists");
-
-        //We want to make sure that our cache of Salesforce Job Opportunity details corresponding
-        //to these job lists are up to date.
-        //Get any Salesforce joblinks in the lists - urls of Salesforce job opportunity records
-        List<String> sfJoblinks = savedListService.collectSfJoblinks(jobLists);
-        //...and extract the corresponding Salesforce ids
-        List<String> sfIds = SalesforceServiceImpl.extractIdFromSfUrl(sfJoblinks);
-        //Update the cache of Salesforce job opportunities
-        salesforceJobOppService.update(sfIds);
-
-        //Now just execute normal query on Jobs.
-        //We now know that any Job salesforceJobOpp field reference will be up to date
-
+        //Search jobs.
         Page<Job> jobs = jobRepository.findAll(JobSpecification.buildSearchQuery(request),
             request.getPageRequest());
 
