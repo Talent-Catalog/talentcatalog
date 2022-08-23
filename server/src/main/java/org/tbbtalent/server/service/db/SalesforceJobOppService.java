@@ -19,6 +19,7 @@ package org.tbbtalent.server.service.db;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 
@@ -44,9 +45,19 @@ public interface SalesforceJobOppService {
      * @param sfId Salesforce opportunity record id
      * @return SalesforceJobOpp cache record
      * @throws SalesforceException if there are issues contacting Salesforce
+     * @throws InvalidRequestException if there is no opportunity with that id.
      */
     @NotNull
-    SalesforceJobOpp createJobOpp(String sfId) throws SalesforceException;
+    SalesforceJobOpp createJobOpp(String sfId) throws InvalidRequestException, SalesforceException;
+
+    /**
+     * Looks up SalesforceJobOp from link, creating one if needed.
+     * @param sfJoblink Link (url) to salesforce job opportunity
+     * @return Null if link is null, otherwise SalesforceJobOpp associated with link
+     * @throws InvalidRequestException if there is no opportunity with that link
+     */
+    @Nullable
+    SalesforceJobOpp getOrCreateJobOppFromLink(String sfJoblink) throws InvalidRequestException;
 
     /**
      * Look up the SalesforceJobOpp associated with the Salesforce opportunity record with the

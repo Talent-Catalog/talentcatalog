@@ -113,6 +113,7 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.PartnerService;
+import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.UserService;
@@ -133,6 +134,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EmailHelper emailHelper;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListRepository savedListRepository;
     private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
@@ -174,7 +176,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         EmailHelper emailHelper,
         UserRepository userRepository,
         UserService userService,
-        SavedListRepository savedListRepository,
+        SalesforceJobOppService salesforceJobOppService, SavedListRepository savedListRepository,
         SavedListService savedListService,
         SavedSearchRepository savedSearchRepository,
         SearchJoinRepository searchJoinRepository,
@@ -197,6 +199,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.emailHelper = emailHelper;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.salesforceJobOppService = salesforceJobOppService;
         this.savedListRepository = savedListRepository;
         this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
@@ -596,6 +599,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 savedSearch.setFixed(request.getFixed());
                 savedSearch.setReviewable(request.getReviewable());
                 savedSearch.setSfJoblink(request.getSfJoblink());
+                savedSearch.setSfJobOpp(
+                    salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+
                 savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
                 return savedSearchRepository.save(savedSearch);
             } else {
@@ -795,6 +801,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedList.setCreatedDate(OffsetDateTime.now());
             savedList.setName(constructSelectionListName(user, savedSearch));
             savedList.setSfJoblink(savedSearch.getSfJoblink());
+            savedList.setSfJobOpp(
+                salesforceJobOppService.getOrCreateJobOppFromLink(savedSearch.getSfJoblink()));
+
             savedList = savedListRepository.save(savedList);
         } else {
             //Keep SavedSearch sfJobLink in sync with its selection list.
@@ -802,12 +811,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 //If not both null
                 if (savedList.getSfJoblink() != null) {
                     savedList.setSfJoblink(null);
+                    savedList.setSfJobOpp(null);
                     savedList = savedListRepository.save(savedList);
                 }
             } else {
                 //If different
                 if (!savedSearch.getSfJoblink().equals(savedList.getSfJoblink())) {
                     savedList.setSfJoblink(savedSearch.getSfJoblink());
+                    savedList.setSfJobOpp(
+                        salesforceJobOppService.getOrCreateJobOppFromLink(savedSearch.getSfJoblink()));
                     savedList = savedListRepository.save(savedList);
                 }
             }
@@ -1129,6 +1141,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.setDefaultSearch(request.getDefaultSearch());
         savedSearch.setReviewable(request.getReviewable());
         savedSearch.setSfJoblink(request.getSfJoblink());
+        savedSearch.setSfJobOpp(
+            salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+
         savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 
         final SearchCandidateRequest searchCandidateRequest = request.getSearchCandidateRequest();
