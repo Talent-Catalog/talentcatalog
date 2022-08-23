@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.configuration.SalesforceConfig;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
@@ -67,14 +69,40 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     }
 
     @Override
-    public SalesforceJobOpp createJobOpp(String sfId) throws SalesforceException {
+    @NonNull
+    public SalesforceJobOpp createJobOpp(String sfId)
+        throws InvalidRequestException, SalesforceException {
         SalesforceJobOpp salesforceJobOpp = new SalesforceJobOpp();
         salesforceJobOpp.setId(sfId);
 
         Opportunity op = salesforceService.fetchOpportunity(sfId);
+        if (op == null) {
+            throw new InvalidRequestException("No Salesforce opportunity with id: " + sfId);
+        }
         copyOpportunityToJobOpp(op, salesforceJobOpp);
 
         return salesforceJobOppRepository.save(salesforceJobOpp);
+    }
+
+    @Override
+    @Nullable
+    public SalesforceJobOpp getOrCreateJobOppFromLink(String sfJoblink) {
+        SalesforceJobOpp jobOpp;
+        if (sfJoblink == null) {
+            jobOpp = null;
+        } else {
+            String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfJoblink);
+            if (sfId == null) {
+                throw new InvalidRequestException("Not a valid link to a Salesforce opportunity: " + sfJoblink);
+            }
+            //Search for existing SalesforceJobOpp associated with this Salesforce record
+            jobOpp = getJobOppById(sfId);
+            if (jobOpp == null) {
+                //Create one if none exists
+                jobOpp = createJobOpp(sfId);
+            }
+        }
+        return jobOpp;
     }
 
     @Override
@@ -118,7 +146,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
      * @param op Salesforce opportunity retrieved from Salesforce
      * @param salesforceJobOpp Cached job opp on our DB
      */
-    private void copyOpportunityToJobOpp(Opportunity op, SalesforceJobOpp salesforceJobOpp) {
+    private void copyOpportunityToJobOpp(@NonNull Opportunity op, SalesforceJobOpp salesforceJobOpp) {
         //Update DB with data from op
         salesforceJobOpp.setName(op.getName());
         salesforceJobOpp.setCountry(op.getAccountCountry__c());

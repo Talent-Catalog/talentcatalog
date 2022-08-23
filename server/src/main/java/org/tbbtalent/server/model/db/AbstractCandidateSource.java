@@ -24,7 +24,10 @@ import java.util.stream.Stream;
 import javax.persistence.Convert;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
@@ -102,12 +105,18 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      */
     private Boolean global = false;
 
+    //TODO JC This eventually goes, replaced by sfJobOpp
     /**
      * Url link to Salesforce EmployerJob opportunity, if one exists, associated
      * with this source of candidates.
      */
     @Nullable
     private String sfJoblink;
+
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sf_job_opp_id")
+    private SalesforceJobOpp sfJobOpp;
 
     /**
      * Stored as comma separated list of watching user ids
@@ -214,6 +223,16 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     public void setSfJoblink(@Nullable String sfJoblink) {
         this.sfJoblink = sfJoblink;
+    }
+
+    @Nullable
+    public SalesforceJobOpp getSfJobOpp() {
+        return sfJobOpp;
+    }
+
+    //TODO JC Who calls this setting up job ops - comes from setSfJOblink
+    public void setSfJobOpp(@Nullable SalesforceJobOpp sfJobOpp) {
+        this.sfJobOpp = sfJobOpp;
     }
 
     public Status getStatus() {

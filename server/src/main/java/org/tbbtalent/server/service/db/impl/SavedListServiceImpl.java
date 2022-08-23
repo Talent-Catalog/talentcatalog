@@ -93,6 +93,7 @@ import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.DocPublisherService;
 import org.tbbtalent.server.service.db.ExportColumnsService;
 import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
@@ -120,6 +121,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
+    private final SalesforceJobOppService salesforceJobOppService;
     private final TaskAssignmentService taskAssignmentService;
     private final UserRepository userRepository;
     private final AuthService authService;
@@ -138,7 +140,7 @@ public class SavedListServiceImpl implements SavedListService {
         FileSystemService fileSystemService,
         GoogleDriveConfig googleDriveConfig,
         SalesforceService salesforceService,
-        TaskAssignmentService taskAssignmentService,
+        SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
         UserRepository userRepository,
         AuthService authService
     ) {
@@ -151,6 +153,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
         this.salesforceService = salesforceService;
+        this.salesforceJobOppService = salesforceJobOppService;
         this.taskAssignmentService = taskAssignmentService;
         this.userRepository = userRepository;
         this.authService = authService;
@@ -454,6 +457,8 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
 
+        savedList.setSfJobOpp(salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+
         //Save created list so that we get its id from the database
         savedList.setAuditFields(user);
         return savedListRepository.save(savedList);
@@ -620,6 +625,9 @@ public class SavedListServiceImpl implements SavedListService {
         }
         SavedList savedList = get(savedListId);
         request.populateFromRequest(savedList);
+
+        savedList.setSfJobOpp(salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+
         return saveIt(savedList);
     }
 

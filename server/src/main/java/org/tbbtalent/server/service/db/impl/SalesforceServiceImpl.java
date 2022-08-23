@@ -56,6 +56,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
 import org.tbbtalent.server.configuration.SalesforceConfig;
 import org.tbbtalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
@@ -647,9 +648,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         throws GeneralSecurityException, WebClientException {
         Opportunity opportunity = null;
         if (sfId != null) {
-            opportunity = findRecordFieldsFromId(
-                "Opportunity", sfId,
-                "Id,Name,AccountId,OwnerId,AccountCountry__c", Opportunity.class);
+            try {
+                opportunity = findRecordFieldsFromId(
+                    "Opportunity", sfId,
+                    "Id,Name,AccountId,OwnerId,AccountCountry__c", Opportunity.class);
+            } catch (NotFound ex) {
+                //Just return null opportunity if not found
+            }
         }
         return opportunity;
     }
