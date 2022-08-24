@@ -56,6 +56,7 @@ import org.tbbtalent.server.model.db.AbstractCandidateSource;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.ExportColumn;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
@@ -428,24 +429,31 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
         throws EntityExistsException, RegisteredListException {
 
+        SalesforceJobOpp sfJobOpp = null;
+        final String sfJoblink = request.getSfJoblink();
+        if (sfJoblink != null) {
+            sfJobOpp = salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink);
+        }
+
         final boolean isRegisteredList =
             request.getRegisteredJob() != null && request.getRegisteredJob();
         if (isRegisteredList) {
-            //Check for a registered list with same sfJobLink (owned any user)
-            final String sfJoblink = request.getSfJoblink();
-            if (sfJoblink == null) {
+            if (sfJobOpp == null) {
                 throw new RegisteredListException("Missing Salesforce link for registered job list");
             }
-            final String jobName = request.getName();
+            String jobName = request.getName();
             if (jobName == null) {
-                throw new RegisteredListException("Missing name for registered job list");
+                jobName = sfJobOpp.getName();
             }
+
+            //Check for a registered list with same sfJobLink (owned any user)
             SavedList registeredList = savedListRepository.findRegisteredJobList(sfJoblink)
                 .orElse(null);
             //If we already have a registered list for this job, just return it
             if (registeredList != null) {
                 return registeredList;
             }
+
             //Modify registered name to avoid clashes with unregistered list names
             request.setName(jobName + REGISTERED_NAME_SUFFIX);
         } else {
@@ -456,8 +464,7 @@ public class SavedListServiceImpl implements SavedListService {
 
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
-
-        savedList.setSfJobOpp(salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+        savedList.setSfJobOpp(sfJobOpp);
 
         //Save created list so that we get its id from the database
         savedList.setAuditFields(user);

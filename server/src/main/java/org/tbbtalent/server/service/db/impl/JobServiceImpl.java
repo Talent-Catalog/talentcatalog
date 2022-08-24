@@ -62,7 +62,7 @@ public class JobServiceImpl implements JobService {
         if (job != null) {
             throw new InvalidRequestException(
                 "Salesforce job opportunity " + sfJoblink +
-                    " is already associated with job " + job.getId());
+                    " is already associated with job " + job.getId() + " (" + job.getName() + ")");
         }
 
         //Search for existing SalesforceJobOpp associated with this Salesforce record
@@ -77,12 +77,10 @@ public class JobServiceImpl implements JobService {
 
         //Create job
         job = new Job();
-        job.setSfJobOpp(jobOpp);
 
         //Create submission list
         UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
         savedListInfoRequest.setRegisteredJob(true);
-        savedListInfoRequest.setName(job.getName());
         savedListInfoRequest.setSfJoblink(sfJoblink);
         SavedList savedList = savedListService.createSavedList(savedListInfoRequest);
 
@@ -93,6 +91,7 @@ public class JobServiceImpl implements JobService {
     @NonNull
     @Override
     public Job getJob(long jobId) throws NoSuchObjectException {
+        //TODO JC This could take a parameter forcing a cache refresh
         return jobRepository.findById(jobId)
             .orElseThrow(() -> new NoSuchObjectException(Job.class, jobId));
     }
@@ -100,6 +99,11 @@ public class JobServiceImpl implements JobService {
     @Override
     public Page<Job> searchJobs(SearchJobRequest request) {
         //Search jobs.
+        //TODO JC This needs to refresh cached SF data of expired cache entries
+        //TODO JC Also need a nightly scheduled task which loads expired cache entries of open
+        //opportunities because there could be opps whose state has been changed on SF which
+        //means that they could satisfy search request, but they won't be seen because they are
+        //still in the cache with their old state.
         Page<Job> jobs = jobRepository.findAll(JobSpecification.buildSearchQuery(request),
             request.getPageRequest());
 

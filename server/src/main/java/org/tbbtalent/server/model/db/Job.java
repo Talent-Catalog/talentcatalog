@@ -43,13 +43,6 @@ import lombok.ToString;
 public class Job extends AbstractDomainObject<Long> {
 
     /**
-     * This is the corresponding job opportunity data copied (ie cached) from Salesforce.
-     */
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sf_job_opp_id")
-    private SalesforceJobOpp sfJobOpp;
-
-    /**
      * Date that submission of candidates to employer is due.
      */
     @Nullable
@@ -65,23 +58,28 @@ public class Job extends AbstractDomainObject<Long> {
     @JoinColumn(name = "submission_list_id")
     private SavedList submissionList;
 
+    @Nullable
+    private SalesforceJobOpp getSfJobOpp() {
+        return submissionList == null ? null : submissionList.getSfJobOpp();
+    }
+
     public String getCountry() {
-        return sfJobOpp == null ? null :sfJobOpp.getCountry();
+        return getSfJobOpp() == null ? null :getSfJobOpp().getCountry();
     }
 
     public String getEmployer() {
-        return sfJobOpp == null ? null :sfJobOpp.getEmployer();
+        return getSfJobOpp() == null ? null :getSfJobOpp().getEmployer();
     }
 
     public String getName() {
-        return sfJobOpp == null ? null :sfJobOpp.getName();
+        return getSfJobOpp() == null ? null :getSfJobOpp().getName();
     }
 
     public JobOpportunityStage getStage() {
-        return sfJobOpp == null ? null :sfJobOpp.getStage();
+        return getSfJobOpp() == null ? null :getSfJobOpp().getStage();
     }
 
     public boolean isClosed() {
-        return sfJobOpp == null ? false :sfJobOpp.isClosed();
+        return getSfJobOpp() == null ? false :getSfJobOpp().isClosed();
     }
 }

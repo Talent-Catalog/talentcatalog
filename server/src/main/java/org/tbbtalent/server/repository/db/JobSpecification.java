@@ -52,6 +52,7 @@ public class JobSpecification {
             //called twice for any given search request: once to retrieve the results and again
             //to count the total number of results across all pages).
             Join<Object, Object> sfJobOpp;
+            Join<Object, Object> submissionList;
 
             /*
               Note that there are two ways of retrieving a join.
@@ -75,13 +76,17 @@ public class JobSpecification {
 
             boolean isCountQuery = query.getResultType().equals(Long.class);
             if (isCountQuery) {
-                //Just use simple join
-                sfJobOpp = job.join("sfJobOpp");
+                //Just use simple joins
+                submissionList = job.join("submissionList");
+                sfJobOpp = submissionList.join("sfJobOpp");
             } else {
                 //Manage sorting for non count queries
 
-                //Set join from a fetch - see notes above.
-                Fetch<Object, Object> sfJobOppFetch = job.fetch("sfJobOpp");
+                //Set joins from fetches - see notes above.
+                Fetch<Object, Object> submissionListFetch = job.fetch("submissionList");
+                submissionList = (Join<Object, Object>) submissionListFetch;
+
+                Fetch<Object, Object> sfJobOppFetch = submissionList.fetch("sfJobOpp");
                 sfJobOpp = (Join<Object, Object>) sfJobOppFetch;
 
                 //Manage sort order of results
