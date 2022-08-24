@@ -30,7 +30,7 @@ public interface JobRepository extends JpaRepository<Job, Long>,JpaSpecification
     Job getJobBySubmissionList(@Param("jobList") SavedList jobList);
 
     @Query(" select j from Job j "
-        + " where j.sfJobOpp.id = :sfId ")
+        + " where j.submissionList.sfJobOpp.id = :sfId ")
     Job findBySfId(@Param("sfId") String sfId);
 
 }
