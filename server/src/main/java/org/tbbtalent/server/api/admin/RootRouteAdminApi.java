@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.service.db.BrandingService;
+import org.tbbtalent.server.service.db.RootRequestService;
 import org.tbbtalent.server.util.SubdomainRedirectHelper;
 
 /**
@@ -43,10 +44,12 @@ public class RootRouteAdminApi {
     private static final Logger log = LoggerFactory.getLogger(RootRouteAdminApi.class);
 
     private final BrandingService brandingService;
+    private final RootRequestService rootRequestService;
 
     @Autowired
-    public RootRouteAdminApi(BrandingService brandingService) {
+    public RootRouteAdminApi(BrandingService brandingService, RootRequestService rootRequestService) {
         this.brandingService = brandingService;
+        this.rootRequestService = rootRequestService;
     }
 
     /**
@@ -59,7 +62,13 @@ public class RootRouteAdminApi {
         HttpServletRequest request,
         @RequestHeader MultiValueMap<String, String> headers,
         @RequestHeader(name="Host", required=false) final String host,
+        @RequestParam(value = "utm_source", required = false) final String utmSource,
+        @RequestParam(value = "utm_medium", required = false) final String utmMedium,
+        @RequestParam(value = "utm_campaign", required = false) final String utmCampaign,
+        @RequestParam(value = "utm_term", required = false) final String utmTerm,
+        @RequestParam(value = "utm_content", required = false) final String utmContent,
         @RequestParam(value = "p", required = false) final String partnerAbbreviation,
+        @RequestParam(value = "c", required = false) final String oldCampaign,
         @RequestParam(value = "h", required = false) final String showHeaders) {
 
 
@@ -78,8 +87,15 @@ public class RootRouteAdminApi {
         //eg crs.tctalent.org --> tctalent.org?p=crs
         String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
         if (redirectUrl != null) {
+            storeQueryInfo(request, partnerAbbreviation, oldCampaign, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
             log.info("Redirecting to: " + redirectUrl);
             return new ModelAndView("redirect:" + redirectUrl);
+        }
+
+        //Store query information
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+            storeQueryInfo(request, partnerAbbreviation, oldCampaign, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
         }
 
         BrandingInfo info = brandingService.getBrandingInfo(partnerAbbreviation);
@@ -105,5 +121,13 @@ public class RootRouteAdminApi {
         }
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(routingUrl)).build();
+    }
+
+    private void storeQueryInfo(HttpServletRequest request,
+        String partnerAbbreviation, String oldCampaign,
+        String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent) {
+
+        rootRequestService.createRootRequest(request, partnerAbbreviation, oldCampaign,
+            utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
     }
 }
