@@ -44,11 +44,6 @@ public class RootRequest extends AbstractDomainObject<Long> {
     private String ipAddress;
 
     /**
-     * Campaign as specified by "c=" query parameter
-     */
-    private String oldCampaign;
-
-    /**
      * Partner abbreviation as specified by "p=" query parameter
      */
     private String partnerAbbreviation;

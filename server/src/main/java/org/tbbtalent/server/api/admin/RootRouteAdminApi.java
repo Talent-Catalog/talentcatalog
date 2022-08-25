@@ -68,7 +68,6 @@ public class RootRouteAdminApi {
         @RequestParam(value = "utm_term", required = false) final String utmTerm,
         @RequestParam(value = "utm_content", required = false) final String utmContent,
         @RequestParam(value = "p", required = false) final String partnerAbbreviation,
-        @RequestParam(value = "c", required = false) final String oldCampaign,
         @RequestParam(value = "h", required = false) final String showHeaders) {
 
 
@@ -87,7 +86,7 @@ public class RootRouteAdminApi {
         //eg crs.tctalent.org --> tctalent.org?p=crs
         String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
         if (redirectUrl != null) {
-            storeQueryInfo(request, partnerAbbreviation, oldCampaign, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
+            storeQueryInfo(request, partnerAbbreviation, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
             log.info("Redirecting to: " + redirectUrl);
             return new ModelAndView("redirect:" + redirectUrl);
         }
@@ -95,7 +94,7 @@ public class RootRouteAdminApi {
         //Store query information
         String queryString = request.getQueryString();
         if (queryString != null) {
-            storeQueryInfo(request, partnerAbbreviation, oldCampaign, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
+            storeQueryInfo(request, partnerAbbreviation, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
         }
 
         BrandingInfo info = brandingService.getBrandingInfo(partnerAbbreviation);
@@ -123,11 +122,10 @@ public class RootRouteAdminApi {
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(routingUrl)).build();
     }
 
-    private void storeQueryInfo(HttpServletRequest request,
-        String partnerAbbreviation, String oldCampaign,
+    private void storeQueryInfo(HttpServletRequest request, String partnerAbbreviation,
         String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent) {
 
-        rootRequestService.createRootRequest(request, partnerAbbreviation, oldCampaign,
+        rootRequestService.createRootRequest(request, partnerAbbreviation,
             utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
     }
 }

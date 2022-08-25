@@ -34,8 +34,7 @@ public class RootRequestServiceImpl implements RootRequestService {
 
     @Override
     public RootRequest createRootRequest(HttpServletRequest request, String partnerAbbreviation,
-        String oldCampaign, String utmSource, String utmMedium, String utmCampaign, String utmTerm,
-        String utmContent) {
+        String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent) {
         RootRequest rootRequest = new RootRequest();
 
         String ipAddress = request.getHeader("X-Forward-For");
@@ -48,7 +47,6 @@ public class RootRequestServiceImpl implements RootRequestService {
         rootRequest.setRequestUrl(request.getRequestURL().toString());
         rootRequest.setQueryString(request.getQueryString());
         rootRequest.setPartnerAbbreviation(partnerAbbreviation);
-        rootRequest.setOldCampaign(oldCampaign);
         rootRequest.setUtmSource(utmSource);
         rootRequest.setUtmMedium(utmMedium);
         rootRequest.setUtmCampaign(utmCampaign);

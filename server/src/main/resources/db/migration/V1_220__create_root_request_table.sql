@@ -18,7 +18,6 @@ create table root_request
 (
     id                   bigserial not null primary key,
     ip_address           text,
-    old_campaign         text,
     partner_abbreviation text,
     query_string         text,
     request_url          text,
