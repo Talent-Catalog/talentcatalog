@@ -17,6 +17,7 @@
 package org.tbbtalent.server.api.admin;
 
 import java.net.URI;
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class RootRouteAdminApi {
      */
     @GetMapping()
     public Object route(
+        HttpServletRequest request,
         @RequestHeader MultiValueMap<String, String> headers,
         @RequestHeader(name="Host", required=false) final String host,
         @RequestParam(value = "p", required = false) final String partnerAbbreviation,
@@ -66,6 +68,10 @@ public class RootRouteAdminApi {
                 log.info(String.format(
                     "Header '%s' = %s", key, String.join("|", value)));
             });
+            String ipAddress = request.getHeader("X-Forward-For");
+            if(ipAddress== null) {
+                log.info("Ip address: " + request.getRemoteAddr());
+            }
         }
 
         //Check for partner tctalent.org subdomains url can redirect to a plain url with p= query
