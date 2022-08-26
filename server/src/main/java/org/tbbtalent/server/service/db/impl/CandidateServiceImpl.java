@@ -44,6 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -89,6 +90,7 @@ import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.RootRequest;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SearchJoin;
@@ -161,6 +163,7 @@ import org.tbbtalent.server.service.db.CandidateVisaService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.PartnerService;
+import org.tbbtalent.server.service.db.RootRequestService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
@@ -240,6 +243,8 @@ public class CandidateServiceImpl implements CandidateService {
     private final PartnerService partnerService;
     private final LanguageLevelRepository languageLevelRepository;
     private final CandidateExamRepository candidateExamRepository;
+
+    private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
     private final EmailHelper emailHelper;
@@ -271,7 +276,7 @@ public class CandidateServiceImpl implements CandidateService {
         PartnerService partnerService,
         LanguageLevelRepository languageLevelRepository,
         CandidateExamRepository candidateExamRepository,
-        TaskAssignmentRepository taskAssignmentRepository,
+        RootRequestService rootRequestService, TaskAssignmentRepository taskAssignmentRepository,
         TaskService taskService, EmailHelper emailHelper,
         PdfHelper pdfHelper) {
         this.userRepository = userRepository;
@@ -297,6 +302,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.partnerService = partnerService;
         this.languageLevelRepository = languageLevelRepository;
         this.candidateExamRepository = candidateExamRepository;
+        this.rootRequestService = rootRequestService;
         this.taskAssignmentRepository = taskAssignmentRepository;
         this.taskService = taskService;
         this.emailHelper = emailHelper;
@@ -705,8 +711,10 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
 
-    private Candidate createCandidate(CreateCandidateRequest request,
-        Partner partner, String passwordEncrypted) throws UsernameTakenException {
+    private Candidate createCandidate(CreateCandidateRequest request, Partner partner, String ipAddress,
+        String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent,
+        String passwordEncrypted)
+        throws UsernameTakenException {
         User user = new User(
                 StringUtils.isNotBlank(request.getUsername()) ? request.getUsername() : request.getEmail(),
                 request.getFirstName(),
@@ -730,6 +738,13 @@ public class CandidateServiceImpl implements CandidateService {
 
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
+
+        candidate.setRegoIp(ipAddress);
+        candidate.setRegoUtmCampaign(utmCampaign);
+        candidate.setRegoUtmContent(utmContent);
+        candidate.setRegoUtmMedium(utmMedium);
+        candidate.setRegoUtmSource(utmSource);
+        candidate.setRegoUtmTerm(utmTerm);
 
         //set some fields to unknown on create as required for search
         //see CandidateSpecification. It works better if these attributes are not null, but instead
@@ -977,7 +992,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(RegisterCandidateRequest request) {
+    public LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest,
+        String partnerAbbrev, String utmSource, String utmMedium, String utmCampaign,
+        String utmTerm, String utmContent) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }
@@ -1002,9 +1019,26 @@ public class CandidateServiceImpl implements CandidateService {
         /* Validate the password before account creation */
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
 
+        //Fetch any recent Root Request by this candidate from their ip address.
+        //Candidate may have been referred to our website by a partner with query parameters
+        //identifying the partner as well as how the candidate was referred (in UTM parameters).
+        //These parameters will have been stored under the candidate's ip address in RootRequest.
+        //See RootRouteAdminApi.
+        String ipAddress = httpRequest.getRemoteAddr();
+        RootRequest rootRequest = rootRequestService.getMostRecentRootRequest(ipAddress);
+
         //Compute and assign partner.
         //A non null partner abbreviation can define partner
-        final String partnerAbbreviation = request.getPartnerAbbreviation();
+        String partnerAbbreviation = request.getPartnerAbbreviation();
+        if (partnerAbbreviation == null) {
+            partnerAbbreviation = partnerAbbrev;
+        }
+        if (partnerAbbreviation == null) {
+            //See if partner info is available on RootRequest.
+            if (rootRequest != null) {
+                partnerAbbreviation = rootRequest.getPartnerAbbreviation();
+            }
+        }
         if (partnerAbbreviation != null) {
             log.info("Registration with partner abbreviation: " + partnerAbbreviation);
         }
@@ -1021,7 +1055,19 @@ public class CandidateServiceImpl implements CandidateService {
         createCandidateRequest.setEmail(request.getEmail());
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
-        Candidate candidate = createCandidate(createCandidateRequest, partner, passwordEncrypted);
+        if (utmSource == null && utmCampaign == null && utmMedium == null) {
+            //No UTM parameters - see if we can set them from a RootRequest.
+            if (rootRequest != null) {
+                utmSource = rootRequest.getUtmSource();
+                utmMedium = rootRequest.getUtmMedium();
+                utmCampaign = rootRequest.getUtmCampaign();
+                utmContent = rootRequest.getUtmContent();
+                utmTerm = rootRequest.getUtmTerm();
+            }
+        }
+
+        Candidate candidate = createCandidate(createCandidateRequest, partner, ipAddress,
+            utmSource, utmMedium, utmCampaign, utmTerm, utmContent, passwordEncrypted);
 
         /* Log the candidate in */
         LoginRequest loginRequest = new LoginRequest();

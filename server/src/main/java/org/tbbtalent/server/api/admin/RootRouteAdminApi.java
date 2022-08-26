@@ -82,17 +82,21 @@ public class RootRouteAdminApi {
             }
         }
 
+        String queryString = request.getQueryString();
+
         //Check for partner tctalent.org subdomains url can redirect to a plain url with p= query
         //eg crs.tctalent.org --> tctalent.org?p=crs
         String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
         if (redirectUrl != null) {
             storeQueryInfo(request, partnerAbbreviation, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
+            if (queryString != null) {
+                redirectUrl += "&" + queryString;
+            }
             log.info("Redirecting to: " + redirectUrl);
             return new ModelAndView("redirect:" + redirectUrl);
         }
 
         //Store query information
-        String queryString = request.getQueryString();
         if (queryString != null) {
             storeQueryInfo(request, partnerAbbreviation, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
         }
@@ -107,9 +111,9 @@ public class RootRouteAdminApi {
             routingUrl = landingPage;
         } else {
             routingUrl = "/candidate-portal/login";
-            if (partnerAbbreviation != null) {
-                routingUrl += "?p=" + partnerAbbreviation;
-            }
+        }
+        if (queryString != null) {
+            routingUrl += "?" + queryString;
         }
 
         if (partnerAbbreviation != null) {

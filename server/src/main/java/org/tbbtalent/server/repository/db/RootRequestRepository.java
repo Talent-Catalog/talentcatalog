@@ -18,9 +18,15 @@ package org.tbbtalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.RootRequest;
 
 public interface RootRequestRepository extends JpaRepository<RootRequest, Long>,
     JpaSpecificationExecutor<RootRequest> {
+
+    @Query("select r from RootRequest r where r.ipAddress = :ipAddress "
+        + "and r.timestamp = (select Max(r.timestamp) from RootRequest r where r.ipAddress = :ipAddress)")
+    RootRequest getMostRecentRootRequest(@Param("ipAddress") String ipAddress);
 
 }

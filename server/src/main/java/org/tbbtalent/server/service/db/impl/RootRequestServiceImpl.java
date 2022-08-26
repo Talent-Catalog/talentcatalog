@@ -18,6 +18,7 @@ package org.tbbtalent.server.service.db.impl;
 
 import java.time.Instant;
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.RootRequest;
 import org.tbbtalent.server.repository.db.RootRequestRepository;
@@ -54,5 +55,12 @@ public class RootRequestServiceImpl implements RootRequestService {
         rootRequest.setUtmContent(utmContent);
 
         return rootRequestRepository.save(rootRequest);
+    }
+
+    @Nullable
+    @Override
+    public RootRequest getMostRecentRootRequest(String ipAddress) {
+        RootRequest rr = rootRequestRepository.getMostRecentRootRequest(ipAddress);
+        return rr;
     }
 }

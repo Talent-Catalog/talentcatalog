@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db;
 
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.RootRequest;
 
 /**
@@ -41,4 +42,7 @@ public interface RootRequestService {
      */
     RootRequest createRootRequest(HttpServletRequest request, String partnerAbbreviation,
         String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent);
+
+    @Nullable
+    RootRequest getMostRecentRootRequest(String ipAddress);
 }

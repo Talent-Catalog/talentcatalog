@@ -18,6 +18,7 @@ package org.tbbtalent.server.api.portal;
 
 import java.util.Map;
 import javax.security.auth.login.AccountLockedException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.configuration.TranslationConfig;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
@@ -94,14 +96,22 @@ public class AuthPortalApi {
 
     @PostMapping("register")
     public Map<String, Object> register(
-            @Valid @RequestBody RegisterCandidateRequest request)
+        HttpServletRequest httpRequest,
+        @RequestParam(value = "utm_source", required = false) final String utmSource,
+        @RequestParam(value = "utm_medium", required = false) final String utmMedium,
+        @RequestParam(value = "utm_campaign", required = false) final String utmCampaign,
+        @RequestParam(value = "utm_term", required = false) final String utmTerm,
+        @RequestParam(value = "utm_content", required = false) final String utmContent,
+        @RequestParam(value = "p", required = false) final String partnerAbbreviation,
+        @Valid @RequestBody RegisterCandidateRequest request)
             throws AccountLockedException, ReCaptchaInvalidException {
 
         //Do check for automated registrations. Throws exception if it looks
         //automated.
         captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "registration");
 
-        LoginRequest loginRequest = candidateService.register(request);
+        LoginRequest loginRequest = candidateService.register(request, httpRequest,
+            partnerAbbreviation, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
 
         JwtAuthenticationResponse jwt = userService.login(loginRequest);
         return jwtDto().build(jwt);
