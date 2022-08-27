@@ -117,6 +117,21 @@ public class PartnerServiceImpl implements PartnerService {
         return partner;
     }
 
+    @Nullable
+    @Override
+    public Partner getAutoAssignablePartnerByCountry(@Nullable Country country) {
+        Partner partner = null;
+        if (country != null) {
+            List<PartnerImpl> partners = partnerRepository.findByCountry(country);
+            //TODO JC Check autoassignable attribute
+            //Don't select if there is more than one country
+            if (partners.size() == 1) {
+                partner = partners.get(0);
+            }
+        }
+        return partner;
+    }
+
     @NonNull
     @Override
     public Partner getDefaultSourcePartner() throws NoSuchObjectException {

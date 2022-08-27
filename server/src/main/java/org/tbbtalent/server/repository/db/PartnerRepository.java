@@ -22,6 +22,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.Status;
 
@@ -33,6 +34,9 @@ public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, Jpa
 
     @Query("select p from SourcePartner p where lower(p.abbreviation) = lower(:abbreviation)")
     Optional<PartnerImpl> findByAbbreviation(@Param("abbreviation") String abbreviation);
+
+    @Query("select p from SourcePartner p join p.sourceCountries c where c = :country")
+    List<PartnerImpl> findByCountry(@Param("country") Country country);
 
     @Query(" select p.name from SourcePartner p "
         + " where p.id in (:ids) order by p.name asc" )

@@ -889,7 +889,10 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setAddress1(request.getAddress1());
         candidate.setCity(request.getCity());
         candidate.setState(request.getState());
+
         candidate.setCountry(country);
+        checkForChangedPartner(candidate, country);
+
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
         return save(candidate, true);
@@ -1122,7 +1125,10 @@ public class CandidateServiceImpl implements CandidateService {
         if (candidate != null) {
             candidate.setGender(request.getGender());
             candidate.setDob(request.getDob());
+
             candidate.setCountry(country);
+            checkForChangedPartner(candidate, country);
+
             candidate.setCity(request.getCity());
             candidate.setState(request.getState());
             candidate.setYearOfArrival(request.getYearOfArrival());
@@ -1152,6 +1158,17 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         return candidate;
+    }
+
+    private void checkForChangedPartner(Candidate candidate, Country country) {
+        //Do we have an auto assignable partner in this country
+        Partner partner = partnerService.getAutoAssignablePartnerByCountry(country);
+        User user = candidate.getUser();
+        if (partner != null && !partner.equals(user.getSourcePartner())) {
+            //Partner of candidate needs to change
+            user.setSourcePartner((SourcePartnerImpl) partner);
+            userRepository.save(user);
+        }
     }
 
     @Override
