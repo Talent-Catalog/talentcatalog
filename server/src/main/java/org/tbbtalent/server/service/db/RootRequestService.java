@@ -43,6 +43,15 @@ public interface RootRequestService {
     RootRequest createRootRequest(HttpServletRequest request, String partnerAbbreviation,
         String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent);
 
+    /**
+     * Looks up the most recent RootRequest by ipAddress.
+     * <p/>
+     * RootRequests made more than maxHours ago are ignored (because ip addresses can change over
+     * time and therefore no longer reliably identify a candidate).
+     * @param ipAddress ip address
+     * @param maxHours Maximum age of RootRequest
+     * @return Most recent root request, null if none found
+     */
     @Nullable
-    RootRequest getMostRecentRootRequest(String ipAddress);
+    RootRequest getMostRecentRootRequest(String ipAddress, int maxHours);
 }

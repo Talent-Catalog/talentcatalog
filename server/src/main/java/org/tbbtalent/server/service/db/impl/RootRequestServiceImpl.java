@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.time.Duration;
 import java.time.Instant;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
@@ -59,8 +60,13 @@ public class RootRequestServiceImpl implements RootRequestService {
 
     @Nullable
     @Override
-    public RootRequest getMostRecentRootRequest(String ipAddress) {
+    public RootRequest getMostRecentRootRequest(String ipAddress, int maxHours) {
         RootRequest rr = rootRequestRepository.getMostRecentRootRequest(ipAddress);
+        if (rr != null) {
+            if (Duration.between(rr.getTimestamp(), Instant.now()).toHours() > maxHours) {
+                rr = null;
+            }
+        }
         return rr;
     }
 }

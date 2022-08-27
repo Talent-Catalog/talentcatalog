@@ -26,7 +26,18 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Records internet requests which have no path but do contain a query or are a subdomain.
+ * Records internet requests which have no path but do contain a query or are a subdomain - ie
+ * hits on our "root" domain name.
+ * <p/>
+ * These simple hits on our tctalent.org server will normally be referrals from Google searches,
+ * or links from posts we have made on Facebook, Twitter or blogs - or maybe links we have sent
+ * out in emails.
+ * <p/>
+ * The purpose of the RootRequest is to record any query parameters that were appended to these
+ * links for the purposes of tracking their origins.
+ * In particular, parameters identifying the partner associated with the referral,
+ * as well as standard UTM parameters.
+ * See https://en.wikipedia.org/wiki/UTM_parameters
  *
  * @author John Cameron
  */
@@ -39,7 +50,7 @@ import lombok.ToString;
 public class RootRequest extends AbstractDomainObject<Long> {
 
     /**
-     * IP address of request
+     * IP address of request.
      */
     private String ipAddress;
 

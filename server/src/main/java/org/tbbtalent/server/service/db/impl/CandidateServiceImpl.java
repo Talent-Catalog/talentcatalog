@@ -1024,8 +1024,12 @@ public class CandidateServiceImpl implements CandidateService {
         //identifying the partner as well as how the candidate was referred (in UTM parameters).
         //These parameters will have been stored under the candidate's ip address in RootRequest.
         //See RootRouteAdminApi.
+        //(Note that we could have used the browser session id instead for looking up RootRequests
+        //but it is useful to store the ip address anyway, so may as well use that rather than
+        //adding session id as well to RootRequest and the database).
         String ipAddress = httpRequest.getRemoteAddr();
-        RootRequest rootRequest = rootRequestService.getMostRecentRootRequest(ipAddress);
+        //Ignore anything that is fairly old (eg 36 hours old) - ip addresses change over time.
+        RootRequest rootRequest = rootRequestService.getMostRecentRootRequest(ipAddress, 36);
 
         //Compute and assign partner.
         //A non null partner abbreviation can define partner
