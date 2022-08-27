@@ -61,6 +61,11 @@ export interface Candidate extends HasId {
   folderlink: string;
   sflink: string;
   videolink: string;
+  regoUtmCampaign: string;
+  regoUtmContent: string;
+  regoUtmMedium: string;
+  regoUtmSource: string;
+  regoUtmTerm: string;
   shareableCv: CandidateAttachment;
   shareableDoc: CandidateAttachment;
   listShareableCv: CandidateAttachment;

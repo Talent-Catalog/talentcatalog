@@ -94,6 +94,46 @@
         </div>
       </div>
 
+      <div *ngIf="candidate.regoUtmCampaign" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-question"></i>UTM Campaign</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.regoUtmCampaign}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="candidate.regoUtmContent" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-question"></i>UTM Content</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.regoUtmContent}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="candidate.regoUtmMedium" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-question"></i>UTM Medium</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.regoUtmMedium}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="candidate.regoUtmSource" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-question"></i>UTM Source</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.regoUtmSource}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="candidate.regoUtmTerm" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-question"></i>UTM Term</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.regoUtmTerm}}</span>
+        </div>
+      </div>
+
     </div>
 
   </div>
