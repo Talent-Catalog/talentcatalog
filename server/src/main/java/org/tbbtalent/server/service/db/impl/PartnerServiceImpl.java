@@ -84,6 +84,7 @@ public class PartnerServiceImpl implements PartnerService {
 
                 //Source partner attributes
                 sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
+                sourcePartner.setAutoAssignable(request.isAutoAssignable());
                 sourcePartner.setSourceCountries(sourceCountries);
 
                 partner = sourcePartner;
@@ -122,8 +123,7 @@ public class PartnerServiceImpl implements PartnerService {
     public Partner getAutoAssignablePartnerByCountry(@Nullable Country country) {
         Partner partner = null;
         if (country != null) {
-            List<PartnerImpl> partners = partnerRepository.findByCountry(country);
-            //TODO JC Check autoassignable attribute
+            List<PartnerImpl> partners = partnerRepository.findByAutoassignableCountry(country);
             //Don't select if there is more than one country
             if (partners.size() == 1) {
                 partner = partners.get(0);
@@ -194,6 +194,7 @@ public class PartnerServiceImpl implements PartnerService {
             sourcePartner.setNotificationEmail(request.getNotificationEmail());
             sourcePartner.setDefaultPartnerRef(request.isDefaultPartnerRef());
             sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
+            sourcePartner.setAutoAssignable(request.isAutoAssignable());
             sourcePartner.setSourceCountries(sourceCountries);
         }
 

@@ -58,6 +58,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
   ngOnInit(): void {
     this.form = this.fb.group({
       abbreviation: [this.partner?.abbreviation, Validators.required],
+      autoAssignable: [this.partner?.autoAssignable],
       defaultPartnerRef: [this.partner?.defaultPartnerRef],
       logo: [this.partner?.logo],
       name: [this.partner?.name, Validators.required],
@@ -102,6 +103,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
 
     const request: UpdatePartnerRequest = {
       abbreviation: this.form.value.abbreviation,
+      autoAssignable: this.form.value.autoAssignable,
       defaultPartnerRef: this.form.value.defaultPartnerRef,
       logo: this.form.value.logo,
       name: this.form.value.name,

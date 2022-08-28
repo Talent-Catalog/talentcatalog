@@ -24,6 +24,7 @@ import {Country} from "./country";
 */
 export interface PartnerSimpleAttributes {
   abbreviation: string;
+  autoAssignable: boolean;
   defaultPartnerRef: boolean;
   logo: string;
   name: string;

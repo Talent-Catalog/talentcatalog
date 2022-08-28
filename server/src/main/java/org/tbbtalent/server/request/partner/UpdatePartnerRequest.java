@@ -29,6 +29,8 @@ public class UpdatePartnerRequest {
 
     private String abbreviation;
 
+    private boolean autoAssignable;
+
     private boolean defaultPartnerRef;
 
     private String logo;

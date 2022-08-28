@@ -54,6 +54,7 @@ public class SourcePartnerImpl extends PartnerImpl
     @NonNull
     private Set<Country> sourceCountries = new HashSet<>();
 
+    private boolean autoAssignable;
     private boolean defaultSourcePartner;
 
     public void setRegistrationLandingPage(@Nullable String registrationLandingPage) {

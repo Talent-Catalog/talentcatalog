@@ -67,6 +67,14 @@ public interface SourcePartner extends Partner {
     void setSourceCountries(@NonNull Set<Country> countries);
 
     /**
+     * True if this partner can be automatically assigned to candidates if they are located in
+     * one of the partner's source countries.
+     * @return True if candidates can be automatically assigned to this partner
+     */
+    boolean isAutoAssignable();
+    void setAutoAssignable(boolean b);
+
+    /**
      * True if this partner is the default source partner - associated with candidates who are
      * not clearly associated with any other source partner.
      * <p/>

@@ -26,6 +26,11 @@ import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.Status;
 
+/**
+ * MODEL - JPA query joining a collection attribute.
+ *
+ * See {@link #findByAutoassignableCountry(Country)} - noting join with sourceCountries attribute
+ */
 public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, JpaSpecificationExecutor<PartnerImpl> {
 
 
@@ -35,8 +40,8 @@ public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, Jpa
     @Query("select p from SourcePartner p where lower(p.abbreviation) = lower(:abbreviation)")
     Optional<PartnerImpl> findByAbbreviation(@Param("abbreviation") String abbreviation);
 
-    @Query("select p from SourcePartner p join p.sourceCountries c where c = :country")
-    List<PartnerImpl> findByCountry(@Param("country") Country country);
+    @Query("select p from SourcePartner p join p.sourceCountries c where c = :country and p.autoAssignable = true")
+    List<PartnerImpl> findByAutoassignableCountry(@Param("country") Country country);
 
     @Query(" select p.name from SourcePartner p "
         + " where p.id in (:ids) order by p.name asc" )
