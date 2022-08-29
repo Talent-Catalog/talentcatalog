@@ -100,6 +100,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String regoIp;
 
     /**
+     * Partner query parameter (p=) associated with candidate on registration
+     */
+    @Nullable
+    private String regoPartnerParam;
+
+    /**
+     * Referrer query parameter (r=) associated with candidate on registration
+     */
+    @Nullable
+    private String regoReferrerParam;
+
+    /**
      * Utm query parameter associated with candidate on registration
      */
     @Nullable
@@ -1672,6 +1684,24 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setRegoIp(@Nullable String regoIp) {
         this.regoIp = regoIp;
+    }
+
+    @Nullable
+    public String getRegoPartnerParam() {
+        return regoPartnerParam;
+    }
+
+    public void setRegoPartnerParam(@Nullable String regoPartnerParam) {
+        this.regoPartnerParam = regoPartnerParam;
+    }
+
+    @Nullable
+    public String getRegoReferrerParam() {
+        return regoReferrerParam;
+    }
+
+    public void setRegoReferrerParam(@Nullable String regoReferrerParam) {
+        this.regoReferrerParam = regoReferrerParam;
     }
 
     @Nullable

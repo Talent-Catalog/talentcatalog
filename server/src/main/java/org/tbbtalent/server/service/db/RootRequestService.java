@@ -32,7 +32,8 @@ public interface RootRequestService {
      * <p/>
      * @param request This is the request that was received. Other parameters have been
      *                automatically extracted from that request by the Spring framework.
-     * @param partnerAbbreviation Content of "p=" query
+     * @param partnerParam Content of "p=" query
+     * @param referrerParam Content of "r=" query
      * @param utmSource Content of "utm_source=" query
      * @param utmMedium Content of "utm_medium=" query
      * @param utmCampaign Content of "utm_campaign=" query
@@ -40,7 +41,8 @@ public interface RootRequestService {
      * @param utmContent Content of "utm_content=" query
      * @return RootRequest object
      */
-    RootRequest createRootRequest(HttpServletRequest request, String partnerAbbreviation,
+    RootRequest createRootRequest(HttpServletRequest request,
+        String partnerParam, String referrerParam,
         String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent);
 
     /**

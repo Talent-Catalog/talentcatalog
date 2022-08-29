@@ -712,8 +712,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private Candidate createCandidate(CreateCandidateRequest request, Partner partner, String ipAddress,
-        String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent,
-        String passwordEncrypted)
+        RootRequest rootRequest, String passwordEncrypted)
         throws UsernameTakenException {
         User user = new User(
                 StringUtils.isNotBlank(request.getUsername()) ? request.getUsername() : request.getEmail(),
@@ -740,11 +739,15 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
         candidate.setRegoIp(ipAddress);
-        candidate.setRegoUtmCampaign(utmCampaign);
-        candidate.setRegoUtmContent(utmContent);
-        candidate.setRegoUtmMedium(utmMedium);
-        candidate.setRegoUtmSource(utmSource);
-        candidate.setRegoUtmTerm(utmTerm);
+        if (rootRequest != null) {
+            candidate.setRegoPartnerParam(rootRequest.getPartnerAbbreviation());
+            candidate.setRegoReferrerParam(rootRequest.getReferrerParam());
+            candidate.setRegoUtmCampaign(rootRequest.getUtmCampaign());
+            candidate.setRegoUtmContent(rootRequest.getUtmContent());
+            candidate.setRegoUtmMedium(rootRequest.getUtmMedium());
+            candidate.setRegoUtmSource(rootRequest.getUtmSource());
+            candidate.setRegoUtmTerm(rootRequest.getUtmTerm());
+        }
 
         //set some fields to unknown on create as required for search
         //see CandidateSpecification. It works better if these attributes are not null, but instead
@@ -995,9 +998,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest,
-        String partnerAbbrev, String utmSource, String utmMedium, String utmCampaign,
-        String utmTerm, String utmContent) {
+    public LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }
@@ -1038,9 +1039,6 @@ public class CandidateServiceImpl implements CandidateService {
         //A non null partner abbreviation can define partner
         String partnerAbbreviation = request.getPartnerAbbreviation();
         if (partnerAbbreviation == null) {
-            partnerAbbreviation = partnerAbbrev;
-        }
-        if (partnerAbbreviation == null) {
             //See if partner info is available on RootRequest.
             if (rootRequest != null) {
                 partnerAbbreviation = rootRequest.getPartnerAbbreviation();
@@ -1062,19 +1060,9 @@ public class CandidateServiceImpl implements CandidateService {
         createCandidateRequest.setEmail(request.getEmail());
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
-        if (utmSource == null && utmCampaign == null && utmMedium == null) {
-            //No UTM parameters - see if we can set them from a RootRequest.
-            if (rootRequest != null) {
-                utmSource = rootRequest.getUtmSource();
-                utmMedium = rootRequest.getUtmMedium();
-                utmCampaign = rootRequest.getUtmCampaign();
-                utmContent = rootRequest.getUtmContent();
-                utmTerm = rootRequest.getUtmTerm();
-            }
-        }
 
         Candidate candidate = createCandidate(createCandidateRequest, partner, ipAddress,
-            utmSource, utmMedium, utmCampaign, utmTerm, utmContent, passwordEncrypted);
+            rootRequest, passwordEncrypted);
 
         /* Log the candidate in */
         LoginRequest loginRequest = new LoginRequest();

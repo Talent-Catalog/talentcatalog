@@ -35,7 +35,8 @@ public class RootRequestServiceImpl implements RootRequestService {
     }
 
     @Override
-    public RootRequest createRootRequest(HttpServletRequest request, String partnerAbbreviation,
+    public RootRequest createRootRequest(HttpServletRequest request,
+        String partnerParam, String referrerParam,
         String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent) {
         RootRequest rootRequest = new RootRequest();
 
@@ -48,7 +49,8 @@ public class RootRequestServiceImpl implements RootRequestService {
 
         rootRequest.setRequestUrl(request.getRequestURL().toString());
         rootRequest.setQueryString(request.getQueryString());
-        rootRequest.setPartnerAbbreviation(partnerAbbreviation);
+        rootRequest.setPartnerAbbreviation(partnerParam);
+        rootRequest.setReferrerParam(referrerParam);
         rootRequest.setUtmSource(utmSource);
         rootRequest.setUtmMedium(utmMedium);
         rootRequest.setUtmCampaign(utmCampaign);

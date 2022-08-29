@@ -67,7 +67,8 @@ public class RootRouteAdminApi {
         @RequestParam(value = "utm_campaign", required = false) final String utmCampaign,
         @RequestParam(value = "utm_term", required = false) final String utmTerm,
         @RequestParam(value = "utm_content", required = false) final String utmContent,
-        @RequestParam(value = "p", required = false) final String partnerAbbreviation,
+        @RequestParam(value = "p", required = false) final String partnerParam,
+        @RequestParam(value = "r", required = false) final String referrerParam,
         @RequestParam(value = "h", required = false) final String showHeaders) {
 
 
@@ -88,7 +89,7 @@ public class RootRouteAdminApi {
         //eg crs.tctalent.org --> tctalent.org?p=crs
         String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
         if (redirectUrl != null) {
-            storeQueryInfo(request, partnerAbbreviation, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
+            storeQueryInfo(request, partnerParam, referrerParam, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
             if (queryString != null) {
                 redirectUrl += "&" + queryString;
             }
@@ -98,10 +99,10 @@ public class RootRouteAdminApi {
 
         //Store query information
         if (queryString != null) {
-            storeQueryInfo(request, partnerAbbreviation, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
+            storeQueryInfo(request, partnerParam, referrerParam, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
         }
 
-        BrandingInfo info = brandingService.getBrandingInfo(partnerAbbreviation);
+        BrandingInfo info = brandingService.getBrandingInfo(partnerParam);
 
         String landingPage = info.getLandingPage();
 
@@ -116,9 +117,9 @@ public class RootRouteAdminApi {
             routingUrl += "?" + queryString;
         }
 
-        if (partnerAbbreviation != null) {
+        if (partnerParam != null) {
             String infoMess = "RootRouting: Host " + host;
-            infoMess += ", Partner specified 'p=" + partnerAbbreviation + "'";
+            infoMess += ", Partner specified 'p=" + partnerParam + "'";
             log.info(infoMess);
             log.info("Routing to landing page: " + routingUrl);
         }
@@ -126,10 +127,11 @@ public class RootRouteAdminApi {
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(routingUrl)).build();
     }
 
-    private void storeQueryInfo(HttpServletRequest request, String partnerAbbreviation,
+    private void storeQueryInfo(HttpServletRequest request,
+        String partnerParam, String referrerParam,
         String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent) {
 
-        rootRequestService.createRootRequest(request, partnerAbbreviation,
+        rootRequestService.createRootRequest(request, partnerParam, referrerParam,
             utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
     }
 }

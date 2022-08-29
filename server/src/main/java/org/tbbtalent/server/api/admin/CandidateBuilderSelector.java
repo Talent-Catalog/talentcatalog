@@ -134,6 +134,8 @@ public class CandidateBuilderSelector {
             .add("residenceStatus")
             .add("ieltsScore")
             .add("numberDependants")
+            .add("regoPartnerParam")
+            .add("regoReferrerParam")
             .add("regoUtmCampaign")
             .add("regoUtmContent")
             .add("regoUtmMedium")

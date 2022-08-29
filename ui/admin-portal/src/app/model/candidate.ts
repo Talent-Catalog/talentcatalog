@@ -61,6 +61,8 @@ export interface Candidate extends HasId {
   folderlink: string;
   sflink: string;
   videolink: string;
+  regoPartnerParam: string;
+  regoReferrerParam: string;
   regoUtmCampaign: string;
   regoUtmContent: string;
   regoUtmMedium: string;

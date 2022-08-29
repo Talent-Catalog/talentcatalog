@@ -160,17 +160,9 @@ public interface CandidateService {
      *
      * @param request             Registration request
      * @param httpRequest HTTP request for registration
-     * @param partnerAbbreviation p= query parameter on http registration request
-     * @param utmSource UTM query parameter on http registration request
-     * @param utmMedium UTM query parameter on http registration request
-     * @param utmCampaign UTM query parameter on http registration request
-     * @param utmTerm UTM query parameter on http registration request
-     * @param utmContent UTM query parameter on http registration request
      * @return A login request generated for the newly created candidate.
      */
-    LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest,
-        String partnerAbbreviation, String utmSource, String utmMedium, String utmCampaign,
-        String utmTerm, String utmContent);
+    LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest);
 
     Candidate updateContact(UpdateCandidateContactRequest request);
 

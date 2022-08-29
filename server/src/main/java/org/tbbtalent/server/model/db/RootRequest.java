@@ -55,9 +55,14 @@ public class RootRequest extends AbstractDomainObject<Long> {
     private String ipAddress;
 
     /**
-     * Partner abbreviation as specified by "p=" query parameter
+     * Partner parameter as specified by "p=" query parameter
      */
     private String partnerAbbreviation;
+
+    /**
+     * Referrer parameter as specified by "r=" query parameter
+     */
+    private String referrerParam;
 
     /**
      * Whole query string as returned by {@link HttpServletRequest#getQueryString()}
