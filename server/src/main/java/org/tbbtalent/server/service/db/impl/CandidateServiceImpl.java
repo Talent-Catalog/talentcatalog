@@ -86,6 +86,7 @@ import org.tbbtalent.server.model.db.DependantRelations;
 import org.tbbtalent.server.model.db.EducationLevel;
 import org.tbbtalent.server.model.db.Exam;
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.HasTcQueryParameters;
 import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
@@ -712,7 +713,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private Candidate createCandidate(CreateCandidateRequest request, Partner partner, String ipAddress,
-        RootRequest rootRequest, String passwordEncrypted)
+        HasTcQueryParameters queryParameters, String passwordEncrypted)
         throws UsernameTakenException {
         User user = new User(
                 StringUtils.isNotBlank(request.getUsername()) ? request.getUsername() : request.getEmail(),
@@ -739,14 +740,14 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
         candidate.setRegoIp(ipAddress);
-        if (rootRequest != null) {
-            candidate.setRegoPartnerParam(rootRequest.getPartnerAbbreviation());
-            candidate.setRegoReferrerParam(rootRequest.getReferrerParam());
-            candidate.setRegoUtmCampaign(rootRequest.getUtmCampaign());
-            candidate.setRegoUtmContent(rootRequest.getUtmContent());
-            candidate.setRegoUtmMedium(rootRequest.getUtmMedium());
-            candidate.setRegoUtmSource(rootRequest.getUtmSource());
-            candidate.setRegoUtmTerm(rootRequest.getUtmTerm());
+        if (queryParameters != null) {
+            candidate.setRegoPartnerParam(queryParameters.getPartnerAbbreviation());
+            candidate.setRegoReferrerParam(queryParameters.getReferrerParam());
+            candidate.setRegoUtmCampaign(queryParameters.getUtmCampaign());
+            candidate.setRegoUtmContent(queryParameters.getUtmContent());
+            candidate.setRegoUtmMedium(queryParameters.getUtmMedium());
+            candidate.setRegoUtmSource(queryParameters.getUtmSource());
+            candidate.setRegoUtmTerm(queryParameters.getUtmTerm());
         }
 
         //set some fields to unknown on create as required for search
@@ -1054,6 +1055,14 @@ public class CandidateServiceImpl implements CandidateService {
             partner = partnerService.getDefaultSourcePartner();
         }
 
+        //Pick up query parameters from request if they are passed in
+        HasTcQueryParameters queryParameters;
+        if (areQueryParametersPresent(request)) {
+            queryParameters = request;
+        } else {
+            queryParameters = rootRequest;
+        }
+
         /* Create the candidate */
         CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();
         createCandidateRequest.setUsername(request.getUsername());
@@ -1062,13 +1071,28 @@ public class CandidateServiceImpl implements CandidateService {
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
 
         Candidate candidate = createCandidate(createCandidateRequest, partner, ipAddress,
-            rootRequest, passwordEncrypted);
+            queryParameters, passwordEncrypted);
 
         /* Log the candidate in */
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername( candidate.getUser().getUsername());
         loginRequest.setPassword(request.getPassword());
         return loginRequest;
+    }
+
+    /**
+     * Return true if any of the TC query parameters are set (not null)
+     * @param queryParameters Query parameters
+     * @return True if any query parameter is set
+     */
+    private boolean areQueryParametersPresent(HasTcQueryParameters queryParameters) {
+        return queryParameters.getPartnerAbbreviation() != null ||
+            queryParameters.getReferrerParam() != null ||
+            queryParameters.getUtmCampaign() != null ||
+            queryParameters.getUtmContent() != null ||
+            queryParameters.getUtmMedium() != null ||
+            queryParameters.getUtmSource() != null ||
+            queryParameters.getUtmTerm() != null;
     }
 
     @Override

@@ -47,7 +47,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "root_request")
 @SequenceGenerator(name = "seq_gen", sequenceName = "root_request_id_seq", allocationSize = 1)
-public class RootRequest extends AbstractDomainObject<Long> {
+public class RootRequest extends AbstractDomainObject<Long> implements HasTcQueryParameters {
 
     /**
      * IP address of request.
