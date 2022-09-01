@@ -173,7 +173,7 @@ export class RegistrationContactComponent implements OnInit {
   }
 
   private registerWithToken(token: string, params: ParamMap) {
-    //Check for the partner query param and use it to configure the branding service
+    //Check for the partner query param and use it to configure the branding service.
 
     const req: RegisterCandidateRequest = new RegisterCandidateRequest();
     req.email = this.email;
