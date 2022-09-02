@@ -31,11 +31,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -63,7 +61,6 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.sf.Contact;
@@ -172,10 +169,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfJoblink)
+    public void addCandidateOpportunityStages(Iterable<Candidate> candidates, String id)
         throws SalesforceException {
 
-        String id = extractIdFromSfUrl(sfJoblink);
         if (id != null) {
             Map<String, Candidate> oppIdCandidateMap = buildCandidateOppsMap(candidates, id);
 
@@ -187,49 +183,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 if (candidate != null) {
                     candidate.setStage(candidateOpp.getStageName());
                     candidate.setSfOpportunityLink(candidateOpp.getUrl());
-                }
-            }
-        }
-    }
-
-    @Override
-    public void addJobOpportunity(Iterable<SavedList> savedLists) throws SalesforceException {
-
-        //Retrieve the sfJobLinks the given lists
-        Set<String> sfIds = new HashSet<>();
-        for (SavedList savedList : savedLists) {
-            final String sfJoblink = savedList.getSfJoblink();
-            if (sfJoblink != null) {
-                //Get id from link.
-                final String id = extractIdFromSfUrl(sfJoblink);
-                if (id != null) {
-                    sfIds.add(id);
-                }
-            }
-        }
-
-        //Process if we have any lists with job links.
-        if (sfIds.size() > 0) {
-            //Fetch the opps from their ids taken from the above map.
-            List<Opportunity> opps = fetchOpportunities(sfIds);
-
-            //Construct map of opps by id.
-            Map<String, Opportunity> idOppMap = new HashMap<>();
-            //Now loop through the opps, adding the opportunity
-            for (Opportunity opp : opps) {
-                idOppMap.put(opp.getId(), opp);
-            }
-
-            //Now populate opps on all lists with sfJobLinks.
-            for (SavedList savedList : savedLists) {
-                String sfJoblink = savedList.getSfJoblink();
-                if (sfJoblink != null) {
-                    String sfId = extractIdFromSfUrl(sfJoblink);
-                    Opportunity opp = sfId == null ? null : idOppMap.get(sfId);
-                    if (opp == null) {
-                        log.warn("Saved List " + savedList.getName() + " with invalid sfJobLink " + sfJoblink);
-                    }
-                    savedList.setSfJobOpportunity(opp);
                 }
             }
         }

@@ -72,6 +72,7 @@ import org.tbbtalent.server.model.db.EducationLevel;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SavedSearchType;
@@ -800,26 +801,23 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedList.setCreatedBy(user);
             savedList.setCreatedDate(OffsetDateTime.now());
             savedList.setName(constructSelectionListName(user, savedSearch));
-            savedList.setSfJoblink(savedSearch.getSfJoblink());
-            savedList.setSfJobOpp(
-                salesforceJobOppService.getOrCreateJobOppFromLink(savedSearch.getSfJoblink()));
+            savedList.setSfJobOpp(savedSearch.getSfJobOpp());
 
             savedList = savedListRepository.save(savedList);
         } else {
             //Keep SavedSearch sfJobLink in sync with its selection list.
-            if (savedSearch.getSfJoblink() == null) {
+            if (savedSearch.getSfJobOpp() == null) {
                 //If not both null
-                if (savedList.getSfJoblink() != null) {
-                    savedList.setSfJoblink(null);
+                if (savedList.getSfJobOpp() != null) {
                     savedList.setSfJobOpp(null);
                     savedList = savedListRepository.save(savedList);
                 }
             } else {
-                //If different
-                if (!savedSearch.getSfJoblink().equals(savedList.getSfJoblink())) {
-                    savedList.setSfJoblink(savedSearch.getSfJoblink());
-                    savedList.setSfJobOpp(
-                        salesforceJobOppService.getOrCreateJobOppFromLink(savedSearch.getSfJoblink()));
+                //Non null SavedSearch Job Opp. Check if it is different from Saved List JobOpp
+                final SalesforceJobOpp savedListJobOpp = savedList.getSfJobOpp();
+                if (savedListJobOpp == null ||
+                    !savedSearch.getSfJobOpp().getId().equals(savedListJobOpp.getId())) {
+                    savedList.setSfJobOpp(savedSearch.getSfJobOpp());
                     savedList = savedListRepository.save(savedList);
                 }
             }

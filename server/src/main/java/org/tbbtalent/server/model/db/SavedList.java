@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 
 /**
@@ -115,40 +114,10 @@ public class SavedList extends AbstractCandidateSource {
 
     /**
      * If true, this list is associated with a "registered" job. See the Angular "New Job" menu
-     * item. A link to the job record on Salesforce is in {@link #getSfJoblink()}.
-     * There should only be one list registered to a particular job, as defined by its sfJoblink.
+     * item. A link to the job record on Salesforce is in {@link #getSfJobOpp()}.
+     * There should only be one list registered to a particular job, as defined by its sfJobOpp.
      */
     private Boolean registeredJob = false;
-
-    /**
-     * Salesforce Job opportunity account country. Can be retrieved from Salesforce to be displayed
-     * when a list has a non null sfJobLink
-     *
-     */
-    @Transient
-    @Nullable
-    private String sfJobCountry;
-
-    /**
-     * Salesforce Job opportunity. Can be retrieved from Salesforce when a list has a non null
-     * sfJobLink
-     */
-    @Transient
-    @Nullable
-    private Opportunity sfJobOpportunity;
-
-    /**
-     * Salesforce Job opportunity stage. Can be retrieved from Salesforce to be displayed
-     * when a list has a non null sfJobLink
-     */
-    @Transient
-    @Nullable
-    private String sfJobStage;
-
-    /**
-     * True if the associated Salesforce job opportunity - specified by sfJobLink is closed.
-     */
-    private boolean sfOppIsClosed;
 
     /**
      * Non null if this is the selection list for the given saved search.
@@ -275,39 +244,33 @@ public class SavedList extends AbstractCandidateSource {
         }
     }
 
+    /**
+     * Salesforce Job opportunity account country. Can be retrieved from Salesforce to be displayed
+     * when a list has a non null sfJobLink
+     *
+     */
     @Nullable
     public String getSfJobCountry() {
-        return sfJobCountry;
+        final SalesforceJobOpp sfJobOpp = getSfJobOpp();
+        return sfJobOpp == null ? null : sfJobOpp.getCountry();
     }
 
-    public void setSfJobCountry(@Nullable String sfJobCountry) {
-        this.sfJobCountry = sfJobCountry;
-    }
-
+    /**
+     * Salesforce Job opportunity stage. Can be retrieved from Salesforce to be displayed
+     * when a list has a non null sfJobLink
+     */
     @Nullable
-    public Opportunity getSfJobOpportunity() {
-        return sfJobOpportunity;
+    public JobOpportunityStage getSfJobStage() {
+        final SalesforceJobOpp sfJobOpp = getSfJobOpp();
+        return sfJobOpp == null ? null : sfJobOpp.getStage();
     }
 
-    public void setSfJobOpportunity(@Nullable Opportunity sfJobOpportunity) {
-        this.sfJobOpportunity = sfJobOpportunity;
-    }
-
-    @Nullable
-    public String getSfJobStage() {
-        return sfJobStage;
-    }
-
-    public void setSfJobStage(@Nullable String sfJobStage) {
-        this.sfJobStage = sfJobStage;
-    }
-
+    /**
+     * True if the associated Salesforce job opportunity - specified by sfJobLink is closed.
+     */
     public boolean isSfOppIsClosed() {
-        return sfOppIsClosed;
-    }
-
-    public void setSfOppIsClosed(boolean sfOppIsClosed) {
-        this.sfOppIsClosed = sfOppIsClosed;
+        final SalesforceJobOpp sfJobOpp = getSfJobOpp();
+        return sfJobOpp == null ? false : sfJobOpp.isClosed();
     }
 
     @Nullable

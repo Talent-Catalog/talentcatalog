@@ -24,7 +24,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
@@ -46,20 +45,11 @@ public interface SalesforceService {
      * Updates the given candidates with their candidate opportunity stages associated with the
      * given Salesforce job opportunity.
      * @param candidates Candidates to check
-     * @param sfJoblink url link to a Salesfroce job opportunity
+     * @param sfId Salesforce id (not url) of job opportunity
      * @throws SalesforceException if there are issues contacting Salesforce
      */
-    void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfJoblink)
+    void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfId)
         throws SalesforceException;
-
-    /**
-     * Updates each of the given saved lists if it has an associated link to a Salesforce job
-     * opportunity (sfJoblink) with the corresponding Opportunity object retrieved from Salesforce
-     * using {@link SavedList#setSfJobOpportunity(Opportunity)}
-     * @param savedLists Saved lists to process
-     * @throws SalesforceException if there are issues contacting Salesforce
-     */
-    void addJobOpportunity(Iterable<SavedList> savedLists);
 
     /**
      * Fetches opportunities with the given ids from Salesforce.

@@ -173,7 +173,7 @@ public class SystemAdminApi {
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
-    @GetMapping("create-sf-job-opps")
+//    @GetMapping("create-sf-job-opps")
     public String createSfJobOpps() {
         int count = 0;
         int errorCount = 0;

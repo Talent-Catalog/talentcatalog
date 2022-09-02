@@ -230,7 +230,6 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         return sfJobOpp;
     }
 
-    //TODO JC Who calls this setting up job ops - comes from setSfJOblink
     public void setSfJobOpp(@Nullable SalesforceJobOpp sfJobOpp) {
         this.sfJobOpp = sfJobOpp;
     }

@@ -155,10 +155,10 @@ public interface CandidateService {
     boolean deleteCandidate(long id);
 
     /**
-     * Registers a new candidate by creating a new candidate and user. It returns a login request
-     * for the generated candidate so that they are processed as a normal login.
-     *
-     * @param request             Registration request
+     * Registers a new candidate by creating a new candidate and user.
+     * It returns a login request for the generated candidate so that they are processed as
+     * a normal login.
+     * @param request Registration request
      * @param httpRequest HTTP request for registration
      * @return A login request generated for the newly created candidate.
      */
