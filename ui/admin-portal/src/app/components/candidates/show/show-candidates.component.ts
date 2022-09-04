@@ -1368,7 +1368,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       //If we do not have a job opportunity, there will be no candidate opp info.
       this.doCreateUpdateSalesforceOnList2(null, selectedCandidatesOnly);
     } else {
-      const applyToWholeListQuery = this.modalService.open(SalesforceStageComponent);
+      const applyToWholeListQuery = this.modalService.open(SalesforceStageComponent, {size: 'lg'});
       applyToWholeListQuery.result
       .then((info: SalesforceOppParams) => {
         this.doCreateUpdateSalesforceOnList2(info, selectedCandidatesOnly);
