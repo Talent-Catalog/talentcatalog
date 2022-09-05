@@ -52,12 +52,14 @@ public interface SalesforceService {
         throws SalesforceException;
 
     /**
-     * Fetches opportunities with the given ids from Salesforce.
-     * @param ids Salesforce id (not url)
+     * Fetches opportunities from Salesforce with Job opportunity fields populated.
+     * <p/>
+     * The opportunities fetched are those with the specified ids plus recently changed open
+     * job opportunities.
+     * @param sfIds Ids of requested Salesforce records
      * @return Opportunities
-     * @throws SalesforceException if there is a problem accessing Salesforce
      */
-    List<Opportunity> fetchOpportunities(Collection<String> ids) throws SalesforceException;
+    List<Opportunity> fetchJobOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds);
 
     /**
      * Fetches opportunity with the given id from Salesforce.
@@ -242,5 +244,4 @@ public interface SalesforceService {
      */
     void updateCandidateOpportunities(List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink)
         throws GeneralSecurityException, WebClientException, SalesforceException;
-
 }

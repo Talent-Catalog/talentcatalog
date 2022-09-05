@@ -56,6 +56,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
 import org.tbbtalent.server.configuration.SalesforceConfig;
+import org.tbbtalent.server.configuration.SalesforceRecordTypeConfig;
 import org.tbbtalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
@@ -109,7 +110,7 @@ import reactor.core.publisher.Mono;
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
-    private static final String apiVersion = "v51.0";
+    private static final String apiVersion = "v54.0";
     private static final String candidateNumberSFFieldName = "TBBid__c";
     private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
     private static final String candidateContactTypeSFFieldValue = "Candidate";
@@ -130,6 +131,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final EmailHelper emailHelper;
 
     private final SalesforceConfig salesforceConfig;
+    private final SalesforceRecordTypeConfig salesforceRecordTypeConfig;
     private final SalesforceTbbAccountsConfig salesforceTbbAccountsConfig;
 
     private PrivateKey privateKey;
@@ -148,9 +150,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Autowired
     public SalesforceServiceImpl(EmailHelper emailHelper, SalesforceConfig salesforceConfig,
-        SalesforceTbbAccountsConfig salesforceTbbAccountsConfig) {
+        SalesforceRecordTypeConfig salesforceRecordTypeConfig, SalesforceTbbAccountsConfig salesforceTbbAccountsConfig) {
         this.emailHelper = emailHelper;
         this.salesforceConfig = salesforceConfig;
+        this.salesforceRecordTypeConfig = salesforceRecordTypeConfig;
         this.salesforceTbbAccountsConfig = salesforceTbbAccountsConfig;
 
         classSfPathMap.put(ContactRequest.class, "Contact");
@@ -498,17 +501,21 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public List<Opportunity> fetchOpportunities(Collection<String> ids) throws SalesforceException {
+    public List<Opportunity> fetchJobOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds) {
         List<Opportunity> opps = new ArrayList<>();
-        if (ids.size() > 0) {
+        if (sfIds.size() > 0) {
             try {
                 //Construct the String of ids for the WHERE clause
-                final String idsAsString = ids.stream().map(s -> "'" + s + "'")
+                final String idsAsString = sfIds.stream().map(s -> "'" + s + "'")
                     .collect(Collectors.joining(","));
 
                 String query =
                     "SELECT " + jobOpportunityRetrievalFields +
-                        " FROM Opportunity WHERE Id IN (" + idsAsString + ")";
+                        " FROM Opportunity WHERE "
+                        + "(Id IN (" + idsAsString + ")"
+                        + " OR (IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
+                        + salesforceConfig.getDaysAgoRecent() + "))"
+                    + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
 
                 ClientResponse response = executeQuery(query);
 
@@ -529,8 +536,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Nullable
     @Override
     public Opportunity fetchOpportunity(String id) throws SalesforceException {
-        List<Opportunity> opportunities = fetchOpportunities(Collections.singletonList(id));
-        return opportunities.isEmpty() ? null : opportunities.get(0);
+        try {
+            return findOpportunity(id, jobOpportunityRetrievalFields);
+        } catch (GeneralSecurityException e) {
+            throw new SalesforceException("Failed to fetch opportunity " + id + ": " + e);
+        }
     }
 
     private List<Opportunity> findCandidateOpportunities(String jobOpportunityId)
@@ -599,12 +609,16 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Nullable
     public Opportunity findOpportunity(String sfId)
         throws GeneralSecurityException, WebClientException {
+        return findOpportunity(sfId, "Id,Name,AccountId,OwnerId,AccountCountry__c");
+    }
+
+    private Opportunity findOpportunity(String sfId, String fields)
+        throws GeneralSecurityException, WebClientException {
         Opportunity opportunity = null;
         if (sfId != null) {
             try {
                 opportunity = findRecordFieldsFromId(
-                    "Opportunity", sfId,
-                    "Id,Name,AccountId,OwnerId,AccountCountry__c", Opportunity.class);
+                    "Opportunity", sfId, fields, Opportunity.class);
             } catch (NotFound ex) {
                 //Just return null opportunity if not found
             }
@@ -612,6 +626,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return opportunity;
     }
 
+    //todo SalesforceJobOpp is not a usable replacement for Opportunity because it does not
+    //have account id and owner id which is needed to create CandidateOpps. We just store the names at the moment.
+    //See CandidateOpportunityRequest which requires those ids
     private Opportunity findOpportunityFromLink(String linkUrl) throws GeneralSecurityException {
         //Get id from link.
         String id = extractIdFromSfUrl(linkUrl);

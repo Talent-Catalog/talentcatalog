@@ -16,11 +16,15 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -91,7 +95,6 @@ public class JobServiceImpl implements JobService {
     @NonNull
     @Override
     public Job getJob(long jobId) throws NoSuchObjectException {
-        //TODO JC This could take a parameter forcing a cache refresh
         return jobRepository.findById(jobId)
             .orElseThrow(() -> new NoSuchObjectException(Job.class, jobId));
     }
@@ -99,14 +102,18 @@ public class JobServiceImpl implements JobService {
     @Override
     public Page<Job> searchJobs(SearchJobRequest request) {
         //Search jobs.
-        //TODO JC This needs to refresh cached SF data of expired cache entries
-        //TODO JC Also need a nightly scheduled task which loads expired cache entries of open
         //opportunities because there could be opps whose state has been changed on SF which
         //means that they could satisfy search request, but they won't be seen because they are
         //still in the cache with their old state.
         Page<Job> jobs = jobRepository.findAll(JobSpecification.buildSearchQuery(request),
             request.getPageRequest());
 
+        return jobs;
+    }
+
+    @Override
+    public List<Job> searchJobsUnpaged(SearchJobRequest request) {
+        List<Job> jobs = jobRepository.findAll(JobSpecification.buildSearchQuery(request));
         return jobs;
     }
 
@@ -119,4 +126,30 @@ public class JobServiceImpl implements JobService {
     private Job getJobBySubmissionList(SavedList submissionList) {
         return jobRepository.getJobBySubmissionList(submissionList);
     }
+
+
+    @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
+    @Async
+    @Override
+    public void updateOpenJobs() {
+        try {
+            //Find all open Salesforce jobs
+            SearchJobRequest request = new SearchJobRequest();
+            request.setSfOppClosed(false);
+
+            List<Job> jobs = searchJobsUnpaged(request);
+
+            //Populate sfIds of jobs
+            List<String> sfIds = jobs.stream()
+                .filter(j -> j.getSfJobOpp() != null)
+                .map(j -> j.getSfJobOpp().getId())
+                .collect(Collectors.toList());
+
+            //Now update them from Salesforce
+            salesforceJobOppService.updateJobs(sfIds);
+        } catch (Exception e) {
+            log.error("JobService.updateOpenJobs failed", e);
+        }
+    }
+
 }

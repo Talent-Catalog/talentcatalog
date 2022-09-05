@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.exception.InvalidRequestException;
@@ -53,9 +54,22 @@ public interface JobService {
     Job getJob(long jobId) throws NoSuchObjectException;
 
     /**
+     * Get all jobs matching the given search request
+     * @param request - Search Request (paging info is ignored)
+     * @return Jobs matching the request
+     */
+    List<Job> searchJobsUnpaged(SearchJobRequest request);
+
+    /**
      * Get jobs from a paged search request
      * @param request - Paged Search Request
      * @return Page of jobs
      */
     Page<Job> searchJobs(SearchJobRequest request);
+
+    /**
+     * Updates all open Jobs from their corresponding records on Salesforce
+     */
+    void updateOpenJobs();
+
 }

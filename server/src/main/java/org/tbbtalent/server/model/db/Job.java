@@ -59,7 +59,7 @@ public class Job extends AbstractDomainObject<Long> {
     private SavedList submissionList;
 
     @Nullable
-    private SalesforceJobOpp getSfJobOpp() {
+    public SalesforceJobOpp getSfJobOpp() {
         return submissionList == null ? null : submissionList.getSfJobOpp();
     }
 

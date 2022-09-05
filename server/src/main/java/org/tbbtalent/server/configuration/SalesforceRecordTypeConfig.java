@@ -21,27 +21,20 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Salesforce configuration - read from application.yml
+ * Salesforce RecordType configuration - read from application.yml
  * <p/>
- * MODEL - Loading application.yml configuration into a Java object
+ * MODEL - Loading application.yml NESTED configuration into a Java object
+ * MODEL Camel case configuration property (recordType) must be converted to kebab form (record-type)
  *
  * @author John Cameron
  */
 @Getter
 @Setter
-@ConfigurationProperties("salesforce")
-public class SalesforceConfig {
+@ConfigurationProperties("salesforce.record-type")
+public class SalesforceRecordTypeConfig {
 
     /**
-     * Maximum number of days ago that will be considered recent.
-     * Used to examine recently changed open opportunities that might need to be considered.
-     * See fetchJobOpportunitiesByIdOrOpenOnSF in SalesforceService
+     * Salesforce RecordType ID of Employer Job opportunities
      */
-    private int daysAgoRecent;
-
-    /**
-     * Private key used for accessing Salesforce
-     */
-    private String privatekey;
-
+    private String employerJob;
 }

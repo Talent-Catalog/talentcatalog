@@ -22,6 +22,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Salesforce configuration - read from application.yml
+ * <p/>
+ * MODEL - Loading application.yml NESTED configuration into a Java object
  *
  * @author John Cameron
  */
