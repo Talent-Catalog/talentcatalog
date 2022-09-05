@@ -230,8 +230,9 @@ public class CandidateSpecification {
                 );
             }
 
-            // COUNTRY SEARCH
-            // If request ids is NOT EMPTY (these will only be selected if allowed source countries)
+            // COUNTRY SEARCH - taking into account user source country limitations
+            // If request ids is NOT EMPTY we can just accept them because the options
+            // presented to the user will be limited to the allowed source countries
             if (!Collections.isEmpty(request.getCountryIds())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(request.getCountryIds()))
