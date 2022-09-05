@@ -29,6 +29,15 @@ import org.springframework.data.annotation.Id;
 
 /**
  * This is a copy of an Employer Job Opportunity on Salesforce
+ * <p/>
+ * Job Opps are intended to only be used for the monitoring open job opps.
+ * They are not intended to completely duplicate what is on SF - eg history
+ * <p/>
+ * Approach to keeping in sync with Salesforce
+ * ===========================================
+ * - Only job opps that have been registered in TC are updated from Salesforce. There will be
+ * opportunities on Salesforce that are not reflected on the TC.
+ * - Once a day local open opportunities on the TC are updated from Salesforce
  *
  * @author John Cameron
  */
@@ -46,6 +55,11 @@ public class SalesforceJobOpp {
     @javax.persistence.Id
     @Column(name = "id")
     private String id;
+
+    /**
+     * Salesforce id of account (ie employer) associated with opportunity
+     */
+    private String accountId;
 
     /**
      * True if opportunity is closed
@@ -66,6 +80,11 @@ public class SalesforceJobOpp {
      * Name of opportunity - maps to Opportunity name on Salesforce
      */
     private String name;
+
+    /**
+     * Salesforce id of owner of opportunity
+     */
+    private String ownerId;
 
     /**
      * Stage of job opportunity

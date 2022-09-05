@@ -390,10 +390,17 @@ public class SavedSearchAdminApi implements
                 .add("global")
                 .add("defaultSearch")
                 .add("sfJoblink")
+                .add("sfJobOpp", salesforceJobOppDto())
                 .add("watcherUserIds")
                 .add("createdBy", userDto())
                 .add("users", userDto())
                 ;
+    }
+
+    private DtoBuilder salesforceJobOppDto() {
+        return new DtoBuilder()
+            .add("id")
+            ;
     }
 
     private DtoBuilder languageDto() {

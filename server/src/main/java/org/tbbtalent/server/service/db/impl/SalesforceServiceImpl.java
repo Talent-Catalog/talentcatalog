@@ -62,6 +62,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.sf.Contact;
@@ -285,10 +286,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void createOrUpdateCandidateOpportunities(
-        List<Candidate> candidates, SalesforceOppParams salesforceOppParams, String sfJoblink)
+        List<Candidate> candidates, SalesforceOppParams salesforceOppParams,
+        SalesforceJobOpp jobOpportunity)
         throws GeneralSecurityException, WebClientException, SalesforceException {
-
-        Opportunity jobOpportunity = findOpportunityFromLink(sfJoblink);
 
         //Find out which candidates already have opportunities (so just need to be updated)
         //and which need opportunities to be created.
@@ -337,7 +337,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     private List<Candidate> selectCandidatesWithNoOpp(List<Candidate> candidates,
-        Opportunity jobOpportunity) throws SalesforceException {
+        SalesforceJobOpp jobOpportunity) throws SalesforceException {
 
         //First creating a map of all candidates indexed by their what their unique
         //opportunity id should be.
@@ -626,20 +626,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return opportunity;
     }
 
-    //todo SalesforceJobOpp is not a usable replacement for Opportunity because it does not
-    //have account id and owner id which is needed to create CandidateOpps. We just store the names at the moment.
-    //See CandidateOpportunityRequest which requires those ids
-    private Opportunity findOpportunityFromLink(String linkUrl) throws GeneralSecurityException {
-        //Get id from link.
-        String id = extractIdFromSfUrl(linkUrl);
-
-        Opportunity opportunity = id == null ? null : findOpportunity(id);
-        if (opportunity == null) {
-            throw new SalesforceException("Could not find opportunity " + linkUrl);
-        }
-        return opportunity;
-    }
-
     @Override
     public void updateContact(Candidate candidate)
         throws GeneralSecurityException {
@@ -661,10 +647,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void updateCandidateOpportunities(
-        List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink)
+        List<EmployerCandidateFeedbackData> feedbacks, SalesforceJobOpp jobOpportunity)
         throws GeneralSecurityException, WebClientException, SalesforceException {
 
-        Opportunity jobOpportunity = findOpportunityFromLink(sfJoblink);
         String recordType = getCandidateOpportunityRecordType(jobOpportunity);
 
         //Now build requests of candidate opportunities we want to update
@@ -706,7 +691,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     private List<CandidateOpportunityRecordComposite> buildCandidateOpportunityRequests(
         List<EmployerCandidateFeedbackData> feedbacks, String recordType,
-        Opportunity jobOpportunity)
+        SalesforceJobOpp jobOpportunity)
         throws GeneralSecurityException {
 
         //Figure out which candidates need an opp created.
@@ -759,8 +744,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return requests;
     }
 
-    private String getCandidateOpportunityRecordType(Opportunity opportunity) {
-        String country = opportunity.getAccountCountry__c();
+    private String getCandidateOpportunityRecordType(SalesforceJobOpp opportunity) {
+        String country = opportunity.getCountry();
         String recordType = "Candidate recruitment";
         if ("Canada".equals(country)) {
             recordType = "Candidate recruitment (CAN)";
@@ -1423,7 +1408,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public CandidateOpportunityRequest(
             @Nullable CompositeAttributes attributes,
             String recordType, Candidate candidate,
-            Opportunity jobOpportunity, boolean create) {
+            SalesforceJobOpp jobOpportunity, boolean create) {
 
             if (attributes != null) {
                 setAttributes(attributes);
@@ -1584,7 +1569,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     class CandidateOpportunityRecordComposite extends CandidateOpportunityRequest {
 
         public CandidateOpportunityRecordComposite(String recordType, Candidate candidate,
-            Opportunity jobOpportunity, boolean create) {
+            SalesforceJobOpp jobOpportunity, boolean create) {
             super(new CompositeAttributes("Opportunity"),
                 recordType, candidate, jobOpportunity, create);
         }

@@ -42,6 +42,7 @@ import org.tbbtalent.server.model.db.CandidateSubfolderType;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -411,15 +412,14 @@ public interface CandidateService {
      * job.
      *
      * @param candidates Candidates to update
-     * @param sfJoblink If not null the candidate opportunities are created/updated
+     * @param sfJobOpp If not null the candidate opportunities are created/updated
      * @param salesforceOppParams Used to create/update candidate opportunities
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     void createUpdateSalesforce(Collection<Candidate> candidates,
-        @Nullable String sfJoblink,
-        @Nullable SalesforceOppParams salesforceOppParams)
+        @Nullable SalesforceJobOpp sfJobOpp, @Nullable SalesforceOppParams salesforceOppParams)
         throws GeneralSecurityException, WebClientException;
 
     /**

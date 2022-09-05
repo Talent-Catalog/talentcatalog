@@ -80,7 +80,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     @Nullable
     public SalesforceJobOpp getOrCreateJobOppFromLink(String sfJoblink) {
         SalesforceJobOpp jobOpp;
-        if (sfJoblink == null) {
+        if (sfJoblink == null || sfJoblink.trim().length() == 0) {
             jobOpp = null;
         } else {
             String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfJoblink);
@@ -137,6 +137,8 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setName(op.getName());
         salesforceJobOpp.setCountry(op.getAccountCountry__c());
         salesforceJobOpp.setEmployer(op.getAccountName__c());
+        salesforceJobOpp.setAccountId(op.getAccountId());
+        salesforceJobOpp.setOwnerId(op.getOwnerId());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());

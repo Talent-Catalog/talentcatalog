@@ -435,8 +435,8 @@ public class SavedListServiceImpl implements SavedListService {
                 jobName = sfJobOpp.getName();
             }
 
-            //Check for a registered list with same sfJobLink (owned any user)
-            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJoblink)
+            //Check for a registered list with same sfJobOpp (owned any user)
+            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJobOpp.getId())
                 .orElse(null);
             //If we already have a registered list for this job, just return it
             if (registeredList != null) {
@@ -472,9 +472,9 @@ public class SavedListServiceImpl implements SavedListService {
     public void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
         throws NoSuchObjectException, GeneralSecurityException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
-        String sfJobLink = savedList.getSfJoblink();
+        SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
         candidateService.createUpdateSalesforce(
-            savedList.getCandidates(), sfJobLink, request.getSalesforceOppParams());
+            savedList.getCandidates(), sfJobOpp, request.getSalesforceOppParams());
     }
 
     @Override
@@ -816,7 +816,7 @@ public class SavedListServiceImpl implements SavedListService {
                 report.setNumNoJobOffers(nNoJobOffers);
 
                 if (nFeedbacks + nJobOffers + nNoJobOffers > 0) {
-                    salesforceService.updateCandidateOpportunities(feedbacks, savedList.getSfJoblink());
+                    salesforceService.updateCandidateOpportunities(feedbacks, savedList.getSfJobOpp());
                     report.setMessage("Import complete");
                 } else {
                     report.setMessage("No feedback detected");

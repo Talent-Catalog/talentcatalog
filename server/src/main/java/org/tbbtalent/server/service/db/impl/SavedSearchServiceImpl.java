@@ -599,7 +599,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 savedSearch.setName(request.getName());
                 savedSearch.setFixed(request.getFixed());
                 savedSearch.setReviewable(request.getReviewable());
-                savedSearch.setSfJoblink(request.getSfJoblink());
                 savedSearch.setSfJobOpp(
                     salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
 
@@ -1138,7 +1137,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.setFixed(request.getFixed());
         savedSearch.setDefaultSearch(request.getDefaultSearch());
         savedSearch.setReviewable(request.getReviewable());
-        savedSearch.setSfJoblink(request.getSfJoblink());
         savedSearch.setSfJobOpp(
             salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
 

@@ -24,6 +24,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
@@ -195,7 +196,7 @@ public interface SalesforceService {
      * @param candidates Candidates
      * @param salesforceOppParams Optional Salesforce fields to set on all given candidates'
      *                            opportunities
-     * @param sfJoblink url link to Employer job opportunity on Salesforce
+     * @param jobOpp Employer job opportunity on Salesforce
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
@@ -203,7 +204,7 @@ public interface SalesforceService {
      * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
      */
     void createOrUpdateCandidateOpportunities(List<Candidate> candidates,
-        @Nullable SalesforceOppParams salesforceOppParams, String sfJoblink)
+        @Nullable SalesforceOppParams salesforceOppParams, SalesforceJobOpp jobOpp)
             throws GeneralSecurityException, WebClientException, SalesforceException;
 
     /**
@@ -235,13 +236,14 @@ public interface SalesforceService {
      * external id TBBCandidateExternalId__c
      *
      * @param feedbacks Employer feedback on candidates
-     * @param sfJoblink url link to Employer job opportunity on Salesforce
+     * @param sfJobOpp Employer job opportunity on Salesforce
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data,
      * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
      */
-    void updateCandidateOpportunities(List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink)
+    void updateCandidateOpportunities(
+        List<EmployerCandidateFeedbackData> feedbacks, SalesforceJobOpp sfJobOpp)
         throws GeneralSecurityException, WebClientException, SalesforceException;
 }

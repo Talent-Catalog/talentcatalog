@@ -105,14 +105,10 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      */
     private Boolean global = false;
 
-    //TODO JC This eventually goes, replaced by sfJobOpp
     /**
-     * Url link to Salesforce EmployerJob opportunity, if one exists, associated
+     * Salesforce EmployerJob opportunity, if one exists, associated
      * with this source of candidates.
      */
-    @Nullable
-    private String sfJoblink;
-
     @Nullable
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sf_job_opp_id")
@@ -217,21 +213,20 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     }
 
     @Nullable
-    public String getSfJoblink() {
-        return sfJoblink;
-    }
-
-    public void setSfJoblink(@Nullable String sfJoblink) {
-        this.sfJoblink = sfJoblink;
-    }
-
-    @Nullable
     public SalesforceJobOpp getSfJobOpp() {
         return sfJobOpp;
     }
 
     public void setSfJobOpp(@Nullable SalesforceJobOpp sfJobOpp) {
         this.sfJobOpp = sfJobOpp;
+    }
+
+    public String getSfJoblink() {
+        //TODO JC Temporary until serializing sfJobOpp up to Angular is all that is needed
+        //TODO JC Replace sfJoblinks on Anglusr with sfJobOpp
+        final String prefix = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/";
+        final String suffix = "/view";
+        return sfJobOpp == null ? null : prefix + sfJobOpp.getId() + suffix;
     }
 
     public Status getStatus() {
