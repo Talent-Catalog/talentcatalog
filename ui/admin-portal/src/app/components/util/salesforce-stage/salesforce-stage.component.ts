@@ -41,7 +41,7 @@ export class SalesforceStageComponent implements OnInit {
 
   onSave() {
     const info: SalesforceOppParams = {
-      //Note that this is an unusual case where we pass back the string value - rather that the key
+      //Note that this is an unusual case where we pass back the string value - rather than the key
       //of the enum.
       stageName: this.stage ? CandidateOpportunityStage[this.stage]: null,
       nextStep: this.nextStep,
