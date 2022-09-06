@@ -61,6 +61,7 @@ import org.tbbtalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.User;
@@ -312,7 +313,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             String nextStep = null;
             String employerFeedback = null;
             if (salesforceOppParams != null) {
-                stageName = salesforceOppParams.getStageName();
+                final CandidateOpportunityStage stage = salesforceOppParams.getStage();
+                stageName = stage == null ? null : stage.toString();
                 nextStep = salesforceOppParams.getNextStep();
                 employerFeedback = salesforceOppParams.getEmployerFeedback();
             }
