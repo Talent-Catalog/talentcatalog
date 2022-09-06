@@ -69,7 +69,7 @@ public interface SalesforceService {
      * @throws SalesforceException if there is a problem accessing Salesforce
      */
     @Nullable
-    Opportunity fetchOpportunity(String id) throws SalesforceException;
+    Opportunity fetchJobOpportunity(String id) throws SalesforceException;
 
     /**
      * Searches Salesforce for all Contact records relating to TBB

@@ -128,7 +128,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName,IsClosed,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
-        "Id,RecordTypeId,Name,AccountId,AccountCountry__c,AccountName__c,StageName,IsClosed";
+        "Id,RecordTypeId,Name,AccountId,OwnerId,AccountCountry__c,AccountName__c,StageName,IsClosed";
 
     private final EmailHelper emailHelper;
 
@@ -537,7 +537,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Nullable
     @Override
-    public Opportunity fetchOpportunity(String id) throws SalesforceException {
+    public Opportunity fetchJobOpportunity(String id) throws SalesforceException {
         try {
             return findOpportunity(id, jobOpportunityRetrievalFields);
         } catch (GeneralSecurityException e) {

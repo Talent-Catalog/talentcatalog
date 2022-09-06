@@ -49,7 +49,11 @@ public enum CandidateOpportunityStage {
         noJobOffer ("No job offer"),
         noVisa ("No visa"),
         notFitForRole ("Not fit for role"),
-        notEligibleForVisa ("Not eligible for visa");
+        notEligibleForVisa ("Not eligible for visa"),
+        noInterview ("No interview"),
+        candidateRejectsOffer ("Candidate rejects offer"),
+        candidateWithdraws ("Candidate withdraws")
+        ;
 
         public final String label;
 

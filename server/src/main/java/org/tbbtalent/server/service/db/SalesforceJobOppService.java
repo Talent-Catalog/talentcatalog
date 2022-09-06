@@ -72,6 +72,13 @@ public interface SalesforceJobOppService {
     SalesforceJobOpp getJobOppByUrl(String sfUrl);
 
     /**
+     * Updates existing job opportunity from Salesforce
+     * @param sfJobOpp Job opportunity
+     * @return Updated job opportunity
+     */
+    SalesforceJobOpp updateJob(SalesforceJobOpp sfJobOpp);
+
+    /**
      * Updates existing Salesforce cache records (SalesforceJobOpp's) corresponding to the given
      * Salesforce ids.
      * <p/>

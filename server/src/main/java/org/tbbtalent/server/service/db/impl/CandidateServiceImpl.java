@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -2211,6 +2212,12 @@ public class CandidateServiceImpl implements CandidateService {
 
         //If we have a Salesforce job opportunity, we can also update associated candidate opps.
         if (sfJobOpp != null) {
+            //If the sfJobOpp is not very recent, reload it
+            final OffsetDateTime lastUpdate = sfJobOpp.getLastUpdate();
+            if (lastUpdate == null ||
+                Duration.between(lastUpdate, OffsetDateTime.now()).toMinutes() >= 3) {
+                sfJobOpp = salesforceJobOppService.updateJob(sfJobOpp);
+            }
             salesforceService.createOrUpdateCandidateOpportunities(
                 orderedCandidates, salesforceOppParams, sfJobOpp);
         }

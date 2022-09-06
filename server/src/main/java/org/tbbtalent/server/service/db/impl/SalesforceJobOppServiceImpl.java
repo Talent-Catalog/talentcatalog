@@ -67,7 +67,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         SalesforceJobOpp salesforceJobOpp = new SalesforceJobOpp();
         salesforceJobOpp.setId(sfId);
 
-        Opportunity op = salesforceService.fetchOpportunity(sfId);
+        Opportunity op = salesforceService.fetchJobOpportunity(sfId);
         if (op == null) {
             throw new InvalidRequestException("No Salesforce opportunity with id: " + sfId);
         }
@@ -95,6 +95,15 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             }
         }
         return jobOpp;
+    }
+
+    @Override
+    public SalesforceJobOpp updateJob(SalesforceJobOpp sfJobOpp) {
+        Opportunity op = salesforceService.fetchJobOpportunity(sfJobOpp.getId());
+        if (op != null) {
+            copyOpportunityToJobOpp(op, sfJobOpp);
+        }
+        return salesforceJobOppRepository.save(sfJobOpp);
     }
 
     @Override
