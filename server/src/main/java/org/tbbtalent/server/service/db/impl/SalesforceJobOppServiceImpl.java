@@ -16,9 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,20 +61,13 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     }
 
     @Override
-    public SalesforceJobOpp createExpiringOpp(String sfId) {
-        SalesforceJobOpp salesforceJobOpp = new SalesforceJobOpp();
-        salesforceJobOpp.setId(sfId);
-        return salesforceJobOppRepository.save(salesforceJobOpp);
-    }
-
-    @Override
     @NonNull
     public SalesforceJobOpp createJobOpp(String sfId)
         throws InvalidRequestException, SalesforceException {
         SalesforceJobOpp salesforceJobOpp = new SalesforceJobOpp();
         salesforceJobOpp.setId(sfId);
 
-        Opportunity op = salesforceService.fetchOpportunity(sfId);
+        Opportunity op = salesforceService.fetchJobOpportunity(sfId);
         if (op == null) {
             throw new InvalidRequestException("No Salesforce opportunity with id: " + sfId);
         }
@@ -88,7 +80,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     @Nullable
     public SalesforceJobOpp getOrCreateJobOppFromLink(String sfJoblink) {
         SalesforceJobOpp jobOpp;
-        if (sfJoblink == null) {
+        if (sfJoblink == null || sfJoblink.trim().length() == 0) {
             jobOpp = null;
         } else {
             String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfJoblink);
@@ -106,28 +98,25 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     }
 
     @Override
-    public void update(List<String> sfIds) throws SalesforceException {
-
-        //Use ids to look up existing records in DB
-        //If record has expired (TTL), add it to list of opp ids to be fetched
-        List<String> expiredSfIds = new ArrayList<>();
-        for (String sfId : sfIds) {
-            final SalesforceJobOpp salesforceJobOpp = salesforceJobOppRepository.findById(sfId)
-                .orElse(null);
-            if (salesforceJobOpp == null) {
-                //Ignore id's if we don't already have a cached entry for them.
-                //New cached entries are not created here.
-                log.error("Unexpected missing cache entry for Salesforce id: " + sfId);
-            } else {
-                if (isExpired(salesforceJobOpp)) {
-                    expiredSfIds.add(sfId);
-                }
-            }
+    public SalesforceJobOpp updateJob(SalesforceJobOpp sfJobOpp) {
+        Opportunity op = salesforceService.fetchJobOpportunity(sfJobOpp.getId());
+        if (op != null) {
+            copyOpportunityToJobOpp(op, sfJobOpp);
         }
+        return salesforceJobOppRepository.save(sfJobOpp);
+    }
 
-        if (!expiredSfIds.isEmpty()) {
-            List<Opportunity> ops = salesforceService.fetchOpportunities(expiredSfIds);
+    @Override
+    public void updateJobs(Collection<String> sfIds) throws SalesforceException {
+        if (sfIds != null && !sfIds.isEmpty()) {
+            log.info("Updating job opportunities from Salesforce");
 
+            //Get SF opportunities from SF that we will use to do the updates
+            List<Opportunity> ops = salesforceService.fetchJobOpportunitiesByIdOrOpenOnSF(sfIds);
+
+            log.info("Loaded " + ops.size() + " job opportunities from Salesforce");
+            int count = 0;
+            int updates = 0;
             for (Opportunity op : ops) {
                 String id = op.getId();
                 //Fetch DB with id
@@ -136,8 +125,14 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
                 if (salesforceJobOpp != null) {
                     copyOpportunityToJobOpp(op, salesforceJobOpp);
                     salesforceJobOppRepository.save(salesforceJobOpp);
+                    updates++;
+                }
+                count++;
+                if (count%100 == 0) {
+                    log.info("Processed " + count + " job opportunities from Salesforce");
                 }
             }
+            log.info("Updated " + updates + " job opportunities from Salesforce");
         }
     }
 
@@ -151,6 +146,8 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setName(op.getName());
         salesforceJobOpp.setCountry(op.getAccountCountry__c());
         salesforceJobOpp.setEmployer(op.getAccountName__c());
+        salesforceJobOpp.setAccountId(op.getAccountId());
+        salesforceJobOpp.setOwnerId(op.getOwnerId());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());
@@ -160,18 +157,5 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         }
         salesforceJobOpp.setStage(stage);
         salesforceJobOpp.setLastUpdate(OffsetDateTime.now());
-    }
-
-    private boolean isExpired(SalesforceJobOpp salesforceJobOpp) {
-        OffsetDateTime lastUpdate = salesforceJobOpp.getLastUpdate();
-        boolean expired;
-        if (lastUpdate == null) {
-            expired = true;
-        } else {
-            Duration difference = Duration.between(lastUpdate, OffsetDateTime.now());
-            long seconds = difference.getSeconds();
-            expired = seconds > salesforceConfig.getTimeToLive();
-        }
-        return expired;
     }
 }

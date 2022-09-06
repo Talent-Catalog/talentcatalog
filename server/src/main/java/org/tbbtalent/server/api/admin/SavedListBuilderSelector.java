@@ -46,6 +46,7 @@ public class SavedListBuilderSelector {
                 .add("global")
                 .add("savedSearchSource", savedSearchSourceDto())
                 .add("sfJoblink")
+                .add("sfJobOpp", salesforceJobOppDto())
                 .add("folderlink")
                 .add("foldercvlink")
                 .add("folderjdlink")
@@ -61,6 +62,12 @@ public class SavedListBuilderSelector {
                 .add("users", userDto())
                 .add("tasks", TaskDtoHelper.getTaskDto())
         ;
+    }
+
+    private DtoBuilder salesforceJobOppDto() {
+        return new DtoBuilder()
+            .add("id")
+            ;
     }
 
     private DtoBuilder savedSearchSourceDto() {

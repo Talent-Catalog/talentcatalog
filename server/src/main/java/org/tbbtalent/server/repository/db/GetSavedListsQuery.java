@@ -16,6 +16,12 @@
 
 package org.tbbtalent.server.repository.db;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,13 +29,6 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Specification which defines a GetSavedListsQuery
@@ -71,11 +70,11 @@ public class GetSavedListsQuery implements Specification<SavedList> {
             conjunction.getExpressions().add(cb.equal(savedList.get("registeredJob"), true));
         }
 
-        //If sfOppIsClosed is specified, and sfJoblink is not null, only supply saved list with
+        //If sfOppIsClosed is specified, and sfJobOpp is not null, only supply saved list with
         // matching job closed.
         if (request.getSfOppClosed() != null) {
-            //Closed condition is only meaningful if sfJoblink is present
-            conjunction.getExpressions().add(cb.isNotNull(savedList.get("sfJoblink")));
+            //Closed condition is only meaningful if sfJobOpp is present
+            conjunction.getExpressions().add(cb.isNotNull(savedList.get("sfJobOpp")));
             conjunction.getExpressions().add(cb.equal(savedList.get("sfOppIsClosed"), request.getSfOppClosed()));
         }
 

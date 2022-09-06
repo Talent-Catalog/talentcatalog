@@ -24,7 +24,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
@@ -46,28 +46,21 @@ public interface SalesforceService {
      * Updates the given candidates with their candidate opportunity stages associated with the
      * given Salesforce job opportunity.
      * @param candidates Candidates to check
-     * @param sfJoblink url link to a Salesfroce job opportunity
+     * @param sfId Salesforce id (not url) of job opportunity
      * @throws SalesforceException if there are issues contacting Salesforce
      */
-    void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfJoblink)
+    void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfId)
         throws SalesforceException;
 
     /**
-     * Updates each of the given saved lists if it has an associated link to a Salesforce job
-     * opportunity (sfJoblink) with the corresponding Opportunity object retrieved from Salesforce
-     * using {@link SavedList#setSfJobOpportunity(Opportunity)}
-     * @param savedLists Saved lists to process
-     * @throws SalesforceException if there are issues contacting Salesforce
-     */
-    void addJobOpportunity(Iterable<SavedList> savedLists);
-
-    /**
-     * Fetches opportunities with the given ids from Salesforce.
-     * @param ids Salesforce id (not url)
+     * Fetches opportunities from Salesforce with Job opportunity fields populated.
+     * <p/>
+     * The opportunities fetched are those with the specified ids plus recently changed open
+     * job opportunities.
+     * @param sfIds Ids of requested Salesforce records
      * @return Opportunities
-     * @throws SalesforceException if there is a problem accessing Salesforce
      */
-    List<Opportunity> fetchOpportunities(Collection<String> ids) throws SalesforceException;
+    List<Opportunity> fetchJobOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds);
 
     /**
      * Fetches opportunity with the given id from Salesforce.
@@ -76,7 +69,7 @@ public interface SalesforceService {
      * @throws SalesforceException if there is a problem accessing Salesforce
      */
     @Nullable
-    Opportunity fetchOpportunity(String id) throws SalesforceException;
+    Opportunity fetchJobOpportunity(String id) throws SalesforceException;
 
     /**
      * Searches Salesforce for all Contact records relating to TBB
@@ -203,7 +196,7 @@ public interface SalesforceService {
      * @param candidates Candidates
      * @param salesforceOppParams Optional Salesforce fields to set on all given candidates'
      *                            opportunities
-     * @param sfJoblink url link to Employer job opportunity on Salesforce
+     * @param jobOpp Employer job opportunity on Salesforce
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
@@ -211,7 +204,7 @@ public interface SalesforceService {
      * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
      */
     void createOrUpdateCandidateOpportunities(List<Candidate> candidates,
-        @Nullable SalesforceOppParams salesforceOppParams, String sfJoblink)
+        @Nullable SalesforceOppParams salesforceOppParams, SalesforceJobOpp jobOpp)
             throws GeneralSecurityException, WebClientException, SalesforceException;
 
     /**
@@ -243,14 +236,14 @@ public interface SalesforceService {
      * external id TBBCandidateExternalId__c
      *
      * @param feedbacks Employer feedback on candidates
-     * @param sfJoblink url link to Employer job opportunity on Salesforce
+     * @param sfJobOpp Employer job opportunity on Salesforce
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data,
      * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
      */
-    void updateCandidateOpportunities(List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink)
+    void updateCandidateOpportunities(
+        List<EmployerCandidateFeedbackData> feedbacks, SalesforceJobOpp sfJobOpp)
         throws GeneralSecurityException, WebClientException, SalesforceException;
-
 }

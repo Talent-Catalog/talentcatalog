@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -92,6 +93,7 @@ import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.RootRequest;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SearchJoin;
@@ -165,6 +167,7 @@ import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.PartnerService;
 import org.tbbtalent.server.service.db.RootRequestService;
+import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
@@ -226,6 +229,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
+    private final SalesforceJobOppService salesforceJobOppService;
     private final CountryRepository countryRepository;
     private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
@@ -259,7 +263,7 @@ public class CandidateServiceImpl implements CandidateService {
         FileSystemService fileSystemService,
         GoogleDriveConfig googleDriveConfig,
         SalesforceService salesforceService,
-        CountryRepository countryRepository,
+        SalesforceJobOppService salesforceJobOppService, CountryRepository countryRepository,
         CountryService countryService,
         EducationLevelRepository educationLevelRepository,
         PasswordHelper passwordHelper,
@@ -285,6 +289,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateRepository = candidateRepository;
         this.candidateEsRepository = candidateEsRepository;
         this.googleDriveConfig = googleDriveConfig;
+        this.salesforceJobOppService = salesforceJobOppService;
         this.countryRepository = countryRepository;
         this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
@@ -2177,12 +2182,14 @@ public class CandidateServiceImpl implements CandidateService {
 
         List<Candidate> candidates = candidateRepository.findByIds(request.getCandidateIds());
 
-        createUpdateSalesforce(candidates, request.getSfJobLink(), request.getSalesforceOppParams());
+        final String sfJobLink = request.getSfJobLink();
+        final SalesforceJobOpp sfJobOpp =
+            salesforceJobOppService.getOrCreateJobOppFromLink(sfJobLink);
+        createUpdateSalesforce(candidates, sfJobOpp, request.getSalesforceOppParams());
     }
 
     public void createUpdateSalesforce(Collection<Candidate> candidates,
-        @Nullable String sfJoblink,
-        @Nullable SalesforceOppParams salesforceOppParams)
+        @Nullable SalesforceJobOpp sfJobOpp, @Nullable SalesforceOppParams salesforceOppParams)
         throws GeneralSecurityException, WebClientException {
 
         //Need ordered list so that can match with returned contacts.
@@ -2204,9 +2211,15 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //If we have a Salesforce job opportunity, we can also update associated candidate opps.
-        if (sfJoblink != null && sfJoblink.length() > 0) {
+        if (sfJobOpp != null) {
+            //If the sfJobOpp is not very recent, reload it
+            final OffsetDateTime lastUpdate = sfJobOpp.getLastUpdate();
+            if (lastUpdate == null ||
+                Duration.between(lastUpdate, OffsetDateTime.now()).toMinutes() >= 3) {
+                sfJobOpp = salesforceJobOppService.updateJob(sfJobOpp);
+            }
             salesforceService.createOrUpdateCandidateOpportunities(
-                orderedCandidates, salesforceOppParams, sfJoblink);
+                orderedCandidates, salesforceOppParams, sfJobOpp);
         }
     }
 

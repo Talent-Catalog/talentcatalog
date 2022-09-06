@@ -162,7 +162,6 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         //Set any specified Salesforce Job Opportunity
         final String sfJoblink = request.getSfJoblink();
         if (sfJoblink != null) {
-            targetList.setSfJoblink(sfJoblink);
             targetList.setSfJobOpp(salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink));
         }
 

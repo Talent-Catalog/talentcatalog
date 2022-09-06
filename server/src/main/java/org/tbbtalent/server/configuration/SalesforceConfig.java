@@ -33,14 +33,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SalesforceConfig {
 
     /**
+     * Maximum number of days ago that will be considered recent.
+     * Used to examine recently changed open opportunities that might need to be considered.
+     * See fetchJobOpportunitiesByIdOrOpenOnSF in SalesforceService
+     */
+    private int daysAgoRecent;
+
+    /**
      * Private key used for accessing Salesforce
      */
     private String privatekey;
-
-    /**
-     * Maximum number seconds that cached Salesforce data should live before being refreshed from
-     * Salesforce.
-     */
-    private int timeToLive;
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2022 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,41 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.candidate;
+package org.tbbtalent.server.configuration;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Candidate's Salesforce opportunity parameters
+ * Salesforce RecordType configuration - read from application.yml
  * <p/>
- * These can be set by a user on the admin portal - from Angular
+ * MODEL - Loading application.yml NESTED configuration into a Java object
+ * MODEL Camel case configuration property (recordType) must be converted to kebab form (record-type)
  *
  * @author John Cameron
  */
 @Getter
 @Setter
-@ToString
-public class SalesforceOppParams {
+@ConfigurationProperties("salesforce.record-type")
+public class SalesforceRecordTypeConfig {
 
-  /**
-   * Must match the name of a Salesforce Candidate Opportunity stage
-   */
-  @Nullable
-  private CandidateOpportunityStage stage;
-
-  /**
-   * Any text which will update a Salesforce Candidate Opportunity stage
-   */
-  @Nullable
-  private String nextStep;
-
-  /**
-   * Employer feedback on a candidate
-   */
-  @Nullable
-  private String employerFeedback;
+    /**
+     * Salesforce RecordType ID of Employer Job opportunities
+     */
+    private String employerJob;
 }

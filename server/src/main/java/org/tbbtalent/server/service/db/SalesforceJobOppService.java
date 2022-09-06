@@ -16,7 +16,7 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.util.List;
+import java.util.Collection;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import org.tbbtalent.server.exception.InvalidRequestException;
@@ -29,15 +29,6 @@ import org.tbbtalent.server.model.db.SalesforceJobOpp;
  * @author John Cameron
  */
 public interface SalesforceJobOppService {
-
-    /**
-     * Creates an empty SalesforceJobOpp associated with Salesforce record with given id configured
-     * to expire immediately - at which time it will be populated with data taken from Salesforce.
-     * @param sfId Salesforce opportunity record id
-     * @return SalesforceJobOpp cache record
-     */
-    @NotNull
-    SalesforceJobOpp createExpiringOpp(String sfId);
 
     /**
      * Creates a SalesforceJobOpp associated with Salesforce record with given id
@@ -81,14 +72,27 @@ public interface SalesforceJobOppService {
     SalesforceJobOpp getJobOppByUrl(String sfUrl);
 
     /**
+     * Updates existing job opportunity from Salesforce
+     * @param sfJobOpp Job opportunity
+     * @return Updated job opportunity
+     */
+    SalesforceJobOpp updateJob(SalesforceJobOpp sfJobOpp);
+
+    /**
      * Updates existing Salesforce cache records (SalesforceJobOpp's) corresponding to the given
      * Salesforce ids.
      * <p/>
-     * Note that this does NOT create new SalesforceJobOpp's - that should be done before calling
-     * this if we have a brand new id. That is because a Job also needs to be created to go with the
-     * SalesforceJobOpp
+     * It will also update records for job opportunities which are open on SF
+     * and which are locally cached, even if their ids are not in the given list of ids.
+     * This is useful for job opportunities which have been closed and then are reopened on SF.
+     * Typically, we only pass in ids of local job opps that are open in order to limit the total
+     * number of ids. Otherwise, the total number of ids being passed in will grow infinitely
+     * over time (and might eventually crash the SF link by making the SF query too long).
+     * This way the id's can be limited to open job opps only - ignoring closed opps. This
+     * approach ensures that closed opps can be reopened as a result of this update.
+     *
      * @param sfIds Salesforce ids of cache records to be updated from Salesforce
      * @throws SalesforceException if there are issues contacting Salesforce
      */
-    void update(List<String> sfIds) throws SalesforceException;
+    void updateJobs(Collection<String> sfIds) throws SalesforceException;
 }

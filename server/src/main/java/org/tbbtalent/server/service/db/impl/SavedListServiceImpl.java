@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
@@ -52,7 +51,6 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.AbstractCandidateSource;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.ExportColumn;
@@ -64,7 +62,6 @@ import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
-import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
@@ -345,14 +342,6 @@ public class SavedListServiceImpl implements SavedListService {
         }
     }
 
-    @Override
-    public List<String> collectSfJoblinks(List<SavedList> savedLists) {
-        return savedLists.stream()
-            .map(AbstractCandidateSource::getSfJoblink)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    }
-
     /**
      * Finds folder for the given list on Google Drive, creating one if none found.
      *
@@ -446,8 +435,8 @@ public class SavedListServiceImpl implements SavedListService {
                 jobName = sfJobOpp.getName();
             }
 
-            //Check for a registered list with same sfJobLink (owned any user)
-            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJoblink)
+            //Check for a registered list with same sfJobOpp (owned any user)
+            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJobOpp.getId())
                 .orElse(null);
             //If we already have a registered list for this job, just return it
             if (registeredList != null) {
@@ -483,9 +472,9 @@ public class SavedListServiceImpl implements SavedListService {
     public void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
         throws NoSuchObjectException, GeneralSecurityException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
-        String sfJobLink = savedList.getSfJoblink();
+        SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
         candidateService.createUpdateSalesforce(
-            savedList.getCandidates(), sfJobLink, request.getSalesforceOppParams());
+            savedList.getCandidates(), sfJobOpp, request.getSalesforceOppParams());
     }
 
     @Override
@@ -687,9 +676,9 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = get(savedListId);
 
         //There will only be candidate opportunities if list has a job opp
-        final String joblink = savedList.getSfJoblink();
-        if (joblink != null) {
-            salesforceService.addCandidateOpportunityStages(candidates, joblink);
+        final SalesforceJobOpp jobOpp = savedList.getSfJobOpp();
+        if (jobOpp != null) {
+            salesforceService.addCandidateOpportunityStages(candidates, jobOpp.getId());
         }
     }
 
@@ -827,7 +816,7 @@ public class SavedListServiceImpl implements SavedListService {
                 report.setNumNoJobOffers(nNoJobOffers);
 
                 if (nFeedbacks + nJobOffers + nNoJobOffers > 0) {
-                    salesforceService.updateCandidateOpportunities(feedbacks, savedList.getSfJoblink());
+                    salesforceService.updateCandidateOpportunities(feedbacks, savedList.getSfJobOpp());
                     report.setMessage("Import complete");
                 } else {
                     report.setMessage("No feedback detected");
@@ -993,32 +982,6 @@ public class SavedListServiceImpl implements SavedListService {
                     .orElseThrow(() -> new NoSuchObjectException(SavedList.class, sourceListId));
         }
         return sourceList;
-    }
-
-    @Override
-    public void updateJobOpportunityInfo(Iterable<SavedList> savedLists) {
-        for (SavedList savedList : savedLists) {
-            Opportunity opp = savedList.getSfJobOpportunity();
-            if (opp == null) {
-                //No opportunity.
-                //But if the savedList has a job link and is marked as having an unclosed opp
-                //close it.
-                //This can happen if the job opp is deleted on Salesforce, so the job link is
-                //no longer valid and Salesforce will return a null opportunity object.
-                //All such opportunities should be considered as closed.
-                if (savedList.getSfJoblink() != null && !savedList.isSfOppIsClosed()) {
-                    savedList.setSfOppIsClosed(true);
-                    savedList = saveIt(savedList);
-                }
-            } else {
-                if (savedList.isSfOppIsClosed() != opp.IsClosed) {
-                    savedList.setSfOppIsClosed(opp.IsClosed);
-                    savedList = saveIt(savedList);
-                }
-                savedList.setSfJobCountry(opp.getAccountCountry__c());
-                savedList.setSfJobStage(opp.getStageName());
-            }
-        }
     }
 
     /**

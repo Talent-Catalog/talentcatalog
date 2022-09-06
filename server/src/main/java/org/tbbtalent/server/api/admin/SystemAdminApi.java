@@ -63,9 +63,6 @@ import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationType;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.NoteType;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
@@ -78,6 +75,7 @@ import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.service.db.LanguageService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
@@ -104,6 +102,7 @@ public class SystemAdminApi {
     private final CandidateRepository candidateRepository;
     private final CountryService countryService;
     private final FileSystemService fileSystemService;
+    private final JobService jobService;
     private final LanguageService languageService;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
@@ -148,7 +147,7 @@ public class SystemAdminApi {
         CandidateRepository candidateRepository,
         CountryService countryService,
         FileSystemService fileSystemService,
-        LanguageService languageService,
+        JobService jobService, LanguageService languageService,
         PopulateElasticsearchService populateElasticsearchService,
         SalesforceService salesforceService,
         SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
@@ -162,6 +161,7 @@ public class SystemAdminApi {
         this.candidateRepository = candidateRepository;
         this.countryService = countryService;
         this.fileSystemService = fileSystemService;
+        this.jobService = jobService;
         this.languageService = languageService;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
@@ -173,68 +173,74 @@ public class SystemAdminApi {
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
-    @GetMapping("create-sf-job-opps")
-    public String createSfJobOpps() {
-        int count = 0;
-        int errorCount = 0;
-        List<SavedList> lists = savedListRepository.findAll();
-        for (SavedList list : lists) {
-            final String sfJoblink = list.getSfJoblink();
-            if (sfJoblink != null && sfJoblink.trim().length() > 0 && list.getSfJobOpp() == null) {
-                try {
-                    final SalesforceJobOpp opp =
-                        salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink);
-                    if (opp == null) {
-                        log.warn("Problem converting sfJoblink " + sfJoblink + " of list " +
-                            list.getId() + " (" + list.getName() +
-                            ") to sfJobOpp. Null jobOpp returned");
-                        errorCount++;
-                    } else {
-                        list.setSfJobOpp(opp);
-                        savedListRepository.save(list);
-                        log.info("Created sfJobOpp for list " + list.getId() + " (" +  list.getName() + ")");
-                        count++;
-                    }
-                } catch (Exception ex) {
-                    log.warn("Problem converting sfJoblink " + sfJoblink + " of list " +
-                        list.getId() + " (" + list.getName() + ") to sfJobOpp: " + ex);
-                    errorCount++;
-                }
-            }
-        }
-        log.info("Completed Saved List processing. Total converted: " + count + " Errors: " + errorCount);
-
-        //Saved searches as well
-        count = 0;
-        errorCount = 0;
-        List<SavedSearch> searches = savedSearchRepository.findAll();
-        for (SavedSearch search : searches) {
-            final String sfJoblink = search.getSfJoblink();
-            if (sfJoblink != null && sfJoblink.trim().length() > 0 && search.getSfJobOpp() == null) {
-                try {
-                    final SalesforceJobOpp opp =
-                        salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink);
-                    if (opp == null) {
-                        log.warn("Problem converting sfJoblink " + sfJoblink + " of search " +
-                            search.getId() + " (" + search.getName() +
-                            ") to sfJobOpp. Null jobOpp returned");
-                        errorCount++;
-                    } else {
-                        search.setSfJobOpp(opp);
-                        savedSearchRepository.save(search);
-                        log.info("Created sfJobOpp for search " + search.getId() + " (" +  search.getName() + ")");
-                        count++;
-                    }
-                } catch (Exception ex) {
-                    log.warn("Problem converting sfJoblink " + sfJoblink + " of search " +
-                        search.getId() + " (" + search.getName() + ") to sfJobOpp: " + ex);
-                    errorCount++;
-                }
-            }
-        }
-        log.info("Completed Saved Search processing. Total converted: " + count + " Errors: " + errorCount);
-        return "Done";
+    @GetMapping("sf-sync-open-jobs")
+    public String SfSyncOpenJobs() {
+        jobService.updateOpenJobs();
+        return "started";
     }
+
+//    @GetMapping("create-sf-job-opps")
+//    public String createSfJobOpps() {
+//        int count = 0;
+//        int errorCount = 0;
+//        List<SavedList> lists = savedListRepository.findAll();
+//        for (SavedList list : lists) {
+//            final String sfJoblink = list.getSfJoblink();
+//            if (sfJoblink != null && sfJoblink.trim().length() > 0 && list.getSfJobOpp() == null) {
+//                try {
+//                    final SalesforceJobOpp opp =
+//                        salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink);
+//                    if (opp == null) {
+//                        log.warn("Problem converting sfJoblink " + sfJoblink + " of list " +
+//                            list.getId() + " (" + list.getName() +
+//                            ") to sfJobOpp. Null jobOpp returned");
+//                        errorCount++;
+//                    } else {
+//                        list.setSfJobOpp(opp);
+//                        savedListRepository.save(list);
+//                        log.info("Created sfJobOpp for list " + list.getId() + " (" +  list.getName() + ")");
+//                        count++;
+//                    }
+//                } catch (Exception ex) {
+//                    log.warn("Problem converting sfJoblink " + sfJoblink + " of list " +
+//                        list.getId() + " (" + list.getName() + ") to sfJobOpp: " + ex);
+//                    errorCount++;
+//                }
+//            }
+//        }
+//        log.info("Completed Saved List processing. Total converted: " + count + " Errors: " + errorCount);
+//
+//        //Saved searches as well
+//        count = 0;
+//        errorCount = 0;
+//        List<SavedSearch> searches = savedSearchRepository.findAll();
+//        for (SavedSearch search : searches) {
+//            final String sfJoblink = search.getSfJoblink();
+//            if (sfJoblink != null && sfJoblink.trim().length() > 0 && search.getSfJobOpp() == null) {
+//                try {
+//                    final SalesforceJobOpp opp =
+//                        salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink);
+//                    if (opp == null) {
+//                        log.warn("Problem converting sfJoblink " + sfJoblink + " of search " +
+//                            search.getId() + " (" + search.getName() +
+//                            ") to sfJobOpp. Null jobOpp returned");
+//                        errorCount++;
+//                    } else {
+//                        search.setSfJobOpp(opp);
+//                        savedSearchRepository.save(search);
+//                        log.info("Created sfJobOpp for search " + search.getId() + " (" +  search.getName() + ")");
+//                        count++;
+//                    }
+//                } catch (Exception ex) {
+//                    log.warn("Problem converting sfJoblink " + sfJoblink + " of search " +
+//                        search.getId() + " (" + search.getName() + ") to sfJobOpp: " + ex);
+//                    errorCount++;
+//                }
+//            }
+//        }
+//        log.info("Completed Saved Search processing. Total converted: " + count + " Errors: " + errorCount);
+//        return "Done";
+//    }
 
     //    @GetMapping("jd-folders-viewable")
     public String makeJobDescriptionFoldersViewable() throws GeneralSecurityException, IOException {
