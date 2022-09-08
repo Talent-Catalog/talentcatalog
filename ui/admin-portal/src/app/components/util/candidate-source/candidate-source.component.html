@@ -58,8 +58,8 @@
           <button class="btn" *ngIf="showEdit && isEditable()" (click)="doSelectColumns()">
             <i class="fas fa-columns" title="Select columns to display"></i>
           </button>
-          <a class="btn" *ngIf="candidateSource.sfJoblink" target="_blank"
-             [href]="candidateSource.sfJoblink">
+          <a class="btn" *ngIf="salesforceService.joblink(candidateSource)" target="_blank"
+             [href]="salesforceService.joblink(candidateSource)">
             <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
           </a>
           <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">

@@ -42,6 +42,7 @@ import {externalDocLink, isSavedList} from "../../../model/saved-list";
 import {ConfirmationComponent} from "../confirm/confirmation.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedListService} from "../../../services/saved-list.service";
+import {SalesforceService} from "../../../services/salesforce.service";
 
 
 /**
@@ -94,6 +95,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   private loggedInUser: User;
 
   constructor(
+    public salesforceService: SalesforceService,
     private savedSearchService: SavedSearchService,
     private savedListService: SavedListService,
     private location: Location,

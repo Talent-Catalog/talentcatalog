@@ -117,6 +117,7 @@ import {
 } from "../../util/published-doc-column-selector/published-doc-column-selector.component";
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
+import {SalesforceService} from "../../../services/salesforce.service";
 
 interface CachedTargetList {
   sourceID: number;
@@ -205,7 +206,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateFieldService: CandidateFieldService,
               private authService: AuthService,
-              private publishedDocColumnService: PublishedDocColumnService
+              private publishedDocColumnService: PublishedDocColumnService,
+              public salesforceService: SalesforceService
 
   ) {
     this.searchForm = this.fb.group({
@@ -821,7 +823,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isShowStage(): boolean {
-    return isSavedList(this.candidateSource) && this.candidateSource.sfJoblink != null;
+    return isSavedList(this.candidateSource) && this.candidateSource.sfJobOpp != null;
   }
 
   isEditable(): boolean {
@@ -1005,7 +1007,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const modal = this.modalService.open(SelectListComponent);
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
-    if (this.candidateSource.sfJoblink != null) {
+    if (this.candidateSource.sfJobOpp != null) {
       modal.componentInstance.sfJoblink = this.candidateSource.sfJoblink;
     }
     if (!isSavedSearch(this.candidateSource)) {
@@ -1364,7 +1366,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private doCreateUpdateSalesforceOnList(selectedCandidatesOnly: boolean) {
-    if (!this.candidateSource.sfJoblink) {
+    if (!this.candidateSource.sfJobOpp) {
       //If we do not have a job opportunity, there will be no candidate opp info.
       this.doCreateUpdateSalesforceOnList2(null, selectedCandidatesOnly);
     } else {
