@@ -67,6 +67,7 @@ import {
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {isJob, JobOpportunityStage, SearchJobRequest} from "../../../../model/job";
 import {enumOptions} from "../../../../util/enum";
+import {SalesforceService} from "../../../../services/salesforce.service";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -103,6 +104,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
               private modalService: NgbModal,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateSourceService: CandidateSourceService,
+              public salesforceService: SalesforceService,
               private savedSearchService: SavedSearchService) {
   }
 
@@ -356,7 +358,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
             sourceListId: source.id,
             statusUpdateInfo: selection.statusUpdateInfo,
             updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
-            sfJoblink: source?.sfJoblink
+            sfJoblink: this.salesforceService.joblink(source)
 
           }
           this.candidateSourceService.copy(source, request).subscribe(

@@ -16,13 +16,11 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {
-  SavedList,
-  UpdateSavedListInfoRequest
-} from '../../../model/saved-list';
+import {SavedList, UpdateSavedListInfoRequest} from '../../../model/saved-list';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {SavedListService} from '../../../services/saved-list.service';
 import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
+import {SalesforceService} from "../../../services/salesforce.service";
 
 @Component({
   selector: 'app-create-update-list',
@@ -39,6 +37,7 @@ export class CreateUpdateListComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
+              public salesforceService: SalesforceService,
               private savedListService: SavedListService) {
   }
 

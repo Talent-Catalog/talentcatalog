@@ -97,7 +97,7 @@
           </li>
           <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
             The Salesforce job opportunity
-            <a href="{{savedList.sfJoblink}}" target="_blank">{{jobName}}</a> has links to the
+            <a href="{{salesforceService.joblink(savedList)}}" target="_blank">{{jobName}}</a> has links to the
             above Talent catalog list and the list folders. This provides easy access to all relevant data
             directly from Salesforce.
           </li>

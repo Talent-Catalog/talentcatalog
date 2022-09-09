@@ -40,7 +40,7 @@ export class NewJobComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private jobService: JobService,
-    private salesforceService: SalesforceService,
+    public salesforceService: SalesforceService,
     private savedListService: SavedListService,
     private slackService: SlackService,
     private location: Location,
@@ -135,7 +135,7 @@ export class NewJobComponent implements OnInit {
     this.creatingSFLinks = Progress.Started;
 
     const request: UpdateEmployerOpportunityRequest = {
-      sfJoblink: this.savedList.sfJoblink,
+      sfJoblink: this.salesforceService.joblink(this.savedList),
       folderlink: this.savedList.folderlink,
       foldercvlink: this.savedList.foldercvlink,
       folderjdlink: this.savedList.folderjdlink,
@@ -160,7 +160,7 @@ export class NewJobComponent implements OnInit {
     this.postingToSlack = Progress.Started;
 
     const request: PostJobToSlackRequest = {
-      sfJoblink: this.savedList.sfJoblink,
+      sfJoblink: this.salesforceService.joblink(this.savedList),
       jobName: this.jobName,
       folderlink: this.savedList.folderlink,
       foldercvlink: this.savedList.foldercvlink,
