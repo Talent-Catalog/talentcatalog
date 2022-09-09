@@ -314,7 +314,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             String employerFeedback = null;
             if (salesforceOppParams != null) {
                 final CandidateOpportunityStage stage = salesforceOppParams.getStage();
-                stageName = stage == null ? null : stage.toString();
+                stageName = stage == null ? null : stage.salesforceStageName;
                 nextStep = salesforceOppParams.getNextStep();
                 employerFeedback = salesforceOppParams.getEmployerFeedback();
             }

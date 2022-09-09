@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.OffsetDateTime;
@@ -920,6 +921,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
      */
 
+        User user = authService.getLoggedInUser().orElse(null);
+
         //Create a simple query string builder from the given string
         SimpleQueryStringBuilder simpleQueryStringBuilder =
             QueryBuilders.simpleQueryStringQuery(simpleQueryString);
@@ -962,18 +965,26 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 SearchType.not,"masterId", candidateIds);
         }
 
-        //Countries
+        //Countries - need to take account of source country restrictions
         final List<Long> countryIds = request.getCountryIds();
-        if (countryIds != null) {
+        List<Object> reqCountries = new ArrayList<>();
+        // If countryIds is NOT EMPTY we can just accept them because the options
+        // presented to the user will be limited to the allowed source countries
+        if (!Collections.isEmpty(countryIds)) {
             //Look up country names from ids.
-            List<Object> reqCountries = new ArrayList<>();
             for (Long countryId : countryIds) {
                 final Country country = countryService.getCountry(countryId);
                 reqCountries.add(country.getName());
             }
-            boolQueryBuilder =
-                addElasticTermFilter(boolQueryBuilder,
-                    null,"country.keyword", reqCountries);
+        } else if (user != null && !Collections.isEmpty(user.getSourceCountries())){
+            for (Country country: user.getSourceCountries()) {
+                reqCountries.add(country.getName());
+            }
+        }
+
+        if (reqCountries.size() > 0) {
+            boolQueryBuilder = addElasticTermFilter(
+                boolQueryBuilder, null,"country.keyword", reqCountries);
         }
 
         //Partners
@@ -1399,6 +1410,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
+            User user = authService.getLoggedInUser().orElse(null);
+
             //This is an elastic search request
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(request,
                 simpleQueryString, excludedCandidates);

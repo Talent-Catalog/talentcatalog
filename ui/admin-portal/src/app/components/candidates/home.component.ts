@@ -121,6 +121,6 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   }
 
   isExperimental() {
-    return this.authService.isSystemAdminOnly();
+    return false;
   }
 }

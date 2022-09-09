@@ -17,7 +17,7 @@
 package org.tbbtalent.server.model.db;
 
 /**
- * Note that the string values of this enum MUST match the actual stage names for candiadte
+ * Note that the string values of this enum MUST match the actual stage names for candidate
  * opportunities on Salesforce.
  * <p/>
  * See https://docs.google.com/document/d/1B6DmpYaONV_yNmyAqL76cu0TUQcpNgKtOmKELCkpRoc/edit#heading=h.qx7je1tuwoqv
@@ -55,25 +55,25 @@ public enum CandidateOpportunityStage {
         candidateWithdraws ("Candidate withdraws")
         ;
 
-        public final String label;
+        public final String salesforceStageName;
 
-        CandidateOpportunityStage(String label) {
-                this.label = label;
+        CandidateOpportunityStage(String salesforceStageName) {
+                this.salesforceStageName = salesforceStageName;
         }
 
         @Override
         public String toString() {
-                return label;
+                return salesforceStageName;
         }
 
-        public static CandidateOpportunityStage textToEnum(String label) {
+        public static CandidateOpportunityStage textToEnum(String salesforceStageName) {
                 for (CandidateOpportunityStage stage : CandidateOpportunityStage.values()) {
-                        if (stage.label.equals(label)) {
+                        if (stage.salesforceStageName.equals(salesforceStageName)) {
                                 return stage;
                         }
                 }
                 throw new IllegalArgumentException(
-                    "Unrecognized CandidateOpportunityStage: " + label);
+                    "Unrecognized CandidateOpportunityStage: " + salesforceStageName);
         }
 
 }
