@@ -2182,9 +2182,9 @@ public class CandidateServiceImpl implements CandidateService {
 
         List<Candidate> candidates = candidateRepository.findByIds(request.getCandidateIds());
 
-        final String sfJobLink = request.getSfJobLink();
+        final String sfJobOppId = request.getSfJobOppId();
         final SalesforceJobOpp sfJobOpp =
-            salesforceJobOppService.getOrCreateJobOppFromLink(sfJobLink);
+            salesforceJobOppService.getOrCreateJobOppFromId(sfJobOppId);
         createUpdateSalesforce(candidates, sfJobOpp, request.getSalesforceOppParams());
     }
 

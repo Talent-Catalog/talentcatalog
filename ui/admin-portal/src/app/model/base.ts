@@ -17,6 +17,7 @@
 import {User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
+import {SalesforceJobOpp} from "./job";
 
 export interface HasName {
   name?: string;
@@ -158,7 +159,7 @@ export interface CandidateSource extends Auditable {
   fixed: boolean;
   global: boolean;
   sfJoblink?: string;
-  sfJobOpp?: string;
+  sfJobOpp?: SalesforceJobOpp;
   users?: User[];
   watcherUserIds?: number[];
 }

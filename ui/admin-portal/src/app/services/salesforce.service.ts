@@ -27,7 +27,8 @@ export class SalesforceService {
   }
 
   joblink(candidateSource: CandidateSource): string {
-    return candidateSource == null ? null : this.sfOppToLink(candidateSource.sfJobOpp)
+    const sfJobOpp = candidateSource == null ? null : candidateSource.sfJobOpp;
+    return sfJobOpp == null ? null : this.sfOppToLink(sfJobOpp.id)
   }
 
   getOpportunity(sfUrl: string): Observable<Opportunity> {

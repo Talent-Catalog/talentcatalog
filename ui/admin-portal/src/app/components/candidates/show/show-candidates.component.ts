@@ -118,6 +118,7 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
+import {SalesforceJobOpp} from "../../../model/job";
 
 interface CachedTargetList {
   sourceID: number;
@@ -1008,7 +1009,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
     if (this.candidateSource.sfJobOpp != null) {
-      modal.componentInstance.sfJoblink = this.candidateSource.sfJoblink;
+      modal.componentInstance.sfJoblink = this.salesforceService.joblink(this.candidateSource);
     }
     if (!isSavedSearch(this.candidateSource)) {
       modal.componentInstance.excludeList = this.candidateSource;
@@ -1384,16 +1385,18 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.updating = true;
 
     if (selectedCandidatesOnly) {
-      const sfJobLink: string = this.candidateSource.sfJoblink;
-      const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
-      this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobLink, info)
-      .subscribe(result => {
-          //Refresh to display any changed stages
-          this.doSearch(true);
-          this.updating = false;
-        },
-        err => {this.error = err; this.updating = false; }
-      );
+      const sfJobOpp: SalesforceJobOpp = this.candidateSource.sfJobOpp;
+      if (sfJobOpp) {
+        const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
+        this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobOpp.id, info)
+        .subscribe(result => {
+            //Refresh to display any changed stages
+            this.doSearch(true);
+            this.updating = false;
+          },
+          err => {this.error = err; this.updating = false; }
+        );
+      }
     } else {
       this.candidateService.createUpdateSalesforceFromList(this.candidateSource, info)
       .subscribe(result => {
@@ -1612,7 +1615,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           sourceListId: this.candidateSource.id,
           statusUpdateInfo: selection.statusUpdateInfo,
           updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
-          sfJoblink: this.candidateSource?.sfJoblink
+          sfJoblink: this.salesforceService.joblink(this.candidateSource)
 
         }
         this.candidateSourceService.copy(this.candidateSource, request).subscribe(

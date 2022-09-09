@@ -76,6 +76,23 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         return salesforceJobOppRepository.save(salesforceJobOpp);
     }
 
+    @Nullable
+    @Override
+    public SalesforceJobOpp getOrCreateJobOppFromId(String sfId) {
+        SalesforceJobOpp jobOpp;
+        if (sfId == null || sfId.trim().length() == 0) {
+            jobOpp = null;
+        } else {
+            //Search for existing SalesforceJobOpp associated with this Salesforce record
+            jobOpp = getJobOppById(sfId);
+            if (jobOpp == null) {
+                //Create one if none exists
+                jobOpp = createJobOpp(sfId);
+            }
+        }
+        return jobOpp;
+    }
+
     @Override
     @Nullable
     public SalesforceJobOpp getOrCreateJobOppFromLink(String sfJoblink) {
@@ -87,12 +104,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             if (sfId == null) {
                 throw new InvalidRequestException("Not a valid link to a Salesforce opportunity: " + sfJoblink);
             }
-            //Search for existing SalesforceJobOpp associated with this Salesforce record
-            jobOpp = getJobOppById(sfId);
-            if (jobOpp == null) {
-                //Create one if none exists
-                jobOpp = createJobOpp(sfId);
-            }
+            jobOpp = getOrCreateJobOppFromId(sfId);
         }
         return jobOpp;
     }

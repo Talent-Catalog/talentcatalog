@@ -54,6 +54,10 @@ export enum JobOpportunityStage {
   noVisa = "No visa"
 }
 
+export interface SalesforceJobOpp {
+  id: string;
+}
+
 export class SearchJobRequest extends SearchCandidateSourcesRequest {
   sfOppClosed?: boolean;
   stages?: string[];

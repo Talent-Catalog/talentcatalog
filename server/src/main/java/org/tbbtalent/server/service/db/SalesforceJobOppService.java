@@ -42,6 +42,14 @@ public interface SalesforceJobOppService {
     SalesforceJobOpp createJobOpp(String sfId) throws InvalidRequestException, SalesforceException;
 
     /**
+     * Looks up SalesforceJobOp from id, creating one if needed.
+     * @param sfId id of salesforce job opportunity
+     * @return SalesforceJobOpp associated with id, or null if none found or id is null
+     */
+    @Nullable
+    SalesforceJobOpp getOrCreateJobOppFromId(String sfId) throws InvalidRequestException;
+
+    /**
      * Looks up SalesforceJobOp from link, creating one if needed.
      * @param sfJoblink Link (url) to salesforce job opportunity
      * @return Null if link is null, otherwise SalesforceJobOpp associated with link

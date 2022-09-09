@@ -403,7 +403,7 @@ export interface SalesforceOppParams {
 
 export interface UpdateCandidateOppsRequest {
   candidateIds: number[];
-  sfJobLink: string;
+  sfJobOppId: string;
   salesforceOppParams?: SalesforceOppParams;
 }
 
