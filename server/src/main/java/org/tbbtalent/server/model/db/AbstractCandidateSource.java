@@ -221,14 +221,6 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         this.sfJobOpp = sfJobOpp;
     }
 
-    public String getSfJoblink() {
-        //TODO JC Temporary until serializing sfJobOpp up to Angular is all that is needed
-        //TODO JC Replace sfJoblinks on Anglusr with sfJobOpp
-        final String prefix = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/";
-        final String suffix = "/view";
-        return sfJobOpp == null ? null : prefix + sfJobOpp.getId() + suffix;
-    }
-
     public Status getStatus() {
         return status;
     }

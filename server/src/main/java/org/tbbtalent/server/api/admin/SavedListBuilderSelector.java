@@ -45,7 +45,6 @@ public class SavedListBuilderSelector {
                 .add("fixed")
                 .add("global")
                 .add("savedSearchSource", savedSearchSourceDto())
-                .add("sfJoblink")
                 .add("sfJobOpp", salesforceJobOppDto())
                 .add("folderlink")
                 .add("foldercvlink")

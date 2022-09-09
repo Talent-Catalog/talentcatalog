@@ -158,7 +158,6 @@ export interface CandidateSource extends Auditable {
   exportColumns?: ExportColumn[];
   fixed: boolean;
   global: boolean;
-  sfJoblink?: string;
   sfJobOpp?: SalesforceJobOpp;
   users?: User[];
   watcherUserIds?: number[];

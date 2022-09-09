@@ -389,7 +389,6 @@ public class SavedSearchAdminApi implements
                 .add("reviewable")
                 .add("global")
                 .add("defaultSearch")
-                .add("sfJoblink")
                 .add("sfJobOpp", salesforceJobOppDto())
                 .add("watcherUserIds")
                 .add("createdBy", userDto())
