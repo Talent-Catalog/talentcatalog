@@ -361,10 +361,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             //Now set any requested stage name and next step
             String stageName = null;
             String nextStep = null;
+            String closingComments = null;
             String employerFeedback = null;
             if (salesforceOppParams != null) {
                 stageName = salesforceOppParams.getStageName();
                 nextStep = salesforceOppParams.getNextStep();
+                closingComments = salesforceOppParams.getClosingComments();
                 employerFeedback = salesforceOppParams.getEmployerFeedback();
             }
 
@@ -378,6 +380,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
             if (nextStep != null) {
                 opportunityRequest.setNextStep(nextStep);
+            }
+            if (closingComments != null) {
+                opportunityRequest.setClosingComments(closingComments);
             }
             if (employerFeedback != null) {
                 opportunityRequest.setEmployerFeedback(employerFeedback);
@@ -1509,6 +1514,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public void setCloseDate(String closeDate) {
             put("CloseDate", closeDate);
+        }
+
+        /**
+         * Comments explaining why the opportunity was closed
+         */
+        public void setClosingComments(String comments) {
+            put("Closing_Comments__c", comments);
         }
 
         /**

@@ -46,6 +46,12 @@ public class SalesforceOppParams {
   private String nextStep;
 
   /**
+   * Comments explaining why the opportunity was closed
+   */
+  @Nullable
+  private String closingComments;
+
+  /**
    * Employer feedback on a candidate
    */
   @Nullable

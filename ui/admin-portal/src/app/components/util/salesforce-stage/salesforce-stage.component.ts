@@ -27,10 +27,12 @@ export class SalesforceStageComponent implements OnInit {
     this.salesforceStageForm = this.fb.group({
       stage: [null],
       nextStep: [null],
+      closingComments: [null],
       employerFeedback: [null]
     });
   }
 
+  get closingComments(): string { return this.salesforceStageForm.value?.closingComments; }
   get employerFeedback(): string { return this.salesforceStageForm.value?.employerFeedback; }
   get nextStep(): string { return this.salesforceStageForm.value?.nextStep; }
   get stage(): string { return this.salesforceStageForm.value?.stage; }
@@ -42,9 +44,10 @@ export class SalesforceStageComponent implements OnInit {
   onSave() {
     const info: SalesforceOppParams = {
       //Note that this is an unusual case where we pass back the string value - rather that the key
-      //of the enum.
-      stageName: this.stage ? CandidateOpportunityStage[this.stage]: null,
+      //of the enum. The enum's string values are what matches the SF stage names.
+      stageName: this.stage ? CandidateOpportunityStage[this.stage] : null,
       nextStep: this.nextStep,
+      closingComments: this.closingComments,
       employerFeedback: this.employerFeedback
     }
     this.activeModal.close(info)
