@@ -49,8 +49,10 @@ public enum CandidateOpportunityStage {
         noJobOffer ("No job offer"),
         noVisa ("No visa"),
         notFitForRole ("Not fit for role"),
+        notEligibleForTC ("Not eligible for TC"),
         notEligibleForVisa ("Not eligible for visa"),
         noInterview ("No interview"),
+        candidateLeavesDestination ("Candidate leaves destination"),
         candidateRejectsOffer ("Candidate rejects offer"),
         candidateWithdraws ("Candidate withdraws")
         ;
