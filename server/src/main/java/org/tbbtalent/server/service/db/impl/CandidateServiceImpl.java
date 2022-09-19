@@ -2259,7 +2259,7 @@ public class CandidateServiceImpl implements CandidateService {
                 UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
                 info.setStatus(newStatus);
                 info.setComment(
-                    "Status changed automatically due candidate's stage in the '"
+                    "Status changed automatically due to candidate's stage in the '"
                         + sfJobOpp.getName() + "' job opportunity changing to '" + stage + "'");
                 updateCandidateStatus(candidate, info);
             }
