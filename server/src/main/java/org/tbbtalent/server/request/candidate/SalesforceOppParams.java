@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 
 /**
  * Candidate's Salesforce opportunity parameters
@@ -37,7 +38,7 @@ public class SalesforceOppParams {
    * Must match the name of a Salesforce Candidate Opportunity stage
    */
   @Nullable
-  private String stageName;
+  private CandidateOpportunityStage stage;
 
   /**
    * Any text which will update a Salesforce Candidate Opportunity stage

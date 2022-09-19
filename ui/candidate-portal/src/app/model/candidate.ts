@@ -212,6 +212,12 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
   passwordConfirmation: string;
   reCaptchaV3Token: string;
   partnerAbbreviation: string;
+  referrerParam?: string;
+  utmCampaign?: string;
+  utmContent?: string;
+  utmMedium?: string;
+  utmSource?: string;
+  utmTerm?: string;
 }
 
 export class LoginRequest {

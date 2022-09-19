@@ -86,10 +86,11 @@
                  [items]="occupations" [clearOnBackspace]="false" placeholder="Select" bindLabel="name" bindValue="id">
       </ng-select>
     </div>
-    <div *ngIf="occupationSelected">
+    <div>
       <div class="form-group">
         <label for="partnerOccupationNotes">
-          Additional notes about partner's occupation
+          Additional notes about selected occupation, or description of an occupation that does
+          not appear in the above list.
         </label>
         <textarea type="text" class="md-textarea-auto form-control" rows="4"
                   id="partnerOccupationNotes" [formControlName]="'partnerOccupationNotes'"

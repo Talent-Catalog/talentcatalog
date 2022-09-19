@@ -19,7 +19,7 @@
   <div class="container">
 
     <!-- LOGO -->
-    <a [href]="websiteUrl" target="_blank">
+    <a *ngIf="logo" [href]="websiteUrl" target="_blank">
       <img class="logo" [src]="logo" alt="Logo">
     </a>
 

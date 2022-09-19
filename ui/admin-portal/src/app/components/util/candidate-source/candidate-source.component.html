@@ -21,13 +21,16 @@
         <div>
           <strong>{{candidateSource?.name}} </strong>
           <span class="d-flex align-items-baseline">
-          <i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i>
-          <i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i>
-          <i *ngIf="candidateSource?.fixed" title="Fixed - can't change" class="fas fa-lock"></i>
-          <i *ngIf="candidateSource?.global" title="Global - all users can see" class="fas fa-globe"></i>
-          <i *ngIf="isShared()" title="Shared" class="fas fa-gift"></i>
-          <span *ngIf="isShared()" class="small">Shared by: {{candidateSource?.createdBy.firstName}} {{candidateSource?.createdBy.lastName}}</span>
-        </span>
+            <i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i>
+            <i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i>
+            <i *ngIf="candidateSource?.fixed" title="Fixed - can't change" class="fas fa-lock"></i>
+            <i *ngIf="candidateSource?.global" title="Global - all users can see" class="fas fa-globe"></i>
+            <i *ngIf="isShared()" title="Shared" class="fas fa-gift"></i>
+            <span *ngIf="isShared()" class="small">Shared by: {{candidateSource?.createdBy?.firstName}} {{candidateSource?.createdBy?.lastName}}</span>
+          </span>
+          <div *ngIf="truncatedSourceDescription()">
+            {{truncatedSourceDescription()}}
+          </div>
         </div>
         <div *ngIf="publishedLink()" class="position-absolute mt-2">
           <span  class="small">Fixed Public Doc Link: <a target="_blank" [href]=publishedLink()>{{publishedLink()}}</a></span>
@@ -55,8 +58,8 @@
           <button class="btn" *ngIf="showEdit && isEditable()" (click)="doSelectColumns()">
             <i class="fas fa-columns" title="Select columns to display"></i>
           </button>
-          <a class="btn" *ngIf="candidateSource.sfJoblink" target="_blank"
-             [href]="candidateSource.sfJoblink">
+          <a class="btn" *ngIf="salesforceService.joblink(candidateSource)" target="_blank"
+             [href]="salesforceService.joblink(candidateSource)">
             <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
           </a>
           <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">

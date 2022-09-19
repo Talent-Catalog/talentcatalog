@@ -111,11 +111,16 @@
                   <button class="btn btn-sm btn-link" (click)="onClearAll('statusesDisplay'); $event.preventDefault()">Clear All</button>
                 </div>
               </ng-template>
+
+              <!--This improves display of selections -->
               <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <!-- Allow individual selections to be removed by clicking on x next to name -->
                 <div *ngFor="let item of items | slice:0:3" class="ng-value">
                   <span class="ng-value-label">{{item.stringValue}}</span>
                   <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
                 </div>
+                <!-- Display "more..." if more than 3 selections and add a tooltip displaying
+                all selections when hovering over the "more..." text -->
                 <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('statusesDisplay')" popoverTitle="Statuses"
                      triggers="mouseenter:mouseleave"  container="body" class="ng-value">
                   <span class="ng-value-label">{{items.length - 3}} more...</span>

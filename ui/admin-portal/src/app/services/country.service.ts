@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 /*
-   MODEL
+   MODEL - cache static data, "of", pipe, tap
 
    Shows how to cache static data (countries in this case) so that we don't have to repeatedly
    fetch it from server. See listCountries.
@@ -40,6 +40,10 @@ export class CountryService {
   private tbbDestinations: Country[] = [];
 
   constructor(private http: HttpClient) { }
+
+  isPalestine(country: Country): boolean {
+    return country && country.name.startsWith("Palest");
+  }
 
   listCountries(): Observable<Country[]> {
     //If we already have the data return it, otherwise get it.

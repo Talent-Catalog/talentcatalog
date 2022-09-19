@@ -89,13 +89,25 @@
     </ng-template>
   </ng-container>
 
-  <ng-container ngbNavItem="JobOpps">
+  <ng-container *ngIf="isExperimental()" ngbNavItem="JobOpps">
     <a ngbNavLink
        title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
     >Registered Job Lists</a>
     <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedList"
+        [searchBy]="SearchBy.registeredJob" >
+      </app-browse-candidate-sources>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="JobOppsNew">
+    <a ngbNavLink
+       title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
+    >Registered Jobs</a>
+    <ng-template ngbNavContent>
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.Job"
         [searchBy]="SearchBy.registeredJob" >
       </app-browse-candidate-sources>
     </ng-template>

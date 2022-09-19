@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -44,6 +45,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -85,10 +87,13 @@ import org.tbbtalent.server.model.db.DependantRelations;
 import org.tbbtalent.server.model.db.EducationLevel;
 import org.tbbtalent.server.model.db.Exam;
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.HasTcQueryParameters;
 import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.RootRequest;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SearchJoin;
@@ -161,6 +166,8 @@ import org.tbbtalent.server.service.db.CandidateVisaService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.PartnerService;
+import org.tbbtalent.server.service.db.RootRequestService;
+import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
@@ -222,6 +229,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
+    private final SalesforceJobOppService salesforceJobOppService;
     private final CountryRepository countryRepository;
     private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
@@ -240,6 +248,8 @@ public class CandidateServiceImpl implements CandidateService {
     private final PartnerService partnerService;
     private final LanguageLevelRepository languageLevelRepository;
     private final CandidateExamRepository candidateExamRepository;
+
+    private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
     private final EmailHelper emailHelper;
@@ -253,7 +263,7 @@ public class CandidateServiceImpl implements CandidateService {
         FileSystemService fileSystemService,
         GoogleDriveConfig googleDriveConfig,
         SalesforceService salesforceService,
-        CountryRepository countryRepository,
+        SalesforceJobOppService salesforceJobOppService, CountryRepository countryRepository,
         CountryService countryService,
         EducationLevelRepository educationLevelRepository,
         PasswordHelper passwordHelper,
@@ -271,7 +281,7 @@ public class CandidateServiceImpl implements CandidateService {
         PartnerService partnerService,
         LanguageLevelRepository languageLevelRepository,
         CandidateExamRepository candidateExamRepository,
-        TaskAssignmentRepository taskAssignmentRepository,
+        RootRequestService rootRequestService, TaskAssignmentRepository taskAssignmentRepository,
         TaskService taskService, EmailHelper emailHelper,
         PdfHelper pdfHelper) {
         this.userRepository = userRepository;
@@ -279,6 +289,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateRepository = candidateRepository;
         this.candidateEsRepository = candidateEsRepository;
         this.googleDriveConfig = googleDriveConfig;
+        this.salesforceJobOppService = salesforceJobOppService;
         this.countryRepository = countryRepository;
         this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
@@ -297,6 +308,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.partnerService = partnerService;
         this.languageLevelRepository = languageLevelRepository;
         this.candidateExamRepository = candidateExamRepository;
+        this.rootRequestService = rootRequestService;
         this.taskAssignmentRepository = taskAssignmentRepository;
         this.taskService = taskService;
         this.emailHelper = emailHelper;
@@ -705,8 +717,9 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
 
-    private Candidate createCandidate(CreateCandidateRequest request,
-        Partner partner, String passwordEncrypted) throws UsernameTakenException {
+    private Candidate createCandidate(CreateCandidateRequest request, Partner partner, String ipAddress,
+        HasTcQueryParameters queryParameters, String passwordEncrypted)
+        throws UsernameTakenException {
         User user = new User(
                 StringUtils.isNotBlank(request.getUsername()) ? request.getUsername() : request.getEmail(),
                 request.getFirstName(),
@@ -730,6 +743,17 @@ public class CandidateServiceImpl implements CandidateService {
 
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
+
+        candidate.setRegoIp(ipAddress);
+        if (queryParameters != null) {
+            candidate.setRegoPartnerParam(queryParameters.getPartnerAbbreviation());
+            candidate.setRegoReferrerParam(queryParameters.getReferrerParam());
+            candidate.setRegoUtmCampaign(queryParameters.getUtmCampaign());
+            candidate.setRegoUtmContent(queryParameters.getUtmContent());
+            candidate.setRegoUtmMedium(queryParameters.getUtmMedium());
+            candidate.setRegoUtmSource(queryParameters.getUtmSource());
+            candidate.setRegoUtmTerm(queryParameters.getUtmTerm());
+        }
 
         //set some fields to unknown on create as required for search
         //see CandidateSpecification. It works better if these attributes are not null, but instead
@@ -874,7 +898,10 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setAddress1(request.getAddress1());
         candidate.setCity(request.getCity());
         candidate.setState(request.getState());
+
         candidate.setCountry(country);
+        checkForChangedPartner(candidate, country);
+
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
         return save(candidate, true);
@@ -977,7 +1004,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(RegisterCandidateRequest request) {
+    public LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }
@@ -1002,9 +1029,27 @@ public class CandidateServiceImpl implements CandidateService {
         /* Validate the password before account creation */
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
 
+        //Fetch any recent Root Request by this candidate from their ip address.
+        //Candidate may have been referred to our website by a partner with query parameters
+        //identifying the partner as well as how the candidate was referred (in UTM parameters).
+        //These parameters will have been stored under the candidate's ip address in RootRequest.
+        //See RootRouteAdminApi.
+        //(Note that we could have used the browser session id instead for looking up RootRequests
+        //but it is useful to store the ip address anyway, so may as well use that rather than
+        //adding session id as well to RootRequest and the database).
+        String ipAddress = httpRequest.getRemoteAddr();
+        //Ignore anything that is fairly old (eg 36 hours old) - ip addresses change over time.
+        RootRequest rootRequest = rootRequestService.getMostRecentRootRequest(ipAddress, 36);
+
         //Compute and assign partner.
         //A non null partner abbreviation can define partner
-        final String partnerAbbreviation = request.getPartnerAbbreviation();
+        String partnerAbbreviation = request.getPartnerAbbreviation();
+        if (partnerAbbreviation == null) {
+            //See if partner info is available on RootRequest.
+            if (rootRequest != null) {
+                partnerAbbreviation = rootRequest.getPartnerAbbreviation();
+            }
+        }
         if (partnerAbbreviation != null) {
             log.info("Registration with partner abbreviation: " + partnerAbbreviation);
         }
@@ -1015,19 +1060,44 @@ public class CandidateServiceImpl implements CandidateService {
             partner = partnerService.getDefaultSourcePartner();
         }
 
+        //Pick up query parameters from request if they are passed in
+        HasTcQueryParameters queryParameters;
+        if (areQueryParametersPresent(request)) {
+            queryParameters = request;
+        } else {
+            queryParameters = rootRequest;
+        }
+
         /* Create the candidate */
         CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();
         createCandidateRequest.setUsername(request.getUsername());
         createCandidateRequest.setEmail(request.getEmail());
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
-        Candidate candidate = createCandidate(createCandidateRequest, partner, passwordEncrypted);
+
+        Candidate candidate = createCandidate(createCandidateRequest, partner, ipAddress,
+            queryParameters, passwordEncrypted);
 
         /* Log the candidate in */
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername( candidate.getUser().getUsername());
         loginRequest.setPassword(request.getPassword());
         return loginRequest;
+    }
+
+    /**
+     * Return true if any of the TC query parameters are set (not null)
+     * @param queryParameters Query parameters
+     * @return True if any query parameter is set
+     */
+    private boolean areQueryParametersPresent(HasTcQueryParameters queryParameters) {
+        return queryParameters.getPartnerAbbreviation() != null ||
+            queryParameters.getReferrerParam() != null ||
+            queryParameters.getUtmCampaign() != null ||
+            queryParameters.getUtmContent() != null ||
+            queryParameters.getUtmMedium() != null ||
+            queryParameters.getUtmSource() != null ||
+            queryParameters.getUtmTerm() != null;
     }
 
     @Override
@@ -1072,7 +1142,10 @@ public class CandidateServiceImpl implements CandidateService {
         if (candidate != null) {
             candidate.setGender(request.getGender());
             candidate.setDob(request.getDob());
+
             candidate.setCountry(country);
+            checkForChangedPartner(candidate, country);
+
             candidate.setCity(request.getCity());
             candidate.setState(request.getState());
             candidate.setYearOfArrival(request.getYearOfArrival());
@@ -1102,6 +1175,17 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         return candidate;
+    }
+
+    private void checkForChangedPartner(Candidate candidate, Country country) {
+        //Do we have an auto assignable partner in this country
+        Partner partner = partnerService.getAutoAssignablePartnerByCountry(country);
+        User user = candidate.getUser();
+        if (partner != null && !partner.equals(user.getSourcePartner())) {
+            //Partner of candidate needs to change
+            user.setSourcePartner((SourcePartnerImpl) partner);
+            userRepository.save(user);
+        }
     }
 
     @Override
@@ -1300,11 +1384,23 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         int afghanistanCountryId = 6180;
         // Don't update status to pending if status is already pending
-        if (!candidate.getStatus().equals(CandidateStatus.pending)) {
+        final CandidateStatus candidateStatus = candidate.getStatus();
+        if (!candidateStatus.equals(CandidateStatus.pending)) {
             if (candidate.getNationality() != candidate.getCountry() ||
-                    candidate.getCountry().getId() == afghanistanCountryId && candidate.getNationality().getId() == afghanistanCountryId) {
+                    candidate.getCountry().getId() == afghanistanCountryId &&
+                        candidate.getNationality().getId() == afghanistanCountryId) {
                 UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
-                info.setStatus(CandidateStatus.pending);
+
+                //Only set status to pending if current status is draft. This addresses the case
+                //where a candidate's status has been changed from draft (the normal status during
+                //registration) by an admin while the candidate is still in the process of registering.
+                //In that case we don't want to override the admin's status with pending once
+                //the submission (at the end of registration) finally happens.
+                if (candidateStatus.equals(CandidateStatus.draft)) {
+                    info.setStatus(CandidateStatus.pending);
+                } else {
+                    info.setStatus(candidateStatus);
+                }
                 info.setComment("Candidate submitted");
                 candidate = updateCandidateStatus(candidate, info);
             } else {
@@ -2086,12 +2182,14 @@ public class CandidateServiceImpl implements CandidateService {
 
         List<Candidate> candidates = candidateRepository.findByIds(request.getCandidateIds());
 
-        createUpdateSalesforce(candidates, request.getSfJobLink(), request.getSalesforceOppParams());
+        final String sfJobOppId = request.getSfJobOppId();
+        final SalesforceJobOpp sfJobOpp =
+            salesforceJobOppService.getOrCreateJobOppFromId(sfJobOppId);
+        createUpdateSalesforce(candidates, sfJobOpp, request.getSalesforceOppParams());
     }
 
     public void createUpdateSalesforce(Collection<Candidate> candidates,
-        @Nullable String sfJoblink,
-        @Nullable SalesforceOppParams salesforceOppParams)
+        @Nullable SalesforceJobOpp sfJobOpp, @Nullable SalesforceOppParams salesforceOppParams)
         throws GeneralSecurityException, WebClientException {
 
         //Need ordered list so that can match with returned contacts.
@@ -2113,9 +2211,15 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //If we have a Salesforce job opportunity, we can also update associated candidate opps.
-        if (sfJoblink != null && sfJoblink.length() > 0) {
+        if (sfJobOpp != null) {
+            //If the sfJobOpp is not very recent, reload it
+            final OffsetDateTime lastUpdate = sfJobOpp.getLastUpdate();
+            if (lastUpdate == null ||
+                Duration.between(lastUpdate, OffsetDateTime.now()).toMinutes() >= 3) {
+                sfJobOpp = salesforceJobOppService.updateJob(sfJobOpp);
+            }
             salesforceService.createOrUpdateCandidateOpportunities(
-                orderedCandidates, salesforceOppParams, sfJoblink);
+                orderedCandidates, salesforceOppParams, sfJobOpp);
         }
     }
 

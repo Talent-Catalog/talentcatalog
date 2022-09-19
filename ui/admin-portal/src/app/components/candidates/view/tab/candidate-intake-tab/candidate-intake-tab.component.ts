@@ -18,7 +18,9 @@ import {Component, QueryList, ViewChildren} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 import {Subject} from "rxjs/index";
 import {NgbAccordion, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
+import {
+  OldIntakeInputComponent
+} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
@@ -82,4 +84,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
+  isPalestinian(): boolean {
+    return this.countryService.isPalestine(this.candidate?.nationality)
+  }
 }

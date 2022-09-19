@@ -56,6 +56,9 @@ export class CandidateFieldService {
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
 
+  /*
+    These are the default candidate fields displayed if nothing special is stored in the database
+   */
   private defaultDisplayedFieldPathsLong: string [] = [
     "user.firstName",
     "user.lastName",
@@ -63,6 +66,7 @@ export class CandidateFieldService {
     "updatedDate",
     "nationality.name",
     "country.name",
+    "user.sourcePartner.abbreviation",
     "gender"
   ];
 
@@ -71,6 +75,7 @@ export class CandidateFieldService {
     "user.lastName",
     "nationality.name",
     "country.name",
+    "user.sourcePartner.abbreviation",
     "gender"
   ];
 

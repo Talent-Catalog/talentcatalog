@@ -42,6 +42,7 @@ import {externalDocLink, isSavedList} from "../../../model/saved-list";
 import {ConfirmationComponent} from "../confirm/confirmation.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedListService} from "../../../services/saved-list.service";
+import {SalesforceService} from "../../../services/salesforce.service";
 
 
 /**
@@ -94,6 +95,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   private loggedInUser: User;
 
   constructor(
+    public salesforceService: SalesforceService,
     private savedSearchService: SavedSearchService,
     private savedListService: SavedListService,
     private location: Location,
@@ -157,13 +159,14 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   doCopyLink() {
-    copyToClipboard(getCandidateSourceExternalHref(
-      this.router, this.location, this.candidateSource));
+    const text = getCandidateSourceExternalHref(
+      this.router, this.location, this.candidateSource);
+    copyToClipboard(text);
     const showReport = this.modalService.open(ConfirmationComponent, {
       centered: true, backdrop: 'static'});
     showReport.componentInstance.title = "Copied link to clipboard";
     showReport.componentInstance.showCancel = false;
-    showReport.componentInstance.message = "Paste the link where you want";
+    showReport.componentInstance.message = "Paste the link (" + text + ") where you want";
 
   }
 
@@ -253,6 +256,14 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     } else {
       return null;
     }
+  }
+
+  truncatedSourceDescription(maxLen: number = 120):string {
+    let s = this.candidateSource?.description;
+    if (s && s.length > maxLen) {
+      s = s.substring(0, maxLen) + "..."
+    }
+    return s;
   }
 
   isSavedList() {

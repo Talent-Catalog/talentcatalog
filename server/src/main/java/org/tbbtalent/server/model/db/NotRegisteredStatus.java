@@ -20,6 +20,7 @@ public enum NotRegisteredStatus {
     NoResponse("No response"),
     WasRegistered("No longer registered, but was registered previously"),
     NeverRegistered("Never been registered"),
+    Registering("Attempted to register and pending"),
     Unsure("Unsure"),
     NA("Not applicable");
 

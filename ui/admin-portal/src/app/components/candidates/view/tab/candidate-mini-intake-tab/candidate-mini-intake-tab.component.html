@@ -252,14 +252,16 @@
             [candidateIntakeData]="candidateIntakeData"
             [showAll]="false">
           </app-registration-unhcr>
-          <div class="card-title h6">
-            UNRWA
+          <div *ngIf="isPalestinian()">
+            <div class="card-title h6">
+              UNRWA
+            </div>
+            <app-registration-unrwa
+              [candidate]="candidate"
+              [candidateIntakeData]="candidateIntakeData"
+              [showAll]="false">
+            </app-registration-unrwa>
           </div>
-          <app-registration-unrwa
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData"
-            [showAll]="false">
-          </app-registration-unrwa>
         </ng-template>
       </ngb-panel>
     </ngb-accordion>

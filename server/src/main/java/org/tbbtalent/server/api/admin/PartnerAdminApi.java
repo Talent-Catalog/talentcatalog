@@ -105,6 +105,7 @@ public class PartnerAdminApi implements
     private DtoBuilder partnerDto() {
         return new DtoBuilder( new PartnerDtoPropertyFilter() )
             .add("abbreviation")
+            .add("autoAssignable")
             .add("defaultPartnerRef")
             .add("id")
             .add("logo")

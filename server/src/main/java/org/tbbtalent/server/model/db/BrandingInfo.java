@@ -42,8 +42,6 @@ public class BrandingInfo {
 
     /**
      * Optional path to logo to display with branding.
-     * <p/>
-     * If no logo is supplied, a default is displayed (eg the TBB logo)
      */
     @Nullable
     private String logo;

@@ -15,12 +15,28 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {SavedSearchService, SavedSearchTypeInfo, SavedSearchTypeSubInfo} from '../../../services/saved-search.service';
-import {convertToSavedSearchRequest, SavedSearch, SavedSearchType} from '../../../model/saved-search';
+import {
+  SavedSearchService,
+  SavedSearchTypeInfo,
+  SavedSearchTypeSubInfo
+} from '../../../services/saved-search.service';
+import {
+  convertToSavedSearchRequest,
+  SavedSearch,
+  SavedSearchType
+} from '../../../model/saved-search';
 import {SearchCandidateRequest} from '../../../model/search-candidate-request';
 import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
+import {SalesforceService} from "../../../services/salesforce.service";
 
 @Component({
   selector: 'app-create-update-search',
@@ -93,6 +109,7 @@ export class CreateUpdateSearchComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
+              public salesforceService:SalesforceService,
               private savedSearchService: SavedSearchService) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
@@ -152,7 +169,6 @@ export class CreateUpdateSearchComponent implements OnInit {
       name: this.nameControl.value,
       savedSearchType: this.savedSearchType,
       savedSearchSubtype: this.savedSearchSubtype,
-      sfJoblink: this.sfJoblink,
       fixed: false,
       defaultSearch: false,
       reviewable: formValues.reviewable,
@@ -161,7 +177,7 @@ export class CreateUpdateSearchComponent implements OnInit {
 
     //And create a SavedSearchRequest from the SavedSearch and the search request
     this.savedSearchService.create(
-      convertToSavedSearchRequest(this.newSavedSearch, this.searchCandidateRequest)
+      convertToSavedSearchRequest(this.newSavedSearch, this.sfJoblink, this.searchCandidateRequest)
     ).subscribe(
       (savedSearch) => {
         this.activeModal.close(savedSearch);
@@ -189,12 +205,11 @@ export class CreateUpdateSearchComponent implements OnInit {
     this.savedSearch.name = this.nameControl.value;
     this.savedSearch.savedSearchType = this.savedSearchType;
     this.savedSearch.savedSearchSubtype = this.savedSearchSubtype;
-    this.savedSearch.sfJoblink = this.sfJoblink;
     this.savedSearch.reviewable = formValues.reviewable;
 
     //Create a SavedSearchRequest from the SavedSearch and the search request
     this.savedSearchService.update(
-      convertToSavedSearchRequest(this.savedSearch, this.searchCandidateRequest)
+      convertToSavedSearchRequest(this.savedSearch, this.sfJoblink, this.searchCandidateRequest)
     ).subscribe(
       (savedSearch) => {
         this.activeModal.close(savedSearch);

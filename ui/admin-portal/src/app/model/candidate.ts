@@ -61,6 +61,13 @@ export interface Candidate extends HasId {
   folderlink: string;
   sflink: string;
   videolink: string;
+  regoPartnerParam: string;
+  regoReferrerParam: string;
+  regoUtmCampaign: string;
+  regoUtmContent: string;
+  regoUtmMedium: string;
+  regoUtmSource: string;
+  regoUtmTerm: string;
   shareableCv: CandidateAttachment;
   shareableDoc: CandidateAttachment;
   listShareableCv: CandidateAttachment;
@@ -343,28 +350,28 @@ export enum AvailImmediateReason {
  * See https://docs.google.com/document/d/1B6DmpYaONV_yNmyAqL76cu0TUQcpNgKtOmKELCkpRoc/edit#heading=h.qx7je1tuwoqv
  */
 export enum CandidateOpportunityStage {
-  prospect = "Prospect",
-  miniIntake = "Mini intake",
-  fullIntake = "Full intake",
-  visaEligibility = "Visa eligibility",
-  cvPreparation = "CV preparation",
-  cvReview = "CV review",
-  oneWayPreparation = "1 way preparation",
-  oneWayReview = "1 way review",
-  testPreparation = "Test preparation",
-  testing = "Testing",
-  twoWayPreparation = "2 way preparation",
-  twoWayReview = "2 way review",
-  offer = "Offer",
-  acceptance = "Acceptance",
-  provincialVisaPreparation = "Provincial visa preparation",
-  provincialVisaProcessing = "Provincial visa processing",
-  visaPreparation = "Visa preparation",
-  visaProcessing = "Visa processing",
-  relocating = "Relocating",
-  relocated = "Relocated",
-  settled = "Settled",
-  durableSolution = "Durable solution",
+  prospect = "0. Prospect",
+  miniIntake = "1. Mini intake",
+  fullIntake = "2. Full intake",
+  visaEligibility = "3. Visa eligibility",
+  cvPreparation = "4. CV preparation",
+  cvReview = "5. CV review",
+  oneWayPreparation = "6. 1 way preparation (Optional depending on employer)",
+  oneWayReview = "7. 1 way review (Optional depending on employer)",
+  testPreparation = "8. Test preparation  (Optional depending on employer)",
+  testing = "9. Testing (Optional depending on employer)",
+  twoWayPreparation = "10. 2 way interview preparation",
+  twoWayReview = "11. 2 way interview review",
+  offer = "12. Offer (employer is preparing written offer)",
+  acceptance = "13. Acceptance (informed decision making as candidate considers offer(s))",
+  provincialVisaPreparation = "14. Provincial visa preparation (Canada only)",
+  provincialVisaProcessing = "15. Provincial visa processing (Canada only)",
+  visaPreparation = "16. Visa preparation",
+  visaProcessing = "17. Visa processing",
+  relocating = "18. Relocating",
+  relocated = "19. Relocated (candidate has arrived at employer's location)",
+  settled = "20. Settled (candidate indicates no further need for support)",
+  durableSolution = "21. Durable solution (permanent residence, normal citizen rights)",
   noJobOffer = "No job offer",
   noVisa = "No visa",
   notFitForRole = "Not fit for role",
@@ -389,7 +396,7 @@ export enum CandidateStatus {
 }
 
 export interface SalesforceOppParams {
-  stageName?: string;
+  stage?: string;
   nextStep?: string;
   closingComments?: string;
   employerFeedback?: string;
@@ -397,7 +404,7 @@ export interface SalesforceOppParams {
 
 export interface UpdateCandidateOppsRequest {
   candidateIds: number[];
-  sfJobLink: string;
+  sfJobOppId: string;
   salesforceOppParams?: SalesforceOppParams;
 }
 
@@ -500,6 +507,7 @@ export enum UnhcrStatus {
 export enum NotRegisteredStatus {
   WasRegistered = "No longer registered, but was registered previously.",
   NeverRegistered = "Never been registered",
+  Registering = "Attempted to register and pending",
   Unsure = "Unsure",
   NA = "Not applicable"
 }

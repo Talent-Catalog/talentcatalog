@@ -45,7 +45,7 @@
         <input type="checkbox" class="form-control" formControlName="fixed">
       </div>
 
-      <app-joblink [joblink]="savedList?.sfJoblink"
+      <app-joblink [joblink]="salesforceService.joblink(savedList)"
                    (updateError)="error=$event"
                    (joblinkValidation)="onJoblinkValidation($event)"
       ></app-joblink>
