@@ -61,6 +61,12 @@ public enum CandidateOpportunityStage {
 
         private final boolean employed;
 
+        /**
+         * Initializes each enum value
+         * @param salesforceStageName Name of stage on Salesforce
+         * @param employed True if a candidate in this stage should be considered as employed and
+         *                 therefore no longer available for other job opportunities.
+         */
         CandidateOpportunityStage(String salesforceStageName, boolean employed) {
                 this.salesforceStageName = salesforceStageName;
                 this.employed = employed;
