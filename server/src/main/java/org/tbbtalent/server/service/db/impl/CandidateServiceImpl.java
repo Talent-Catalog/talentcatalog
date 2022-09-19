@@ -78,6 +78,7 @@ import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.model.db.CandidateExam;
 import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.CandidateProperty;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.CandidateSubfolderType;
@@ -2220,6 +2221,48 @@ public class CandidateServiceImpl implements CandidateService {
             }
             salesforceService.createOrUpdateCandidateOpportunities(
                 orderedCandidates, salesforceOppParams, sfJobOpp);
+
+            //Detect any auto candidate status changes based on stage changes
+            final CandidateOpportunityStage stage =
+                salesforceOppParams == null ? null : salesforceOppParams.getStage();
+            if (stage != null) {
+                performAutoStageRelatedStatusUpdates(sfJobOpp, orderedCandidates, stage);
+            }
+        }
+    }
+
+    /**
+     * Checks whether the status of the given candidates going for the given job opportunity
+     * can be automatically changed based on them moving to the given stage in that job opp.
+     * <p/>
+     * Candidates' statuses will be updated if appropriate.
+     * @param sfJobOpp Job opportunity
+     * @param candidates Some candidates who are going for that opportunity
+     * @param stage Stage those candidates have just been updated to.
+     */
+    private void performAutoStageRelatedStatusUpdates(@NonNull SalesforceJobOpp sfJobOpp,
+        List<Candidate> candidates, @NonNull CandidateOpportunityStage stage) {
+
+        for (Candidate candidate : candidates) {
+            CandidateStatus status = candidate.getStatus();
+            CandidateStatus newStatus = null;
+            if (stage.isEmployed() && status != CandidateStatus.employed) {
+                //Auto set status to employed
+                newStatus = CandidateStatus.employed;
+            } else if (stage == CandidateOpportunityStage.notEligibleForTC
+                && status != CandidateStatus.ineligible) {
+                //Auto set status to ineligible
+                newStatus = CandidateStatus.ineligible;
+            }
+
+            if (newStatus != null) {
+                UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
+                info.setStatus(newStatus);
+                info.setComment(
+                    "Status changed automatically due candidate's stage in the '"
+                        + sfJobOpp.getName() + "' job opportunity changing to '" + stage + "'");
+                updateCandidateStatus(candidate, info);
+            }
         }
     }
 

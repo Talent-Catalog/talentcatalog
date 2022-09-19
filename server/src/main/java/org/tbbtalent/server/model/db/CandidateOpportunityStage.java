@@ -24,43 +24,54 @@ package org.tbbtalent.server.model.db;
  * <p/>
  */
 public enum CandidateOpportunityStage {
-        prospect ("Prospect"),
-        miniIntake ("Mini intake"),
-        fullIntake ("Full intake"),
-        visaEligibility ("Visa eligibility"),
-        cvPreparation ("CV preparation"),
-        cvReview ("CV review"),
-        oneWayPreparation ("1 way preparation"),
-        oneWayReview ("1 way review"),
-        testPreparation ("Test preparation"),
-        testing ("Testing"),
-        twoWayPreparation ("2 way preparation"),
-        twoWayReview ("2 way review"),
-        offer ("Offer"),
-        acceptance ("Acceptance"),
-        provincialVisaPreparation ("Provincial visa preparation"),
-        provincialVisaProcessing ("Provincial visa processing"),
-        visaPreparation ("Visa preparation"),
-        visaProcessing ("Visa processing"),
-        relocating ("Relocating"),
-        relocated ("Relocated"),
-        settled ("Settled"),
-        durableSolution ("Durable solution"),
-        noJobOffer ("No job offer"),
-        noVisa ("No visa"),
-        notFitForRole ("Not fit for role"),
-        notEligibleForTC ("Not eligible for TC"),
-        notEligibleForVisa ("Not eligible for visa"),
-        noInterview ("No interview"),
-        candidateLeavesDestination ("Candidate leaves destination"),
-        candidateRejectsOffer ("Candidate rejects offer"),
-        candidateWithdraws ("Candidate withdraws")
+        prospect ("Prospect", false),
+        miniIntake ("Mini intake", false),
+        fullIntake ("Full intake", false),
+        visaEligibility ("Visa eligibility", false),
+        cvPreparation ("CV preparation", false),
+        cvReview ("CV review", false),
+        oneWayPreparation ("1 way preparation", false),
+        oneWayReview ("1 way review", false),
+        testPreparation ("Test preparation", false),
+        testing ("Testing", false),
+        twoWayPreparation ("2 way preparation", false),
+        twoWayReview ("2 way review", false),
+        offer ("Offer", false),
+        acceptance ("Acceptance", false),
+        provincialVisaPreparation ("Provincial visa preparation", true),
+        provincialVisaProcessing ("Provincial visa processing", true),
+        visaPreparation ("Visa preparation", true),
+        visaProcessing ("Visa processing", true),
+        relocating ("Relocating", true),
+        relocated ("Relocated", true),
+        settled ("Settled", true),
+        durableSolution ("Durable solution", true),
+        noJobOffer ("No job offer", false),
+        noVisa ("No visa", false),
+        notFitForRole ("Not fit for role", false),
+        notEligibleForTC ("Not eligible for TC", false),
+        notEligibleForVisa ("Not eligible for visa", false),
+        noInterview ("No interview", false),
+        candidateLeavesDestination ("Candidate leaves destination", true),
+        candidateRejectsOffer ("Candidate rejects offer", false),
+        candidateWithdraws ("Candidate withdraws", false)
         ;
 
-        public final String salesforceStageName;
+        private final String salesforceStageName;
 
-        CandidateOpportunityStage(String salesforceStageName) {
+        private final boolean employed;
+
+        CandidateOpportunityStage(String salesforceStageName, boolean employed) {
                 this.salesforceStageName = salesforceStageName;
+                this.employed = employed;
+        }
+
+        public boolean isEmployed() {
+                return employed;
+        }
+
+        public String getSalesforceStageName() {
+                return salesforceStageName;
         }
 
         @Override
