@@ -36,7 +36,6 @@ public enum JobOpportunityStage {
         recruitmentProcess ("Recruitment process"),
         jobOffer ("Job offer"),
         visaPreparation ("Visa preparation"),
-        visaGranted ("Visa granted"),
         postHireEngagement ("Post hire engagement"),
         hiringCompleted ("Hiring completed"),
         employerIneligible ("Employer ineligible"),
