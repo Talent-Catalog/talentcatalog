@@ -47,6 +47,8 @@ export enum JobOpportunityStage {
   jobOffer = "Job offer",
   visaPreparation = "Visa preparation",
   visaGranted = "Visa granted",
+  postHireEngagement = "Post hire engagement",
+  hiringCompleted = "Hiring completed",
   employerIneligible = "Employer ineligible",
   noJobOffer = "No job offer",
   noInterest = "No interest",
