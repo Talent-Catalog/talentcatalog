@@ -18,7 +18,7 @@ create table task
 (
     id                    bigserial   not null primary key,
     admin                 boolean     not null default false,
-    created_by            bigint      not null references users,
+    created_by            bigint      references users,
     created_date          timestamptz not null,
     days_to_complete      integer,
     description           text,

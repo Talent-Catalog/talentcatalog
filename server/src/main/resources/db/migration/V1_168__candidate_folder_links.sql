@@ -13,7 +13,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
 alter table candidate add column folderlink_address text;
 alter table candidate add column folderlink_character text;
 alter table candidate add column folderlink_employer text;

@@ -68,7 +68,7 @@ values ('Police Check','UploadTask',
 insert into task (name, task_type, description, days_to_complete, upload_subfolder_name,
                   upload_type, uploadable_file_types,
                   created_by, created_date)
-values ('Police Check','UploadTask', 'Translation of original document',
+values ('Police Check Translation','UploadTask', 'Translation of original document',
         14, 'Character', 'policeCheckTrans', null,
         (select id from users where username = 'SystemAdmin'), now());
 

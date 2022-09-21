@@ -90,7 +90,7 @@ create table users
   last_name               text,
   email                   text,
   role                    text not null,
-  status                  text not null,
+  status                  text,
   password_enc            text,
   last_login              timestamptz,
   created_by              bigint references users,
