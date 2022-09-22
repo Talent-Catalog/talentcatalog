@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -201,25 +201,3 @@ comment                 text,
 created_by              bigint references users,
 created_date            timestamptz
 );
-
-
-insert into users (username, password_enc, role, first_name, last_name, email, status)
-values('jo', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Jo', 'Thatcher', 'jo@digitalpurpose.com.au', 'active');
-
-insert into users (username, password_enc, role, first_name, last_name, email, status)
-values('dan', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Dan', 'Zwolenski', 'dan@digitalpurpose.com.au', 'active');
-
-insert into users (username, password_enc, role, first_name, last_name, email, status)
-values('martina', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Martina', 'Kainberger', 'martina@digitalpurpose.com.au', 'active');
-
-insert into users (username, password_enc, role, first_name, last_name, email, status)
-values('louise', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Louise', 'Muszynkski', 'louise@digitalpurpose.com.au', 'active');
-
-insert into users (username, password_enc, role, first_name, last_name, email, status)
-values('dean', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Dean', 'El-Mouslimani', 'dean@digitalpurpose.com.au', 'active');
-
-insert into users (username, password_enc, role, first_name, last_name, email, status)
-values('caroline', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Caroline', 'Cameron', 'caroline@cameronfoundation.org', 'active');
-
-
-

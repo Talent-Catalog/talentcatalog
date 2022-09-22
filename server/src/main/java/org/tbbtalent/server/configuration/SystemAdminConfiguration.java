@@ -72,8 +72,9 @@ public class SystemAdminConfiguration {
       req.setEmail(sysAdminEmail);
       req.setRole(Role.systemadmin);
       req.setReadOnly(false);
-      req.setUsingMfa(false);
+      req.setUsingMfa(true);
       req.setPassword("password");
+      req.setStatus(Status.active);
 
       //Self create system admin
       systemAdmin = userService.createUser(req, null);
