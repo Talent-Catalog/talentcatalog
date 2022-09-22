@@ -29,39 +29,41 @@ They should be submitted as pull request.
 
 Download and install the latest of the following tools.
 
-IMPORTANT NOTE FOR MAC Users:
+IMPORTANT NOTE:
 
-On a Mac, installing with Homebrew usually works well. eg "brew install xxx".
-However, Flyway and Postgres don't install with Homebrew, and the book
-"Angular Up & Running" notes that installing Node.js using Homebrew
-can also have problems. Googling you can still see lots of people having
-problems installing Node using brew.
+Below instructions are tailored to Mac users, as this is what we use for development. Adittional notes have been added 
+for certain steps required for newer macs with the M1 chip. Windows/Linux users can also run the program, but will need 
+to adjust the set up accordingly based on their system requirements. 
 
-It is also probably easier to install Java directly (or from your 
-development IDE - see below) rather than using brew.
+On a Mac, installing with Homebrew usually works well. eg "brew install xxx". However, the book "Angular Up & Running" 
+notes that installing Node.js using Homebrew can have problems. Googling you can still see lots of people having
+issues installing Node using brew.
+
+It is also probably easier to install Java directly (or from your development IDE - see below) rather than using brew.
+
+- IntelliJ IDEA (or the IDE of your choice) - [Intellij website](https://www.jetbrains.com/idea/download/)
 
 
 - Java 11
-   - At least Java 11 is required because we use the Locale object to provide translations of 
-  countries and languages and that support is not complete in Java 8, for example.
-   - If you are using a recent version of Intellij the version of Java that comes with it works 
- fine except that it does not have library source code - so probably best to download a new SDK
-     (which you can from inside Intellij).
-    
+   - At least Java 11 is required because we use the Locale object to provide translations of countries and languages and 
+  that support is not complete in Java 8, for example.
+   - If you are using a recent version of Intellij the version of Java that comes with it works fine except that it does 
+  not have library source code. You will need to download a new SDK (which you can from inside Intellij).
+   - [Alternatively install with Homebrew](https://formulae.brew.sh/formula/openjdk) (untested with M1)
+
 
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
   > brew install gradle
-
-- NodeJS: Install as described here [https://nodejs.org/en/](https://nodejs.org/en/)
+  
+- NodeJS: Install as described [here](https://nodejs.org/en/)
     - Note that you should use the LTS version of node - which is not normally the latest.
-    
-    "Production applications should only use Active LTS or Maintenance LTS releases." -       
-  https://nodejs.org/en/about/releases/
+    "Production applications should only use Active LTS or Maintenance LTS releases." - https://nodejs.org/en/about/releases/
 
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
   > npm install -g @angular/cli
   - To upgrade Angular versions, see https://update.angular.io/
+  - M1 Tip: If you see an EACCES error when installing Angular, follow instructions listed [here.](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally)
     
 
 - cURL (for database migrations, can also use Postman) 
@@ -70,7 +72,7 @@ development IDE - see below) rather than using brew.
   > or...
   > 
   > brew install --cask postman
-
+  
 - Docker (we are moving to a container architecture, so want to start
   using Docker technology - in particular for running Elasticsearch - 
   see below)
@@ -83,28 +85,54 @@ development IDE - see below) rather than using brew.
       See [Elastic search website](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
       Just pull the image to install. See later for how to run.
 
+
 - Kibana (for monitoring Elasticsearch)
     - Install Docker image.
       See [Elastic search website](https://www.elastic.co/guide/en/kibana/current/docker.html)
       Just pull the image to install. See later for how to run.
 
+
 - Git - [see Git website](https://git-scm.com/downloads)
-- PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
+
+
+- PostgreSQL 
+  > brew install postgres
+  - Alternatively: [Postgres website](https://www.postgresql.org/download/)
+  - M1 Tip: If you see an issue with the SCHMALL value after installing postgres
+    - This works as a temporary fix until reboot:
+      > sudo sysctl -w kern.sysv.shmmax=12582912  
+    sudo sysctl -w kern.sysv.shmall=12582912
+    - Not easy to fix permanently, but instructions on how can be found [here.](https://dansketcher.com/2021/03/30/shmmax-error-on-big-sur/)
+
+    
+- pgAdmin (interactive GUI for PostgreSQL)
+  - BEFORE installing pgAdmin, you will need to create a default postgres user to log into pgAdmin with.
+  - Instructions to do so can be found [here](https://dev.to/letsbsocial1/installing-pgadmin-only-after-installing-postgresql-with-homebrew-part-2-4k44)
+    (scroll to section after "Installing PostgreSQL with Homebrew").
+  - Then continue with pgAdmin install:
+    > brew install --cask pgadmin4
+    - Alternatively: [PgAdmin website](https://www.pgadmin.org)
+
 - MySQL - We use MySQL to do daily uploads to the RefugeeTalent database. We are locked into an old
-  (pre the Oracle purchase of MySQL) version, 5.7, of MySQL. The best way to install this on a Mac 
-is using brew. 
-See [Installing MySQL 5.7 using Homebrew](https://medium.com/macoclock/installing-mysql-5-7-using-homebrew-974cc2d42509).
-Note the brew instructions at the end of the install, particularly
-the export to the path and the brew services restart.
-- IntelliJ IDEA (or the IDE of your choice) - [Intellij website](https://www.jetbrains.com/idea/download/)
+  (pre the Oracle purchase of MySQL) version, 5.7, of MySQL. The best way to install this on a Mac is using brew. 
+  - See [Installing MySQL 5.7 using Homebrew](https://medium.com/macoclock/installing-mysql-5-7-using-homebrew-974cc2d42509).
+  - Note the brew instructions at the end of the install, particularly the export to the path and the brew services restart.
+  - M1 Tip: The export path noted in the above article may not be correct for M1 machines. 
+    - If you get an error later on stating that mysql commands are not found by the terminal, this is likely because the 
+    export path was not correct.
+    - The below command may work for your M1 machine, or you will need to identify the correct path to your mysql install
+    > echo 'export PATH="/opt/homebrew/opt/mysql@5.7/bin:$PATH"' >> ~/.zshrc 
+    
+- Flyway (used to manage database migrations)
+  > brew install flyway
 
 ### Setup your local database ###
 
 Use PostreSQL pgAdmin tool to...
 
-- Create a new login role (ie user) called tbbtalent, password tbbtalent with 
-full privileges
+- Create a new login role (ie user) called tbbtalent, password tbbtalent with full privileges
 - Create a new database called tbbtalent and set tbbtalent as the owner
+  - Step-by-step instructions on how to do this found [here.](https://www.guru99.com/postgresql-create-alter-add-user.html)
 - The database details are defined in bundle/all/resources/application.yml
 - The database is populated/updated using Flyway at start up - see TbbTalentApplication
 - Run data migration script to add additional data - using tool like postman or curl 
@@ -155,57 +183,61 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
   For example add "source ~/tbb_secrets.txt" to .bash_profile or .zshenv
   depending on whether you are running bash or zsh.
 
-- Create a new Run Profile for `org.tbbtalent.server.TbbTalentApplication`. 
-  In the Environment Variables section of Intellij, check the 
-  "Include system environment variables" checkbox.
+- If it doesn't already exist, create a new Run Profile for `org.tbbtalent.server.TbbTalentApplication`. 
+  In the Environment Variables section of Intellij, check the "Include system environment variables" checkbox.
+
 - Run the new profile, you should see something similar to this in the logs: 
 ```
 Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
 ```
-- your server will be running on port 8080 (default for Spring Boot) 
+- The server will be running on port 8080 (default for Spring Boot) 
 (can be overridden by setting server.port in application.yml, or Intellij Run 
   Configuration, and updating environment.ts in portals)
 - To test it open a browser to [http://localhost:8080/test](http://localhost:8080/test)
 
+- M1 Tip: If you see a Netty Warning on startup, this is normal and you can ignore it. See discussion of this [here.](https://rieckpil.de/java-development-on-an-apple-m1-a-one-year-review/)
 
 ### Run the Candidate Portal ###
 
 The "Candidate Portal" is an Angular Module and can be found in the diretory `tbbtalentv2\ui\candidate-portal`.
 
-Before running, make sure all the libraries have been downloaded locally by running `npm install` from the root 
+Tip: If you see this error: `ng: command not found` when running any of the below commands, first confirm that node is 
+correctly installed. If node is correctly installed, you may need to run `npm link @angular/cli` as described [here.](https://stackoverflow.com/questions/46623571/angular-ng-command-not-found)
+
+- First, create a Run Profile in IntelliJ that opens the Candidate Portal on [http://localhost:4200](http://localhost:4200).
+
+- Before running, make sure all the libraries have been downloaded locally by running `npm install` from the root 
 directory of the module (i.e. `tbbtalentv2\ui\candidate-portal`):
 
-> cd tbbtalentv2\ui\candidate-portal
->
-> npm install
+    > cd tbbtalentv2\ui\candidate-portal
+    >
+    > npm install
 
-It is also a good idea to install fsevents for MacOS which will greatly
+- It is also a good idea to install fsevents for MacOS which will greatly
 reduce your CPU usage
 
-> npm install fsevents
-> 
-> npm rebuild fsevents
- 
- 
+    > npm install fsevents
+    > 
+    > npm rebuild fsevents
 
-Then from within the same directory run: 
+- Then from within the same directory run: 
 
-> ng serve
+    > ng serve
 
-You will see log similar to: 
+- You will see log similar to: 
 
-```
-chunk {main} main.js, main.js.map (main) 11.9 kB [initial] [rendered]
-chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 236 kB [initial] [rendered]
-chunk {runtime} runtime.js, runtime.js.map (runtime) 6.08 kB [entry] [rendered]
-chunk {styles} styles.js, styles.js.map (styles) 16.6 kB [initial] [rendered]
-chunk {vendor} vendor.js, vendor.js.map (vendor) 3.55 MB [initial] [rendered]
-i ｢wdm｣: Compiled successfully.
-```
+    ```
+    chunk {main} main.js, main.js.map (main) 11.9 kB [initial] [rendered]
+    chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 236 kB [initial] [rendered]
+    chunk {runtime} runtime.js, runtime.js.map (runtime) 6.08 kB [entry] [rendered]
+    chunk {styles} styles.js, styles.js.map (styles) 16.6 kB [initial] [rendered]
+    chunk {vendor} vendor.js, vendor.js.map (vendor) 3.55 MB [initial] [rendered]
+    i ｢wdm｣: Compiled successfully.
+    ```
 
-The Candidate Portal is now running locally and you can open a browser (chrome preferred) to: 
+- The Candidate Portal is now running locally and you can open a browser (chrome preferred) to: 
 
-[http://localhost:4200](http://localhost:4200)
+    [http://localhost:4200](http://localhost:4200)
 
 
 __Note:__ _this is for development mode only. In production, the Candidate Portal module will be bundled 
@@ -217,30 +249,37 @@ into the server and serve through Apache Tomcat._
 
 The "Admin Portal" is an Angular Module and can be found in the directory `tbbtalentv2\ui\admin-portal`.
 
-As for the "Candidate Portal", make sure all libraries are installed locally.
+- First, create a Run Profile in IntelliJ which opens the Admin Portal on [http://localhost:4201](http://localhost:4201)
+- As for the "Candidate Portal", make sure all libraries are installed locally.
 
-Then from within the same directory run: 
+- Then from within the same directory run: 
 
-> ng serve
+    > ng serve
 
-You will see log similar to: 
+- You will see log similar to: 
 
-```
-chunk {main} main.js, main.js.map (main) 11.9 kB [initial] [rendered]
-chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 236 kB [initial] [rendered]
-chunk {runtime} runtime.js, runtime.js.map (runtime) 6.08 kB [entry] [rendered]
-chunk {styles} styles.js, styles.js.map (styles) 16.6 kB [initial] [rendered]
-chunk {vendor} vendor.js, vendor.js.map (vendor) 3.55 MB [initial] [rendered]
-i ｢wdm｣: Compiled successfully.
-```
+    ```
+    chunk {main} main.js, main.js.map (main) 11.9 kB [initial] [rendered]
+    chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 236 kB [initial] [rendered]
+    chunk {runtime} runtime.js, runtime.js.map (runtime) 6.08 kB [entry] [rendered]
+    chunk {styles} styles.js, styles.js.map (styles) 16.6 kB [initial] [rendered]
+    chunk {vendor} vendor.js, vendor.js.map (vendor) 3.55 MB [initial] [rendered]
+    i ｢wdm｣: Compiled successfully.
+    ```
 
-The Admin Portal is now running locally and you can open a browser (chrome preferred) to: 
+- The Admin Portal is now running locally and you can open a browser (chrome preferred) to: 
 
-[http://localhost:4201](http://localhost:4201)
+    [http://localhost:4201](http://localhost:4201)
 
 
 __Note:__ _this is for development mode only. In production, the Admin Portal module will be bundled 
 into the server and serve through Apache Tomcat._ 
+
+### Log In To The Admin Portal ###
+
+- On startup, the server automatically creates a default user with username `SystemAdmin` and password `password` 
+  that can be used to log in to the admin portal in development. 
+- Details about this user can be found in `org/tbbtalent/server/configuration/SystemAdminConfiguration.java`
 
 ## Upgrades ##
 
