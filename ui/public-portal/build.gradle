@@ -20,14 +20,14 @@
 
 plugins {
   id 'java'
-  id "com.github.node-gradle.node" version "2.2.4"
+  id "com.github.node-gradle.node" version "3.4.0"
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 node {
-  version = '12.4.0'
+  version = '16.17.0'
   download = true
 }
 
