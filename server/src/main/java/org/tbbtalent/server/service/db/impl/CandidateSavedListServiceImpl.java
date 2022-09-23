@@ -53,6 +53,7 @@ import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
@@ -62,6 +63,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     private final AuthService authService;
     private final CandidateService candidateService;
     private final FileSystemService fileSystemService;
+    private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
     private final SavedListRepository savedListRepository;
     private final UserService userService;
@@ -72,7 +74,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     public CandidateSavedListServiceImpl(
         AuthService authService, CandidateService candidateService,
         FileSystemService fileSystemService,
-        SavedListService savedListService,
+        SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
         SavedListRepository savedListRepository,
         UserService userService,
         CandidateAttachmentRepository candidateAttachmentRepository,
@@ -80,6 +82,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         this.authService = authService;
         this.candidateService = candidateService;
         this.fileSystemService = fileSystemService;
+        this.salesforceJobOppService = salesforceJobOppService;
         this.savedListService = savedListService;
         this.savedListRepository = savedListRepository;
         this.userService = userService;
@@ -157,8 +160,9 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
 
 
         //Set any specified Salesforce Job Opportunity
-        if (request.getSfJoblink() != null) {
-            targetList.setSfJoblink(request.getSfJoblink());
+        final String sfJoblink = request.getSfJoblink();
+        if (sfJoblink != null) {
+            targetList.setSfJobOpp(salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink));
         }
 
         boolean replace = request.getUpdateType() == ContentUpdateType.replace;

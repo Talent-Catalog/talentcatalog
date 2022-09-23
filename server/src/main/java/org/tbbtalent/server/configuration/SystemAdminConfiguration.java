@@ -22,6 +22,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
@@ -65,6 +66,7 @@ public class SystemAdminConfiguration {
     if (systemAdmin == null) {
       UpdateUserRequest req = new UpdateUserRequest();
       req.setUsername(SYSTEM_ADMIN_NAME);
+      req.setStatus(Status.active);
       req.setFirstName("System");
       req.setLastName("Admin");
       req.setEmail(sysAdminEmail);
@@ -72,6 +74,7 @@ public class SystemAdminConfiguration {
       req.setReadOnly(false);
       req.setUsingMfa(true);
       req.setPassword("password");
+      req.setStatus(Status.active);
 
       //Self create system admin
       systemAdmin = userService.createUser(req, null);

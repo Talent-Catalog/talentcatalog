@@ -47,27 +47,27 @@
     </div>
 
     <div class="d-flex flex-column pt-4">
-      <div [ngSwitch]="creatingList">
+      <div [ngSwitch]="creatingJob">
         <ul class="fa-ul">
           <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
-            Create list associated with job
+            Create job and associated list
           </li>
           <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
-            Creating list
+            Creating job and submission list
           </li>
           <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
             List <a [href]="listLink" target="_blank>">{{listLink}}</a> is the list that should be populated with job candidates.
           </li>
         </ul>
-        <div class="alert alert-danger" *ngIf="errorCreatingList">
-          {{errorCreatingList}}
+        <div class="alert alert-danger" *ngIf="errorCreatingJob">
+          {{errorCreatingJob}}
         </div>
       </div>
 
       <div [ngSwitch]="creatingFolders">
         <ul class="fa-ul">
           <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
-            Create folders associated with list
+            Create folders associated with job's submission list
           </li>
           <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
             Creating folders
@@ -90,14 +90,14 @@
       <div [ngSwitch]="creatingSFLinks">
         <ul class="fa-ul">
           <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
-            Add links to Salesforce Job Opportunity back to list and list folders
+            Add links to Salesforce Job Opportunity back to submission list and list folders
           </li>
           <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
             Creating Salesforce links
           </li>
           <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
             The Salesforce job opportunity
-            <a href="{{savedList.sfJoblink}}" target="_blank">{{jobName}}</a> has links to the
+            <a href="{{salesforceService.joblink(savedList)}}" target="_blank">{{jobName}}</a> has links to the
             above Talent catalog list and the list folders. This provides easy access to all relevant data
             directly from Salesforce.
           </li>

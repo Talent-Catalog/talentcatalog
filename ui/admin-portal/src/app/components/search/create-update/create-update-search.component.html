@@ -51,7 +51,7 @@
     </div>
 
       <div class="form-group">
-        <app-joblink [joblink]="savedSearch?.sfJoblink"
+        <app-joblink [joblink]="salesforceService.joblink(savedSearch)"
                      (updateError)="error=$event"
                      (joblinkValidation)="onJoblinkValidation($event)"
         ></app-joblink>

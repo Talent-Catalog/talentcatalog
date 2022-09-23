@@ -16,12 +16,16 @@
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.*;
-
+//TODO JC Is this Zombie code - SavedListLink?
 @Getter
 @Setter
 @ToString

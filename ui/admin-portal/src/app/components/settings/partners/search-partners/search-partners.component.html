@@ -48,11 +48,13 @@
 
     <thead class="thead-light">
     <tr>
+      <th *ngIf="!readOnly"></th>
       <th>Partner</th>
       <th>Abbreviation</th>
       <th>Email</th>
       <th>Type</th>
       <th>Source countries</th>
+      <th>Autoassignable?</th>
       <th>Logo</th>
       <th>Website</th>
       <th>Rego Landing page</th>
@@ -63,6 +65,12 @@
 
     <tbody>
     <tr *ngFor="let partner of results?.content">
+      <td>
+        <div class="btn-group" *ngIf="!readOnly">
+          <button type="button" class="btn btn-default" (click)="editPartner(partner)"><i
+            class="fas fa-edit" title="Change partner details"></i></button>
+        </div>
+      </td>
       <td>{{partner.name}}
         <a *ngIf="partner.sflink" [href]="partner.sflink" target="_blank">
           <i class="fab fa-salesforce" title="Show partner account in Salesforce"></i>
@@ -72,17 +80,12 @@
       <td>{{partner.notificationEmail}}</td>
       <td>{{partner.partnerType}}</td>
       <td>{{sourceCountries(partner)}}</td>
+      <td>{{partner.autoAssignable}}</td>
       <td>{{partner.logo}}</td>
       <td>{{partner.websiteUrl}}</td>
       <td>{{partner.registrationLandingPage}}</td>
       <td>{{partner.defaultPartnerRef}}</td>
       <td>{{partner.status}}</td>
-      <td>
-        <div class="btn-group" *ngIf="(!readOnly)">
-          <button type="button" class="btn btn-default" (click)="editPartner(partner)"><i
-            class="fas fa-edit" title="Change partner details"></i></button>
-        </div>
-      </td>
     </tr>
 
     <!-- loading -->

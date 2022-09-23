@@ -154,11 +154,11 @@ export class CandidateService {
   }
 
   createUpdateSalesforceFromCandidates(
-    candidateIds: number[], sfJobLink: string, salesforceOppParams: SalesforceOppParams): Observable<void> {
+    candidateIds: number[], sfJobOpp: string, salesforceOppParams: SalesforceOppParams): Observable<void> {
 
     const request: UpdateCandidateOppsRequest = {
       candidateIds: candidateIds,
-      sfJobLink: sfJobLink,
+      sfJobOppId: sfJobOpp,
       salesforceOppParams: salesforceOppParams
     }
 

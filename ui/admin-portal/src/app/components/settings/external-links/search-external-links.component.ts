@@ -142,12 +142,13 @@ export class SearchExternalLinksComponent implements OnInit {
   }
 
   doCopyLink(savedList: SavedList) {
-    copyToClipboard(externalDocLink(savedList));
+    const text = externalDocLink(savedList);
+    copyToClipboard(text);
     const showReport = this.modalService.open(ConfirmationComponent, {
       centered: true, backdrop: 'static'});
     showReport.componentInstance.title = "Copied link to clipboard";
     showReport.componentInstance.showCancel = false;
-    showReport.componentInstance.message = "Paste the link where you want";
+    showReport.componentInstance.message = "Paste the link (" + text + ") where you want";
 
   }
 }

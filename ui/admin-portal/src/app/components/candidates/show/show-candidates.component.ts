@@ -88,9 +88,13 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
+import {
+  CandidateSourceCandidateService
+} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
-import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
+import {
+  EditCandidateReviewStatusItemComponent
+} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
 import {Router} from '@angular/router';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
@@ -99,16 +103,22 @@ import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
 import {SavedListService} from '../../../services/saved-list.service';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
-import {CandidateColumnSelectorComponent} from '../../util/candidate-column-selector/candidate-column-selector.component';
+import {
+  CandidateColumnSelectorComponent
+} from '../../util/candidate-column-selector/candidate-column-selector.component';
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
 import {SalesforceStageComponent} from "../../util/salesforce-stage/salesforce-stage.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
-import {PublishedDocColumnSelectorComponent} from "../../util/published-doc-column-selector/published-doc-column-selector.component";
+import {
+  PublishedDocColumnSelectorComponent
+} from "../../util/published-doc-column-selector/published-doc-column-selector.component";
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
+import {SalesforceService} from "../../../services/salesforce.service";
+import {SalesforceJobOpp} from "../../../model/job";
 
 interface CachedTargetList {
   sourceID: number;
@@ -197,7 +207,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateFieldService: CandidateFieldService,
               private authService: AuthService,
-              private publishedDocColumnService: PublishedDocColumnService
+              private publishedDocColumnService: PublishedDocColumnService,
+              public salesforceService: SalesforceService
 
   ) {
     this.searchForm = this.fb.group({
@@ -696,8 +707,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   createAndDownloadBlobFile(body, options, filename) {
     const blob = new Blob([body], options);
-    if (navigator.msSaveBlob) {
+    if ('msSaveBlob' in navigator) {
       // IE 10+
+      // @ts-ignore
       navigator.msSaveBlob(blob, filename);
     } else {
       const link = document.createElement('a');
@@ -812,7 +824,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isShowStage(): boolean {
-    return isSavedList(this.candidateSource) && this.candidateSource.sfJoblink != null;
+    return isSavedList(this.candidateSource) && this.candidateSource.sfJobOpp != null;
   }
 
   isEditable(): boolean {
@@ -996,8 +1008,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const modal = this.modalService.open(SelectListComponent);
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
-    if (this.candidateSource.sfJoblink != null) {
-      modal.componentInstance.sfJoblink = this.candidateSource.sfJoblink;
+    if (this.candidateSource.sfJobOpp != null) {
+      modal.componentInstance.sfJoblink = this.salesforceService.joblink(this.candidateSource);
     }
     if (!isSavedSearch(this.candidateSource)) {
       modal.componentInstance.excludeList = this.candidateSource;
@@ -1257,13 +1269,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   doCopyLink() {
-    copyToClipboard(getCandidateSourceExternalHref(
-      this.router, this.location, this.candidateSource));
+    const text = getCandidateSourceExternalHref(
+      this.router, this.location, this.candidateSource);
+    copyToClipboard(text);
     const showReport = this.modalService.open(ConfirmationComponent, {
       centered: true, backdrop: 'static'});
     showReport.componentInstance.title = "Copied link to clipboard";
     showReport.componentInstance.showCancel = false;
     showReport.componentInstance.message = "Paste the link where you want";
+    showReport.componentInstance.message = "Paste the link (" + text + ") where you want";
 
   }
 
@@ -1353,11 +1367,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private doCreateUpdateSalesforceOnList(selectedCandidatesOnly: boolean) {
-    if (!this.candidateSource.sfJoblink) {
+    if (!this.candidateSource.sfJobOpp) {
       //If we do not have a job opportunity, there will be no candidate opp info.
       this.doCreateUpdateSalesforceOnList2(null, selectedCandidatesOnly);
     } else {
-      const applyToWholeListQuery = this.modalService.open(SalesforceStageComponent);
+      const applyToWholeListQuery = this.modalService.open(SalesforceStageComponent, {size: 'lg'});
       applyToWholeListQuery.result
       .then((info: SalesforceOppParams) => {
         this.doCreateUpdateSalesforceOnList2(info, selectedCandidatesOnly);
@@ -1371,16 +1385,18 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.updating = true;
 
     if (selectedCandidatesOnly) {
-      const sfJobLink: string = this.candidateSource.sfJoblink;
-      const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
-      this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobLink, info)
-      .subscribe(result => {
-          //Refresh to display any changed stages
-          this.doSearch(true);
-          this.updating = false;
-        },
-        err => {this.error = err; this.updating = false; }
-      );
+      const sfJobOpp: SalesforceJobOpp = this.candidateSource.sfJobOpp;
+      if (sfJobOpp) {
+        const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
+        this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobOpp.id, info)
+        .subscribe(result => {
+            //Refresh to display any changed stages
+            this.doSearch(true);
+            this.updating = false;
+          },
+          err => {this.error = err; this.updating = false; }
+        );
+      }
     } else {
       this.candidateService.createUpdateSalesforceFromList(this.candidateSource, info)
       .subscribe(result => {
@@ -1599,7 +1615,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           sourceListId: this.candidateSource.id,
           statusUpdateInfo: selection.statusUpdateInfo,
           updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
-          sfJoblink: this.candidateSource?.sfJoblink
+          sfJoblink: this.salesforceService.joblink(this.candidateSource)
 
         }
         this.candidateSourceService.copy(this.candidateSource, request).subscribe(

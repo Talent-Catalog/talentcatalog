@@ -46,8 +46,6 @@ public class SourcePartnerImpl extends PartnerImpl
     @Nullable
     private String registrationLandingPage;
 
-    //TODO JC Note - unidirectional - no mapping from Country
-    //TODO JC Eager necessary? Test.
     @ManyToMany
     @JoinTable(
         name = "partner_source_country",
@@ -56,6 +54,15 @@ public class SourcePartnerImpl extends PartnerImpl
     @NonNull
     private Set<Country> sourceCountries = new HashSet<>();
 
+    private boolean autoAssignable;
     private boolean defaultSourcePartner;
 
+    public void setRegistrationLandingPage(@Nullable String registrationLandingPage) {
+        if (registrationLandingPage != null) {
+            if (registrationLandingPage.trim().length() == 0) {
+                registrationLandingPage = null;
+            }
+        }
+        this.registrationLandingPage = registrationLandingPage;
+    }
 }

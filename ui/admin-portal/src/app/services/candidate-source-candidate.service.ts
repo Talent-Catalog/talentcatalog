@@ -22,6 +22,7 @@ import {SearchResults} from "../model/search-results";
 import {Candidate} from "../model/candidate";
 import {CandidateSource, PagedSearchRequest, SearchCandidateSourcesRequest} from "../model/base";
 import {isSavedSearch} from "../model/saved-search";
+import {isJob} from "../model/job";
 
 @Injectable({providedIn: 'root'})
 export class CandidateSourceCandidateService {
@@ -34,7 +35,9 @@ export class CandidateSourceCandidateService {
   list(source: CandidateSource): Observable<Candidate[]> {
     const apiUrl = isSavedSearch(source) ? this.savedSearchApiUrl : this.savedListApiUrl;
 
-    return this.http.get<Candidate[]>(`${apiUrl}/${source.id}/list`);
+    const useId = CandidateSourceCandidateService.extractIdToUse(source);
+
+    return this.http.get<Candidate[]>(`${apiUrl}/${useId}/list`);
   }
 
   searchPaged(source: CandidateSource, request: SearchCandidateSourcesRequest):
@@ -43,15 +46,28 @@ export class CandidateSourceCandidateService {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
 
+    const useId = CandidateSourceCandidateService.extractIdToUse(source);
+
     return this.http.post<SearchResults<Candidate>>(
-      `${apiUrl}/${source.id}/search-paged`, request);
+      `${apiUrl}/${useId}/search-paged`, request);
   }
 
   export(source: CandidateSource, request: PagedSearchRequest) {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
 
+    const useId = CandidateSourceCandidateService.extractIdToUse(source);
+
     return this.http.post(
-      `${apiUrl}/${source.id}/export/csv`, request, {responseType: 'blob'});
+      `${apiUrl}/${useId}/export/csv`, request, {responseType: 'blob'});
+  }
+
+  private static extractIdToUse(source: CandidateSource) {
+    let useId;
+    if (isJob(source)) {
+      return source.submissionList.id;
+    } else {
+      return source.id;
+    }
   }
 }

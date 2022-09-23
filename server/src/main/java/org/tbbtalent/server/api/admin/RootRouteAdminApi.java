@@ -17,6 +17,7 @@
 package org.tbbtalent.server.api.admin;
 
 import java.net.URI;
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.service.db.BrandingService;
+import org.tbbtalent.server.service.db.RootRequestService;
 import org.tbbtalent.server.util.SubdomainRedirectHelper;
 
 /**
@@ -42,10 +44,12 @@ public class RootRouteAdminApi {
     private static final Logger log = LoggerFactory.getLogger(RootRouteAdminApi.class);
 
     private final BrandingService brandingService;
+    private final RootRequestService rootRequestService;
 
     @Autowired
-    public RootRouteAdminApi(BrandingService brandingService) {
+    public RootRouteAdminApi(BrandingService brandingService, RootRequestService rootRequestService) {
         this.brandingService = brandingService;
+        this.rootRequestService = rootRequestService;
     }
 
     /**
@@ -55,9 +59,16 @@ public class RootRouteAdminApi {
      */
     @GetMapping()
     public Object route(
+        HttpServletRequest request,
         @RequestHeader MultiValueMap<String, String> headers,
         @RequestHeader(name="Host", required=false) final String host,
-        @RequestParam(value = "p", required = false) final String partnerAbbreviation,
+        @RequestParam(value = "utm_source", required = false) final String utmSource,
+        @RequestParam(value = "utm_medium", required = false) final String utmMedium,
+        @RequestParam(value = "utm_campaign", required = false) final String utmCampaign,
+        @RequestParam(value = "utm_term", required = false) final String utmTerm,
+        @RequestParam(value = "utm_content", required = false) final String utmContent,
+        @RequestParam(value = "p", required = false) final String partnerParam,
+        @RequestParam(value = "r", required = false) final String referrerParam,
         @RequestParam(value = "h", required = false) final String showHeaders) {
 
 
@@ -66,17 +77,32 @@ public class RootRouteAdminApi {
                 log.info(String.format(
                     "Header '%s' = %s", key, String.join("|", value)));
             });
+            String ipAddress = request.getHeader("X-Forward-For");
+            if(ipAddress== null) {
+                log.info("Ip address: " + request.getRemoteAddr());
+            }
         }
+
+        String queryString = request.getQueryString();
 
         //Check for partner tctalent.org subdomains url can redirect to a plain url with p= query
         //eg crs.tctalent.org --> tctalent.org?p=crs
         String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
         if (redirectUrl != null) {
+            storeQueryInfo(request, partnerParam, referrerParam, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
+            if (queryString != null) {
+                redirectUrl += "&" + queryString;
+            }
             log.info("Redirecting to: " + redirectUrl);
             return new ModelAndView("redirect:" + redirectUrl);
         }
 
-        BrandingInfo info = brandingService.getBrandingInfo(partnerAbbreviation);
+        //Store query information
+        if (queryString != null) {
+            storeQueryInfo(request, partnerParam, referrerParam, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
+        }
+
+        BrandingInfo info = brandingService.getBrandingInfo(partnerParam);
 
         String landingPage = info.getLandingPage();
 
@@ -86,18 +112,26 @@ public class RootRouteAdminApi {
             routingUrl = landingPage;
         } else {
             routingUrl = "/candidate-portal/login";
-            if (partnerAbbreviation != null) {
-                routingUrl += "?p=" + partnerAbbreviation;
-            }
+        }
+        if (queryString != null) {
+            routingUrl += "?" + queryString;
         }
 
-        if (partnerAbbreviation != null) {
+        if (partnerParam != null) {
             String infoMess = "RootRouting: Host " + host;
-            infoMess += ", Partner specified 'p=" + partnerAbbreviation + "'";
+            infoMess += ", Partner specified 'p=" + partnerParam + "'";
             log.info(infoMess);
             log.info("Routing to landing page: " + routingUrl);
         }
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(routingUrl)).build();
+    }
+
+    private void storeQueryInfo(HttpServletRequest request,
+        String partnerParam, String referrerParam,
+        String utmSource, String utmMedium, String utmCampaign, String utmTerm, String utmContent) {
+
+        rootRequestService.createRootRequest(request, partnerParam, referrerParam,
+            utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
     }
 }

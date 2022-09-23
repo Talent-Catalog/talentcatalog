@@ -1,4 +1,4 @@
-# This workflow builds a Java project with Gradle and deploys to Elastic beanstalk
+# This workflow builds a Java project with Gradle and deploys to Elastic beanstalk on a push to master
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 # And https://github.com/marketplace/actions/beanstalk-deploy
 
@@ -26,7 +26,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '11'
-      - name: Install creditional helper - for jib
+      - name: Install credential helper - for jib
         run: sudo apt update && sudo apt install amazon-ecr-credential-helper
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew

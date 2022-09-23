@@ -38,4 +38,12 @@ export class ConfirmContactComponent implements OnInit {
     }
   }
 
+  candidateSurveyAnswer(): string {
+    let answer = this.candidate.surveyType?.name;
+    if (this.candidate.surveyComment) {
+      answer += ' ' + this.candidate.surveyComment;
+    }
+    return answer;
+  }
+
 }

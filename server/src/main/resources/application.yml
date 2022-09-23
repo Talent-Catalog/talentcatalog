@@ -90,6 +90,9 @@ salesforce:
   #
   # For dev this should be set in tbb-secrets
   privatekey: ${SALESFORCE_PRIVATEKEY:}
+  daysAgoRecent: 7
+  recordType:
+    employerJob: 0121N000001890wQAA
   tbb:
     jordanAccount: 0013l00002Jm1rRAAR
     lebanonAccount: 0013l00002Jm2sqAAB

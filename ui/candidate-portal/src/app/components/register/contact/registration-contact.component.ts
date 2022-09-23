@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, ParamMap, Router} from "@angular/router";
 import {CandidateService, UpdateCandidateSurvey} from "../../../services/candidate.service";
 import {AuthService} from "../../../services/auth.service";
 import {Candidate, RegisterCandidateRequest} from "../../../model/candidate";
@@ -156,7 +156,7 @@ export class RegistrationContactComponent implements OnInit {
       // The user has not yet registered - create an account for them
       const action = 'registration';
       this.reCaptchaV3Service.execute(action).subscribe(
-        (token) => this.registerWithToken(token),
+        (token) => this.getParamsAndRegister(token),
         (error) => {
           console.log(error);
         }
@@ -164,7 +164,17 @@ export class RegistrationContactComponent implements OnInit {
     }
   }
 
-  private registerWithToken(token: string) {
+  private getParamsAndRegister(token: string) {
+    this.route.queryParamMap.subscribe(
+      (params) => {
+        this.registerWithToken(token, params);
+      }
+    );
+  }
+
+  private registerWithToken(token: string, params: ParamMap) {
+    //Check for the partner query param and use it to configure the branding service.
+
     const req: RegisterCandidateRequest = new RegisterCandidateRequest();
     req.email = this.email;
     req.phone = this.phone;
@@ -173,6 +183,25 @@ export class RegistrationContactComponent implements OnInit {
     req.passwordConfirmation = this.passwordConfirmation;
     req.reCaptchaV3Token = token;
     req.partnerAbbreviation = this.brandingService.partnerAbbreviation;
+    //Populate query params
+    if (params.has('r')) {
+      req.referrerParam = params.get('r');
+    }
+    if (params.has('utm_source')) {
+      req.utmSource = params.get('utm_source');
+    }
+    if (params.has('utm_campaign')) {
+      req.utmCampaign = params.get('utm_campaign');
+    }
+    if (params.has('utm_medium')) {
+      req.utmMedium = params.get('utm_medium');
+    }
+    if (params.has('utm_content')) {
+      req.utmContent = params.get('utm_content');
+    }
+    if (params.has('utm_term')) {
+      req.utmContent = params.get('utm_term');
+    }
 
     this.authService.register(req).subscribe(
       (response) => {

@@ -23,6 +23,7 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.request.partner.SearchPartnerRequest;
@@ -51,6 +52,17 @@ public interface PartnerService {
      */
     @NonNull
     Partner getDefaultSourcePartner() throws NoSuchObjectException;
+
+    /**
+     * Returns partner who can be auto assigned to a candidate based on the country the candidate
+     * is currently located in. Null if none found.
+     * <p/>
+     * If there is ambiguity - ie more than one partner is found, then returns null.
+     * @param country Country associated with partner
+     * @return Auto assignable partner
+     */
+    @Nullable
+    Partner getAutoAssignablePartnerByCountry(@Nullable Country country);
 
     /**
      * Get the partner associated with the given partner abbreviation (case insensitive)

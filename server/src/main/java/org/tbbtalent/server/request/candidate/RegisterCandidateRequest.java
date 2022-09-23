@@ -18,10 +18,12 @@ package org.tbbtalent.server.request.candidate;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.tbbtalent.server.model.db.HasTcQueryParameters;
 
 @Getter
 @Setter
-public class RegisterCandidateRequest extends BaseCandidateContactRequest {
+public class RegisterCandidateRequest extends BaseCandidateContactRequest
+    implements HasTcQueryParameters {
     private String username;
     private String password;
     private String passwordConfirmation;
@@ -31,4 +33,12 @@ public class RegisterCandidateRequest extends BaseCandidateContactRequest {
      * If not null, can be used to look up partner to which the candidate belongs.
      */
     private String partnerAbbreviation;
+
+    private String referrerParam;
+    private String utmCampaign;
+    private String utmContent;
+    private String utmMedium;
+    private String utmSource;
+    private String utmTerm;
+
 }

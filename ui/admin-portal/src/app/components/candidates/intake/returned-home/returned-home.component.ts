@@ -21,6 +21,8 @@ import {CandidateService} from '../../../../services/candidate.service';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNo} from '../../../../model/candidate';
 
+//todo Is this component used anywhere?
+
 @Component({
   selector: 'app-returned-home',
   templateUrl: './returned-home.component.html',

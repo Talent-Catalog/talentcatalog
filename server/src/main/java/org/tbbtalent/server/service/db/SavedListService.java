@@ -154,7 +154,7 @@ public interface SavedListService {
 
     /**
      * Creates a new SavedList unless it is a registered list and a registered list for that
-     * job, as defined by {@link SavedList#getSfJoblink()} already exists, in which case
+     * job, as defined by {@link SavedList#getSfJobOpp()}, already exists, in which case
      * nothing new is created, and the existing list is returned.
      * @param request Request defining new list (including whether it is a registered list
      *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
@@ -186,7 +186,7 @@ public interface SavedListService {
     /**
      /**
      * Creates a new SavedList unless it is a registered list and a registered list for that
-     * job, as defined by {@link SavedList#getSfJoblink()} already exists, in which case
+     * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
      * nothing new is created, and the existing list is returned.
      * @param user User to be recorded as creator of saved list
      * @param request Request defining new list (including whether it is a registered list
@@ -413,13 +413,4 @@ public interface SavedListService {
     @Nullable
     SavedList fetchSourceList(UpdateSavedListContentsRequest request) throws NoSuchObjectException;
 
-    /**
-     * Updates lists in the given SavedLists with opportunity info taken from any opportunity
-     * objects found by calling {@link SavedList#getSfJobOpportunity()}.
-     * <p/>
-     * This includes transient fields such as {@link SavedList#getSfJobStage()} and
-     * {@link SavedList#getSfJobCountry()} but also the database field sfOppIsClosed.
-     * @param savedLists Lists to be processed.
-     */
-    void updateJobOpportunityInfo(Iterable<SavedList> savedLists);
 }

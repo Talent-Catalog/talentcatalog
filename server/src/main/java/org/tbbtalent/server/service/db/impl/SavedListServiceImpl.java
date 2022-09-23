@@ -54,6 +54,7 @@ import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.ExportColumn;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
@@ -61,7 +62,6 @@ import org.tbbtalent.server.model.db.TaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
-import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
@@ -91,6 +91,7 @@ import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.DocPublisherService;
 import org.tbbtalent.server.service.db.ExportColumnsService;
 import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
@@ -118,6 +119,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
+    private final SalesforceJobOppService salesforceJobOppService;
     private final TaskAssignmentService taskAssignmentService;
     private final UserRepository userRepository;
     private final AuthService authService;
@@ -136,7 +138,7 @@ public class SavedListServiceImpl implements SavedListService {
         FileSystemService fileSystemService,
         GoogleDriveConfig googleDriveConfig,
         SalesforceService salesforceService,
-        TaskAssignmentService taskAssignmentService,
+        SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
         UserRepository userRepository,
         AuthService authService
     ) {
@@ -149,6 +151,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
         this.salesforceService = salesforceService;
+        this.salesforceJobOppService = salesforceJobOppService;
         this.taskAssignmentService = taskAssignmentService;
         this.userRepository = userRepository;
         this.authService = authService;
@@ -415,24 +418,31 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
         throws EntityExistsException, RegisteredListException {
 
+        SalesforceJobOpp sfJobOpp = null;
+        final String sfJoblink = request.getSfJoblink();
+        if (sfJoblink != null) {
+            sfJobOpp = salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink);
+        }
+
         final boolean isRegisteredList =
             request.getRegisteredJob() != null && request.getRegisteredJob();
         if (isRegisteredList) {
-            //Check for a registered list with same sfJobLink (owned any user)
-            final String sfJoblink = request.getSfJoblink();
-            if (sfJoblink == null) {
+            if (sfJobOpp == null) {
                 throw new RegisteredListException("Missing Salesforce link for registered job list");
             }
-            final String jobName = request.getName();
+            String jobName = request.getName();
             if (jobName == null) {
-                throw new RegisteredListException("Missing name for registered job list");
+                jobName = sfJobOpp.getName();
             }
-            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJoblink)
+
+            //Check for a registered list with same sfJobOpp (owned any user)
+            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJobOpp.getId())
                 .orElse(null);
             //If we already have a registered list for this job, just return it
             if (registeredList != null) {
                 return registeredList;
             }
+
             //Modify registered name to avoid clashes with unregistered list names
             request.setName(jobName + REGISTERED_NAME_SUFFIX);
         } else {
@@ -443,6 +453,7 @@ public class SavedListServiceImpl implements SavedListService {
 
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
+        savedList.setSfJobOpp(sfJobOpp);
 
         //Save created list so that we get its id from the database
         savedList.setAuditFields(user);
@@ -461,9 +472,9 @@ public class SavedListServiceImpl implements SavedListService {
     public void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
         throws NoSuchObjectException, GeneralSecurityException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
-        String sfJobLink = savedList.getSfJoblink();
+        SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
         candidateService.createUpdateSalesforce(
-            savedList.getCandidates(), sfJobLink, request.getSalesforceOppParams());
+            savedList.getCandidates(), sfJobOpp, request.getSalesforceOppParams());
     }
 
     @Override
@@ -610,6 +621,9 @@ public class SavedListServiceImpl implements SavedListService {
         }
         SavedList savedList = get(savedListId);
         request.populateFromRequest(savedList);
+
+        savedList.setSfJobOpp(salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+
         return saveIt(savedList);
     }
 
@@ -662,9 +676,9 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = get(savedListId);
 
         //There will only be candidate opportunities if list has a job opp
-        final String joblink = savedList.getSfJoblink();
-        if (joblink != null) {
-            salesforceService.addCandidateOpportunityStages(candidates, joblink);
+        final SalesforceJobOpp jobOpp = savedList.getSfJobOpp();
+        if (jobOpp != null) {
+            salesforceService.addCandidateOpportunityStages(candidates, jobOpp.getId());
         }
     }
 
@@ -802,7 +816,7 @@ public class SavedListServiceImpl implements SavedListService {
                 report.setNumNoJobOffers(nNoJobOffers);
 
                 if (nFeedbacks + nJobOffers + nNoJobOffers > 0) {
-                    salesforceService.updateCandidateOpportunities(feedbacks, savedList.getSfJoblink());
+                    salesforceService.updateCandidateOpportunities(feedbacks, savedList.getSfJobOpp());
                     report.setMessage("Import complete");
                 } else {
                     report.setMessage("No feedback detected");
@@ -968,32 +982,6 @@ public class SavedListServiceImpl implements SavedListService {
                     .orElseThrow(() -> new NoSuchObjectException(SavedList.class, sourceListId));
         }
         return sourceList;
-    }
-
-    @Override
-    public void updateJobOpportunityInfo(Iterable<SavedList> savedLists) {
-        for (SavedList savedList : savedLists) {
-            Opportunity opp = savedList.getSfJobOpportunity();
-            if (opp == null) {
-                //No opportunity.
-                //But if the savedList has a job link and is marked as having an unclosed opp
-                //close it.
-                //This can happen if the job opp is deleted on Salesforce, so the job link is
-                //no longer valid and Salesforce will return a null opportunity object.
-                //All such opportunities should be considered as closed.
-                if (savedList.getSfJoblink() != null && !savedList.isSfOppIsClosed()) {
-                    savedList.setSfOppIsClosed(true);
-                    savedList = saveIt(savedList);
-                }
-            } else {
-                if (savedList.isSfOppIsClosed() != opp.IsClosed) {
-                    savedList.setSfOppIsClosed(opp.IsClosed);
-                    savedList = saveIt(savedList);
-                }
-                savedList.setSfJobCountry(opp.getAccountCountry__c());
-                savedList.setSfJobStage(opp.getStageName());
-            }
-        }
     }
 
     /**

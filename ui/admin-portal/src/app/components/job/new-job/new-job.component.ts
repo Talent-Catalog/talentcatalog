@@ -1,13 +1,20 @@
 import {Component, OnInit} from '@angular/core';
 import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
-import {SavedList, UpdateSavedListInfoRequest} from "../../../model/saved-list";
+import {SavedList} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
-import {PostJobToSlackRequest, Progress, UpdateEmployerOpportunityRequest} from "../../../model/base";
+import {
+  PostJobToSlackRequest,
+  Progress,
+  UpdateEmployerOpportunityRequest
+} from "../../../model/base";
 import {getCandidateSourceExternalHref} from "../../../model/saved-search";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {SlackService} from "../../../services/slack.service";
+import {AuthService} from "../../../services/auth.service";
+import {UpdateJobRequest} from "../../../model/job";
+import {JobService} from "../../../services/job.service";
 
 @Component({
   selector: 'app-new-job',
@@ -19,19 +26,21 @@ export class NewJobComponent implements OnInit {
   savedList: SavedList;
   sfJoblink: string;
   slacklink: string;
-  creatingList: Progress = Progress.NotStarted;
+  creatingJob: Progress = Progress.NotStarted;
   creatingFolders: Progress = Progress.NotStarted;
   creatingSFLinks: Progress = Progress.NotStarted;
   postingToSlack: Progress = Progress.NotStarted;
   findingJob: boolean;
   errorFindingJob: string = null;
   errorCreatingFolders: string = null;
-  errorCreatingList: string = null;
+  errorCreatingJob: string = null;
   errorCreatingSFLinks: string = null;
   errorPostingToSlack: string = null;
 
   constructor(
-    private salesforceService: SalesforceService,
+    private authService: AuthService,
+    private jobService: JobService,
+    public salesforceService: SalesforceService,
     private savedListService: SavedListService,
     private slackService: SlackService,
     private location: Location,
@@ -49,7 +58,7 @@ export class NewJobComponent implements OnInit {
 
   get progressPercent(): number {
     let pct = 0;
-    if (this.creatingList === Progress.Finished) {
+    if (this.creatingJob === Progress.Finished) {
       pct += 25;
     }
     if (this.creatingFolders === Progress.Finished) {
@@ -66,7 +75,7 @@ export class NewJobComponent implements OnInit {
 
 
   onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
-    this.creatingList = Progress.NotStarted;
+    this.creatingJob = Progress.NotStarted;
     this.creatingFolders = Progress.NotStarted;
     this.creatingSFLinks = Progress.NotStarted;
     this.postingToSlack = Progress.NotStarted;
@@ -87,24 +96,22 @@ export class NewJobComponent implements OnInit {
   }
 
 
-  createRegisteredList() {
-    this.errorCreatingList = null;
-    this.creatingList = Progress.Started;
-    const request: UpdateSavedListInfoRequest = {
-      registeredJob: true,
-      name: this.jobName,
-      fixed: true,
+  private createRegisteredJob() {
+    this.errorCreatingJob = null;
+
+    this.creatingJob = Progress.Started;
+    const request: UpdateJobRequest = {
       sfJoblink: this.sfJoblink ? this.sfJoblink : null
     };
-    this.savedListService.create(request).subscribe(
-      (savedList) => {
-        this.creatingList = Progress.Finished;
-        this.savedList = savedList;
+    this.jobService.create(request).subscribe(
+      (job) => {
+        this.creatingJob = Progress.Finished;
+        this.savedList = job.submissionList;
         this.createFolders();
       },
       (error) => {
-        this.errorCreatingList = error;
-        this.creatingList = Progress.NotStarted;
+        this.errorCreatingJob = error;
+        this.creatingJob = Progress.NotStarted;
       });
   }
 
@@ -128,7 +135,7 @@ export class NewJobComponent implements OnInit {
     this.creatingSFLinks = Progress.Started;
 
     const request: UpdateEmployerOpportunityRequest = {
-      sfJoblink: this.savedList.sfJoblink,
+      sfJoblink: this.salesforceService.joblink(this.savedList),
       folderlink: this.savedList.folderlink,
       foldercvlink: this.savedList.foldercvlink,
       folderjdlink: this.savedList.folderjdlink,
@@ -153,7 +160,7 @@ export class NewJobComponent implements OnInit {
     this.postingToSlack = Progress.Started;
 
     const request: PostJobToSlackRequest = {
-      sfJoblink: this.savedList.sfJoblink,
+      sfJoblink: this.salesforceService.joblink(this.savedList),
       jobName: this.jobName,
       folderlink: this.savedList.folderlink,
       foldercvlink: this.savedList.foldercvlink,
@@ -173,6 +180,6 @@ export class NewJobComponent implements OnInit {
   }
 
   doRegistration() {
-    this.createRegisteredList();
+    this.createRegisteredJob()
   }
 }

@@ -88,10 +88,58 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * This is the reference used to identify the candidate on the source partner's internal systems.
      * <p/>
      * Some partners may choose to use the candidateNumber field as their own internal reference
-     * identifying this candidate. See the
+     * identifying this candidate. See Partner#isDefaultPartnerRef
      */
     @Nullable
     private String partnerRef;
+
+    /**
+     * IP address of candidate when they registered
+     */
+    @Nullable
+    private String regoIp;
+
+    /**
+     * Partner query parameter (p=) associated with candidate on registration
+     */
+    @Nullable
+    private String regoPartnerParam;
+
+    /**
+     * Referrer query parameter (r=) associated with candidate on registration
+     */
+    @Nullable
+    private String regoReferrerParam;
+
+    /**
+     * Utm query parameter associated with candidate on registration
+     */
+    @Nullable
+    private String regoUtmCampaign;
+
+    /**
+     * Utm query parameter associated with candidate on registration
+     */
+    @Nullable
+    private String regoUtmContent;
+
+    /**
+     * Utm query parameter associated with candidate on registration
+     */
+    @Nullable
+    private String regoUtmMedium;
+
+    /**
+     * Utm query parameter associated with candidate on registration
+     */
+    @Nullable
+    private String regoUtmSource;
+
+    /**
+     * Utm query parameter associated with candidate on registration
+     */
+    @Nullable
+    private String regoUtmTerm;
 
     @Nullable
     private String shareableNotes;
@@ -1628,6 +1676,78 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getLeftHomeNotes() { return leftHomeNotes; }
 
     public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
+
+    @Nullable
+    public String getRegoIp() {
+        return regoIp;
+    }
+
+    public void setRegoIp(@Nullable String regoIp) {
+        this.regoIp = regoIp;
+    }
+
+    @Nullable
+    public String getRegoPartnerParam() {
+        return regoPartnerParam;
+    }
+
+    public void setRegoPartnerParam(@Nullable String regoPartnerParam) {
+        this.regoPartnerParam = regoPartnerParam;
+    }
+
+    @Nullable
+    public String getRegoReferrerParam() {
+        return regoReferrerParam;
+    }
+
+    public void setRegoReferrerParam(@Nullable String regoReferrerParam) {
+        this.regoReferrerParam = regoReferrerParam;
+    }
+
+    @Nullable
+    public String getRegoUtmCampaign() {
+        return regoUtmCampaign;
+    }
+
+    public void setRegoUtmCampaign(@Nullable String regoUtmCampaign) {
+        this.regoUtmCampaign = regoUtmCampaign;
+    }
+
+    @Nullable
+    public String getRegoUtmContent() {
+        return regoUtmContent;
+    }
+
+    public void setRegoUtmContent(@Nullable String regoUtmContent) {
+        this.regoUtmContent = regoUtmContent;
+    }
+
+    @Nullable
+    public String getRegoUtmMedium() {
+        return regoUtmMedium;
+    }
+
+    public void setRegoUtmMedium(@Nullable String regoUtmMedium) {
+        this.regoUtmMedium = regoUtmMedium;
+    }
+
+    @Nullable
+    public String getRegoUtmSource() {
+        return regoUtmSource;
+    }
+
+    public void setRegoUtmSource(@Nullable String regoUtmSource) {
+        this.regoUtmSource = regoUtmSource;
+    }
+
+    @Nullable
+    public String getRegoUtmTerm() {
+        return regoUtmTerm;
+    }
+
+    public void setRegoUtmTerm(@Nullable String regoUtmTerm) {
+        this.regoUtmTerm = regoUtmTerm;
+    }
 
     @Nullable
     public YesNoUnsure getReturnHomeFuture() { return returnHomeFuture; }

@@ -19,8 +19,13 @@ import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy} from "../../model/base"
 import {LocalStorageService} from "angular-2-local-storage";
-import {SavedSearchService, SavedSearchTypeInfo, SavedSearchTypeSubInfo} from "../../services/saved-search.service";
+import {
+  SavedSearchService,
+  SavedSearchTypeInfo,
+  SavedSearchTypeSubInfo
+} from "../../services/saved-search.service";
 import {FormBuilder} from "@angular/forms";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-home',
@@ -44,7 +49,8 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   constructor(
     private fb: FormBuilder,
     private localStorageService: LocalStorageService,
-    private savedSearchService: SavedSearchService
+    private savedSearchService: SavedSearchService,
+    private authService: AuthService
   ) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
@@ -112,5 +118,9 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   get SavedSearchType() {
     return SavedSearchType;
+  }
+
+  isExperimental() {
+    return false;
   }
 }

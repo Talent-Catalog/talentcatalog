@@ -18,6 +18,7 @@ package org.tbbtalent.server.api.portal;
 
 import java.util.Map;
 import javax.security.auth.login.AccountLockedException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,14 +95,14 @@ public class AuthPortalApi {
 
     @PostMapping("register")
     public Map<String, Object> register(
-            @Valid @RequestBody RegisterCandidateRequest request)
+        HttpServletRequest httpRequest, @Valid @RequestBody RegisterCandidateRequest request)
             throws AccountLockedException, ReCaptchaInvalidException {
 
         //Do check for automated registrations. Throws exception if it looks
         //automated.
         captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "registration");
 
-        LoginRequest loginRequest = candidateService.register(request);
+        LoginRequest loginRequest = candidateService.register(request, httpRequest);
 
         JwtAuthenticationResponse jwt = userService.login(loginRequest);
         return jwtDto().build(jwt);

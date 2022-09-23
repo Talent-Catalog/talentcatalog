@@ -31,14 +31,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -46,7 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -56,11 +54,16 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
+import org.tbbtalent.server.configuration.SalesforceConfig;
+import org.tbbtalent.server.configuration.SalesforceRecordTypeConfig;
+import org.tbbtalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.sf.Contact;
@@ -109,7 +112,7 @@ import reactor.core.publisher.Mono;
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
-    private static final String apiVersion = "v51.0";
+    private static final String apiVersion = "v54.0";
     private static final String candidateNumberSFFieldName = "TBBid__c";
     private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
     private static final String candidateContactTypeSFFieldValue = "Candidate";
@@ -125,27 +128,15 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName,IsClosed,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
-        "Id,RecordTypeId,Name,AccountId,AccountCountry__c,StageName,IsClosed";
-
+        "Id,RecordTypeId,Name,AccountId,OwnerId,AccountCountry__c,AccountName__c,StageName,IsClosed";
 
     private final EmailHelper emailHelper;
 
-    @Value("${salesforce.privatekey}")
-    private String privateKeyStr;
+    private final SalesforceConfig salesforceConfig;
+    private final SalesforceRecordTypeConfig salesforceRecordTypeConfig;
+    private final SalesforceTbbAccountsConfig salesforceTbbAccountsConfig;
 
     private PrivateKey privateKey;
-
-    @Value("${salesforce.tbb.jordanAccount}")
-    private String tbbJordanAccountId;
-
-    @Value("${salesforce.tbb.lebanonAccount}")
-    private String tbbLebanonAccountId;
-
-    @Value("${salesforce.tbb.otherAccount}")
-    private String tbbOtherAccountId;
-
-    @Value("${salesforce.tbb.tbbAccount}")
-    private String tbbAccountId;
 
     private final WebClient webClient;
 
@@ -160,8 +151,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private String accessToken = null;
 
     @Autowired
-    public SalesforceServiceImpl(EmailHelper emailHelper) {
+    public SalesforceServiceImpl(EmailHelper emailHelper, SalesforceConfig salesforceConfig,
+        SalesforceRecordTypeConfig salesforceRecordTypeConfig, SalesforceTbbAccountsConfig salesforceTbbAccountsConfig) {
         this.emailHelper = emailHelper;
+        this.salesforceConfig = salesforceConfig;
+        this.salesforceRecordTypeConfig = salesforceRecordTypeConfig;
+        this.salesforceTbbAccountsConfig = salesforceTbbAccountsConfig;
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
@@ -179,10 +174,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfJoblink)
+    public void addCandidateOpportunityStages(Iterable<Candidate> candidates, String id)
         throws SalesforceException {
 
-        String id = extractIdFromSfUrl(sfJoblink);
         if (id != null) {
             Map<String, Candidate> oppIdCandidateMap = buildCandidateOppsMap(candidates, id);
 
@@ -194,49 +188,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 if (candidate != null) {
                     candidate.setStage(candidateOpp.getStageName());
                     candidate.setSfOpportunityLink(candidateOpp.getUrl());
-                }
-            }
-        }
-    }
-
-    @Override
-    public void addJobOpportunity(Iterable<SavedList> savedLists) throws SalesforceException {
-
-        //Retrieve the sfJobLinks the given lists
-        Set<String> sfIds = new HashSet<>();
-        for (SavedList savedList : savedLists) {
-            final String sfJoblink = savedList.getSfJoblink();
-            if (sfJoblink != null) {
-                //Get id from link.
-                final String id = extractIdFromSfUrl(sfJoblink);
-                if (id != null) {
-                    sfIds.add(id);
-                }
-            }
-        }
-
-        //Process if we have any lists with job links.
-        if (sfIds.size() > 0) {
-            //Fetch the opps from their ids taken from the above map.
-            List<Opportunity> opps = fetchOpportunities(sfIds);
-
-            //Construct map of opps by id.
-            Map<String, Opportunity> idOppMap = new HashMap<>();
-            //Now loop through the opps, adding the opportunity
-            for (Opportunity opp : opps) {
-                idOppMap.put(opp.getId(), opp);
-            }
-
-            //Now populate opps on all lists with sfJobLinks.
-            for (SavedList savedList : savedLists) {
-                String sfJoblink = savedList.getSfJoblink();
-                if (sfJoblink != null) {
-                    String sfId = extractIdFromSfUrl(sfJoblink);
-                    Opportunity opp = sfId == null ? null : idOppMap.get(sfId);
-                    if (opp == null) {
-                        log.warn("Saved List " + savedList.getName() + " with invalid sfJobLink " + sfJoblink);
-                    }
-                    savedList.setSfJobOpportunity(opp);
                 }
             }
         }
@@ -254,7 +205,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        privateKey = privateKeyFromPkcs8(privateKeyStr);
+        privateKey = privateKeyFromPkcs8(salesforceConfig.getPrivatekey());
     }
 
     @Override
@@ -336,10 +287,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void createOrUpdateCandidateOpportunities(
-        List<Candidate> candidates, SalesforceOppParams salesforceOppParams, String sfJoblink)
+        List<Candidate> candidates, SalesforceOppParams salesforceOppParams,
+        SalesforceJobOpp jobOpportunity)
         throws GeneralSecurityException, WebClientException, SalesforceException {
-
-        Opportunity jobOpportunity = findOpportunityFromLink(sfJoblink);
 
         //Find out which candidates already have opportunities (so just need to be updated)
         //and which need opportunities to be created.
@@ -361,10 +311,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             //Now set any requested stage name and next step
             String stageName = null;
             String nextStep = null;
+            String closingComments = null;
             String employerFeedback = null;
             if (salesforceOppParams != null) {
-                stageName = salesforceOppParams.getStageName();
+                final CandidateOpportunityStage stage = salesforceOppParams.getStage();
+                stageName = stage == null ? null : stage.getSalesforceStageName();
                 nextStep = salesforceOppParams.getNextStep();
+                closingComments = salesforceOppParams.getClosingComments();
                 employerFeedback = salesforceOppParams.getEmployerFeedback();
             }
 
@@ -379,6 +332,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             if (nextStep != null) {
                 opportunityRequest.setNextStep(nextStep);
             }
+            if (closingComments != null) {
+                opportunityRequest.setClosingComments(closingComments);
+            }
             if (employerFeedback != null) {
                 opportunityRequest.setEmployerFeedback(employerFeedback);
             }
@@ -388,7 +344,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     private List<Candidate> selectCandidatesWithNoOpp(List<Candidate> candidates,
-        Opportunity jobOpportunity) throws SalesforceException {
+        SalesforceJobOpp jobOpportunity) throws SalesforceException {
 
         //First creating a map of all candidates indexed by their what their unique
         //opportunity id should be.
@@ -416,6 +372,18 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public static @Nullable
     String extractIdFromSfUrl(@Nullable String url) {
         return extractFieldFromSfUrl(url, 2);
+    }
+
+    /**
+     * Extracts the Salesforce record ids from Salesforce record urls.
+     * <p/>
+     * List version go {@link #extractIdFromSfUrl(String)}
+     */
+    public static @NotNull
+    List<String> extractIdFromSfUrl(@NotNull List<String> urls) {
+        return urls.stream()
+            .map(SalesforceServiceImpl::extractIdFromSfUrl)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -539,30 +507,46 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public List<Contact> records;
     }
 
-    private List<Opportunity> fetchOpportunities(Collection<String> ids) throws SalesforceException {
+    @Override
+    public List<Opportunity> fetchJobOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds) {
+        List<Opportunity> opps = new ArrayList<>();
+        if (sfIds.size() > 0) {
+            try {
+                //Construct the String of ids for the WHERE clause
+                final String idsAsString = sfIds.stream().map(s -> "'" + s + "'")
+                    .collect(Collectors.joining(","));
 
-        try {
-            //Construct the String of ids for the WHERE clause
-            final String idsAsString = ids.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
+                String query =
+                    "SELECT " + jobOpportunityRetrievalFields +
+                        " FROM Opportunity WHERE "
+                        + "(Id IN (" + idsAsString + ")"
+                        + " OR (IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
+                        + salesforceConfig.getDaysAgoRecent() + "))"
+                    + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
 
-            String query =
-                "SELECT " + jobOpportunityRetrievalFields +
-                    " FROM Opportunity WHERE Id IN (" + idsAsString + ")";
+                ClientResponse response = executeQuery(query);
 
-            ClientResponse response = executeQuery(query);
+                OpportunityQueryResult result =
+                    response.bodyToMono(OpportunityQueryResult.class).block();
 
-            OpportunityQueryResult result =
-                response.bodyToMono(OpportunityQueryResult.class).block();
-
-            //Retrieve the contact from the response
-            List<Opportunity> opps = null;
-            if (result != null) {
-                opps = result.records;
+                //Retrieve the contact from the response
+                if (result != null) {
+                    opps = result.records;
+                }
+            } catch (GeneralSecurityException ex) {
+                throw new SalesforceException("Failed to fetch Opportunities: " + ex);
             }
+        }
+        return opps;
+    }
 
-            return opps;
-        } catch (GeneralSecurityException ex) {
-            throw new SalesforceException("Failed to fetch Opportunities: " + ex);
+    @Nullable
+    @Override
+    public Opportunity fetchJobOpportunity(String id) throws SalesforceException {
+        try {
+            return findOpportunity(id, jobOpportunityRetrievalFields);
+        } catch (GeneralSecurityException e) {
+            throw new SalesforceException("Failed to fetch opportunity " + id + ": " + e);
         }
     }
 
@@ -632,22 +616,19 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Nullable
     public Opportunity findOpportunity(String sfId)
         throws GeneralSecurityException, WebClientException {
-        Opportunity opportunity = null;
-        if (sfId != null) {
-            opportunity = findRecordFieldsFromId(
-                "Opportunity", sfId,
-                "Id,Name,AccountId,OwnerId,AccountCountry__c", Opportunity.class);
-        }
-        return opportunity;
+        return findOpportunity(sfId, "Id,Name,AccountId,OwnerId,AccountCountry__c");
     }
 
-    private Opportunity findOpportunityFromLink(String linkUrl) throws GeneralSecurityException {
-        //Get id from link.
-        String id = extractIdFromSfUrl(linkUrl);
-
-        Opportunity opportunity = id == null ? null : findOpportunity(id);
-        if (opportunity == null) {
-            throw new SalesforceException("Could not find opportunity " + linkUrl);
+    private Opportunity findOpportunity(String sfId, String fields)
+        throws GeneralSecurityException, WebClientException {
+        Opportunity opportunity = null;
+        if (sfId != null) {
+            try {
+                opportunity = findRecordFieldsFromId(
+                    "Opportunity", sfId, fields, Opportunity.class);
+            } catch (NotFound ex) {
+                //Just return null opportunity if not found
+            }
         }
         return opportunity;
     }
@@ -673,10 +654,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void updateCandidateOpportunities(
-        List<EmployerCandidateFeedbackData> feedbacks, String sfJoblink)
+        List<EmployerCandidateFeedbackData> feedbacks, SalesforceJobOpp jobOpportunity)
         throws GeneralSecurityException, WebClientException, SalesforceException {
 
-        Opportunity jobOpportunity = findOpportunityFromLink(sfJoblink);
         String recordType = getCandidateOpportunityRecordType(jobOpportunity);
 
         //Now build requests of candidate opportunities we want to update
@@ -718,7 +698,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     private List<CandidateOpportunityRecordComposite> buildCandidateOpportunityRequests(
         List<EmployerCandidateFeedbackData> feedbacks, String recordType,
-        Opportunity jobOpportunity)
+        SalesforceJobOpp jobOpportunity)
         throws GeneralSecurityException {
 
         //Figure out which candidates need an opp created.
@@ -771,8 +751,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return requests;
     }
 
-    private String getCandidateOpportunityRecordType(Opportunity opportunity) {
-        String country = opportunity.getAccountCountry__c();
+    private String getCandidateOpportunityRecordType(SalesforceJobOpp opportunity) {
+        String country = opportunity.getCountry();
         String recordType = "Candidate recruitment";
         if ("Canada".equals(country)) {
             recordType = "Candidate recruitment (CAN)";
@@ -1282,13 +1262,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             //Set account id based on candidate's country
             switch (country) {
                 case "Jordan":
-                    setAccountId(tbbJordanAccountId);
+                    setAccountId(salesforceTbbAccountsConfig.getJordanAccount());
                     break;
                 case "Lebanon":
-                    setAccountId(tbbLebanonAccountId);
+                    setAccountId(salesforceTbbAccountsConfig.getLebanonAccount());
                     break;
                 default:
-                    setAccountId(tbbOtherAccountId);
+                    setAccountId(salesforceTbbAccountsConfig.getOtherAccount());
             }
 
             setTBBid(Long.valueOf(candidate.getCandidateNumber()));
@@ -1435,7 +1415,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public CandidateOpportunityRequest(
             @Nullable CompositeAttributes attributes,
             String recordType, Candidate candidate,
-            Opportunity jobOpportunity, boolean create) {
+            SalesforceJobOpp jobOpportunity, boolean create) {
 
             if (attributes != null) {
                 setAttributes(attributes);
@@ -1509,6 +1489,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public void setCloseDate(String closeDate) {
             put("CloseDate", closeDate);
+        }
+
+        /**
+         * Comments explaining why the opportunity was closed
+         */
+        public void setClosingComments(String comments) {
+            put("Closing_Comments__c", comments);
         }
 
         /**
@@ -1596,7 +1583,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     class CandidateOpportunityRecordComposite extends CandidateOpportunityRequest {
 
         public CandidateOpportunityRecordComposite(String recordType, Candidate candidate,
-            Opportunity jobOpportunity, boolean create) {
+            SalesforceJobOpp jobOpportunity, boolean create) {
             super(new CompositeAttributes("Opportunity"),
                 recordType, candidate, jobOpportunity, create);
         }

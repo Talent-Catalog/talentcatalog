@@ -7,13 +7,13 @@ import {SearchResults} from "../../../../model/search-results";
 import {Partner} from "../../../../model/partner";
 import {PartnerService} from "../../../../services/partner.service";
 import {SearchPartnerRequest} from "../../../../model/base";
-import {CreateUpdatePartnerComponent} from "../create-update-partner/create-update-partner.component";
+import {
+  CreateUpdatePartnerComponent
+} from "../create-update-partner/create-update-partner.component";
 import {Country} from "../../../../model/country";
 
 /*
-   MODEL - latest best practice on this kind of component
-
-   - Delegate all authentication logic to authService
+   MODEL - Delegate all authentication logic to authService
  */
 
 @Component({

@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.OffsetDateTime;
@@ -72,6 +73,7 @@ import org.tbbtalent.server.model.db.EducationLevel;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SavedSearchType;
@@ -113,6 +115,7 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.PartnerService;
+import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.UserService;
@@ -133,6 +136,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EmailHelper emailHelper;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListRepository savedListRepository;
     private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
@@ -174,7 +178,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         EmailHelper emailHelper,
         UserRepository userRepository,
         UserService userService,
-        SavedListRepository savedListRepository,
+        SalesforceJobOppService salesforceJobOppService, SavedListRepository savedListRepository,
         SavedListService savedListService,
         SavedSearchRepository savedSearchRepository,
         SearchJoinRepository searchJoinRepository,
@@ -197,6 +201,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.emailHelper = emailHelper;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.salesforceJobOppService = salesforceJobOppService;
         this.savedListRepository = savedListRepository;
         this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
@@ -595,7 +600,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 savedSearch.setName(request.getName());
                 savedSearch.setFixed(request.getFixed());
                 savedSearch.setReviewable(request.getReviewable());
-                savedSearch.setSfJoblink(request.getSfJoblink());
+                savedSearch.setSfJobOpp(
+                    salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+
                 savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
                 return savedSearchRepository.save(savedSearch);
             } else {
@@ -794,20 +801,23 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedList.setCreatedBy(user);
             savedList.setCreatedDate(OffsetDateTime.now());
             savedList.setName(constructSelectionListName(user, savedSearch));
-            savedList.setSfJoblink(savedSearch.getSfJoblink());
+            savedList.setSfJobOpp(savedSearch.getSfJobOpp());
+
             savedList = savedListRepository.save(savedList);
         } else {
             //Keep SavedSearch sfJobLink in sync with its selection list.
-            if (savedSearch.getSfJoblink() == null) {
+            if (savedSearch.getSfJobOpp() == null) {
                 //If not both null
-                if (savedList.getSfJoblink() != null) {
-                    savedList.setSfJoblink(null);
+                if (savedList.getSfJobOpp() != null) {
+                    savedList.setSfJobOpp(null);
                     savedList = savedListRepository.save(savedList);
                 }
             } else {
-                //If different
-                if (!savedSearch.getSfJoblink().equals(savedList.getSfJoblink())) {
-                    savedList.setSfJoblink(savedSearch.getSfJoblink());
+                //Non null SavedSearch Job Opp. Check if it is different from Saved List JobOpp
+                final SalesforceJobOpp savedListJobOpp = savedList.getSfJobOpp();
+                if (savedListJobOpp == null ||
+                    !savedSearch.getSfJobOpp().getId().equals(savedListJobOpp.getId())) {
+                    savedList.setSfJobOpp(savedSearch.getSfJobOpp());
                     savedList = savedListRepository.save(savedList);
                 }
             }
@@ -911,6 +921,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
      */
 
+        User user = authService.getLoggedInUser().orElse(null);
+
         //Create a simple query string builder from the given string
         SimpleQueryStringBuilder simpleQueryStringBuilder =
             QueryBuilders.simpleQueryStringQuery(simpleQueryString);
@@ -953,18 +965,26 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 SearchType.not,"masterId", candidateIds);
         }
 
-        //Countries
+        //Countries - need to take account of source country restrictions
         final List<Long> countryIds = request.getCountryIds();
-        if (countryIds != null) {
+        List<Object> reqCountries = new ArrayList<>();
+        // If countryIds is NOT EMPTY we can just accept them because the options
+        // presented to the user will be limited to the allowed source countries
+        if (!Collections.isEmpty(countryIds)) {
             //Look up country names from ids.
-            List<Object> reqCountries = new ArrayList<>();
             for (Long countryId : countryIds) {
                 final Country country = countryService.getCountry(countryId);
                 reqCountries.add(country.getName());
             }
-            boolQueryBuilder =
-                addElasticTermFilter(boolQueryBuilder,
-                    null,"country.keyword", reqCountries);
+        } else if (user != null && !Collections.isEmpty(user.getSourceCountries())){
+            for (Country country: user.getSourceCountries()) {
+                reqCountries.add(country.getName());
+            }
+        }
+
+        if (reqCountries.size() > 0) {
+            boolQueryBuilder = addElasticTermFilter(
+                boolQueryBuilder, null,"country.keyword", reqCountries);
         }
 
         //Partners
@@ -1128,7 +1148,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.setFixed(request.getFixed());
         savedSearch.setDefaultSearch(request.getDefaultSearch());
         savedSearch.setReviewable(request.getReviewable());
-        savedSearch.setSfJoblink(request.getSfJoblink());
+        savedSearch.setSfJobOpp(
+            salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+
         savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 
         final SearchCandidateRequest searchCandidateRequest = request.getSearchCandidateRequest();
@@ -1388,6 +1410,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
+            User user = authService.getLoggedInUser().orElse(null);
+
             //This is an elastic search request
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(request,
                 simpleQueryString, excludedCandidates);
