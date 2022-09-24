@@ -42,9 +42,9 @@ node {
 //The parameters after the '--' are passed to the Angular build script
 //- ie to ng build
 //See https://angular.io/cli/build
-//So this task effectively runs "ng build --prod --base-href /...-portal/"
+//So this task effectively runs "ng build --configuration production --base-href /...-portal/"
 task npm_build_ui_bundle(type: NpmTask) {
-  args = ['run', 'build', '--', '--prod', '--base-href', "/$project.name/"]
+  args = ['run', 'build', '--', '--configuration', 'production', '--base-href', "/$project.name/"]
   dependsOn 'npm_install'
 }
 
