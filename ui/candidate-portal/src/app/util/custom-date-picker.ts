@@ -21,16 +21,13 @@
 import {Injectable} from "@angular/core";
 import {NgbDatepickerI18n, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../services/language.service";
+import {TranslationWidth} from "@angular/common";
 
 @Injectable()
 export class CustomDatepickerI18n extends NgbDatepickerI18n {
 
   constructor(private languageService: LanguageService) {
     super();
-  }
-
-  getWeekdayShortName(weekday: number): string {
-    return this.languageService.getDatePickerWeekdayName(weekday);
   }
   getMonthShortName(month: number): string {
     return this.languageService.getDatePickerMonthName(month);
@@ -41,5 +38,9 @@ export class CustomDatepickerI18n extends NgbDatepickerI18n {
 
   getDayAriaLabel(date: NgbDateStruct): string {
     return `${date.day}-${date.month}-${date.year}`;
+  }
+
+  getWeekdayLabel(weekday: number, width?: TranslationWidth): string {
+    return this.languageService.getDatePickerWeekdayName(weekday);
   }
 }
