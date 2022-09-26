@@ -24,6 +24,7 @@ import {ActivatedRoute} from "@angular/router";
 import {SavedSearch} from "../../model/saved-search";
 import {forkJoin} from "rxjs";
 import {SavedSearchService} from "../../services/saved-search.service";
+import {saveBlob} from "../../util/file";
 
 @Component({
   selector: 'app-infographic',
@@ -193,24 +194,8 @@ export class InfographicComponent implements OnInit {
         csv.push('\n');
       }
 
-    const blob = new Blob(csv, options);
-
-    if (navigator.msSaveBlob) {
-      // IE 10+
-      navigator.msSaveBlob(blob, filename);
-    } else {
-      const link = document.createElement('a');
-      // Browsers that support HTML5 download attribute
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    }
+      const blob = new Blob(csv, options);
+      saveBlob(blob, filename);
   }
 
   scroll(id){
