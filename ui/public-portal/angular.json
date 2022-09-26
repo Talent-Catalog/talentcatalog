@@ -112,7 +112,6 @@
       }
     }
   },
-  "defaultProject": "public-portal",
   "cli": {
     "analytics": "8a40c54c-a6dd-413d-9013-f80961bcba24"
   }
