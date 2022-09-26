@@ -23,6 +23,12 @@
  * @param blob Blob to save
  * @param filename Name to save it with
  */
+//See https://stackoverflow.com/questions/69485778/new-typescript-version-does-not-include-window-navigator-mssaveblob
+declare global {
+  interface Navigator {
+    msSaveBlob?: (blob: any, defaultName?: string) => boolean
+  }
+}
 export function saveBlob(blob: Blob, filename: string) {
   if (navigator.msSaveBlob) {
     // IE 10+
