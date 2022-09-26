@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CandidateStatService, CandidateStatsRequest} from "../../services/candidate-stat.service";
 import {StatReport} from "../../model/stat-report";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {SavedList, SearchSavedListRequest} from "../../model/saved-list";
 import {SavedListService} from "../../services/saved-list.service";
 import {ActivatedRoute} from "@angular/router";
@@ -39,7 +39,7 @@ export class InfographicComponent implements OnInit {
   lists: SavedList[] = [];
   searches: SavedSearch[] = [];
   statReports: StatReport[];
-  statsFilter: FormGroup;
+  statsFilter: UntypedFormGroup;
   statsName: string;
   listFromUrl: boolean = false;
 
@@ -47,7 +47,7 @@ export class InfographicComponent implements OnInit {
               private statService: CandidateStatService,
               private savedListService: SavedListService,
               private savedSearchService: SavedSearchService,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
   }
 
   ngOnInit() {

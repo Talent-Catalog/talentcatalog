@@ -17,7 +17,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CandidateCitizenship, HasPassport} from '../../../../../model/candidate';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {CandidateCitizenshipService} from '../../../../../services/candidate-citizenship.service';
@@ -40,7 +40,7 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
 
   today: Date;
 
-  constructor(fb: FormBuilder, candidateService: CandidateService,
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService,
               private candidateCitizenshipService: CandidateCitizenshipService) {
     super(fb, candidateService);
   }

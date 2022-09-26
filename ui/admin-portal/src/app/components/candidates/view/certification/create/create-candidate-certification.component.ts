@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   CandidateCertificationService,
@@ -33,7 +33,7 @@ export class CreateCandidateCertificationComponent implements OnInit {
 
   candidateCertification: CandidateCertification;
 
-  candidateForm: FormGroup;
+  candidateForm: UntypedFormGroup;
 
   candidateId: number;
   countries = [];
@@ -43,7 +43,7 @@ export class CreateCandidateCertificationComponent implements OnInit {
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateCertificationService: CandidateCertificationService,
               private countryService: CountryService ) {
   }

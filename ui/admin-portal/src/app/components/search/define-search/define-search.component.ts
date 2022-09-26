@@ -34,7 +34,7 @@ import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormArray, UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
@@ -53,8 +53,12 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
-import {LanguageLevelFormControlComponent} from '../../util/form/language-proficiency/language-level-form-control.component';
+import {
+  DateRangePickerComponent
+} from '../../util/form/date-range-picker/date-range-picker.component';
+import {
+  LanguageLevelFormControlComponent
+} from '../../util/form/language-proficiency/language-level-form-control.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -96,7 +100,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   error: any;
   loading: boolean;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
   savedSearchId;
@@ -133,7 +137,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   selectedBaseJoin;
   storedBaseJoin;
 
-  constructor(private http: HttpClient, private fb: FormBuilder,
+  constructor(private http: HttpClient, private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private countryService: CountryService,
               private languageService: LanguageService,
@@ -281,7 +285,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   validateDuplicateSearches(id: string) {
-    return (group: FormGroup): { [key: string]: any } => {
+    return (group: UntypedFormGroup): { [key: string]: any } => {
       const savedSearchId = group.controls[id].value;
       if (this.selectedBaseJoin){
         const baseJoinId = this.selectedBaseJoin.savedSearchId;
@@ -588,7 +592,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get searchJoinArray() {
-    return this.searchForm.get('searchJoinRequests') as FormArray;
+    return this.searchForm.get('searchJoinRequests') as UntypedFormArray;
   }
 
   addSavedSearchJoin() {

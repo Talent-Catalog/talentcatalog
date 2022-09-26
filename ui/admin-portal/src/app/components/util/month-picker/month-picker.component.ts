@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {generateYearArray} from '../../../util/year-helper';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 
 @Component({
   selector: 'app-month-picker',
@@ -25,7 +25,7 @@ import {FormControl} from '@angular/forms';
 })
 export class MonthPickerComponent implements OnInit {
 
-  @Input() control: FormControl;
+  @Input() control: UntypedFormControl;
 
   month;
   year;

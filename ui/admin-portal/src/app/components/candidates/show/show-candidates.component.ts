@@ -71,7 +71,7 @@ import {
   CachedSourceResults,
   CandidateSourceResultsCacheService
 } from '../../../services/candidate-source-results-cache.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
@@ -159,7 +159,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   updatingStatuses: boolean;
   updatingTasks: boolean;
   savingSelection: boolean;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   monitoredTask: Task;
   tasksAssignedToList: Task[];
 
@@ -192,7 +192,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   public filterSearch: boolean = false;
 
   constructor(private http: HttpClient,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private candidateSourceService: CandidateSourceService,
               private candidateSourceCandidateService: CandidateSourceCandidateService,

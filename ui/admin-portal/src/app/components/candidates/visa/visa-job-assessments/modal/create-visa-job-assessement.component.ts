@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {JoblinkValidationEvent} from '../../../../util/joblink/joblink.component';
 import {CreateCandidateVisaJobRequest} from "../../../../../services/candidate-visa-job.service";
@@ -12,14 +12,14 @@ import {CreateCandidateVisaJobRequest} from "../../../../../services/candidate-v
 export class CreateVisaJobAssessementComponent implements OnInit {
 
   error = null;
-  form: FormGroup;
+  form: UntypedFormGroup;
   saving: boolean;
 
   jobName: string;
   sfJoblink: string;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
   }
 
   ngOnInit() {

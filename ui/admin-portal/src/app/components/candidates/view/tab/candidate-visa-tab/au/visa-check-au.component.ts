@@ -23,7 +23,7 @@ import {
   CandidateVisaJobCheck,
   getIeltsScoreTypeString
 } from '../../../../../../model/candidate';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {CandidateService} from "../../../../../../services/candidate.service";
 import {CountryService} from "../../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../../services/education-level.service";
@@ -36,7 +36,9 @@ import {
   CreateCandidateVisaJobRequest
 } from "../../../../../../services/candidate-visa-job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {CreateVisaJobAssessementComponent} from "../../../../visa/visa-job-assessments/modal/create-visa-job-assessement.component";
+import {
+  CreateVisaJobAssessementComponent
+} from "../../../../visa/visa-job-assessments/modal/create-visa-job-assessement.component";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
 import {Country} from "../../../../../../model/country";
 
@@ -51,7 +53,7 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaRecord: CandidateVisa;
   loading: boolean;
-  form: FormGroup;
+  form: UntypedFormGroup;
   @Input() nationalities: Country[];
   saving: boolean;
   jobIndex: number;
@@ -68,7 +70,7 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
               authService: AuthService,
               private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 

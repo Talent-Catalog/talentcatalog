@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from "../../../../util/enum";
@@ -13,7 +13,7 @@ import {YesNo} from "../../../../model/candidate";
 export class IntProtectionComponent extends IntakeComponentBase implements OnInit {
   public visaProtectionOptions: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

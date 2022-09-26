@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {SavedList, UpdateSavedListInfoRequest} from '../../../model/saved-list';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {SavedListService} from '../../../services/saved-list.service';
@@ -29,14 +29,14 @@ import {SalesforceService} from "../../../services/salesforce.service";
 })
 export class CreateUpdateListComponent implements OnInit {
   error = null;
-  form: FormGroup;
+  form: UntypedFormGroup;
   jobName: string;
   saving: boolean;
   savedList: SavedList;
   sfJoblink: string;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               public salesforceService: SalesforceService,
               private savedListService: SavedListService) {
   }

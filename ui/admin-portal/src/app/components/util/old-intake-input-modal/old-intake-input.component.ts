@@ -1,7 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateNoteService, CreateCandidateNoteRequest} from "../../../services/candidate-note.service";
+import {
+  CandidateNoteService,
+  CreateCandidateNoteRequest
+} from "../../../services/candidate-note.service";
 
 @Component({
   selector: 'app-old-intake-input',
@@ -13,14 +16,14 @@ export class OldIntakeInputComponent implements OnInit {
   candidateId: number;
   formName: string;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   error;
   loading: boolean;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateNoteService: CandidateNoteService) {
   }
 

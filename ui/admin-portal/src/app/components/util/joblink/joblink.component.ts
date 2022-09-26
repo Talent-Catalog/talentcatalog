@@ -18,8 +18,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   AbstractControl,
   AsyncValidatorFn,
-  FormBuilder,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormGroup,
   ValidationErrors,
   Validators
 } from '@angular/forms';
@@ -42,12 +42,12 @@ import {FormComponentBase} from "../form/FormComponentBase";
   styleUrls: ['./joblink.component.scss']
 })
 export class JoblinkComponent extends FormComponentBase implements OnInit {
-  form: FormGroup;
+  form: UntypedFormGroup;
   @Input() joblink: string;
   @Output() updateError =  new EventEmitter();
   @Output() joblinkValidation =  new EventEmitter();
 
-  constructor(fb: FormBuilder,
+  constructor(fb: UntypedFormBuilder,
     private salesforceService: SalesforceService) {
     super(fb);
   }

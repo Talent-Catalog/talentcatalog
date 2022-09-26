@@ -14,10 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {AttachmentType, CandidateAttachment} from '../../../../model/candidate-attachment';
 import {
   CandidateAttachmentService,
@@ -44,8 +52,8 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   error: any;
   s3BucketUrl = environment.s3BucketUrl;
 
-  attachmentForm: FormGroup;
-  shareableForm: FormGroup;
+  attachmentForm: UntypedFormGroup;
+  shareableForm: UntypedFormGroup;
   expanded: boolean;
   attachments: CandidateAttachment[];
   cvs: CandidateAttachment[];
@@ -54,7 +62,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
   constructor(private candidateAttachmentService: CandidateAttachmentService,
               private modalService: NgbModal,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
   }
 
   get AttachmentType() {

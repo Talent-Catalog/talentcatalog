@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {LanguageLevel} from "../../../../model/language-level";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageLevelService} from "../../../../services/language-level.service";
@@ -28,13 +28,13 @@ import {LanguageLevelService} from "../../../../services/language-level.service"
 export class EditLanguageLevelComponent implements OnInit {
 
   languageLevelId: number;
-  languageLevelForm: FormGroup;
+  languageLevelForm: UntypedFormGroup;
   error;
   loading: boolean;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private languageLevelService: LanguageLevelService) {
   }
 

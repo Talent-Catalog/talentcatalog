@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedListService} from "../../../../services/saved-list.service";
 import {SavedList, SearchSavedListRequest} from "../../../../model/saved-list";
@@ -12,7 +12,7 @@ import {environment} from "../../../../../environments/environment";
 })
 export class CreateExternalLinkComponent implements OnInit {
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error;
   saving: boolean;
   savedLists: SavedList[];
@@ -20,7 +20,7 @@ export class CreateExternalLinkComponent implements OnInit {
   publishUrl: string = environment.publishUrl;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private savedListService: SavedListService) {
   }
 
