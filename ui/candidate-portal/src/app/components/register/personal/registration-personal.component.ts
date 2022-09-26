@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {Candidate} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
@@ -38,7 +38,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   @Output() onSave = new EventEmitter();
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: any;
   // Component states
   _loading = {
@@ -56,7 +56,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   subscription;
   lang: string;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private countryService: CountryService,

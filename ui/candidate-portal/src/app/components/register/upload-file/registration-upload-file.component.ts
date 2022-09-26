@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {UntypedFormGroup} from "@angular/forms";
 import {RegistrationService} from "../../../services/registration.service";
 import {CandidateService} from "../../../services/candidate.service";
 
@@ -15,7 +15,7 @@ export class RegistrationUploadFileComponent implements OnInit {
 
   @Output() onSave = new EventEmitter();
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: any;
   // Component states
   saving: boolean;

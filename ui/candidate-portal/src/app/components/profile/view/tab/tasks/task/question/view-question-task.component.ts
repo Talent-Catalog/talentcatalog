@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {UntypedFormGroup} from "@angular/forms";
 import {TaskAssignment} from "../../../../../../../model/candidate";
 
 @Component({
@@ -8,7 +8,7 @@ import {TaskAssignment} from "../../../../../../../model/candidate";
   styleUrls: ['./view-question-task.component.scss']
 })
 export class ViewQuestionTaskComponent implements OnInit {
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
   @Input() selectedTask: TaskAssignment;
 
   constructor() { }

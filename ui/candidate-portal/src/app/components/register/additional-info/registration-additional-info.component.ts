@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
@@ -34,7 +34,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
 
   @Output() onSave = new EventEmitter();
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: any;
   _loading = {
     surveyTypes: true,
@@ -48,7 +48,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   usAfghan: boolean;
   surveyTypes: SurveyType[];
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               public registrationService: RegistrationService,
