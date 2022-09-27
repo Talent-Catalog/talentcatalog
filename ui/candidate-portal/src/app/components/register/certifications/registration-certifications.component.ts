@@ -14,13 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateCertification} from "../../../model/candidate-certification";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateCertificationService} from "../../../services/candidate-certification.service";
 import {RegistrationService} from "../../../services/registration.service";
+import {CandidateEducation} from '../../../model/candidate-education';
 
 @Component({
   selector: 'app-registration-certifications',
@@ -38,7 +39,7 @@ export class RegistrationCertificationsComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
-  form: UntypedFormGroup;
+  form: FormGroup;
   candidateCertifications: CandidateCertification[];
   addingCertification: boolean;
 
@@ -46,7 +47,7 @@ export class RegistrationCertificationsComponent implements OnInit {
   editTarget: CandidateCertification;
   subscription;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private candidateCertificationService: CandidateCertificationService,

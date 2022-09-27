@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
 import {CandidateService, UpdateCandidateSurvey} from "../../../services/candidate.service";
 import {AuthService} from "../../../services/auth.service";
@@ -38,7 +38,7 @@ export class RegistrationContactComponent implements OnInit {
 
   @Output() onSave = new EventEmitter();
 
-  form: UntypedFormGroup;
+  form: FormGroup;
   error: any;
   // Form states
   loading: boolean;
@@ -49,7 +49,7 @@ export class RegistrationContactComponent implements OnInit {
 
   usAfghan: boolean;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private router: Router,
               private route: ActivatedRoute,
               private brandingService: BrandingService,
@@ -98,8 +98,8 @@ export class RegistrationContactComponent implements OnInit {
       this.languageService.setUsAfghan(this.usAfghan);
 
       // The user has not registered - add the password fields to the reactive form
-      this.form.addControl('password', new UntypedFormControl('', [Validators.required, Validators.minLength(8)]));
-      this.form.addControl('passwordConfirmation', new UntypedFormControl('', [Validators.required, Validators.minLength(8)]));
+      this.form.addControl('password', new FormControl('', [Validators.required, Validators.minLength(8)]));
+      this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
       this.loading = false;
     }
   }

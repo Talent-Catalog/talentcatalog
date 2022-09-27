@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate, TaskAssignment, TaskType} from "../../../../../../model/candidate";
-import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {
   TaskAssignmentService,
   UpdateQuestionTaskAssignmentRequest,
@@ -35,13 +35,13 @@ export class CandidateTaskComponent implements OnInit {
   @Input() selectedTask: TaskAssignment;
   @Input() candidate: Candidate;
   @Output() back = new EventEmitter();
-  form: UntypedFormGroup;
+  form: FormGroup;
   url: SafeResourceUrl;
   loading: boolean;
   saving: boolean;
   error;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private taskAssignmentService: TaskAssignmentService,
               public sanitizer: DomSanitizer) { }
 
@@ -85,9 +85,9 @@ export class CandidateTaskComponent implements OnInit {
   addRequiredFormControls() {
     if (!this.formAbandoned) {
       if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
-        this.form.addControl('response', new UntypedFormControl(this.selectedTask?.answer ? this.answer : null, Validators.required));
+        this.form.addControl('response', new FormControl(this.selectedTask?.answer ? this.answer : null, Validators.required));
       } else if (this.selectedTask.task.taskType === 'Simple') {
-        this.form.addControl('completed', new UntypedFormControl({value: this.completedTask,
+        this.form.addControl('completed', new FormControl({value: this.completedTask,
           disabled: this.completedTask}, Validators.requiredTrue));
       }
     }

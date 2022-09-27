@@ -14,8 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateJobExperienceService} from "../../../services/candidate-job-experience.service";
@@ -46,7 +53,7 @@ export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
     occupations: true
   };
 
-  form: UntypedFormGroup;
+  form: FormGroup;
   candidateJobExperiences: CandidateJobExperience[];
   countries: Country[];
   occupations: CandidateOccupation[];
@@ -58,7 +65,7 @@ export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
 
   subscription;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private candidateOccupationService: CandidateOccupationService,

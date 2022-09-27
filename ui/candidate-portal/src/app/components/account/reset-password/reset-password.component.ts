@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {UserService} from '../../../services/user.service';
 import {ReCaptchaV3Service} from "ng-recaptcha";
 import {SendResetPasswordEmailRequest} from "../../../model/candidate";
@@ -29,10 +29,10 @@ export class ResetPasswordComponent implements OnInit {
 
   loading: boolean;
   error: any;
-  form: UntypedFormGroup;
+  form: FormGroup;
   updated: boolean;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private reCaptchaV3Service: ReCaptchaV3Service,
               private userService: UserService) {
   }

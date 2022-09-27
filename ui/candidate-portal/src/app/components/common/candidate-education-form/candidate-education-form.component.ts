@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateEducation} from "../../../model/candidate-education";
 import {CandidateEducationService} from "../../../services/candidate-education.service";
@@ -48,10 +48,10 @@ export class CandidateEducationFormComponent implements OnInit {
   };
   saving: boolean;
 
-  form: UntypedFormGroup;
+  form: FormGroup;
   years: number[];
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private router: Router,
               private candidateEducationService: CandidateEducationService,
               private countryService: CountryService,

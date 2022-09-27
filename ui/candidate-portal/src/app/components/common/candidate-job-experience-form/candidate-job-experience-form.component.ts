@@ -14,18 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {CandidateJobExperience} from "../../../model/candidate-job-experience";
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
 import {CandidateOccupation} from "../../../model/candidate-occupation";
@@ -53,9 +44,9 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
   saving: boolean;
   error: any;
 
-  form: UntypedFormGroup;
+  form: FormGroup;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private countryService: CountryService,
               private candidateOccupationService: CandidateOccupationService,
               private jobExperienceService: CandidateJobExperienceService) { }
@@ -120,7 +111,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
   }
 
   startDateBeforeEndDate(from: string, to: string) {
-    return (group: UntypedFormGroup): { [key: string]: any } => {
+    return (group: FormGroup): { [key: string]: any } => {
       let f = group.controls[from];
       let t = group.controls[to];
       if (f.value && t.value && f.value > t.value) {

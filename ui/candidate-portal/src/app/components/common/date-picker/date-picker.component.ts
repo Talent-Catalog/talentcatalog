@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {UntypedFormControl} from "@angular/forms";
+import {FormControl} from "@angular/forms";
 import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../services/language.service";
 
@@ -9,7 +9,7 @@ import {LanguageService} from "../../../services/language.service";
   styleUrls: ['./date-picker.component.scss']
 })
 export class DatePickerComponent implements OnInit {
-  @Input() control: UntypedFormControl;
+  @Input() control: FormControl;
   // If don't want to allow selection of a future date, set to false.
   @Input() allowFuture: boolean = true;
   date: string;

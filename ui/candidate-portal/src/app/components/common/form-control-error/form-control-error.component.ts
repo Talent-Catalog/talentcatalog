@@ -15,7 +15,7 @@
  */
 
 import {Component, Input} from '@angular/core';
-import {UntypedFormControl} from "@angular/forms";
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-form-control-error',
@@ -25,7 +25,7 @@ import {UntypedFormControl} from "@angular/forms";
 export class FormControlErrorComponent {
 
   @Input()
-  control: UntypedFormControl;
+  control: FormControl;
 
   @Input()
   showAlways: boolean;

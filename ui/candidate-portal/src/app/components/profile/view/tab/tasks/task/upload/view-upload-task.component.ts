@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {forkJoin, Observable} from "rxjs";
 import {Candidate, TaskAssignment} from "../../../../../../../model/candidate";
 import {CandidateAttachment} from "../../../../../../../model/candidate-attachment";
-import {UntypedFormGroup} from "@angular/forms";
+import {FormGroup} from "@angular/forms";
 import {TaskAssignmentService} from "../../../../../../../services/task-assignment.service";
 
 @Component({
@@ -11,7 +11,7 @@ import {TaskAssignmentService} from "../../../../../../../services/task-assignme
   styleUrls: ['./view-upload-task.component.scss']
 })
 export class ViewUploadTaskComponent implements OnInit {
-  @Input() form: UntypedFormGroup;
+  @Input() form: FormGroup;
   @Input() selectedTask: TaskAssignment;
   @Input() candidate: Candidate;
   @Output() successfulUpload = new EventEmitter<TaskAssignment>();

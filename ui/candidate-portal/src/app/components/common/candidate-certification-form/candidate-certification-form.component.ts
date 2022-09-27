@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {CandidateService} from '../../../services/candidate.service';
 import {CandidateCertificationService} from '../../../services/candidate-certification.service';
@@ -37,9 +37,9 @@ export class CandidateCertificationFormComponent implements OnInit {
   error: any;
   saving: boolean;
 
-  form: UntypedFormGroup;
+  form: FormGroup;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private candidateCertificationService: CandidateCertificationService,

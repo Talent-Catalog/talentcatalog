@@ -20,7 +20,7 @@ import {
   UpdateCandidateAttachmentRequest
 } from '../../../services/candidate-attachment.service';
 import {AttachmentType, CandidateAttachment} from '../../../model/candidate-attachment';
-import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {CandidateService} from '../../../services/candidate.service';
 import {forkJoin, Observable} from 'rxjs';
@@ -49,7 +49,7 @@ export class CandidateAttachmentsComponent implements OnInit {
   uploading: boolean;
 
   s3BucketUrl: string = environment.s3BucketUrl;
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   attachments: CandidateAttachment[] = [];
   candidateNumber: string;
@@ -57,7 +57,7 @@ export class CandidateAttachmentsComponent implements OnInit {
 
   editTarget: CandidateAttachment;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
               private candidateAttachmentService: CandidateAttachmentService,
               private userService: UserService) { }

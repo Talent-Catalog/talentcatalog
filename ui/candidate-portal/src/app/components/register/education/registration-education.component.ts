@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {EducationLevelService} from "../../../services/education-level.service";
@@ -50,7 +50,7 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
     countries: true
   };
 
-  form: UntypedFormGroup;
+  form: FormGroup;
   majors: EducationMajor[];
   countries: Country[];
   educationLevels: EducationLevel[];
@@ -62,7 +62,7 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
   editTarget: CandidateEducation;
   subscription;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private router: Router,
               private candidateEducationService: CandidateEducationService,
               private candidateService: CandidateService,

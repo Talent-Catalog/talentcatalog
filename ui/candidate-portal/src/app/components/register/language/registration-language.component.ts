@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateLanguage} from "../../../model/candidate-language";
 import {CandidateLanguageService} from "../../../services/candidate-language.service";
@@ -51,7 +51,7 @@ export class RegistrationLanguageComponent implements OnInit, OnDestroy {
   saving: boolean;
 
   addingLanguage: boolean;
-  form: UntypedFormGroup;
+  form: FormGroup;
   candidateLanguages: CandidateLanguage[];
   english: Language;
   languages: Language[];
@@ -59,7 +59,7 @@ export class RegistrationLanguageComponent implements OnInit, OnDestroy {
 
   subscription;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private candidateLanguageService: CandidateLanguageService,
