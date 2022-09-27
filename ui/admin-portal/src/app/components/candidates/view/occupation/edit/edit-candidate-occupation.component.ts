@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOccupation} from "../../../../../model/candidate-occupation";
 import {CandidateOccupationService} from "../../../../../services/candidate-occupation.service";
@@ -31,7 +31,7 @@ export class EditCandidateOccupationComponent implements OnInit {
 
   candidateOccupation: CandidateOccupation;
 
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   occupations: Occupation[];
   years = [];
@@ -40,7 +40,7 @@ export class EditCandidateOccupationComponent implements OnInit {
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private candidateOccupationService: CandidateOccupationService,
               private occupationService: OccupationService ) {
   }

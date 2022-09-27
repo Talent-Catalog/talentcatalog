@@ -16,12 +16,8 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {
-  CandidateDestination,
-  FamilyRelations,
-  YesNoUnsureLearn
-} from '../../../../../model/candidate';
-import {UntypedFormBuilder} from '@angular/forms';
+import {CandidateDestination, FamilyRelations, YesNoUnsureLearn} from '../../../../../model/candidate';
+import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {Country} from '../../../../../model/country';
@@ -38,7 +34,7 @@ export class DestinationComponent extends IntakeComponentBase implements OnInit 
   public destInterestOptions: EnumOption[] = enumOptions(YesNoUnsureLearn);
   public destFamilyOptions: EnumOption[] = enumOptions(FamilyRelations);
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

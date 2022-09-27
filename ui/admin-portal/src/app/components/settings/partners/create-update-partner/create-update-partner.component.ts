@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
 import {salesforceUrlPattern, Status} from "../../../../model/base";
@@ -42,13 +42,13 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
 
   countries: Country[];
   error = null;
-  form: UntypedFormGroup;
+  form: FormGroup;
   partner: Partner;
   statuses = enumOptions(Status);
   working: boolean;
 
 
-  constructor(fb: UntypedFormBuilder,
+  constructor(fb: FormBuilder,
               private activeModal: NgbActiveModal,
               private countryService: CountryService,
               private partnerService: PartnerService) {

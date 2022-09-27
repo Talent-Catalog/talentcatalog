@@ -16,11 +16,11 @@
 
 import {Directive, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {UntypedFormBuilder} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
-import {isEnumOptionArray} from "../../../util/enum";
+import {isEnumOption, isEnumOptionArray} from "../../../util/enum";
 
 /**
  * Base class for all candidate intake components.
@@ -70,7 +70,7 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
    * @param fb FormBuilder
    * @param candidateService CandidateService which saves the intake data
    */
-  protected constructor(protected fb: UntypedFormBuilder, private candidateService: CandidateService) {
+  protected constructor(protected fb: FormBuilder, private candidateService: CandidateService) {
     super();
   }
 

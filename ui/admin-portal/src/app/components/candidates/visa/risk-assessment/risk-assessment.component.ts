@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from "../../../../util/enum";
 import {RiskLevel} from "../../../../model/candidate";
-import {UntypedFormBuilder} from "@angular/forms";
+import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 
@@ -15,7 +15,7 @@ export class RiskAssessmentComponent extends IntakeComponentBase implements OnIn
 //Drop down values for enumeration
   riskLevelOptions: EnumOption[] = enumOptions(RiskLevel);
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

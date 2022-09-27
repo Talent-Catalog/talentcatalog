@@ -26,7 +26,7 @@ import {
 import {Language} from "../../../../model/language";
 import {LanguageService} from "../../../../services/language.service";
 import {LanguageLevel} from "../../../../model/language-level";
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {LanguageLevelService} from "../../../../services/language-level.service";
 import {LanguageLevelFormControlModel} from "./language-level-form-control-model";
 
@@ -49,11 +49,11 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
 
   disabledClasses;
   showMenu: boolean;
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   constructor(private languageService: LanguageService,
               private languageLevelService: LanguageLevelService,
-              private fb: UntypedFormBuilder) {
+              private fb: FormBuilder) {
 
   }
 

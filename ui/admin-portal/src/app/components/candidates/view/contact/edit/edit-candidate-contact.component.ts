@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {Candidate, Gender} from '../../../../../model/candidate';
@@ -33,7 +33,7 @@ export class EditCandidateContactComponent implements OnInit {
   candidateId: number;
 
 
-  candidateForm: UntypedFormGroup;
+  candidateForm: FormGroup;
 
   genderOptions: EnumOption[] = enumOptions(Gender);
   nationalities = [];
@@ -44,7 +44,7 @@ export class EditCandidateContactComponent implements OnInit {
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private candidateService: CandidateService,
               private countryService: CountryService ) {
   }

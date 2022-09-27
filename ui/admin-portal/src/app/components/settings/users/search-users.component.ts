@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {Role, roleGreaterThan, User} from "../../../model/user";
 import {UserService} from "../../../services/user.service";
@@ -40,7 +40,7 @@ export class SearchUsersComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  searchForm: UntypedFormGroup;
+  searchForm: FormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -48,7 +48,7 @@ export class SearchUsersComponent implements OnInit {
   results: SearchResults<User>;
   roleOptions: EnumOption[] = enumOptions(Role);
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private userService: UserService,
               private modalService: NgbModal,
               private authService: AuthService) { }

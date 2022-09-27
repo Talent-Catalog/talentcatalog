@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
@@ -39,7 +39,7 @@ export class SearchCountriesComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  searchForm: UntypedFormGroup;
+  searchForm: FormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -47,7 +47,7 @@ export class SearchCountriesComponent implements OnInit {
   results: SearchResults<Country>;
 
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private countryService: CountryService,
               private modalService: NgbModal,
               private authService: AuthService) {

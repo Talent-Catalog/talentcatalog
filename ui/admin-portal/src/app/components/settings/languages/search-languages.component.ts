@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SystemLanguage} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
@@ -33,7 +33,7 @@ export class SearchLanguagesComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  searchForm: UntypedFormGroup;
+  searchForm: FormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -41,7 +41,7 @@ export class SearchLanguagesComponent implements OnInit {
   results: SystemLanguage[];
 
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private languageService: LanguageService,
               private modalService: NgbModal,
               private authService: AuthService) {

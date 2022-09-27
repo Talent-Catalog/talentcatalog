@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {TaskAssignment} from "../../../../../model/task-assignment";
-import {UntypedFormGroup} from "@angular/forms";
+import {FormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
@@ -11,7 +11,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class ViewResponseComponent implements OnInit {
 
   taskAssignment: TaskAssignment;
-  form: UntypedFormGroup;
+  form: FormGroup;
   dueDate: string;
   date: Date;
   loading;

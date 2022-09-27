@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {CandidateService} from '../../../../services/candidate.service';
 import {EnumOption, enumOptions} from '../../../../util/enum';
@@ -32,7 +32,7 @@ export class ReturnedHomeComponent extends IntakeComponentBase implements OnInit
 
   public returnedHomeOptions: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

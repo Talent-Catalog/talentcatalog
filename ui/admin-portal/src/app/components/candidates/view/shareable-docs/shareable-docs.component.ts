@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {AutoSaveComponentBase} from "../../../util/autosave/AutoSaveComponentBase";
 import {Candidate, UpdateCandidateShareableDocsRequest} from "../../../../model/candidate";
-import {UntypedFormBuilder} from "@angular/forms";
+import {FormBuilder} from "@angular/forms";
 import {Observable} from "rxjs";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {CandidateService} from "../../../../services/candidate.service";
@@ -23,7 +23,7 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
 
   savedList: boolean;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private candidateService: CandidateService) {
     super();
   }

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from "../../../../util/enum";
 import {VaccinationStatus, YesNo} from "../../../../model/candidate";
-import {UntypedFormBuilder} from "@angular/forms";
+import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 
@@ -15,7 +15,7 @@ export class CovidVaccinationComponent extends IntakeComponentBase implements On
   public vaccinationOptions: EnumOption[] = enumOptions(YesNo);
   public vaccinationStatusOptions: EnumOption[] = enumOptions(VaccinationStatus);
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

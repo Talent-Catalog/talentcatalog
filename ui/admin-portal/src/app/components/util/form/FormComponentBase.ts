@@ -15,7 +15,7 @@
  */
 
 import {Directive} from "@angular/core";
-import {AbstractControl, UntypedFormBuilder} from "@angular/forms";
+import {AbstractControl, FormBuilder} from "@angular/forms";
 
 /**
  * Base class for component containing a form.
@@ -30,7 +30,7 @@ import {AbstractControl, UntypedFormBuilder} from "@angular/forms";
 @Directive()
 export abstract class FormComponentBase {
 
-  protected constructor(protected fb: UntypedFormBuilder) {
+  protected constructor(protected fb: FormBuilder) {
   }
 
   /**

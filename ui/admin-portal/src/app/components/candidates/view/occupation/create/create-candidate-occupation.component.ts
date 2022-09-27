@@ -14,9 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {CandidateOccupation} from "../../../../../model/candidate-occupation";
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Occupation} from "../../../../../model/occupation";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOccupationService} from "../../../../../services/candidate-occupation.service";
@@ -31,7 +31,7 @@ export class CreateCandidateOccupationComponent implements OnInit {
 
   candidateOccupation: CandidateOccupation;
 
-  form: UntypedFormGroup;
+  form: FormGroup;
   candidateId: number;
   occupations: Occupation[];
   years = [];
@@ -40,7 +40,7 @@ export class CreateCandidateOccupationComponent implements OnInit {
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private candidateOccupationService: CandidateOccupationService,
               private occupationService: OccupationService ) {
   }

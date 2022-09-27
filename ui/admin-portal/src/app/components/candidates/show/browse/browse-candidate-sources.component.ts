@@ -24,7 +24,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
-import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {
   indexOfAuditable,
@@ -86,7 +86,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   @Input() savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   @Output() subtypeChange = new EventEmitter<SavedSearchTypeSubInfo>();
 
-  searchForm: UntypedFormGroup;
+  searchForm: FormGroup;
   public loading: boolean;
   error: any;
   pageNumber: number;
@@ -97,7 +97,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   loggedInUser: User;
   stages = enumOptions(JobOpportunityStage);
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
               private authService: AuthService,

@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {HasName} from "../../../model/base";
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 /**
@@ -34,14 +34,14 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 })
 export class HasNameSelectorComponent implements OnInit {
   cancel: string = "Cancel";
-  form: UntypedFormGroup;
+  form: FormGroup;
   hasNames: HasName[] = [];
   label: string = "Label"
   select: string = "Select";
 
   constructor(
     private activeModal: NgbActiveModal,
-    private fb: UntypedFormBuilder) { }
+    private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({

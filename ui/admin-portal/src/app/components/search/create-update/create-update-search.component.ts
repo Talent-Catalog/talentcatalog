@@ -17,8 +17,8 @@
 import {Component, OnInit} from '@angular/core';
 import {
   AbstractControl,
-  UntypedFormBuilder,
-  UntypedFormGroup,
+  FormBuilder,
+  FormGroup,
   ValidationErrors,
   ValidatorFn,
   Validators
@@ -47,7 +47,7 @@ import {SalesforceService} from "../../../services/salesforce.service";
 export class CreateUpdateSearchComponent implements OnInit {
 
   error = null;
-  form: UntypedFormGroup;
+  form: FormGroup;
   jobName: string;
   saving: boolean;
   savedSearch: SavedSearch;
@@ -108,7 +108,7 @@ export class CreateUpdateSearchComponent implements OnInit {
   }
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               public salesforceService:SalesforceService,
               private savedSearchService: SavedSearchService) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();

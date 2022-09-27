@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
-import {UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../services/language.service";
@@ -35,7 +35,7 @@ export class DropdownTranslationsComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  searchForm: UntypedFormGroup;
+  searchForm: FormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -44,11 +44,11 @@ export class DropdownTranslationsComponent implements OnInit {
   systemLanguages: SystemLanguage[];
   types: SearchResults<any>;
 
-  topLevelForm: UntypedFormGroup;
-  translations: UntypedFormArray;
+  topLevelForm: FormGroup;
+  translations: FormArray;
 
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private modalService: NgbModal,
               private languageService: LanguageService,
               private countryService: CountryService,
@@ -139,7 +139,7 @@ export class DropdownTranslationsComponent implements OnInit {
   }
 
   updateTranslation(index) {
-    const translationForm = this.topLevelForm.get(`translations.${index}`) as UntypedFormGroup;
+    const translationForm = this.topLevelForm.get(`translations.${index}`) as FormGroup;
     const request = translationForm.value;
     if (request.translatedId) {
       //update

@@ -17,7 +17,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {DrivingLicenseStatus, YesNo} from '../../../../model/candidate';
-import {UntypedFormBuilder} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {Country} from "../../../../model/country";
@@ -34,7 +34,7 @@ export class DrivingLicenseComponent extends IntakeComponentBase implements OnIn
   public canDriveOptions: EnumOption[] = enumOptions(YesNo);
   public drivingLicenseOptions: EnumOption[] = enumOptions(DrivingLicenseStatus);
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

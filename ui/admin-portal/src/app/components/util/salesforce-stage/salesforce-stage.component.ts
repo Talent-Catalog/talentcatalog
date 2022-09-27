@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {CandidateOpportunityStage, SalesforceOppParams} from "../../../model/candidate";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -16,12 +16,12 @@ export interface SalesforceStageInfo {
 })
 export class SalesforceStageComponent implements OnInit {
 
-  salesforceStageForm: UntypedFormGroup;
+  salesforceStageForm: FormGroup;
   candidateOpportunityStageOptions: EnumOption[] = enumOptions(CandidateOpportunityStage);
 
   constructor(
     private activeModal: NgbActiveModal,
-    private fb: UntypedFormBuilder) { }
+    private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.salesforceStageForm = this.fb.group({

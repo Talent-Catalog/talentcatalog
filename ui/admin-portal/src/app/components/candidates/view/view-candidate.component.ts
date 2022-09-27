@@ -36,7 +36,7 @@ import {SavedListCandidateService} from '../../../services/saved-list-candidate.
 import {forkJoin} from 'rxjs';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
 import {CandidateAttachment} from '../../../model/candidate-attachment';
-import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
@@ -66,7 +66,7 @@ export class ViewCandidateComponent implements OnInit {
 
   selectedLists: SavedList[] = [];
   lists: SavedList[] = [];
-  attachmentForm: UntypedFormGroup;
+  attachmentForm: FormGroup;
   attachments: CandidateAttachment[];
   cvs: CandidateAttachment[];
   s3BucketUrl = environment.s3BucketUrl;
@@ -84,7 +84,7 @@ export class ViewCandidateComponent implements OnInit {
               private titleService: Title,
               private authService: AuthService,
               private candidateFieldService: CandidateFieldService,
-              private fb: UntypedFormBuilder) { }
+              private fb: FormBuilder) { }
 
   ngOnInit() {
     this.refreshCandidateInfo();

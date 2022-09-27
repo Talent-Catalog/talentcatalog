@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {CandidateVisaJobCheck, OtherVisas} from '../../../../../model/candidate';
-import {UntypedFormBuilder} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 
@@ -16,7 +16,7 @@ export class VisaOtherOptionsComponent extends IntakeComponentBase implements On
   @Input() selectedJobCheck: CandidateVisaJobCheck;
   public visaOtherOptions: EnumOption[] = enumOptions(OtherVisas);
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

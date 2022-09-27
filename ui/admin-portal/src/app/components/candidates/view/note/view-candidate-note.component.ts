@@ -14,22 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {CandidateNote} from '../../../../model/candidate-note';
 import {CandidateNoteService} from '../../../../services/candidate-note.service';
 import {EditCandidateNoteComponent} from './edit/edit-candidate-note.component';
 import {CreateCandidateNoteComponent} from './create/create-candidate-note.component';
-import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-view-candidate-note',
@@ -43,7 +35,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   @Input() characterLimit: number;
   @Output() onResize = new EventEmitter();
 
-  candidateNoteForm: UntypedFormGroup;
+  candidateNoteForm: FormGroup;
   loading: boolean;
   expanded: boolean;
   error;
@@ -53,7 +45,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
   constructor(private candidateNoteService: CandidateNoteService,
               private modalService: NgbModal,
-              private fb: UntypedFormBuilder) {
+              private fb: FormBuilder) {
   }
 
   ngOnInit() {

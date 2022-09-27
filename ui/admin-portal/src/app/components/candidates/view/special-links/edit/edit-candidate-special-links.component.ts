@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 
@@ -28,14 +28,14 @@ import {CandidateService} from "../../../../../services/candidate.service";
 export class EditCandidateSpecialLinksComponent implements OnInit {
 
   candidateId: number;
-  candidateForm: UntypedFormGroup;
+  candidateForm: FormGroup;
 
   error;
   loading: boolean;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private candidateService: CandidateService) { }
 
   ngOnInit() {

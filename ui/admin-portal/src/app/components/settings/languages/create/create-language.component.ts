@@ -15,8 +15,8 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
-import {SystemLanguage} from "../../../../model/language";
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Language, SystemLanguage} from "../../../../model/language";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../services/language.service";
 
@@ -28,12 +28,12 @@ import {LanguageService} from "../../../../services/language.service";
 
 export class CreateLanguageComponent implements OnInit {
 
-  languageForm: UntypedFormGroup;
+  languageForm: FormGroup;
   error;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private languageService: LanguageService) {
   }
 

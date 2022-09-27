@@ -1,11 +1,8 @@
 import {Component, Inject, LOCALE_ID, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {formatDate} from '@angular/common';
-import {
-  TaskAssignmentService,
-  UpdateTaskAssignmentRequest
-} from "../../../../../services/task-assignment.service";
+import {TaskAssignmentService, UpdateTaskAssignmentRequest} from "../../../../../services/task-assignment.service";
 import {TaskAssignment} from "../../../../../model/task-assignment";
 import {Task} from "../../../../../model/task";
 
@@ -17,7 +14,7 @@ import {Task} from "../../../../../model/task";
 export class EditTaskAssignmentComponent implements OnInit {
 
   taskAssignment: TaskAssignment;
-  form: UntypedFormGroup;
+  form: FormGroup;
   dueDate: string;
   date: Date;
   loading;
@@ -25,7 +22,7 @@ export class EditTaskAssignmentComponent implements OnInit {
   error;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private taskAssignmentService: TaskAssignmentService,
               @Inject(LOCALE_ID) private locale: string) { }
 

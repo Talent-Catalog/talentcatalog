@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNo} from '../../../../model/candidate';
-import {UntypedFormBuilder} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 
@@ -30,7 +30,7 @@ export class DestinationJobComponent extends IntakeComponentBase implements OnIn
 
   public destJobOptions: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

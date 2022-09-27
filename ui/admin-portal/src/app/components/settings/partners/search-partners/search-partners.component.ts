@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../../../../services/auth.service";
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SearchResults} from "../../../../model/search-results";
@@ -28,11 +28,11 @@ export class SearchPartnersComponent implements OnInit {
   pageSize: number;
   readOnly: boolean;
   results: SearchResults<Partner>;
-  searchForm: UntypedFormGroup;
+  searchForm: FormGroup;
 
   constructor(
     private partnerService: PartnerService,
-    private fb: UntypedFormBuilder,
+    private fb: FormBuilder,
     private modalService: NgbModal,
     private authService: AuthService) { }
 

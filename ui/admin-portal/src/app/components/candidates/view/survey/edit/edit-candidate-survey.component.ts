@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {Candidate} from "../../../../../model/candidate";
@@ -31,7 +31,7 @@ export class EditCandidateSurveyComponent implements OnInit {
 
   candidateId: number;
 
-  candidateForm: UntypedFormGroup;
+  candidateForm: FormGroup;
 
   error;
   loading: boolean;
@@ -40,7 +40,7 @@ export class EditCandidateSurveyComponent implements OnInit {
   surveyTypes: SurveyType[];
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private candidateService: CandidateService,
               private surveyTypeService: SurveyTypeService) {}
 

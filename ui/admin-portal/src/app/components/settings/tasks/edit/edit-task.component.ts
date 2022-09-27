@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {TaskService, UpdateTaskRequest} from "../../../../services/task.service";
 import {Task} from "../../../../model/task";
@@ -28,13 +28,13 @@ import {Task} from "../../../../model/task";
 export class EditTaskComponent implements OnInit {
 
   taskId: number;
-  taskForm: UntypedFormGroup;
+  taskForm: FormGroup;
   error;
   loading: boolean;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private taskService: TaskService) {
   }
 

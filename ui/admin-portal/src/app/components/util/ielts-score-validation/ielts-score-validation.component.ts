@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {UntypedFormControl} from "@angular/forms";
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-ielts-score-validation',
@@ -8,7 +8,7 @@ import {UntypedFormControl} from "@angular/forms";
 })
 export class IeltsScoreValidationComponent implements OnInit, OnChanges {
 
-  @Input() control: UntypedFormControl;
+  @Input() control: FormControl;
   @Input() examType: string;
 
   errorMsg: string;

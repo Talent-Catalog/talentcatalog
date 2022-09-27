@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {EducationMajor} from "../../../../model/education-major";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {EducationMajorService} from "../../../../services/education-major.service";
@@ -28,12 +28,12 @@ import {EducationMajorService} from "../../../../services/education-major.servic
 
 export class CreateEducationMajorComponent implements OnInit {
 
-  educationMajorForm: UntypedFormGroup;
+  educationMajorForm: FormGroup;
   error;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private educationMajorService: EducationMajorService) {
   }
 

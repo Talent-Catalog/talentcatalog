@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateNoteService} from '../../../../../services/candidate-note.service';
 import {CandidateNote} from '../../../../../model/candidate-note';
@@ -30,7 +30,7 @@ export class CreateCandidateNoteComponent implements OnInit {
 
   candidateNote: CandidateNote;
 
-  candidateForm: UntypedFormGroup;
+  candidateForm: FormGroup;
 
   candidateId: number;
   countries = [];
@@ -39,7 +39,7 @@ export class CreateCandidateNoteComponent implements OnInit {
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private candidateNoteService: CandidateNoteService,
               private countryService: CountryService ) {
   }

@@ -24,8 +24,15 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap
+} from "rxjs/operators";
 import {SavedSearch} from '../../../model/saved-search';
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
@@ -39,7 +46,7 @@ import {SearchCandidateSourcesRequest} from "../../../model/base";
 })
 export class JoinSavedSearchComponent implements OnInit, OnChanges {
 
-  searchForm: UntypedFormGroup;
+  searchForm: FormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -56,7 +63,7 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
   @Output() addBaseSearch = new EventEmitter<SavedSearch>();
   @Output() deleteBaseSearch = new EventEmitter();
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private router: Router,
               private savedSearchService: SavedSearchService) {
   }

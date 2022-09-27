@@ -24,7 +24,7 @@ import {
   SavedSearchTypeInfo,
   SavedSearchTypeSubInfo
 } from "../../services/saved-search.service";
-import {UntypedFormBuilder} from "@angular/forms";
+import {FormBuilder} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 
 @Component({
@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   selectedSavedSearchSubtype: SavedSearchSubtype;
 
   constructor(
-    private fb: UntypedFormBuilder,
+    private fb: FormBuilder,
     private localStorageService: LocalStorageService,
     private savedSearchService: SavedSearchService,
     private authService: AuthService

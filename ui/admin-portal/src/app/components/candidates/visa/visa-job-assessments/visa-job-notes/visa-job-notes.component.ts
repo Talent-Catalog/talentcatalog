@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateVisaJobCheck} from "../../../../../model/candidate";
-import {UntypedFormBuilder} from "@angular/forms";
+import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
 
@@ -13,7 +13,7 @@ export class VisaJobNotesComponent extends IntakeComponentBase implements OnInit
 
   @Input() selectedJobCheck: CandidateVisaJobCheck;
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

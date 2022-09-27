@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {User} from "../../../model/user";
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthService} from "../../../services/auth.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
@@ -19,7 +19,7 @@ export class SearchTasksComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  searchForm: UntypedFormGroup;
+  searchForm: FormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -27,7 +27,7 @@ export class SearchTasksComponent implements OnInit {
   results: SearchResults<Task>;
 
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private taskService: TaskService,
               private modalService: NgbModal,
               private authService: AuthService) {

@@ -18,7 +18,7 @@ import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNo} from '../../../../model/candidate';
-import {UntypedFormBuilder} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 
 @Component({
@@ -30,7 +30,7 @@ export class FamilyComponent extends IntakeComponentBase implements OnInit {
 
   public familyMoveOptions: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

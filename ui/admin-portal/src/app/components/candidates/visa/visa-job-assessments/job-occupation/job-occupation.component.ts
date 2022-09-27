@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {Occupation} from '../../../../../model/occupation';
 import {CandidateVisaJobCheck} from '../../../../../model/candidate';
-import {UntypedFormBuilder} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class JobOccupationComponent extends IntakeComponentBase implements OnIni
   @Input() selectedIndex: number;
   @Input() selectedJobCheck: CandidateVisaJobCheck;
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

@@ -1,11 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {TaskService} from "../../../services/task.service";
-import {
-  CreateTaskAssignmentRequest,
-  TaskAssignmentService
-} from "../../../services/task-assignment.service";
+import {CreateTaskAssignmentRequest, TaskAssignmentService} from "../../../services/task-assignment.service";
 import {TaskAssignment} from "../../../model/task-assignment";
 import {Task} from "../../../model/task";
 
@@ -15,7 +12,7 @@ import {Task} from "../../../model/task";
   styleUrls: ['./assign-tasks-candidate.component.scss']
 })
 export class AssignTasksCandidateComponent implements OnInit {
-  assignForm: UntypedFormGroup;
+  assignForm: FormGroup;
   candidateId: number;
   allTasks: Task[];
   loading;
@@ -24,7 +21,7 @@ export class AssignTasksCandidateComponent implements OnInit {
   estDate: Date;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private modalService: NgbModal,
               private taskService: TaskService,
               private taskAssignmentService: TaskAssignmentService) { }

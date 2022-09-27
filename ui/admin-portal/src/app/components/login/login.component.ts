@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LoginRequest} from "../../model/base";
@@ -32,12 +32,12 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 })
 export class LoginComponent implements OnInit {
 
-  loginForm: UntypedFormGroup;
+  loginForm: FormGroup;
   loading: boolean;
   returnUrl: string;
   error;
 
-  constructor(private builder: UntypedFormBuilder,
+  constructor(private builder: FormBuilder,
               private authService: AuthService,
               private modalService: NgbModal,
               private reCaptchaV3Service: ReCaptchaV3Service,

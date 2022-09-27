@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {EducationLevel} from "../../../model/education-level";
 import {EducationLevelService} from "../../../services/education-level.service";
@@ -40,8 +40,8 @@ export class SearchEducationLevelsComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  importForm: UntypedFormGroup;
-  searchForm: UntypedFormGroup;
+  importForm: FormGroup;
+  searchForm: FormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -49,7 +49,7 @@ export class SearchEducationLevelsComponent implements OnInit {
   results: SearchResults<EducationLevel>;
 
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private educationLevelService: EducationLevelService,
               private modalService: NgbModal,
               private authService: AuthService) {

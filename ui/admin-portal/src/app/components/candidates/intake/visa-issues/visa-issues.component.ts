@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
-import {UntypedFormBuilder} from "@angular/forms";
+import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {EnumOption, enumOptions} from "../../../../util/enum";
 import {YesNoUnsure} from "../../../../model/candidate";
@@ -30,7 +30,7 @@ export class VisaIssuesComponent extends IntakeComponentBase implements OnInit {
 
   public visaIssueOptions: EnumOption[] = enumOptions(YesNoUnsure);
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService)
   }
 

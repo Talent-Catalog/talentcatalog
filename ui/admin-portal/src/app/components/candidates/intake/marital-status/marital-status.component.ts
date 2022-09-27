@@ -16,14 +16,8 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {
-  Candidate,
-  IeltsStatus,
-  MaritalStatus,
-  YesNo,
-  YesNoUnsure
-} from '../../../../model/candidate';
-import {UntypedFormBuilder} from '@angular/forms';
+import {Candidate, IeltsStatus, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EducationLevel} from '../../../../model/education-level';
@@ -51,7 +45,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
 
   years: number[];
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

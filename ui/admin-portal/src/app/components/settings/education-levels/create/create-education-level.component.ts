@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {EducationLevel} from "../../../../model/education-level";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {EducationLevelService} from "../../../../services/education-level.service";
@@ -28,12 +28,12 @@ import {EducationLevelService} from "../../../../services/education-level.servic
 
 export class CreateEducationLevelComponent implements OnInit {
 
-  educationLevelForm: UntypedFormGroup;
+  educationLevelForm: FormGroup;
   error;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private educationLevelService: EducationLevelService) {
   }
 

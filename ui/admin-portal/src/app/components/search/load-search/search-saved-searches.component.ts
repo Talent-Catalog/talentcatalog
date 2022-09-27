@@ -19,7 +19,7 @@ import {Component, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SavedSearch} from "../../../model/saved-search";
 import {SavedSearchService} from "../../../services/saved-search.service";
@@ -33,7 +33,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 })
 export class SearchSavedSearchesComponent implements OnInit {
 
-  searchForm: UntypedFormGroup;
+  searchForm: FormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -43,7 +43,7 @@ export class SearchSavedSearchesComponent implements OnInit {
 
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private router: Router,
               private savedSearchService: SavedSearchService) {
   }

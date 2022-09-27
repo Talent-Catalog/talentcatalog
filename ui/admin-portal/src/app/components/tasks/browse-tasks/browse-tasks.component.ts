@@ -1,12 +1,19 @@
-import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {Component, OnInit, SimpleChanges} from '@angular/core';
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
-import {SearchTaskRequest} from "../../../model/base";
+import {
+  CandidateSource,
+  CandidateSourceType,
+  PagedSearchRequest,
+  SearchBy, SearchTaskRequest
+} from "../../../model/base";
 import {User} from "../../../model/user";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Router} from "@angular/router";
 import {AuthService} from "../../../services/auth.service";
-import {indexOfAuditable} from "../../../model/saved-search";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {indexOfAuditable, SearchSavedSearchRequest} from "../../../model/saved-search";
+import {SearchSavedListRequest} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
 import {Task} from "../../../model/task";
 
@@ -19,7 +26,7 @@ export class BrowseTasksComponent implements OnInit {
   private filterKeySuffix: string = 'Filter';
   private savedStateKeyPrefix: string = 'BrowseKey';
 
-  searchForm: UntypedFormGroup;
+  searchForm: FormGroup;
   public loading: boolean;
   error: any;
   pageNumber: number;
@@ -29,7 +36,7 @@ export class BrowseTasksComponent implements OnInit {
   selectedIndex = 0;
   loggedInUser: User;
 
-  constructor(private fb: UntypedFormBuilder,
+  constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
               private authService: AuthService,

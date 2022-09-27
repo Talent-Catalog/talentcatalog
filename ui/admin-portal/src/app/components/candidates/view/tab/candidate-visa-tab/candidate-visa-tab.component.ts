@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
-import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {CountryService} from '../../../../../services/country.service';
 import {
   CandidateVisaCheckService,
@@ -42,7 +42,7 @@ import {AuthService} from '../../../../../services/auth.service';
   styleUrls: ['./candidate-visa-tab.component.scss']
 })
 export class CandidateVisaTabComponent extends IntakeComponentTabBase implements OnInit {
-  form: UntypedFormGroup;
+  form: FormGroup;
   selectedIndex: number;
   selectedCountry: string;
 
@@ -55,7 +55,7 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
               authService: AuthService,
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
-              private fb: UntypedFormBuilder) {
+              private fb: FormBuilder) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 

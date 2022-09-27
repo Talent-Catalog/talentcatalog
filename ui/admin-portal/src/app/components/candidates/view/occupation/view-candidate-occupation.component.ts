@@ -16,16 +16,14 @@
 
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {Candidate} from "../../../../model/candidate";
 import {CandidateOccupation} from "../../../../model/candidate-occupation";
 import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
 import {CandidateJobExperience} from "../../../../model/candidate-job-experience";
 import {CandidateJobExperienceService} from "../../../../services/candidate-job-experience.service";
-import {
-  EditCandidateJobExperienceComponent
-} from "./experience/edit/edit-candidate-job-experience.component";
+import {EditCandidateJobExperienceComponent} from "./experience/edit/edit-candidate-job-experience.component";
 import {CreateCandidateOccupationComponent} from "./create/create-candidate-occupation.component";
 
 @Component({
@@ -39,7 +37,7 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
   @Input() editable: boolean;
   @Input() adminUser: boolean;
 
-  candidateJobExperienceForm: UntypedFormGroup;
+  candidateJobExperienceForm: FormGroup;
   _loading = {
     experience: true,
     occupation: true,
@@ -56,7 +54,7 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
               private candidateOccupationService: CandidateOccupationService,
               private candidateJobExperienceService: CandidateJobExperienceService,
               private modalService: NgbModal,
-              private fb: UntypedFormBuilder) { }
+              private fb: FormBuilder) { }
 
   ngOnInit() {}
 

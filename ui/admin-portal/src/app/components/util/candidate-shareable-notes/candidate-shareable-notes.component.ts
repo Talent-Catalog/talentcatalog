@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {Candidate, UpdateCandidateShareableNotesRequest} from "../../../model/candidate";
-import {UntypedFormBuilder} from "@angular/forms";
+import {FormBuilder} from "@angular/forms";
 import {Observable} from "rxjs";
 import {CandidateService} from "../../../services/candidate.service";
 
@@ -15,7 +15,7 @@ export class CandidateShareableNotesComponent extends AutoSaveComponentBase
 
   @Input() candidate: Candidate;
 
-  constructor(private fb: UntypedFormBuilder, private candidateService: CandidateService) {
+  constructor(private fb: FormBuilder, private candidateService: CandidateService) {
     super();
   }
 

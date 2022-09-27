@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Industry} from "../../../../model/industry";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {IndustryService} from "../../../../services/industry.service";
@@ -28,12 +28,12 @@ import {IndustryService} from "../../../../services/industry.service";
 
 export class CreateIndustryComponent implements OnInit {
 
-  industryForm: UntypedFormGroup;
+  industryForm: FormGroup;
   error;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private industryService: IndustryService) {
   }
 
