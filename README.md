@@ -1,12 +1,12 @@
-# TBB Talent Portal #
+# Talent Catalog #
 
 ## Overview ##
 
-This is the repository for the Talent Beyond Boundaries Talent Portal, which manages data 
+This is the repository for the Talent Catalog (TC), which manages data 
 for refugees looking for skilled migration pathways into safe countries and employment. 
  
 This repository is a "mono-repo", meaning it contains multiple sub-modules all of which 
-make up the TBB Talent Portal system. In particular it contains: 
+make up the Talent Catalog system. In particular it contains: 
 
 - **server**: the backend module of the system providing secure API (REST) access to the 
 data, stored in an SQL Database. This module is written in Java / Spring Boot.
@@ -16,6 +16,9 @@ to the REST API endpoints under `/api/candidate` provided by the server.
 - **admin-portal**: the frontend module through which TBB staff are able to view, manage and annotate 
 candidate details. This is written in Angular and connects to the REST API endpoints under 
 `/api/admin` provided by the server.
+- **public-portal**: a module through which anyone can access publicly available data. 
+This is written in Angular and connects to the REST API endpoints under 
+`/api/public` provided by the server.
 
 ## Contributing ##
 
@@ -27,19 +30,22 @@ They should be submitted as pull request.
 
 ### Install the tools ###
 
-Download and install the latest of the following tools.
-
-IMPORTANT NOTE FOR MAC Users:
-
-On a Mac, installing with Homebrew usually works well. eg "brew install xxx".
+>IMPORTANT NOTE:
+>
+>These instructions are tailored for Mac users, as this is what we use for development.
+>
+>On a Mac, installing with Homebrew usually works well. eg "brew install xxx".
 However, Flyway and Postgres don't install with Homebrew, and the book
 "Angular Up & Running" notes that installing Node.js using Homebrew
 can also have problems. Googling you can still see lots of people having
 problems installing Node using brew.
-
-It is also probably easier to install Java directly (or from your 
+>
+>It is also probably easier to install Java directly (or from your
 development IDE - see below) rather than using brew.
 
+Download and install the latest of the following tools.
+
+- IntelliJ IDEA (or the IDE of your choice) - [Intellij website](https://www.jetbrains.com/idea/download/)
 
 - Java 11
    - At least Java 11 is required because we use the Locale object to provide translations of 
@@ -71,9 +77,7 @@ development IDE - see below) rather than using brew.
   > 
   > brew install --cask postman
 
-- Docker (we are moving to a container architecture, so want to start
-  using Docker technology - in particular for running Elasticsearch - 
-  see below)
+- Docker
     - Install Docker Desktop for Mac - 
       see [docker website](https://hub.docker.com/editions/community/docker-ce-desktop-mac/)
 
@@ -90,13 +94,6 @@ development IDE - see below) rather than using brew.
 
 - Git - [see Git website](https://git-scm.com/downloads)
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
-- MySQL - We use MySQL to do daily uploads to the RefugeeTalent database. We are locked into an old
-  (pre the Oracle purchase of MySQL) version, 5.7, of MySQL. The best way to install this on a Mac 
-is using brew. 
-See [Installing MySQL 5.7 using Homebrew](https://medium.com/macoclock/installing-mysql-5-7-using-homebrew-974cc2d42509).
-Note the brew instructions at the end of the install, particularly
-the export to the path and the brew services restart.
-- IntelliJ IDEA (or the IDE of your choice) - [Intellij website](https://www.jetbrains.com/idea/download/)
 
 ### Setup your local database ###
 
@@ -211,6 +208,36 @@ The Candidate Portal is now running locally and you can open a browser (chrome p
 __Note:__ _this is for development mode only. In production, the Candidate Portal module will be bundled 
 into the server and serve through Apache Tomcat._  
 
+### Run the Public Portal ###
+
+
+The "Public Portal" is an Angular Module and can be found in the directory `tbbtalentv2\ui\public-portal`.
+
+As for the "Candidate Portal", make sure all libraries are installed locally.
+
+Then from within the same directory run:
+
+> ng serve
+
+You will see log similar to:
+
+```
+chunk {main} main.js, main.js.map (main) 11.9 kB [initial] [rendered]
+chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 236 kB [initial] [rendered]
+chunk {runtime} runtime.js, runtime.js.map (runtime) 6.08 kB [entry] [rendered]
+chunk {styles} styles.js, styles.js.map (styles) 16.6 kB [initial] [rendered]
+chunk {vendor} vendor.js, vendor.js.map (vendor) 3.55 MB [initial] [rendered]
+i ｢wdm｣: Compiled successfully.
+```
+
+The Public Portal is now running locally and you can open a browser (chrome preferred) to:
+
+[http://localhost:4202](http://localhost:4202)
+
+
+__Note:__ _this is for development mode only. In production, the Public Portal module will be bundled
+into the server and serve through Apache Tomcat._
+
 
 ### Run the Admin Portal ###
 
@@ -242,24 +269,54 @@ The Admin Portal is now running locally and you can open a browser (chrome prefe
 __Note:__ _this is for development mode only. In production, the Admin Portal module will be bundled 
 into the server and serve through Apache Tomcat._ 
 
+### Log In To The Admin Portal ###
+
+- On startup, the server automatically creates a default user with username `SystemAdmin` 
+and password `password` that can be used to log in to the admin portal in development.
+- Details about this user can be found in `org/tbbtalent/server/configuration/SystemAdminConfiguration.java`
+
 ## Upgrades ##
 
 ### Angular ###
 
-See https://angular-update-guide.firebaseapp.com/
+See https://update.angular.io
 
 Note that you have to separately upgrade each of the Angular directories:
 
 - ui/admin-portal
 - ui/candidate-portal
+- ui/public-portal
 
 Assuming that the package.json in each of the above directories has the right
 versions already in there you just need run the following commands in each
 directory.
 
-> npm install
+> npm install 
+
+Note and fix any errors. "npm outdated" is good for identifying outdated libraries
+"npm update --save" will update versions to the latest version within the allowed versions 
+specified by the package.json.
+
+Once all versions are updated for the current version of Angular, you can run the Angular
+update as follows.
 >
-> ng update   
+> ng update
+
+This will prompt you to update the Angular core and cli. For example: 
+
+> ng update @angular/core@13 @angular/cli@13
+ 
+This will update package.json with the appropriate Angular versions which will drive updates of 
+other dependent libraries.
+
+You may find that you need to manually upgrade versions of some tools in package.json so that they 
+work with the new version of Angular. 
+For example, you might need to upgrade the version of ng-bootstrap to a version that works with the 
+later version of Angular. 
+Look at the doc of the library in question to select the correct version
+
+You may also need to make changes to your Angular code because of changes in Angular, or because of
+changed APIs in the dependent libraries.
 
 ## Version Control ##
 
@@ -289,7 +346,7 @@ then pushing master. See Deployment section below.
 
 Staging is a shared resource so you should only push changes there when
 you have finished changes which you are confident will build without error 
-and should not not break other parts of the code.
+and should not break other parts of the code.
 
 As a shared resource, staging is the best way to share your code with other
 team members to allow them to merge your code into their own branches and
@@ -299,7 +356,7 @@ also to allow them to review your code and help with testing.
 
 New development should be done in branches. 
 
-Typically you should branch from the staging branch, and merge regularly 
+Typically, you should branch from the staging branch, and merge regularly 
 (eg daily) from staging so that your code does not get too far away from
 what everyone else is doing.
   
