@@ -201,3 +201,7 @@ comment                 text,
 created_by              bigint references users,
 created_date            timestamptz
 );
+
+-- Create the default system admin user which is required by later migration scripts
+-- Both the id (1) and username (SystemAdmin) are referenced
+insert into users (id, username, first_name, last_name, email, role, status) values (1, 'SystemAdmin', 'System', 'Admin', 'systemadmin@example.com', 'systemadmin', 'active');
