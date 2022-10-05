@@ -488,12 +488,22 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   private updateLocalCandidateSourceCopy(source: CandidateSource) {
-    const index: number = indexOfAuditable(source.id, this.results.content);
-    if (index >= 0) {
-      this.results.content[index] = source;
-    }
-    if (this.selectedIndex === index) {
-      this.selectedSource = source;
+    if (isJob(this.selectedSource)) {
+      //Looking at jobs, we update the current job's submission list
+      if (source.id === this.selectedSourceDetail().id) {
+        this.selectedSource.submissionList = source;
+      }
+    } else {
+      //Looking at lists or searches.
+      //Need to update the list of sources as well as the currently selected source if that
+      //is the source which has been updated
+      const index: number = indexOfAuditable(source.id, this.results.content);
+      if (index >= 0) {
+        this.results.content[index] = source;
+      }
+      if (this.selectedIndex === index) {
+        this.selectedSource = source;
+      }
     }
   }
 
