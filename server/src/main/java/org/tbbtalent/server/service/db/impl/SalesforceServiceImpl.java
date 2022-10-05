@@ -25,6 +25,7 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -311,12 +312,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             //Now set any requested stage name and next step
             String stageName = null;
             String nextStep = null;
+            LocalDate nextStepDueDate = null;
             String closingComments = null;
             String employerFeedback = null;
             if (salesforceOppParams != null) {
                 final CandidateOpportunityStage stage = salesforceOppParams.getStage();
                 stageName = stage == null ? null : stage.getSalesforceStageName();
                 nextStep = salesforceOppParams.getNextStep();
+                nextStepDueDate = salesforceOppParams.getNextStepDueDate();
                 closingComments = salesforceOppParams.getClosingComments();
                 employerFeedback = salesforceOppParams.getEmployerFeedback();
             }
@@ -331,6 +334,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
             if (nextStep != null) {
                 opportunityRequest.setNextStep(nextStep);
+            }
+            if (nextStepDueDate != null) {
+                opportunityRequest.setNextStepDueDate(nextStepDueDate);
             }
             if (closingComments != null) {
                 opportunityRequest.setClosingComments(closingComments);
@@ -1545,6 +1551,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public void setNextStep(String nextStep) {
             put("NextStep", nextStep);
+        }
+
+        /**
+         * Opportunity next step due date
+         */
+        public void setNextStepDueDate(LocalDate nextStepDueDate) {
+            put("Next_Step_Due_Date__c", nextStepDueDate.toString());
         }
 
         /**

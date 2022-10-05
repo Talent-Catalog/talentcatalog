@@ -23,6 +23,12 @@
     </div>
 
     <div class="form-group">
+      <label for="nextStepDueDate">Next step due date</label>
+      <app-date-picker id="nextStepDueDate" [control]="salesforceStageForm.controls.nextStepDueDate"
+                       [allowFuture]="true"></app-date-picker>
+    </div>
+
+    <div class="form-group">
       <label for="closingComments">Closing comments</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="closingComments" [formControlName]="'closingComments'"></textarea>

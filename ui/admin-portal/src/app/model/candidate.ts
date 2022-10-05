@@ -400,6 +400,7 @@ export enum CandidateStatus {
 export interface SalesforceOppParams {
   stage?: string;
   nextStep?: string;
+  nextStepDueDate?: string;
   closingComments?: string;
   employerFeedback?: string;
 }
