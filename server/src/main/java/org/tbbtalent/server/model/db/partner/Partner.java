@@ -18,7 +18,6 @@ package org.tbbtalent.server.model.db.partner;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Status;
 
 /**
@@ -37,17 +36,6 @@ public interface Partner {
     @Nullable
     String getAbbreviation();
     void setAbbreviation(@Nullable String s);
-
-    /**
-     * If true, candidates managed by this partner will use {@link Candidate#getCandidateNumber()}
-     * as their own internal reference identifying this candidate.
-     * <p/>
-     * The internal partner reference is stored in {@link Candidate#getPartnerRef()}. If this is
-     * true, that field will automatically be populated with candidateNumber.
-     * @return True if candidateNumber is used as internal partner ref
-     */
-    boolean isDefaultPartnerRef();
-    void setDefaultPartnerRef(boolean defaultPartnerRef);
 
     /**
      * Unique id identifying this partner

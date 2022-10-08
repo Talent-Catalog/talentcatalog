@@ -16,14 +16,22 @@
 
   <form [formGroup]="form">
     <div class="form-group" >
+
+      <div *ngIf="isCreate()" class="form-inline">
+        <label>Type? *</label>
+        <ng-select
+          id="partnerType"
+          [items]="partnerTypes"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="false"
+          bindLabel="stringValue"
+          bindValue="key"
+          [formControlName]="'partnerType'">
+        </ng-select>
+      </div>
       <label for="name">Name *</label>
       <input class="form-control" id="name" formControlName="name">
-<!--      <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"-->
-<!--           class="alert alert-danger">-->
-<!--        <div *ngIf="nameControl.errors.required">-->
-<!--          Name is required.-->
-<!--        </div>-->
-<!--      </div>-->
       <div class="form-inline">
         <label>Status? *</label>
         <ng-select
@@ -55,35 +63,35 @@
       <label for="logo">Logo</label>
       <input class="form-control" id="logo" formControlName="logo">
 
-      <label for="registrationLandingPage">Registration Landing Page (url)</label>
-      <input class="form-control" id="registrationLandingPage" formControlName="registrationLandingPage">
-
       <label for="websiteUrl">Website Url</label>
       <input class="form-control" id="websiteUrl" formControlName="websiteUrl">
 
-      <label for="autoAssignable">Auto assignable by country?</label>
-      <input type="checkbox" formControlName="autoAssignable" id="autoAssignable">
+      <div *ngIf="isSourcePartner()">
+        <label for="registrationLandingPage">Registration Landing Page (url)</label>
+        <input class="form-control" id="registrationLandingPage" formControlName="registrationLandingPage">
 
-      <label for="defaultPartnerRef">Default partner ref?</label>
-      <input type="checkbox" formControlName="defaultPartnerRef" id="defaultPartnerRef">
+        <label for="autoAssignable">Auto assignable by country?</label>
+        <input type="checkbox" formControlName="autoAssignable" id="autoAssignable">
+
+        <label for="defaultPartnerRef">Default partner ref?</label>
+        <input type="checkbox" formControlName="defaultPartnerRef" id="defaultPartnerRef">
+
+        <!-- SOURCE COUNTRIES  -->
+        <label>Source Country</label>
+        <ng-select
+          id="sourceCountry"
+          [items]="countries"
+          [multiple]="true"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          [formControlName]="'sourceCountries'">
+        </ng-select>
+        <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
+      </div>
 
     </div>
-    <!-- SOURCE COUNTRIES  -->
-    <div class="form-group">
-      <label>Source Country</label>
-      <ng-select
-        id="sourceCountry"
-        [items]="countries"
-        [multiple]="true"
-        [closeOnSelect]="false"
-        [searchable]="true"
-        placeholder="Select or type..."
-        bindLabel="name"
-        [formControlName]="'sourceCountries'">
-      </ng-select>
-      <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
-    </div>
-
     <hr/>
   </form>
 </div>

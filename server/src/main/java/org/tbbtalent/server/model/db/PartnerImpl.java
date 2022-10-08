@@ -48,8 +48,6 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     @Nullable
     private String abbreviation;
 
-    private boolean defaultPartnerRef;
-
     @Nullable
     private String logo;
 
