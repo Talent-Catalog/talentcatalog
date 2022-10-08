@@ -54,6 +54,7 @@ public enum CandidateOpportunityStage {
         noInterview ("No interview", false),
         candidateLeavesDestination ("Candidate leaves destination", true),
         candidateRejectsOffer ("Candidate rejects offer", false),
+        candidateUnreachable ("Candidate unreachable", false),
         candidateWithdraws ("Candidate withdraws", false)
         ;
 
