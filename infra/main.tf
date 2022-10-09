@@ -4,7 +4,7 @@ terraform {
 
 terraform {
   backend "s3" {
-    bucket = "tbbtalent-terraform-state"
+    bucket = "tbbtalent-terraform-state-dev"
     key    = "tbbtalent"
     region = "us-east-1"
   }

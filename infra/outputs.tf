@@ -1,7 +1,3 @@
-output "main_website_token" {
-  value = module.main_website.website_token
-}
-
-output "standby_website_token" {
-  value = module.main_website.website_token
+output "website_token" {
+  value = module.website.website_token
 }
