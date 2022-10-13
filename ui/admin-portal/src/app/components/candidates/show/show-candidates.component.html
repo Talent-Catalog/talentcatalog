@@ -55,6 +55,7 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
+<!--      Icons -->
       <div class="d-flex flex-grow-1 space-evenly">
         <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()">
           <i class="fas fa-link" title="Copy shareable link"></i>
@@ -98,12 +99,14 @@
         </button>
       </div>
 
+<!--    Results summary-->
       <div class="text-right">
         <span>{{results?.totalElements}} candidates returned</span><br/>
         <span class="small">Timestamp {{timestamp | date: 'customDateTime'}}</span>
       </div>
     </div>
 
+<!--    Buttons -->
     <div class="d-flex">
 
       <div class="d-flex flex-wrap buttons-spacing flex-fill">
@@ -212,6 +215,7 @@
 
     </div>
 
+<!--  List operation log - eg Save/Replace again, or Copied to list  -->
     <div class="text-muted pt-0 mb-3" *ngIf="!searching">
       <div *ngIf="haveTargetList() && savedSelection" class="d-flex pt-1 align-items-center">
         <button class="btn btn-sm btn-outline-secondary mr-2"
@@ -241,6 +245,7 @@
     </div>
 
 
+<!-- Review status - unverified, verified, rejected -->
     <form class="filter-form" [formGroup]="searchForm">
 
       <!-- REVIEW STATUS FILTER -->
@@ -259,6 +264,7 @@
       </div>
     </form>
 
+<!--  Task selection - select just one task to focus on  -->
     <div *ngIf="hasTasksAssigned()" class="mb-3">
       <ng-select [items]="tasksAssignedToList"
                  bindLabel="displayName"
@@ -268,11 +274,14 @@
       </ng-select>
     </div>
 
+<!--    Table of list contents - plus candidate details of selected candidate-->
     <div class="split-view">
 
+<!--     Table of list contents -->
       <div class="table-wrapper">
         <table class="table table-hover">
 
+<!--          Header-->
           <thead class="thead-light">
           <tr>
             <th class="candidate-number-row" (click)="toggleSort('id')">
@@ -295,20 +304,21 @@
           </thead>
 
           <tbody>
-            <!-- loading -->
+            <!--  Loading icon while loading  -->
             <tr *ngIf="searching">
               <td colspan="42">
                 <i class="fas fa-spinner fa-spin"></i> Loading...
               </td>
             </tr>
 
-            <!-- no results -->
+            <!-- Special display for no results-->
             <tr *ngIf="!searching && !results?.totalElements">
               <td colspan="42">
                 <span class="text-muted">(no matching candidates)</span>
               </td>
             </tr>
 
+<!--        Candidate records    -->
             <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)" [ngClass]="{'selected': currentCandidate?.id == candidate.id, 'selected-row': candidate.selected}">
               <td>
                 <a [routerLink]="['/candidate',candidate.candidateNumber]">
@@ -387,6 +397,7 @@
         </table>
       </div>
 
+<!--      Data on selected candidate-->
       <app-candidate-search-card class="profile"
                                  *ngIf="currentCandidate"
                                  [candidateSource]="candidateSource"
