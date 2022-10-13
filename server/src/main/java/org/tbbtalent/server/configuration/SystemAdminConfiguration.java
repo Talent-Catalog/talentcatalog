@@ -30,8 +30,7 @@ import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.UserService;
 
 /**
- * Component which listens for a Spring start up event and creates a system admin user if
- * none is present.
+ * Component which listens for a Spring start up event and auto creates objects if needed.
  *
  * @author John Cameron
  */
@@ -57,10 +56,10 @@ public class SystemAdminConfiguration {
   }
 
   /**
-   * Run at startup to check whether we have a master system admin user, creating one if necessary
+   * Run at startup to check whether we have necessary objects, creating them if necessary
    */
   @EventListener(ApplicationReadyEvent.class)
-  public void autoCreateSystemAdmin() {
+  public void autoCreates() {
 
     User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
     if (systemAdmin == null) {
@@ -73,8 +72,6 @@ public class SystemAdminConfiguration {
       req.setRole(Role.systemadmin);
       req.setReadOnly(false);
       req.setUsingMfa(true);
-      req.setPassword("password");
-      req.setStatus(Status.active);
 
       //Self create system admin
       systemAdmin = userService.createUser(req, null);

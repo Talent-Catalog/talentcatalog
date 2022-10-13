@@ -201,3 +201,8 @@ comment                 text,
 created_by              bigint references users,
 created_date            timestamptz
 );
+
+-- Create system admin as boot strap user. Should have user id = 1.
+insert into users (username, role, first_name, last_name, email, status)
+values('SystemAdmin', 'systemadmin','System', 'Admin', 'tbbtalent@talentbeyondboundaries.org', 'active');
+
