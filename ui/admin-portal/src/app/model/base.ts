@@ -245,12 +245,12 @@ export function isMine(source: CandidateSource, auth: AuthService) {
 }
 
 export function isStarredByMe(source: CandidateSource, auth: AuthService) {
-  let sharedWithMe: boolean = false;
+  let starredByMe: boolean = false;
   const me: User = auth.getLoggedInUser();
   if (source && me) {
-    sharedWithMe = source.users?.find(u => u.id === me.id ) !== undefined;
+    starredByMe = source.users?.find(u => u.id === me.id ) !== undefined;
   }
-  return sharedWithMe;
+  return starredByMe;
 }
 
 export function canEditSource(source: CandidateSource, auth: AuthService) {

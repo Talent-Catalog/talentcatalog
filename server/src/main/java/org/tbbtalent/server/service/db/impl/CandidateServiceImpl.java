@@ -107,6 +107,7 @@ import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.YesNoUnsure;
 import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 import org.tbbtalent.server.model.db.task.Task;
@@ -718,7 +719,7 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
 
-    private Candidate createCandidate(CreateCandidateRequest request, Partner partner, String ipAddress,
+    private Candidate createCandidate(CreateCandidateRequest request, SourcePartner partner, String ipAddress,
         HasTcQueryParameters queryParameters, String passwordEncrypted)
         throws UsernameTakenException {
         User user = new User(
@@ -1055,10 +1056,10 @@ public class CandidateServiceImpl implements CandidateService {
             log.info("Registration with partner abbreviation: " + partnerAbbreviation);
         }
 
-        Partner partner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
-        if (partner == null) {
+        SourcePartner sourcePartner = (SourcePartner) partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+        if (sourcePartner == null) {
             //Use default partner.
-            partner = partnerService.getDefaultSourcePartner();
+            sourcePartner = partnerService.getDefaultSourcePartner();
         }
 
         //Pick up query parameters from request if they are passed in
@@ -1076,7 +1077,7 @@ public class CandidateServiceImpl implements CandidateService {
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
 
-        Candidate candidate = createCandidate(createCandidateRequest, partner, ipAddress,
+        Candidate candidate = createCandidate(createCandidateRequest, sourcePartner, ipAddress,
             queryParameters, passwordEncrypted);
 
         /* Log the candidate in */

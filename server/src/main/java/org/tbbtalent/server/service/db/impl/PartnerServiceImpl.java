@@ -30,9 +30,11 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.PartnerImpl;
+import org.tbbtalent.server.model.db.RecruiterPartnerImpl;
 import org.tbbtalent.server.model.db.SourcePartnerImpl;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.model.db.partner.RecruiterPartner;
 import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.repository.db.PartnerRepository;
 import org.tbbtalent.server.repository.db.PartnerSpecification;
@@ -90,6 +92,14 @@ public class PartnerServiceImpl implements PartnerService {
                 partner = sourcePartner;
                 break;
 
+            case "RecruiterPartner":
+                RecruiterPartnerImpl recruiterPartner = new RecruiterPartnerImpl();
+
+                populateCommonAttributes(request, recruiterPartner);
+
+                partner = recruiterPartner;
+                break;
+
             default:
                 throw new InvalidRequestException("Unknown partner type: " + partnerType);
         }
@@ -134,8 +144,8 @@ public class PartnerServiceImpl implements PartnerService {
 
     @NonNull
     @Override
-    public Partner getDefaultSourcePartner() throws NoSuchObjectException {
-        final PartnerImpl partner = partnerRepository.findByDefaultSourcePartner(true)
+    public SourcePartner getDefaultSourcePartner() throws NoSuchObjectException {
+        final SourcePartnerImpl partner = (SourcePartnerImpl) partnerRepository.findByDefaultSourcePartner(true)
             .orElseThrow(() -> new NoSuchObjectException(Partner.class, "default"));
 
         return partner;
@@ -196,6 +206,8 @@ public class PartnerServiceImpl implements PartnerService {
             sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
             sourcePartner.setAutoAssignable(request.isAutoAssignable());
             sourcePartner.setSourceCountries(sourceCountries);
+        } else if (partner instanceof RecruiterPartner) {
+            populateCommonAttributes(request, partner);
         }
 
         return partnerRepository.save((PartnerImpl) partner);

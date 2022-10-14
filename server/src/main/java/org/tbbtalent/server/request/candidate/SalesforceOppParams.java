@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -41,10 +42,16 @@ public class SalesforceOppParams {
   private CandidateOpportunityStage stage;
 
   /**
-   * Any text which will update a Salesforce Candidate Opportunity stage
+   * Any text which will update a Salesforce Candidate Opportunity next step
    */
   @Nullable
   private String nextStep;
+
+  /**
+   * Any text which will update a Salesforce Candidate Opportunity next step due date
+   */
+  @Nullable
+  private LocalDate nextStepDueDate;
 
   /**
    * Comments explaining why the opportunity was closed

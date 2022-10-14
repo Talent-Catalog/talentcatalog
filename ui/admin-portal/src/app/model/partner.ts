@@ -22,6 +22,13 @@ import {Country} from "./country";
   - Link update request to partner attributes (ie don't duplicate attributes)
   - Map Java enums to strings.
 */
+
+export enum PartnerType {
+  RecruiterPartner = "RecruiterPartner",
+  SourcePartner = "SourcePartner"
+}
+
+
 export interface PartnerSimpleAttributes {
   abbreviation: string;
   autoAssignable: boolean;

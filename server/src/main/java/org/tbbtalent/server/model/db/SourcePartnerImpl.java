@@ -43,6 +43,8 @@ public class SourcePartnerImpl extends PartnerImpl
         return "SourcePartner";
     }
 
+    private boolean defaultPartnerRef;
+
     @Nullable
     private String registrationLandingPage;
 

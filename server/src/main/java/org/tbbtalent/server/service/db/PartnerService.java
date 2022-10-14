@@ -26,6 +26,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.request.partner.SearchPartnerRequest;
 import org.tbbtalent.server.request.partner.UpdatePartnerRequest;
 
@@ -51,7 +52,7 @@ public interface PartnerService {
      * @throws NoSuchObjectException if no default source partner is configured
      */
     @NonNull
-    Partner getDefaultSourcePartner() throws NoSuchObjectException;
+    SourcePartner getDefaultSourcePartner() throws NoSuchObjectException;
 
     /**
      * Returns partner who can be auto assigned to a candidate based on the country the candidate
