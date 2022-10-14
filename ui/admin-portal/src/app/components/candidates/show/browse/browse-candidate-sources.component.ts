@@ -277,7 +277,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Called when a particular source (ie list of search) is selected from browse results
+   * Called when a particular source (ie list or search) is selected from browse results
    * of the search of sources.
    * @param source Selected candidate source
    */
