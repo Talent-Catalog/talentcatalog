@@ -115,7 +115,7 @@ web:
   admin: ${WEB_ADMIN:https://tbbtalent-staging.herokuapp.com/admin-portal}
 
 flyway:
-  ignoreMissingMigrations: true
+  ignoreMissingMigrations: false
 
 #  Set this to true if you need to repair the Flyway history.
   repair: false
