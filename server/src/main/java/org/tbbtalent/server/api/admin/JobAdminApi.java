@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Job;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
@@ -50,6 +51,12 @@ public class JobAdminApi implements
     }
 
     @Override
+    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
+        Job job = jobService.getJob(id);
+        return jobDto().build(job);
+    }
+
+    @Override
     public @NotNull Map<String, Object> searchPaged(@Valid SearchJobRequest request) {
         Page<Job> jobs = jobService.searchJobs(request);
         final Map<String, Object> objectMap = jobDto().buildPage(jobs);
@@ -58,6 +65,7 @@ public class JobAdminApi implements
 
     private DtoBuilder jobDto() {
         return new DtoBuilder()
+            .add("id")
             .add("country")
             .add("employer")
             .add("name")

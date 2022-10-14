@@ -18,4 +18,8 @@ export class JobService {
     return this.http.post<Job>(`${this.apiUrl}`, request);
   }
 
+  get(id: number): Observable<Job> {
+    return this.http.get<Job>(`${this.apiUrl}/${id}`);
+  }
+
 }
