@@ -27,6 +27,7 @@ export class SalesforceStageComponent implements OnInit {
     this.salesforceStageForm = this.fb.group({
       stage: [null],
       nextStep: [null],
+      nextStepDueDate: [null],
       closingComments: [null],
       employerFeedback: [null]
     });
@@ -35,6 +36,7 @@ export class SalesforceStageComponent implements OnInit {
   get closingComments(): string { return this.salesforceStageForm.value?.closingComments; }
   get employerFeedback(): string { return this.salesforceStageForm.value?.employerFeedback; }
   get nextStep(): string { return this.salesforceStageForm.value?.nextStep; }
+  get nextStepDueDate(): string { return this.salesforceStageForm.value?.nextStepDueDate; }
   get stage(): string { return this.salesforceStageForm.value?.stage; }
 
   cancel() {
@@ -45,6 +47,7 @@ export class SalesforceStageComponent implements OnInit {
     const info: SalesforceOppParams = {
       stage: this.stage,
       nextStep: this.nextStep,
+      nextStepDueDate: this.nextStepDueDate,
       closingComments: this.closingComments,
       employerFeedback: this.employerFeedback
     }

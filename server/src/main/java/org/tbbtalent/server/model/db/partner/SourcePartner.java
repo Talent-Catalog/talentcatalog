@@ -19,6 +19,7 @@ package org.tbbtalent.server.model.db.partner;
 import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Country;
 
 /**
@@ -37,6 +38,17 @@ import org.tbbtalent.server.model.db.Country;
  * @author John Cameron
  */
 public interface SourcePartner extends Partner {
+
+    /**
+     * If true, candidates managed by this partner will use {@link Candidate#getCandidateNumber()}
+     * as their own internal reference identifying this candidate.
+     * <p/>
+     * The internal partner reference is stored in {@link Candidate#getPartnerRef()}. If this is
+     * true, that field will automatically be populated with candidateNumber.
+     * @return True if candidateNumber is used as internal partner ref
+     */
+    boolean isDefaultPartnerRef();
+    void setDefaultPartnerRef(boolean defaultPartnerRef);
 
     /**
      * Url of registration landing page.

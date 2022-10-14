@@ -380,6 +380,7 @@ export enum CandidateOpportunityStage {
   noInterview = "No interview",
   candidateLeavesDestination = "Candidate leaves destination",
   candidateRejectsOffer = "Candidate rejects offer",
+  candidateUnreachable = "Candidate unreachable",
   candidateWithdraws = "Candidate withdraws"
 
 }
@@ -400,6 +401,7 @@ export enum CandidateStatus {
 export interface SalesforceOppParams {
   stage?: string;
   nextStep?: string;
+  nextStepDueDate?: string;
   closingComments?: string;
   employerFeedback?: string;
 }

@@ -91,7 +91,8 @@ public class PartnerAdminApi implements
         //These properties should only be extracted for source partner's
         private final Set<String> sourcePartnerOnlyProperties =
             new HashSet<>(Arrays.asList(
-                "registrationLandingPage", "sourceCountries", "defaultSourcePartner"));
+                "registrationLandingPage", "sourceCountries", "defaultSourcePartner",
+                "autoAssignable", "defaultPartnerRef"));
 
         public boolean ignoreProperty(Object o, String property) {
             //Ignore properties which do not exist on type of partner

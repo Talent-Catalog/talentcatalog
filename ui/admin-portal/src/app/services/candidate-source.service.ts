@@ -64,7 +64,7 @@ export class CandidateSourceService {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
 
-    //todo Need to replace this "shared by" idea with "tagged by" in both API and Spring code.
+    //todo Need to replace this "shared by" idea with "starred by" in both API and Spring code.
     return this.http.put<CandidateSource>(`${apiUrl}/shared-add/${source.id}`, request)
     .pipe(
       map(result => this.processPostResult(result))
@@ -77,7 +77,7 @@ export class CandidateSourceService {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
 
-    //todo Need to replace this "shared by" idea with "tagged by" in both API and Spring code.
+    //todo Need to replace this "shared by" idea with "starred by" in both API and Spring code.
     return this.http.put<CandidateSource>(`${apiUrl}/shared-remove/${source.id}`, request)
       .pipe(
         map(result => this.processPostResult(result))

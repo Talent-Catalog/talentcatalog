@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PartnerService} from "../../../../services/partner.service";
-import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
+import {Partner, PartnerType, UpdatePartnerRequest} from "../../../../model/partner";
 import {salesforceUrlPattern, Status} from "../../../../model/base";
 import {Country} from "../../../../model/country";
 import {CountryService} from "../../../../services/country.service";
@@ -44,6 +44,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
   error = null;
   form: FormGroup;
   partner: Partner;
+  partnerTypes = enumOptions(PartnerType);
   statuses = enumOptions(Status);
   working: boolean;
 
@@ -73,6 +74,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       //enum key and the "bindLabel" set to the enum stringValue (which is what is displayed to
       //the user).
       status: [this.partner?.status, Validators.required],
+      partnerType: [this.partner ? this.partner.partnerType : PartnerType.SourcePartner, Validators.required],
       websiteUrl: [this.partner?.websiteUrl],
     });
 
@@ -108,7 +110,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       logo: this.form.value.logo,
       name: this.form.value.name,
       notificationEmail: this.form.value.notificationEmail,
-      partnerType: 'SourcePartner',
+      partnerType: this.form.value.partnerType,
       registrationLandingPage: this.form.value.registrationLandingPage,
       sflink: this.form.value.sflink,
 
@@ -156,4 +158,11 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
     this.activeModal.dismiss(false);
   }
 
+  isSourcePartner(): boolean {
+    return this.form.value.partnerType === PartnerType.SourcePartner;
+  }
+
+  isCreate(): boolean {
+    return this.partner == null;
+  }
 }
