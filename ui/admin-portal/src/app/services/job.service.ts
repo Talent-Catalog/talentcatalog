@@ -2,7 +2,8 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {Job, UpdateJobRequest} from "../model/job";
+import {Job, SearchJobRequest, UpdateJobRequest} from "../model/job";
+import {SearchResults} from "../model/search-results";
 
 @Injectable({
   providedIn: 'root'
@@ -22,4 +23,7 @@ export class JobService {
     return this.http.get<Job>(`${this.apiUrl}/${id}`);
   }
 
+  searchPaged(request: SearchJobRequest): Observable<SearchResults<Job>> {
+    return this.http.post<SearchResults<Job>>(`${this.apiUrl}/search-paged`, request);
+  }
 }

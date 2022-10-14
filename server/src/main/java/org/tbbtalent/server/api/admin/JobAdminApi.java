@@ -20,6 +20,8 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -44,6 +46,7 @@ public class JobAdminApi implements
     }
 
     @Override
+    @PostMapping
     public @NotNull Map<String, Object> create(@Valid UpdateJobRequest request)
         throws EntityExistsException {
         Job job = jobService.createJob(request);
@@ -51,12 +54,14 @@ public class JobAdminApi implements
     }
 
     @Override
+    @GetMapping("{id}")
     public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
         Job job = jobService.getJob(id);
         return jobDto().build(job);
     }
 
     @Override
+    @PostMapping("search-paged")
     public @NotNull Map<String, Object> searchPaged(@Valid SearchJobRequest request) {
         Page<Job> jobs = jobService.searchJobs(request);
         final Map<String, Object> objectMap = jobDto().buildPage(jobs);
