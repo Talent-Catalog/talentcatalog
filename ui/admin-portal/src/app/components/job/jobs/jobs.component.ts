@@ -26,6 +26,8 @@ export class JobsComponent implements OnInit {
   error: string;
   results: SearchResults<Job>;
   stages = enumOptions(JobOpportunityStage);
+
+  //Default sort jobs with most recent job first - ie descending order of id
   sortField = 'id';
   sortDirection = 'DESC';
 
@@ -68,9 +70,8 @@ export class JobsComponent implements OnInit {
     req.pageNumber = this.pageNumber - 1;
     req.pageSize = this.pageSize;
 
-    //Sort jobs with most recent job first - ie descending order of id
-    req.sortFields = ['id'];
-    req.sortDirection = 'DESC';
+    req.sortFields = [this.sortField];
+    req.sortDirection = this.sortDirection;
 
     req.stages = this.selectedStages;
 
