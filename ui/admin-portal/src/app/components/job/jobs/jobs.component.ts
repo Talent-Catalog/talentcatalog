@@ -26,6 +26,9 @@ export class JobsComponent implements OnInit {
   error: string;
   results: SearchResults<Job>;
   stages = enumOptions(JobOpportunityStage);
+  sortField = 'id';
+  sortDirection = 'DESC';
+
 
   constructor(
     private authService: AuthService,
@@ -100,5 +103,19 @@ export class JobsComponent implements OnInit {
 
   private savedStateKey(): string {
     return "Jobs"
+  }
+
+  toggleSort(column: string) {
+    if (this.sortField === column) {
+      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortField = column;
+      this.sortDirection = 'ASC';
+    }
+    this.search();
+  }
+
+  viewJob(job: Job) {
+    //todo
   }
 }

@@ -31,5 +31,61 @@
     {{job.employer}}
     {{job.country}}
   </div>
+  <div class="table-wrapper">
+    <table class="table table-hover">
+
+      <!--          Header-->
+      <thead class="thead-light">
+      <tr>
+        <th class="candidate-number-row" (click)="toggleSort('id')">
+          <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          Job #
+        </th>
+        <th>
+          <i class="fab fa-salesforce"></i>
+        </th>
+        <th class="candidate-number-row" (click)="toggleSort('employer')">
+          <app-sorted-by [column]="'employer'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          Employer
+        </th>
+        <th class="candidate-number-row" (click)="toggleSort('country')">
+          <app-sorted-by [column]="'country'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          Country
+        </th>
+      </tr>
+      </thead>
+
+      <tbody>
+
+      <!-- Special display for no results-->
+      <tr *ngIf="!results?.totalElements">
+        <td colspan="42">
+          <span class="text-muted">(no matching data)</span>
+        </td>
+      </tr>
+
+      <!--        Job records    -->
+      <tr *ngFor="let job of results?.content" (click)="viewJob(job)">
+        <td>
+          <a [routerLink]="['/job',job.id]">
+            {{job.id}}
+          </a>
+        </td>
+        <td>
+            {{job.stage}}
+        </td>
+        <td>
+            {{job.employer}}
+        </td>
+        <td>
+            {{job.country}}
+        </td>
+      </tr>
+
+      </tbody>
+
+    </table>
+  </div>
+
 
 </div>
