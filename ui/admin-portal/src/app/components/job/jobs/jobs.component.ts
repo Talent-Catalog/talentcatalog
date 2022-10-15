@@ -70,6 +70,7 @@ export class JobsComponent implements OnInit {
     req.pageNumber = this.pageNumber - 1;
     req.pageSize = this.pageSize;
 
+    //todo Need to implement sorts on other fields on server
     req.sortFields = [this.sortField];
     req.sortDirection = this.sortDirection;
 
