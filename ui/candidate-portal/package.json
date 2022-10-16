@@ -26,6 +26,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
     "@ng-bootstrap/ng-bootstrap": "^12.1.2",
     "bootstrap": "^5.0.2",
+    "@popperjs/core": "^2.10.2",
     "@ng-select/ng-select": "^8.3.0",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
