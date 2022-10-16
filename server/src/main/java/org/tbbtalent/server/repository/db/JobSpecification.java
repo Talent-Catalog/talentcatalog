@@ -44,7 +44,11 @@ public class JobSpecification {
     public static Specification<Job> buildSearchQuery(final SearchJobRequest request) {
         return (job, query, builder) -> {
             Predicate conjunction = builder.conjunction();
-            query.distinct(true);
+
+            //Cannot do a DISTINCT query because we will be sorting on a field that is not a Job
+            //field, ie a returned field from the generated SELECT  which Postgres will not allow
+            //See https://stackoverflow.com/a/18367248/929968
+            query.distinct(false);
 
             //This will hold the joined sfJobOpp entity. We determine the join differently
             //depending on whether this is a count query.
@@ -133,9 +137,9 @@ public class JobSpecification {
 
                 Join<Object, Object> join = null;
                 String subProperty;
-                if (property.startsWith("sfJobOpp.")) {
+                if (property.startsWith("submissionList.sfJobOpp.")) {
                     join = sfJobOpp;
-                    subProperty = property.replaceAll("sfjobOpp.", "");
+                    subProperty = property.replaceAll("submissionList.sfJobOpp.", "");
                 } else {
                     subProperty = property;
                     if (property.equals("id")) {

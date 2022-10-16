@@ -26,30 +26,26 @@
     </form>
   </div>
 
-  <div *ngFor="let job of results?.content">
-    {{job.id}}
-    {{job.employer}}
-    {{job.country}}
-  </div>
   <div class="table-wrapper">
     <table class="table table-hover">
 
       <!--          Header-->
       <thead class="thead-light">
       <tr>
-        <th class="candidate-number-row" (click)="toggleSort('id')">
+        <th (click)="toggleSort('id')">
           <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           Job #
         </th>
-        <th>
+        <th (click)="toggleSort('submissionList.sfJobOpp.stage')">
+          <app-sorted-by [column]="'submissionList.sfJobOpp.stage'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           <i class="fab fa-salesforce"></i>
         </th>
-        <th class="candidate-number-row" (click)="toggleSort('employer')">
-          <app-sorted-by [column]="'employer'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+        <th (click)="toggleSort('submissionList.sfJobOpp.employer')">
+          <app-sorted-by [column]="'submissionList.sfJobOpp.employer'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           Employer
         </th>
-        <th class="candidate-number-row" (click)="toggleSort('country')">
-          <app-sorted-by [column]="'country'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+        <th (click)="toggleSort('submissionList.sfJobOpp.country')">
+          <app-sorted-by [column]="'submissionList.sfJobOpp.country'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           Country
         </th>
       </tr>
