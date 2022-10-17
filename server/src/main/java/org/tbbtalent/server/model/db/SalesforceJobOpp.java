@@ -17,10 +17,15 @@
 package org.tbbtalent.server.model.db;
 
 import java.time.OffsetDateTime;
+import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -55,6 +60,10 @@ public class SalesforceJobOpp {
     @javax.persistence.Id
     @Column(name = "id")
     private String id;
+
+
+    @SequenceGenerator(name = "seq_gen", sequenceName = "tc_job_id_seq", allocationSize = 1)
+    private Long tcJobId;
 
     /**
      * Salesforce id of account (ie employer) associated with opportunity
@@ -106,6 +115,23 @@ public class SalesforceJobOpp {
      * Last time that this was updated from Salesforce (which holds the master copy)
      */
     private OffsetDateTime lastUpdate;
+
+
+    /**
+     * Date that submission of candidates to employer is due.
+     */
+    @Nullable
+    private OffsetDateTime submissionDueDate;
+
+    /**
+     * This is the official list of candidates which will be submitted to the employer for
+     * their consideration.
+     * <p/>
+     * SubmissionList should be a registeredJob associated with sfJobOpp
+     */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "submission_list_id")
+    private SavedList submissionList;
 
     /**
      * Override standard setStage to automatically also update stageOrder

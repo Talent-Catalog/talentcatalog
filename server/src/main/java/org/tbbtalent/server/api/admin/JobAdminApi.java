@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Job;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.service.db.JobService;
@@ -49,28 +49,28 @@ public class JobAdminApi implements
     @PostMapping
     public @NotNull Map<String, Object> create(@Valid UpdateJobRequest request)
         throws EntityExistsException {
-        Job job = jobService.createJob(request);
+        SalesforceJobOpp job = jobService.createJob(request);
         return jobDto().build(job);
     }
 
     @Override
     @GetMapping("{id}")
     public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
-        Job job = jobService.getJob(id);
+        SalesforceJobOpp job = jobService.getJob(id);
         return jobDto().build(job);
     }
 
     @Override
     @PostMapping("search-paged")
     public @NotNull Map<String, Object> searchPaged(@Valid SearchJobRequest request) {
-        Page<Job> jobs = jobService.searchJobs(request);
+        Page<SalesforceJobOpp> jobs = jobService.searchJobs(request);
         final Map<String, Object> objectMap = jobDto().buildPage(jobs);
         return objectMap;
     }
 
     private DtoBuilder jobDto() {
         return new DtoBuilder()
-            .add("id")
+            .add("tcJobId")
             .add("country")
             .add("employer")
             .add("name")

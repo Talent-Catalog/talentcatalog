@@ -16,7 +16,9 @@
 import {CandidateSource, SearchCandidateSourcesRequest} from "./base";
 import {SavedList} from "./saved-list";
 
+//todo This doesn't extend CandidateSource any more
 export interface Job extends CandidateSource {
+  tcJobId: number;
   employer: string;
   country: string;
   stage: JobOpportunityStage;

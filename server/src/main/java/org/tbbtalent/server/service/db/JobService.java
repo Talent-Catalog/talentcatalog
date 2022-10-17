@@ -22,12 +22,12 @@ import org.springframework.lang.NonNull;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.Job;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 
 /**
- * Service for managing {@link Job}
+ * Service for managing {@link SalesforceJobOpp}
  *
  * @author John Cameron
  */
@@ -41,31 +41,31 @@ public interface JobService {
      * Salesforce job opportunity.
      * @throws SalesforceException if there are issues contacting Salesforce
      */
-    Job createJob(UpdateJobRequest request)
+    SalesforceJobOpp createJob(UpdateJobRequest request)
         throws InvalidRequestException, SalesforceException;
 
     /**
-     * Get the Job with the given id.
-     * @param jobId ID of job to get
-     * @return JOb
+     * Get the Job with the given tcJobId.
+     * @param tcJobId tcJobId of job to get
+     * @return Job
      * @throws NoSuchObjectException if there is no Job with this id.
      */
     @NonNull
-    Job getJob(long jobId) throws NoSuchObjectException;
+    SalesforceJobOpp getJob(long tcJobId) throws NoSuchObjectException;
 
     /**
      * Get all jobs matching the given search request
      * @param request - Search Request (paging info is ignored)
      * @return Jobs matching the request
      */
-    List<Job> searchJobsUnpaged(SearchJobRequest request);
+    List<SalesforceJobOpp> searchJobsUnpaged(SearchJobRequest request);
 
     /**
      * Get jobs from a paged search request
      * @param request - Paged Search Request
      * @return Page of jobs
      */
-    Page<Job> searchJobs(SearchJobRequest request);
+    Page<SalesforceJobOpp> searchJobs(SearchJobRequest request);
 
     /**
      * Updates all open Jobs from their corresponding records on Salesforce

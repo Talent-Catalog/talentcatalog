@@ -32,20 +32,20 @@
       <!--          Header-->
       <thead class="thead-light">
       <tr>
-        <th (click)="toggleSort('id')">
-          <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+        <th (click)="toggleSort('tcJobId')">
+          <app-sorted-by [column]="'tcJobId'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           Job #
         </th>
-        <th (click)="toggleSort('submissionList.sfJobOpp.stage')">
-          <app-sorted-by [column]="'submissionList.sfJobOpp.stage'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+        <th (click)="toggleSort('stage')">
+          <app-sorted-by [column]="'stage'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           <i class="fab fa-salesforce"></i>
         </th>
-        <th (click)="toggleSort('submissionList.sfJobOpp.employer')">
-          <app-sorted-by [column]="'submissionList.sfJobOpp.employer'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+        <th (click)="toggleSort('employer')">
+          <app-sorted-by [column]="'employer'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           Employer
         </th>
-        <th (click)="toggleSort('submissionList.sfJobOpp.country')">
-          <app-sorted-by [column]="'submissionList.sfJobOpp.country'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+        <th (click)="toggleSort('country')">
+          <app-sorted-by [column]="'country'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           Country
         </th>
       </tr>
@@ -63,8 +63,8 @@
       <!--        Job records    -->
       <tr *ngFor="let job of results?.content" (click)="viewJob(job)">
         <td>
-          <a [routerLink]="['/job',job.id]">
-            {{job.id}}
+          <a [routerLink]="['/job',job.tcJobId]">
+            {{job.tcJobId}}
           </a>
         </td>
         <td>

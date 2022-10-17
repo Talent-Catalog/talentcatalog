@@ -29,11 +29,10 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.Job;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.repository.db.JobRepository;
 import org.tbbtalent.server.repository.db.JobSpecification;
+import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
@@ -43,44 +42,33 @@ import org.tbbtalent.server.service.db.SavedListService;
 
 @Service
 public class JobServiceImpl implements JobService {
-    private final JobRepository jobRepository;
+    private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
 
     private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
-    public JobServiceImpl(JobRepository jobRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService) {
-        this.jobRepository = jobRepository;
+    public JobServiceImpl(
+        SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService) {
+        this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.salesforceJobOppService = salesforceJobOppService;
         this.savedListService = savedListService;
     }
 
     @Override
-    public Job createJob(UpdateJobRequest request)
+    public SalesforceJobOpp createJob(UpdateJobRequest request)
         throws InvalidRequestException, SalesforceException {
-        //Only one job can be associated with a Salesforce job opportunity
         //Check if we already have a job for this Salesforce job opp.
         final String sfJoblink = request.getSfJoblink();
         String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfJoblink);
-        Job job = jobRepository.findBySfId(sfId);
-        if (job != null) {
-            throw new InvalidRequestException(
-                "Salesforce job opportunity " + sfJoblink +
-                    " is already associated with job " + job.getId() + " (" + job.getName() + ")");
-        }
-
-        //Search for existing SalesforceJobOpp associated with this Salesforce record
-        SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppById(sfId);
-        if (jobOpp == null) {
+        SalesforceJobOpp job = salesforceJobOppService.getJobOppById(sfId);
+        if (job == null) {
             //Create one if none exists
-            jobOpp = salesforceJobOppService.createJobOpp(sfId);
-            if (jobOpp == null) {
+            job = salesforceJobOppService.createJobOpp(sfId);
+            if (job == null) {
                 throw new InvalidRequestException("No such Salesforce opportunity: " + sfJoblink);
             }
         }
-
-        //Create job
-        job = new Job();
 
         //Create submission list
         UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
@@ -89,31 +77,31 @@ public class JobServiceImpl implements JobService {
         SavedList savedList = savedListService.createSavedList(savedListInfoRequest);
 
         job.setSubmissionList(savedList);
-        return jobRepository.save(job);
+        return salesforceJobOppRepository.save(job);
     }
 
     @NonNull
     @Override
-    public Job getJob(long jobId) throws NoSuchObjectException {
-        return jobRepository.findById(jobId)
-            .orElseThrow(() -> new NoSuchObjectException(Job.class, jobId));
+    public SalesforceJobOpp getJob(long tcJobId) throws NoSuchObjectException {
+        return salesforceJobOppRepository.findByTcJobId(tcJobId)
+            .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, tcJobId));
     }
 
     @Override
-    public Page<Job> searchJobs(SearchJobRequest request) {
+    public Page<SalesforceJobOpp> searchJobs(SearchJobRequest request) {
         //Search jobs.
         //opportunities because there could be opps whose state has been changed on SF which
         //means that they could satisfy search request, but they won't be seen because they are
         //still in the cache with their old state.
-        Page<Job> jobs = jobRepository.findAll(JobSpecification.buildSearchQuery(request),
+        Page<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(JobSpecification.buildSearchQuery(request),
             request.getPageRequest());
 
         return jobs;
     }
 
     @Override
-    public List<Job> searchJobsUnpaged(SearchJobRequest request) {
-        List<Job> jobs = jobRepository.findAll(JobSpecification.buildSearchQuery(request));
+    public List<SalesforceJobOpp> searchJobsUnpaged(SearchJobRequest request) {
+        List<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(JobSpecification.buildSearchQuery(request));
         return jobs;
     }
 
@@ -123,8 +111,8 @@ public class JobServiceImpl implements JobService {
      * @return Associated job, or null if none found
      */
     @Nullable
-    private Job getJobBySubmissionList(SavedList submissionList) {
-        return jobRepository.getJobBySubmissionList(submissionList);
+    private SalesforceJobOpp getJobBySubmissionList(SavedList submissionList) {
+        return salesforceJobOppRepository.getJobBySubmissionList(submissionList);
     }
 
 
@@ -137,12 +125,11 @@ public class JobServiceImpl implements JobService {
             SearchJobRequest request = new SearchJobRequest();
             request.setSfOppClosed(false);
 
-            List<Job> jobs = searchJobsUnpaged(request);
+            List<SalesforceJobOpp> jobs = searchJobsUnpaged(request);
 
             //Populate sfIds of jobs
             List<String> sfIds = jobs.stream()
-                .filter(j -> j.getSfJobOpp() != null)
-                .map(j -> j.getSfJobOpp().getId())
+                .map(SalesforceJobOpp::getId)
                 .collect(Collectors.toList());
 
             //Now update them from Salesforce
