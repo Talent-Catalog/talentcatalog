@@ -22,6 +22,9 @@ export class JobsComponent implements OnInit {
   private loggedInUser: User;
 
   private filterKeySuffix: string = 'Filter';
+  private stagesAcceptingCandidates = [
+    'candidateSearch', 'visaEligibility', 'cvPreparation', 'cvReview', 'recruitmentProcess',
+  'jobOffer', 'visaPreparation'];
 
   searchForm: FormGroup;
   loading: boolean;
@@ -49,7 +52,7 @@ export class JobsComponent implements OnInit {
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
     this.searchForm = this.fb.group({
       keyword: [filter],
-      selectedStages: [[]]
+      selectedStages: [this.stagesAcceptingCandidates]
     });
     this.pageNumber = 1;
     this.pageSize = 30;
