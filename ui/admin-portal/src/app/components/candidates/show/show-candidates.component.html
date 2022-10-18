@@ -319,7 +319,7 @@
             </tr>
 
 <!--        Candidate records    -->
-            <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)" [ngClass]="{'selected': currentCandidate?.id == candidate.id, 'selected-row': candidate.selected}">
+            <tr *ngFor="let candidate of results?.content" (click)="selectCandidate(candidate)" [ngClass]="{'selected': currentCandidate?.id == candidate.id, 'selected-row': candidate.selected}">
               <td>
                 <a [routerLink]="['/candidate',candidate.candidateNumber]">
                   {{candidate.candidateNumber}}

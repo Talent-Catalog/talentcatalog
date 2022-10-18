@@ -519,7 +519,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.candidateSelection.emit(candidate);
   }
 
-  viewCandidate(candidate: Candidate) {
+  selectCandidate(candidate: Candidate) {
     this.setCurrentCandidate(candidate);
   }
 
