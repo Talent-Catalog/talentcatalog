@@ -1,10 +1,6 @@
 name: Terraform
 
 on:
-  push:
-    branches:
-      - master
-      - develop
   pull_request:
 
   workflow_dispatch: #this attribute will enable the manual run to the pipeline
@@ -41,7 +37,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
           aws-region: ${{ env.TERRAFORM_REGION }}
 
       # Install the latest version of Terraform CLI and configure the Terraform
