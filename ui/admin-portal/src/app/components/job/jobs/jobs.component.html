@@ -40,9 +40,9 @@
           <app-sorted-by [column]="'stage'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           <i class="fab fa-salesforce"></i>
         </th>
-        <th (click)="toggleSort('employer')">
-          <app-sorted-by [column]="'employer'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          Employer
+        <th (click)="toggleSort('name')">
+          <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          Name
         </th>
         <th (click)="toggleSort('country')">
           <app-sorted-by [column]="'country'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
@@ -71,7 +71,7 @@
             {{job.stage}}
         </td>
         <td>
-            {{job.employer}}
+            {{job.name}}
         </td>
         <td>
             {{job.country}}
