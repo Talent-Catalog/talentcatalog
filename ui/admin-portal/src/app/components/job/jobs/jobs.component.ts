@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {AuthService} from "../../../services/auth.service";
 import {User} from "../../../model/user";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -15,6 +15,8 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
   styleUrls: ['./jobs.component.scss']
 })
 export class JobsComponent implements OnInit {
+  @Output() jobSelection = new EventEmitter();
+
   private pageNumber: number;
   private pageSize: number;
   private loggedInUser: User;
@@ -30,6 +32,7 @@ export class JobsComponent implements OnInit {
   //Default sort jobs with most recent job first - ie descending order of id
   sortField = 'id';
   sortDirection = 'DESC';
+  currentJob: Job;
 
 
   constructor(
@@ -70,7 +73,6 @@ export class JobsComponent implements OnInit {
     req.pageNumber = this.pageNumber - 1;
     req.pageSize = this.pageSize;
 
-    //todo Need to implement sorts on other fields on server
     req.sortFields = [this.sortField];
     req.sortDirection = this.sortDirection;
 
@@ -117,7 +119,12 @@ export class JobsComponent implements OnInit {
     this.search();
   }
 
-  viewJob(job: Job) {
-    //todo
+  selectJob(job: Job) {
+    this.setCurrentJob(job);
+  }
+
+  private setCurrentJob(job: Job) {
+    this.currentJob = job;
+    this.jobSelection.emit(job);
   }
 }
