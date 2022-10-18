@@ -548,6 +548,7 @@ import {
   EnglishThresholdComponent
 } from './components/candidates/visa/english-threshold/english-threshold.component';
 import {FilterPipe} from "./pipes/filter.pipe";
+import {SafePipe} from "./pipes/safe.pipe";
 import {
   CandidateTaskTabComponent
 } from './components/candidates/view/tab/candidate-task-tab/candidate-task-tab.component';
@@ -829,7 +830,7 @@ import {
     EditExternalLinkComponent,
     CovidVaccinationComponent,
     EnglishThresholdComponent,
-    FilterPipe,
+    SafePipe,
     CandidateTaskTabComponent,
     FilterPipe,
     DownloadCvComponent,
