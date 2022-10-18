@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {SearchCandidateSourcesRequest} from "./base";
+import {PagedSearchRequest} from "./base";
 import {SavedList} from "./saved-list";
 
 export interface Job {
@@ -57,7 +57,8 @@ export interface SalesforceJobOpp {
   id: string;
 }
 
-export class SearchJobRequest extends SearchCandidateSourcesRequest {
+export class SearchJobRequest extends PagedSearchRequest {
+  keyword?: string;
   sfOppClosed?: boolean;
   stages?: string[];
 }

@@ -22,12 +22,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
-import org.tbbtalent.server.request.candidate.source.SearchCandidateSourceRequestPaged;
+import org.tbbtalent.server.request.PagedSearchRequest;
 
 @Getter
 @Setter
 @ToString
-public class SearchJobRequest extends SearchCandidateSourceRequestPaged {
+public class SearchJobRequest extends PagedSearchRequest {
+    /**
+     * Used to match sources whose names are like this keyword
+     */
+    @Nullable
+    private String keyword;
 
     /**
      * If specified, job opportunities will be selected based on whether the opportunity is closed.
