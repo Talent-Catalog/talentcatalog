@@ -1,0 +1,10 @@
+<app-jobs
+  (jobSelection)="onJobSelected($event)"
+  >
+</app-jobs>
+
+<app-view-job
+  *ngIf="selectedJob"
+  [job]="selectedJob"
+>
+</app-view-job>

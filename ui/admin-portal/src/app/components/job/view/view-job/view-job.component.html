@@ -1,10 +1,4 @@
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
-<div *ngIf="!loading && !error">
+<div *ngIf="job">
   {{job.id}}
   {{job.employer}}
   {{job.country}}

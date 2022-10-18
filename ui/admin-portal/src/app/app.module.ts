@@ -598,6 +598,12 @@ import {
 import {RoleGuardService} from "./services/role-guard.service";
 import {ViewJobComponent} from './components/job/view/view-job/view-job.component';
 import {JobsComponent} from './components/job/jobs/jobs.component';
+import {
+  JobsWithDetailComponent
+} from './components/job/jobs-with-detail/jobs-with-detail.component';
+import {
+  ViewJobFromUrlComponent
+} from './components/job/view/view-job-from-url/view-job-from-url.component';
 
 @NgModule({
   declarations: [
@@ -833,7 +839,9 @@ import {JobsComponent} from './components/job/jobs/jobs.component';
     SearchPartnersComponent,
     CreateUpdatePartnerComponent,
     ViewJobComponent,
-    JobsComponent
+    JobsComponent,
+    JobsWithDetailComponent,
+    ViewJobFromUrlComponent
   ],
   imports: [
     BrowserModule,

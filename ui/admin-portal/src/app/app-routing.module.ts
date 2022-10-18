@@ -32,8 +32,12 @@ import {
 import {NewJobComponent} from "./components/job/new-job/new-job.component";
 import {Role} from "./model/user";
 import {RoleGuardService} from "./services/role-guard.service";
-import {ViewJobComponent} from "./components/job/view/view-job/view-job.component";
-import {JobsComponent} from "./components/job/jobs/jobs.component";
+import {
+  ViewJobFromUrlComponent
+} from "./components/job/view/view-job-from-url/view-job-from-url.component";
+import {
+  JobsWithDetailComponent
+} from "./components/job/jobs-with-detail/jobs-with-detail.component";
 
 const routes: Routes = [
   {
@@ -82,14 +86,14 @@ const routes: Routes = [
           },
           {
             path: ':id',
-            component: ViewJobComponent,
+            component: ViewJobFromUrlComponent,
             data: {title: 'TC Job'}
           },
         ]
       },
       {
         path: 'jobs',
-        component: JobsComponent,
+        component: JobsWithDetailComponent,
         data: {title: 'TC Jobs'}
       },
       {
