@@ -13,21 +13,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {CandidateSource, SearchCandidateSourcesRequest} from "./base";
+import {SearchCandidateSourcesRequest} from "./base";
 import {SavedList} from "./saved-list";
 
-//todo This doesn't extend CandidateSource any more
-export interface Job extends CandidateSource {
+export interface Job {
   tcJobId: number;
   employer: string;
   country: string;
+  name: string;
   stage: JobOpportunityStage;
   submissionDueDate: Date;
   submissionList: SavedList;
-}
-
-export function isJob(source: CandidateSource): source is Job {
-  return source ? 'submissionList' in source : false;
 }
 
 /**

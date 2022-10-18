@@ -65,7 +65,7 @@ import {
   CreateUpdateSearchComponent
 } from '../../../search/create-update/create-update-search.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
-import {isJob, JobOpportunityStage, SearchJobRequest} from "../../../../model/job";
+import {JobOpportunityStage} from "../../../../model/job";
 import {enumOptions} from "../../../../util/enum";
 import {SalesforceService} from "../../../../services/salesforce.service";
 
@@ -152,9 +152,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   getBrowserDisplayString(source: CandidateSource) {
     let s = source.name;
     if (this.searchBy === SearchBy.registeredJob) {
-      if (isJob(source)) {
-        s += "(" + source.country + ") - " + source.stage;
-      } else if (isSavedList(source)) {
+      if (isSavedList(source)) {
         s += "(" + source.sfJobCountry + ") - " + source.sfJobStage;
       }
     }
@@ -186,54 +184,38 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       case CandidateSourceType.SavedList:
         req = new SearchSavedListRequest();
         break;
-
-      case CandidateSourceType.Job:
-        req = new SearchJobRequest();
-        break;
     }
 
     req.keyword = this.keyword;
     req.pageNumber = this.pageNumber - 1;
     req.pageSize = this.pageSize;
 
-    if (this.sourceType === CandidateSourceType.Job) {
-      //This is Jobs
-      //We sort them with most recent job first - ie descending order of id
-      req.sortFields = ['id'];
-      req.sortDirection = 'DESC';
+    //These are lists and searches (ie not CandidateSourceType.Job's)
+    //Default sort for them is alpha
+    req.sortFields = ['name'];
+    req.sortDirection = 'ASC';
 
-      req.stages = this.selectedStages;
-
-      //Don't want to see closed jobs
-      req.sfOppClosed = false;
-    } else {
-      //These are lists and searches (ie not CandidateSourceType.Job's)
-      //Default sort for them is alpha
-      req.sortFields = ['name'];
-      req.sortDirection = 'ASC';
-
-      switch (this.searchBy) {
-        case SearchBy.mine:
-          req.owned = true;
-          break;
-        case SearchBy.sharedWithMe:
-          req.shared = true;
-          break;
-        case SearchBy.watched:
-          req.watched = true;
-          break;
-        case SearchBy.all:
-          req.global = true;
-          req.owned = true;
-          req.shared = true;
-          break;
-        case SearchBy.externalLink:
-          req.shortName = true;
-          break;
-        case SearchBy.registeredJob:
-          req.registeredJob = true;
-          break;
-      }
+    switch (this.searchBy) {
+      case SearchBy.mine:
+        req.owned = true;
+        break;
+      case SearchBy.sharedWithMe:
+        req.shared = true;
+        break;
+      case SearchBy.watched:
+        req.watched = true;
+        break;
+      case SearchBy.all:
+        req.global = true;
+        req.owned = true;
+        req.shared = true;
+        break;
+      case SearchBy.externalLink:
+        req.shortName = true;
+        break;
+      case SearchBy.registeredJob:
+        req.registeredJob = true;
+        break;
     }
     if (this.savedSearchType !== undefined) {
       if (req instanceof SearchSavedSearchRequest) {
@@ -488,22 +470,15 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   private updateLocalCandidateSourceCopy(source: CandidateSource) {
-    if (isJob(this.selectedSource)) {
-      //Looking at jobs, we update the current job's submission list
-      if (source.id === this.selectedSourceDetail().id) {
-        this.selectedSource.submissionList = source;
-      }
-    } else {
-      //Looking at lists or searches.
-      //Need to update the list of sources as well as the currently selected source if that
-      //is the source which has been updated
-      const index: number = indexOfAuditable(source.id, this.results.content);
-      if (index >= 0) {
-        this.results.content[index] = source;
-      }
-      if (this.selectedIndex === index) {
-        this.selectedSource = source;
-      }
+    //Looking at lists or searches.
+    //Need to update the list of sources as well as the currently selected source if that
+    //is the source which has been updated
+    const index: number = indexOfAuditable(source.id, this.results.content);
+    if (index >= 0) {
+      this.results.content[index] = source;
+    }
+    if (this.selectedIndex === index) {
+      this.selectedSource = source;
     }
   }
 
@@ -536,26 +511,5 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   subtypeChangeEvent($event: SavedSearchTypeSubInfo) {
     this.subtypeChange.emit($event);
-  }
-
-  /**
-   * Returns the candidate source which should be displayed when a particular candidate source
-   * has been selected from the browsed sources.
-   * <p/>
-   * Normally we simply display the selected candidate source. But when the selected source is a job
-   * we select the job's submission list instead
-   */
-  selectedSourceDetail(): CandidateSource {
-    let sourceDetail;
-    if (isJob(this.selectedSource)) {
-      sourceDetail = this.selectedSource.submissionList
-    } else {
-      sourceDetail = this.selectedSource
-    }
-    return sourceDetail;
-  }
-
-  showStageFilter() {
-    return this.sourceType === CandidateSourceType.Job;
   }
 }

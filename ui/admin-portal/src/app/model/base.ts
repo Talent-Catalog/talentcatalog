@@ -25,8 +25,7 @@ export interface HasName {
 
 export enum CandidateSourceType {
   SavedList,
-  SavedSearch,
-  Job
+  SavedSearch
 }
 
 export enum Progress {
