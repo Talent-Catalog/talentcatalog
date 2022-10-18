@@ -604,6 +604,18 @@ import {
 import {
   ViewJobFromUrlComponent
 } from './components/job/view/view-job-from-url/view-job-from-url.component';
+import {
+  JobGeneralTabComponent
+} from './components/job/view/tab/job-general-tab/job-general-tab.component';
+import {
+  ViewJobDescriptionComponent
+} from './components/job/view/description/view-job-description/view-job-description.component';
+import {
+  ViewJobContactComponent
+} from './components/job/view/contact/view-job-contact/view-job-contact.component';
+import {
+  ViewJobSubmissionListComponent
+} from './components/job/view/submission-list/view-job-submission-list/view-job-submission-list.component';
 
 @NgModule({
   declarations: [
@@ -841,7 +853,11 @@ import {
     ViewJobComponent,
     JobsComponent,
     JobsWithDetailComponent,
-    ViewJobFromUrlComponent
+    ViewJobFromUrlComponent,
+    JobGeneralTabComponent,
+    ViewJobDescriptionComponent,
+    ViewJobContactComponent,
+    ViewJobSubmissionListComponent
   ],
   imports: [
     BrowserModule,
