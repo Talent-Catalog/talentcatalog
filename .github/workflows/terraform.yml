@@ -23,6 +23,7 @@ env:
   TERRAFORM_VERSION: 1.3.0
   TERRAFORM_REGION: "ap-southeast-2"
   INFRA_PATH: './infra'
+  AWS_ACCESS_KEY_ID: AKIATLUVZAGYXPLKILO3
 
 jobs:
   terraform-plan:
@@ -39,7 +40,7 @@ jobs:
       - name: Setup AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.TERRAFORM_REGION }}
 
