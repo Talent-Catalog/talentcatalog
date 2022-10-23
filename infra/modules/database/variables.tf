@@ -1,6 +1,6 @@
 variable "app" {
   description = "Name of the application"
-  type = string
+  type        = string
 }
 
 variable "vpc_id" {
@@ -13,7 +13,7 @@ variable "public_subnet_ids" {
 
 variable "db_username" {
   description = "Master username of the db"
-  default = "postgress-admin"
+  default     = "postgress-admin"
 }
 
 variable "db_backup_retention_days" {

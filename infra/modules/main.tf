@@ -1,11 +1,11 @@
 module "webesite_secrets" {
-  source      = "./secrets"
-  app         = var.app
+  source = "./secrets"
+  app    = var.app
 }
 
 module "webesite_network" {
-  source      = "./network"
-  app         = var.app
+  source = "./network"
+  app    = var.app
 }
 
 module "database" {

@@ -1,6 +1,6 @@
 variable "app" {
   description = "Name of the application"
-  type = string
+  type        = string
 }
 
 variable "vpc_cidr" {
