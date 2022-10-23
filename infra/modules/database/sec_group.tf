@@ -1,5 +1,5 @@
 resource "aws_security_group" "db" {
-  name   = "${var.app}-${var.environment}-db-sg"
+  name   = "${var.app}-${terraform.workspace}-db-sg"
   vpc_id = var.vpc_id
 
   ingress {

@@ -3,12 +3,6 @@ variable "app" {
   type = string
 }
 
-variable "environment" {
-  description = "Name of the application environment. e.g. dev, prod, test, staging"
-  type = string
-}
-
-
 variable "vpc_cidr" {
   description = "The CIDR block for the VPC"
   default     = "172.32.0.0/16"

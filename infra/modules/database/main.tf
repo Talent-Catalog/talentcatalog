@@ -1,12 +1,12 @@
 data "aws_ssm_parameter" "rds_password" {
-  name = "/${var.app}/${var.environment}/db_password"
+  name = "/${var.app}/${terraform.workspace}/db_password"
 }
 
 module "database" {
   source  = "terraform-aws-modules/rds/aws"
   version = "5.1.0"
 
-  identifier        = "${var.app}-${var.environment}"
+  identifier        = "${var.app}-${terraform.workspace}"
   engine            = "postgres"
   engine_version    = "14.1"
   instance_class    = var.db_instance_class
@@ -17,7 +17,7 @@ module "database" {
   allow_major_version_upgrade = true
   auto_minor_version_upgrade  = true
 
-  db_name  = "${var.app}-${var.environment}"
+  db_name  = "${var.app}-${terraform.workspace}"
   port     = "5432"
   username = var.db_username
   password = data.aws_ssm_parameter.rds_password.value

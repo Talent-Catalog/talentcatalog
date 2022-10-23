@@ -3,11 +3,6 @@ variable "app" {
   type = string
 }
 
-variable "environment" {
-  description = "Name of the application environment. e.g. dev, prod, test, staging"
-  type = string
-}
-
 variable "vpc_id" {
   description = "VPC ID for the network"
 }
