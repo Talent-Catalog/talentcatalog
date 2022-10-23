@@ -18,7 +18,7 @@ module "database" {
   auto_minor_version_upgrade  = true
 
   db_name  = "${var.app}-${var.environment}"
-  port     = "3306"
+  port     = "5432"
   username = var.db_username
   password = data.aws_ssm_parameter.rds_password.value
 

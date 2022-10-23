@@ -5,8 +5,8 @@ resource "aws_security_group" "db" {
   ingress {
     description = "Database endpoint port"
     protocol    = "tcp"
-    from_port   = 3306
-    to_port     = 3306
+    from_port   = 5432
+    to_port     = 5432
     cidr_blocks = ["0.0.0.0/0"]
   }
 
