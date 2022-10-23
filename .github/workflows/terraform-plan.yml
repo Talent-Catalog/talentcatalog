@@ -1,4 +1,4 @@
-name: Terraform
+name: Terraform Plan
 
 on:
   pull_request:
@@ -42,7 +42,7 @@ jobs:
       - name: Setup AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ env.WORKSPACE == 'prod' && secrets.AWS_ACCESS_KEY_ID_PROD || secrets.AWS_ACCESS_KEY_ID_DEV }}
+          aws-access-key-id: ${{ env.WORKSPACE == 'prod' && env.AWS_ACCESS_KEY_ID_PROD || env.AWS_ACCESS_KEY_ID_DEV }}
           aws-secret-access-key: ${{ env.WORKSPACE == 'prod' && secrets.AWS_SECRET_ACCESS_KEY || secrets.AWS_SECRET_ACCESS_KEY_DEV }}
           aws-region: ${{ env.TERRAFORM_REGION }}
 
