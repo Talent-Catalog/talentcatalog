@@ -73,7 +73,6 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           TF_WORKSPACE: ${{ env.WORKSPACE }}
-          TF_VAR_app: ${{ secrets.APP }}
         run: |
           terraform plan -no-color -input=false
         continue-on-error: true
