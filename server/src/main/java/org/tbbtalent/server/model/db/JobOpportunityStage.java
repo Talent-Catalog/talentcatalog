@@ -38,7 +38,7 @@ public enum JobOpportunityStage {
         visaPreparation ("Visa preparation"),
         postHireEngagement ("Post hire engagement"),
         hiringCompleted ("Hiring completed"),
-        employerIneligible ("Employer ineligible"),
+        ineligibleEmployer ("Ineligible employer"),
         ineligibleOccupation ("Ineligible occupation"),
         ineligibleRegion ("Ineligible region"),
         noInterest ("No interest"),
