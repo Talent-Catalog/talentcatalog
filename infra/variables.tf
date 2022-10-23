@@ -5,5 +5,5 @@ variable "app" {
 
 variable "environment" {
   description = "Name of the application environment. e.g. dev, prod, test, staging"
-  default     = "prod"
+  default     = "dev"
 }
