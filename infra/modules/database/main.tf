@@ -17,10 +17,12 @@ module "database" {
   allow_major_version_upgrade = true
   auto_minor_version_upgrade  = true
 
-  db_name  = "${var.app}-${terraform.workspace}"
+  db_name  = var.app
   port     = "5432"
   username = var.db_username
   password = data.aws_ssm_parameter.rds_password.value
+
+  db_subnet_group_name = var.db_subnet_group_name
 
   subnet_ids             = var.public_subnet_ids
   vpc_security_group_ids = [aws_security_group.db.id]

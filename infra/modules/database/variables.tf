@@ -11,9 +11,13 @@ variable "public_subnet_ids" {
   description = "VPC - Public Subnet ID"
 }
 
+variable "db_subnet_group_name" {
+  description = "VPC subnet group name for the database"
+}
+
 variable "db_username" {
   description = "Master username of the db"
-  default     = "postgress-admin"
+  default     = "tbbtalentAdmin"
 }
 
 variable "db_backup_retention_days" {
