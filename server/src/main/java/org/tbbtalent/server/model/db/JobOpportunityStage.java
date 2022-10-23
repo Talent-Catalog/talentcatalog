@@ -39,10 +39,16 @@ public enum JobOpportunityStage {
         postHireEngagement ("Post hire engagement"),
         hiringCompleted ("Hiring completed"),
         employerIneligible ("Employer ineligible"),
-        noJobOffer ("No job offer"),
+        ineligibleOccupation ("Ineligible occupation"),
+        ineligibleRegion ("Ineligible region"),
         noInterest ("No interest"),
+        noJobOffer ("No job offer"),
+        noPrPathway ("No PR pathway"),
         noSuitableCandidates ("No suitable candidates"),
-        noVisa ("No visa");
+        noVisa ("No visa"),
+        tooExpensive ("Too expensive"),
+        tooHighWage ("Too high wage"),
+        tooLong ("Too long");
 
         public final String label;
 

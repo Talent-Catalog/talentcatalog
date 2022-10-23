@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright = c) 2022 Talent Beyond Boundarie.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -49,10 +49,16 @@ export enum JobOpportunityStage {
   postHireEngagement = "Post hire engagement",
   hiringCompleted = "Hiring completed",
   employerIneligible = "Employer ineligible",
-  noJobOffer = "No job offer",
+  ineligibleOccupation = "Ineligible occupation",
+  ineligibleRegion = "Ineligible region",
   noInterest = "No interest",
+  noJobOffer = "No job offer",
+  noPrPathway = "No PR pathway",
   noSuitableCandidates = "No suitable candidates",
-  noVisa = "No visa"
+  noVisa = "No visa",
+  tooExpensive = "Too expensive",
+  tooHighWage = "Too high wage",
+  tooLong = "Too long"
 }
 
 export interface SalesforceJobOpp {
