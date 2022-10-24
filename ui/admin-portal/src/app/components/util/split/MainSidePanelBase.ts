@@ -25,7 +25,8 @@ import {Directive} from "@angular/core";
  * <p/>
  * The html will look something like below. Note that it is driven by the following fields
  * which are inherited from this class:
- *    mainColWidth
+ *    canToggleSizes
+ *    mainPanelColWidth
  *    sidePanelColWidth
  *    sidePanelIsMax
  *
@@ -38,7 +39,7 @@ import {Directive} from "@angular/core";
 
     <div class="col-sm-{{sidePanelColWidth}} admin-panel">
       <div class="w-100">
-        <div class="float-right">
+        <div *ngIf="canToggleSizes()" class="float-right">
          <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
             class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
         </div>
@@ -58,22 +59,29 @@ export abstract class MainSidePanelBase {
 
   /**
    * Configures the panels.
-   * @param minSidePanelWith Minimum size of the side panel in columns
-   * @param maxSidePanelWidth Maximum size of the side panel in columns
+   * @param minSidePanelWidth Minimum size of the side panel in columns
+   * @param maxSidePanelWidth Maximum size of the side panel in columns - 0 if max is same as min
    * @param sidePanelIsMax True (default) if the side panel should start at maximum width
    * @param totalPanelWidth Total number of columns - defaults to 12 (standard Bootstrap number)
    * @protected
    */
-  protected constructor(private minSidePanelWith: number, private maxSidePanelWidth: number,
+  protected constructor(private minSidePanelWidth: number, private maxSidePanelWidth = 0,
                         public sidePanelIsMax = true,
                         private totalPanelWidth = 12) {
-    this.sidePanelColWidth = this.sidePanelIsMax ? this.maxSidePanelWidth : this.minSidePanelWith;
+    if (this.maxSidePanelWidth === 0) {
+      this.maxSidePanelWidth = this.minSidePanelWidth;
+    }
+    this.sidePanelColWidth = this.sidePanelIsMax ? this.maxSidePanelWidth : this.minSidePanelWidth;
     this.mainPanelColWidth = this.totalPanelWidth - this.sidePanelColWidth;
+  }
+
+  canToggleSizes(): boolean {
+      return this.maxSidePanelWidth !== this.minSidePanelWidth;
   }
 
   resizeSidePanel() {
     this.sidePanelIsMax = !this.sidePanelIsMax;
-    this.sidePanelColWidth = this.sidePanelIsMax ? this.maxSidePanelWidth : this.minSidePanelWith;
+    this.sidePanelColWidth = this.sidePanelIsMax ? this.maxSidePanelWidth : this.minSidePanelWidth;
     this.mainPanelColWidth = this.totalPanelWidth - this.sidePanelColWidth;
   }
 

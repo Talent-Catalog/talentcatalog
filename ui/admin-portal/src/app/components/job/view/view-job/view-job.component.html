@@ -36,13 +36,12 @@
 
     <div class="col-sm-{{sidePanelColWidth}} admin-panel">
       <div class="w-100">
-        <div class="float-right">
+        <div *ngIf="canToggleSizes()" class="float-right">
           <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
             class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
         </div>
         <app-view-job-description
-          [job]="job"
-          (resizeEvent)="resizeSidePanel()">
+          [job]="job">
         </app-view-job-description>
       </div>
     </div>

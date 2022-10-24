@@ -224,7 +224,7 @@
       </div>
       <div class="col-sm-{{sidePanelColWidth}} admin-panel">
         <div class="w-100">
-          <div class="float-right">
+          <div *ngIf="canToggleSizes()" class="float-right">
             <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
               class="fas fa-arrow-{{sidePanelColWidth == 2 ? 'left' : 'right'}}"></i></button>
           </div>
