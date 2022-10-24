@@ -1,10 +1,25 @@
-<app-jobs
-  (jobSelection)="onJobSelected($event)"
-  >
-</app-jobs>
+<div class="row">
+  <div class="col-sm-{{mainPanelColWidth}}">
 
-<app-view-job
-  *ngIf="selectedJob"
-  [job]="selectedJob"
->
-</app-view-job>
+    <app-jobs
+      (jobSelection)="onJobSelected($event)"
+    >
+    </app-jobs>
+
+  </div>
+
+  <div class="col-sm-{{sidePanelColWidth}} admin-panel">
+    <div class="w-100">
+      <div class="float-right">
+        <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+          class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
+      </div>
+
+      <app-view-job-description
+        [job]="selectedJob"
+        (resizeEvent)="resizeSidePanel()">
+      </app-view-job-description>
+
+    </div>
+  </div>
+</div>
