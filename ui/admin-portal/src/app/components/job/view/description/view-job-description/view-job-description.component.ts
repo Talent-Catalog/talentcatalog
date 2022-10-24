@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../../../model/job";
 
 @Component({
@@ -8,7 +8,6 @@ import {Job} from "../../../../../model/job";
 })
 export class ViewJobDescriptionComponent implements OnInit {
   @Input() job: Job;
-  @Output() resizeEvent = new EventEmitter();
 
   jobDescription = "https://static1.squarespace.com/static/5dc0262432cd095744bf1bf2/t/5f8f8928981fbd24aec3836d/1603242283119/TBB-Talent-Catalog-Privacy-Policy.pdf";
   // jobDescription= "https://drive.google.com/file/d/1i0FdQ-B2UXk0pU0CAd2fT6ddxLmFVNhg/view";
