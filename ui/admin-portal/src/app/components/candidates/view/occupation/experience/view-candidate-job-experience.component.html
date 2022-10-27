@@ -88,6 +88,13 @@
           </small>
         </div>
 
+        <div class="col-12">
+          <small class="text-muted">
+            {{experience.fullTime ? 'Full Time' : 'Part Time'}}
+            {{experience.paid ? 'Paid' : 'Voluntary'}}
+          </small>
+        </div>
+
       </div>
 
       <hr *ngIf="i < experiences?.length - 1">
