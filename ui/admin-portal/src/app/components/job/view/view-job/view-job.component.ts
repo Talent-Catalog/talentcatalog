@@ -2,6 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../../model/job";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
+import {User} from "../../../../model/user";
+import {AuthService} from "../../../../services/auth.service";
 
 @Component({
   selector: 'app-view-job',
@@ -12,12 +14,14 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   @Input() job: Job;
 
   activeTabId: string;
+  loggedInUser: User;
 
-  constructor() {
+  constructor(private authService: AuthService) {
     super(4,6, false)
   }
 
   ngOnInit(): void {
+    this.loggedInUser = this.authService.getLoggedInUser();
   }
 
 

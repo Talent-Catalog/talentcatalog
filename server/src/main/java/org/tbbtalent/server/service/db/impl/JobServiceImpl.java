@@ -115,6 +115,17 @@ public class JobServiceImpl implements JobService {
         return salesforceJobOppRepository.getJobBySubmissionList(submissionList);
     }
 
+    @NonNull
+    @Override
+    public SalesforceJobOpp updateJob(long tcJobId, UpdateJobRequest request)
+        throws NoSuchObjectException, SalesforceException {
+        SalesforceJobOpp job = getJob(tcJobId);
+
+        if (request.getSubmissionDueDate() != null) {
+            job.setSubmissionDueDate(request.getSubmissionDueDate());
+        }
+        return salesforceJobOppRepository.save(job);
+    }
 
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
     @Async

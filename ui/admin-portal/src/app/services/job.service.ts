@@ -26,4 +26,8 @@ export class JobService {
   searchPaged(request: SearchJobRequest): Observable<SearchResults<Job>> {
     return this.http.post<SearchResults<Job>>(`${this.apiUrl}/search-paged`, request);
   }
+
+  update(id: number, request: UpdateJobRequest): Observable<Job> {
+    return this.http.put<Job>(`${this.apiUrl}/${id}`, request);
+  }
 }

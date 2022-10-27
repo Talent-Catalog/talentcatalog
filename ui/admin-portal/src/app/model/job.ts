@@ -70,6 +70,7 @@ export class SearchJobRequest extends PagedSearchRequest {
 }
 
 export interface UpdateJobRequest {
-  sfJoblink: string;
+  sfJoblink?: string;
+  submissionDueDate?: Date;
 }
 

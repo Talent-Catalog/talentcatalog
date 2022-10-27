@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import javax.annotation.Nullable;
 import javax.persistence.Column;
@@ -121,7 +122,7 @@ public class SalesforceJobOpp {
      * Date that submission of candidates to employer is due.
      */
     @Nullable
-    private OffsetDateTime submissionDueDate;
+    private LocalDate submissionDueDate;
 
     /**
      * This is the official list of candidates which will be submitted to the employer for

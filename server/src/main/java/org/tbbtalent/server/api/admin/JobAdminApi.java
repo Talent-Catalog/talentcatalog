@@ -22,9 +22,11 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.request.job.SearchJobRequest;
@@ -66,6 +68,14 @@ public class JobAdminApi implements
         Page<SalesforceJobOpp> jobs = jobService.searchJobs(request);
         final Map<String, Object> objectMap = jobDto().buildPage(jobs);
         return objectMap;
+    }
+
+    @Override
+    @PutMapping("{id}")
+    public @NotNull Map<String, Object> update(long id, UpdateJobRequest request)
+        throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateJob(id, request);
+        return jobDto().build(job);
     }
 
     private DtoBuilder jobDto() {

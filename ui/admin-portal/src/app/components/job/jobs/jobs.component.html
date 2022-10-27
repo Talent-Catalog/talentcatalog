@@ -44,9 +44,9 @@
           <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           Name
         </th>
-        <th (click)="toggleSort('country')">
-          <app-sorted-by [column]="'country'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          Country
+        <th (click)="toggleSort('submissionDueDate')">
+          <app-sorted-by [column]="'submissionDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          Due
         </th>
       </tr>
       </thead>
@@ -74,7 +74,7 @@
             {{job.name}}
         </td>
         <td>
-            {{job.country}}
+            {{job.submissionDueDate}}
         </td>
       </tr>
 

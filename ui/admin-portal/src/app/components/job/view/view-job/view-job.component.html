@@ -26,12 +26,35 @@
           <a ngbNavLink>General</a>
           <ng-template ngbNavContent>
             <app-job-general-tab
-              [job]="job">
+              [job]="job"
+              [editable]="!loggedInUser.readOnly"
+            >
+            </app-job-general-tab>
+          </ng-template>
+        </ng-container>
+
+        <!-- Job Summary -->
+        <ng-container ngbNavItem="Summary">
+          <a ngbNavLink>Summary</a>
+          <ng-template ngbNavContent>
+            <app-job-general-tab
+              [job]="job"
+              [editable]="!loggedInUser.readOnly"
+            >
             </app-job-general-tab>
           </ng-template>
         </ng-container>
       </nav>
       <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+      <hr/>
+
+      <app-view-job-submission-list
+        [job]="job"
+        [editable]="true"
+      >
+      </app-view-job-submission-list>
+
     </div>
 
     <div class="col-sm-{{sidePanelColWidth}} admin-panel">
