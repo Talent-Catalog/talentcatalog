@@ -67,7 +67,14 @@ public interface JobService {
      */
     Page<SalesforceJobOpp> searchJobs(SearchJobRequest request);
 
-    //TODO JC Doc
+    /**
+     * Updates the job with the given TCJobId with data contained in the given request.
+      * @param tcJobId Id of job to be updated
+     * @param request Requested updated data
+     * @return Updated job
+     * @throws NoSuchObjectException if there is no Job with this id.
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
     @NonNull
     SalesforceJobOpp updateJob(long tcJobId, UpdateJobRequest request)
         throws NoSuchObjectException, SalesforceException;
