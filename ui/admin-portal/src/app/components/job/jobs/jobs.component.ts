@@ -33,7 +33,7 @@ export class JobsComponent implements OnInit {
   stages = enumOptions(JobOpportunityStage);
 
   //Default sort jobs with most recent job first - ie descending order of id
-  sortField = 'tcJobId';
+  sortField = 'id';
   sortDirection = 'DESC';
   currentJob: Job;
 

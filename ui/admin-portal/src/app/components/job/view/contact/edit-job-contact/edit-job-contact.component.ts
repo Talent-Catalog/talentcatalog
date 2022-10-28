@@ -11,7 +11,7 @@ import {Job} from "../../../../../model/job";
 })
 export class EditJobContactComponent implements OnInit {
 
-  tcJobId: number;
+  jobId: number;
 
   jobForm: FormGroup;
 
@@ -25,7 +25,7 @@ export class EditJobContactComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading = true;
-    this.jobService.get(this.tcJobId).subscribe(job => {
+    this.jobService.get(this.jobId).subscribe(job => {
         this.jobForm = this.fb.group({
           submissionDueDate: [job.submissionDueDate],
         });
@@ -41,7 +41,7 @@ export class EditJobContactComponent implements OnInit {
   onSave() {
     this.error = null;
     this.saving = true;
-    this.jobService.update(this.tcJobId, this.jobForm.value).subscribe(
+    this.jobService.update(this.jobId, this.jobForm.value).subscribe(
       (job) => {
         this.closeModal(job);
         this.saving = false;

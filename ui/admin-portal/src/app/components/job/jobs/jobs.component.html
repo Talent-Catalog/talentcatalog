@@ -32,8 +32,8 @@
       <!--          Header-->
       <thead class="thead-light">
       <tr>
-        <th (click)="toggleSort('tcJobId')">
-          <app-sorted-by [column]="'tcJobId'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+        <th (click)="toggleSort('id')">
+          <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           #
         </th>
         <th (click)="toggleSort('stageOrder')">
@@ -63,8 +63,8 @@
       <!--        Job records    -->
       <tr *ngFor="let job of results?.content" (click)="selectJob(job)">
         <td>
-          <a [routerLink]="['/job',job.tcJobId]">
-            {{job.tcJobId}}
+          <a [routerLink]="['/job',job.id]">
+            {{job.id}}
           </a>
         </td>
         <td>

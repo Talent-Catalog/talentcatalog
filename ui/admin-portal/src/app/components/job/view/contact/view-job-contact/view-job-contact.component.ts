@@ -23,7 +23,7 @@ export class ViewJobContactComponent implements OnInit {
       backdrop: 'static'
     });
 
-    editModal.componentInstance.tcJobId = this.job.tcJobId;
+    editModal.componentInstance.jobId = this.job.id;
 
     editModal.result
     .then((job) => this.job = job)

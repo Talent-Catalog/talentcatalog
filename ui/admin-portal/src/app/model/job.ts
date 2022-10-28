@@ -20,7 +20,7 @@ import {Partner} from "./partner";
 import {SavedSearch} from "./saved-search";
 
 export interface Job {
-  tcJobId: number;
+  id: number;
   contactEmail: string;
   contactUser: User;
   country: string;
