@@ -1388,7 +1388,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       const sfJobOpp: SalesforceJobOpp = this.candidateSource.sfJobOpp;
       if (sfJobOpp) {
         const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
-        this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobOpp.id, info)
+        this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobOpp.sfId, info)
         .subscribe(result => {
             //Refresh to display any changed stages
             this.doSearch(true);

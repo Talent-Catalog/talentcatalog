@@ -69,7 +69,7 @@ export enum JobOpportunityStage {
 }
 
 export interface SalesforceJobOpp {
-  id: string;
+  sfId: string;
 }
 
 export class SearchJobRequest extends PagedSearchRequest {

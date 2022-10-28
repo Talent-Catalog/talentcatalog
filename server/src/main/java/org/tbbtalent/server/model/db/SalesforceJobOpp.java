@@ -26,12 +26,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
 
 /**
  * This is a copy of an Employer Job Opportunity on Salesforce
@@ -52,22 +50,13 @@ import org.springframework.data.annotation.Id;
 @ToString
 @Entity
 @Table(name = "salesforce_job_opp")
-public class SalesforceJobOpp {
+public class SalesforceJobOpp extends AbstractDomainObject<Long> {
 
     /**
      * ID of copied Salesforce job opportunity is also used as id of this copy.
      */
-    @Id
-    @javax.persistence.Id
-    @Column(name = "id")
+    @Column(name = "sf_job_opp_id")
     private String sfId;
-
-    /**
-     * Automatically generated unique numeric id for this job
-     */
-    @SequenceGenerator(name = "seq_gen", sequenceName = "tc_job_id_seq", allocationSize = 1)
-    @Column(name = "tc_job_id")
-    private Long id;
 
     /**
      * Salesforce id of account (ie employer) associated with opportunity

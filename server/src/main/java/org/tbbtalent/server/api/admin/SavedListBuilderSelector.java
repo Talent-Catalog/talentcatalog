@@ -65,7 +65,7 @@ public class SavedListBuilderSelector {
 
     private DtoBuilder salesforceJobOppDto() {
         return new DtoBuilder()
-            .add("id")
+            .add("sfId")
             ;
     }
 
