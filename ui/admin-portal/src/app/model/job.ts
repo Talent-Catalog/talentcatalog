@@ -15,15 +15,24 @@
  */
 import {PagedSearchRequest} from "./base";
 import {SavedList} from "./saved-list";
+import {User} from "./user";
+import {Partner} from "./partner";
+import {SavedSearch} from "./saved-search";
 
 export interface Job {
   tcJobId: number;
-  employer: string;
+  contactEmail: string;
+  contactUser: User;
   country: string;
+  employer: string;
+  jobSummary: string;
   name: string;
+  recruiterPartner: Partner;
   stage: JobOpportunityStage;
   submissionDueDate: Date;
   submissionList: SavedList;
+  suggestedList: SavedList;
+  suggestedSearches: SavedSearch[];
 }
 
 /**

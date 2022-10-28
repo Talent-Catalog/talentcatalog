@@ -33,6 +33,7 @@ import org.tbbtalent.server.request.job.UpdateJobRequest;
  */
 public interface JobService {
 
+    //TODO JC This text needs to change
     /**
      * Registered a new job matching a job opportunity on Salesforce
      * @param request Request which includes a link to the associated Salesforce job opportunity

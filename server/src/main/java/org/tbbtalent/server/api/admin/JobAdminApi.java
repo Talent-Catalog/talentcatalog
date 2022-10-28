@@ -39,7 +39,7 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 public class JobAdminApi implements
     ITableApi<SearchJobRequest, UpdateJobRequest, UpdateJobRequest> {
 
-    private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
+    private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
 
     private final JobService jobService;
 
@@ -81,12 +81,42 @@ public class JobAdminApi implements
     private DtoBuilder jobDto() {
         return new DtoBuilder()
             .add("tcJobId")
+            .add("contactEmail")
+            .add("contactUser", userDto())
             .add("country")
             .add("employer")
+            .add("jobSummary")
             .add("name")
+            .add("recruiterPartner", partnerDto())
             .add("stage")
             .add("submissionDueDate")
-            .add("submissionList", builderSelector.selectBuilder())
+            .add("submissionList", savedListBuilderSelector.selectBuilder())
+            .add("suggestedList", savedListBuilderSelector.selectBuilder())
+//TODO JC
+//            .add("suggestedSearches", savedSearchDto())
+            ;
+    }
+
+    private DtoBuilder savedSearchDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
+    }
+
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+            .add("firstName")
+            .add("lastName")
+            .add("email")
+            ;
+    }
+
+    private DtoBuilder partnerDto() {
+        return new DtoBuilder()
+            .add("name")
+            .add("abbreviation")
+            .add("websiteUrl")
             ;
     }
 }
