@@ -18,6 +18,8 @@ package org.tbbtalent.server.model.db;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +27,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -165,13 +169,12 @@ public class SalesforceJobOpp extends AbstractDomainObject<Long> {
      * Optional search(es) that the employer/recruiter thought would find candidates matching the
      * job requirements.
      */
-//    //TODO JC
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(
-//        name = "job_suggested_saved_search",
-//        joinColumns = @JoinColumn(name = "tc_job_id", referencedColumnName = "tc_job_id"),
-//        inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
-//    private Set<SavedSearch> suggestedSearches = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "job_suggested_saved_search",
+        joinColumns = @JoinColumn(name = "tc_job_id"),
+        inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
+    private Set<SavedSearch> suggestedSearches = new HashSet<>();
 
     /**
      * Override standard setStage to automatically also update stageOrder

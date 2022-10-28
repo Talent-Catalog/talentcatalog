@@ -92,8 +92,7 @@ public class JobAdminApi implements
             .add("submissionDueDate")
             .add("submissionList", savedListBuilderSelector.selectBuilder())
             .add("suggestedList", savedListBuilderSelector.selectBuilder())
-//TODO JC
-//            .add("suggestedSearches", savedSearchDto())
+            .add("suggestedSearches", savedSearchDto())
             ;
     }
 
