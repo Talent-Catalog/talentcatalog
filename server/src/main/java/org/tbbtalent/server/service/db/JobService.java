@@ -46,13 +46,13 @@ public interface JobService {
         throws InvalidRequestException, SalesforceException;
 
     /**
-     * Get the Job with the given tcJobId.
-     * @param tcJobId tcJobId of job to get
+     * Get the Job with the given id.
+     * @param id Id of job to get
      * @return Job
      * @throws NoSuchObjectException if there is no Job with this id.
      */
     @NonNull
-    SalesforceJobOpp getJob(long tcJobId) throws NoSuchObjectException;
+    SalesforceJobOpp getJob(long id) throws NoSuchObjectException;
 
     /**
      * Get all jobs matching the given search request
@@ -69,15 +69,15 @@ public interface JobService {
     Page<SalesforceJobOpp> searchJobs(SearchJobRequest request);
 
     /**
-     * Updates the job with the given TCJobId with data contained in the given request.
-      * @param tcJobId Id of job to be updated
+     * Updates the job with the given id with data contained in the given request.
+      * @param id Id of job to be updated
      * @param request Requested updated data
      * @return Updated job
      * @throws NoSuchObjectException if there is no Job with this id.
      * @throws SalesforceException if there are issues contacting Salesforce
      */
     @NonNull
-    SalesforceJobOpp updateJob(long tcJobId, UpdateJobRequest request)
+    SalesforceJobOpp updateJob(long id, UpdateJobRequest request)
         throws NoSuchObjectException, SalesforceException;
 
     /**

@@ -80,7 +80,7 @@ public class JobAdminApi implements
 
     private DtoBuilder jobDto() {
         return new DtoBuilder()
-            .add("tcJobId")
+            .add("id")
             .add("contactEmail")
             .add("contactUser", userDto())
             .add("country")

@@ -31,7 +31,7 @@ import org.tbbtalent.server.model.db.SavedList;
  */
 public interface SalesforceJobOppRepository extends JpaRepository<SalesforceJobOpp, String>,
     JpaSpecificationExecutor<SalesforceJobOpp> {
-    Optional<SalesforceJobOpp> findByTcJobId(long tcJobId);
+    Optional<SalesforceJobOpp> findById(long id);
 
     @Query("select distinct j from SalesforceJobOpp j left join j.submissionList list "
         + " where list = :jobList")

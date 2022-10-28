@@ -108,7 +108,7 @@ public class JobSpecification {
         if (sort != null) {
             for (String property : sort) {
 
-                if (property.equals("tcJobId")) {
+                if (property.equals("id")) {
                     idSort = true;
                 }
 
@@ -123,7 +123,7 @@ public class JobSpecification {
         //which means that the contents of pages - computed at different times -
         //won't be predictable.
         if (!idSort) {
-            orders.add(builder.desc(job.get("tcJobId")));
+            orders.add(builder.desc(job.get("id")));
         }
         return orders;
     }

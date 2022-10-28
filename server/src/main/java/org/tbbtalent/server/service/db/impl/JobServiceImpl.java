@@ -82,9 +82,9 @@ public class JobServiceImpl implements JobService {
 
     @NonNull
     @Override
-    public SalesforceJobOpp getJob(long tcJobId) throws NoSuchObjectException {
-        return salesforceJobOppRepository.findByTcJobId(tcJobId)
-            .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, tcJobId));
+    public SalesforceJobOpp getJob(long id) throws NoSuchObjectException {
+        return salesforceJobOppRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
     }
 
     @Override
@@ -117,9 +117,9 @@ public class JobServiceImpl implements JobService {
 
     @NonNull
     @Override
-    public SalesforceJobOpp updateJob(long tcJobId, UpdateJobRequest request)
+    public SalesforceJobOpp updateJob(long id, UpdateJobRequest request)
         throws NoSuchObjectException, SalesforceException {
-        SalesforceJobOpp job = getJob(tcJobId);
+        SalesforceJobOpp job = getJob(id);
 
         if (request.getSubmissionDueDate() != null) {
             job.setSubmissionDueDate(request.getSubmissionDueDate());
