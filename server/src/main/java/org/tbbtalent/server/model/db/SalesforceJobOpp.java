@@ -66,6 +66,7 @@ public class SalesforceJobOpp {
      * Automatically generated unique numeric id for this job
      */
     @SequenceGenerator(name = "seq_gen", sequenceName = "tc_job_id_seq", allocationSize = 1)
+    @Column(name = "tc_job_id")
     private Long tcJobId;
 
     /**
