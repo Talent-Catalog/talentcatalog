@@ -113,6 +113,11 @@ public class SalesforceJobOpp {
     private String jobSummary;
 
     /**
+     * Last time that this was updated from Salesforce (which holds the master copy)
+     */
+    private OffsetDateTime lastUpdate;
+
+    /**
      * Name of opportunity - maps to Opportunity name on Salesforce
      */
     private String name;
@@ -146,6 +151,23 @@ public class SalesforceJobOpp {
     private int stageOrder;
 
     /**
+     * Date that submission of candidates to employer is due.
+     */
+    @Nullable
+    private LocalDate submissionDueDate;
+
+    /**
+     * This is the official list of candidates which will be submitted to the employer for
+     * their consideration.
+     * <p/>
+     * This list should have the {@link SavedList#getRegisteredJob()} attribute set true.
+     * That marks it as a special list associated with a single job.
+     */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "submission_list_id")
+    private SavedList submissionList;
+
+    /**
      * Optional list containing candidates that the employer/recruiter thought looked right for the
      * job
      */
@@ -163,28 +185,6 @@ public class SalesforceJobOpp {
         joinColumns = @JoinColumn(name = "tc_job_id"),
         inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
-
-    /**
-     * Last time that this was updated from Salesforce (which holds the master copy)
-     */
-    private OffsetDateTime lastUpdate;
-
-    /**
-     * Date that submission of candidates to employer is due.
-     */
-    @Nullable
-    private LocalDate submissionDueDate;
-
-    /**
-     * This is the official list of candidates which will be submitted to the employer for
-     * their consideration.
-     * <p/>
-     * This list should have the {@link SavedList#getRegisteredJob()} attribute set true.
-     * That marks it as a special list associated with a single job.
-     */
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "submission_list_id")
-    private SavedList submissionList;
 
     /**
      * Override standard setStage to automatically also update stageOrder
