@@ -18,6 +18,8 @@ package org.tbbtalent.server.model.db;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +27,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -62,7 +66,9 @@ public class SalesforceJobOpp {
     @Column(name = "id")
     private String id;
 
-
+    /**
+     * Automatically generated unique numeric id for this job
+     */
     @SequenceGenerator(name = "seq_gen", sequenceName = "tc_job_id_seq", allocationSize = 1)
     private Long tcJobId;
 
@@ -77,6 +83,21 @@ public class SalesforceJobOpp {
     private boolean closed;
 
     /**
+     * Email to use for enquiries about this job.
+     * <p/>
+     * Should default to email of {@link #contactUser} - but can be different
+     */
+    private String contactEmail;
+
+    /**
+     * TC user responsible for this job - will normally be "destination" staff located in the same
+     * region as the {@link #employer}
+     */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contact_user_id")
+    private User contactUser;
+
+    /**
      * Name of country where job is located
      */
     private String country;
@@ -87,6 +108,11 @@ public class SalesforceJobOpp {
     private String employer;
 
     /**
+     * Summary describing job
+     */
+    private String jobSummary;
+
+    /**
      * Name of opportunity - maps to Opportunity name on Salesforce
      */
     private String name;
@@ -95,6 +121,13 @@ public class SalesforceJobOpp {
      * Salesforce id of owner of opportunity
      */
     private String ownerId;
+
+    /**
+     * Recruiter partner responsible for this job.
+     */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recruiter_partner_id")
+    private RecruiterPartnerImpl recruiterPartner;
 
     /**
      * Stage of job opportunity
@@ -113,10 +146,28 @@ public class SalesforceJobOpp {
     private int stageOrder;
 
     /**
+     * Optional list containing candidates that the employer/recruiter thought looked right for the
+     * job
+     */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "suggested_list_id")
+    private SavedList suggestedList;
+
+    /**
+     * Optional search(es) that the employer/recruiter thought would find candidates matching the
+     * job requirements.
+     */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "job_suggested_saved_search",
+        joinColumns = @JoinColumn(name = "tc_job_id"),
+        inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
+    private Set<SavedSearch> suggestedSearches = new HashSet<>();
+
+    /**
      * Last time that this was updated from Salesforce (which holds the master copy)
      */
     private OffsetDateTime lastUpdate;
-
 
     /**
      * Date that submission of candidates to employer is due.
@@ -128,7 +179,8 @@ public class SalesforceJobOpp {
      * This is the official list of candidates which will be submitted to the employer for
      * their consideration.
      * <p/>
-     * SubmissionList should be a registeredJob associated with sfJobOpp
+     * This list should have the {@link SavedList#getRegisteredJob()} attribute set true.
+     * That marks it as a special list associated with a single job.
      */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "submission_list_id")
