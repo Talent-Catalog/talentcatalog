@@ -65,7 +65,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     public SalesforceJobOpp createJobOpp(String sfId)
         throws InvalidRequestException, SalesforceException {
         SalesforceJobOpp salesforceJobOpp = new SalesforceJobOpp();
-        salesforceJobOpp.setId(sfId);
+        salesforceJobOpp.setSfId(sfId);
 
         Opportunity op = salesforceService.fetchJobOpportunity(sfId);
         if (op == null) {
@@ -111,7 +111,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
 
     @Override
     public SalesforceJobOpp updateJob(SalesforceJobOpp sfJobOpp) {
-        Opportunity op = salesforceService.fetchJobOpportunity(sfJobOpp.getId());
+        Opportunity op = salesforceService.fetchJobOpportunity(sfJobOpp.getSfId());
         if (op != null) {
             copyOpportunityToJobOpp(op, sfJobOpp);
         }

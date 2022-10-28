@@ -49,7 +49,7 @@ public interface SavedListRepository extends JpaRepository<SavedList, Long>, Jpa
 
     @Query(" select distinct s from SavedList s " +
         " where s.registeredJob = true " +
-        " and s.sfJobOpp.id = :sfId" )
+        " and s.sfJobOpp.sfId = :sfId" )
     Optional<SavedList> findRegisteredJobList(@Param("sfId") String sfJoblink);
 
     @Query(" select distinct s from SavedList s "

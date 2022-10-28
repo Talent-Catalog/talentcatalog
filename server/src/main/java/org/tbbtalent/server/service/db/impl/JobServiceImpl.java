@@ -140,7 +140,7 @@ public class JobServiceImpl implements JobService {
 
             //Populate sfIds of jobs
             List<String> sfIds = jobs.stream()
-                .map(SalesforceJobOpp::getId)
+                .map(SalesforceJobOpp::getSfId)
                 .collect(Collectors.toList());
 
             //Now update them from Salesforce

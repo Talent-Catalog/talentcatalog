@@ -29,7 +29,7 @@ public interface OldJobRepository extends JpaRepository<OldJob, Long> {
     OldJob getJobBySubmissionList(@Param("jobList") SavedList jobList);
 
     @Query(" select j from OldJob j "
-        + " where j.submissionList.sfJobOpp.id = :sfId ")
+        + " where j.submissionList.sfJobOpp.sfId = :sfId ")
     OldJob findBySfId(@Param("sfId") String sfId);
 
 }

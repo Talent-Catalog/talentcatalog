@@ -38,7 +38,7 @@ public interface SalesforceJobOppRepository extends JpaRepository<SalesforceJobO
     SalesforceJobOpp getJobBySubmissionList(@Param("jobList") SavedList jobList);
 
     @Query(" select j from SalesforceJobOpp j "
-        + " where j.id = :sfId ")
+        + " where j.sfId = :sfId ")
     SalesforceJobOpp findBySfId(@Param("sfId") String sfId);
 
 }

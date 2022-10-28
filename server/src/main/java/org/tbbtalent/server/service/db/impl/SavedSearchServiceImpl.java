@@ -816,7 +816,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 //Non null SavedSearch Job Opp. Check if it is different from Saved List JobOpp
                 final SalesforceJobOpp savedListJobOpp = savedList.getSfJobOpp();
                 if (savedListJobOpp == null ||
-                    !savedSearch.getSfJobOpp().getId().equals(savedListJobOpp.getId())) {
+                    !savedSearch.getSfJobOpp().getSfId().equals(savedListJobOpp.getSfId())) {
                     savedList.setSfJobOpp(savedSearch.getSfJobOpp());
                     savedList = savedListRepository.save(savedList);
                 }

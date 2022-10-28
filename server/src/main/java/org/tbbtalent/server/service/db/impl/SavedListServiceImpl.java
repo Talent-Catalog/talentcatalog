@@ -436,7 +436,7 @@ public class SavedListServiceImpl implements SavedListService {
             }
 
             //Check for a registered list with same sfJobOpp (owned any user)
-            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJobOpp.getId())
+            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJobOpp.getSfId())
                 .orElse(null);
             //If we already have a registered list for this job, just return it
             if (registeredList != null) {
@@ -678,7 +678,7 @@ public class SavedListServiceImpl implements SavedListService {
         //There will only be candidate opportunities if list has a job opp
         final SalesforceJobOpp jobOpp = savedList.getSfJobOpp();
         if (jobOpp != null) {
-            salesforceService.addCandidateOpportunityStages(candidates, jobOpp.getId());
+            salesforceService.addCandidateOpportunityStages(candidates, jobOpp.getSfId());
         }
     }
 

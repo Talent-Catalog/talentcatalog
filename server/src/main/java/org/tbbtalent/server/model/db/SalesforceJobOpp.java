@@ -60,7 +60,7 @@ public class SalesforceJobOpp {
     @Id
     @javax.persistence.Id
     @Column(name = "id")
-    private String id;
+    private String sfId;
 
     /**
      * Automatically generated unique numeric id for this job

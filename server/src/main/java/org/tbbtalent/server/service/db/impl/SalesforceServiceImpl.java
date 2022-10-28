@@ -355,10 +355,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //First creating a map of all candidates indexed by their what their unique
         //opportunity id should be.
         Map<String, Candidate> idCandidateMap =
-            buildCandidateOppsMap(candidates, jobOpportunity.getId());
+            buildCandidateOppsMap(candidates, jobOpportunity.getSfId());
 
         //Now find the ids we actually have for candidate opportunities for this job.
-        List<Opportunity> opps = findCandidateOpportunities(jobOpportunity.getId());
+        List<Opportunity> opps = findCandidateOpportunities(jobOpportunity.getSfId());
 
         //Remove these from map, leaving just those that need to be created
         for (Opportunity opp : opps) {
@@ -1430,7 +1430,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setRecordType(new RecordTypeField(recordType));
 
             String candidateNumber = candidate.getCandidateNumber();
-            setExternalCandidateOppId(makeExternalId(candidateNumber, jobOpportunity.getId()));
+            setExternalCandidateOppId(makeExternalId(candidateNumber, jobOpportunity.getSfId()));
 
             User user = candidate.getUser();
             SourcePartner partner = user.getSourcePartner();
@@ -1450,7 +1450,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 setAccountId(jobOpportunity.getAccountId());
                 setCandidateContactId(candidate.getSfId());
                 setOwnerId(jobOpportunity.getOwnerId());
-                setParentOpportunityId(jobOpportunity.getId());
+                setParentOpportunityId(jobOpportunity.getSfId());
 
                 LocalDateTime close = LocalDateTime.now().plusYears(1);
                 setCloseDate(close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
