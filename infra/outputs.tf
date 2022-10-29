@@ -1,3 +1,3 @@
-output "website_token" {
-  value = module.website.website_token
+output "db_endpoint" {
+  value = module.website.db_endpoint
 }

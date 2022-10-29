@@ -1,3 +1,3 @@
-output "website_token" {
-  value = module.webesite_secrets.website_token
+output "db_endpoint" {
+  value = module.database.db_endpoint
 }

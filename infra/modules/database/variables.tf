@@ -15,11 +15,6 @@ variable "db_subnet_group_name" {
   description = "VPC subnet group name for the database"
 }
 
-variable "db_username" {
-  description = "Master username of the db"
-  default     = "tbbtalentAdmin"
-}
-
 variable "db_backup_retention_days" {
   description = "Number of days to retain db backups, Needed to enable backup"
   default     = 7

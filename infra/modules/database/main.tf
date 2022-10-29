@@ -1,5 +1,8 @@
 data "aws_ssm_parameter" "rds_password" {
-  name = "/${var.app}/${terraform.workspace}/db_password"
+  name = "/${var.app}/develop/SPRING_DATASOURCE_PASSWORD" // todo: change develop to terraform.workspace
+}
+data "aws_ssm_parameter" "rds_username" {
+  name = "/${var.app}/develop/SPRING_DATASOURCE_USERNAME" // todo: change develop to terraform.workspace
 }
 
 module "database" {
@@ -19,7 +22,7 @@ module "database" {
 
   db_name  = var.app
   port     = "5432"
-  username = var.db_username
+  username = data.aws_ssm_parameter.rds_username.value
   password = data.aws_ssm_parameter.rds_password.value
 
   db_subnet_group_name = var.db_subnet_group_name
