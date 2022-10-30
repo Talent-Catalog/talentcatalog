@@ -130,4 +130,12 @@ export class JobsComponent implements OnInit {
     this.currentJob = job;
     this.jobSelection.emit(job);
   }
+
+  truncate(str: string, num: number) {
+    if (str && str.length > num) {
+      return str.slice(0, num) + "...";
+    } else {
+      return str;
+    }
+  }
 }

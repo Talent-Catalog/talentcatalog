@@ -68,10 +68,10 @@
           </a>
         </td>
         <td>
-            {{job.stage}}
+            {{truncate(job.stage,13)}}
         </td>
         <td>
-            {{job.name}}
+            {{truncate(job.name, 40)}}
         </td>
         <td>
             {{job.submissionDueDate}}
