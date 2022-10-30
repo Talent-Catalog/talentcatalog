@@ -121,9 +121,7 @@ public class JobServiceImpl implements JobService {
         throws NoSuchObjectException, SalesforceException {
         SalesforceJobOpp job = getJob(id);
 
-        if (request.getSubmissionDueDate() != null) {
-            job.setSubmissionDueDate(request.getSubmissionDueDate());
-        }
+        job.setSubmissionDueDate(request.getSubmissionDueDate());
         return salesforceJobOppRepository.save(job);
     }
 
