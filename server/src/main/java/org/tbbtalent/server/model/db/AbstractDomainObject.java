@@ -17,17 +17,23 @@
 package org.tbbtalent.server.model.db;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.MappedSuperclass;
-
 import org.springframework.data.annotation.Id;
 
 @MappedSuperclass
 public abstract class AbstractDomainObject<IdType extends Serializable>  implements Serializable {
 
+
+    /*
+       See https://stackoverflow.com/questions/4560813/specifying-distinct-sequence-per-table-in-hibernate-on-subclasses
+       Unfortunate side effect is that it generates "Duplicate generator name seq_gen" warnings
+       for each entity at start up.
+       Hibernate has a JPA_ID_GENERATOR_GLOBAL_SCOPE_COMPLIANCE setting which can be set false
+       but haven't figured out how to set this yet.
+     */
     @Id
     @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_gen")

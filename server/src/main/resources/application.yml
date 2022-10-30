@@ -14,6 +14,20 @@ logging:
       netty:
         http:
           client: INFO
+    org:
+      hibernate:
+        boot:
+          internal:
+            #Gets rid of DuplicateSeqGen errors at start up.
+            #Caused by Entity inheritance from org/tbbtalent/server/model/db/AbstractDomainObject.java
+            #See notes in that class
+            InFlightMetadataCollectorImpl: ERROR
+      springframework:
+        data:
+          convert:
+            #Gets rid of registering converter warnings at start up
+            #See https://stackoverflow.com/questions/60001034/how-to-remove-spring-data-customconversions-warnings-from-application-startup
+            CustomConversions: ERROR
 
 spring:
   servlet:
