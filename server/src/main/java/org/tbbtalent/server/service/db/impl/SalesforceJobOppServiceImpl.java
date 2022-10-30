@@ -51,7 +51,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     @Nullable
     @Override
     public SalesforceJobOpp getJobOppById(String sfId) {
-        return salesforceJobOppRepository.findById(sfId).orElse(null);
+        return salesforceJobOppRepository.findBySfId(sfId).orElse(null);
     }
 
     @Nullable
@@ -132,7 +132,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             for (Opportunity op : ops) {
                 String id = op.getId();
                 //Fetch DB with id
-                SalesforceJobOpp salesforceJobOpp = salesforceJobOppRepository.findById(id)
+                SalesforceJobOpp salesforceJobOpp = salesforceJobOppRepository.findBySfId(id)
                     .orElse(null);
                 if (salesforceJobOpp != null) {
                     copyOpportunityToJobOpp(op, salesforceJobOpp);

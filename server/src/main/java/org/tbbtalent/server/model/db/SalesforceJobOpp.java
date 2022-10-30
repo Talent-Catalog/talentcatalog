@@ -30,6 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,6 +55,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "salesforce_job_opp")
+@SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
 public class SalesforceJobOpp extends AbstractDomainObject<Long> {
 
     /**
