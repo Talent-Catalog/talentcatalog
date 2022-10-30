@@ -101,7 +101,7 @@ salesforce:
 
 slack:
   workspace: https://refugeejobsmarket.slack.com
-  channelId: C029WMY6H1U
+  channelId: ${SLACK_CHANNEL_ID:C048GS1KHPG}
   token: ${SLACK_TOKEN}
 
 server:
