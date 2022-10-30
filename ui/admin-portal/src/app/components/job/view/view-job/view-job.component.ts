@@ -17,7 +17,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   loggedInUser: User;
 
   constructor(private authService: AuthService) {
-    super(4,6, false)
+    super(0,0, false)
   }
 
   ngOnInit(): void {
