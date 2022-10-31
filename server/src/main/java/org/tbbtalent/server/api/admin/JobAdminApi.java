@@ -84,15 +84,21 @@ public class JobAdminApi implements
             .add("contactEmail")
             .add("contactUser", userDto())
             .add("country")
+            .add("createdBy", userDto())
+            .add("createdDate")
             .add("employer")
             .add("jobSummary")
             .add("name")
+            .add("publishedBy", userDto())
+            .add("publishedDate")
             .add("recruiterPartner", partnerDto())
             .add("stage")
             .add("submissionDueDate")
             .add("submissionList", savedListBuilderSelector.selectBuilder())
             .add("suggestedList", savedListBuilderSelector.selectBuilder())
             .add("suggestedSearches", savedSearchDto())
+            .add("updatedBy", userDto())
+            .add("updatedDate")
             ;
     }
 

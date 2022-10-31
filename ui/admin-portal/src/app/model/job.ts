@@ -24,15 +24,21 @@ export interface Job {
   contactEmail: string;
   contactUser: User;
   country: string;
+  createdBy: User;
+  createdDate: Date;
   employer: string;
   jobSummary: string;
   name: string;
+  publishedBy: User;
+  publishedDate: Date;
   recruiterPartner: Partner;
   stage: JobOpportunityStage;
   submissionDueDate: Date;
   submissionList: SavedList;
   suggestedList: SavedList;
   suggestedSearches: SavedSearch[];
+  updatedBy: User;
+  updatedDate: Date;
 }
 
 /**

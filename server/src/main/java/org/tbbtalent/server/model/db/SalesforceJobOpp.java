@@ -29,6 +29,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -56,7 +57,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "salesforce_job_opp")
 @SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
-public class SalesforceJobOpp extends AbstractDomainObject<Long> {
+public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
 
     /**
      * ID of copied Salesforce job opportunity is also used as id of this copy.
@@ -118,6 +119,18 @@ public class SalesforceJobOpp extends AbstractDomainObject<Long> {
      * Salesforce id of owner of opportunity
      */
     private String ownerId;
+
+    /**
+     * User that published job on the TC
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "published_by")
+    private User publishedBy;
+
+    /**
+     * Time that this job was published on the TC
+     */
+    private OffsetDateTime publishedDate;
 
     /**
      * Recruiter partner responsible for this job.

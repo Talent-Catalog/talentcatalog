@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditJobContactComponent} from "../edit-job-contact/edit-job-contact.component";
+import {User} from "../../../../../model/user";
 
 @Component({
   selector: 'app-view-job-contact',
@@ -29,5 +30,11 @@ export class ViewJobContactComponent implements OnInit {
     .then((job) => this.job = job)
     .catch(() => {});
 
+  }
+
+  showUser(contactUser: User): string {
+    return contactUser ?
+      contactUser.firstName + " " + contactUser.lastName + " " + contactUser.email
+      : "";
   }
 }

@@ -1,7 +1,7 @@
 <div class="card">
 
   <div class="card-header">
-    Contact Information
+    Job Information
     <div class="float-right" *ngIf="editable">
       <button class="btn btn-sm btn-outline-secondary" (click)="editContactDetails()">
         <i class="fas fa-edit"></i></button>
@@ -16,6 +16,47 @@
 
         <div class="form-control-plaintext">
           <span>{{job.submissionDueDate | date}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="job.contactUser" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Contact</label>
+
+        <div class="form-control-plaintext">
+          <span>{{showUser(job.contactUser)}}</span>
+          <span>{{job.contactEmail}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="job.createdDate" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Created</label>
+
+        <div class="form-control-plaintext">
+          <span>{{job.createdDate | date}} {{showUser(job.createdBy)}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="job.updatedDate" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Updated</label>
+
+        <div class="form-control-plaintext">
+          <span>{{job.updatedDate | date}} {{showUser(job.updatedBy)}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="job.publishedDate" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Published</label>
+
+        <div class="form-control-plaintext">
+          <span>{{job.publishedDate | date}} {{showUser(job.publishedBy)}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="job.recruiterPartner" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Recruiter</label>
+
+        <div class="form-control-plaintext">
+          <span>{{job.recruiterPartner?.name}}</span>
         </div>
       </div>
 
