@@ -19,3 +19,8 @@ variable "container_port" {
   description = "Container port"
   default     = 8080
 }
+
+variable "container_image" {
+  description = "Container image"
+  default     = "231168606641.dkr.ecr.us-east-1.amazonaws.com/tbbtalentv2:latest"
+}

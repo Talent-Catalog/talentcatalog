@@ -70,7 +70,7 @@ resource "aws_ecs_task_definition" "web-app" {
   container_definitions = jsonencode([
     {
       name                   = "${var.app}-${terraform.workspace}"
-      image                  = "968457613372.dkr.ecr.us-east-1.amazonaws.com/tbbtalentv2:latest"
+      image                  = var.container_image
       essential              = true
       readonlyRootFilesystem = false
       environment            = local.env_secrets
