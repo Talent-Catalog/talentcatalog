@@ -5,11 +5,11 @@ import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {User} from "../../../../../model/user";
 
 @Component({
-  selector: 'app-view-job-contact',
-  templateUrl: './view-job-contact.component.html',
-  styleUrls: ['./view-job-contact.component.scss']
+  selector: 'app-view-job-info',
+  templateUrl: './view-job-info.component.html',
+  styleUrls: ['./view-job-info.component.scss']
 })
-export class ViewJobContactComponent implements OnInit {
+export class ViewJobInfoComponent implements OnInit {
   @Input() job: Job;
   @Input() editable: boolean;
 

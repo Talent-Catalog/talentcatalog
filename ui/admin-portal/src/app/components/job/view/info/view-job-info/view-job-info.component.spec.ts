@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {ViewJobContactComponent} from './view-job-contact.component';
+import {ViewJobInfoComponent} from './view-job-info.component';
 
 describe('ViewJobContactComponent', () => {
-  let component: ViewJobContactComponent;
-  let fixture: ComponentFixture<ViewJobContactComponent>;
+  let component: ViewJobInfoComponent;
+  let fixture: ComponentFixture<ViewJobInfoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ViewJobContactComponent ]
+      declarations: [ ViewJobInfoComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ViewJobContactComponent);
+    fixture = TestBed.createComponent(ViewJobInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

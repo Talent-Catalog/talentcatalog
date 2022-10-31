@@ -612,8 +612,8 @@ import {
   ViewJobDescriptionComponent
 } from './components/job/view/description/view-job-description/view-job-description.component';
 import {
-  ViewJobContactComponent
-} from './components/job/view/info/view-job-contact/view-job-contact.component';
+  ViewJobInfoComponent
+} from './components/job/view/info/view-job-info/view-job-info.component';
 import {
   ViewJobSubmissionListComponent
 } from './components/job/view/submission-list/view-job-submission-list/view-job-submission-list.component';
@@ -860,7 +860,7 @@ import {
     ViewJobFromUrlComponent,
     JobGeneralTabComponent,
     ViewJobDescriptionComponent,
-    ViewJobContactComponent,
+    ViewJobInfoComponent,
     ViewJobSubmissionListComponent,
     EditJobInfoComponent
   ],
