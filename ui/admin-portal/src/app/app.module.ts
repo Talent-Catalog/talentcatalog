@@ -613,13 +613,13 @@ import {
 } from './components/job/view/description/view-job-description/view-job-description.component';
 import {
   ViewJobContactComponent
-} from './components/job/view/contact/view-job-contact/view-job-contact.component';
+} from './components/job/view/info/view-job-contact/view-job-contact.component';
 import {
   ViewJobSubmissionListComponent
 } from './components/job/view/submission-list/view-job-submission-list/view-job-submission-list.component';
 import {
   EditJobContactComponent
-} from './components/job/view/contact/edit-job-contact/edit-job-contact.component';
+} from './components/job/view/info/edit-job-contact/edit-job-contact.component';
 
 @NgModule({
   declarations: [
