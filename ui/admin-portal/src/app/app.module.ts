@@ -618,8 +618,8 @@ import {
   ViewJobSubmissionListComponent
 } from './components/job/view/submission-list/view-job-submission-list/view-job-submission-list.component';
 import {
-  EditJobContactComponent
-} from './components/job/view/info/edit-job-contact/edit-job-contact.component';
+  EditJobInfoComponent
+} from './components/job/view/info/edit-job-info/edit-job-info.component';
 
 @NgModule({
   declarations: [
@@ -862,7 +862,7 @@ import {
     ViewJobDescriptionComponent,
     ViewJobContactComponent,
     ViewJobSubmissionListComponent,
-    EditJobContactComponent
+    EditJobInfoComponent
   ],
   imports: [
     BrowserModule,

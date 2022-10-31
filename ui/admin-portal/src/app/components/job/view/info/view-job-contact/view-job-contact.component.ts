@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {EditJobContactComponent} from "../edit-job-contact/edit-job-contact.component";
+import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {User} from "../../../../../model/user";
 
 @Component({
@@ -19,7 +19,7 @@ export class ViewJobContactComponent implements OnInit {
   }
 
   editContactDetails() {
-    const editModal = this.modalService.open(EditJobContactComponent, {
+    const editModal = this.modalService.open(EditJobInfoComponent, {
       centered: true,
       backdrop: 'static'
     });
