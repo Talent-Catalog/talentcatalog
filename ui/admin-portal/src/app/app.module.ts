@@ -620,6 +620,9 @@ import {
 import {
   EditJobInfoComponent
 } from './components/job/view/info/edit-job-info/edit-job-info.component';
+import {
+  ViewJobSuggestedListComponent
+} from './components/job/view/suggested-list/view-job-suggested-list/view-job-suggested-list.component';
 
 @NgModule({
   declarations: [
@@ -862,7 +865,8 @@ import {
     ViewJobDescriptionComponent,
     ViewJobInfoComponent,
     ViewJobSubmissionListComponent,
-    EditJobInfoComponent
+    EditJobInfoComponent,
+    ViewJobSuggestedListComponent
   ],
   imports: [
     BrowserModule,
