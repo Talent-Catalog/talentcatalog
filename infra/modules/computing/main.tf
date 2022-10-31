@@ -54,7 +54,7 @@ resource "aws_ecs_service" "web-app" {
     security_groups = [
       aws_security_group.fargate.id
     ]
-    subnets          = var.private_subnet_ids
+    subnets          = var.public_subnet_ids
     assign_public_ip = true
   }
   health_check_grace_period_seconds = 300
@@ -77,7 +77,7 @@ resource "aws_ecs_task_definition" "web-app" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "${var.app}-${terraform.workspace}"
+          awslogs-group         = "/fargate/service/${var.app}-${terraform.workspace}-fargate-log"
           awslogs-stream-prefix = "ecs"
           awslogs-region        = "us-east-1"
         }
