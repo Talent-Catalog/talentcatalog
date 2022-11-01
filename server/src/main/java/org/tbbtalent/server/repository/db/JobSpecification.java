@@ -20,6 +20,9 @@ import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -43,8 +46,6 @@ public class JobSpecification {
         return (job, query, builder) -> {
             Predicate conjunction = builder.conjunction();
 
-            query.distinct(true);
-
             /*
               Note that there are two ways of retrieving a join.
               One is simply to call the join method - and that is what we use for Count queries.
@@ -67,8 +68,11 @@ public class JobSpecification {
 
             boolean isCountQuery = query.getResultType().equals(Long.class);
             if (!isCountQuery) {
+                Fetch<Object, Object> listFetch = job.fetch("submissionList", JoinType.INNER);
+                Join<Object, Object> submissionList = (Join<Object, Object>) listFetch;
+
                 //Manage sorting for non count queries
-                List<Order> ordering = getOrdering(request, job, builder);
+                List<Order> ordering = getOrdering(request, job, builder, submissionList);
                 query.orderBy(ordering);
             }
 
@@ -100,19 +104,32 @@ public class JobSpecification {
 
     private static List<Order> getOrdering(PagedSearchRequest request,
         Root<SalesforceJobOpp> job,
-        CriteriaBuilder builder) {
+        CriteriaBuilder builder, Join<Object, Object> submissionList) {
 
         List<Order> orders = new ArrayList<>();
         String[] sort = request.getSortFields();
         boolean idSort = false;
         if (sort != null) {
             for (String property : sort) {
+                Join<Object, Object> join = null;
+                String subProperty;
 
-                if (property.equals("id")) {
-                    idSort = true;
+                if (property.startsWith("submissionList.")) {
+                    join = submissionList;
+                    subProperty = property.replaceAll("submissionList.", "");
+                } else {
+                    subProperty = property;
+                    if (property.equals("id")) {
+                        idSort = true;
+                    }
                 }
 
-                Path<Object> path = job.get(property);
+                Path<Object> path;
+                if (join != null) {
+                    path = join.get(subProperty);
+                } else {
+                    path = job.get(subProperty);
+                }
                 orders.add(request.getSortDirection().equals(Sort.Direction.ASC)
                     ? builder.asc(path) : builder.desc(path));
             }

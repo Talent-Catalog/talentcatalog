@@ -36,6 +36,10 @@
           <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           #
         </th>
+        <th (click)="toggleSort('submissionList.id')">
+          <app-sorted-by [column]="'submissionList.id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          List#
+        </th>
         <th (click)="toggleSort('stageOrder')">
           <app-sorted-by [column]="'stageOrder'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           <i class="fab fa-salesforce"></i>
@@ -68,10 +72,15 @@
           </a>
         </td>
         <td>
+          <a [routerLink]="['/list',job.submissionList.id]">
+            {{job.submissionList.id}}
+          </a>
+        </td>
+        <td>
             {{truncate(job.stage,13)}}
         </td>
         <td>
-            {{truncate(job.name, 40)}}
+            {{truncate(job.name, 36)}}
         </td>
         <td>
             {{job.submissionDueDate}}
