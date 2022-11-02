@@ -72,7 +72,10 @@ public interface UserService {
 
     User findByUsernameAndRole(String username, Role role);
 
-    Page<User> searchUsers(SearchUserRequest request);
+
+    List<User> search(SearchUserRequest request);
+
+    Page<User> searchPaged(SearchUserRequest request);
 
     User getUser(long id);
 

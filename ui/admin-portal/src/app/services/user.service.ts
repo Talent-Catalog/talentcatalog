@@ -29,8 +29,12 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  search(request): Observable<SearchResults<User>> {
-    return this.http.post<SearchResults<User>>(`${this.apiUrl}/search`, request);
+  search(request): Observable<User[]> {
+    return this.http.post<User[]>(`${this.apiUrl}/search`, request);
+  }
+
+  searchPaged(request): Observable<SearchResults<User>> {
+    return this.http.post<SearchResults<User>>(`${this.apiUrl}/search-paged`, request);
   }
 
   get(id: number): Observable<User> {

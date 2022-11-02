@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {User} from './user';
+import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
 import {SalesforceJobOpp} from "./job";
@@ -195,10 +195,15 @@ export class PagedSearchRequest {
 export class PagedFilteredSearchRequest extends PagedSearchRequest {
   keyword?: string;
   status?: string;
+}
+
+export class SearchPartnerRequest extends PagedFilteredSearchRequest {
   partnerType?: PartnerType;
 }
 
-export class SearchPartnerRequest extends PagedFilteredSearchRequest {}
+export class SearchUserRequest extends PagedFilteredSearchRequest {
+  role?: Role;
+}
 
 export class SearchTaskRequest extends PagedFilteredSearchRequest {}
 

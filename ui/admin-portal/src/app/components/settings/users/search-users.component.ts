@@ -96,7 +96,7 @@ export class SearchUsersComponent implements OnInit {
     const request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize =  this.pageSize;
-    this.userService.search(request).subscribe(results => {
+    this.userService.searchPaged(request).subscribe(results => {
       this.results = results;
       this.loading = false;
     });

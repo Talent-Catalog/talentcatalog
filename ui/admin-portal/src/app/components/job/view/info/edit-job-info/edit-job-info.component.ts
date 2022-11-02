@@ -22,7 +22,9 @@ import {Job} from "../../../../../model/job";
 import {forkJoin} from "rxjs";
 import {PartnerService} from "../../../../../services/partner.service";
 import {Partner, PartnerType} from "../../../../../model/partner";
-import {SearchPartnerRequest} from "../../../../../model/base";
+import {SearchPartnerRequest, SearchUserRequest} from "../../../../../model/base";
+import {UserService} from "../../../../../services/user.service";
+import {User} from "../../../../../model/user";
 
 @Component({
   selector: 'app-edit-job-info',
@@ -36,6 +38,7 @@ export class EditJobInfoComponent implements OnInit {
   jobForm: FormGroup;
 
   recruiters: Partner[];
+  users: User[];
 
   error;
   loading: boolean;
@@ -44,19 +47,23 @@ export class EditJobInfoComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private jobService: JobService,
-              private partnerService: PartnerService
+              private partnerService: PartnerService,
+              private userService: UserService
   ) { }
 
   ngOnInit(): void {
     this.error = null;
     this.loading = true;
+    const userRequest: SearchUserRequest = {};
     const partnerRequest: SearchPartnerRequest = {partnerType: PartnerType.RecruiterPartner};
     forkJoin({
       'job': this.jobService.get(this.jobId),
       'partners': this.partnerService.search(partnerRequest),
+      'users': this.userService.search(userRequest),
     }).subscribe(results => {
       this.loading = false;
       this.recruiters = results['partners'];
+      this.users = results['users'];
       let job: Job = results['job'];
       this.createForm(job);
     }, error => {
@@ -69,6 +76,7 @@ export class EditJobInfoComponent implements OnInit {
     this.jobForm = this.fb.group({
       submissionDueDate: [job.submissionDueDate],
       contactEmail: [job.contactEmail],
+      contactUser: [job.contactUser],
       recruiterPartner: [job.recruiterPartner]
       //  todo other fields
     });
@@ -77,7 +85,7 @@ export class EditJobInfoComponent implements OnInit {
   onSave() {
     this.error = null;
     this.saving = true;
-    //todo need to add contactEmail, recruiter
+    //todo need to add contactEmail, recruiter  etc
 
     this.jobService.update(this.jobId, this.jobForm.value).subscribe(
       (job) => {

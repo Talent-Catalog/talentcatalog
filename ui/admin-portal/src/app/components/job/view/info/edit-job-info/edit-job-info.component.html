@@ -49,7 +49,22 @@
         <input type="email" class="form-control" id="email" placeholder="Enter contact email" [formControlName]="'contactEmail'">
       </div>
 
-      <!-- CONTACT EMAIL -->
+      <!-- Contact user -->
+      <div class="form-group">
+        <label for="contactUser">Contact User</label>
+        <ng-select
+          id="contactUser"
+          [items]="users"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [clearSearchOnAdd]="true"
+          placeholder="Select or type..."
+          bindLabel="username"
+          [formControlName]="'contactUser'">
+        </ng-select>
+      </div>
+
+      <!-- Recruiter -->
       <div class="form-group">
         <label for="recruiter">Recruiter</label>
         <ng-select
