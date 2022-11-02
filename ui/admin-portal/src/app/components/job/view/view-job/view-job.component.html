@@ -14,6 +14,13 @@
         ({{job.id}}) {{job.stage}}
       </span>
     </h1>
+
+    <div class="col-sm-4">
+      <app-view-job-summary
+        [job]="job">
+      </app-view-job-summary>
+    </div>
+
   </div>
 
   <div class="row">
@@ -33,35 +40,26 @@
           </ng-template>
         </ng-container>
 
+        <!-- SEARCHES -->
         <ng-container ngbNavItem="Searches">
-          <a ngbNavLink>Suggested searches</a>
+          <a ngbNavLink>Suggested search(es)</a>
           <ng-template ngbNavContent>
+<!--            todo -->
             to do
           </ng-template>
         </ng-container>
 
-        <!-- Job Summary -->
-<!--        <ng-container ngbNavItem="Summary">-->
-<!--          <a ngbNavLink>Summary</a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <app-job-general-tab-->
-<!--              [job]="job"-->
-<!--              [editable]="!loggedInUser.readOnly"-->
-<!--            >-->
-<!--            </app-job-general-tab>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
+        <!-- UPLOADS -->
+        <ng-container ngbNavItem="Uploads">
+          <a ngbNavLink>Uploads (JD/JOI)</a>
+          <ng-template ngbNavContent>
+<!--            todo -->
+            to do
+          </ng-template>
+        </ng-container>
 
       </nav>
       <div [ngbNavOutlet]="nav" class="mt-2"></div>
-
-      <hr/>
-
-<!--      <app-view-job-submission-list-->
-<!--        [job]="job"-->
-<!--        [editable]="true"-->
-<!--      >-->
-<!--      </app-view-job-submission-list>-->
 
     </div>
 

@@ -81,11 +81,18 @@ public interface PartnerService {
     List<PartnerImpl> listPartners();
 
     /**
+     * Get the partners from a search request
+     * @param request - Search Request
+     * @return All matching partners
+     */
+    List<PartnerImpl> searchPartners(SearchPartnerRequest request);
+
+    /**
      * Get the partners as a paged search request
      * @param request - Paged Search Request
      * @return Page of partners
      */
-    Page<PartnerImpl> searchPartners(SearchPartnerRequest request);
+    Page<PartnerImpl> searchPartnersPaged(SearchPartnerRequest request);
 
     /**
      * Create a partner.

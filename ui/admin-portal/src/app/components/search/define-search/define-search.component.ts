@@ -53,8 +53,12 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
-import {LanguageLevelFormControlComponent} from '../../util/form/language-proficiency/language-level-form-control.component';
+import {
+  DateRangePickerComponent
+} from '../../util/form/date-range-picker/date-range-picker.component';
+import {
+  LanguageLevelFormControlComponent
+} from '../../util/form/language-proficiency/language-level-form-control.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -64,7 +68,7 @@ import {
   SavedSearch,
   SearchCandidateRequestPaged
 } from '../../../model/saved-search';
-import {canEditSource} from '../../../model/base';
+import {canEditSource, SearchPartnerRequest} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
@@ -74,7 +78,7 @@ import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
 import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
-import {Partner} from "../../../model/partner";
+import {Partner, PartnerType} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 
 @Component({
@@ -205,6 +209,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.loading = true;
     this.error = null;
 
+    const partnerRequest: SearchPartnerRequest = {partnerType: PartnerType.SourcePartner};
     const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
     forkJoin({
       'lists': this.savedListService.search(request),
@@ -214,7 +219,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       'languageLevels': this.languageLevelService.listLanguageLevels(),
       'educationLevels': this.educationLevelService.listEducationLevels(),
       'majors': this.educationMajorService.listMajors(),
-      'partners': this.partnerService.listPartners(),
+      'partners': this.partnerService.search(partnerRequest),
       'verifiedOccupation': this.candidateOccupationService.listVerifiedOccupations(),
       'occupations': this.candidateOccupationService.listOccupations(),
       'surveyTypes': this.surveyTypeService.listSurveyTypes()

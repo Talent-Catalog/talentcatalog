@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -35,7 +36,7 @@ import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name = "Partner")
 @Table(name = "partner")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "partner_type")
@@ -57,7 +58,9 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     @Nullable
     private String notificationEmail;
 
-    abstract public String getPartnerType();
+    //See https://stackoverflow.com/questions/53796557/should-be-mapped-with-insert-false-update-false
+    @Column(name = "partner_type", insertable = false, updatable = false)
+    private String partnerType;
 
     @Nullable
     public String getSfId() {

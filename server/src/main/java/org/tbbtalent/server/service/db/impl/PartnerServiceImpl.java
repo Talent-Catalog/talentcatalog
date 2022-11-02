@@ -172,7 +172,14 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
-    public Page<PartnerImpl> searchPartners(SearchPartnerRequest request) {
+    public List<PartnerImpl> searchPartners(SearchPartnerRequest request) {
+        List<PartnerImpl> partners = partnerRepository.findAll(
+            PartnerSpecification.buildSearchQuery(request));
+        return partners;
+    }
+
+    @Override
+    public Page<PartnerImpl> searchPartnersPaged(SearchPartnerRequest request) {
         Page<PartnerImpl> partners = partnerRepository.findAll(
             PartnerSpecification.buildSearchQuery(request), request.getPageRequest());
         return partners;

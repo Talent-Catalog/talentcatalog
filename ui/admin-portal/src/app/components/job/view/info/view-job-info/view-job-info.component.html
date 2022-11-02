@@ -11,6 +11,37 @@
   <div class="card-body">
     <div class="row">
 
+      <div *ngIf="job.submissionList" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Submission List</label>
+
+        <div class="form-control-plaintext">
+          <span><a [routerLink]="['/list',job.submissionList.id]">{{displaySubmissionList()}}</a></span>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-envelope"></i>Job Contact Email</label>
+
+        <div *ngIf="isSpecialContactEmail()" class="form-control-plaintext">
+          <a target="_blank" href="{{showEmailUrl(job.contactEmail)}}">{{job.contactEmail}}</a>
+        </div>
+
+        <div *ngIf="!isSpecialContactEmail()" class="form-control-plaintext">
+          See contact's email
+        </div>
+      </div>
+
+      <div *ngIf="job.contactUser" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-user"></i>Contact</label>
+
+        <div class="form-control-plaintext">
+          <div>{{showUser(job.contactUser)}}</div>
+          <div>
+          <a target="_blank" href="{{showEmailUrl(job.contactUser.email)}}">{{job.contactUser.email}}</a>
+          </div>
+        </div>
+      </div>
+
       <div class="form-group col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Submission Due</label>
 
@@ -19,12 +50,13 @@
         </div>
       </div>
 
-      <div *ngIf="job.contactUser" class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Contact</label>
+      <div *ngIf="job.recruiterPartner" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-id-badge"></i>Recruiter</label>
 
         <div class="form-control-plaintext">
-          <span>{{showUser(job.contactUser)}}</span>
-          <span>{{job.contactEmail}}</span>
+          <a target="_blank" href="{{job.recruiterPartner.websiteUrl}}">
+            {{job.recruiterPartner.name}}
+          </a>
         </div>
       </div>
 
@@ -32,7 +64,13 @@
         <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Created</label>
 
         <div class="form-control-plaintext">
-          <span>{{job.createdDate | date}} {{showUser(job.createdBy)}}</span>
+          <span>{{job.createdDate | date}}</span>
+          <span *ngIf="job.createdBy" >
+            <div>{{showUser(job.createdBy)}}</div>
+            <div>
+            <a target="_blank" href="{{showEmailUrl(job.createdBy.email)}}">{{job.createdBy.email}}</a>
+            </div>
+          </span>
         </div>
       </div>
 
@@ -41,6 +79,12 @@
 
         <div class="form-control-plaintext">
           <span>{{job.updatedDate | date}} {{showUser(job.updatedBy)}}</span>
+          <span *ngIf="job.updatedBy" >
+            <div>{{showUser(job.updatedBy)}}</div>
+            <div>
+            <a target="_blank" href="{{showEmailUrl(job.updatedBy.email)}}">{{job.updatedBy.email}}</a>
+            </div>
+          </span>
         </div>
       </div>
 
@@ -48,15 +92,13 @@
         <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Published</label>
 
         <div class="form-control-plaintext">
-          <span>{{job.publishedDate | date}} {{showUser(job.publishedBy)}}</span>
-        </div>
-      </div>
-
-      <div *ngIf="job.recruiterPartner" class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Recruiter</label>
-
-        <div class="form-control-plaintext">
-          <span>{{job.recruiterPartner?.name}}</span>
+          <span>{{job.publishedDate | date}}</span>
+          <span *ngIf="job.publishedBy" >
+            <div>{{showUser(job.publishedBy)}}</div>
+            <div>
+            <a target="_blank" href="{{showEmailUrl(job.publishedBy.email)}}">{{job.publishedBy.email}}</a>
+            </div>
+          </span>
         </div>
       </div>
 

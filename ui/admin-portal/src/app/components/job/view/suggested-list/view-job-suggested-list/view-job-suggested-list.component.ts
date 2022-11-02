@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {Job} from "../../../../../model/job";
 
 @Component({
   selector: 'app-view-job-suggested-list',
@@ -6,6 +7,8 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./view-job-suggested-list.component.scss']
 })
 export class ViewJobSuggestedListComponent implements OnInit {
+  @Input() job: Job;
+  @Input() editable: boolean;
 
   constructor() { }
 

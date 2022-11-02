@@ -18,6 +18,7 @@ import {User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
 import {SalesforceJobOpp} from "./job";
+import {PartnerType} from "./partner";
 
 export interface HasName {
   name?: string;
@@ -194,6 +195,7 @@ export class PagedSearchRequest {
 export class PagedFilteredSearchRequest extends PagedSearchRequest {
   keyword?: string;
   status?: string;
+  partnerType?: PartnerType;
 }
 
 export class SearchPartnerRequest extends PagedFilteredSearchRequest {}

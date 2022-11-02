@@ -16,6 +16,10 @@ export class PartnerService {
   constructor(private http: HttpClient) { }
 
 
+  search(request: SearchPartnerRequest): Observable<Partner[]> {
+    return this.http.post<Partner[]>(`${this.apiUrl}/search`, request);
+  }
+
   searchPaged(request: SearchPartnerRequest): Observable<SearchResults<Partner>> {
     return this.http.post<SearchResults<Partner>>(`${this.apiUrl}/search-paged`, request);
   }
