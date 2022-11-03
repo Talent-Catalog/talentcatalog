@@ -76,10 +76,10 @@
             {{job.submissionList.id}}
           </a>
         </td>
-        <td>
+        <td title="Contact {{fullUserName(job.contactUser)}}">
             {{truncate(job.stage,13)}}
         </td>
-        <td>
+        <td title="{{job.country}}">
             {{truncate(job.name, 36)}}
         </td>
         <td>

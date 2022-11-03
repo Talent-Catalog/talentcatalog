@@ -138,4 +138,8 @@ export class JobsComponent implements OnInit {
       return str;
     }
   }
+
+  fullUserName(contactUser: User) {
+    return contactUser ? contactUser.firstName + " " + contactUser.lastName : "";
+  }
 }
