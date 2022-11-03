@@ -56,12 +56,14 @@ public interface JobService {
 
     /**
      * Creates a suggested saved search for the job with the given id.
-     * @param id Job id
+     *
+     * @param id     Job id
+     * @param suffix Unique suffix for search name (first part of name is job name)
      * @return Updated job which will have the new search added to its suggested searches
      * @throws NoSuchObjectException If no job with that id exists
      */
     @NonNull
-    SalesforceJobOpp createSuggestedSearch(long id) throws NoSuchObjectException;
+    SalesforceJobOpp createSuggestedSearch(long id, String suffix) throws NoSuchObjectException;
 
     /**
      * Removes the given search from the suggested searches for the given job.

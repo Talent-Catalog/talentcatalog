@@ -1,7 +1,7 @@
 <div class="card">
 
   <div class="card-header">
-    Suggested searches - click on a search to run or modify it.
+    Suggested searches.
     <div class="float-right" *ngIf="editable">
       <button class="btn btn-sm btn-primary ml-2" (click)="addSearch()">
         <i class="fas fa-plus"></i> Search
@@ -13,7 +13,7 @@
     <div class="alert alert-danger" *ngIf="error">
       {{error}}
     </div>
-    <!-- EMPTY STATE -->
+
     <div *ngIf="!searches?.length">
       <p >
         No searches have been specified.
@@ -21,6 +21,13 @@
     </div>
 
     <div *ngIf="searches.length">
+
+      <div class="row">
+          Click on a search to run or modify it.
+          If you change the search don't forget to click on Update Search.
+          If you find candidates of interest, copy them into the submission list.
+      </div>
+      <hr/>
 
       <!-- searches -->
       <div class="row position-relative mb-3" *ngFor="let search of searches; let i = index">

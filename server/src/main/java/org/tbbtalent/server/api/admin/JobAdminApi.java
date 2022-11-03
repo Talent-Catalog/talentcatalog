@@ -65,15 +65,16 @@ public class JobAdminApi implements
     }
 
     @PostMapping("{id}/create-search")
-    public @NotNull Map<String, Object> createSuggestedSearch(@PathVariable("id") long id)
+    public @NotNull Map<String, Object> createSuggestedSearch(
+        @PathVariable("id") long id, @Valid @RequestBody String suffix)
         throws NoSuchObjectException {
-        SalesforceJobOpp job = jobService.createSuggestedSearch(id);
+        SalesforceJobOpp job = jobService.createSuggestedSearch(id, suffix);
         return jobDto().build(job);
     }
 
     @PutMapping("{id}/remove-search")
     public @NotNull Map<String, Object> removeSuggestedSearch(
-        @PathVariable("id") long id,  @Valid @RequestBody long savedSearchId)
+        @PathVariable("id") long id, @Valid @RequestBody long savedSearchId)
         throws NoSuchObjectException {
         SalesforceJobOpp job = jobService.removeSuggestedSearch(id, savedSearchId);
         return jobDto().build(job);

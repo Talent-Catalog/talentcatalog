@@ -110,18 +110,16 @@ public class JobServiceImpl implements JobService {
 
     @NonNull
     @Override
-    public SalesforceJobOpp createSuggestedSearch(long id) throws NoSuchObjectException {
+    public SalesforceJobOpp createSuggestedSearch(long id, String suffix) throws NoSuchObjectException {
         SalesforceJobOpp job = getJob(id);
-
-        Set<SavedSearch> searches = job.getSuggestedSearches();
 
         UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
         request.setSavedSearchType(SavedSearchType.job);
-        final int searchNumber = searches.size() + 1;
-        request.setName(job.getName() + "*-search" + searchNumber);
+        request.setName(job.getName() + "*-" + suffix);
         request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId()));
         SavedSearch search = savedSearchService.createSavedSearch(request);
 
+        Set<SavedSearch> searches = job.getSuggestedSearches();
         searches.add(search);
 
         return salesforceJobOppRepository.save(job);

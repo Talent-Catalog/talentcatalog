@@ -19,8 +19,8 @@ export class JobService {
     return this.http.post<Job>(`${this.apiUrl}`, request);
   }
 
-  createSuggestedSearch(id: number): Observable<Job> {
-    return this.http.post<Job>(`${this.apiUrl}/${id}/create-search`, null);
+  createSuggestedSearch(id: number, suffix: string): Observable<Job> {
+    return this.http.post<Job>(`${this.apiUrl}/${id}/create-search`, suffix);
   }
 
   get(id: number): Observable<Job> {
