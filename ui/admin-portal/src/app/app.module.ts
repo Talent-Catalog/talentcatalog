@@ -635,6 +635,7 @@ import {
 import {
   ViewJobSuggestedSearchesComponent
 } from './components/job/view/suggested-searches/view-job-suggested-searches/view-job-suggested-searches.component';
+import {InputTextComponent} from './components/util/input/input-text/input-text.component';
 
 @NgModule({
   declarations: [
@@ -882,7 +883,8 @@ import {
     ViewJobSummaryComponent,
     EditJobSummaryComponent,
     JobSuggestedSearchesTabComponent,
-    ViewJobSuggestedSearchesComponent
+    ViewJobSuggestedSearchesComponent,
+    InputTextComponent
   ],
   imports: [
     BrowserModule,
