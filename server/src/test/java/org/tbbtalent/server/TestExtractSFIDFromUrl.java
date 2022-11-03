@@ -5,22 +5,22 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server;
 
-import org.junit.jupiter.api.Test;
-import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
+import org.tbbtalent.server.util.SalesforceHelper;
 
 /**
  * Test id from SFLink extraction
@@ -28,18 +28,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author John Cameron
  */
 public class TestExtractSFIDFromUrl {
-    
+
     @Test
     void testExtract() {
         String url = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/0061N00000gO3zXQAS/view";
-        String id = SalesforceServiceImpl.extractIdFromSfUrl(url);
+        String id = SalesforceHelper.extractIdFromSfUrl(url);
         assertNotNull(id);
-        String objectType = SalesforceServiceImpl.extractObjectTypeFromSfUrl(url);
+        String objectType = SalesforceHelper.extractObjectTypeFromSfUrl(url);
         assertEquals("Opportunity", objectType);
         url = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/0061N00000gO3zXQAS";
-        id = SalesforceServiceImpl.extractIdFromSfUrl(url);
+        id = SalesforceHelper.extractIdFromSfUrl(url);
         assertNotNull(id);
-        objectType = SalesforceServiceImpl.extractObjectTypeFromSfUrl(url);
+        objectType = SalesforceHelper.extractObjectTypeFromSfUrl(url);
         assertEquals("Opportunity", objectType);
-    } 
+    }
 }

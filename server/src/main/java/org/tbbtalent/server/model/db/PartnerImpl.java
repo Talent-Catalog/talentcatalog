@@ -31,7 +31,7 @@ import lombok.ToString;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
+import org.tbbtalent.server.util.SalesforceHelper;
 
 @Getter
 @Setter
@@ -64,7 +64,7 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
 
     @Nullable
     public String getSfId() {
-        return SalesforceServiceImpl.extractIdFromSfUrl(sflink);
+        return SalesforceHelper.extractIdFromSfUrl(sflink);
     }
 
     @Nullable
