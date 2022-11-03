@@ -21,8 +21,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -59,6 +61,21 @@ public class JobAdminApi implements
     @GetMapping("{id}")
     public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
         SalesforceJobOpp job = jobService.getJob(id);
+        return jobDto().build(job);
+    }
+
+    @PostMapping("{id}/create-search")
+    public @NotNull Map<String, Object> createSuggestedSearch(@PathVariable("id") long id)
+        throws NoSuchObjectException {
+        SalesforceJobOpp job = jobService.createSuggestedSearch(id);
+        return jobDto().build(job);
+    }
+
+    @PutMapping("{id}/remove-search")
+    public @NotNull Map<String, Object> removeSuggestedSearch(
+        @PathVariable("id") long id,  @Valid @RequestBody long savedSearchId)
+        throws NoSuchObjectException {
+        SalesforceJobOpp job = jobService.removeSuggestedSearch(id, savedSearchId);
         return jobDto().build(job);
     }
 

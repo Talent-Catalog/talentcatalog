@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db.impl;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -31,28 +32,36 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SavedSearchType;
 import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.util.SalesforceHelper;
 
 @Service
 public class JobServiceImpl implements JobService {
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
+    private final SavedSearchService savedSearchService;
 
     private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
     public JobServiceImpl(
-        SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService) {
+        SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
+        SavedSearchService savedSearchService) {
         this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.salesforceJobOppService = salesforceJobOppService;
         this.savedListService = savedListService;
+        this.savedSearchService = savedSearchService;
     }
 
     @Override
@@ -60,7 +69,7 @@ public class JobServiceImpl implements JobService {
         throws InvalidRequestException, SalesforceException {
         //Check if we already have a job for this Salesforce job opp.
         final String sfJoblink = request.getSfJoblink();
-        String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfJoblink);
+        String sfId = SalesforceHelper.extractIdFromSfUrl(sfJoblink);
         SalesforceJobOpp job = salesforceJobOppService.getJobOppById(sfId);
         if (job == null) {
             //Create one if none exists
@@ -97,6 +106,40 @@ public class JobServiceImpl implements JobService {
             request.getPageRequest());
 
         return jobs;
+    }
+
+    @NonNull
+    @Override
+    public SalesforceJobOpp createSuggestedSearch(long id) throws NoSuchObjectException {
+        SalesforceJobOpp job = getJob(id);
+
+        Set<SavedSearch> searches = job.getSuggestedSearches();
+
+        UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
+        request.setSavedSearchType(SavedSearchType.job);
+        final int searchNumber = searches.size() + 1;
+        request.setName(job.getName() + "*-search" + searchNumber);
+        request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId()));
+        SavedSearch search = savedSearchService.createSavedSearch(request);
+
+        searches.add(search);
+
+        return salesforceJobOppRepository.save(job);
+    }
+
+    @NonNull
+    @Override
+    public SalesforceJobOpp removeSuggestedSearch(long id, long savedSearchId) {
+        SalesforceJobOpp job = getJob(id);
+
+        SavedSearch search = savedSearchService.getSavedSearch(savedSearchId);
+
+        Set<SavedSearch> searches = job.getSuggestedSearches();
+        searches.remove(search);
+
+        savedSearchService.deleteSavedSearch(savedSearchId);
+
+        return salesforceJobOppRepository.save(job);
     }
 
     @Override

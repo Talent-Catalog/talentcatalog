@@ -629,6 +629,12 @@ import {
 import {
   EditJobSummaryComponent
 } from './components/job/view/summary/edit-job-summary/edit-job-summary.component';
+import {
+  JobSuggestedSearchesTabComponent
+} from './components/job/view/tab/job-suggested-searches-tab/job-suggested-searches-tab.component';
+import {
+  ViewJobSuggestedSearchesComponent
+} from './components/job/view/suggested-searches/view-job-suggested-searches/view-job-suggested-searches.component';
 
 @NgModule({
   declarations: [
@@ -874,7 +880,9 @@ import {
     EditJobInfoComponent,
     ViewJobSuggestedListComponent,
     ViewJobSummaryComponent,
-    EditJobSummaryComponent
+    EditJobSummaryComponent,
+    JobSuggestedSearchesTabComponent,
+    ViewJobSuggestedSearchesComponent
   ],
   imports: [
     BrowserModule,

@@ -55,6 +55,26 @@ public interface JobService {
     SalesforceJobOpp getJob(long id) throws NoSuchObjectException;
 
     /**
+     * Creates a suggested saved search for the job with the given id.
+     * @param id Job id
+     * @return Updated job which will have the new search added to its suggested searches
+     * @throws NoSuchObjectException If no job with that id exists
+     */
+    @NonNull
+    SalesforceJobOpp createSuggestedSearch(long id) throws NoSuchObjectException;
+
+    /**
+     * Removes the given search from the suggested searches for the given job.
+     * @param id Job id
+     * @param savedSearchId Id of saved search to be removed
+     * @return Updated job which will have the search removed from its selected searches
+     * @throws NoSuchObjectException if either there is no job or no search corresponding to the
+     * given ids.
+     */
+    @NonNull
+    SalesforceJobOpp removeSuggestedSearch(long id, long savedSearchId) throws NoSuchObjectException;
+
+    /**
      * Get all jobs matching the given search request
      * @param request - Search Request (paging info is ignored)
      * @return Jobs matching the request
@@ -84,5 +104,4 @@ public interface JobService {
      * Updates all open Jobs from their corresponding records on Salesforce
      */
     void updateOpenJobs();
-
 }

@@ -19,8 +19,16 @@ export class JobService {
     return this.http.post<Job>(`${this.apiUrl}`, request);
   }
 
+  createSuggestedSearch(id: number): Observable<Job> {
+    return this.http.post<Job>(`${this.apiUrl}/${id}/create-search`, null);
+  }
+
   get(id: number): Observable<Job> {
     return this.http.get<Job>(`${this.apiUrl}/${id}`);
+  }
+
+  removeSuggestedSearch(id: number, savedSearchId: number): Observable<Job> {
+    return this.http.put<Job>(`${this.apiUrl}/${id}/remove-search`, savedSearchId);
   }
 
   searchPaged(request: SearchJobRequest): Observable<SearchResults<Job>> {
