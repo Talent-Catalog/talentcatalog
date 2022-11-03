@@ -96,6 +96,14 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
+    @PutMapping("{id}/summary")
+    public @NotNull Map<String, Object> updateSummary(
+        @PathVariable("id") long id, @Valid @RequestBody String summary)
+        throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateJobSummary(id, summary);
+        return jobDto().build(job);
+    }
+
     private DtoBuilder jobDto() {
         return new DtoBuilder()
             .add("id")

@@ -38,4 +38,8 @@ export class JobService {
   update(id: number, request: UpdateJobRequest): Observable<Job> {
     return this.http.put<Job>(`${this.apiUrl}/${id}`, request);
   }
+
+  updateSummary(id: number, summary: string): Observable<Job> {
+    return this.http.put<Job>(`${this.apiUrl}/${id}/summary`, summary);
+  }
 }

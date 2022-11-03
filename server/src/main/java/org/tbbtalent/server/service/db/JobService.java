@@ -103,6 +103,16 @@ public interface JobService {
         throws NoSuchObjectException, SalesforceException;
 
     /**
+     * Updates the summary of the job with the given id
+     * @param id Id of job to be updated
+     * @param summary JOb summary
+     * @return Updated job
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp updateJobSummary(long id, String summary) throws NoSuchObjectException;
+
+    /**
      * Updates all open Jobs from their corresponding records on Salesforce
      */
     void updateOpenJobs();

@@ -15,20 +15,27 @@
           class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
       </div>
 
-      <app-candidate-source-results *ngIf="selectedJob && selectedJob.submissionList"
-                                    [candidateSource]="selectedJob.submissionList" >
-<!--                                    (toggleStarred)="onToggleStarred($event)"-->
-<!--                                    (toggleWatch)="onToggleWatch($event)"-->
-<!--                                    (deleteSource)="onDeleteSource($event)"-->
-<!--                                    (editSource)="onEditSource($event)"-->
-<!--                                    (copySource)="onCopySource($event)"-->
-      >
+      <div *ngIf="selectedJob">
+        <app-view-job-summary
+          [job]="selectedJob">
+        </app-view-job-summary>
 
-      </app-candidate-source-results>
+        <hr/>
+        <div>
+          Submission List
+        </div>
 
-<!--      <app-view-job-description-->
-<!--        [job]="selectedJob">-->
-<!--      </app-view-job-description>-->
+        <app-candidate-source-results *ngIf= "selectedJob.submissionList"
+                                      [candidateSource]="selectedJob.submissionList" >
+  <!--                                    (toggleStarred)="onToggleStarred($event)"-->
+  <!--                                    (toggleWatch)="onToggleWatch($event)"-->
+  <!--                                    (deleteSource)="onDeleteSource($event)"-->
+  <!--                                    (editSource)="onEditSource($event)"-->
+  <!--                                    (copySource)="onCopySource($event)"-->
+        >
+
+        </app-candidate-source-results>
+      </div>
 
     </div>
   </div>
