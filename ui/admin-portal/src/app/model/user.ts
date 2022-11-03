@@ -17,7 +17,7 @@
 import {Country} from "./country";
 import {Partner} from "./partner";
 
-export interface User {
+export class User {
   id: number;
   username: string;
   firstName: string;
@@ -34,6 +34,9 @@ export interface User {
   usingMfa: boolean;
   mfaConfigured: boolean;
   sourcePartner: Partner;
+
+  //Can be populated after upload
+  fullName: string;
 }
 
 export interface UpdateUserRequest {
