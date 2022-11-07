@@ -3,7 +3,8 @@
   <div class="card-header">
     Suggested searches.
     <div class="float-right" *ngIf="editable">
-      <button class="btn btn-sm btn-primary ml-2" (click)="addSearch()">
+      <button title="Create a new suggested search"  class="btn btn-sm btn-primary ml-2"
+              (click)="addSearch()">
         <i class="fas fa-plus"></i> Search
       </button>
     </div>
@@ -21,10 +22,16 @@
     </div>
 
     <div *ngIf="searches.length">
-          Click on a search to run or change it.
-          If you change the search don't forget to click on Update Search.
-          If you find candidates of interest, copy them into the submission list.
+      <p>
+        Click on a search to run or change it.
+        If you change the search don't forget to click on Update Search.
+        If you find candidates of interest, copy them into the submission list.
         (<a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>).
+      </p>
+      <p>
+        Created searches will always include the exclusion list associated with this job.
+        You can change the search to remove the exclusion list if you don't want it.
+      </p>
       <hr/>
 
       <!-- searches -->
