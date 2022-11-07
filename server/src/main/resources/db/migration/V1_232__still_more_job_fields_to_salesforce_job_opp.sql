@@ -15,7 +15,9 @@
  */
 
 alter table salesforce_job_opp add column exclusion_list_id bigint references saved_list;
+alter table salesforce_job_opp add column job_description_doc_name text;
 alter table salesforce_job_opp add column job_description_url text;
+alter table salesforce_job_opp add column job_intake_doc_name text;
 alter table salesforce_job_opp add column job_intake_url text;
 
 

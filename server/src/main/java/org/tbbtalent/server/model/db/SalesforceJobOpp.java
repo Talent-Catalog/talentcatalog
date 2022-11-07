@@ -112,11 +112,23 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private SavedList exclusionList;
 
     /**
+     * Optional job description document name.
+     */
+    @Nullable
+    private String jobDescriptionDocName;
+
+    /**
      * Optional link to a job description document.
      * Could be on employer website - or could be the link to a doc uploaded to our Google Drive.
      */
     @Nullable
     private String jobDescriptionUrl;
+
+    /**
+     * Optional job intake document name.
+     */
+    @Nullable
+    private String jobIntakeDocName;
 
     /**
      * Optional link to a job intake document.

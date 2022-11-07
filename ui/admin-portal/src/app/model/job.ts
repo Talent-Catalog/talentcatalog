@@ -28,7 +28,9 @@ export interface Job {
   createdDate: Date;
   employer: string;
   exclusionList: SavedList;
+  jobDescriptionDocName: string;
   jobDescriptionUrl: string;
+  jobIntakeDocName: string;
   jobIntakeUrl: string;
   jobSummary: string;
   name: string;
