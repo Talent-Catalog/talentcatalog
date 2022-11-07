@@ -25,4 +25,12 @@ export class ViewJobUploadsComponent implements OnInit {
   editJoi() {
     //todo
   }
+
+  uploadJd() {
+    //todo
+  }
+
+  uploadJoi() {
+    //todo
+  }
 }

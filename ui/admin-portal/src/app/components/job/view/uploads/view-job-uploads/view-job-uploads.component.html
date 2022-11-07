@@ -12,14 +12,20 @@
     <div class="row">
 
       <div class="form-group col-sm-12 col-md-4">
-        <label title="Potential candidates should be added to this list" class="col-form-label">
+        <label class="col-form-label">
           <i class="far fa-file"></i>Employer's Job Description (JD)
-          <span class="actions" *ngIf="editable">
-            <button class="btn btn-sm btn-primary" (click)="editJd()">
-              <i class="fas fa-edit"></i>
-            </button>
-          </span>
         </label>
+        <span class="actions" *ngIf="editable">
+          <button title="Enter/change a link to the document"
+                  class="btn btn-sm btn-outline-primary" (click)="editJd()">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button title="Upload the document from your computer"
+                  class="btn btn-sm btn-outline-primary" (click)="uploadJd()">
+            <i class="fa-solid fa-upload"></i>
+          </button>
+        </span>
+
 
         <div *ngIf="job.jobDescriptionUrl" class="form-control-plaintext">
           <a target="_blank" href="{{job.jobDescriptionUrl}}">{{job.jobDescriptionUrl}}</a>
@@ -27,14 +33,19 @@
       </div>
 
       <div class="form-group col-sm-12 col-md-4">
-        <label title="Potential candidates should be added to this list" class="col-form-label">
+        <label class="col-form-label">
           <i class="far fa-file"></i>Job Opportunity Intake (JOI)
-          <span class="actions" *ngIf="editable">
-            <button class="btn btn-sm btn-primary" (click)="editJoi()">
-              <i class="fas fa-edit"></i>
-            </button>
-          </span>
         </label>
+        <span class="actions" *ngIf="editable">
+          <button title="Enter/change a link to the document"
+                  class="btn btn-sm btn-outline-primary" (click)="editJoi()">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button title="Upload the document from your computer"
+                  class="btn btn-sm btn-outline-primary" (click)="uploadJoi()">
+            <i class="fa-solid fa-upload"></i>
+          </button>
+        </span>
 
         <div *ngIf="job.jobIntakeUrl" class="form-control-plaintext">
           <a target="_blank" href="{{job.jobIntakeUrl}}">{{job.jobIntakeUrl}}</a>
