@@ -51,10 +51,12 @@
 
         <!-- UPLOADS -->
         <ng-container ngbNavItem="Uploads">
-          <a ngbNavLink>Uploads (JD/JOI)</a>
+          <a ngbNavLink>Job Detail (JD/JOI)</a>
           <ng-template ngbNavContent>
-<!--            todo -->
-            to do
+            <app-job-upload-tab
+              [job]="job"
+              [editable]="!loggedInUser.readOnly">
+            </app-job-upload-tab>
           </ng-template>
         </ng-container>
 

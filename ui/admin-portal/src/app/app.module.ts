@@ -636,6 +636,12 @@ import {
   ViewJobSuggestedSearchesComponent
 } from './components/job/view/suggested-searches/view-job-suggested-searches/view-job-suggested-searches.component';
 import {InputTextComponent} from './components/util/input/input-text/input-text.component';
+import {
+  JobUploadTabComponent
+} from './components/job/view/tab/job-upload-tab/job-upload-tab.component';
+import {
+  ViewJobUploadsComponent
+} from './components/job/view/uploads/view-job-uploads/view-job-uploads.component';
 
 @NgModule({
   declarations: [
@@ -884,7 +890,9 @@ import {InputTextComponent} from './components/util/input/input-text/input-text.
     EditJobSummaryComponent,
     JobSuggestedSearchesTabComponent,
     ViewJobSuggestedSearchesComponent,
-    InputTextComponent
+    InputTextComponent,
+    JobUploadTabComponent,
+    ViewJobUploadsComponent
   ],
   imports: [
     BrowserModule,
