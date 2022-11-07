@@ -28,7 +28,8 @@
 
 
         <div *ngIf="job.jobDescriptionUrl" class="form-control-plaintext">
-          <a target="_blank" href="{{job.jobDescriptionUrl}}">{{job.jobDescriptionUrl}}</a>
+          <a target="_blank" href="{{job.jobDescriptionUrl}}">
+            {{job.jobDescriptionDocName ? job.jobDescriptionDocName : job.jobDescriptionUrl}}</a>
         </div>
       </div>
 
@@ -48,7 +49,8 @@
         </span>
 
         <div *ngIf="job.jobIntakeUrl" class="form-control-plaintext">
-          <a target="_blank" href="{{job.jobIntakeUrl}}">{{job.jobIntakeUrl}}</a>
+          <a target="_blank" href="{{job.jobIntakeUrl}}">
+            {{job.jobIntakeDocName ? job.jobIntakeDocName : job.jobIntakeUrl}}</a>
         </div>
       </div>
     </div>
