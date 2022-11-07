@@ -17,11 +17,11 @@
         </label>
         <span class="actions" *ngIf="editable">
           <button title="Enter/change a link to the document"
-                  class="btn btn-sm btn-outline-primary" (click)="editJd()">
+                  class="btn btn-sm btn-outline-primary" (click)="editJobLink(DocType.jd)">
             <i class="fas fa-edit"></i>
           </button>
           <button title="Upload the document from your computer"
-                  class="btn btn-sm btn-outline-primary" (click)="uploadJd()">
+                  class="btn btn-sm btn-outline-primary" (click)="uploadJobDoc(DocType.jd)">
             <i class="fa-solid fa-upload"></i>
           </button>
         </span>
@@ -39,11 +39,11 @@
         </label>
         <span class="actions" *ngIf="editable">
           <button title="Enter/change a link to the document"
-                  class="btn btn-sm btn-outline-primary" (click)="editJoi()">
+                  class="btn btn-sm btn-outline-primary" (click)="editJobLink(DocType.joi)">
             <i class="fas fa-edit"></i>
           </button>
           <button title="Upload the document from your computer"
-                  class="btn btn-sm btn-outline-primary" (click)="uploadJoi()">
+                  class="btn btn-sm btn-outline-primary" (click)="uploadJobDoc(DocType.joi)">
             <i class="fa-solid fa-upload"></i>
           </button>
         </span>
