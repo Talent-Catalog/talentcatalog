@@ -101,6 +101,31 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private String employer;
 
     /**
+     * Optional exclusion list associated with job.
+     * <p/>
+     * Used to exclude people who have already been seen and rejected for this job from future
+     * searches (see {@link SavedSearch#getExclusionList()}).
+     */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exclusion_list_id")
+    private SavedList exclusionList;
+
+    /**
+     * Optional link to a job description document.
+     * Could be on employer website - or could be the link to a doc uploaded to our Google Drive.
+     */
+    @Nullable
+    private String jobDescriptionUrl;
+
+    /**
+     * Optional link to a job intake document.
+     * Usually a link to a doc on our Google Drive.
+     */
+    @Nullable
+    private String jobIntakeUrl;
+
+    /**
      * Summary describing job
      */
     private String jobSummary;
