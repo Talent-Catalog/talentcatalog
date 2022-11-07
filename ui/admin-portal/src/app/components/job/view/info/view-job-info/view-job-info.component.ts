@@ -3,6 +3,7 @@ import {Job} from "../../../../../model/job";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {User} from "../../../../../model/user";
+import {SavedList} from "../../../../../model/saved-list";
 
 @Component({
   selector: 'app-view-job-info',
@@ -37,10 +38,8 @@ export class ViewJobInfoComponent implements OnInit {
       contactUser.firstName + " " + contactUser.lastName  : "";
   }
 
-  displaySubmissionList(): string {
-    return this.job.submissionList ?
-      this.job.submissionList.name + "(" + this.job.submissionList.id + ")" :
-      "";
+  displaySavedList(list: SavedList): string {
+    return list ? list.name + "(" + list.id + ")" : "";
   }
 
   showEmailUrl(email: string) {

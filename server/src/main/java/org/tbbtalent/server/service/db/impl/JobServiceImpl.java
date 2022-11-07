@@ -36,6 +36,7 @@ import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SavedSearchType;
 import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
@@ -117,6 +118,13 @@ public class JobServiceImpl implements JobService {
         request.setSavedSearchType(SavedSearchType.job);
         request.setName(job.getName() + "*-" + suffix);
         request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId()));
+        SavedList exclusionList = job.getExclusionList();
+        if (exclusionList != null) {
+            //Add job exclusion list to suggested search
+            SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
+            searchCandidateRequest.setExclusionListId(exclusionList.getId());
+            request.setSearchCandidateRequest(searchCandidateRequest);;
+        }
         SavedSearch search = savedSearchService.createSavedSearch(request);
 
         Set<SavedSearch> searches = job.getSuggestedSearches();

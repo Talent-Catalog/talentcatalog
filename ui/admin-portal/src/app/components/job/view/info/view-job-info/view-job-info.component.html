@@ -12,10 +12,18 @@
     <div class="row">
 
       <div *ngIf="job.submissionList" class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Submission List</label>
+        <label title="Potential candidates should be added to this list" class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Submission List</label>
 
         <div class="form-control-plaintext">
-          <span><a [routerLink]="['/list',job.submissionList.id]">{{displaySubmissionList()}}</a></span>
+          <span><a [routerLink]="['/list',job.submissionList.id]">{{displaySavedList(job.submissionList)}}</a></span>
+        </div>
+      </div>
+
+      <div *ngIf="job.exclusionList" class="form-group col-sm-12 col-md-4">
+        <label title="Candidates who have already been considered and rejected for this job should be added to this list" class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Exclusion List</label>
+
+        <div class="form-control-plaintext">
+          <span><a [routerLink]="['/list',job.exclusionList.id]">{{displaySavedList(job.exclusionList)}}</a></span>
         </div>
       </div>
 

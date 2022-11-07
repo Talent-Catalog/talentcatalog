@@ -27,6 +27,9 @@ export interface Job {
   createdBy: User;
   createdDate: Date;
   employer: string;
+  exclusionList: SavedList;
+  jobDescriptionUrl: string;
+  jobIntakeUrl: string;
   jobSummary: string;
   name: string;
   publishedBy: User;
