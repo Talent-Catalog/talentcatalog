@@ -170,8 +170,11 @@ export interface Opportunity {
 export interface HasJobRelatedLinks {
   sfJoblink: string;
   listlink?: string;
+  fileJdLink?: string;
+  fileJdName?: string;
+  fileJoiLink?: string;
+  fileJoiName?: string;
   folderlink?: string;
-  foldercvlink?: string;
   folderjdlink?: string;
 }
 

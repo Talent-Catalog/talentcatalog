@@ -35,7 +35,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * This is a copy of an Employer Job Opportunity on Salesforce
@@ -53,7 +52,6 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "salesforce_job_opp")
 @SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
@@ -110,32 +108,6 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exclusion_list_id")
     private SavedList exclusionList;
-
-    /**
-     * Optional job description document name.
-     */
-    @Nullable
-    private String jobDescriptionDocName;
-
-    /**
-     * Optional link to a job description document.
-     * Could be on employer website - or could be the link to a doc uploaded to our Google Drive.
-     */
-    @Nullable
-    private String jobDescriptionUrl;
-
-    /**
-     * Optional job intake document name.
-     */
-    @Nullable
-    private String jobIntakeDocName;
-
-    /**
-     * Optional link to a job intake document.
-     * Usually a link to a doc on our Google Drive.
-     */
-    @Nullable
-    private String jobIntakeUrl;
 
     /**
      * Summary describing job

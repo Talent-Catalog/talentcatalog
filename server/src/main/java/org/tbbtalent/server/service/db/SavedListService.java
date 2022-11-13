@@ -137,15 +137,14 @@ public interface SavedListService {
     void deassociateTaskFromList(User user, TaskImpl task, SavedList list);
 
     /**
-     * Creates a folder for the given list on Google Drive with two subfolders, one for CVs and
-     * the other for Job Description (JD) docs.
+     * Creates a folder for the given list on Google Drive with a subfolder for Job Description docs.
      * <p/>
      * If a folder already exists for the list, does nothing.
      *
      * @param id ID of list
      * @return Updated saved list object, containing link to folder (created or
-     * existing) in {@link SavedList#getFolderlink()} and also links to the subfolders
-     * in {@link SavedList#getFoldercvlink()} and {@link SavedList#getFolderjdlink()}
+     * existing) in {@link SavedList#getFolderlink()} and also link to the subfolder
+     * {@link SavedList#getFolderjdlink()}
      * @throws NoSuchObjectException if no list is found with that id
      * @throws IOException           if there is a problem creating the folder.
      */

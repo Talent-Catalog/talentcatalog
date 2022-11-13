@@ -41,8 +41,11 @@ export enum ContentUpdateType {
 
 export interface SavedList extends CandidateSource {
   savedSearchSource?: SavedSearchRef;
+  fileJdLink?: string;
+  fileJdName?: string;
+  fileJoiLink?: string;
+  fileJoiName?: string;
   folderlink?: string;
-  foldercvlink?: string;
   folderjdlink?: string;
   publishedDocLink?: string;
   tbbShortName?: string;

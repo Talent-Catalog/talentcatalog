@@ -26,10 +26,12 @@
           </button>
         </span>
 
-
-        <div *ngIf="job.jobDescriptionUrl" class="form-control-plaintext">
-          <a target="_blank" href="{{job.jobDescriptionUrl}}">
-            {{job.jobDescriptionDocName ? job.jobDescriptionDocName : job.jobDescriptionUrl}}</a>
+        <div *ngIf="!job.submissionList?.fileJdLink" class="form-control-plaintext alert alert-danger">
+          Please upload, or link to, a job description document
+        </div>
+        <div *ngIf="job.submissionList?.fileJdLink" class="form-control-plaintext">
+          <a target="_blank" href="{{job.submissionList.fileJdLink}}">
+            {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
         </div>
       </div>
 
@@ -48,9 +50,12 @@
           </button>
         </span>
 
-        <div *ngIf="job.jobIntakeUrl" class="form-control-plaintext">
-          <a target="_blank" href="{{job.jobIntakeUrl}}">
-            {{job.jobIntakeDocName ? job.jobIntakeDocName : job.jobIntakeUrl}}</a>
+        <div *ngIf="!job.submissionList?.fileJoiLink" class="form-control-plaintext alert alert-danger">
+          Please upload, or link to, a job opportunity intake document
+        </div>
+        <div *ngIf="job.submissionList?.fileJoiLink" class="form-control-plaintext">
+          <a target="_blank" href="{{job.submissionList.fileJoiLink}}">
+            {{job.submissionList.fileJoiName ? job.submissionList.fileJoiName : job.submissionList.fileJoiLink}}</a>
         </div>
       </div>
     </div>

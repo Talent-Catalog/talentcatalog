@@ -14,6 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-alter table salesforce_job_opp add column exclusion_list_id bigint references saved_list;
-
+alter table saved_list add column file_jd_name text;
+alter table saved_list add column file_jd_link text;
+alter table saved_list add column file_joi_name text;
+alter table saved_list add column file_joi_link text;
 

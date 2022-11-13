@@ -132,6 +132,7 @@ public interface FileSystemService {
      * @param parentFolder - this is the folder where the new copy will belong.
      * @param name - this is the name for the new copy.
      * @param sourceFile - this is the file to be copied.
+     * @return Copy of file
      * @throws IOException If there was a problem copying the file.
      */
     GoogleFileSystemFile copyFile(
