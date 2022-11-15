@@ -32,7 +32,24 @@ export class ViewJobUploadsComponent implements OnInit {
   }
 
   editJobLink(docType: DocType) {
-    //todo
+    //todo Create InputLinkComponent - capture link and name then save
+    let link = "todo link";
+    let name = "todo name";
+    this.saveLink(docType, link, name);
+
+  }
+
+  private doUpload(docType: DocType, file: File) {
+    const formData: FormData = new FormData();
+    formData.append('file', file);
+
+    //todo this.jobService.uploadJobDoc(this.job.id, docType, formData).subscribe;
+
+
+    //todo upload file and if successful set the link and name
+    let link = "todo link";
+    let name = "todo name";
+    this.saveLink(docType, link, name);
   }
 
   uploadJobDoc(docType: DocType) {
@@ -47,12 +64,15 @@ export class ViewJobUploadsComponent implements OnInit {
 
     fileSelectorModal.result
     .then((selectedFiles: File[]) => {
-      this.doUpload(docType, selectedFiles);
+      if (selectedFiles.length > 0) {
+        this.doUpload(docType, selectedFiles[0]);
+      }
     })
     .catch(() => {});
   }
 
-  private doUpload(docType: DocType, selectedFiles: File[]) {
-    //todo upload file and if successful set the link and name
+  private saveLink(docType: DocType, link: string, name: string) {
+
+    //todo
   }
 }

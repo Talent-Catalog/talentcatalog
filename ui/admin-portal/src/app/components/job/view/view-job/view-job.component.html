@@ -15,6 +15,11 @@
       </span>
     </h1>
 
+    <div *ngIf="!job.publishedDate">
+      <button type="button" class="btn btn-outline-dark mr-2"
+              (click)="publishJob()">Publish Job</button>
+    </div>
+
     <div class="col-sm-4">
       <app-view-job-summary
         [job]="job">
@@ -44,8 +49,10 @@
         <ng-container ngbNavItem="Searches">
           <a ngbNavLink>Suggested search(es)</a>
           <ng-template ngbNavContent>
-<!--            todo -->
-            to do
+            <app-job-suggested-searches-tab
+              [job]="job"
+              [editable]="!loggedInUser.readOnly">
+            </app-job-suggested-searches-tab>
           </ng-template>
         </ng-container>
 
@@ -57,6 +64,15 @@
               [job]="job"
               [editable]="!loggedInUser.readOnly">
             </app-job-upload-tab>
+          </ng-template>
+        </ng-container>
+
+        <!-- SOURCE CONTACTS -->
+        <ng-container ngbNavItem="Source">
+          <a ngbNavLink>Source Contacts</a>
+          <ng-template ngbNavContent>
+<!--            todo -->
+            to do
           </ng-template>
         </ng-container>
 

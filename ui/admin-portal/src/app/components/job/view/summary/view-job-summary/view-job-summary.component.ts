@@ -44,6 +44,21 @@ export class ViewJobSummaryComponent implements OnInit, OnChanges {
   }
 
   saveChanges() {
-    //todo
+    this.error = null;
+    this.saving = true;
+
+    const summary = this.form.value.jobSummary;
+    //Update the local job object.
+    this.job.jobSummary = summary;
+    //And save the change on the server as well.
+    this.jobService.updateSummary(this.job.id, summary).subscribe(
+      (job) => {
+        this.jobSummaryControl.markAsPristine();
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
   }
 }
