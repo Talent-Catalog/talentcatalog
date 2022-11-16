@@ -66,7 +66,7 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
                 .setIncludeItemsFromAllDrives(true)
                 .setCorpora("drive")
                 .setDriveId(drive.getId())
-                .setQ("name='" + folderName + "'" +
+                .setQ("name='" + folderName.replace("'", "\\'") + "'" +
                       " and '" + parentFolder.getId() + "' in parents" +
                       " and mimeType='" + FOLDER_MIME_TYPE + "'")
                 .setPageSize(10)
