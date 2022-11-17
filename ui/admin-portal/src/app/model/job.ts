@@ -42,6 +42,8 @@ export interface Job {
   updatedDate: Date;
 }
 
+export type JobDocType = "jd" | "joi";
+
 /**
  * Note that the string values of this enum MUST match the actual stage names for job
  * opportunities on Salesforce.

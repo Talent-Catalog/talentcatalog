@@ -1,12 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Job} from "../../../../../model/job";
+import {Job, JobDocType} from "../../../../../model/job";
 import {FileSelectorComponent} from "../../../../util/file-selector/file-selector.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-
-enum DocType {
-  jd = "job description",
-  joi = "job intake"
-}
+import {JobService} from "../../../../../services/job.service";
 
 @Component({
   selector: 'app-view-job-uploads',
@@ -21,38 +17,55 @@ export class ViewJobUploadsComponent implements OnInit {
   saving: boolean;
 
   constructor(
+    private jobService: JobService,
     private modalService: NgbModal,
   ) { }
 
   ngOnInit(): void {
   }
 
-  get DocType() {
-    return DocType;
-  }
-
-  editJobLink(docType: DocType) {
+  private editJobLink(docType: JobDocType) {
     //todo Create InputLinkComponent - capture link and name then save
     let link = "todo link";
     let name = "todo name";
-    this.saveLink(docType, link, name);
+
+    this.error = null;
+    this.saving = true;
+    this.jobService.updateJobLink(this.job.id, docType, name, link).subscribe(
+      job => {
+        //todo Need event to bubble up and change job
+        this.job = job
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error
+        this.saving = false;
+      }
+    );
+
 
   }
 
-  private doUpload(docType: DocType, file: File) {
+  private doUpload(docType: JobDocType, file: File) {
     const formData: FormData = new FormData();
     formData.append('file', file);
 
-    //todo this.jobService.uploadJobDoc(this.job.id, docType, formData).subscribe;
-
-
-    //todo upload file and if successful set the link and name
-    let link = "todo link";
-    let name = "todo name";
-    this.saveLink(docType, link, name);
+    this.error = null;
+    this.saving = true;
+    this.jobService.uploadJobDoc(this.job.id, docType, formData).subscribe(
+      job => {
+        //todo Need event to bubble up and change job
+        this.job = job
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error
+        this.saving = false;
+      }
+    );
   }
 
-  uploadJobDoc(docType: DocType) {
+  private uploadJobDoc(docType: JobDocType) {
     const fileSelectorModal = this.modalService.open(FileSelectorComponent, {
       centered: true,
       backdrop: 'static'
@@ -71,8 +84,19 @@ export class ViewJobUploadsComponent implements OnInit {
     .catch(() => {});
   }
 
-  private saveLink(docType: DocType, link: string, name: string) {
+  editJDLink() {
+    this.editJobLink("jd")
+  }
 
-    //todo
+  editJOILink() {
+    this.editJobLink("joi")
+  }
+
+  uploadJD() {
+    this.uploadJobDoc("jd")
+  }
+
+  uploadJOI() {
+    this.uploadJobDoc("joi")
   }
 }

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {Job, SearchJobRequest, UpdateJobRequest} from "../model/job";
+import {Job, JobDocType, SearchJobRequest, UpdateJobRequest} from "../model/job";
 import {SearchResults} from "../model/search-results";
 
 @Injectable({
@@ -39,7 +39,19 @@ export class JobService {
     return this.http.put<Job>(`${this.apiUrl}/${id}`, request);
   }
 
+  updateJobLink(id: number, docType: JobDocType, name: string, link: string): Observable<Job> {
+
+    //todo UpdateJobLinkRequest
+    return this.http.put<Job>(`${this.apiUrl}/${id}/${docType}`, {});
+  }
+
   updateSummary(id: number, summary: string): Observable<Job> {
     return this.http.put<Job>(`${this.apiUrl}/${id}/summary`, summary);
+  }
+
+  uploadJobDoc(id: number, docType: JobDocType, formData: FormData): Observable<Job> {
+    return this.http.post<Job>(
+      `${this.apiUrl}/${id}/upload/${docType}`, formData);
+
   }
 }

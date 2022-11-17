@@ -1,7 +1,7 @@
 <div class="card">
 
   <div class="card-header">
-    Formal job definitions.
+    Formal job definitions. <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
   </div>
 
   <div class="card-body">
@@ -17,11 +17,11 @@
         </label>
         <span class="actions" *ngIf="editable">
           <button title="Enter/change a link to the document"
-                  class="btn btn-sm btn-outline-primary" (click)="editJobLink(DocType.jd)">
+                  class="btn btn-sm btn-outline-primary" (click)="editJDLink()">
             <i class="fas fa-edit"></i>
           </button>
           <button title="Upload the document from your computer"
-                  class="btn btn-sm btn-outline-primary" (click)="uploadJobDoc(DocType.jd)">
+                  class="btn btn-sm btn-outline-primary" (click)="uploadJD()">
             <i class="fa-solid fa-upload"></i>
           </button>
         </span>
@@ -41,11 +41,11 @@
         </label>
         <span class="actions" *ngIf="editable">
           <button title="Enter/change a link to the document"
-                  class="btn btn-sm btn-outline-primary" (click)="editJobLink(DocType.joi)">
+                  class="btn btn-sm btn-outline-primary" (click)="editJOILink()">
             <i class="fas fa-edit"></i>
           </button>
           <button title="Upload the document from your computer"
-                  class="btn btn-sm btn-outline-primary" (click)="uploadJobDoc(DocType.joi)">
+                  class="btn btn-sm btn-outline-primary" (click)="uploadJOI()">
             <i class="fa-solid fa-upload"></i>
           </button>
         </span>

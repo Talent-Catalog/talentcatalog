@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.io.IOException;
 import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -26,7 +27,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -101,6 +104,22 @@ public class JobAdminApi implements
         @PathVariable("id") long id, @Valid @RequestBody String summary)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateJobSummary(id, summary);
+        return jobDto().build(job);
+    }
+
+    @PostMapping("{id}/upload/jd")
+    public @NotNull Map<String, Object> uploadJd(
+        @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
+        throws InvalidRequestException, IOException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.uploadJd(id, file);
+        return jobDto().build(job);
+    }
+
+    @PostMapping("{id}/upload/joi")
+    public @NotNull Map<String, Object> uploadJoi(
+        @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
+        throws InvalidRequestException, IOException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.uploadJoi(id, file);
         return jobDto().build(job);
     }
 

@@ -48,5 +48,4 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   publishJob() {
     //todo
   }
-
 }

@@ -16,6 +16,10 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +31,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
@@ -41,14 +47,20 @@ import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.util.SalesforceHelper;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
 public class JobServiceImpl implements JobService {
+    private final FileSystemService fileSystemService;
+    private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
@@ -57,8 +69,11 @@ public class JobServiceImpl implements JobService {
     private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
     public JobServiceImpl(
+        FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
         SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
         SavedSearchService savedSearchService) {
+        this.fileSystemService = fileSystemService;
+        this.googleDriveConfig = googleDriveConfig;
         this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.salesforceJobOppService = salesforceJobOppService;
         this.savedListService = savedListService;
@@ -204,4 +219,86 @@ public class JobServiceImpl implements JobService {
         }
     }
 
+    private void setJobJdLink(SalesforceJobOpp job, String name, String url) {
+        SavedList submissionList = job.getSubmissionList();
+        submissionList.setFileJdLink(url);
+        submissionList.setFileJdName(name);
+        savedListService.saveIt(submissionList);
+    }
+
+    private void setJobJoiLink(SalesforceJobOpp job, String name, String url) {
+        SavedList submissionList = job.getSubmissionList();
+        submissionList.setFileJoiLink(url);
+        submissionList.setFileJoiName(name);
+        savedListService.saveIt(submissionList);
+    }
+
+    private GoogleFileSystemFile uploadFile(String folderLink, String fileName,
+        MultipartFile file) throws IOException {
+
+        //Save to a temporary file
+        InputStream is = file.getInputStream();
+        File tempFile = File.createTempFile("job", ".tmp");
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+            int read;
+            byte[] bytes = new byte[1024];
+            while ((read = is.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+        }
+
+        final GoogleFileSystemDrive listFoldersDrive = googleDriveConfig.getListFoldersDrive();
+        final GoogleFileSystemFolder parentFolder = new GoogleFileSystemFolder(folderLink);
+
+        //Upload the file to its folder, with the correct name (not the temp
+        //file name).
+        GoogleFileSystemFile uploadedFile =
+            fileSystemService.uploadFile(listFoldersDrive, parentFolder, fileName, tempFile);
+
+        //Delete tempfile
+        if (!tempFile.delete()) {
+            log.error("Failed to delete temporary file " + tempFile);
+        }
+
+        return uploadedFile;
+    }
+
+    private GoogleFileSystemFile uploadJobFile(SalesforceJobOpp job, MultipartFile file)
+        throws IOException {
+        SavedList submissionList = job.getSubmissionList();
+
+        String jdFolderLink = submissionList.getFolderjdlink();
+
+        //Name of file being uploaded (this is the name it had on the
+        //originating computer).
+        String fileName = file.getOriginalFilename();
+
+        return uploadFile(jdFolderLink, fileName, file);
+    }
+
+    @Override
+    public SalesforceJobOpp uploadJd(long id, MultipartFile file)
+        throws InvalidRequestException, NoSuchObjectException, IOException {
+
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+        setJobJdLink(job, uploadedFile.getName(), uploadedFile.getUrl());
+        return job;
+    }
+
+    @Override
+    public SalesforceJobOpp uploadJoi(long id, MultipartFile file)
+        throws InvalidRequestException, NoSuchObjectException, IOException {
+
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+        setJobJoiLink(job, uploadedFile.getName(), uploadedFile.getUrl());
+        return job;
+    }
 }
