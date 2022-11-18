@@ -18,7 +18,7 @@
     </span>
     </label>
 
-    <textarea id="jobSummary" class="md-textarea-auto form-control" rows="3"
+    <textarea id="jobSummary" class="md-textarea-auto form-control" rows="{{nRows}}"
               placeholder="Enter short summary of job..."
               [formControlName]="'jobSummary'">{{job.jobSummary}}</textarea>
   </div>

@@ -10,6 +10,7 @@ import {JobService} from "../../../../../services/job.service";
 })
 export class ViewJobSummaryComponent implements OnInit, OnChanges {
   @Input() job: Job;
+  @Input() nRows: number = 3;
 
   form: FormGroup;
   error: any;
