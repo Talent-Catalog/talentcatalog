@@ -51,4 +51,8 @@ export class ViewJobFromUrlComponent implements OnInit {
   private setJob(job: Job) {
     this.job = job;
   }
+
+  onJobUpdated(job: Job) {
+    this.setJob(job)
+  }
 }

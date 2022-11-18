@@ -1,0 +1,33 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">{{title}}</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+  <div *ngIf="instructions">{{instructions}}</div>
+
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="form">
+    <div class="form-group">
+      <label for="name"l>Name of link</label>
+      <input id="name" type="text" class="form-control" formControlName="name">
+    </div>
+    <div class="form-group">
+      <label for="url"l>Url of link</label>
+      <input id="url" type="text" class="form-control" formControlName="url">
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="close()">
+    Ok
+  </button>
+  <button *ngIf="showCancel" type="button" class="btn btn-primary" (click)="dismiss()">
+    Cancel
+  </button>
+</div>

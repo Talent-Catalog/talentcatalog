@@ -62,7 +62,9 @@
           <ng-template ngbNavContent>
             <app-job-upload-tab
               [job]="job"
-              [editable]="!loggedInUser.readOnly">
+              [editable]="!loggedInUser.readOnly"
+              (jobUpdated)="onJobUpdated($event)"
+            >
             </app-job-upload-tab>
           </ng-template>
         </ng-container>

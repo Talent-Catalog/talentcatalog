@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Job, JobDocType, SearchJobRequest, UpdateJobRequest} from "../model/job";
 import {SearchResults} from "../model/search-results";
+import {UpdateLinkRequest} from "../components/util/input/input-link/input-link.component";
 
 @Injectable({
   providedIn: 'root'
@@ -39,10 +40,8 @@ export class JobService {
     return this.http.put<Job>(`${this.apiUrl}/${id}`, request);
   }
 
-  updateJobLink(id: number, docType: JobDocType, name: string, link: string): Observable<Job> {
-
-    //todo UpdateJobLinkRequest
-    return this.http.put<Job>(`${this.apiUrl}/${id}/${docType}`, {});
+  updateJobLink(id: number, docType: JobDocType, updateLinkRequest: UpdateLinkRequest): Observable<Job> {
+    return this.http.put<Job>(`${this.apiUrl}/${id}/${docType}link`, updateLinkRequest);
   }
 
   updateSummary(id: number, summary: string): Observable<Job> {

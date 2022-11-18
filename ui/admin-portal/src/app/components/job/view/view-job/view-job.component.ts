@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Job} from "../../../../model/job";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
@@ -13,6 +13,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 })
 export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   @Input() job: Job;
+  @Output() jobUpdated = new EventEmitter<Job>();
 
   activeTabId: string;
   loggedInUser: User;
@@ -47,5 +48,9 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
 
   publishJob() {
     //todo
+  }
+
+  onJobUpdated(job: Job) {
+    this.jobUpdated.emit(job);
   }
 }

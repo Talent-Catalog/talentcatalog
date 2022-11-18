@@ -1,8 +1,17 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Job, JobDocType} from "../../../../../model/job";
 import {FileSelectorComponent} from "../../../../util/file-selector/file-selector.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {JobService} from "../../../../../services/job.service";
+import {
+  InputLinkComponent,
+  UpdateLinkRequest
+} from "../../../../util/input/input-link/input-link.component";
+
+/*
+MODEL: Bubbling up object changes using @Output events (in this case changes to a job)
+through a hierarchy of components.
+ */
 
 @Component({
   selector: 'app-view-job-uploads',
@@ -12,6 +21,7 @@ import {JobService} from "../../../../../services/job.service";
 export class ViewJobUploadsComponent implements OnInit {
   @Input() job: Job;
   @Input() editable: boolean;
+  @Output() jobUpdated = new EventEmitter<Job>();
 
   error: any;
   saving: boolean;
@@ -25,16 +35,36 @@ export class ViewJobUploadsComponent implements OnInit {
   }
 
   private editJobLink(docType: JobDocType) {
-    //todo Create InputLinkComponent - capture link and name then save
-    let link = "todo link";
-    let name = "todo name";
+    const inputLinkModal = this.modalService.open(InputLinkComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
 
+    let initialValue: UpdateLinkRequest = {}
+    switch (docType) {
+      case "jd":
+        initialValue.url = this.job.submissionList?.fileJdLink;
+        initialValue.name  = this.job.submissionList?.fileJdName;
+        break;
+
+      case "joi":
+        initialValue.url = this.job.submissionList?.fileJoiLink;
+        initialValue.name = this.job.submissionList?.fileJoiName;
+        break;
+    }
+    inputLinkModal.componentInstance.initialValue = initialValue;
+    inputLinkModal.result.then(
+      updateLinkRequest => {this.doUpdateLink(docType, updateLinkRequest)}
+    );
+  }
+
+  private doUpdateLink(docType: JobDocType, updateLinkRequest: UpdateLinkRequest) {
     this.error = null;
     this.saving = true;
-    this.jobService.updateJobLink(this.job.id, docType, name, link).subscribe(
+    this.jobService.updateJobLink(this.job.id, docType, updateLinkRequest).subscribe(
       job => {
-        //todo Need event to bubble up and change job
-        this.job = job
+        //Need event to bubble up and change job
+        this.jobUpdated.emit(job)
         this.saving = false;
       },
       (error) => {
@@ -42,8 +72,6 @@ export class ViewJobUploadsComponent implements OnInit {
         this.saving = false;
       }
     );
-
-
   }
 
   private doUpload(docType: JobDocType, file: File) {
@@ -54,8 +82,8 @@ export class ViewJobUploadsComponent implements OnInit {
     this.saving = true;
     this.jobService.uploadJobDoc(this.job.id, docType, formData).subscribe(
       job => {
-        //todo Need event to bubble up and change job
-        this.job = job
+        //Need event to bubble up and change job
+        this.jobUpdated.emit(job)
         this.saving = false;
       },
       (error) => {

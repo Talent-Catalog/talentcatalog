@@ -27,6 +27,7 @@ import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
+import org.tbbtalent.server.request.link.UpdateLinkRequest;
 
 /**
  * Service for managing {@link SalesforceJobOpp}
@@ -115,6 +116,30 @@ public interface JobService {
     SalesforceJobOpp updateJobSummary(long id, String summary) throws NoSuchObjectException;
 
     /**
+     * Updates the Job Description doc link of the job with the given id
+     * @param id ID of job
+     * @param updateLinkRequest Details of link (name and url)
+     * @return Updated job
+     * @throws InvalidRequestException if the job does not have a submission list
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp updateJdLink(long id, UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException;
+
+    /**
+     * Updates the Job opportunity intake link of the job with the given id
+     * @param id ID of job
+     * @param updateLinkRequest Details of link (name and url)
+     * @return Updated job
+     * @throws InvalidRequestException if the job does not have a submission list
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp updateJoiLink(long id, UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException;
+
+    /**
      * Updates all open Jobs from their corresponding records on Salesforce
      */
     void updateOpenJobs();
@@ -150,4 +175,5 @@ public interface JobService {
      */
     SalesforceJobOpp uploadJoi(long id, MultipartFile file)
         throws InvalidRequestException, NoSuchObjectException, IOException;
+
 }

@@ -45,6 +45,7 @@ import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
+import org.tbbtalent.server.request.link.UpdateLinkRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.service.db.FileSystemService;
@@ -177,6 +178,30 @@ public class JobServiceImpl implements JobService {
     @Nullable
     private SalesforceJobOpp getJobBySubmissionList(SavedList submissionList) {
         return salesforceJobOppRepository.getJobBySubmissionList(submissionList);
+    }
+
+    @Override
+    @NonNull
+    public SalesforceJobOpp updateJdLink(long id, UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        setJobJdLink(job, updateLinkRequest.getName(), updateLinkRequest.getUrl());
+        return job;
+    }
+
+    @Override
+    @NonNull
+    public SalesforceJobOpp updateJoiLink(long id, UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        setJobJoiLink(job, updateLinkRequest.getName(), updateLinkRequest.getUrl());
+        return job;
     }
 
     @NonNull

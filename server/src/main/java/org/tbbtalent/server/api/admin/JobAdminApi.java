@@ -36,6 +36,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
+import org.tbbtalent.server.request.link.UpdateLinkRequest;
 import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -96,6 +97,22 @@ public class JobAdminApi implements
     public @NotNull Map<String, Object> update(long id, UpdateJobRequest request)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateJob(id, request);
+        return jobDto().build(job);
+    }
+
+    @PutMapping("{id}/jdlink")
+    public @NotNull Map<String, Object> updateJdLink(
+        @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateJdLink(id, updateLinkRequest);
+        return jobDto().build(job);
+    }
+
+    @PutMapping("{id}/joilink")
+    public @NotNull Map<String, Object> updateJoiLink(
+        @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateJoiLink(id, updateLinkRequest);
         return jobDto().build(job);
     }
 
