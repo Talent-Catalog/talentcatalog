@@ -24,3 +24,8 @@ variable "container_image" {
   description = "Container image"
   default     = "231168606641.dkr.ecr.us-east-1.amazonaws.com/tbbtalentv2"
 }
+
+variable "certificate_domain" {
+  type        = string
+  description = "The primary domain name of the certificate in ACM"
+}

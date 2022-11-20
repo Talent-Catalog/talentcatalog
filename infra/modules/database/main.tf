@@ -6,12 +6,13 @@ data "aws_ssm_parameter" "rds_username" {
 }
 
 module "database" {
+  count   = var.db_enable ? 1 : 0
   source  = "terraform-aws-modules/rds/aws"
   version = "5.1.0"
 
   identifier        = "${var.app}-${terraform.workspace}"
   engine            = "postgres"
-  engine_version    = "14.1"
+  engine_version    = "14.3"
   instance_class    = var.db_instance_class
   allocated_storage = var.db_capacity
 
@@ -20,10 +21,11 @@ module "database" {
   allow_major_version_upgrade = true
   auto_minor_version_upgrade  = true
 
-  db_name  = var.app
-  port     = "5432"
-  username = data.aws_ssm_parameter.rds_username.value
-  password = data.aws_ssm_parameter.rds_password.value
+  db_name                = var.app
+  port                   = "5432"
+  username               = data.aws_ssm_parameter.rds_username.value
+  password               = data.aws_ssm_parameter.rds_password.value
+  create_random_password = false
 
   db_subnet_group_name = var.db_subnet_group_name
 

@@ -1,3 +1,10 @@
+# Get the HTPPS certificate for the website
+data "aws_acm_certificate" "certificate" {
+  domain      = var.certificate_domain
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
+
 module "alb" {
   source             = "terraform-aws-modules/alb/aws"
   version            = "~> 6.0"
@@ -15,12 +22,12 @@ module "alb" {
       target_type      = "ip"
       health_check = {
         enabled             = true
-        interval            = 130
+        interval            = 65
         path                = "/"
         port                = "traffic-port"
-        healthy_threshold   = 5
-        unhealthy_threshold = 2
-        timeout             = 120
+        healthy_threshold   = 2
+        unhealthy_threshold = 5
+        timeout             = 60
         protocol            = "HTTP"
         matcher             = "200,302"
       }
@@ -28,17 +35,27 @@ module "alb" {
       }
     }
   ]
-  http_tcp_listeners = [
+
+  https_listeners = [
     {
-      port               = 80
-      protocol           = "HTTP"
+      port               = 443
+      protocol           = "HTTPS"
+      certificate_arn    = data.aws_acm_certificate.certificate.arn
       target_group_index = 0
     }
-    # ,
-    # {
-    #   port               = 443
-    #   protocol           = "HTTPS"
-    #   target_group_index = 0
-    # }
+  ]
+
+  http_tcp_listeners = [
+    {
+      port        = 80
+      protocol    = "HTTP"
+      target_group_index = 0
+      # action_type = "redirect"
+      # redirect = {
+      #   port        = "443"
+      #   protocol    = "HTTPS"
+      #   status_code = "HTTP_301"
+      # }
+    }
   ]
 }

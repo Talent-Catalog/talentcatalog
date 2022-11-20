@@ -43,3 +43,7 @@ variable "db_instance_class" {
 variable "db_public_access" {
   description = "Flag to set if the database publicly accessible"
 }
+
+variable "db_enable" {
+  description = "Flag to define if database is reuqired"
+}

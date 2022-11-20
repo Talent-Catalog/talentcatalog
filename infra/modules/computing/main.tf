@@ -41,7 +41,7 @@ resource "aws_ecs_service" "web-app" {
   name            = "${var.app}-${terraform.workspace}"
   cluster         = module.ecs.cluster_id
   task_definition = aws_ecs_task_definition.web-app.arn
-  desired_count   = 2
+  desired_count   = 1
   launch_type     = "FARGATE"
 
   load_balancer {
