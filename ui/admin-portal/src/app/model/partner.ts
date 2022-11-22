@@ -50,6 +50,7 @@ export interface PartnerSimpleAttributes {
 
 export interface Partner extends PartnerSimpleAttributes {
   id: number;
+  defaultSourcePartner: boolean;
   sourceCountries: Country[];
 }
 

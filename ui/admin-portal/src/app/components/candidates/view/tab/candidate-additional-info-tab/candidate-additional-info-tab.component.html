@@ -43,7 +43,7 @@
 
   <hr/>
 
-  <app-view-candidate-attachment
+  <app-view-candidate-attachment *ngIf="editable"
     [candidate]="candidate"
     [editable]="editable"
     [adminUser]="adminUser"

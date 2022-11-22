@@ -26,6 +26,7 @@ import {Role, User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {Observable} from "rxjs/index";
 import {EncodedQrImage} from "../util/qr";
+import {Candidate} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -213,4 +214,43 @@ export class AuthService {
     this.loggedInUser = response.user;
   }
 
+  /**
+   * True if the currently logged in user is permitted to edit the given candidate's details
+   * @param candidate Candidate to be checked
+   */
+  isEditableCandidate(candidate: Candidate): boolean {
+    let editable = false;
+    const loggedInUser = this.getLoggedInUser()
+    //Must be logged in
+    if (loggedInUser) {
+      //Cannot be a read only user
+      if (!this.isReadOnly()) {
+        const role = this.getLoggedInRole();
+        //Must have some kind of admin role
+        if (role !== Role.limited && role !== Role.semilimited) {
+          if (this.isDefaultSourcePartner()) {
+            //Default source partners with admin roles can edit all candidates
+            editable = true;
+          } else {
+            //Can only edit candidate if the candidate is assigned to the user's partner
+            const candidateSourcePartner = candidate.user.sourcePartner;
+            editable = candidateSourcePartner.id === loggedInUser.sourcePartner.id;
+          }
+        }
+      }
+    }
+    return editable;
+  }
+
+  /**
+   * True if a user is logged in and they are associated with the default source partner.
+   */
+  isDefaultSourcePartner(): boolean {
+    let defaultSourcePartner = false;
+    const loggedInUser = this.getLoggedInUser();
+    if (loggedInUser) {
+      defaultSourcePartner = loggedInUser.sourcePartner?.defaultSourcePartner;
+    }
+    return defaultSourcePartner;
+  }
 }
