@@ -219,7 +219,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       'languageLevels': this.languageLevelService.listLanguageLevels(),
       'educationLevels': this.educationLevelService.listEducationLevels(),
       'majors': this.educationMajorService.listMajors(),
-      'partners': this.partnerService.search(partnerRequest),
+      'partners': this.partnerService.listSourcePartners(),
       'verifiedOccupation': this.candidateOccupationService.listVerifiedOccupations(),
       'occupations': this.candidateOccupationService.listOccupations(),
       'surveyTypes': this.surveyTypeService.listSurveyTypes()
@@ -693,5 +693,20 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       control.value.forEach(i => tooltip += i.name + ', ');
     }
     return tooltip.slice(0, -2);
+  }
+
+  public getPartnerDefaultMessage(): string {
+    let partnerName =this.loggedInUser?.sourcePartner.name;
+
+    let s: string;
+
+    //todo Hack UNHCR - should be partner default
+    if (partnerName === "UNHCR") {
+      s = "If nothing is specified, the default is to show candidates from any partner";
+    } else {
+      s = "If nothing is specified, the default is to just show candidates belonging to your partner";
+    }
+
+    return s;
   }
 }

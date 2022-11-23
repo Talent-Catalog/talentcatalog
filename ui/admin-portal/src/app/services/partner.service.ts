@@ -3,8 +3,8 @@ import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {SearchPartnerRequest} from "../model/base";
-import {Partner, UpdatePartnerRequest} from "../model/partner";
+import {SearchPartnerRequest, Status} from "../model/base";
+import {Partner, PartnerType, UpdatePartnerRequest} from "../model/partner";
 
 @Injectable({
   providedIn: 'root'
@@ -28,9 +28,12 @@ export class PartnerService {
     return this.http.post<Partner>(`${this.apiUrl}`, request);
   }
 
-  listPartners(): Observable<Partner[]> {
-    //If we already have the data return it, otherwise get it.
-    return this.http.get<Partner[]>(`${this.apiUrl}`);
+  listSourcePartners(): Observable<Partner[]> {
+    const request: SearchPartnerRequest = {
+      partnerType: PartnerType.SourcePartner,
+      status: Status.active
+    }
+    return this.search(request);
  }
 
   update(id: number, request: UpdatePartnerRequest): Observable<Partner>  {

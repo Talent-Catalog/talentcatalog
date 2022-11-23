@@ -133,7 +133,7 @@ public class PartnerServiceImpl implements PartnerService {
     public Partner getAutoAssignablePartnerByCountry(@Nullable Country country) {
         Partner partner = null;
         if (country != null) {
-            List<PartnerImpl> partners = partnerRepository.findByAutoassignableCountry(country);
+            List<PartnerImpl> partners = partnerRepository.findSourcePartnerByAutoassignableCountry(country);
             //Don't select if there is more than one country
             if (partners.size() == 1) {
                 partner = partners.get(0);
@@ -166,20 +166,22 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
-    public List<PartnerImpl> listPartners() {
-        List<PartnerImpl> partners = partnerRepository.findByStatus(Status.active);
-        return partners;
+    public List<PartnerImpl> listSourcePartners() {
+        SearchPartnerRequest request = new SearchPartnerRequest();
+        request.setPartnerType("SourcePartner");
+        request.setStatus(Status.active);
+        return search(request);
     }
 
     @Override
-    public List<PartnerImpl> searchPartners(SearchPartnerRequest request) {
+    public List<PartnerImpl> search(SearchPartnerRequest request) {
         List<PartnerImpl> partners = partnerRepository.findAll(
             PartnerSpecification.buildSearchQuery(request));
         return partners;
     }
 
     @Override
-    public Page<PartnerImpl> searchPartnersPaged(SearchPartnerRequest request) {
+    public Page<PartnerImpl> searchPaged(SearchPartnerRequest request) {
         Page<PartnerImpl> partners = partnerRepository.findAll(
             PartnerSpecification.buildSearchQuery(request), request.getPageRequest());
         return partners;

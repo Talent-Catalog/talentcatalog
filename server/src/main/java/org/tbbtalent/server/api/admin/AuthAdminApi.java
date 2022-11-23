@@ -125,13 +125,14 @@ public class AuthAdminApi {
                 .add("lastName")
                 .add("usingMfa")
                 .add("mfaConfigured")
-                .add("sourcePartner", partnerDto())
+                .add("sourcePartner", sourcePartnerDto())
                 ;
     }
 
-    private DtoBuilder partnerDto() {
+    private DtoBuilder sourcePartnerDto() {
         return new DtoBuilder()
             .add("id")
+            .add("defaultSourcePartner")
             .add("name")
             .add("abbreviation")
             .add("websiteUrl")

@@ -40,16 +40,14 @@ public class PartnerSpecification {
                         ));
             }
 
-            //Partner type
-            if (request.getPartnerType() != null){
-                conjunction.getExpressions()
-                    .add(builder.equal(partner.get("partnerType"), request.getPartnerType()));
+            // STATUS
+            if (request.getStatus() != null){
+                conjunction.getExpressions().add(builder.equal(partner.get("status"), request.getStatus()));
             }
 
-            //Status
-            if (request.getStatus() != null){
-                conjunction.getExpressions()
-                    .add(builder.equal(partner.get("status"), request.getStatus()));
+            // Partner type
+            if (request.getPartnerType() != null){
+                conjunction.getExpressions().add(builder.equal(partner.get("partnerType"), request.getPartnerType()));
             }
 
             return conjunction;

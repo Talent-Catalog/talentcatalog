@@ -73,6 +73,7 @@ import org.tbbtalent.server.model.db.EducationLevel;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
@@ -1492,7 +1493,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (requestedPartners == null || requestedPartners.isEmpty()) {
             Partner partner = userService.getLoggedInSourcePartner();
             if (partner != null) {
-                request.setPartnerIds(List.of(partner.getId()));
+                //todo Hack - Different defaults for UNHCR - should be partner default
+                if ("UNHCR".equals(partner.getName())) {
+                   List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                   List<Long> partnerIds =
+                       sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
+                    request.setPartnerIds(partnerIds);
+                } else {
+                   request.setPartnerIds(List.of(partner.getId()));
+                }
             }
         }
     }

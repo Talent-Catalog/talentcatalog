@@ -27,7 +27,7 @@
       <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
       <li *ngIf="candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
       <li *ngIf="!candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.candidateNumber}}</li>
-      <li *ngIf="isAnAdmin()" class="ml-auto">
+      <li *ngIf="isEditable()" class="ml-auto">
         <div  class="input-group">
           <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
                  value="{{candidate.status | titlecase}}" disabled>
@@ -76,7 +76,9 @@
 
       <div class="col-sm-4">
         <app-candidate-shareable-notes
-          [candidate]="candidate">
+          [candidate]="candidate"
+          [editable] = "isEditable()"
+        >
         </app-candidate-shareable-notes>
       </div>
 
@@ -86,6 +88,7 @@
       <div class="flex-grow-1">
         <p class="small text-muted mb-0">Add candidate to a list</p>
         <ng-select
+          [readonly]="!isEditable()"
           [items]="lists"
           [multiple]="true"
           [placeholder]="'Select or Type'"
@@ -115,7 +118,7 @@
         </ng-select>
       </div>
 
-      <div class="pl-2 flex-shrink-0">
+      <div *ngIf="isEditable()" class="pl-2 flex-shrink-0">
         <button class="btn btn-sm btn-secondary" type="button"
                 (click)="onNewList()">+ New List
         </button>
@@ -134,7 +137,7 @@
             <ng-template ngbNavContent>
               <app-candidate-general-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly"
+                [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-general-tab>
             </ng-template>
@@ -146,7 +149,7 @@
             <ng-template ngbNavContent>
               <app-candidate-experience-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly"
+                [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-experience-tab>
             </ng-template>
@@ -158,7 +161,7 @@
             <ng-template ngbNavContent>
               <app-candidate-education-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly"
+                [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-education-tab>
             </ng-template>
@@ -170,7 +173,7 @@
             <ng-template ngbNavContent>
               <app-candidate-additional-info-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly"
+                [editable]="isEditable()"
                 [adminUser]="isAnAdmin()"
                 [loggedInUser]="loggedInUser"
                 (candidateChanged)="onCandidateChanged()">
@@ -179,7 +182,7 @@
           </ng-container>
 
           <!-- Mini Intake -->
-          <ng-container ngbNavItem="MiniIntake" *ngIf="isAnAdmin()">
+          <ng-container ngbNavItem="MiniIntake" *ngIf="isAnAdmin() && isEditable()">
             <a ngbNavLink>Mini Intake</a>
             <ng-template ngbNavContent>
               <app-candidate-mini-intake-tab
@@ -189,7 +192,7 @@
           </ng-container>
 
           <!-- Intake -->
-          <ng-container ngbNavItem="FullIntake" *ngIf="isAnAdmin()">
+          <ng-container ngbNavItem="FullIntake" *ngIf="isAnAdmin() && isEditable()">
             <a ngbNavLink>Full Intake</a>
             <ng-template ngbNavContent>
               <app-candidate-intake-tab
@@ -199,7 +202,7 @@
           </ng-container>
 
           <!-- Visa eligibility -->
-          <ng-container ngbNavItem="Visa" *ngIf="isAnAdmin()">
+          <ng-container ngbNavItem="Visa" *ngIf="isAnAdmin() && isEditable()">
             <a ngbNavLink>Visa</a>
             <ng-template ngbNavContent>
               <app-candidate-visa-tab
@@ -209,12 +212,12 @@
           </ng-container>
 
           <!-- TASKS -->
-          <ng-container ngbNavItem="Tasks" *ngIf="isAnAdmin()">
+          <ng-container ngbNavItem="Tasks" *ngIf="isAnAdmin() && isEditable()">
             <a ngbNavLink>Tasks</a>
             <ng-template ngbNavContent>
               <app-candidate-task-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly">
+                [editable]="isEditable()">
               </app-candidate-task-tab>
             </ng-template>
           </ng-container>
@@ -230,7 +233,7 @@
           </div>
           <app-view-candidate-note
             [candidate]="candidate"
-            [editable]="!loggedInUser.readOnly"
+            [editable]="isEditable()"
             [characterLimit]="1000"
             (onResize)="resizeSidePanel()">
           </app-view-candidate-note>

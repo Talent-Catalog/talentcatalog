@@ -75,24 +75,25 @@ public interface PartnerService {
     Partner getPartnerFromAbbreviation(@Nullable String partnerAbbreviation);
 
     /**
-     * Get all partners
-     * @return List of partners
+     * Convenience method which just delegates to {@link #search(SearchPartnerRequest)} with an
+     * appropriate request.
+     * @return All active source partners
      */
-    List<PartnerImpl> listPartners();
+    List<PartnerImpl> listSourcePartners();
 
     /**
-     * Get the partners from a search request
+     * Get the partners from search request
      * @param request - Search Request
-     * @return All matching partners
+     * @return Matching partners
      */
-    List<PartnerImpl> searchPartners(SearchPartnerRequest request);
+    List<PartnerImpl> search(SearchPartnerRequest request);
 
     /**
      * Get the partners as a paged search request
      * @param request - Paged Search Request
      * @return Page of partners
      */
-    Page<PartnerImpl> searchPartnersPaged(SearchPartnerRequest request);
+    Page<PartnerImpl> searchPaged(SearchPartnerRequest request);
 
     /**
      * Create a partner.

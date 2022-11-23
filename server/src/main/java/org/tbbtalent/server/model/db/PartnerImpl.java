@@ -58,8 +58,8 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     @Nullable
     private String notificationEmail;
 
-    //See https://stackoverflow.com/questions/53796557/should-be-mapped-with-insert-false-update-false
-    @Column(name = "partner_type", insertable = false, updatable = false)
+    //See https://stackoverflow.com/questions/43570875/how-to-access-discriminator-column-in-jpa
+    @Column(name="partner_type", insertable = false, updatable = false)
     private String partnerType;
 
     @Nullable

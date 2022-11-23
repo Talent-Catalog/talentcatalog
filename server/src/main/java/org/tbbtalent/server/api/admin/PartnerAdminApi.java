@@ -63,21 +63,14 @@ public class PartnerAdminApi implements
     }
 
     @Override
-    public List<Map<String, Object>> list() {
-        List<PartnerImpl> partners = partnerService.listPartners();
+    public @NotNull List<Map<String, Object>> search(@Valid SearchPartnerRequest request) {
+        List<PartnerImpl> partners = partnerService.search(request);
         return partnerDto().buildList(partners);
     }
 
     @Override
-    public List<Map<String, Object>> search(SearchPartnerRequest request) {
-        List<PartnerImpl> partners = partnerService.searchPartners(request);
-        return partnerDto().buildList(partners);
-    }
-
-    @Override
-    public @NotNull Map<String, Object> searchPaged(
-        @Valid SearchPartnerRequest request) {
-        Page<PartnerImpl> partners = partnerService.searchPartnersPaged(request);
+    public @NotNull Map<String, Object> searchPaged(@Valid SearchPartnerRequest request) {
+        Page<PartnerImpl> partners = partnerService.searchPaged(request);
         return partnerDto().buildPage(partners);
     }
 
@@ -113,6 +106,7 @@ public class PartnerAdminApi implements
         return new DtoBuilder( new PartnerDtoPropertyFilter() )
             .add("abbreviation")
             .add("autoAssignable")
+            .add("defaultSourcePartner")
             .add("defaultPartnerRef")
             .add("id")
             .add("logo")

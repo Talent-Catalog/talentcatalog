@@ -348,4 +348,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     )
   }
 
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
+  }
 }
