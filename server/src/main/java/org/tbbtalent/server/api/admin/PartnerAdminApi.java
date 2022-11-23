@@ -63,15 +63,14 @@ public class PartnerAdminApi implements
     }
 
     @Override
-    public List<Map<String, Object>> list() {
-        List<PartnerImpl> partners = partnerService.listPartners();
+    public @NotNull List<Map<String, Object>> search(@Valid SearchPartnerRequest request) {
+        List<PartnerImpl> partners = partnerService.search(request);
         return partnerDto().buildList(partners);
     }
 
     @Override
-    public @NotNull Map<String, Object> searchPaged(
-        @Valid SearchPartnerRequest request) {
-        Page<PartnerImpl> partners = partnerService.searchPartners(request);
+    public @NotNull Map<String, Object> searchPaged(@Valid SearchPartnerRequest request) {
+        Page<PartnerImpl> partners = partnerService.searchPaged(request);
         return partnerDto().buildPage(partners);
     }
 

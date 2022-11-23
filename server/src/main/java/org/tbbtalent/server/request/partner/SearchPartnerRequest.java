@@ -25,5 +25,6 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 @Setter
 public class SearchPartnerRequest extends PagedSearchRequest {
     private String keyword;
+    private String partnerType;
     private Status status;
 }

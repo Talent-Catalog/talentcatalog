@@ -29,9 +29,4 @@ import org.tbbtalent.server.model.db.partner.RecruiterPartner;
 @Entity(name = "RecruiterPartner")
 @DiscriminatorValue("RecruiterPartner")
 public class RecruiterPartnerImpl extends PartnerImpl implements RecruiterPartner {
-
-    @Override
-    public String getPartnerType() {
-        return "RecruiterPartner";
-    }
 }

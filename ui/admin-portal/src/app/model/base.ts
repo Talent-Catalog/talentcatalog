@@ -196,7 +196,9 @@ export class PagedFilteredSearchRequest extends PagedSearchRequest {
   status?: string;
 }
 
-export class SearchPartnerRequest extends PagedFilteredSearchRequest {}
+export class SearchPartnerRequest extends PagedFilteredSearchRequest {
+  partnerType?: string;
+}
 
 export class SearchTaskRequest extends PagedFilteredSearchRequest {}
 

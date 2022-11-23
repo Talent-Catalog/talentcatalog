@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -57,7 +58,9 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     @Nullable
     private String notificationEmail;
 
-    abstract public String getPartnerType();
+    //See https://stackoverflow.com/questions/43570875/how-to-access-discriminator-column-in-jpa
+    @Column(name="partner_type", insertable = false, updatable = false)
+    private String partnerType;
 
     @Nullable
     public String getSfId() {
