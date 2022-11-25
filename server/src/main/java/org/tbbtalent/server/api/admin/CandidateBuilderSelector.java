@@ -55,16 +55,16 @@ public class CandidateBuilderSelector {
             "updatedDate",
             "contextNote",
             "user",
-            "candidateReviewStatusItems"
+            "candidateReviewStatusItems",
+            "country",
+            "nationality"
         ));
 
     private final Set<String> candidateSemiLimitedExtraProperties =
         new HashSet<>(Arrays.asList(
             "city",
             "state",
-            "address1",
-            "country",
-            "nationality"
+            "address1"
         ));
 
     private final Set<String> userPublicProperties =
