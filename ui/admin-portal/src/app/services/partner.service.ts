@@ -31,7 +31,9 @@ export class PartnerService {
   listSourcePartners(): Observable<Partner[]> {
     const request: SearchPartnerRequest = {
       partnerType: PartnerType.SourcePartner,
-      status: Status.active
+      status: Status.active,
+      sortFields: ["name"],
+      sortDirection: "ASC"
     }
     return this.search(request);
  }

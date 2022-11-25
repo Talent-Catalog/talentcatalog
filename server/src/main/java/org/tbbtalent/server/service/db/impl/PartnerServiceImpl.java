@@ -176,7 +176,7 @@ public class PartnerServiceImpl implements PartnerService {
     @Override
     public List<PartnerImpl> search(SearchPartnerRequest request) {
         List<PartnerImpl> partners = partnerRepository.findAll(
-            PartnerSpecification.buildSearchQuery(request));
+            PartnerSpecification.buildSearchQuery(request), request.getSort());
         return partners;
     }
 
