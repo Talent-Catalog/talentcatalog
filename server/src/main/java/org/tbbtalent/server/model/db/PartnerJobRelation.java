@@ -28,16 +28,16 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * This is used to store the many-to-many relation between source partners and jobs.
+ * This is used to store the many-to-many relation between partners and jobs.
  * <p/>
- * It also can store "context" information relating to both a source partner and a job - for example
- * the contact user that the source partner has assigned to this particular job.
+ * It also can store "context" information relating to both a partner and a job - for example
+ * the contact user that the partner has assigned to this particular job.
  * <p/>
  * Note on the naming convention:
  * <p/>
- * If this was named SourcePartnerJob, it would be storing job information linked to a source partner
+ * If this was named PartnerJob, it would be storing job information linked to a partner
  * - like CandidateAttachment stores information about an attachment linked to a candidate.
- * The "Relation" part of the name JobSourcePartnerRelation indicates that the entity represents
+ * The "Relation" part of the name PartnerJobRelation indicates that the entity represents
  * the actual many-to-many relationship - plus any contextual data uniquely associated with that
  * relationship.
  *
@@ -48,15 +48,15 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "source_partner_job")
-public class SourcePartnerJobRelation {
+@Table(name = "partner_job")
+public class PartnerJobRelation {
 
     /**
      * Composite key consisting of job id and source partner id
      */
     @EqualsAndHashCode.Include
     @EmbeddedId
-    SourcePartnerJobRelationKey id;
+    PartnerJobRelationKey id;
 
     /**
      * Job associated with relation
@@ -67,15 +67,15 @@ public class SourcePartnerJobRelation {
     private SalesforceJobOpp job;
 
     /**
-     * Source partner associated with relation
+     * Partner associated with relation
      */
     @ManyToOne
-    @MapsId("sourcePartnerId")
-    @JoinColumn(name = "source_partner_id")
-    private SourcePartnerImpl sourcePartner;
+    @MapsId("partnerId")
+    @JoinColumn(name = "partner_id")
+    private PartnerImpl partner;
 
     /**
-     * The contact related to the above job and source partner.
+     * The contact related to the above job and partner.
      */
     @ManyToOne
     @JoinColumn(name = "contact_id")

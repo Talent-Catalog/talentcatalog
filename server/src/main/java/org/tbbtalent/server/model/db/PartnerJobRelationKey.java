@@ -25,7 +25,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Composite primary key for {@link SourcePartnerJobRelation}.
+ * Composite primary key for {@link PartnerJobRelation}.
  * See doc for that class.
  *
  * @author John Cameron
@@ -35,19 +35,19 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @Embeddable
-public class SourcePartnerJobRelationKey implements Serializable {
+public class PartnerJobRelationKey implements Serializable {
 
-    @Column(name = "source_partner_id")
-    private Long sourcePartnerId;
+    @Column(name = "partner_id")
+    private Long partnerId;
 
     @Column(name = "tc_job_id")
     private Long tcJobId;
 
-    public SourcePartnerJobRelationKey() {
+    public PartnerJobRelationKey() {
     }
 
-    public SourcePartnerJobRelationKey(Long sourcePartnerId, Long tcJobId) {
-        this.sourcePartnerId = sourcePartnerId;
+    public PartnerJobRelationKey(Long partnerId, Long tcJobId) {
+        this.partnerId = partnerId;
         this.tcJobId = tcJobId;
     }
 

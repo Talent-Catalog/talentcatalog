@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-create table source_partner_job
+create table partner_job
 (
-    source_partner_id bigint references partner,
+    partner_id bigint references partner,
     tc_job_id bigint references salesforce_job_opp,
     contact_id bigint references users,
-    primary key (source_partner_id, tc_job_id)
+    primary key (partner_id, tc_job_id)
 );
 
