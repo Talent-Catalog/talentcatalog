@@ -18,12 +18,18 @@ package org.tbbtalent.server.request.partner;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
 @Getter
 @Setter
 public class SearchPartnerRequest extends PagedSearchRequest {
+
+    //todo doc
+    @Nullable
+    private Long contextJobId;
+
     private String keyword;
     private String partnerType;
     private Status status;

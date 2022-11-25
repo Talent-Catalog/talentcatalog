@@ -19,6 +19,7 @@ package org.tbbtalent.server.model.db.partner;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
 
 /**
  * A partner is an organization that works to implement displaced talent mobility.
@@ -37,12 +38,19 @@ public interface Partner {
     String getAbbreviation();
     void setAbbreviation(@Nullable String s);
 
+    @Nullable
+    Long getContextJobId();
+    void setContextJobId(@Nullable Long contextJobId);
+
     /**
      * Unique id identifying this partner
      * @return partner id
      */
     Long getId();
     void setId(Long id);
+
+    //todo Doc
+    User getJobContact();
 
     /**
      * Partner's logo.

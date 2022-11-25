@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../../../model/job";
+import {PartnerService} from "../../../../../services/partner.service";
+import {Partner} from "../../../../../model/partner";
 
 @Component({
   selector: 'app-view-job-source-contacts',
@@ -10,9 +12,24 @@ export class ViewJobSourceContactsComponent implements OnInit {
   @Input() job: Job;
   @Input() editable: boolean;
 
-  constructor() { }
+  error: any;
+  loading: boolean;
+  sourcePartners: Partner[];
+
+  constructor(
+    private partnerService: PartnerService,
+  ) { }
 
   ngOnInit(): void {
+    this.error = null;
+    this.loading = true;
+    this.partnerService.listSourcePartners().subscribe(
+      (sourcePartners) => {this.sourcePartners = sourcePartners; this.loading = false},
+      (error) => {this.error = error; this.loading = false}
+    )
   }
 
+  editPartnerContact(partner: Partner) {
+    //todo
+  }
 }

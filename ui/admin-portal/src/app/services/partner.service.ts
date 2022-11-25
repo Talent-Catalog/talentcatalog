@@ -5,6 +5,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {SearchPartnerRequest, Status} from "../model/base";
 import {Partner, PartnerType, UpdatePartnerRequest} from "../model/partner";
+import {Job} from "../model/job";
 
 @Injectable({
   providedIn: 'root'
@@ -28,8 +29,9 @@ export class PartnerService {
     return this.http.post<Partner>(`${this.apiUrl}`, request);
   }
 
-  listSourcePartners(): Observable<Partner[]> {
+  listSourcePartners(jobContext?: Job): Observable<Partner[]> {
     const request: SearchPartnerRequest = {
+      contextJobId: jobContext?.id,
       partnerType: PartnerType.SourcePartner,
       status: Status.active,
       sortFields: ["name"],

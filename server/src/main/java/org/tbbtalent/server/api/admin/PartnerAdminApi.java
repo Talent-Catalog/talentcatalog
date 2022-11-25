@@ -65,6 +65,11 @@ public class PartnerAdminApi implements
     @Override
     public @NotNull List<Map<String, Object>> search(@Valid SearchPartnerRequest request) {
         List<PartnerImpl> partners = partnerService.search(request);
+        if (request.getContextJobId() != null) {
+            for (PartnerImpl partner : partners) {
+                partner.setContextJobId(request.getContextJobId());
+            }
+        }
         return partnerDto().buildList(partners);
     }
 
@@ -109,6 +114,7 @@ public class PartnerAdminApi implements
             .add("defaultSourcePartner")
             .add("defaultPartnerRef")
             .add("id")
+            .add("jobContact", userDto())
             .add("logo")
             .add("name")
             .add("notificationEmail")
@@ -125,6 +131,13 @@ public class PartnerAdminApi implements
         return new DtoBuilder()
             .add("id")
             .add("name")
+            ;
+    }
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+            .add("firstName")
+            .add("lastName")
+            .add("email")
             ;
     }
 

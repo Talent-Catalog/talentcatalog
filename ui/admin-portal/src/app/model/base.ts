@@ -201,6 +201,7 @@ export class PagedFilteredSearchRequest extends PagedSearchRequest {
 }
 
 export class SearchPartnerRequest extends PagedFilteredSearchRequest {
+  contextJobId?: number;
   partnerType?: PartnerType;
 }
 

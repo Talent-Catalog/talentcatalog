@@ -25,6 +25,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -48,6 +49,10 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
 
     @Nullable
     private String abbreviation;
+
+    @Nullable
+    @Transient
+    private Long contextJobId;
 
     @Nullable
     private String logo;
@@ -76,4 +81,8 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
 
     @Nullable
     private String websiteUrl;
+
+    public User getJobContact() {
+        return null;
+    }
 }
