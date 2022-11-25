@@ -154,7 +154,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> search(SearchUserRequest request) {
         List<User> users = userRepository.findAll(
-            UserSpecification.buildSearchQuery(request));
+            UserSpecification.buildSearchQuery(request), request.getSort());
         return users;
     }
 

@@ -16,14 +16,19 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import lombok.Getter;
@@ -63,6 +68,9 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     @Nullable
     private String notificationEmail;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "partner", cascade = CascadeType.MERGE)
+    private Set<PartnerJobRelation> partnerJobRelations = new HashSet<>();
+
     //See https://stackoverflow.com/questions/43570875/how-to-access-discriminator-column-in-jpa
     @Column(name="partner_type", insertable = false, updatable = false)
     private String partnerType;
@@ -83,6 +91,16 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     private String websiteUrl;
 
     public User getJobContact() {
-        return null;
+        //todo Partner has default contact - add to db.
+        User contact = null;
+        if (contextJobId != null) {
+            for (PartnerJobRelation partnerJob : partnerJobRelations) {
+                if (contextJobId.equals(partnerJob.getJob().getId())) {
+                    contact = partnerJob.getContact();
+                    break;
+                }
+            }
+        }
+        return contact;
     }
 }

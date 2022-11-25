@@ -21,6 +21,7 @@ import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {UpdateUserRequest, User} from '../model/user';
 import {UpdateSharingRequest} from '../model/saved-search';
+import {SearchUserRequest} from "../model/base";
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -29,7 +30,7 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  search(request): Observable<User[]> {
+  search(request: SearchUserRequest): Observable<User[]> {
     return this.http.post<User[]>(`${this.apiUrl}/search`, request);
   }
 

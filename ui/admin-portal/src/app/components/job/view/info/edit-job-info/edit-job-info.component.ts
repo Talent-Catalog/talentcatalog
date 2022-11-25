@@ -54,7 +54,10 @@ export class EditJobInfoComponent implements OnInit {
   ngOnInit(): void {
     this.error = null;
     this.loading = true;
-    const userRequest: SearchUserRequest = {};
+    const userRequest: SearchUserRequest = {
+      sortFields: ["firstName", "lastName"],
+      sortDirection: "ASC"
+    };
     const partnerRequest: SearchPartnerRequest = {partnerType: PartnerType.RecruiterPartner};
     forkJoin({
       'job': this.jobService.get(this.jobId),
