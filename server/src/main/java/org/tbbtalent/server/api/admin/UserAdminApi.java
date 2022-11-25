@@ -54,7 +54,7 @@ public class UserAdminApi {
     }
 
     @PostMapping("search")
-    public List<Map<String, Object>> search(SearchUserRequest request) {
+    public List<Map<String, Object>> search(@RequestBody SearchUserRequest request) {
         List<User> users = userService.search(request);
         return userDto().buildList(users);
     }
