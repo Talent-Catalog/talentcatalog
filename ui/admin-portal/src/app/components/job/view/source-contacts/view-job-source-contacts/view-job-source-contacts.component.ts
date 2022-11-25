@@ -30,6 +30,7 @@ export class ViewJobSourceContactsComponent implements OnInit {
   }
 
   editPartnerContact(partner: Partner) {
-    //todo
+    //todo select from drop down of partner users
+    //todo Update job, partner, contact user
   }
 }

@@ -16,11 +16,8 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +26,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.PartnerDtoHelper;
 import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.request.partner.SearchPartnerRequest;
 import org.tbbtalent.server.request.partner.UpdatePartnerRequest;
 import org.tbbtalent.server.service.db.PartnerService;
-import org.tbbtalent.server.util.dto.DtoBuilder;
-import org.tbbtalent.server.util.dto.DtoPropertyFilter;
 
 @RestController()
 @RequestMapping("/api/admin/partner")
@@ -53,13 +48,13 @@ public class PartnerAdminApi implements
     @Override
     public @NotNull Map<String, Object> create(UpdatePartnerRequest request) throws EntityExistsException {
         Partner partner = partnerService.create(request);
-        return partnerDto().build(partner);
+        return PartnerDtoHelper.getPartnerDto().build(partner);
     }
 
     @Override
     public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
         Partner partner = partnerService.getPartner(id);
-        return partnerDto().build(partner);
+        return PartnerDtoHelper.getPartnerDto().build(partner);
     }
 
     @Override
@@ -70,13 +65,13 @@ public class PartnerAdminApi implements
                 partner.setContextJobId(request.getContextJobId());
             }
         }
-        return partnerDto().buildList(partners);
+        return PartnerDtoHelper.getPartnerDto().buildList(partners);
     }
 
     @Override
     public @NotNull Map<String, Object> searchPaged(@Valid SearchPartnerRequest request) {
         Page<PartnerImpl> partners = partnerService.searchPaged(request);
-        return partnerDto().buildPage(partners);
+        return PartnerDtoHelper.getPartnerDto().buildPage(partners);
     }
 
     @Override
@@ -84,61 +79,7 @@ public class PartnerAdminApi implements
             long id, @Valid UpdatePartnerRequest request)
             throws EntityExistsException, NoSuchObjectException {
         Partner partner = partnerService.update(id, request);
-        return partnerDto().build(partner);
-    }
-
-    /**
-     * Filters out properties in the DtoBuilder not appropriate to the type of partner
-     */
-    static private class PartnerDtoPropertyFilter implements DtoPropertyFilter {
-
-        //These properties should only be extracted for source partner's
-        private final Set<String> sourcePartnerOnlyProperties =
-            new HashSet<>(Arrays.asList(
-                "registrationLandingPage", "sourceCountries", "defaultSourcePartner",
-                "autoAssignable", "defaultPartnerRef"));
-
-        public boolean ignoreProperty(Object o, String property) {
-            //Ignore properties which do not exist on type of partner
-            boolean ignore =
-                sourcePartnerOnlyProperties.contains(property) && ! (o instanceof SourcePartner);
-
-            return ignore;
-        }
-    };
-
-    private DtoBuilder partnerDto() {
-        return new DtoBuilder( new PartnerDtoPropertyFilter() )
-            .add("abbreviation")
-            .add("autoAssignable")
-            .add("defaultSourcePartner")
-            .add("defaultPartnerRef")
-            .add("id")
-            .add("jobContact", userDto())
-            .add("logo")
-            .add("name")
-            .add("notificationEmail")
-            .add("partnerType")
-            .add("status")
-            .add("websiteUrl")
-            .add("registrationLandingPage")
-            .add("sflink")
-            .add("sourceCountries", countryDto())
-            ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("name")
-            ;
-    }
-    private DtoBuilder userDto() {
-        return new DtoBuilder()
-            .add("firstName")
-            .add("lastName")
-            .add("email")
-            ;
+        return PartnerDtoHelper.getPartnerDto().build(partner);
     }
 
 }

@@ -200,7 +200,7 @@ public class CandidateEs {
         this.nationality = candidate.getNationality() == null ? null
                 : candidate.getNationality().getName();
         this.partner = candidate.getUser() == null ? null
-                : candidate.getUser().getSourcePartner().getAbbreviation();
+                : candidate.getUser().getPartner().getAbbreviation();
         this.status = candidate.getStatus();
 
         this.phone = candidate.getPhone();

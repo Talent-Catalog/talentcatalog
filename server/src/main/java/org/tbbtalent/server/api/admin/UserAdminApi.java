@@ -144,7 +144,7 @@ public class UserAdminApi {
                 .add("lastLogin")
                 .add("usingMfa")
                 .add("mfaConfigured")
-                .add("sourcePartner", partnerDto())
+                .add("partner", partnerDto())
                 ;
     }
 

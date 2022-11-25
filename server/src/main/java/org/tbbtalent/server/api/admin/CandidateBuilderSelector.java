@@ -72,7 +72,7 @@ public class CandidateBuilderSelector {
             "id",
             "createdDate",
             "updatedDate",
-            "sourcePartner"
+            "partner"
         ));
 
     public CandidateBuilderSelector(UserService userService) {
@@ -82,7 +82,7 @@ public class CandidateBuilderSelector {
     @NonNull
     public DtoBuilder selectBuilder() {
         User user = userService.getLoggedInUser();
-        Partner partner = user == null ? null : user.getSourcePartner();
+        Partner partner = user == null ? null : user.getPartner();
 
         //Default to Role.limited if user is null.
         Role role = user == null ? Role.limited : user.getRole();
@@ -170,7 +170,7 @@ public class CandidateBuilderSelector {
                 .add("email")
                 .add("createdDate")
                 .add("updatedDate")
-                .add("sourcePartner", partnerDto())
+                .add("partner", partnerDto())
                 ;
     }
 

@@ -233,8 +233,8 @@ export class AuthService {
             editable = true;
           } else {
             //Can only edit candidate if the candidate is assigned to the user's partner
-            const candidateSourcePartner = candidate.user.sourcePartner;
-            editable = candidateSourcePartner.id === loggedInUser.sourcePartner.id;
+            const candidateSourcePartner = candidate.user.partner;
+            editable = candidateSourcePartner.id === loggedInUser.partner.id;
           }
         }
       }
@@ -249,7 +249,7 @@ export class AuthService {
     let defaultSourcePartner = false;
     const loggedInUser = this.getLoggedInUser();
     if (loggedInUser) {
-      defaultSourcePartner = loggedInUser.sourcePartner?.defaultSourcePartner;
+      defaultSourcePartner = loggedInUser.partner?.defaultSourcePartner;
     }
     return defaultSourcePartner;
   }

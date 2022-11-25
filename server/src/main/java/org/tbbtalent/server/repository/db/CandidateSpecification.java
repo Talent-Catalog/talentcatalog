@@ -100,7 +100,7 @@ public class CandidateSpecification {
                 Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.INNER);
                 user = (Join<Object, Object>) userFetch;
 
-                Fetch<Object, Object> partnerFetch = user.fetch("sourcePartner", JoinType.INNER);
+                Fetch<Object, Object> partnerFetch = user.fetch("partner", JoinType.INNER);
                 partner = (Join<Object, Object>) partnerFetch;
 
                 Fetch<Object, Object> nationalityFetch = candidate.fetch("nationality");
@@ -120,7 +120,7 @@ public class CandidateSpecification {
             } else {
                 //Count query - sort doesn't matter
                 user = candidate.join("user");
-                partner = user.join("sourcePartner");
+                partner = user.join("partner");
                 nationality = candidate.join("nationality");
                 country = candidate.join("country");
                 maxEducationLevel = candidate.join("maxEducationLevel");
@@ -226,7 +226,7 @@ public class CandidateSpecification {
             // PARTNER SEARCH
             if (!Collections.isEmpty(request.getPartnerIds())) {
                 conjunction.getExpressions().add(
-                        builder.isTrue(user.get("sourcePartner").in(request.getPartnerIds()))
+                        builder.isTrue(user.get("partner").in(request.getPartnerIds()))
                 );
             }
 

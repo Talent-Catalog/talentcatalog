@@ -132,7 +132,7 @@ export class HeaderComponent implements OnInit {
   }
 
   loggedInUserInfo(): string {
-    if (this.loggedInUser?.sourcePartner == null) {
+    if (this.loggedInUser?.partner == null) {
       //If we don't know our source partner, major issue - so just logout.
       this.logout();
     }
@@ -141,7 +141,7 @@ export class HeaderComponent implements OnInit {
     if (this.loggedInUser == null) {
       info = "Not logged in";
     } else {
-      info = this.loggedInUser.username + " (" + this.loggedInUser.sourcePartner?.abbreviation
+      info = this.loggedInUser.username + " (" + this.loggedInUser.partner?.abbreviation
         + " " + this.loggedInUser.role + ")";
     }
     return info;

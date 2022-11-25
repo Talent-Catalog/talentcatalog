@@ -58,7 +58,7 @@ export class CreateUpdateUserComponent implements OnInit {
       username: [this.user?.username, Validators.required],
       firstName: [this.user?.firstName, Validators.required],
       lastName: [this.user?.lastName, Validators.required],
-      partnerId: [this.user?.sourcePartner.id],
+      partnerId: [this.user?.partner.id],
       status: [this.user ? this.user.status : Status.active],
       role: [this.user?.role, Validators.required],
       sourceCountries: [this.user?.sourceCountries],

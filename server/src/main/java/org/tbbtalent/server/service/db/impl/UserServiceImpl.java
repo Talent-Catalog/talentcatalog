@@ -64,9 +64,9 @@ import org.tbbtalent.server.exception.UserDeactivatedException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.SourcePartnerImpl;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
@@ -221,7 +221,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(requestedEmail);
 
         //Possibly update the user's source partner
-        Partner currentPartner = user.getSourcePartner();
+        Partner currentPartner = user.getPartner();
         Long currentPartnerId = currentPartner == null ? null : currentPartner.getId();
         Partner newSourcePartner = null;
         Long partnerId = request.getPartnerId();
@@ -243,13 +243,13 @@ public class UserServiceImpl implements UserService {
                     //If we do not know who created this user, set up a default partner
                     newSourcePartner = partnerService.getDefaultSourcePartner();
                 } else {
-                    newSourcePartner = creatingUser.getSourcePartner();
+                    newSourcePartner = creatingUser.getPartner();
                 }
             }
         }
         //If we have a new source partner, update it.
         if (newSourcePartner != null) {
-            user.setSourcePartner((SourcePartnerImpl) newSourcePartner);
+            user.setPartner((PartnerImpl) newSourcePartner);
         }
 
 
@@ -513,7 +513,7 @@ public class UserServiceImpl implements UserService {
         if (user != null) {
             //Fetch user from database
             user = getUser(user.getId());
-            partner = user.getSourcePartner();
+            partner = user.getPartner();
         }
         return partner;
     }

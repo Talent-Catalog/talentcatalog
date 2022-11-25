@@ -65,7 +65,7 @@ import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
+import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
@@ -1170,7 +1170,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setContactType(candidateContactTypeSFFieldValue);
 
             //Add partner account id
-            SourcePartner partner = user.getSourcePartner();
+            Partner partner = user.getPartner();
             //Update candidate partner Salesforce account id
             if (partner != null) {
                 String partnerSfAccountId = partner.getSfId();
@@ -1361,7 +1361,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setExternalCandidateOppId(makeExternalId(candidateNumber, jobOpportunity.getSfId()));
 
             User user = candidate.getUser();
-            SourcePartner partner = user.getSourcePartner();
+            Partner partner = user.getPartner();
 
             //Update candidate partner Salesforce account id
             if (partner != null) {

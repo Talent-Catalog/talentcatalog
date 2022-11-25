@@ -91,6 +91,7 @@ import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.HasTcQueryParameters;
 import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.RootRequest;
@@ -98,7 +99,6 @@ import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SearchJoin;
-import org.tbbtalent.server.model.db.SourcePartnerImpl;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
@@ -735,7 +735,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Add partner
-        user.setSourcePartner((SourcePartnerImpl) partner);
+        user.setPartner((PartnerImpl) partner);
 
         /* Set the password */
         user.setPasswordEnc(passwordEncrypted);
@@ -1183,9 +1183,9 @@ public class CandidateServiceImpl implements CandidateService {
         //Do we have an auto assignable partner in this country
         Partner partner = partnerService.getAutoAssignablePartnerByCountry(country);
         User user = candidate.getUser();
-        if (partner != null && !partner.equals(user.getSourcePartner())) {
+        if (partner != null && !partner.equals(user.getPartner())) {
             //Partner of candidate needs to change
-            user.setSourcePartner((SourcePartnerImpl) partner);
+            user.setPartner((PartnerImpl) partner);
             userRepository.save(user);
         }
     }

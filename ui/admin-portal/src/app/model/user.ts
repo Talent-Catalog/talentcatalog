@@ -33,7 +33,7 @@ export class User {
   lastLogin: number;
   usingMfa: boolean;
   mfaConfigured: boolean;
-  sourcePartner: Partner;
+  partner: Partner;
 
   //Can be populated after upload
   fullName: string;

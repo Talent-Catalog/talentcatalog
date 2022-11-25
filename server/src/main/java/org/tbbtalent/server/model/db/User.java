@@ -83,7 +83,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_id")
-    private SourcePartnerImpl sourcePartner;
+    private PartnerImpl partner;
 
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
@@ -305,12 +305,12 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setSourceCountries(Set<Country> sourceCountries) { this.sourceCountries = sourceCountries; }
 
-    public SourcePartnerImpl getSourcePartner() {
-        return sourcePartner;
+    public PartnerImpl getPartner() {
+        return partner;
     }
 
-    public void setSourcePartner(SourcePartnerImpl sourcePartner) {
-        this.sourcePartner = sourcePartner;
+    public void setPartner(PartnerImpl partner) {
+        this.partner = partner;
     }
 
     @Transient

@@ -696,7 +696,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public getPartnerDefaultMessage(): string {
-    let partnerName =this.loggedInUser?.sourcePartner.name;
+    let partnerName =this.loggedInUser?.partner.name;
 
     let s: string;
 
