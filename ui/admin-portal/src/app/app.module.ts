@@ -643,6 +643,12 @@ import {
   ViewJobUploadsComponent
 } from './components/job/view/uploads/view-job-uploads/view-job-uploads.component';
 import {InputLinkComponent} from './components/util/input/input-link/input-link.component';
+import {
+  JobSourceContactsTabComponent
+} from './components/job/view/tab/job-source-contacts-tab/job-source-contacts-tab.component';
+import {
+  ViewJobSourceContactsComponent
+} from './components/job/view/source-contacts/view-job-source-contacts/view-job-source-contacts.component';
 
 @NgModule({
   declarations: [
@@ -894,7 +900,9 @@ import {InputLinkComponent} from './components/util/input/input-link/input-link.
     InputTextComponent,
     JobUploadTabComponent,
     ViewJobUploadsComponent,
-    InputLinkComponent
+    InputLinkComponent,
+    JobSourceContactsTabComponent,
+    ViewJobSourceContactsComponent
   ],
   imports: [
     BrowserModule,

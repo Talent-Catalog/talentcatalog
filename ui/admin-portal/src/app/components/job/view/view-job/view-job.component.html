@@ -75,8 +75,10 @@
         <ng-container ngbNavItem="Source">
           <a ngbNavLink>Source Contacts</a>
           <ng-template ngbNavContent>
-<!--            todo -->
-            to do
+            <app-job-source-contacts-tab
+              [job]="job"
+              [editable]="!loggedInUser.readOnly">
+            </app-job-source-contacts-tab>
           </ng-template>
         </ng-container>
 
