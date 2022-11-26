@@ -1,28 +1,31 @@
 variable "app" {
-  description = "Name of the application"
   type        = string
+  description = "Name of the application"
 }
 
 variable "vpc_id" {
+  type        = string
   description = "VPC ID for the network"
 }
 
 variable "public_subnet_ids" {
+  type        = list(string)
   description = "VPC - Public Subnet ID"
 }
 
 variable "private_subnet_ids" {
+  type        = list(string)
   description = "VPC - Private Subnet ID"
 }
 
 variable "container_port" {
+  type        = number
   description = "Container port"
-  default     = 8080
 }
 
 variable "container_image" {
-  description = "Container image"
-  default     = "231168606641.dkr.ecr.us-east-1.amazonaws.com/tbbtalentv2"
+  type        = string
+  description = "The ecr url for the docker image"
 }
 
 variable "certificate_domain" {

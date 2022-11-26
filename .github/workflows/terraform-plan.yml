@@ -20,7 +20,7 @@ env:
   TERRAFORM_REGION: "us-east-1"
   INFRA_PATH: './infra'
   AWS_ACCESS_KEY_ID_DEV: "AKIATLUVZAGYXPLKILO3"
-  AWS_ACCESS_KEY_ID_PROD: "AKIATLUVZAGYXPLKILO3" # todo: AKIATLUVZAGYXPLKILO3
+  AWS_ACCESS_KEY_ID_PROD: "AKIATLUVZAGYXPLKILO3"
 
 jobs:
   terraform-plan:
@@ -43,8 +43,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ env.WORKSPACE == 'prod' && env.AWS_ACCESS_KEY_ID_PROD || env.AWS_ACCESS_KEY_ID_DEV }}
-          aws-secret-access-key: ${{ env.WORKSPACE == 'prod' && secrets.AWS_SECRET_ACCESS_KEY_DEV || secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-          # todo: aws-secret-access-key: ${{ env.WORKSPACE == 'prod' && secrets.AWS_SECRET_ACCESS_KEY || secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          aws-secret-access-key: ${{ env.WORKSPACE == 'prod' && secrets.AWS_SECRET_ACCESS_KEY || secrets.AWS_SECRET_ACCESS_KEY_DEV }}
           aws-region: ${{ env.TERRAFORM_REGION }}
 
       # Install the latest version of Terraform CLI and configure the Terraform

@@ -1,4 +1,4 @@
-# Get the HTPPS certificate for the website
+# Get the HTTPS certificate for the website
 data "aws_acm_certificate" "certificate" {
   domain      = var.certificate_domain
   types       = ["AMAZON_ISSUED"]
@@ -49,13 +49,12 @@ module "alb" {
     {
       port        = 80
       protocol    = "HTTP"
-      target_group_index = 0
-      # action_type = "redirect"
-      # redirect = {
-      #   port        = "443"
-      #   protocol    = "HTTPS"
-      #   status_code = "HTTP_301"
-      # }
+      action_type = "redirect"
+      redirect = {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
     }
   ]
 }

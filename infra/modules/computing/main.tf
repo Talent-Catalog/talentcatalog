@@ -1,7 +1,8 @@
 data "aws_ssm_parameters_by_path" "secrets" {
-  path = "/${var.app}/develop/" // todo: change develop to terraform.workspace
+  path = "/${var.app}/${terraform.workspace}/"
 }
 
+// Create map from all the SSM parameters that related to the app to add it to the fargate tasks environment variables
 locals {
   env_secrets = [for name in data.aws_ssm_parameters_by_path.secrets.names : {
     "name" : split("/", name)[3],                                                                                        // item name
@@ -41,7 +42,7 @@ resource "aws_ecs_service" "web-app" {
   name            = "${var.app}-${terraform.workspace}"
   cluster         = module.ecs.cluster_id
   task_definition = aws_ecs_task_definition.web-app.arn
-  desired_count   = 1
+  desired_count   = 2
   launch_type     = "FARGATE"
 
   load_balancer {
@@ -85,7 +86,7 @@ resource "aws_ecs_task_definition" "web-app" {
       portMappings = [
         {
           containerPort = var.container_port
-          hostPort      = 8080
+          hostPort      = var.container_port
         }
       ]
     }

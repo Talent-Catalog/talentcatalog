@@ -1,8 +1,8 @@
 data "aws_ssm_parameter" "rds_password" {
-  name = "/${var.app}/develop/SPRING_DATASOURCE_PASSWORD" // todo: change develop to terraform.workspace
+  name = "/${var.app}/${terraform.workspace}/SPRING_DATASOURCE_PASSWORD"
 }
 data "aws_ssm_parameter" "rds_username" {
-  name = "/${var.app}/develop/SPRING_DATASOURCE_USERNAME" // todo: change develop to terraform.workspace
+  name = "/${var.app}/${terraform.workspace}/SPRING_DATASOURCE_USERNAME"
 }
 
 module "database" {
@@ -38,4 +38,7 @@ module "database" {
   backup_window                       = var.db_backup_window
   maintenance_window                  = var.db_maintenance_window
   iam_database_authentication_enabled = true
+
+  # To provide highly available Database
+  multi_az = var.db_multi_az
 }

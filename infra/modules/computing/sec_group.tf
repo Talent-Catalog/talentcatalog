@@ -5,27 +5,10 @@ resource "aws_security_group" "fargate" {
   ingress {
     description      = "Container port"
     protocol         = "tcp"
-    from_port        = 80
-    to_port          = 80
+    from_port        = var.container_port
+    to_port          = var.container_port
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "Container port"
-    protocol         = "tcp"
-    from_port        = 8080
-    to_port          = 8080
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description     = "LB access to Container dynamic port"
-    protocol        = "tcp"
-    from_port       = 1
-    to_port         = 65535
-    security_groups = [aws_security_group.alb.id]
   }
 
   egress {
