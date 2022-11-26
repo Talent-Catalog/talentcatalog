@@ -29,6 +29,7 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 @ToString(callSuper = true)
 public class SearchUserRequest extends PagedSearchRequest {
     private String keyword;
+    private Long partnerId;
     private List<Role> role;
     private Status status;
 }

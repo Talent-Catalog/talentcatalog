@@ -66,7 +66,7 @@ export class EditJobInfoComponent implements OnInit {
     }).subscribe(results => {
       this.loading = false;
       this.recruiters = results['partners'];
-      this.users = results['users'].map(u => {u.fullName = u.firstName + " " + u.lastName; return u});
+      this.users = results['users'].map(u => {u.name = u.firstName + " " + u.lastName; return u});
       let job: Job = results['job'];
       this.createForm(job);
     }, error => {

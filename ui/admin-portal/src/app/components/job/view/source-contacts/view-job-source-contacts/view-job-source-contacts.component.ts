@@ -1,8 +1,18 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {PartnerService} from "../../../../../services/partner.service";
-import {Partner} from "../../../../../model/partner";
+import {Partner, UpdatePartnerJobContactRequest} from "../../../../../model/partner";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {User} from "../../../../../model/user";
+import {UserService} from "../../../../../services/user.service";
+import {SearchUserRequest} from "../../../../../model/base";
+import {
+  HasNameSelectorComponent
+} from "../../../../util/has-name-selector/has-name-selector.component";
 
+/*
+MODEL: Modal popups. Use set methods on ComponentInstance- will cause exception if doesn't exist
+ */
 @Component({
   selector: 'app-view-job-source-contacts',
   templateUrl: './view-job-source-contacts.component.html',
@@ -17,7 +27,9 @@ export class ViewJobSourceContactsComponent implements OnInit {
   sourcePartners: Partner[];
 
   constructor(
+    private modalService: NgbModal,
     private partnerService: PartnerService,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -30,7 +42,64 @@ export class ViewJobSourceContactsComponent implements OnInit {
   }
 
   editPartnerContact(partner: Partner) {
-    //todo select from drop down of partner users
-    //todo Update job, partner, contact user
+    //Get users for given partner.
+    const request: SearchUserRequest = {
+      partnerId: partner.id
+    }
+    this.error = null;
+    this.loading = true;
+    this.userService.search(request)
+    .subscribe(
+      (users) => {this.loading = false; this.selectPartnerContactUser(partner, users)},
+      (error) => {this.error = error; this.loading = false},
+    );
+  }
+
+  /**
+   * Select partner contact from drop down of given users
+   */
+  private selectPartnerContactUser(partner: Partner, users: User[]) {
+    users.forEach(user => user.name = user.firstName + " " + user.lastName)
+    const selectUserModal = this.modalService.open(HasNameSelectorComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+    selectUserModal.componentInstance.label = "Select user to contact";
+    selectUserModal.componentInstance.hasNames = users;
+    selectUserModal.result.then(
+      (user: User) => {this.updateContact(partner, user)},
+    )
+    .catch(() => {})
+  }
+
+  /**
+   * Update the given partners contact user for this job
+   * @param partner Partner
+   * @param user Contact user
+   */
+  private updateContact(partner: Partner, user: User) {
+    const request: UpdatePartnerJobContactRequest = {
+      jobId: this.job.id,
+      userId: user.id
+    }
+    this.error = null;
+    this.loading = true;
+    this.partnerService.updateJobContact(partner.id, request).subscribe(
+      (partner) => {this.updateSourcePartners(partner); this.loading = false},
+      error => {this.error = error; this.loading = false}
+    );
+  }
+
+  /**
+   * Update given partner in our array of source partners
+   * @param partner Updated partner
+   */
+  private updateSourcePartners(partner: Partner) {
+    let modifiedPartnerIndex = this.sourcePartners.findIndex(p => p.id === partner.id );
+    if (modifiedPartnerIndex >= 0) {
+      this.sourcePartners[modifiedPartnerIndex] = partner;
+    } else {
+      console.log("Bug - partner " + partner.id + " not found in source partners")
+    }
   }
 }

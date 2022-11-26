@@ -4,7 +4,12 @@ import {SearchResults} from "../model/search-results";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {SearchPartnerRequest, Status} from "../model/base";
-import {Partner, PartnerType, UpdatePartnerRequest} from "../model/partner";
+import {
+  Partner,
+  PartnerType,
+  UpdatePartnerJobContactRequest,
+  UpdatePartnerRequest
+} from "../model/partner";
 import {Job} from "../model/job";
 
 @Injectable({
@@ -42,5 +47,9 @@ export class PartnerService {
 
   update(id: number, request: UpdatePartnerRequest): Observable<Partner>  {
     return this.http.put<Partner>(`${this.apiUrl}/${id}`, request);
+  }
+
+  updateJobContact(id: number, request: UpdatePartnerJobContactRequest): Observable<Partner>  {
+    return this.http.put<Partner>(`${this.apiUrl}/${id}/updateJobContact`, request);
   }
 }

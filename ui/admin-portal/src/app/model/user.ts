@@ -36,7 +36,7 @@ export class User {
   partner: Partner;
 
   //Can be populated after upload
-  fullName: string;
+  name: string;
 }
 
 export interface UpdateUserRequest {

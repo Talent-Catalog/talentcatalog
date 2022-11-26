@@ -60,3 +60,8 @@ export interface UpdatePartnerRequest extends PartnerSimpleAttributes {
   sourceCountryIds: number[];
 }
 
+export interface UpdatePartnerJobContactRequest {
+  jobId: number;
+  userId: number;
+}
+

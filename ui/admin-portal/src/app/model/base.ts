@@ -206,6 +206,7 @@ export class SearchPartnerRequest extends PagedFilteredSearchRequest {
 }
 
 export class SearchUserRequest extends PagedFilteredSearchRequest {
+  partnerId?: number;
   role?: Role;
 }
 
