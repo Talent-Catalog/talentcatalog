@@ -37,7 +37,7 @@ variable "db_maintenance_window" {
 }
 
 variable "db_capacity" {
-  tyep        = number
+  type        = number
   description = "The Aurora capacity unit of the db."
   default     = 20
 }
