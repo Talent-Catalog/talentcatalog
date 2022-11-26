@@ -9,6 +9,7 @@ import {SearchUserRequest} from "../../../../../model/base";
 import {
   HasNameSelectorComponent
 } from "../../../../util/has-name-selector/has-name-selector.component";
+import {AuthService} from "../../../../../services/auth.service";
 
 /*
 MODEL: Modal popups.
@@ -25,17 +26,21 @@ export class ViewJobSourceContactsComponent implements OnInit {
   error: any;
   loading: boolean;
   sourcePartners: Partner[];
+  private loggedInUserPartnerId: number;
 
   constructor(
+    private authService: AuthService,
     private modalService: NgbModal,
     private partnerService: PartnerService,
     private userService: UserService
   ) { }
 
   ngOnInit(): void {
+    this.loggedInUserPartnerId = this.authService.getLoggedInUser()?.partner?.id;
+
     this.error = null;
     this.loading = true;
-    this.partnerService.listSourcePartners().subscribe(
+    this.partnerService.listSourcePartners(this.job).subscribe(
       (sourcePartners) => {this.sourcePartners = sourcePartners; this.loading = false},
       (error) => {this.error = error; this.loading = false}
     )
@@ -44,7 +49,9 @@ export class ViewJobSourceContactsComponent implements OnInit {
   editPartnerContact(partner: Partner) {
     //Get users for given partner.
     const request: SearchUserRequest = {
-      partnerId: partner.id
+      partnerId: partner.id,
+      sortFields: ["firstName", "lastName"],
+      sortDirection: "ASC"
     }
     this.error = null;
     this.loading = true;
@@ -101,5 +108,13 @@ export class ViewJobSourceContactsComponent implements OnInit {
     } else {
       console.log("Bug - partner " + partner.id + " not found in source partners")
     }
+  }
+
+  isEditable(partner: Partner): boolean {
+    let canEdit: boolean = this.editable;
+    if (canEdit) {
+      canEdit = this.loggedInUserPartnerId === partner.id;
+    }
+    return canEdit;
   }
 }

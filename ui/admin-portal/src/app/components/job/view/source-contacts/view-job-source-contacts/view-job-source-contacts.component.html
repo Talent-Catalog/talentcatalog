@@ -23,7 +23,7 @@
       <tbody>
       <tr *ngFor="let partner of sourcePartners">
         <td>
-          <div class="btn-group" *ngIf="editable">
+          <div class="btn-group" *ngIf="isEditable(partner)">
             <button type="button" class="btn btn-default" (click)="editPartnerContact(partner)"><i
               class="fas fa-edit" title="Change partner details"></i></button>
           </div>
