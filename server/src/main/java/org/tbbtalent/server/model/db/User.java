@@ -81,7 +81,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //Note that this has to be an EAGER fetch (ie not LAZY) because the partner has to be fully
+    //loaded in order to know its type because it uses a discriminator column to determine class
+    //type.
+    //See https://stackoverflow.com/questions/70394739/behavior-of-hibernate-get-vs-load-with-discriminator
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "partner_id")
     private PartnerImpl partner;
 
