@@ -30,12 +30,17 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.PartnerImpl;
+import org.tbbtalent.server.model.db.PartnerJobRelation;
+import org.tbbtalent.server.model.db.PartnerJobRelationKey;
 import org.tbbtalent.server.model.db.RecruiterPartnerImpl;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SourcePartnerImpl;
 import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.db.partner.RecruiterPartner;
 import org.tbbtalent.server.model.db.partner.SourcePartner;
+import org.tbbtalent.server.repository.db.PartnerJobRelationRepository;
 import org.tbbtalent.server.repository.db.PartnerRepository;
 import org.tbbtalent.server.repository.db.PartnerSpecification;
 import org.tbbtalent.server.request.partner.SearchPartnerRequest;
@@ -46,14 +51,17 @@ import org.tbbtalent.server.service.db.PartnerService;
 @Service
 public class PartnerServiceImpl implements PartnerService {
     private final PartnerRepository partnerRepository;
+    private final PartnerJobRelationRepository partnerJobRelationRepository;
     private final CountryService countryService;
     private static final Logger log = LoggerFactory.getLogger(PartnerServiceImpl.class);
 
     public PartnerServiceImpl(
         PartnerRepository partnerRepository,
-        CountryService countryService) {
+        CountryService countryService,
+        PartnerJobRelationRepository partnerJobRelationRepository) {
         this.partnerRepository = partnerRepository;
         this.countryService = countryService;
+        this.partnerJobRelationRepository = partnerJobRelationRepository;
     }
 
     @Override
@@ -189,7 +197,7 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Override
     public @NonNull PartnerImpl update(long id, UpdatePartnerRequest request)
-        throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+        throws InvalidRequestException, NoSuchObjectException {
 
         Partner partner = getPartner(id);
 
@@ -220,5 +228,19 @@ public class PartnerServiceImpl implements PartnerService {
         }
 
         return partnerRepository.save((PartnerImpl) partner);
+    }
+
+    @Override
+    public void updateJobContact(Partner partner, SalesforceJobOpp job, User contactUser) {
+        PartnerJobRelationKey key =
+            new PartnerJobRelationKey(partner.getId(), job.getId());
+        PartnerJobRelation pjr = partnerJobRelationRepository.findById(key).orElse(null);
+        if (pjr == null) {
+            PartnerImpl partnerImpl = (PartnerImpl) partner;
+            pjr = new PartnerJobRelation(partnerImpl, job);
+            partnerImpl.getPartnerJobRelations().add(pjr);
+        }
+        pjr.setContact(contactUser);
+        partnerJobRelationRepository.save(pjr);
     }
 }

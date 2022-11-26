@@ -11,7 +11,7 @@ import {
 } from "../../../../util/has-name-selector/has-name-selector.component";
 
 /*
-MODEL: Modal popups. Use set methods on ComponentInstance- will cause exception if doesn't exist
+MODEL: Modal popups.
  */
 @Component({
   selector: 'app-view-job-source-contacts',

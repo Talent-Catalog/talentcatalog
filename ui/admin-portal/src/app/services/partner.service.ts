@@ -50,6 +50,6 @@ export class PartnerService {
   }
 
   updateJobContact(id: number, request: UpdatePartnerJobContactRequest): Observable<Partner>  {
-    return this.http.put<Partner>(`${this.apiUrl}/${id}/updateJobContact`, request);
+    return this.http.put<Partner>(`${this.apiUrl}/${id}/update-job-contact`, request);
   }
 }

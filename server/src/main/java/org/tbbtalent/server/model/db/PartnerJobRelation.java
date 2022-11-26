@@ -81,4 +81,13 @@ public class PartnerJobRelation {
     @JoinColumn(name = "contact_id")
     private User contact;
 
+    public PartnerJobRelation() {
+    }
+
+    public PartnerJobRelation(PartnerImpl partner, SalesforceJobOpp job) {
+        this.partner = partner;
+        this.job = job;
+        this.id = new PartnerJobRelationKey(partner.getId(), job.getId());
+    }
+
 }

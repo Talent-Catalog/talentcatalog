@@ -25,6 +25,8 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.PartnerImpl;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.request.partner.SearchPartnerRequest;
@@ -116,5 +118,10 @@ public interface PartnerService {
      * @throws NoSuchObjectException if there is not a partner with this id.
      */
     @NonNull
-    PartnerImpl update(long id, UpdatePartnerRequest request) throws EntityExistsException, NoSuchObjectException;
+    PartnerImpl update(long id, UpdatePartnerRequest request) throws InvalidRequestException, NoSuchObjectException;
+
+    /**
+     * Update the given user contact for the given partner and job
+     */
+    void updateJobContact(Partner partner, SalesforceJobOpp job, User contactUser);
 }
