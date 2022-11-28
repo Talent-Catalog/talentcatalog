@@ -21,6 +21,7 @@ import {SavedSearch} from "./saved-search";
 
 export interface Job {
   id: number;
+  sfId: string;
   contactEmail: string;
   contactUser: User;
   country: string;

@@ -12,6 +12,12 @@
     <h1>{{job.name}}
       <span class="small text-muted">
         ({{job.id}}) {{job.stage}}
+        <a *ngIf="job.sfId" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
+          <i class="fab fa-salesforce" title="Show job in Salesforce"></i>
+        </a>
+        <a *ngIf="job.submissionList?.folderjdlink" [href]="job.submissionList.folderjdlink" target="_blank">
+          <i class="fab fa-google-drive" title="Show job's Google Doc folder"></i>
+        </a>
       </span>
     </h1>
 

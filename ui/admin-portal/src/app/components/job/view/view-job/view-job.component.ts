@@ -5,6 +5,7 @@ import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
 import {AuthService} from "../../../../services/auth.service";
 import {LocalStorageService} from "angular-2-local-storage";
+import {SalesforceService} from "../../../../services/salesforce.service";
 
 @Component({
   selector: 'app-view-job',
@@ -23,6 +24,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   constructor(
     private authService: AuthService,
     private localStorageService: LocalStorageService,
+    private salesforceService: SalesforceService,
   ) {
     super(0,0, false)
   }
@@ -52,5 +54,9 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
 
   onJobUpdated(job: Job) {
     this.jobUpdated.emit(job);
+  }
+
+  getSalesforceJobLink(sfId: string): string {
+    return this.salesforceService.sfOppToLink(sfId);
   }
 }
