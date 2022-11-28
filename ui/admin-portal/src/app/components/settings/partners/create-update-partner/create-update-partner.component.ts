@@ -3,11 +3,13 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner, PartnerType, UpdatePartnerRequest} from "../../../../model/partner";
-import {salesforceUrlPattern, Status} from "../../../../model/base";
+import {salesforceUrlPattern, SearchUserRequest, Status} from "../../../../model/base";
 import {Country} from "../../../../model/country";
 import {CountryService} from "../../../../services/country.service";
 import {enumOptions} from "../../../../util/enum";
 import {FormComponentBase} from "../../../util/form/FormComponentBase";
+import {User} from "../../../../model/user";
+import {UserService} from "../../../../services/user.service";
 
 /*
   MODEL - mapping enums, display text send ids, create/update component
@@ -45,6 +47,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
   form: FormGroup;
   partner: Partner;
   partnerTypes = enumOptions(PartnerType);
+  partnerUsers: User[];
   statuses = enumOptions(Status);
   working: boolean;
 
@@ -52,14 +55,21 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
   constructor(fb: FormBuilder,
               private activeModal: NgbActiveModal,
               private countryService: CountryService,
-              private partnerService: PartnerService) {
+              private partnerService: PartnerService,
+              private userService: UserService,
+  ) {
     super(fb);
   }
 
   ngOnInit(): void {
+    const defaultContact = this.partner.defaultContact;
+    if (defaultContact) {
+      defaultContact.name = defaultContact.firstName + " " + defaultContact.lastName
+    }
     this.form = this.fb.group({
       abbreviation: [this.partner?.abbreviation, Validators.required],
       autoAssignable: [this.partner?.autoAssignable],
+      defaultContact: [this.partner?.defaultContact],
       defaultPartnerRef: [this.partner?.defaultPartnerRef],
       logo: [this.partner?.logo],
       name: [this.partner?.name, Validators.required],
@@ -81,13 +91,35 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
     this.countryService.listCountriesRestricted().subscribe(
       (response) => {
         this.countries = response;
+        this.working = false
       },
       (error) => {
         this.error = error;
-        this.working = false;
+        this.working = false
       }
     );
 
+    if (this.partner) {
+      //Get users for given partner.
+      const request: SearchUserRequest = {
+        partnerId: this.partner.id,
+        sortFields: ["firstName", "lastName"],
+        sortDirection: "ASC"
+      }
+      this.error = null;
+      this.working = true;
+      this.userService.search(request).subscribe(
+        (users) => {
+          this.working = false;
+          users.forEach(user => user.name = user.firstName + " " + user.lastName);
+          this.partnerUsers = users
+        },
+        (error) => {
+          this.error = error;
+          this.working = false
+        },
+      );
+    }
   }
 
   get create(): boolean {
@@ -106,6 +138,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
     const request: UpdatePartnerRequest = {
       abbreviation: this.form.value.abbreviation,
       autoAssignable: this.form.value.autoAssignable,
+      defaultContactId: this.form.value.defaultContact?.id,
       defaultPartnerRef: this.form.value.defaultPartnerRef,
       logo: this.form.value.logo,
       name: this.form.value.name,

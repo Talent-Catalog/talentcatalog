@@ -91,6 +91,13 @@ public class PartnerAdminApi implements
     public @NotNull Map<String, Object> update(
         @PathVariable("id") long id, @Valid UpdatePartnerRequest request)
             throws EntityExistsException, NoSuchObjectException {
+
+        //Note - have to look up contact user here rather than in partnerService to avoid
+        //circular dependency between partnerService and userService. Spring doesn't like that.
+        final Long defaultContactId = request.getDefaultContactId();
+        User defaultContact = defaultContactId == null ? null : userService.getUser(defaultContactId);
+        request.setDefaultContact(defaultContact);
+
         Partner partner = partnerService.update(id, request);
         return PartnerDtoHelper.getPartnerDto().build(partner);
     }

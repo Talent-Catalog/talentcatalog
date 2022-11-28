@@ -28,7 +28,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import lombok.Getter;
@@ -54,6 +56,11 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
 
     @Nullable
     private String abbreviation;
+
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "default_contact_id")
+    private User defaultContact;
 
     @Nullable
     @Transient
@@ -91,8 +98,8 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     private String websiteUrl;
 
     public User getJobContact() {
-        //todo Partner has default contact - add to db.
-        User contact = null;
+        //User partner contact as default contact.
+        User contact = this.defaultContact;
         if (contextJobId != null) {
             for (PartnerJobRelation partnerJob : partnerJobRelations) {
                 if (contextJobId.equals(partnerJob.getJob().getId())) {

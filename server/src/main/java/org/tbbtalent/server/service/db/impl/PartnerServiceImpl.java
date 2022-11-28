@@ -117,6 +117,7 @@ public class PartnerServiceImpl implements PartnerService {
 
     private void populateCommonAttributes(UpdatePartnerRequest request, Partner partner) {
         partner.setAbbreviation(request.getAbbreviation());
+        partner.setDefaultContact(request.getDefaultContact());
         partner.setLogo(request.getLogo());
         partner.setName(request.getName());
 
@@ -198,6 +199,12 @@ public class PartnerServiceImpl implements PartnerService {
     @Override
     public @NonNull PartnerImpl update(long id, UpdatePartnerRequest request)
         throws InvalidRequestException, NoSuchObjectException {
+
+        //Check that defaultContact has been populated from defaultContactId in the request
+        if (request.getDefaultContactId() != null && request.getDefaultContact() == null) {
+            throw new InvalidRequestException(
+                "Bug: UpdatePartnerRequest has not been preprocessed to populate defaultContact");
+        }
 
         Partner partner = getPartner(id);
 

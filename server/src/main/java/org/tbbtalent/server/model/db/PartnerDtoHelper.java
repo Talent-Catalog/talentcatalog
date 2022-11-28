@@ -53,6 +53,7 @@ public class PartnerDtoHelper {
         return new DtoBuilder(new PartnerDtoPropertyFilter())
             .add("abbreviation")
             .add("autoAssignable")
+            .add("defaultContact", userDto())
             .add("defaultSourcePartner")
             .add("defaultPartnerRef")
             .add("id")

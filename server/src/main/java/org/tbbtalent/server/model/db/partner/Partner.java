@@ -42,6 +42,10 @@ public interface Partner {
     Long getContextJobId();
     void setContextJobId(@Nullable Long contextJobId);
 
+    @Nullable
+    User getDefaultContact();
+    void setDefaultContact(@Nullable User defaultContact);
+
     /**
      * Unique id identifying this partner
      * @return partner id

@@ -52,11 +52,13 @@ export interface PartnerSimpleAttributes {
 
 export interface Partner extends PartnerSimpleAttributes {
   id: number;
+  defaultContact?: User;
   defaultSourcePartner: boolean;
   sourceCountries: Country[];
 }
 
 export interface UpdatePartnerRequest extends PartnerSimpleAttributes {
+  defaultContactId?: number,
   sourceCountryIds: number[];
 }
 
