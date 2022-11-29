@@ -21,10 +21,11 @@
       </span>
     </h1>
 
-    <div *ngIf="!job.publishedDate">
-      <button type="button" class="btn btn-outline-dark mr-2"
-              (click)="publishJob()">Publish Job</button>
-    </div>
+<!--todo reinstate this once delayed publishing is introduced -->
+    <!--    <div *ngIf="!job.publishedDate">-->
+<!--      <button type="button" class="btn btn-outline-dark mr-2"-->
+<!--              (click)="publishJob()">Publish Job</button>-->
+<!--    </div>-->
 
     <div class="col-sm-4">
       <app-view-job-summary
