@@ -62,7 +62,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
   }
 
   ngOnInit(): void {
-    const defaultContact = this.partner.defaultContact;
+    const defaultContact = this.partner?.defaultContact;
     if (defaultContact) {
       defaultContact.name = defaultContact.firstName + " " + defaultContact.lastName
     }
