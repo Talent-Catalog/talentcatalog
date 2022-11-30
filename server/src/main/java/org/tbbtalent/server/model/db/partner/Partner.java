@@ -53,7 +53,12 @@ public interface Partner {
     Long getId();
     void setId(Long id);
 
-    //todo Doc
+    /**
+     * Gets the contact associated with {@link #getContextJobId()} if it is not null, otherwise
+     * returns the default partner contact, {@link #getDefaultContact()}
+     * @return Contact user
+     */
+    @Nullable
     User getJobContact();
 
     /**
