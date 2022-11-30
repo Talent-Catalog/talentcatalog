@@ -49,7 +49,7 @@ import org.tbbtalent.server.util.SalesforceHelper;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "partner_type")
 @DiscriminatorValue("Partner")
-public abstract class PartnerImpl extends AbstractDomainObject<Long>
+public class PartnerImpl extends AbstractDomainObject<Long>
     implements Partner {
 
     private Long id;

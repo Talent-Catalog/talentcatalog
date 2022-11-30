@@ -38,7 +38,6 @@ import org.tbbtalent.server.model.db.SourcePartnerImpl;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.RecruiterPartner;
 import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.repository.db.PartnerJobRelationRepository;
 import org.tbbtalent.server.repository.db.PartnerRepository;
@@ -106,6 +105,14 @@ public class PartnerServiceImpl implements PartnerService {
                 populateCommonAttributes(request, recruiterPartner);
 
                 partner = recruiterPartner;
+                break;
+
+            case "Partner":
+                PartnerImpl partnerImpl = new PartnerImpl();
+
+                populateCommonAttributes(request, partnerImpl);
+
+                partner = partnerImpl;
                 break;
 
             default:
@@ -230,7 +237,7 @@ public class PartnerServiceImpl implements PartnerService {
             sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
             sourcePartner.setAutoAssignable(request.isAutoAssignable());
             sourcePartner.setSourceCountries(sourceCountries);
-        } else if (partner instanceof RecruiterPartner) {
+        } else {
             populateCommonAttributes(request, partner);
         }
 

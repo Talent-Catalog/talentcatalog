@@ -25,6 +25,7 @@ import {User} from "./user";
 */
 
 export enum PartnerType {
+  Partner = "Partner",
   RecruiterPartner = "RecruiterPartner",
   SourcePartner = "SourcePartner"
 }
