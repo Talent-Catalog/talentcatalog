@@ -26,7 +26,13 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 @Setter
 public class SearchPartnerRequest extends PagedSearchRequest {
 
-    //todo doc
+    /**
+     * Id of a job associated with partner.
+     * <p/>
+     * It will be used to set the context of jobs returned by the search.
+     * This is used to populate job related info associated with the partner - for example the
+     * job specific partner contact user.
+     */
     @Nullable
     private Long contextJobId;
 
