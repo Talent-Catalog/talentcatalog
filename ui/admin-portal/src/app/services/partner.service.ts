@@ -21,6 +21,9 @@ export class PartnerService {
 
   constructor(private http: HttpClient) { }
 
+  listPartners(): Observable<Partner[]> {
+    return this.http.get<Partner[]>(`${this.apiUrl}`);
+  }
 
   search(request: SearchPartnerRequest): Observable<Partner[]> {
     return this.http.post<Partner[]>(`${this.apiUrl}/search`, request);

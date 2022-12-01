@@ -78,7 +78,7 @@ export class CreateUpdateUserComponent implements OnInit {
 
     forkJoin({
       'countries': this.countryService.listCountriesRestricted(),
-      'partners': this.partnerService.listSourcePartners()
+      'partners': this.partnerService.listPartners()
     }).subscribe(
       results => {
         this.working = false;

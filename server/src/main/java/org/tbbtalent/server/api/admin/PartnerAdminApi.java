@@ -71,6 +71,12 @@ public class PartnerAdminApi implements
     }
 
     @Override
+    public @NotNull List<Map<String, Object>> list() {
+        List<PartnerImpl> partners = partnerService.listPartners();
+        return PartnerDtoHelper.getPartnerDto().buildList(partners);
+    }
+
+    @Override
     public @NotNull List<Map<String, Object>> search(@Valid SearchPartnerRequest request) {
         List<PartnerImpl> partners = partnerService.search(request);
         if (request.getContextJobId() != null) {

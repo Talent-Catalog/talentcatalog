@@ -60,7 +60,7 @@ public interface UserService {
      * Returns a live JPA entity representing the logged in partner.
      * @return Partner associated with logged in partner or null if no user.
      */
-    Partner getLoggedInSourcePartner();
+    Partner getLoggedInPartner();
 
     User getSystemAdminUser();
 

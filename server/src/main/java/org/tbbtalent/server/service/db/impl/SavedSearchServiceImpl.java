@@ -83,6 +83,7 @@ import org.tbbtalent.server.model.db.SearchType;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateReviewStatusRepository;
@@ -1491,10 +1492,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Modify request, defaulting blank partners
         List<Long> requestedPartners = request.getPartnerIds();
         if (requestedPartners == null || requestedPartners.isEmpty()) {
-            Partner partner = userService.getLoggedInSourcePartner();
+            Partner partner = userService.getLoggedInPartner();
             if (partner != null) {
-                //todo Hack - Different defaults for UNHCR - should be partner default
-                if ("UNHCR".equals(partner.getName())) {
+                //Some partners default to seeing candidates from all source partners.
+                final boolean isDefaultSourcePartner = partner instanceof SourcePartner
+                    && ((SourcePartner) partner).isDefaultSourcePartner();
+                //Different default for simple (non operating partners)
+                //and default source partner
+                if ("Partner".equals(partner.getPartnerType()) || isDefaultSourcePartner) {
                    List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
                    List<Long> partnerIds =
                        sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());

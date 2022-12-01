@@ -24,6 +24,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.PartnerImpl;
+import org.tbbtalent.server.model.db.Status;
 
 /**
  * MODEL - JPA query joining a collection attribute.
@@ -46,4 +47,6 @@ public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, Jpa
     @Query(" select p.name from Partner p "
         + " where p.id in (:ids) order by p.name asc" )
     List<String> getNamesForIds(@Param("ids") List<Long> ids);
+
+    List<PartnerImpl> findByStatusOrderByName(Status status);
 }

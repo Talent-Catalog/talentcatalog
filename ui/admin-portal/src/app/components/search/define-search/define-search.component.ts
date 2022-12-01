@@ -696,13 +696,15 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public getPartnerDefaultMessage(): string {
-    let partnerName =this.loggedInUser?.partner.name;
+
+    const partner = this.loggedInUser?.partner;
+    let partnerType = partner?.partnerType;
 
     let s: string;
 
-    //todo Hack UNHCR - should be partner default
-    if (partnerName === "UNHCR") {
-      s = "If nothing is specified, the default is to show candidates from any partner";
+    //Simple non-operating partners default to seeing candidates from all partners
+    if (partnerType === PartnerType.Partner || partner && partner.defaultSourcePartner) {
+      s = "If nothing is specified, the default is to show candidates managed by any partner";
     } else {
       s = "If nothing is specified, the default is to just show candidates belonging to your partner";
     }

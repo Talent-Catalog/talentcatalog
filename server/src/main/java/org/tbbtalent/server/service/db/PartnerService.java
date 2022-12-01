@@ -77,6 +77,12 @@ public interface PartnerService {
     Partner getPartnerFromAbbreviation(@Nullable String partnerAbbreviation);
 
     /**
+     * Lists all active partners
+     * @return
+     */
+    List<PartnerImpl> listPartners();
+
+    /**
      * Convenience method which just delegates to {@link #search(SearchPartnerRequest)} with an
      * appropriate request.
      * @return All active source partners

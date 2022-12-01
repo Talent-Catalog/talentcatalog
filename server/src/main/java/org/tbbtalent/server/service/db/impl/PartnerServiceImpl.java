@@ -182,6 +182,12 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
+    public List<PartnerImpl> listPartners() {
+        List<PartnerImpl> partners = partnerRepository.findByStatusOrderByName(Status.active);
+        return partners;
+    }
+
+    @Override
     public List<PartnerImpl> listSourcePartners() {
         SearchPartnerRequest request = new SearchPartnerRequest();
         request.setPartnerType("SourcePartner");

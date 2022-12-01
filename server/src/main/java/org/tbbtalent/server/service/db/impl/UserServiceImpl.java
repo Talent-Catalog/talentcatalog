@@ -507,7 +507,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Partner getLoggedInSourcePartner() {
+    public Partner getLoggedInPartner() {
         Partner partner = null;
         User user = authService.getLoggedInUser().orElse(null);
         if (user != null) {
