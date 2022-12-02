@@ -318,6 +318,12 @@ public interface CandidateService {
     List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
+    List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom,
+        LocalDate dateTo, List<Long> sourceCountryIds);
+
+    List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom,
+        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
+
     List<DataRow> computeRegistrationStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeRegistrationStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
