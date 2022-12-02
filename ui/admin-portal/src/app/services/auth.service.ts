@@ -27,6 +27,7 @@ import {LoginRequest} from "../model/base";
 import {Observable} from "rxjs/index";
 import {EncodedQrImage} from "../util/qr";
 import {Candidate} from "../model/candidate";
+import {PartnerType} from "../model/partner";
 
 @Injectable({
   providedIn: 'root'
@@ -95,12 +96,16 @@ export class AuthService {
 
   canViewCandidateCV(): boolean {
     let result: boolean = false;
-    switch (this.getLoggedInRole()) {
-       case Role.systemadmin:
-       case Role.admin:
-       case Role.sourcepartneradmin:
-        result = true;
-     }
+
+    let partnerType = this.getPartnerType();
+    if (partnerType != null && partnerType != PartnerType.Partner) {
+      switch (this.getLoggedInRole()) {
+        case Role.systemadmin:
+        case Role.admin:
+        case Role.sourcepartneradmin:
+          result = true;
+      }
+    }
      return result;
   }
 
@@ -165,6 +170,11 @@ export class AuthService {
     }
 
     return this.loggedInUser;
+  }
+
+  getPartnerType(): string {
+    const loggedInUser = this.getLoggedInUser();
+    return loggedInUser == null ? null : loggedInUser.partner?.partnerType;
   }
 
   setNewLoggedInUser(new_user) {
