@@ -124,10 +124,10 @@ export class HeaderComponent implements OnInit {
   }
 
   renderCandidateRow(candidate: Candidate) {
-    if (this.isUserLimited()) {
-      return candidate.candidateNumber;
-    } else {
+    if (this.canViewCandidateName()) {
       return candidate.candidateNumber + ": " + candidate.user.firstName + " " + candidate.user.lastName;
+    } else {
+      return candidate.candidateNumber;
     }
   }
 
@@ -160,7 +160,11 @@ export class HeaderComponent implements OnInit {
 
   }
 
-  isUserLimited(): boolean {
-    return !this.authService.isAnAdmin();
+  canViewCandidateName(): boolean {
+    return this.authService.canViewCandidateName();
+  }
+
+  isAnAdmin(): boolean {
+    return this.authService.isAnAdmin();
   }
 }

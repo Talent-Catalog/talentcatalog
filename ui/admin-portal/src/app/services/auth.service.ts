@@ -94,6 +94,9 @@ export class AuthService {
      return result;
   }
 
+  /**
+   * True if the currently logged in user is permitted to see candidate CVs
+   */
   canViewCandidateCV(): boolean {
     let result: boolean = false;
 
@@ -109,15 +112,53 @@ export class AuthService {
      return result;
   }
 
+  /**
+   * True if the currently logged in user is permitted to see candidate names
+   */
   canViewCandidateName(): boolean {
     let result: boolean = false;
-    switch (this.getLoggedInRole()) {
-       case Role.systemadmin:
-       case Role.admin:
-       case Role.sourcepartneradmin:
-        result = true;
-     }
-     return result;
+    let partnerType = this.getPartnerType();
+    if (partnerType != null && partnerType != PartnerType.Partner) {
+      switch (this.getLoggedInRole()) {
+        case Role.systemadmin:
+        case Role.admin:
+        case Role.sourcepartneradmin:
+          result = true;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * True if the currently logged in user is permitted to see the given candidate's private
+   * and potentially sensitive information - such as intake data
+   * @param candidate Candidate to be checked
+   */
+  canViewPrivateCandidateInfo(candidate: Candidate): boolean {
+    let visible = false;
+    const loggedInUser = this.getLoggedInUser()
+    //Must be logged in
+    if (loggedInUser) {
+
+      //Must have more than a basic Partner type.
+      let partnerType = this.getPartnerType();
+      if (partnerType != null && partnerType != PartnerType.Partner) {
+
+        //Must have some kind of admin role
+        const role = this.getLoggedInRole();
+        if (role !== Role.limited && role !== Role.semilimited) {
+          if (this.isDefaultSourcePartner()) {
+            //Default source partners with admin roles can see all candidate info
+            visible = true;
+          } else {
+            //Can only see private candidate info if the candidate is assigned to the user's partner
+            const candidateSourcePartner = candidate.user.partner;
+            visible = candidateSourcePartner.id === loggedInUser.partner.id;
+          }
+        }
+      }
+    }
+    return visible;
   }
 
   isAnAdmin(): boolean {

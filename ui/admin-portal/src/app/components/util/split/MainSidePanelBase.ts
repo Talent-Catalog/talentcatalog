@@ -67,7 +67,7 @@ export abstract class MainSidePanelBase {
    */
   protected constructor(private minSidePanelWidth: number, private maxSidePanelWidth = 0,
                         public sidePanelIsMax = true,
-                        private totalPanelWidth = 12) {
+                        public totalPanelWidth = 12) {
     if (this.maxSidePanelWidth === 0) {
       this.maxSidePanelWidth = this.minSidePanelWidth;
     }
