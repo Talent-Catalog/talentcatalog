@@ -33,7 +33,7 @@
          <li class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/'">Home</a>
         </li>
-        <li class="nav-item" [routerLinkActive]="'active'">
+        <li *ngIf="canCreateJob()" class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/job'">New Job</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
@@ -45,8 +45,8 @@
         <li class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/infographics'">Stats</a>
         </li>
-        <li class="nav-item" [routerLinkActive]="'active'">
-          <a *ngIf="isAnAdmin()" class="nav-link" [routerLink]="'/settings'">Settings</a>
+        <li *ngIf="isAnAdmin()" class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/settings'">Settings</a>
         </li>
 
       </ul>

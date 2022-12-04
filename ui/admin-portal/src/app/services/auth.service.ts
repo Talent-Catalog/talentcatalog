@@ -82,6 +82,17 @@ export class AuthService {
     return loggedInUser == null ? false : Role[loggedInUser.role] === Role.systemadmin;
   }
 
+  canCreateJob() : boolean {
+    let result: boolean = false;
+
+    let partnerType = this.getPartnerType();
+    if (partnerType != null && partnerType != PartnerType.Partner) {
+      result = this.isDefaultSourcePartner() || partnerType == PartnerType.RecruiterPartner;
+    }
+
+    return result;
+  }
+
   canViewCandidateCountry(): boolean {
     let result: boolean = false;
     switch (this.getLoggedInRole()) {

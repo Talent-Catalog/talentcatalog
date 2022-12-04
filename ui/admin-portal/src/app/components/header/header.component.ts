@@ -160,6 +160,10 @@ export class HeaderComponent implements OnInit {
 
   }
 
+  canCreateJob(): boolean {
+    return this.authService.canCreateJob();
+  }
+
   canViewCandidateName(): boolean {
     return this.authService.canViewCandidateName();
   }
