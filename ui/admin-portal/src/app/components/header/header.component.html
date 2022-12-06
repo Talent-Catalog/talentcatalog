@@ -34,7 +34,10 @@
           <a class="nav-link" [routerLink]="'/'">Home</a>
         </li>
         <li *ngIf="canCreateJob()" class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/job'">New Job</a>
+          <a class="nav-link" [routerLink]="'/job'">New Job <br/> (old way)</a>
+        </li>
+        <li *ngIf="canCreateJob()" class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/job/prepare'">Prepare Job <br/> (new way)</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/list'">New List</a>
