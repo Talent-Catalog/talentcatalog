@@ -33,6 +33,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
@@ -83,17 +84,19 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public SalesforceJobOpp createJob(UpdateJobRequest request)
-        throws InvalidRequestException, SalesforceException {
+        throws EntityExistsException, SalesforceException {
         //Check if we already have a job for this Salesforce job opp.
         final String sfJoblink = request.getSfJoblink();
         String sfId = SalesforceHelper.extractIdFromSfUrl(sfJoblink);
         SalesforceJobOpp job = salesforceJobOppService.getJobOppById(sfId);
+        if (job != null) {
+            throw new EntityExistsException("job", job.getName() + " (" + job.getId() + ")" );
+        }
+
+        //Create job
+        job = salesforceJobOppService.createJobOpp(sfId);
         if (job == null) {
-            //Create one if none exists
-            job = salesforceJobOppService.createJobOpp(sfId);
-            if (job == null) {
-                throw new InvalidRequestException("No such Salesforce opportunity: " + sfJoblink);
-            }
+            throw new InvalidRequestException("No such Salesforce opportunity: " + sfJoblink);
         }
 
         //Create submission list

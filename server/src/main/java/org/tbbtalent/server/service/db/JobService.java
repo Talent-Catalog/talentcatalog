@@ -21,6 +21,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
@@ -36,17 +37,16 @@ import org.tbbtalent.server.request.link.UpdateLinkRequest;
  */
 public interface JobService {
 
-    //TODO JC This text needs to change
     /**
      * Registered a new job matching a job opportunity on Salesforce
      * @param request Request which includes a link to the associated Salesforce job opportunity
      * @return Created job
-     * @throws InvalidRequestException if there is already a job associated with the requested
+     * @throws EntityExistsException if there is already a job associated with the requested
      * Salesforce job opportunity.
      * @throws SalesforceException if there are issues contacting Salesforce
      */
     SalesforceJobOpp createJob(UpdateJobRequest request)
-        throws InvalidRequestException, SalesforceException;
+        throws EntityExistsException, SalesforceException;
 
     /**
      * Get the Job with the given id.
