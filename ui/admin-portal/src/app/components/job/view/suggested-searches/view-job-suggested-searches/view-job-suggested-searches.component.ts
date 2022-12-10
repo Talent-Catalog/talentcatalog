@@ -1,4 +1,12 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {SavedSearch} from "../../../../../model/saved-search";
 import {JobService} from "../../../../../services/job.service";
@@ -10,9 +18,10 @@ import {InputTextComponent} from "../../../../util/input/input-text/input-text.c
   templateUrl: './view-job-suggested-searches.component.html',
   styleUrls: ['./view-job-suggested-searches.component.scss']
 })
-export class ViewJobSuggestedSearchesComponent implements OnInit {
+export class ViewJobSuggestedSearchesComponent implements OnInit, OnChanges {
   @Input() job: Job;
   @Input() editable: boolean;
+  @Output() jobUpdated = new EventEmitter<Job>();
 
   searches: SavedSearch[] = [];
   error: any;
@@ -22,6 +31,10 @@ export class ViewJobSuggestedSearchesComponent implements OnInit {
               private modalService: NgbModal) { }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    //Refresh the searches if the job changes.
     this.searches = this.job.suggestedSearches;
   }
 
@@ -49,8 +62,7 @@ export class ViewJobSuggestedSearchesComponent implements OnInit {
     this.saving = true;
     this.jobService.createSuggestedSearch(this.job.id, suffix).subscribe(
       (job) => {
-        this.job = job;
-        this.searches = this.job.suggestedSearches;
+        this.fireJobUpdatedEvent(job);
         this.saving = false;
       },
       (error) => {
@@ -64,13 +76,19 @@ export class ViewJobSuggestedSearchesComponent implements OnInit {
     this.saving = true;
     this.jobService.removeSuggestedSearch(this.job.id, search.id).subscribe(
       (job) => {
-        this.job = job;
-        this.searches = this.job.suggestedSearches;
+        this.fireJobUpdatedEvent(job);
         this.saving = false;
       },
       (error) => {
         this.error = error;
         this.saving = false;
       });
+  }
+
+  private fireJobUpdatedEvent(job: Job) {
+    //Fire the job updated event - that should bubble up to parent components, then be fed back
+    //down to this component, which will then update itself when ngOnChanges is called with the
+    //updated job.
+    this.jobUpdated.emit(job);
   }
 }

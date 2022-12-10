@@ -76,6 +76,13 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
+    @PutMapping("{id}/publish")
+    public @NotNull Map<String, Object> publishJob(@PathVariable("id") long id)
+        throws NoSuchObjectException {
+        SalesforceJobOpp job = jobService.publishJob(id);
+        return jobDto().build(job);
+    }
+
     @PutMapping("{id}/remove-search")
     public @NotNull Map<String, Object> removeSuggestedSearch(
         @PathVariable("id") long id, @Valid @RequestBody long savedSearchId)
@@ -118,7 +125,7 @@ public class JobAdminApi implements
 
     @PutMapping("{id}/summary")
     public @NotNull Map<String, Object> updateSummary(
-        @PathVariable("id") long id, @Valid @RequestBody String summary)
+        @PathVariable("id") long id, @Valid @RequestBody(required = false) String summary)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateJobSummary(id, summary);
         return jobDto().build(job);

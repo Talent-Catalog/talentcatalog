@@ -17,12 +17,15 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.request.job.JobInfoForSlackPost;
 import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
 import org.tbbtalent.server.request.opportunity.PostJobToSlackResponse;
+import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.service.db.SlackService;
 
 /**
@@ -33,10 +36,12 @@ import org.tbbtalent.server.service.db.SlackService;
 @RestController()
 @RequestMapping("/api/admin/slack")
 public class SlackAdminApi {
+  private final JobService jobService;
   private final SlackService slackService;
 
   @Autowired
-  public SlackAdminApi(SlackService slackService) {
+  public SlackAdminApi(JobService jobService, SlackService slackService) {
+    this.jobService = jobService;
     this.slackService = slackService;
   }
 
@@ -50,5 +55,12 @@ public class SlackAdminApi {
     String slackChannelUrl = slackService.postJob(request);
     return new PostJobToSlackResponse(slackChannelUrl);
   }
-  
+
+  @PostMapping("{id}/post-job")
+  public PostJobToSlackResponse postJob(@PathVariable("id") long id) {
+    JobInfoForSlackPost jobInfo = jobService.extractJobInfoForSlack(id);
+    String slackChannelUrl = slackService.postJob(jobInfo);
+    return new PostJobToSlackResponse(slackChannelUrl);
+  }
+
 }

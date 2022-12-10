@@ -84,6 +84,7 @@ export interface SalesforceJobOpp {
 
 export class SearchJobRequest extends PagedSearchRequest {
   keyword?: string;
+  published?: boolean;
   sfOppClosed?: boolean;
   stages?: string[];
 }

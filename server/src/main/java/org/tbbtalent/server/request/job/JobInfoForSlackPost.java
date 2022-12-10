@@ -16,40 +16,23 @@
 
 package org.tbbtalent.server.request.job;
 
-import java.util.List;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tbbtalent.server.model.db.JobOpportunityStage;
-import org.tbbtalent.server.request.PagedSearchRequest;
+import org.tbbtalent.server.model.db.User;
 
+/**
+ * Information used to post Job info on Slack
+ *
+ * @author John Cameron
+ */
 @Getter
 @Setter
 @ToString
-public class SearchJobRequest extends PagedSearchRequest {
-    /**
-     * Used to match sources whose names are like this keyword
-     */
-    @Nullable
-    private String keyword;
-
-    /**
-     * If specified, job opportunities will be selected based on whether the job has been published.
-     */
-    @Nullable
-    private Boolean published;
-
-    /**
-     * If specified, job opportunities will be selected based on whether the opportunity is closed.
-     */
-    @Nullable
-    private Boolean sfOppClosed;
-
-    /**
-     * If specified, job opportunities are selected if they match any of the stages
-     */
-    @Nullable
-    private List<JobOpportunityStage> stages;
-
+public class JobInfoForSlackPost {
+    private User contact;
+    private String jobName;
+    private String jobSummary;
+    private String sfJobLink;
+    private String tcJobLink;
 }

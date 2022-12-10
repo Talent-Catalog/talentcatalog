@@ -162,8 +162,11 @@ export class NewJobComponent implements OnInit {
     if (this.prepare) {
       this.postingToSlack = Progress.Finished;
     } else {
-      //Slack post can run in parallel with creating SF backlinks
-      this.postJobToSlack();
+      //Mark job as published and then post to Slack
+      this.jobService.publishJob(this.job.id).subscribe(
+        (job) => {this.job = job; this.postJobToSlack()},
+        (error) => {this.errorPostingToSlack = error}
+      )
     }
   }
 

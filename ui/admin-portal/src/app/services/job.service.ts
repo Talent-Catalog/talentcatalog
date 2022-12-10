@@ -28,6 +28,10 @@ export class JobService {
     return this.http.get<Job>(`${this.apiUrl}/${id}`);
   }
 
+  publishJob(id: number): Observable<Job> {
+    return this.http.put<Job>(`${this.apiUrl}/${id}/publish`, null);
+  }
+
   removeSuggestedSearch(id: number, savedSearchId: number): Observable<Job> {
     return this.http.put<Job>(`${this.apiUrl}/${id}/remove-search`, savedSearchId);
   }

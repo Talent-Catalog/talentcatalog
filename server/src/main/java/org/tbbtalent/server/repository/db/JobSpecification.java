@@ -98,6 +98,17 @@ public class JobSpecification {
                 conjunction.getExpressions().add(builder.equal(job.get("closed"), request.getSfOppClosed()));
             }
 
+            //PUBLISHED
+            if (request.getPublished() != null) {
+                Predicate published;
+                if (request.getPublished()) {
+                    published = builder.isNotNull(job.get("publishedBy"));
+                } else {
+                    published = builder.isNull(job.get("publishedBy"));
+                }
+                conjunction.getExpressions().add(published);
+            }
+
             return conjunction;
         };
     }

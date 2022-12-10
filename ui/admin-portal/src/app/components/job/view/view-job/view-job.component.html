@@ -3,10 +3,14 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb align-items-center">
       <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-      <li *ngIf="job.name" class="breadcrumb-item active" aria-current="page">{{job.name}}</li>
+      <li *ngIf="job.name" class="breadcrumb-item active" aria-current="page">Job / {{job.name}}</li>
     </ol>
 
   </nav>
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
 
   <div class="d-flex justify-content-between align-items-center">
     <h1>{{job.name}}
@@ -21,11 +25,13 @@
       </span>
     </h1>
 
-<!--todo reinstate this once delayed publishing is introduced -->
-    <!--    <div *ngIf="!job.publishedDate">-->
-<!--      <button type="button" class="btn btn-outline-dark mr-2"-->
-<!--              (click)="publishJob()">Publish Job</button>-->
-<!--    </div>-->
+    <div *ngIf="!job.publishedBy">
+      <button type="button" class="btn btn-outline-dark mr-2"
+              (click)="publishJob()"
+              title="Publish job so that source partners can see it">
+      Publish Job</button>
+      <i *ngIf="publishing" class="fas fa-spinner fa-spin"></i>
+    </div>
 
     <div class="col-sm-4">
       <app-view-job-summary
@@ -60,7 +66,8 @@
           <ng-template ngbNavContent>
             <app-job-suggested-searches-tab
               [job]="job"
-              [editable]="!loggedInUser.readOnly">
+              [editable]="!loggedInUser.readOnly"
+              (jobUpdated)="onJobUpdated($event)">
             </app-job-suggested-searches-tab>
           </ng-template>
         </ng-container>

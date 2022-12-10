@@ -6,6 +6,10 @@ import {User} from "../../../../model/user";
 import {AuthService} from "../../../../services/auth.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../../services/salesforce.service";
+import {JobService} from "../../../../services/job.service";
+import {SlackService} from "../../../../services/slack.service";
+import {Location} from "@angular/common";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-view-job',
@@ -17,14 +21,21 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   @Output() jobUpdated = new EventEmitter<Job>();
 
   activeTabId: string;
+  error: any;
   loggedInUser: User;
+  publishing: boolean;
+  slacklink: string;
 
   private lastTabKey: string = 'JobLastTab';
 
   constructor(
     private authService: AuthService,
     private localStorageService: LocalStorageService,
+    private jobService: JobService,
     private salesforceService: SalesforceService,
+    private slackService: SlackService,
+    private location: Location,
+    private router: Router
   ) {
     super(0,0, false)
   }
@@ -49,7 +60,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   }
 
   publishJob() {
-    //todo
+    //todo checks - are you sure?
+    this.error = null;
+    this.publishing = true;
+    this.jobService.publishJob(this.job.id).subscribe(
+      (job) => {this.updateJobAndPostOnSlack(job)},
+      (error) => {this.error = error; this.publishing = false}
+    )
   }
 
   onJobUpdated(job: Job) {
@@ -58,5 +75,17 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
 
   getSalesforceJobLink(sfId: string): string {
     return this.salesforceService.sfOppToLink(sfId);
+  }
+
+  private updateJobAndPostOnSlack(job: Job) {
+
+    this.onJobUpdated(job);
+
+    this.slackService.postJobFromId(job.id).subscribe(
+      (response) => {
+        this.slacklink = response.slackChannelUrl;
+        this.publishing = false;
+      },
+      (error) => {this.error = error; this.publishing = false});
   }
 }

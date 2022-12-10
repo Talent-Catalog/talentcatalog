@@ -26,6 +26,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.request.job.JobInfoForSlackPost;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
@@ -67,6 +68,25 @@ public interface JobService {
      */
     @NonNull
     SalesforceJobOpp createSuggestedSearch(long id, String suffix) throws NoSuchObjectException;
+
+    /**
+     * Extracts job related information that is used to post to Slack.
+     * @param id Job id
+     * @return Job information
+     * @throws NoSuchObjectException If no job with that id exists
+     */
+    @NonNull
+    JobInfoForSlackPost extractJobInfoForSlack(long id) throws NoSuchObjectException;
+
+    /**
+     * Marks job as published by the current user
+     *
+     * @param id ID of job
+     * @return Updated job
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp publishJob(long id) throws NoSuchObjectException;
 
     /**
      * Removes the given search from the suggested searches for the given job.
@@ -175,5 +195,4 @@ public interface JobService {
      */
     SalesforceJobOpp uploadJoi(long id, MultipartFile file)
         throws InvalidRequestException, NoSuchObjectException, IOException;
-
 }

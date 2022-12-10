@@ -26,6 +26,7 @@ import {
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {getExternalHref} from '../util/url';
+import {Job} from "./job";
 
 export enum SavedSearchType {
   profession,
@@ -104,6 +105,10 @@ export function getSavedSourceNavigation(source: SavedSearchRef): any[] {
 export function getCandidateSourceExternalHref(
   router: Router, location: Location, source: CandidateSource): string {
   return getExternalHref(router, location, getCandidateSourceNavigation(source));
+}
+
+export function getJobExternalHref(router: Router, location: Location, job: Job): string {
+  return getExternalHref(router, location, ['job', job.id]);
 }
 
 export function getCandidateSourceType(source: CandidateSource) {

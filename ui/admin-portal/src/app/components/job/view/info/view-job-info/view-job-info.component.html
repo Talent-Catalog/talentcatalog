@@ -88,7 +88,7 @@
         <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Created</label>
 
         <div class="form-control-plaintext">
-          <span>{{job.createdDate | date}}</span>
+          <span>{{job.createdDate | date: 'customDateTime'}}</span>
           <span *ngIf="job.createdBy" >
             <div>{{showUser(job.createdBy)}}</div>
             <div>
@@ -102,7 +102,7 @@
         <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Updated</label>
 
         <div class="form-control-plaintext">
-          <span>{{job.updatedDate | date}} {{showUser(job.updatedBy)}}</span>
+          <span>{{job.updatedDate | date: 'customDateTime'}}</span>
           <span *ngIf="job.updatedBy" >
             <div>{{showUser(job.updatedBy)}}</div>
             <div>
@@ -112,11 +112,11 @@
         </div>
       </div>
 
-      <div *ngIf="job.publishedDate" class="form-group col-sm-12 col-md-4">
+      <div *ngIf="job.publishedBy" class="form-group col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Published</label>
 
         <div class="form-control-plaintext">
-          <span>{{job.publishedDate | date}}</span>
+          <span>{{job.publishedDate | date: 'customDateTime'}}</span>
           <span *ngIf="job.publishedBy" >
             <div>{{showUser(job.publishedBy)}}</div>
             <div>
