@@ -4,8 +4,9 @@
 <form [formGroup]="form">
 
   <div class="form-group flex-fill">
-    <label class="h6" for="jobSummary">
-    <span class="mr-2 font-weight-normal">Job Summary: {{job.name}}
+    <label for="jobSummary">
+    <span class="mr-2 font-weight-normal">
+      Job Summary
       <span *ngIf="saving">
          <i class="fas fa-spinner fa-spin"></i>
       </span>

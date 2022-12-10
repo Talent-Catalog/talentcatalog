@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Job} from "../../../model/job";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -11,7 +12,9 @@ import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit {
   selectedJob: Job;
 
-  constructor() {
+  constructor(
+    private router: Router,
+  ) {
     super(6);
   }
 
@@ -23,4 +26,7 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
     this.selectedJob = job;
   }
 
+  doOpenJob() {
+    this.router.navigate(['job', this.selectedJob.id]);
+  }
 }

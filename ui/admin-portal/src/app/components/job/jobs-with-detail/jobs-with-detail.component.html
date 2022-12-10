@@ -16,8 +16,12 @@
       </div>
 
       <div *ngIf="selectedJob">
+        <strong>{{selectedJob.name}}</strong>
+        <button class="btn" (click)="doOpenJob()"><i class="fas fa-expand" title="Open"></i></button>
+
         <app-view-job-summary
-          [job]="selectedJob">
+          [job]="selectedJob"
+        >
         </app-view-job-summary>
 
         <hr/>
