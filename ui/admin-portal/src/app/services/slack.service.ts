@@ -16,7 +16,7 @@ export class SlackService {
     return this.http.post<PostJobToSlackResponse>(`${this.apiUrl}/post-job`, request);
   }
 
-  postJobFromId(id: number): Observable<PostJobToSlackResponse> {
-    return this.http.post<PostJobToSlackResponse>(`${this.apiUrl}/${id}/post-job`, null);
+  postJobFromId(id: number, tcJobLink: string): Observable<PostJobToSlackResponse> {
+    return this.http.post<PostJobToSlackResponse>(`${this.apiUrl}/${id}/post-job`, tcJobLink);
   }
 }

@@ -72,11 +72,12 @@ public interface JobService {
     /**
      * Extracts job related information that is used to post to Slack.
      * @param id Job id
+     * @param tcJobLink Link to job on TC
      * @return Job information
      * @throws NoSuchObjectException If no job with that id exists
      */
     @NonNull
-    JobInfoForSlackPost extractJobInfoForSlack(long id) throws NoSuchObjectException;
+    JobInfoForSlackPost extractJobInfoForSlack(long id, String tcJobLink) throws NoSuchObjectException;
 
     /**
      * Marks job as published by the current user

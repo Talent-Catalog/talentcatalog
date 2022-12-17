@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Job} from "../../../../model/job";
+import {getJobExternalHref, Job} from "../../../../model/job";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
@@ -64,7 +64,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
     this.error = null;
     this.publishing = true;
     this.jobService.publishJob(this.job.id).subscribe(
-      (job) => {this.updateJobAndPostOnSlack(job)},
+      (job) => {this.fireJobEventAndPostOnSlack(job)},
       (error) => {this.error = error; this.publishing = false}
     )
   }
@@ -77,11 +77,14 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
     return this.salesforceService.sfOppToLink(sfId);
   }
 
-  private updateJobAndPostOnSlack(job: Job) {
+  private fireJobEventAndPostOnSlack(job: Job) {
 
+    //Fire the job update event
     this.onJobUpdated(job);
 
-    this.slackService.postJobFromId(job.id).subscribe(
+    //Post on Slack
+    this.slackService.postJobFromId(
+      job.id, getJobExternalHref(this.router, this.location, job)).subscribe(
       (response) => {
         this.slacklink = response.slackChannelUrl;
         this.publishing = false;

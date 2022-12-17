@@ -57,8 +57,8 @@ public class SlackAdminApi {
   }
 
   @PostMapping("{id}/post-job")
-  public PostJobToSlackResponse postJob(@PathVariable("id") long id) {
-    JobInfoForSlackPost jobInfo = jobService.extractJobInfoForSlack(id);
+  public PostJobToSlackResponse postJob(@PathVariable("id") long id, @RequestBody String tcJobLink) {
+    JobInfoForSlackPost jobInfo = jobService.extractJobInfoForSlack(id, tcJobLink);
     String slackChannelUrl = slackService.postJob(jobInfo);
     return new PostJobToSlackResponse(slackChannelUrl);
   }

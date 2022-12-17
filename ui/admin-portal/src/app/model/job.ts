@@ -18,6 +18,9 @@ import {SavedList} from "./saved-list";
 import {User} from "./user";
 import {Partner} from "./partner";
 import {SavedSearch} from "./saved-search";
+import {Router} from "@angular/router";
+import {Location} from "@angular/common";
+import {getExternalHref} from "../util/url";
 
 export interface Job {
   id: number;
@@ -41,6 +44,10 @@ export interface Job {
   suggestedSearches: SavedSearch[];
   updatedBy: User;
   updatedDate: Date;
+}
+
+export function getJobExternalHref(router: Router, location: Location, job: Job): string {
+  return getExternalHref(router, location, ['job', job.id]);
 }
 
 export type JobDocType = "jd" | "joi";

@@ -177,8 +177,9 @@ public class JobServiceImpl implements JobService {
 
     @NonNull
     @Override
-    public JobInfoForSlackPost extractJobInfoForSlack(long id) throws NoSuchObjectException {
+    public JobInfoForSlackPost extractJobInfoForSlack(long id, String tcJobLink) throws NoSuchObjectException {
         final SalesforceJobOpp job = getJob(id);
+
         JobInfoForSlackPost jobInfo = new JobInfoForSlackPost();
         jobInfo.setJobName(job.getName());
 
@@ -196,8 +197,7 @@ public class JobServiceImpl implements JobService {
 
         jobInfo.setSfJobLink(SalesforceHelper.sfOppIdToLink(job.getSfId()));
 
-        //todo
-        jobInfo.setTcJobLink("todo");
+        jobInfo.setTcJobLink(tcJobLink);
 
         return jobInfo;
     }
