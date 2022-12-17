@@ -58,6 +58,15 @@ export interface Partner extends PartnerSimpleAttributes {
   sourceCountries: Country[];
 }
 
+export function sourceCountriesAsString(partner: Partner): string {
+  let s = '';
+  const countries: Country[] = partner.sourceCountries;
+  if (countries != null) {
+    s = countries.map(c => c.name).join(",");
+  }
+  return s;
+}
+
 export interface UpdatePartnerRequest extends PartnerSimpleAttributes {
   defaultContactId?: number,
   sourceCountryIds: number[];

@@ -1,7 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {PartnerService} from "../../../../../services/partner.service";
-import {Partner, UpdatePartnerJobContactRequest} from "../../../../../model/partner";
+import {
+  Partner,
+  sourceCountriesAsString,
+  UpdatePartnerJobContactRequest
+} from "../../../../../model/partner";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {User} from "../../../../../model/user";
 import {UserService} from "../../../../../services/user.service";
@@ -116,5 +120,14 @@ export class ViewJobSourceContactsComponent implements OnInit {
       canEdit = this.loggedInUserPartnerId === partner.id;
     }
     return canEdit;
+  }
+
+  sourceCountries(partner: Partner) {
+    let ret = "";
+    const s = sourceCountriesAsString(partner);
+    if (s) {
+      ret = "(" + s + ")"
+    }
+    return ret;
   }
 }
