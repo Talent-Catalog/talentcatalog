@@ -162,6 +162,7 @@ export class NewJobComponent implements OnInit {
     if (this.prepare) {
       this.postingToSlack = Progress.Finished;
     } else {
+      //Todo This is the old way - which will eventually not been needed
       //Mark job as published and then post to Slack
       this.jobService.publishJob(this.job.id).subscribe(
         (job) => {this.job = job; this.postJobToSlack()},
