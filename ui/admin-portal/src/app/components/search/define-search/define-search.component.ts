@@ -576,7 +576,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['nationalities'].patchValue(nationalities);
-    this.searchForm.controls['nationalitySearchType'].patchValue('or');
+    let searchType = request.nationalitySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
 
     /* JOINED SEARCHES */
     while (this.searchJoinArray.length) {
