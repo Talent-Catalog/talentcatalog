@@ -1499,7 +1499,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     && ((SourcePartner) partner).isDefaultSourcePartner();
                 //Different default for simple (non operating partners)
                 //and default source partner
-                if ("Partner".equals(partner.getPartnerType()) || isDefaultSourcePartner) {
+                if ("Partner".equals(partner.getPartnerType())
+                    || "RecruiterPartner".equals(partner.getPartnerType())
+                    || isDefaultSourcePartner) {
                    List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
                    List<Long> partnerIds =
                        sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());

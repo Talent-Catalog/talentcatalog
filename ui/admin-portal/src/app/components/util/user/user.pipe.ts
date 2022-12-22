@@ -38,7 +38,12 @@ export class UserPipe implements PipeTransform {
   }
 
   private fullName(user: User) {
-    return ((user.firstName || '(first name not set)') + ' ' + (user.lastName || '(last name not set)')).trim() || '-';
+    let name = ((user.firstName || '(first name not set)') +
+      ' ' + (user.lastName || '(last name not set)')).trim() || '-';
+    if (user.partner?.abbreviation) {
+      name += '(' + user.partner.abbreviation + ')';
+    }
+    return name;
   }
 
 }

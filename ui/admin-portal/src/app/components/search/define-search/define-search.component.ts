@@ -370,6 +370,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   clearForm() {
     this.searchForm.reset();
+    this.searchForm.controls['nationalitySearchType'].patchValue('or');
+
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
     }
@@ -574,6 +576,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['nationalities'].patchValue(nationalities);
+    let searchType = request.nationalitySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
 
     /* JOINED SEARCHES */
     while (this.searchJoinArray.length) {
@@ -703,7 +710,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     let s: string;
 
     //Simple non-operating partners default to seeing candidates from all partners
-    if (partnerType === PartnerType.Partner || partner && partner.defaultSourcePartner) {
+    if (partnerType === PartnerType.Partner
+      || partnerType === PartnerType.RecruiterPartner
+      || partner && partner.defaultSourcePartner) {
       s = "If nothing is specified, the default is to show candidates managed by any partner";
     } else {
       s = "If nothing is specified, the default is to just show candidates belonging to your partner";
