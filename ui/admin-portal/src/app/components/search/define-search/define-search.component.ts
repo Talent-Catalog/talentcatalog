@@ -370,6 +370,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   clearForm() {
     this.searchForm.reset();
+    this.searchForm.controls['nationalitySearchType'].patchValue('or');
+
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
     }
@@ -574,6 +576,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['nationalities'].patchValue(nationalities);
+    this.searchForm.controls['nationalitySearchType'].patchValue('or');
 
     /* JOINED SEARCHES */
     while (this.searchJoinArray.length) {
