@@ -29,7 +29,10 @@ import {LanguageLevel} from '../../../model/language-level';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import {CandidateNoteService, CreateCandidateNoteRequest} from '../../../services/candidate-note.service';
+import {
+  CandidateNoteService,
+  CreateCandidateNoteRequest
+} from '../../../services/candidate-note.service';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {dateString} from '../../../util/date-adapter/date-adapter';
@@ -213,7 +216,8 @@ export abstract class IntakeComponentTabBase implements OnInit {
   };
 
   /**
-   * Called when Start button on intake forms is clicked. Creates a start note with user/time.
+   * Called when Start, update or complete buttons on intake forms are clicked.
+   * Creates an appropriate note with user/time.
    * @param formName is the type of intake interview used for the comment/title.
    * @param btnType is either start, update or complete.
    * @param button is the button that's clicked, used to change the button text on click.
@@ -224,22 +228,22 @@ export abstract class IntakeComponentTabBase implements OnInit {
     if (btnType === "update") {
        this.noteRequest = {
         candidateId: this.candidate.id,
-        title: formName + ' interview updated by ' + this.loggedInUser.firstName + ' '
-          + this.loggedInUser.lastName + ' on ' + dateString(new Date()) + '.',
+        title: formName + ' interview updated by ' + this.makeUserName(this.loggedInUser)
+          + ' on ' + dateString(new Date()) + '.',
       };
        btnText = 'Updated!';
     } else if (btnType === "complete") {
       this.noteRequest = {
         candidateId: this.candidate.id,
-        title: formName + ' interview completed by ' + this.loggedInUser.firstName + ' '
-          + this.loggedInUser.lastName + ' on ' + dateString(new Date()) + '.',
+        title: formName + ' interview completed by ' + this.makeUserName(this.loggedInUser)
+          + ' on ' + dateString(new Date()) + '.',
       };
       btnText = 'Completed!';
     } else {
       this.noteRequest = {
         candidateId: this.candidate.id,
-        title: formName + ' interview started by ' + this.loggedInUser.firstName + ' '
-          + this.loggedInUser.lastName + ' on ' + dateString(new Date()) + '.',
+        title: formName + ' interview started by ' + this.makeUserName(this.loggedInUser)
+          + ' on ' + dateString(new Date()) + '.',
       };
       btnText = 'Started!';
     }
@@ -250,5 +254,13 @@ export abstract class IntakeComponentTabBase implements OnInit {
         this.error = error;
       })
   };
+
+  private makeUserName(user: User): string {
+    let name = user.firstName + ' ' + user.lastName;
+    if (user.partner?.abbreviation) {
+      name += '(' + user.partner.abbreviation + ')';
+    }
+    return name;
+  }
 
 }
