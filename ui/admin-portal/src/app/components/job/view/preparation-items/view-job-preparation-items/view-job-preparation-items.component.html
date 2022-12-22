@@ -1,0 +1,36 @@
+<div *ngIf="job" class="card">
+  <div class="card-header d-flex align-items-baseline justify-content-between">
+    <h5>Progress</h5>
+  </div>
+  <div class="card-body">
+    <div class="progress">
+      <div class="tbb-primary" [ngClass]=
+        "{'progress-bar-animated progress-bar-striped': progressPercent != 100 }"
+           role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+           [ngStyle]="{'width': progressPercent + '%'}"></div>
+    </div>
+
+<!--
+  todo
+  PrepItem enum
+  hasCompletedPrepItem(item: PrepItem)
+  getPrepItemText(item: PrepItem)
+
+  Loop through all prep items
+
+-->
+    <div class="d-flex flex-column pt-4">
+      <ul class="fa-ul">
+        <li><span class="fa-li text-secondary">
+          <i [ngClass]="hasCreatedSearch() ? 'far fa-check-square' : 'far fa-square'"></i>
+        </span>Create suggested search(es)
+        </li>
+
+        <li><span class="fa-li text-secondary">
+          <i [ngClass]="hasJobDescription() ? 'far fa-check-square' : 'far fa-square'"></i>
+        </span>Upload job description
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

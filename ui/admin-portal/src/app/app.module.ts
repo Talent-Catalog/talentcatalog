@@ -649,6 +649,9 @@ import {
 import {
   ViewJobSourceContactsComponent
 } from './components/job/view/source-contacts/view-job-source-contacts/view-job-source-contacts.component';
+import {
+  ViewJobPreparationItemsComponent
+} from './components/job/view/preparation-items/view-job-preparation-items/view-job-preparation-items.component';
 
 @NgModule({
   declarations: [
@@ -902,7 +905,8 @@ import {
     ViewJobUploadsComponent,
     InputLinkComponent,
     JobSourceContactsTabComponent,
-    ViewJobSourceContactsComponent
+    ViewJobSourceContactsComponent,
+    ViewJobPreparationItemsComponent
   ],
   imports: [
     BrowserModule,
