@@ -16,6 +16,14 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -28,8 +36,16 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.UnauthorisedActionException;
+import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.task.UploadType;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -47,11 +63,6 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
-
-import java.io.*;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Service
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
@@ -437,7 +448,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         //file will be uploaded to)
         GoogleFileSystemFolder parentFolder = new GoogleFileSystemFolder(folderLink);
 
-        final GoogleFileSystemDrive candidateDataDrive = googleDriveConfig.getCandidateDataDrive();
+        //Use the drive associated with the candidate folder.
+        GoogleFileSystemDrive candidateDataDrive = fileSystemService.getDriveFromEntity(parentFolder);
+
         if (subfolderName != null) {
             //Create folder if it does not exist
             GoogleFileSystemFolder subfolder = fileSystemService.findAFolder(
