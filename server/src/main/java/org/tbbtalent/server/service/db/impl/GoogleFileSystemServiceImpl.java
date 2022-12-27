@@ -145,6 +145,23 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
                 .executeMediaAndDownloadTo(out);
     }
 
+    @Override
+    public GoogleFileSystemDrive getDriveFromEntity(GoogleFileSystemBaseEntity fileOrFolder) throws IOException {
+        String id = fileOrFolder.getId();
+
+        //https://developers.google.com/drive/api/guides/fields-parameter
+        File fileInfo = googleDriveService.files().get(id)
+            .setSupportsAllDrives(true)
+            .setFields("driveId")
+            .execute();
+
+        //Return an object representing the drive associated with the file
+        GoogleFileSystemDrive drive = new GoogleFileSystemDrive(null);
+        drive.setId(fileInfo.getDriveId());
+
+        return drive;
+    }
+
     private void publishFileOrFolder(@NonNull GoogleFileSystemBaseEntity fileOrFolder)
         throws IOException {
         String id = fileOrFolder.getId();

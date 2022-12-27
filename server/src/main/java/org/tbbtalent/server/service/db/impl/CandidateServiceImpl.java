@@ -2126,9 +2126,7 @@ public class CandidateServiceImpl implements CandidateService {
             throws NoSuchObjectException, IOException {
         Candidate candidate = getCandidate(id);
 
-        GoogleFileSystemDrive candidateDrive = googleDriveConfig.getCandidateDataDrive();
-        GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
-
+        GoogleFileSystemDrive candidateDrive;
         GoogleFileSystemFolder folder;
 
         String folderlink = candidate.getFolderlink();
@@ -2140,6 +2138,10 @@ public class CandidateServiceImpl implements CandidateService {
             folder = new GoogleFileSystemFolder(folderlink);
         } else {
             //If we don't have a folderlink stored, look for the folder, creating one if needed.
+            //The folder should be located in the current candidate drive and candidate root folder
+            candidateDrive = googleDriveConfig.getCandidateDataDrive();
+            GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
+
             String candidateNumber = candidate.getCandidateNumber();
             folder = fileSystemService.findAFolder(candidateDrive, candidateRoot, candidateNumber);
             if (folder == null) {
@@ -2152,6 +2154,8 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Check that all candidate subfolders are present and links are stored
+        //Use the candidate drive associated with the main folder
+        candidateDrive = fileSystemService.getDriveFromEntity(folder);
         for (CandidateSubfolderType cstype: CandidateSubfolderType.values()) {
             if (getCandidateSubfolderlink(candidate, cstype) == null) {
                 //No link stored = check if folder exists
