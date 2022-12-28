@@ -73,8 +73,6 @@ h1 {
   margin-bottom: 20px;
 }
 
-ng-multiselect-dropdown span .dropdown-btn
-
 .multiselect-dropdown .dropdown-btn {
     border: 1px solid #ced4da !important;
 
@@ -109,7 +107,7 @@ ng-multiselect-dropdown div.multiselect-dropdown {
 }
 
 /* FONT AWESOME */
-label,a > i.fas,i.fab,i.far {
+label,a > i.fas,i.fa-solid,i.fab,i.far {
   margin-right: 5px;
 }
 
