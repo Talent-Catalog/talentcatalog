@@ -82,10 +82,14 @@
         <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()">
           <i class="fas fa-chart-bar" title="Run stats"></i>
         </button>
+        <button class="btn" *ngIf="candidateSource?.sfJobOpp"
+           [routerLink]="['/job',candidateSource.sfJobOpp.id]">
+          <i class="fas fa-hands-helping" title="Associated Job"></i>
+        </button>
         <button class="btn" *ngIf="salesforceService.joblink(candidateSource)">
           <a target="_blank"
              [href]="salesforceService.joblink(candidateSource)">
-            <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
+            <i class="fab fa-salesforce" title="Associated Job Opportunity on Salesforce"></i>
           </a>
         </button>
         <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">

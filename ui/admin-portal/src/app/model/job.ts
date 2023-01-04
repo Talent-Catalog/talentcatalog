@@ -86,6 +86,7 @@ export enum JobOpportunityStage {
 }
 
 export interface SalesforceJobOpp {
+  id: number;
   sfId: string;
 }
 
