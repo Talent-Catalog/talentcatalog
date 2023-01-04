@@ -10,25 +10,14 @@
            [ngStyle]="{'width': progressPercent + '%'}"></div>
     </div>
 
-<!--
-  todo
-  PrepItem enum
-  hasCompletedPrepItem(item: PrepItem)
-  getPrepItemText(item: PrepItem)
-
-  Loop through all prep items
-
--->
+<!-- Loop through job preparation items -->
     <div class="d-flex flex-column pt-4">
       <ul class="fa-ul">
-        <li><span class="fa-li text-secondary">
-          <i [ngClass]="hasCreatedSearch() ? 'far fa-check-square' : 'far fa-square'"></i>
-        </span>Create suggested search(es)
-        </li>
-
-        <li><span class="fa-li text-secondary">
-          <i [ngClass]="hasJobDescription() ? 'far fa-check-square' : 'far fa-square'"></i>
-        </span>Upload job description
+        <li *ngFor="let item of jobPrepItems">
+          <span class="fa-li text-secondary">
+             <i [ngClass]="item.isCompleted() ? 'far fa-check-square' : 'far fa-square'"></i>
+          </span>
+          {{item.description}}
         </li>
       </ul>
     </div>

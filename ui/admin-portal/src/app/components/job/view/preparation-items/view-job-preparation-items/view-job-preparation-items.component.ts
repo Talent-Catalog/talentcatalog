@@ -1,5 +1,14 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Job} from "../../../../../model/job";
+import {
+  JobPrepDueDate,
+  JobPrepItem,
+  JobPrepJD,
+  JobPrepJobSummary,
+  JobPrepJOI,
+  JobPrepSuggestedCandidates,
+  JobPrepSuggestedSearches
+} from "../../../../../model/job-prep-item";
 
 @Component({
   selector: 'app-view-job-preparation-items',
@@ -10,23 +19,24 @@ export class ViewJobPreparationItemsComponent implements OnInit, OnChanges {
   @Input() job: Job;
   progressPercent: number;
 
-  constructor() { }
+  jobPrepItems: JobPrepItem[];
+
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //Job has changed, recompute the status of the items
-    //todo
-  }
-
-  hasCreatedSearch() {
-    //todo
-    return false;
-  }
-
-  hasJobDescription() {
-    //todo
-    return true
+    if (changes.job) {
+      this.jobPrepItems = [
+        new JobPrepDueDate(this.job),
+        new JobPrepJD(this.job),
+        new JobPrepJobSummary(this.job),
+        new JobPrepJOI(this.job),
+        new JobPrepSuggestedCandidates(this.job),
+        new JobPrepSuggestedSearches(this.job)
+      ];
+    }
   }
 }
