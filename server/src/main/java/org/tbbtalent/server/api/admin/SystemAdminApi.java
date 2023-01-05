@@ -64,6 +64,7 @@ import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationType;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
@@ -112,6 +113,7 @@ public class SystemAdminApi {
     private final SalesforceService salesforceService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListRepository savedListRepository;
+    private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
     private final S3ResourceHelper s3ResourceHelper;
 
@@ -173,6 +175,7 @@ public class SystemAdminApi {
         this.salesforceService = salesforceService;
         this.salesforceJobOppService = salesforceJobOppService;
         this.savedListRepository = savedListRepository;
+        this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
         this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
@@ -187,6 +190,27 @@ public class SystemAdminApi {
 
     @GetMapping("move-candidate-drive/{number}")
     public void moveCandidate(@PathVariable("number") String number) throws IOException {
+        doMoveCandidate(number);
+    }
+
+    @GetMapping("move-candidates-drive/{listid}")
+    public void moveCandidates(@PathVariable("listid") long id) throws IOException {
+        SavedList savedList = savedListService.get(id);
+
+        final Set<Candidate> candidates = savedList.getCandidates();
+        int count = candidates.size();
+        log.info(count + " candidates to move");
+        for (Candidate candidate : candidates) {
+            doMoveCandidate(candidate.getCandidateNumber());
+            log.info("Moved candidate " + candidate.getCandidateNumber());
+            count--;
+            if (count%100 == 0) {
+                log.info(count + " candidates still to move");
+            }
+        }
+    }
+
+    private void doMoveCandidate(String number) throws IOException {
         Candidate candidate = this.candidateService.findByCandidateNumber(number);
         if (candidate != null) {
             String folder = candidate.getFolderlink();
@@ -197,7 +221,6 @@ public class SystemAdminApi {
             }
         }
     }
-
 
 //    @GetMapping("create-sf-job-opps")
 //    public String createSfJobOpps() {
