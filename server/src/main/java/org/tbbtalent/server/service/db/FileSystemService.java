@@ -102,6 +102,15 @@ public interface FileSystemService {
     GoogleFileSystemDrive getDriveFromEntity(GoogleFileSystemBaseEntity fileOrFolder) throws IOException;
 
     /**
+     * Moves the given entity (a file or folder) into the given parent folder.
+     * @param fileOrFolder File or folder
+     * @param parentFolder Destination folder
+     * @throws IOException If there was a problem with the move
+     */
+    void moveEntityToFolder(
+        GoogleFileSystemBaseEntity fileOrFolder, GoogleFileSystemFolder parentFolder) throws IOException;
+
+    /**
      * Makes the given file viewable by anyone.
      * @param file Describes file to be published
      * @throws IOException If there was a problem changing the file's accessibility.

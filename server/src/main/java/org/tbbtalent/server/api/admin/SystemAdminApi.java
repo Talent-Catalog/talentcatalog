@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,6 +73,7 @@ import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.SavedSearchRepository;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.FileSystemService;
@@ -84,6 +86,7 @@ import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 @RestController
@@ -100,6 +103,7 @@ public class SystemAdminApi {
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
     private final CountryService countryService;
     private final FileSystemService fileSystemService;
     private final JobService jobService;
@@ -145,6 +149,7 @@ public class SystemAdminApi {
         CandidateAttachmentRepository candidateAttachmentRepository,
         CandidateNoteRepository candidateNoteRepository,
         CandidateRepository candidateRepository,
+        CandidateService candidateService,
         CountryService countryService,
         FileSystemService fileSystemService,
         JobService jobService, LanguageService languageService,
@@ -159,6 +164,7 @@ public class SystemAdminApi {
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
         this.countryService = countryService;
         this.fileSystemService = fileSystemService;
         this.jobService = jobService;
@@ -178,6 +184,20 @@ public class SystemAdminApi {
         jobService.updateOpenJobs();
         return "started";
     }
+
+    @GetMapping("move-candidate-drive/{number}")
+    public void moveCandidate(@PathVariable("number") String number) throws IOException {
+        Candidate candidate = this.candidateService.findByCandidateNumber(number);
+        if (candidate != null) {
+            String folder = candidate.getFolderlink();
+            if (folder != null) {
+                GoogleFileSystemFolder candidateFolder = new GoogleFileSystemFolder(folder);
+                fileSystemService.moveEntityToFolder(
+                    candidateFolder, googleDriveConfig.getCandidateRootFolder());
+            }
+        }
+    }
+
 
 //    @GetMapping("create-sf-job-opps")
 //    public String createSfJobOpps() {
