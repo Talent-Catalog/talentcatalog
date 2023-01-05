@@ -58,6 +58,8 @@
         <ng-container ngbNavItem="General">
           <a ngbNavLink>General</a>
           <ng-template ngbNavContent>
+            <!--              todo need to percolate job info changes (eg submission due date) up to here-->
+            <!--              (jobUpdated)="onJobUpdated($event)"-->
             <app-job-general-tab
               [job]="job"
               [editable]="!loggedInUser.readOnly"

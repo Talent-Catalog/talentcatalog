@@ -46,6 +46,13 @@ export interface Job {
   updatedDate: Date;
 }
 
+//todo This shouldn't appear in Angular code - Angular should only see Job's
+//todo See where it is used and replace with Job - or job ids subset of Job
+export interface SalesforceJobOpp {
+  id: number;
+  sfId: string;
+}
+
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
   return getExternalHref(router, location, ['job', job.id]);
 }
@@ -83,11 +90,6 @@ export enum JobOpportunityStage {
   tooExpensive = "Too expensive",
   tooHighWage = "Too high wage",
   tooLong = "Too long"
-}
-
-export interface SalesforceJobOpp {
-  id: number;
-  sfId: string;
 }
 
 export class SearchJobRequest extends PagedSearchRequest {
