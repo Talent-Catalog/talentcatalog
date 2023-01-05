@@ -649,6 +649,7 @@ import {
 import {
   ViewJobSourceContactsComponent
 } from './components/job/view/source-contacts/view-job-source-contacts/view-job-source-contacts.component';
+import {AdminApiComponent} from './components/settings/admin-api/admin-api.component';
 
 @NgModule({
   declarations: [
@@ -902,7 +903,8 @@ import {
     ViewJobUploadsComponent,
     InputLinkComponent,
     JobSourceContactsTabComponent,
-    ViewJobSourceContactsComponent
+    ViewJobSourceContactsComponent,
+    AdminApiComponent
   ],
   imports: [
     BrowserModule,
