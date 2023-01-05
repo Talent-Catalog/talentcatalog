@@ -26,6 +26,8 @@ export class AdminApiComponent implements OnInit {
 
   send() {
     if (this.form.value.apicall) {
+      this.ack = null;
+      this.error = null;
       this.adminService.call(this.form.value.apicall).subscribe(
         () => {this.ack = "Done"},
         (error) => {this.error = error}
