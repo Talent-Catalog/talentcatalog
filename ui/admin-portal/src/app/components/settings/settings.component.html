@@ -99,6 +99,15 @@
       </ng-template>
     </ng-container>
 
+    <!-- Admin API -->
+    <ng-container ngbNavItem="Admin API">
+      <a ngbNavLink>Admin API</a>
+      <ng-template ngbNavContent>
+        <app-admin-api>
+        </app-admin-api>
+      </ng-template>
+    </ng-container>
+
   </ng-container>
 
   <ng-container *ngIf="operatingPartnerSourcePartnerAdminOrGreater()">

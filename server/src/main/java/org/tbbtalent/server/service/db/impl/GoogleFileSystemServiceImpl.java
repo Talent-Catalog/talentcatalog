@@ -162,6 +162,35 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         return drive;
     }
 
+    /*
+     * See https://developers.google.com/drive/api/guides/folder#move_files_between_folders
+     */
+    @Override
+    public void moveEntityToFolder(GoogleFileSystemBaseEntity fileOrFolder,
+        GoogleFileSystemFolder parentFolder) throws IOException {
+        String entityId = fileOrFolder.getId();
+        String folderId = parentFolder.getId();
+
+        // Retrieve the existing parents to remove
+        File file = googleDriveService.files().get(entityId)
+            .setSupportsAllDrives(true)
+            .setFields("parents")
+            .execute();
+        StringBuilder previousParents = new StringBuilder();
+        for (String parent : file.getParents()) {
+            previousParents.append(parent);
+            previousParents.append(',');
+        }
+
+        // Move the entity to the new folder
+        googleDriveService.files().update(entityId, null)
+            .setSupportsAllDrives(true)
+            .setAddParents(folderId)
+            .setRemoveParents(previousParents.toString())
+            .setFields("id, parents")
+            .execute();
+    }
+
     private void publishFileOrFolder(@NonNull GoogleFileSystemBaseEntity fileOrFolder)
         throws IOException {
         String id = fileOrFolder.getId();

@@ -652,6 +652,7 @@ import {
 import {
   ViewJobPreparationItemsComponent
 } from './components/job/view/preparation-items/view-job-preparation-items/view-job-preparation-items.component';
+import {AdminApiComponent} from './components/settings/admin-api/admin-api.component';
 
 @NgModule({
   declarations: [
@@ -906,7 +907,9 @@ import {
     InputLinkComponent,
     JobSourceContactsTabComponent,
     ViewJobSourceContactsComponent,
-    ViewJobPreparationItemsComponent
+    ViewJobPreparationItemsComponent,
+    ViewJobSourceContactsComponent,
+    AdminApiComponent
   ],
   imports: [
     BrowserModule,
