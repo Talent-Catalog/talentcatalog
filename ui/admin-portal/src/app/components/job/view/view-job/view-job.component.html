@@ -63,6 +63,7 @@
             <app-job-general-tab
               [job]="job"
               [editable]="!loggedInUser.readOnly"
+              (jobUpdated)="onJobUpdated($event)"
             >
             </app-job-general-tab>
           </ng-template>

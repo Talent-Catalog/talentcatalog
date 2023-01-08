@@ -1,6 +1,7 @@
 <app-view-job-info
   [job]="job"
-  [editable]="editable">
+  [editable]="editable"
+  (jobUpdated)="onJobUpdated($event)">
 </app-view-job-info>
 <hr/>
 <!--todo Do we need suggested list?-->

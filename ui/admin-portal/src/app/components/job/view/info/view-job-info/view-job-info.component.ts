@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
@@ -13,13 +13,14 @@ import {SavedList} from "../../../../../model/saved-list";
 export class ViewJobInfoComponent implements OnInit {
   @Input() job: Job;
   @Input() editable: boolean;
+  @Output() jobUpdated = new EventEmitter<Job>();
 
   constructor(private modalService: NgbModal) { }
 
   ngOnInit(): void {
   }
 
-  editContactDetails() {
+  editJobInfo() {
     const editModal = this.modalService.open(EditJobInfoComponent, {
       centered: true,
       backdrop: 'static'
@@ -28,7 +29,7 @@ export class ViewJobInfoComponent implements OnInit {
     editModal.componentInstance.jobId = this.job.id;
 
     editModal.result
-    .then((job) => this.job = job)
+    .then((job) => this.jobUpdated.emit(job))
     .catch(() => {});
 
   }

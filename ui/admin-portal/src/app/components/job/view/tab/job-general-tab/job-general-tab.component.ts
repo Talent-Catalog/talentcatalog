@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Job} from "../../../../../model/job";
 
 @Component({
@@ -9,10 +9,14 @@ import {Job} from "../../../../../model/job";
 export class JobGeneralTabComponent implements OnInit {
   @Input() job: Job;
   @Input() editable: boolean;
+  @Output() jobUpdated = new EventEmitter<Job>();
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  onJobUpdated(job: Job) {
+    this.jobUpdated.emit(job);
+  }
 }
