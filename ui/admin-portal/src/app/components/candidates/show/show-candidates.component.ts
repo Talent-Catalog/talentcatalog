@@ -118,7 +118,7 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {SalesforceJobOpp} from "../../../model/job";
+import {JobIds} from "../../../model/job";
 
 interface CachedTargetList {
   sourceID: number;
@@ -1385,10 +1385,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.updating = true;
 
     if (selectedCandidatesOnly) {
-      const sfJobOpp: SalesforceJobOpp = this.candidateSource.sfJobOpp;
-      if (sfJobOpp) {
+      const jobIds: JobIds = this.candidateSource.sfJobOpp;
+      if (jobIds) {
         const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
-        this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobOpp.sfId, info)
+        this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, jobIds.sfId, info)
         .subscribe(result => {
             //Refresh to display any changed stages
             this.doSearch(true);

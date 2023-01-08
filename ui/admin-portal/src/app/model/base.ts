@@ -17,7 +17,7 @@
 import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
-import {SalesforceJobOpp} from "./job";
+import {JobIds} from "./job";
 import {PartnerType} from "./partner";
 
 export interface HasName {
@@ -158,7 +158,7 @@ export interface CandidateSource extends Auditable {
   exportColumns?: ExportColumn[];
   fixed: boolean;
   global: boolean;
-  sfJobOpp?: SalesforceJobOpp;
+  sfJobOpp?: JobIds;
   users?: User[];
   watcherUserIds?: number[];
 }

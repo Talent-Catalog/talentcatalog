@@ -22,9 +22,12 @@ import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 
-export interface Job {
+export interface JobIds {
   id: number;
   sfId: string;
+}
+
+export interface Job extends JobIds {
   contactEmail: string;
   contactUser: User;
   country: string;
@@ -44,13 +47,6 @@ export interface Job {
   suggestedSearches: SavedSearch[];
   updatedBy: User;
   updatedDate: Date;
-}
-
-//todo This shouldn't appear in Angular code - Angular should only see Job's
-//todo See where it is used and replace with Job - or job ids subset of Job
-export interface SalesforceJobOpp {
-  id: number;
-  sfId: string;
 }
 
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
