@@ -28,10 +28,7 @@ import {
   SelectCandidateInSearchRequest
 } from "../model/saved-search";
 import {map} from "rxjs/operators";
-import {
-  CopySourceContentsRequest,
-  SavedList
-} from "../model/saved-list";
+import {CopySourceContentsRequest, SavedList} from "../model/saved-list";
 import {UpdateCandidateStatusInfo} from "../model/candidate";
 import {SearchCandidateRequest} from "../model/search-candidate-request";
 
@@ -93,7 +90,7 @@ export class SavedSearchService {
 
     this.savedSearchTypeInfos[SavedSearchType.job] =
       {savedSearchType: SavedSearchType.job,
-        title: 'Jobs',
+        title: 'Roles',
       };
 
     this.savedSearchTypeInfos[SavedSearchType.other] =
