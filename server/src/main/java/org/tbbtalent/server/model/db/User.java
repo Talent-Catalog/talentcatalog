@@ -304,6 +304,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
         savedSearch.getUsers().remove(this);
     }
 
+    public Set<SalesforceJobOpp> getStarredJobs() {
+        //todo Starred jobs
+        return new HashSet<>();
+    }
+
 
     public Set<Country> getSourceCountries() { return sourceCountries; }
 

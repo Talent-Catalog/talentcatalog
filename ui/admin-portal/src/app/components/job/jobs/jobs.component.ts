@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AuthService} from "../../../services/auth.service";
 import {User} from "../../../model/user";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -8,6 +8,7 @@ import {JobService} from "../../../services/job.service";
 import {SearchResults} from "../../../model/search-results";
 import {enumOptions} from "../../../util/enum";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {SearchJobsBy} from "../../../model/base";
 
 @Component({
   selector: 'app-jobs',
@@ -15,6 +16,7 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
   styleUrls: ['./jobs.component.scss']
 })
 export class JobsComponent implements OnInit {
+  @Input() searchBy: SearchJobsBy;
   @Output() jobSelection = new EventEmitter();
 
   private pageNumber: number;
@@ -81,11 +83,29 @@ export class JobsComponent implements OnInit {
 
     req.stages = this.selectedStages;
 
-    //Don't want to see closed jobs
-    req.sfOppClosed = false;
+    switch (this.searchBy) {
+      case SearchJobsBy.live:
 
-    //Only want to see published jobs.
-    req.published = true;
+        //Don't want to see closed jobs
+        req.sfOppClosed = false;
+
+        //Only want to see published jobs.
+        req.published = true;
+
+        //Only want jobs which are accepting candidates
+        req.accepting = true;
+        break;
+
+      case SearchJobsBy.mine:
+        req.ownedByMe = true;
+        req.ownedByMyPartner = true;
+        //todo ownedByMyPartner false? Need checkbox in form.
+        break;
+
+      case SearchJobsBy.starredByMe:
+        req.starred = true;
+        break;
+    }
 
     this.error = null;
     this.loading = true;

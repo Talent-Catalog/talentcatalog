@@ -89,10 +89,14 @@ export enum JobOpportunityStage {
 }
 
 export class SearchJobRequest extends PagedSearchRequest {
+  accepting?: boolean;
   keyword?: string;
+  ownedByMe?: boolean;
+  ownedByMyPartner?: boolean;
   published?: boolean;
   sfOppClosed?: boolean;
   stages?: string[];
+  starred?: boolean;
 }
 
 export interface UpdateJobRequest {

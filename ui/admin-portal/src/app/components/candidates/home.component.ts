@@ -17,7 +17,7 @@
 import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
-import {CandidateSourceType, SearchBy} from "../../model/base"
+import {CandidateSourceType, SearchBy, SearchJobsBy} from "../../model/base"
 import {LocalStorageService} from "angular-2-local-storage";
 import {
   SavedSearchService,
@@ -114,6 +114,10 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   get SearchBy() {
     return SearchBy;
+  }
+
+  get SearchJobsBy() {
+    return SearchJobsBy;
   }
 
   get SavedSearchType() {

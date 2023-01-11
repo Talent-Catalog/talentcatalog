@@ -59,6 +59,7 @@ import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.SalesforceHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
@@ -67,7 +68,7 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 @Service
 public class JobServiceImpl implements JobService {
     private final AuthService authService;
-
+    private final UserService userService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceJobOppRepository salesforceJobOppRepository;
@@ -78,10 +79,11 @@ public class JobServiceImpl implements JobService {
     private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
     public JobServiceImpl(
-        AuthService authService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
+        AuthService authService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
         SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
         SavedSearchService savedSearchService) {
         this.authService = authService;
+        this.userService = userService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
         this.salesforceJobOppRepository = salesforceJobOppRepository;
@@ -137,11 +139,9 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public Page<SalesforceJobOpp> searchJobs(SearchJobRequest request) {
-        //Search jobs.
-        //opportunities because there could be opps whose state has been changed on SF which
-        //means that they could satisfy search request, but they won't be seen because they are
-        //still in the cache with their old state.
-        Page<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(JobSpecification.buildSearchQuery(request),
+        User loggedInUser = userService.getLoggedInUser();
+        Page<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(
+            JobSpecification.buildSearchQuery(request, loggedInUser),
             request.getPageRequest());
 
         return jobs;
@@ -234,7 +234,9 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public List<SalesforceJobOpp> searchJobsUnpaged(SearchJobRequest request) {
-        List<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(JobSpecification.buildSearchQuery(request));
+        User loggedInUser = userService.getLoggedInUser();
+        List<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(
+            JobSpecification.buildSearchQuery(request, loggedInUser));
         return jobs;
     }
 

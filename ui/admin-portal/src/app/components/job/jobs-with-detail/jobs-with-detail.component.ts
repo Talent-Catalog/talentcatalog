@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../model/job";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Router} from "@angular/router";
+import {SearchJobsBy} from "../../../model/base";
 
 
 @Component({
@@ -11,6 +12,8 @@ import {Router} from "@angular/router";
 })
 export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit {
   selectedJob: Job;
+
+  @Input() searchBy: SearchJobsBy;
 
   constructor(
     private router: Router,

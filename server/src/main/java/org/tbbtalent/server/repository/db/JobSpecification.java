@@ -18,7 +18,9 @@ package org.tbbtalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
@@ -32,6 +34,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 
@@ -42,7 +45,8 @@ import org.tbbtalent.server.request.job.SearchJobRequest;
  */
 public class JobSpecification {
 
-    public static Specification<SalesforceJobOpp> buildSearchQuery(final SearchJobRequest request) {
+    public static Specification<SalesforceJobOpp> buildSearchQuery(
+        final SearchJobRequest request, User loggedInUser) {
         return (job, query, builder) -> {
             Predicate conjunction = builder.conjunction();
 
@@ -107,6 +111,50 @@ public class JobSpecification {
                     published = builder.isNull(job.get("publishedBy"));
                 }
                 conjunction.getExpressions().add(published);
+            }
+
+            //TODO JC Accepting
+
+            // (shared OR owned)
+            Predicate ors = builder.disjunction();
+
+            //If owned by this user (ie by logged in user)
+            if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
+                if (loggedInUser != null) {
+                    ors.getExpressions().add(
+                        builder.equal(job.get("createdBy"), loggedInUser.getId())
+                    );
+                }
+            }
+
+            //If owned by this user's partner
+            if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+                if (loggedInUser != null) {
+                    //todo Probably need to fetch and join to createdBy in User table
+//                    ors.getExpressions().add(
+//                        builder.equal(job.get("createdBy"), loggedInUser.getId())
+//                    );
+                }
+            }
+
+            //If starred is specified, only supply jobs starred by the owner
+            if (request.getStarred() != null && request.getStarred()) {
+                if (loggedInUser != null) {
+                    Set<SalesforceJobOpp> starredJobs = loggedInUser.getStarredJobs();
+                    if (!starredJobs.isEmpty()) {
+                        Set<Long> starredIDs = new HashSet<>();
+                        for (SalesforceJobOpp starredJob : starredJobs) {
+                            starredIDs.add(starredJob.getId());
+                        }
+                        ors.getExpressions().add(
+                            job.get("id").in( starredIDs )
+                        );
+                    }
+                }
+            }
+
+            if (ors.getExpressions().size() != 0) {
+                conjunction.getExpressions().add(ors);
             }
 
             return conjunction;

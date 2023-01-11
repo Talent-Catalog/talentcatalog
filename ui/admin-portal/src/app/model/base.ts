@@ -100,6 +100,13 @@ export enum SearchBy {
   registeredJob
 }
 
+export enum SearchJobsBy {
+  all,
+  mine,
+  starredByMe,
+  live
+}
+
 /**
  * Defines what TBB Salesforce url should look like.
  * <p/>

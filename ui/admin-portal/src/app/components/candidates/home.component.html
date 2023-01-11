@@ -89,6 +89,7 @@
     </ng-template>
   </ng-container>
 
+<!--  Todo Throw this away - is there anything that is now Zombie code?-->
   <ng-container *ngIf="isExperimental()" ngbNavItem="JobOpps">
     <a ngbNavLink
        title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
@@ -98,16 +99,6 @@
         [sourceType]="CandidateSourceType.SavedList"
         [searchBy]="SearchBy.registeredJob" >
       </app-browse-candidate-sources>
-    </ng-template>
-  </ng-container>
-
-  <ng-container ngbNavItem="JobOppsNew">
-    <a ngbNavLink
-       title="Jobs associated with active Salesforce job opportunities which have been registered on the TC"
-    >Registered Jobs</a>
-    <ng-template ngbNavContent>
-      <app-jobs-with-detail>
-      </app-jobs-with-detail>
     </ng-template>
   </ng-container>
 
@@ -138,6 +129,38 @@
           [sourceType]="CandidateSourceType.SavedList"
           [searchBy]="SearchBy.externalLink">
         </app-browse-candidate-sources>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="MyJobs">
+    <a ngbNavLink title="Jobs that I created">My Jobs</a>
+    <ng-template ngbNavContent>
+      <app-jobs-with-detail
+        [searchBy]="SearchJobsBy.mine">
+      >
+      </app-jobs-with-detail>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="StarredJobs">
+    <a ngbNavLink title="Starred jobs (eg those I am working with)"><i class="fas fa-star"></i>Jobs</a>
+    <ng-template ngbNavContent>
+      <app-jobs-with-detail
+        [searchBy]="SearchJobsBy.starredByMe">
+      >
+      </app-jobs-with-detail>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="JobOppsNew">
+    <a ngbNavLink
+       title="Jobs associated with active Salesforce job opportunities which have been registered on the TC"
+    >Live Jobs</a>
+    <ng-template ngbNavContent>
+      <app-jobs-with-detail
+        [searchBy]="SearchJobsBy.live">
+      >
+      </app-jobs-with-detail>
     </ng-template>
   </ng-container>
 </nav>
