@@ -57,13 +57,6 @@
 
       <tbody>
 
-      <!-- Special display for no results-->
-      <tr *ngIf="!results?.totalElements">
-        <td colspan="42">
-          <span class="text-muted">(no matching data)</span>
-        </td>
-      </tr>
-
       <!--        Job records    -->
       <tr *ngFor="let job of results?.content" (click)="selectJob(job)">
         <td>
@@ -90,6 +83,30 @@
       </tbody>
 
     </table>
+
+    <div class="text-muted mb-2 align-middle">
+
+      <ngb-pagination
+        [boundaryLinks]="true"
+        [pageSize]="pageSize"
+        [collectionSize]="results?.totalElements"
+        [(page)]="pageNumber"
+        [maxSize]="5"
+        [ellipses]="true"
+        [rotate]="true"
+        (pageChange)="search()">
+      </ngb-pagination>
+
+      Found {{results?.totalElements}} in total
+    </div>
+
+    <!-- loading -->
+    <div *ngIf="loading">
+      <div>
+        <i class="fas fa-spinner fa-spin"></i> Loading...
+      </div>
+    </div>
+
   </div>
 
 

@@ -19,8 +19,8 @@ export class JobsComponent implements OnInit {
   @Input() searchBy: SearchJobsBy;
   @Output() jobSelection = new EventEmitter();
 
-  private pageNumber: number;
-  private pageSize: number;
+  pageNumber: number;
+  pageSize: number;
   private loggedInUser: User;
 
   private filterKeySuffix: string = 'Filter';
