@@ -66,7 +66,6 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
@@ -80,7 +79,6 @@ import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
 import org.tbbtalent.server.request.user.ResetPasswordRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;
 import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
-import org.tbbtalent.server.request.user.UpdateSharingRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
@@ -383,36 +381,6 @@ public class UserServiceImpl implements UserService {
                 throw new InvalidRequestException("You don't have permission to save this role type.");
             }
         }
-    }
-
-    @Override
-    @Transactional
-    public User addToSharedWithUser(long id, UpdateSharingRequest request) {
-        User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-
-        final Long sharedSearchID = request.getSavedSearchId();
-        SavedSearch savedSearch = savedSearchRepository.findById(sharedSearchID)
-                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, sharedSearchID));
-
-        user.addSharedSearch(savedSearch);
-
-        return userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
-    public User removeFromSharedWithUser(long id, UpdateSharingRequest request) {
-        User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-
-        final Long sharedSearchID = request.getSavedSearchId();
-        SavedSearch savedSearch = savedSearchRepository.findById(sharedSearchID)
-                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, sharedSearchID));
-
-        user.removeSharedSearch(savedSearch);
-
-        return userRepository.save(user);
     }
 
     @Override
