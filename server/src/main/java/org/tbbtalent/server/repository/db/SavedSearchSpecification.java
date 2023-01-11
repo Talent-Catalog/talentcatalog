@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -18,9 +18,7 @@ package org.tbbtalent.server.repository.db;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.criteria.Predicate;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.SavedSearch;
@@ -36,13 +34,13 @@ public class SavedSearchSpecification {
             final SearchSavedSearchRequest request, User loggedInUser) {
 
         //Returns an anonymous class implementing the Specification interface.
-        //There is only one method that needs to be implemented on that 
+        //There is only one method that needs to be implemented on that
         //interface because all the other methods are defaults or static.
-        //That method is the toPredicate method - 
+        //That method is the toPredicate method -
         // Predicate toPredicate(Root<SavedSearch> savedSearch, CriteriaQuery<?> query, CriteriaBuilder builder)
         //toPredicate creates the WHERE clause for the given CriteriaQuery
         return (savedSearch, query, builder) -> {
-            
+
             //Conjunction means implicit AND between each term (sub Predicate)
             Predicate conjunction = builder.conjunction();
             query.distinct(true);
@@ -52,7 +50,7 @@ public class SavedSearchSpecification {
                  like keyword
                  and
                  equals saved search type
-                 and 
+                 and
                  search status = active
                  and
                  not default search
@@ -84,7 +82,7 @@ public class SavedSearchSpecification {
                      builder.like(builder.lower(savedSearch.get("name")), likeMatchTerm)
                 );
             }
-            
+
             // Filter by type if present
             SavedSearchType savedSearchType = request.getSavedSearchType();
             if (savedSearchType != null) {
@@ -96,7 +94,7 @@ public class SavedSearchSpecification {
                         builder.equal(savedSearch.get("type"), type)
                 );
             }
-            
+
             //If fixed is specified, only supply matching saved searches
             if (request.getFixed() != null && request.getFixed()) {
                 conjunction.getExpressions().add(
@@ -137,8 +135,10 @@ public class SavedSearchSpecification {
                     );
                 }
             }
-            
-            conjunction.getExpressions().add(ors);
+
+            if (ors.getExpressions().size() != 0) {
+                conjunction.getExpressions().add(ors);
+            }
 
             return conjunction;
         };
