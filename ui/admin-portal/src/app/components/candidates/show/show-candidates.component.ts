@@ -1725,4 +1725,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       );
     }
   }
+
+  canAssignTasks() {
+    return this.authService.canAssignTask();
+  }
 }

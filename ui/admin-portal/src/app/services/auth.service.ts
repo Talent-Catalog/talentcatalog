@@ -82,6 +82,13 @@ export class AuthService {
     return loggedInUser == null ? false : Role[loggedInUser.role] === Role.systemadmin;
   }
 
+  canAssignTask(): boolean {
+    //For now only TBB can do this.
+    //Todo Need to make this more broadly available. It gets complicated when assigning tasks
+    //to a list - if that list has candidates from multiple partners.
+    return this.isDefaultSourcePartner();
+  }
+
   canCreateJob() : boolean {
     let result: boolean = false;
 
