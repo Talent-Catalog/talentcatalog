@@ -28,6 +28,7 @@ export interface JobIds {
 }
 
 export interface Job extends JobIds {
+  accepting: boolean;
   contactEmail: string;
   contactUser: User;
   country: string;

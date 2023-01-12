@@ -564,6 +564,9 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public List<SavedList> search(long candidateId, SearchSavedListRequest request) {
         final User loggedInUser = authService.getLoggedInUser().orElse(null);
+
+        //todo This should be loading shared lists not searches!!! But seems to work anyway!
+        //I think the problem was that the above code should have been using userService to get loggged in user.
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(loggedInUser.getId());
         GetSavedListsQuery getSavedListsQuery =

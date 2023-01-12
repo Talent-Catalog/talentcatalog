@@ -151,6 +151,7 @@ public class JobAdminApi implements
         return new DtoBuilder()
             .add("id")
             .add("sfId")
+            .add("accepting")
             .add("contactEmail")
             .add("contactUser", userDto())
             .add("country")

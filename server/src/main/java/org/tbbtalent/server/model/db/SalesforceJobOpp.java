@@ -64,6 +64,11 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private String sfId;
 
     /**
+     * True if the job is currently accepting candidates
+     */
+    private boolean accepting;
+
+    /**
      * Salesforce id of account (ie employer) associated with opportunity
      */
     private String accountId;
