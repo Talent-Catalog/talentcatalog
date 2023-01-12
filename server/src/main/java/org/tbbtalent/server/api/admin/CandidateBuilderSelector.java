@@ -57,7 +57,8 @@ public class CandidateBuilderSelector {
             "user",
             "candidateReviewStatusItems",
             "country",
-            "nationality"
+            "nationality",
+            "stage"
         ));
 
     private final Set<String> candidateSemiLimitedExtraProperties =
