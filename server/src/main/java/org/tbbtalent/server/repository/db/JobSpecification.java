@@ -141,15 +141,13 @@ public class JobSpecification {
             if (request.getStarred() != null && request.getStarred()) {
                 if (loggedInUser != null) {
                     Set<SalesforceJobOpp> starredJobs = loggedInUser.getStarredJobs();
-                    if (!starredJobs.isEmpty()) {
-                        Set<Long> starredIDs = new HashSet<>();
-                        for (SalesforceJobOpp starredJob : starredJobs) {
-                            starredIDs.add(starredJob.getId());
-                        }
-                        ors.getExpressions().add(
-                            job.get("id").in( starredIDs )
-                        );
+                    Set<Long> starredIDs = new HashSet<>();
+                    for (SalesforceJobOpp starredJob : starredJobs) {
+                        starredIDs.add(starredJob.getId());
                     }
+                    ors.getExpressions().add(
+                        job.get("id").in( starredIDs )
+                    );
                 }
             }
 

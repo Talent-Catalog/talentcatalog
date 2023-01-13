@@ -21,6 +21,7 @@ import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -169,6 +170,17 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      */
     private int stageOrder;
 
+    //Note use of Set rather than List as strongly recommended for Many to Many
+    //relationships here:
+    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+        name = "user_job",
+        joinColumns = @JoinColumn(name = "tc_job_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> starringUsers = new HashSet<>();
+
     /**
      * Date that submission of candidates to employer is due.
      */
@@ -204,6 +216,14 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
         joinColumns = @JoinColumn(name = "tc_job_id"),
         inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
+
+    public void addStarringUser(User user) {
+        starringUsers.add(user);
+    }
+
+    public void removeStarringUser(User user) {
+        starringUsers.remove(user);
+    }
 
     /**
      * Override standard setStage to automatically also update stageOrder

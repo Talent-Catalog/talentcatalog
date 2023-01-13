@@ -163,7 +163,7 @@ public class JobServiceImpl implements JobService {
             //Add job exclusion list to suggested search
             SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
             searchCandidateRequest.setExclusionListId(exclusionList.getId());
-            request.setSearchCandidateRequest(searchCandidateRequest);;
+            request.setSearchCandidateRequest(searchCandidateRequest);
         }
         SavedSearch search = savedSearchService.createSavedSearch(request);
 
@@ -325,6 +325,19 @@ public class JobServiceImpl implements JobService {
         } catch (Exception e) {
             log.error("JobService.updateOpenJobs failed", e);
         }
+    }
+
+    @Override
+    @NonNull
+    public SalesforceJobOpp updateStarred(long id, boolean starred) throws NoSuchObjectException {
+        User loggedInUser = userService.getLoggedInUser();
+        SalesforceJobOpp job = getJob(id);
+        if (starred) {
+            job.addStarringUser(loggedInUser);
+        } else {
+            job.removeStarringUser(loggedInUser);
+        }
+        return salesforceJobOppRepository.save(job);
     }
 
     private void setJobJdLink(SalesforceJobOpp job, String name, String url) {

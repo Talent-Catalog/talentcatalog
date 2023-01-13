@@ -123,6 +123,14 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
+    @PutMapping("{id}/starred")
+    public @NotNull Map<String, Object> updateStarred(
+        @PathVariable("id") long id, @Valid @RequestBody boolean starred)
+        throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateStarred(id, starred);
+        return jobDto().build(job);
+    }
+
     @PutMapping("{id}/summary")
     public @NotNull Map<String, Object> updateSummary(
         @PathVariable("id") long id, @Valid @RequestBody(required = false) String summary)
@@ -165,6 +173,7 @@ public class JobAdminApi implements
             .add("publishedDate")
             .add("recruiterPartner", partnerDto())
             .add("stage")
+            .add("starringUsers", userDto())
             .add("submissionDueDate")
             .add("submissionList", savedListBuilderSelector.selectBuilder())
             .add("suggestedList", savedListBuilderSelector.selectBuilder())
@@ -183,6 +192,7 @@ public class JobAdminApi implements
 
     private DtoBuilder userDto() {
         return new DtoBuilder()
+            .add("id")
             .add("firstName")
             .add("lastName")
             .add("email")

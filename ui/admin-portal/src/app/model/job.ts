@@ -42,6 +42,7 @@ export interface Job extends JobIds {
   publishedDate: Date;
   recruiterPartner: Partner;
   stage: JobOpportunityStage;
+  starringUsers: User[];
   submissionDueDate: Date;
   submissionList: SavedList;
   suggestedList: SavedList;

@@ -24,6 +24,10 @@
           <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
         </button>
 
+        <div class="alert alert-danger" *ngIf="error">
+          {{error}}
+        </div>
+
         <app-view-job-summary
           [job]="selectedJob"
         >

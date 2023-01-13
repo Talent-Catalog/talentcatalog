@@ -3,6 +3,9 @@ import {Job} from "../../../model/job";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Router} from "@angular/router";
 import {SearchJobsBy} from "../../../model/base";
+import {JobService} from "../../../services/job.service";
+import {User} from "../../../model/user";
+import {AuthService} from "../../../services/auth.service";
 
 
 @Component({
@@ -12,11 +15,15 @@ import {SearchJobsBy} from "../../../model/base";
 })
 export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit {
   selectedJob: Job;
+  error: any;
+  loading: boolean;
 
   @Input() searchBy: SearchJobsBy;
 
   constructor(
     private router: Router,
+    private authService: AuthService,
+    private jobService: JobService
   ) {
     super(6);
   }
@@ -34,10 +41,21 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   }
 
   doToggleStarred() {
-    //todo
+    this.loading = true;
+    this.error = null
+    this.jobService.updateStarred(this.selectedJob.id, !this.isStarred()).subscribe(
+      (job: Job) => {this.selectedJob = job; this.loading = false},
+      (error) => {this.error = error; this.loading = false}
+    )
   }
 
-  isStarred() {
-    //todo
+  isStarred(): boolean {
+    let starredByMe: boolean = false;
+    const me: User = this.authService.getLoggedInUser();
+    const starringUsers = this.selectedJob?.starringUsers;
+    if (starringUsers && me) {
+      starredByMe = starringUsers.find(u => u.id === me.id ) !== undefined;
+    }
+    return starredByMe;
   }
 }

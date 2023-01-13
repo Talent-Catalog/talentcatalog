@@ -161,6 +161,16 @@ public interface JobService {
         throws InvalidRequestException, NoSuchObjectException;
 
     /**
+     * Updates whether or not the job wth the given id is starred by the current user
+     * @param id ID of job
+     * @param starred True if job should be starred, false if not
+     * @return Updated job
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp updateStarred(long id, boolean starred)throws NoSuchObjectException;
+
+    /**
      * Updates all open Jobs from their corresponding records on Salesforce
      */
     void updateOpenJobs();
