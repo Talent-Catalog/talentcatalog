@@ -18,9 +18,7 @@ package org.tbbtalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
@@ -140,13 +138,9 @@ public class JobSpecification {
             //If starred is specified, only supply jobs starred by the owner
             if (request.getStarred() != null && request.getStarred()) {
                 if (loggedInUser != null) {
-                    Set<SalesforceJobOpp> starredJobs = loggedInUser.getStarredJobs();
-                    Set<Long> starredIDs = new HashSet<>();
-                    for (SalesforceJobOpp starredJob : starredJobs) {
-                        starredIDs.add(starredJob.getId());
-                    }
+                    Join<Object, Object> users = job.join("starringUsers");
                     ors.getExpressions().add(
-                        job.get("id").in( starredIDs )
+                        builder.equal(users.get("id"), loggedInUser.getId())
                     );
                 }
             }

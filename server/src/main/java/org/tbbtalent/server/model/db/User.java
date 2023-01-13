@@ -111,12 +111,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
     )
     private Set<SavedList> sharedLists = new HashSet<>();
 
-    //Note use of Set rather than List as strongly recommended for Many to Many
-    //relationships here:
-    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
-    @ManyToMany(mappedBy = "starringUsers", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private Set<SalesforceJobOpp> starredJobs = new HashSet<>();
-
     @Transient
     private String selectedLanguage = "en";
 
@@ -125,7 +119,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
             name = "user_source_country",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "country_id"))
-    Set<Country> sourceCountries = new HashSet<Country>();
+    Set<Country> sourceCountries = new HashSet<>();
 
     public User() {
     }
@@ -308,10 +302,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public void removeSharedSearch(SavedSearch savedSearch) {
         sharedSearches.remove(savedSearch);
         savedSearch.getUsers().remove(this);
-    }
-
-    public Set<SalesforceJobOpp> getStarredJobs() {
-        return starredJobs;
     }
 
     public Set<Country> getSourceCountries() { return sourceCountries; }
