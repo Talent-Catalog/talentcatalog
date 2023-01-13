@@ -114,12 +114,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinTable(
-        name = "user_job",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "tc_job_id")
-    )
+    @ManyToMany(mappedBy = "starringUsers", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Set<SalesforceJobOpp> starredJobs = new HashSet<>();
 
     @Transient
