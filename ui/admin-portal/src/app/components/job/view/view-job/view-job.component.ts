@@ -10,6 +10,7 @@ import {JobService} from "../../../../services/job.service";
 import {SlackService} from "../../../../services/slack.service";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
+import {isStarredByMe} from "../../../../model/base";
 
 @Component({
   selector: 'app-view-job',
@@ -22,6 +23,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
 
   activeTabId: string;
   error: any;
+  loading: boolean;
   loggedInUser: User;
   publishing: boolean;
   slacklink: string;
@@ -90,5 +92,18 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
         this.publishing = false;
       },
       (error) => {this.error = error; this.publishing = false});
+  }
+
+  doToggleStarred() {
+    this.loading = true;
+    this.error = null
+    this.jobService.updateStarred(this.job.id, !this.isStarred()).subscribe(
+      (job: Job) => {this.job = job; this.loading = false},
+      (error) => {this.error = error; this.loading = false}
+    )
+  }
+
+  isStarred(): boolean {
+    return isStarredByMe(this.job?.starringUsers, this.authService);
   }
 }

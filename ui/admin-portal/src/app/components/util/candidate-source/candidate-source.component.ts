@@ -179,7 +179,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource, this.authService);
+    return isStarredByMe(this.candidateSource?.users, this.authService);
   }
 
   doToggleWatch() {

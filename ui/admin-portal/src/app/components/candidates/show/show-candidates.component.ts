@@ -820,7 +820,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource, this.authService);
+    return isStarredByMe(this.candidateSource?.users, this.authService);
   }
 
   isShowStage(): boolean {

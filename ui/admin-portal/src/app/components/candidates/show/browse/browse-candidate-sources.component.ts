@@ -407,7 +407,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   onToggleStarred(source: CandidateSource) {
     this.loading = true;
     this.error = null
-    if (isStarredByMe(source, this.authService)) {
+    if (isStarredByMe(source?.users, this.authService)) {
       this.candidateSourceService.unstarSourceForUser(
         source, {userId: this.loggedInUser.id}).subscribe(
         result => {

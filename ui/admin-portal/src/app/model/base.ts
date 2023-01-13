@@ -262,11 +262,11 @@ export function isMine(source: CandidateSource, auth: AuthService) {
   return mine;
 }
 
-export function isStarredByMe(source: CandidateSource, auth: AuthService) {
+export function isStarredByMe(users: User[], auth: AuthService) {
   let starredByMe: boolean = false;
   const me: User = auth.getLoggedInUser();
-  if (source && me) {
-    starredByMe = source.users?.find(u => u.id === me.id ) !== undefined;
+  if (users && me) {
+    starredByMe = users.find(u => u.id === me.id ) !== undefined;
   }
   return starredByMe;
 }

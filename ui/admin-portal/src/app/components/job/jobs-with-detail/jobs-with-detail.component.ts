@@ -2,9 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../model/job";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Router} from "@angular/router";
-import {SearchJobsBy} from "../../../model/base";
+import {isStarredByMe, SearchJobsBy} from "../../../model/base";
 import {JobService} from "../../../services/job.service";
-import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
 
 
@@ -50,12 +49,6 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   }
 
   isStarred(): boolean {
-    let starredByMe: boolean = false;
-    const me: User = this.authService.getLoggedInUser();
-    const starringUsers = this.selectedJob?.starringUsers;
-    if (starringUsers && me) {
-      starredByMe = starringUsers.find(u => u.id === me.id ) !== undefined;
-    }
-    return starredByMe;
+    return isStarredByMe(this.selectedJob?.starringUsers, this.authService);
   }
 }
