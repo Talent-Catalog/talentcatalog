@@ -64,6 +64,8 @@
 
     <thead class="thead-light">
     <tr>
+      <th></th>
+      <th>#</th>
       <th>Username</th>
       <th>First Name</th>
       <th>Last Name</th>
@@ -73,22 +75,11 @@
       <th>Source Countries</th>
       <th>Read Only?</th>
       <th>Status</th>
-      <th></th>
     </tr>
     </thead>
 
     <tbody>
     <tr *ngFor="let user of results?.content">
-      <td> {{user.username}}</td>
-      <td>{{user.firstName}}</td>
-      <td>{{user.lastName}}</td>
-      <td>{{user.email}}</td>
-      <td>{{user.role}}</td>
-      <td><a [href]="user.partner.websiteUrl" target="_blank"
-             [title]="user.partner.name">{{user.partner.abbreviation}}</a></td>
-      <td>{{getSourceCountries(user)}}</td>
-      <td>{{user.readOnly}}</td>
-      <td>{{user.status}}</td>
       <td>
         <div *ngIf="!loggedInUser.readOnly && canEdit(user)" ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
           <button class="btn btn-xs hide-after" ngbDropdownToggle>
@@ -104,6 +95,17 @@
           </ul>
         </div>
       </td>
+      <td> {{user.id}}</td>
+      <td> {{user.username}}</td>
+      <td>{{user.firstName}}</td>
+      <td>{{user.lastName}}</td>
+      <td>{{user.email}}</td>
+      <td>{{user.role}}</td>
+      <td><a [href]="user.partner.websiteUrl" target="_blank"
+             [title]="user.partner.name">{{user.partner.abbreviation}}</a></td>
+      <td>{{getSourceCountries(user)}}</td>
+      <td>{{user.readOnly}}</td>
+      <td>{{user.status}}</td>
     </tr>
 
     <!-- loading -->
