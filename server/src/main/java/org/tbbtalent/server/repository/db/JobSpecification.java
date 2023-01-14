@@ -33,6 +33,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 
@@ -128,10 +129,14 @@ public class JobSpecification {
             //If owned by this user's partner
             if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
                 if (loggedInUser != null) {
-                    //todo Probably need to fetch and join to createdBy in User table
-//                    ors.getExpressions().add(
-//                        builder.equal(job.get("createdBy"), loggedInUser.getId())
-//                    );
+                    Partner loggedInUserPartner = loggedInUser.getPartner();
+                    if (loggedInUserPartner != null) {
+                        Join<Object, Object> owner = job.join("createdBy");
+                        Join<Object, Object> partner = owner.join("partner");
+                        ors.getExpressions().add(
+                            builder.equal(partner.get("id"), loggedInUserPartner.getId())
+                        );
+                    }
                 }
             }
 

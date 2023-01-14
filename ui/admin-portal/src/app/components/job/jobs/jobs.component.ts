@@ -9,6 +9,7 @@ import {SearchResults} from "../../../model/search-results";
 import {enumOptions} from "../../../util/enum";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SearchJobsBy} from "../../../model/base";
+import {Partner} from "../../../model/partner";
 
 @Component({
   selector: 'app-jobs',
@@ -21,6 +22,7 @@ export class JobsComponent implements OnInit {
 
   pageNumber: number;
   pageSize: number;
+  loggedInPartner: Partner;
   private loggedInUser: User;
 
   private filterKeySuffix: string = 'Filter';
@@ -49,11 +51,13 @@ export class JobsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInPartner = this.loggedInUser?.partner;
 
     //Pick up any previous keyword filter
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
     this.searchForm = this.fb.group({
       keyword: [filter],
+      myPartner: [false],
       selectedStages: [[]]
     });
     this.pageNumber = 1;
@@ -66,6 +70,14 @@ export class JobsComponent implements OnInit {
 
   private get keyword(): string {
     return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  private get myPartner(): boolean {
+    return this.searchForm ? this.searchForm.value.myPartner : false;
+  }
+
+  get SearchJobsBy() {
+    return SearchJobsBy;
   }
 
   private get selectedStages(): string[] {
@@ -97,9 +109,11 @@ export class JobsComponent implements OnInit {
         break;
 
       case SearchJobsBy.mine:
-        req.ownedByMe = true;
-        req.ownedByMyPartner = true;
-        //todo ownedByMyPartner false? Need checkbox in form.
+        if (this.myPartner) {
+          req.ownedByMyPartner = true;
+        } else {
+          req.ownedByMe = true;
+        }
         break;
 
       case SearchJobsBy.starredByMe:

@@ -9,8 +9,14 @@
   <div class="searches">
     <form [formGroup]="searchForm" (ngSubmit)="search()">
       <div class="form-group">
+        <div *ngIf="searchBy === SearchJobsBy.mine" class="form-inline">
+          <label title="Show jobs associated with the partner I work for">All {{loggedInPartner.abbreviation}} jobs</label>
+          <input type="checkbox" class="form-control" formControlName="myPartner" >
+        </div>
+
         <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
                id="keyword">
+
         <label>Stage</label>
         <ng-select
           id="stage"
