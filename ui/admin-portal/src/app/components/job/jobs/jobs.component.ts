@@ -101,9 +101,6 @@ export class JobsComponent implements OnInit {
         //Don't want to see closed jobs
         req.sfOppClosed = false;
 
-        //Only want to see published jobs.
-        req.published = true;
-
         //Only want jobs which are accepting candidates
         req.accepting = true;
         break;
