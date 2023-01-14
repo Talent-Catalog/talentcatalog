@@ -54,7 +54,7 @@ export class JobsComponent implements OnInit {
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
     this.searchForm = this.fb.group({
       keyword: [filter],
-      selectedStages: [this.stagesAcceptingCandidates]
+      selectedStages: [[]]
     });
     this.pageNumber = 1;
     this.pageSize = 30;
