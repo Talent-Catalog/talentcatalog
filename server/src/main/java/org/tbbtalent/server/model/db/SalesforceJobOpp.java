@@ -65,7 +65,8 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private String sfId;
 
     /**
-     * True if the job is currently accepting candidates
+     * True if the job is currently accepting processing by other than its creator.
+     * Setting it false will make the job hidden on the TC front end to all but the creator.
      */
     private boolean accepting;
 
