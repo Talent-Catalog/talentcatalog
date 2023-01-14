@@ -132,21 +132,11 @@
     </ng-template>
   </ng-container>
 
-  <ng-container ngbNavItem="MyJobs">
+  <ng-container *ngIf="canCreateJob()" ngbNavItem="MyJobs">
     <a ngbNavLink title="Jobs that I created">My Jobs</a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
         [searchBy]="SearchJobsBy.mine">
-      >
-      </app-jobs-with-detail>
-    </ng-template>
-  </ng-container>
-
-  <ng-container ngbNavItem="StarredJobs">
-    <a ngbNavLink title="Starred jobs (eg those I am working with)"><i class="fas fa-star"></i>Jobs</a>
-    <ng-template ngbNavContent>
-      <app-jobs-with-detail
-        [searchBy]="SearchJobsBy.starredByMe">
       >
       </app-jobs-with-detail>
     </ng-template>
@@ -160,6 +150,16 @@
       <app-jobs-with-detail
         [searchBy]="SearchJobsBy.live">
       >
+      </app-jobs-with-detail>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="StarredJobs">
+    <a ngbNavLink title="Starred jobs (eg those I am working with)"><i class="fas fa-star"></i>Jobs</a>
+    <ng-template ngbNavContent>
+      <app-jobs-with-detail
+        [searchBy]="SearchJobsBy.starredByMe">
+        >
       </app-jobs-with-detail>
     </ng-template>
   </ng-container>
