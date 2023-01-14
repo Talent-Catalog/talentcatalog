@@ -67,6 +67,8 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     /**
      * True if the job is currently accepting processing by other than its creator.
      * Setting it false will make the job hidden on the TC front end to all but the creator.
+     * The first time accepting is set true for a job effectively "publishes" the job so that
+     * others can see it and process it.
      */
     private boolean accepting;
 
