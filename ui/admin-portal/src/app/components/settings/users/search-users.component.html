@@ -64,9 +64,9 @@
 
     <thead class="thead-light">
     <tr>
-      <th></th>
       <th>#</th>
       <th>Username</th>
+      <th></th>
       <th>First Name</th>
       <th>Last Name</th>
       <th>Email</th>
@@ -80,6 +80,8 @@
 
     <tbody>
     <tr *ngFor="let user of results?.content">
+      <td> {{user.id}}</td>
+      <td> {{user.username}}</td>
       <td>
         <div *ngIf="!loggedInUser.readOnly && canEdit(user)" ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
           <button class="btn btn-xs hide-after" ngbDropdownToggle>
@@ -95,8 +97,6 @@
           </ul>
         </div>
       </td>
-      <td> {{user.id}}</td>
-      <td> {{user.username}}</td>
       <td>{{user.firstName}}</td>
       <td>{{user.lastName}}</td>
       <td>{{user.email}}</td>
