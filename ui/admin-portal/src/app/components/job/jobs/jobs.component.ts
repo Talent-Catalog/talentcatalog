@@ -24,6 +24,7 @@ export class JobsComponent implements OnInit {
   private loggedInUser: User;
 
   private filterKeySuffix: string = 'Filter';
+  private savedStateKeyPrefix: string = 'BrowseKey';
   private stagesAcceptingCandidates = [
     'candidateSearch', 'visaEligibility', 'cvPreparation', 'cvReview', 'recruitmentProcess',
   'jobOffer', 'visaPreparation'];
@@ -82,6 +83,9 @@ export class JobsComponent implements OnInit {
   }
 
   search() {
+    //Remember keyword filter from last search
+    this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
+
     let req = new SearchJobRequest();
     req.keyword = this.keyword;
     req.pageNumber = this.pageNumber - 1;
@@ -140,7 +144,17 @@ export class JobsComponent implements OnInit {
   }
 
   private savedStateKey(): string {
-    return "Jobs"
+    //This key is constructed from the combination of inputs which are associated with each tab
+    // in home.component.html
+    //This key is used to store the last state associated with each tab.
+
+    //The standard key is "BrowseKey" + "Jobs" +
+    // the search by (corresponding to the specific displayed tab)
+    let key = this.savedStateKeyPrefix
+      + "Jobs"
+      + SearchJobsBy[this.searchBy];
+
+    return key
   }
 
   toggleSort(column: string) {
