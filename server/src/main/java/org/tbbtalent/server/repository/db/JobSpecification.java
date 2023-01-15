@@ -112,9 +112,13 @@ public class JobSpecification {
                 conjunction.getExpressions().add(published);
             }
 
-            //TODO JC Accepting
+            //ACCEPTING
+            if (request.getAccepting() != null) {
+                conjunction.getExpressions().add(builder.equal(job.get("accepting"),
+                    request.getAccepting()));
+            }
 
-            // (shared OR owned)
+            // (starred OR owned)
             Predicate ors = builder.disjunction();
 
             //If owned by this user (ie by logged in user)
