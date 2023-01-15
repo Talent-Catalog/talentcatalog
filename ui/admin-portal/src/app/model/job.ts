@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {PagedSearchRequest} from "./base";
+import {HasId, PagedSearchRequest} from "./base";
 import {SavedList} from "./saved-list";
 import {User} from "./user";
 import {Partner} from "./partner";
@@ -22,8 +22,7 @@ import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 
-export interface JobIds {
-  id: number;
+export interface JobIds extends HasId {
   sfId: string;
 }
 
