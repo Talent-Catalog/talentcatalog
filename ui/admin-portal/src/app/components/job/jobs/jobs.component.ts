@@ -20,6 +20,9 @@ export class JobsComponent implements OnInit {
   @Input() searchBy: SearchJobsBy;
   @Output() jobSelection = new EventEmitter();
 
+  /*
+     MODEL: Modal set component focus from code
+   */
   //Get reference to the search input filter element (see #searchFilter in html)
   @ViewChild("searchFilter")
   searchFilter: ElementRef;
