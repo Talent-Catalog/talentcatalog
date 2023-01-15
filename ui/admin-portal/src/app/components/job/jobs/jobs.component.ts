@@ -9,7 +9,6 @@ import {SearchResults} from "../../../model/search-results";
 import {enumOptions} from "../../../util/enum";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SearchJobsBy} from "../../../model/base";
-import {Partner} from "../../../model/partner";
 
 @Component({
   selector: 'app-jobs',
@@ -22,7 +21,6 @@ export class JobsComponent implements OnInit {
 
   pageNumber: number;
   pageSize: number;
-  loggedInPartner: Partner;
   private loggedInUser: User;
 
   private filterKeySuffix: string = 'Filter';
@@ -40,7 +38,7 @@ export class JobsComponent implements OnInit {
   sortField = 'submissionList.id';
   sortDirection = 'DESC';
   currentJob: Job;
-
+  myJobsOnlyTip = "Only show jobs that were created by me";
 
   constructor(
     private authService: AuthService,
@@ -51,13 +49,12 @@ export class JobsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loggedInUser = this.authService.getLoggedInUser();
-    this.loggedInPartner = this.loggedInUser?.partner;
 
     //Pick up any previous keyword filter
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
     this.searchForm = this.fb.group({
       keyword: [filter],
-      myPartner: [false],
+      myJobsOnly: [false],
       selectedStages: [[]]
     });
     this.pageNumber = 1;
@@ -72,8 +69,8 @@ export class JobsComponent implements OnInit {
     return this.searchForm ? this.searchForm.value.keyword : "";
   }
 
-  private get myPartner(): boolean {
-    return this.searchForm ? this.searchForm.value.myPartner : false;
+  private get myJobsOnly(): boolean {
+    return this.searchForm ? this.searchForm.value.myJobsOnly : false;
   }
 
   get SearchJobsBy() {
@@ -106,10 +103,10 @@ export class JobsComponent implements OnInit {
         break;
 
       case SearchJobsBy.mine:
-        if (this.myPartner) {
-          req.ownedByMyPartner = true;
-        } else {
+        if (this.myJobsOnly) {
           req.ownedByMe = true;
+        } else {
+          req.ownedByMyPartner = true;
         }
         break;
 

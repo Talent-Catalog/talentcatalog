@@ -26,6 +26,7 @@ import {
 } from "../../services/saved-search.service";
 import {FormBuilder} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
+import {Partner} from "../../model/partner";
 
 @Component({
   selector: 'app-home',
@@ -37,6 +38,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   activeTabId: string;
   private lastTabKey: string = 'HomeLastTab';
   private lastCategoryTabKey: string = 'HomeLastCategoryTab';
+  loggedInPartner: Partner;
 
   //Get reference to the nav element
   @ViewChild(NgbNav)
@@ -57,6 +59,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   ngOnInit() {
     this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[0].categories;
+    this.loggedInPartner = this.authService.getLoggedInUser()?.partner;
   }
 
   ngAfterViewChecked(): void {

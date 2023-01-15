@@ -133,7 +133,7 @@
   </ng-container>
 
   <ng-container *ngIf="canCreateJob()" ngbNavItem="MyJobs">
-    <a ngbNavLink title="Jobs that I created">My Jobs</a>
+    <a ngbNavLink title="Jobs created by my partner organization">{{loggedInPartner.abbreviation}} Jobs</a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
         [searchBy]="SearchJobsBy.mine">
@@ -142,9 +142,9 @@
     </ng-template>
   </ng-container>
 
-  <ng-container ngbNavItem="JobOppsNew">
+  <ng-container ngbNavItem="LiveJobs">
     <a ngbNavLink
-       title="Jobs associated with active Salesforce job opportunities which have been registered on the TC"
+       title="Jobs associated with active opportunities which have been published on the TC"
     >Live Jobs</a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
