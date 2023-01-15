@@ -208,6 +208,7 @@ public class JobServiceImpl implements JobService {
         User loggedInUser = authService.getLoggedInUser().orElseThrow(
             () -> new UnauthorisedActionException("publish job")
         );
+        job.setAccepting(true);
         job.setPublishedBy(loggedInUser);
         job.setPublishedDate(OffsetDateTime.now());
         return salesforceJobOppRepository.save(job);
