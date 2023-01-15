@@ -151,6 +151,7 @@ export class JobsComponent implements OnInit {
         }
 
         //Following the search filter loses focus, so focus back on it again
+        /* MODEL: Setting component focus*/
         setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
 
         this.loading = false;
