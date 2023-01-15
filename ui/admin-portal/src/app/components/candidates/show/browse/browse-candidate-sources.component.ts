@@ -27,7 +27,7 @@ import {SearchResults} from '../../../../model/search-results';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {
-  indexOfAuditable,
+  indexOfHasId,
   isSavedSearch,
   SavedSearchSubtype,
   SavedSearchType,
@@ -236,17 +236,17 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         //Selected previously search if any
         const id: number = this.localStorageService.get(this.savedStateKey());
         if (id) {
-          this.selectedIndex = indexOfAuditable(id, this.results.content);
+          this.selectedIndex = indexOfHasId(id, this.results.content);
           if (this.selectedIndex >= 0) {
             this.selectedSource = this.results.content[this.selectedIndex];
           } else {
             //Select the first search if can't find previous (category of search
             // may have changed)
-            this.onSelect(this.results.content[0]);
+            this.select(this.results.content[0]);
           }
         } else {
           //Select the first search if no previous
-          this.onSelect(this.results.content[0]);
+          this.select(this.results.content[0]);
         }
       }
 
@@ -263,13 +263,13 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
    * of the search of sources.
    * @param source Selected candidate source
    */
-  onSelect(source: CandidateSource) {
+  select(source: CandidateSource) {
     this.selectedSource = source;
 
     const id: number = source.id;
     this.localStorageService.set(this.savedStateKey(), id);
 
-    this.selectedIndex = indexOfAuditable(id, this.results.content);
+    this.selectedIndex = indexOfHasId(id, this.results.content);
   }
 
   private savedStateKey() {
@@ -306,7 +306,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         break;
     }
     if (this.selectedIndex !== oldSelectedIndex) {
-      this.onSelect(this.results.content[this.selectedIndex])
+      this.select(this.results.content[this.selectedIndex])
     }
   }
 
@@ -473,7 +473,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     //Looking at lists or searches.
     //Need to update the list of sources as well as the currently selected source if that
     //is the source which has been updated
-    const index: number = indexOfAuditable(source.id, this.results.content);
+    const index: number = indexOfHasId(source.id, this.results.content);
     if (index >= 0) {
       this.results.content[index] = source;
     }

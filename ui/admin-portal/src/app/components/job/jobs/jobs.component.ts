@@ -9,6 +9,7 @@ import {SearchResults} from "../../../model/search-results";
 import {enumOptions} from "../../../util/enum";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SearchJobsBy} from "../../../model/base";
+import {indexOfHasId} from "../../../model/saved-search";
 
 @Component({
   selector: 'app-jobs',
@@ -38,7 +39,8 @@ export class JobsComponent implements OnInit {
   //Default sort jobs with most recent job first - ie descending order of id
   sortField = 'submissionList.id';
   sortDirection = 'DESC';
-  currentJob: Job;
+  private selectedJob: Job;
+  private selectedIndex = 0;
   myJobsOnlyTip = "Only show jobs that were created by me";
 
   constructor(
@@ -124,6 +126,23 @@ export class JobsComponent implements OnInit {
 
     this.jobService.searchPaged(req).subscribe(results => {
         this.results = results;
+
+        if (results.content.length > 0) {
+          //Select previously selected item if still present in results
+          const id: number = this.localStorageService.get(this.savedStateKey());
+          if (id) {
+            this.selectedIndex = indexOfHasId(id, this.results.content);
+            if (this.selectedIndex >= 0) {
+              this.select(this.results.content[this.selectedIndex]);
+            } else {
+              this.select(this.results.content[0]);
+            }
+          } else {
+            //Select the first search if no previous
+            this.select(this.results.content[0]);
+          }
+        }
+
         this.loading = false;
       },
       error => {
@@ -167,12 +186,14 @@ export class JobsComponent implements OnInit {
     this.search();
   }
 
-  selectJob(job: Job) {
-    this.setCurrentJob(job);
-  }
+  select(job: Job) {
+    this.selectedJob = job;
 
-  private setCurrentJob(job: Job) {
-    this.currentJob = job;
+    const id: number = job.id;
+    this.localStorageService.set(this.savedStateKey(), id);
+
+    this.selectedIndex = indexOfHasId(id, this.results.content);
+
     this.jobSelection.emit(job);
   }
 

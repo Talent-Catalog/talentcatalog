@@ -65,7 +65,7 @@
       <tbody>
 
       <!--        Job records    -->
-      <tr *ngFor="let job of results?.content" (click)="selectJob(job)">
+      <tr *ngFor="let job of results?.content" (click)="select(job)">
         <td>
           <a [routerLink]="['/job',job.id]">
             {{job.id}}
