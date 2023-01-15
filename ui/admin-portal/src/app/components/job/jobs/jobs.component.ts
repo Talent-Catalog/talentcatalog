@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {AuthService} from "../../../services/auth.service";
 import {User} from "../../../model/user";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -19,6 +19,10 @@ import {indexOfHasId} from "../../../model/saved-search";
 export class JobsComponent implements OnInit {
   @Input() searchBy: SearchJobsBy;
   @Output() jobSelection = new EventEmitter();
+
+  //Get reference to the search input filter element (see #searchFilter in html)
+  @ViewChild("searchFilter")
+  searchFilter: ElementRef;
 
   pageNumber: number;
   pageSize: number;
@@ -142,6 +146,9 @@ export class JobsComponent implements OnInit {
             this.select(this.results.content[0]);
           }
         }
+
+        //Following the search filter loses focus, so focus back on it again
+        setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
 
         this.loading = false;
       },
