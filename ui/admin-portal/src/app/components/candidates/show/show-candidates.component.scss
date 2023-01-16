@@ -61,11 +61,13 @@ label {
   //}
 }
 
-.selected {
+//Current candidate - the one whose detailed data is displaying
+.current {
   background-color: fade-out($color-primary, 0.8)
 }
 
-tr.selected-row {
+//Candidate is one of the selected ones (those with checked selection checkbox)
+tr.selected {
   background-color: fade-out($color-secondary-lighter, 0.7)
 }
 
