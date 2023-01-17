@@ -7,6 +7,7 @@ import {
   InputLinkComponent,
   UpdateLinkRequest
 } from "../../../../util/input/input-link/input-link.component";
+import {JobPrepItem, JobPrepJD, JobPrepJOI} from "../../../../../model/job-prep-item";
 
 /*
 MODEL: Bubbling up object changes using @Output events (in this case changes to a job)
@@ -21,6 +22,7 @@ through a hierarchy of components.
 export class ViewJobUploadsComponent implements OnInit {
   @Input() job: Job;
   @Input() editable: boolean;
+  @Input() highlightItem: JobPrepItem;
   @Output() jobUpdated = new EventEmitter<Job>();
 
   error: any;
@@ -118,6 +120,14 @@ export class ViewJobUploadsComponent implements OnInit {
 
   editJOILink() {
     this.editJobLink("joi")
+  }
+
+  highlightJD() {
+    return this.highlightItem instanceof JobPrepJD;
+  }
+
+  highlightJOI() {
+    return this.highlightItem instanceof JobPrepJOI;
   }
 
   uploadJD() {

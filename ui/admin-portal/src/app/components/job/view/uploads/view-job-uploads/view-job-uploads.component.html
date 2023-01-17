@@ -13,6 +13,7 @@
 
       <div class="form-group col-sm-12 col-md-4">
         <label class="col-form-label">
+          <span *ngIf="highlightJD()">---></span>
           <i class="far fa-file"></i>Employer's Job Description (JD)
         </label>
         <span class="actions" *ngIf="editable">
@@ -37,6 +38,7 @@
 
       <div class="form-group col-sm-12 col-md-4">
         <label class="col-form-label">
+          <span *ngIf="highlightJOI()">---></span>
           <i class="far fa-file"></i>Job Opportunity Intake (JOI)
         </label>
         <span class="actions" *ngIf="editable">

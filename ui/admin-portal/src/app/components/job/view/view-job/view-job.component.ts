@@ -11,6 +11,7 @@ import {SlackService} from "../../../../services/slack.service";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
 import {isStarredByMe} from "../../../../model/base";
+import {JobPrepItem, JobPrepJobSummary} from "../../../../model/job-prep-item";
 
 @Component({
   selector: 'app-view-job',
@@ -22,6 +23,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   @Output() jobUpdated = new EventEmitter<Job>();
 
   activeTabId: string;
+  currentPrepItem: JobPrepItem;
   error: any;
   loading: boolean;
   loggedInUser: User;
@@ -105,5 +107,16 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
 
   isStarred(): boolean {
     return isStarredByMe(this.job?.starringUsers, this.authService);
+  }
+
+  onPrepItemSelected(item: JobPrepItem) {
+    if (item.tabId) {
+      this.setActiveTabId(item.tabId);
+    }
+    this.currentPrepItem = item;
+  }
+
+  currentPrepItemIsSummary(): boolean {
+    return this.currentPrepItem instanceof JobPrepJobSummary;
   }
 }

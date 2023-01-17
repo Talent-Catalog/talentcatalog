@@ -42,6 +42,7 @@
       <app-view-job-summary
         [job]="job"
         [nRows]=4
+        [highlight]="currentPrepItemIsSummary()"
       >
       </app-view-job-summary>
     </div>
@@ -50,8 +51,8 @@
 
   <app-view-job-preparation-items
     [job] ="job"
+    (itemSelected)="onPrepItemSelected($event)"
   >
-
   </app-view-job-preparation-items>
 
   <div class="row">
@@ -66,6 +67,7 @@
             <app-job-general-tab
               [job]="job"
               [editable]="!loggedInUser.readOnly"
+              [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)"
             >
             </app-job-general-tab>
@@ -79,6 +81,7 @@
             <app-job-suggested-searches-tab
               [job]="job"
               [editable]="!loggedInUser.readOnly"
+              [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)">
             </app-job-suggested-searches-tab>
           </ng-template>
@@ -91,6 +94,7 @@
             <app-job-upload-tab
               [job]="job"
               [editable]="!loggedInUser.readOnly"
+              [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)"
             >
             </app-job-upload-tab>

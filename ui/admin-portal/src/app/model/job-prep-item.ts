@@ -27,7 +27,11 @@ export abstract class JobPrepItem {
    * @param _job the job being prepared for publication
    * @param _description displayable description of this item
    */
-  constructor(private _job: Job, private _description: string) {
+  constructor(
+    private _job: Job,
+    private _description: string,
+    private _tabId: string
+    ) {
   }
 
   /**
@@ -42,11 +46,15 @@ export abstract class JobPrepItem {
   get description(): string {
     return this._description;
   }
+
+  get tabId(): string {
+    return this._tabId;
+  }
 }
 
 export class JobPrepDueDate extends JobPrepItem {
   constructor(job: Job) {
-    super(job, "Submission due date");
+    super(job, "Submission due date", "General");
   }
 
   isCompleted(): boolean {
@@ -56,7 +64,7 @@ export class JobPrepDueDate extends JobPrepItem {
 
 export class JobPrepJD extends JobPrepItem {
   constructor(job: Job) {
-    super(job, "Provide job description (JD)");
+    super(job, "Provide job description (JD)", "Uploads");
   }
 
   isCompleted(): boolean {
@@ -67,7 +75,7 @@ export class JobPrepJD extends JobPrepItem {
 
 export class JobPrepJobSummary extends JobPrepItem {
   constructor(job: Job) {
-    super(job, "Provide job summary");
+    super(job, "Provide job summary", null);
   }
 
   isCompleted(): boolean {
@@ -77,7 +85,7 @@ export class JobPrepJobSummary extends JobPrepItem {
 
 export class JobPrepJOI extends JobPrepItem {
   constructor(job: Job) {
-    super(job, "Provide job opportunity intake (JOI)");
+    super(job, "Provide job opportunity intake (JOI)", "Uploads");
   }
 
   isCompleted(): boolean {
@@ -87,7 +95,7 @@ export class JobPrepJOI extends JobPrepItem {
 
 export class JobPrepSuggestedCandidates extends JobPrepItem {
   constructor(job: Job) {
-    super(job, "Suggested candidate(s)");
+    super(job, "Suggested candidate(s)", "Searches");
   }
 
   isCompleted(): boolean {
@@ -98,7 +106,7 @@ export class JobPrepSuggestedCandidates extends JobPrepItem {
 
 export class JobPrepSuggestedSearches extends JobPrepItem {
   constructor(job: Job) {
-    super(job, "Suggested search(es)");
+    super(job, "Suggested search(es)", "Searches");
   }
 
   isCompleted(): boolean {

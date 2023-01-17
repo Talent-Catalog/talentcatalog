@@ -12,6 +12,11 @@ import {SavedSearch} from "../../../../../model/saved-search";
 import {JobService} from "../../../../../services/job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {InputTextComponent} from "../../../../util/input/input-text/input-text.component";
+import {
+  JobPrepItem,
+  JobPrepSuggestedCandidates,
+  JobPrepSuggestedSearches
+} from "../../../../../model/job-prep-item";
 
 @Component({
   selector: 'app-view-job-suggested-searches',
@@ -21,6 +26,7 @@ import {InputTextComponent} from "../../../../util/input/input-text/input-text.c
 export class ViewJobSuggestedSearchesComponent implements OnInit, OnChanges {
   @Input() job: Job;
   @Input() editable: boolean;
+  @Input() highlightItem: JobPrepItem;
   @Output() jobUpdated = new EventEmitter<Job>();
 
   searches: SavedSearch[] = [];
@@ -91,4 +97,13 @@ export class ViewJobSuggestedSearchesComponent implements OnInit, OnChanges {
     //updated job.
     this.jobUpdated.emit(job);
   }
+
+  highlightCandidates() {
+    return this.highlightItem instanceof JobPrepSuggestedCandidates;
+  }
+
+  highlightSearches() {
+    return this.highlightItem instanceof JobPrepSuggestedSearches;
+  }
+
 }

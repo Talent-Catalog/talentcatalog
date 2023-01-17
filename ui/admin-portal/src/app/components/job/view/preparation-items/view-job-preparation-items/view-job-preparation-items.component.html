@@ -17,7 +17,9 @@
           <span class="fa-li text-secondary">
              <i [ngClass]="item.isCompleted() ? 'far fa-check-square' : 'far fa-square'"></i>
           </span>
+          <button (click)="onItemSelected(item)">
           {{item.description}}
+          </button>
         </li>
       </ul>
     </div>

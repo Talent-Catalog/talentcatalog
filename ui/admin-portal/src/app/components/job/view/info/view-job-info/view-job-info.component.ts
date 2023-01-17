@@ -4,6 +4,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {User} from "../../../../../model/user";
 import {SavedList} from "../../../../../model/saved-list";
+import {JobPrepDueDate, JobPrepItem} from "../../../../../model/job-prep-item";
 
 @Component({
   selector: 'app-view-job-info',
@@ -13,6 +14,7 @@ import {SavedList} from "../../../../../model/saved-list";
 export class ViewJobInfoComponent implements OnInit {
   @Input() job: Job;
   @Input() editable: boolean;
+  @Input() highlightItem: JobPrepItem;
   @Output() jobUpdated = new EventEmitter<Job>();
 
   constructor(private modalService: NgbModal) { }
@@ -59,5 +61,9 @@ export class ViewJobInfoComponent implements OnInit {
       }
     }
     return isSpecial;
+  }
+
+  highlightSubmissionDate() {
+    return this.highlightItem instanceof JobPrepDueDate;
   }
 }

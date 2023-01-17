@@ -1,4 +1,12 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {
   JobPrepDueDate,
@@ -17,6 +25,8 @@ import {
 })
 export class ViewJobPreparationItemsComponent implements OnInit, OnChanges {
   @Input() job: Job;
+  @Output() itemSelected = new EventEmitter();
+
   progressPercent: number;
 
   jobPrepItems: JobPrepItem[];
@@ -38,5 +48,11 @@ export class ViewJobPreparationItemsComponent implements OnInit, OnChanges {
         new JobPrepSuggestedSearches(this.job)
       ];
     }
+  }
+
+  onItemSelected(item: JobPrepItem) {
+    this.itemSelected.emit(item);
+
+    //todo store current item so that we can highlight selection
   }
 }
