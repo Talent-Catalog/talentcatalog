@@ -89,6 +89,9 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   private setActiveTabId(id: string) {
 
+/*
+   MODEL: Selecting tabs in code
+*/
     this.nav?.select(id);
 
     //The typed saved search tabs have id's which look like "type:profession", "type:jobs",
