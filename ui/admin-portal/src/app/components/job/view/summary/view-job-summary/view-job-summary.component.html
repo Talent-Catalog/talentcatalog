@@ -5,10 +5,7 @@
 
   <div class="form-group flex-fill">
     <label for="jobSummary">
-    <span class="mr-2 font-weight-normal">
-      <span *ngIf="highlight">
-        --->
-      </span>
+    <span class="mr-2 font-weight-normal" [ngClass]="{'alert alert-danger': highlight}">
       Job Summary
       <span *ngIf="saving">
          <i class="fas fa-spinner fa-spin"></i>

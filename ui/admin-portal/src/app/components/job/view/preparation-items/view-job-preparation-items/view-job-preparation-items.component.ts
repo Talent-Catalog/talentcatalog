@@ -27,6 +27,7 @@ export class ViewJobPreparationItemsComponent implements OnInit, OnChanges {
   @Input() job: Job;
   @Output() itemSelected = new EventEmitter();
 
+  selectedItem: JobPrepItem;
   progressPercent: number;
 
   jobPrepItems: JobPrepItem[];
@@ -51,8 +52,13 @@ export class ViewJobPreparationItemsComponent implements OnInit, OnChanges {
   }
 
   onItemSelected(item: JobPrepItem) {
-    this.itemSelected.emit(item);
+    this.selectedItem = item;
 
-    //todo store current item so that we can highlight selection
+    this.itemSelected.emit(item);
+  }
+
+  isSelected(item: JobPrepItem): boolean {
+    let res = item === this.selectedItem;
+    return res;
   }
 }

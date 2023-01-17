@@ -1,0 +1,5 @@
+@import "~src/scss/variables";
+
+.selected {
+  background-color: fade-out(red, 0.7)
+}

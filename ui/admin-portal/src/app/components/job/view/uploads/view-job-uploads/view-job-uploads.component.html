@@ -12,8 +12,7 @@
     <div class="row">
 
       <div class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label">
-          <span *ngIf="highlightJD()">---></span>
+        <label class="col-form-label" [ngClass]="{'alert alert-danger': highlightJD()}">
           <i class="far fa-file"></i>Employer's Job Description (JD)
         </label>
         <span class="actions" *ngIf="editable">
@@ -27,7 +26,7 @@
           </button>
         </span>
 
-        <div *ngIf="!job.submissionList?.fileJdLink" class="form-control-plaintext alert alert-danger">
+        <div *ngIf="!job.submissionList?.fileJdLink" class="form-control-plaintext">
           Please upload, or link to, a job description document
         </div>
         <div *ngIf="job.submissionList?.fileJdLink" class="form-control-plaintext">
@@ -37,8 +36,7 @@
       </div>
 
       <div class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label">
-          <span *ngIf="highlightJOI()">---></span>
+        <label class="col-form-label" [ngClass]="{'alert alert-danger': highlightJOI()}">
           <i class="far fa-file"></i>Job Opportunity Intake (JOI)
         </label>
         <span class="actions" *ngIf="editable">
@@ -52,7 +50,7 @@
           </button>
         </span>
 
-        <div *ngIf="!job.submissionList?.fileJoiLink" class="form-control-plaintext alert alert-danger">
+        <div *ngIf="!job.submissionList?.fileJoiLink" class="form-control-plaintext">
           Please upload, or link to, a job opportunity intake document
         </div>
         <div *ngIf="job.submissionList?.fileJoiLink" class="form-control-plaintext">

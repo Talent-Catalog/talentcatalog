@@ -2,10 +2,10 @@
 
   <div class="card-header">
     Job Information
-    <div class="float-right" *ngIf="editable">
-      <span *ngIf="highlightSubmissionDate()">---></span>
+    <div class="float-right" *ngIf="editable" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
       <button class="btn btn-sm btn-outline-secondary" (click)="editJobInfo()">
-        <i class="fas fa-edit"></i></button>
+        <i class="fas fa-edit"></i>
+      </button>
     </div>
   </div>
 
@@ -78,8 +78,7 @@
       </div>
 
       <div class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label">
-          <span *ngIf="highlightSubmissionDate()">---></span>
+        <label class="col-form-label" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
           <i class="fa-regular fa-calendar-days"></i>Submission Due</label>
 
         <div class="form-control-plaintext">
