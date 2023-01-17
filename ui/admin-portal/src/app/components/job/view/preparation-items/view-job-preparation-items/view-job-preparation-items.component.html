@@ -13,13 +13,11 @@
 <!-- Loop through job preparation items -->
     <div class="d-flex flex-column pt-4">
       <ul class="fa-ul">
-        <li *ngFor="let item of jobPrepItems">
+        <li *ngFor="let item of jobPrepItems" (click)="onItemSelected(item)">
           <span class="fa-li text-secondary">
              <i [ngClass]="item.isCompleted() ? 'far fa-check-square' : 'far fa-square'"></i>
           </span>
-          <button (click)="onItemSelected(item)">
           {{item.description}}
-          </button>
         </li>
       </ul>
     </div>

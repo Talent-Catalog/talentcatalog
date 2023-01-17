@@ -3,6 +3,7 @@
   <div class="card-header">
     Job Information
     <div class="float-right" *ngIf="editable">
+      <span *ngIf="highlightSubmissionDate()">---></span>
       <button class="btn btn-sm btn-outline-secondary" (click)="editJobInfo()">
         <i class="fas fa-edit"></i></button>
     </div>
