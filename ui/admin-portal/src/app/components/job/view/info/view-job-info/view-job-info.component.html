@@ -27,7 +27,8 @@
       </div>
 
       <div *ngIf="job.submissionList" class="form-group col-sm-12 col-md-4">
-        <label title="Potential candidates should be added to this list" class="col-form-label">
+        <label title="Potential candidates should be added to this list" class="col-form-label"
+               [ngClass]="{'alert alert-danger': highlightCandidates()}">
           <i class="fas fa-list"></i>Submission List</label>
 
         <div class="form-control-plaintext">

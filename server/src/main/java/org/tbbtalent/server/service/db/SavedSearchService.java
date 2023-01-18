@@ -80,12 +80,13 @@ public interface SavedSearchService {
 
     /**
      * Returns a set of the ids of all candidates matching the given saved search.
+     *
      * @param savedSearchId ID of saved search
      * @return Candidate ids (NOT candidateNumbers) of candidates matching search
      * @throws NoSuchObjectException is no saved search exists with given id.
      */
-    Set<Long> searchCandidates(long savedSearchId)
-        throws NoSuchObjectException;
+    @NotNull
+    Set<Long> searchCandidates(long savedSearchId) throws NoSuchObjectException;
 
     void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
 
@@ -205,6 +206,14 @@ public interface SavedSearchService {
      */
     @NotNull SavedList getSelectionListForLoggedInUser(long id)
             throws NoSuchObjectException, InvalidSessionException;
+
+    /**
+     * Returns true if there are no candidates matching search
+     * @param id ID of search
+     * @return True if no candidates
+     * @throws NoSuchObjectException if there is no such saved search.
+     */
+    boolean isEmpty(long id) throws NoSuchObjectException;
 
     /**
      * Updates a candidate context note associated with the given saved search.

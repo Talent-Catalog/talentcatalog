@@ -21,14 +21,15 @@ import {Job} from "./job";
  * All classes subclass JobPrepItem.
  */
 export abstract class JobPrepItem {
+  private _job: Job;
 
   /**
    * Every item has a ...
    * @param _job the job being prepared for publication
    * @param _description displayable description of this item
+   * @param _tabId ID of job display tab where this item is defined
    */
   constructor(
-    private _job: Job,
     private _description: string,
     private _tabId: string
     ) {
@@ -43,6 +44,10 @@ export abstract class JobPrepItem {
     return this._job;
   }
 
+  set job(value: Job) {
+    this._job = value;
+  }
+
   get description(): string {
     return this._description;
   }
@@ -53,8 +58,8 @@ export abstract class JobPrepItem {
 }
 
 export class JobPrepDueDate extends JobPrepItem {
-  constructor(job: Job) {
-    super(job, "Submission due date", "General");
+  constructor() {
+    super("Submission due date", "General");
   }
 
   isCompleted(): boolean {
@@ -63,53 +68,61 @@ export class JobPrepDueDate extends JobPrepItem {
 }
 
 export class JobPrepJD extends JobPrepItem {
-  constructor(job: Job) {
-    super(job, "Provide job description (JD)", "Uploads");
+  constructor() {
+    super("Provide job description (JD)", "Uploads");
   }
 
   isCompleted(): boolean {
-    return this.job?.submissionList?.fileJdLink != null
-      && this.job.submissionList.fileJdLink.trim().length > 0;
+    const fileJdLink = this.job?.submissionList?.fileJdLink;
+    return fileJdLink != null && fileJdLink.trim().length > 0;
   }
 }
 
 export class JobPrepJobSummary extends JobPrepItem {
-  constructor(job: Job) {
-    super(job, "Provide job summary", null);
+  constructor() {
+    super("Provide job summary", null);
   }
 
   isCompleted(): boolean {
-    return this.job?.jobSummary != null && this.job.jobSummary.trim().length > 0;
+    const jobSummary = this.job?.jobSummary;
+    return jobSummary != null && jobSummary.trim().length > 0;
   }
 }
 
 export class JobPrepJOI extends JobPrepItem {
-  constructor(job: Job) {
-    super(job, "Provide job opportunity intake (JOI)", "Uploads");
+  constructor() {
+    super("Provide job opportunity intake (JOI)", "Uploads");
   }
 
   isCompleted(): boolean {
-    return this.job?.submissionList?.fileJoiLink != null;
+    const fileJoiLink = this.job?.submissionList?.fileJoiLink;
+    return fileJoiLink != null && fileJoiLink.trim().length > 0;
   }
 }
 
 export class JobPrepSuggestedCandidates extends JobPrepItem {
-  constructor(job: Job) {
-    super(job, "Suggested candidate(s)", "Searches");
+  private _empty = true;
+
+  constructor() {
+    super("Suggested candidate(s)", "General");
   }
 
   isCompleted(): boolean {
-    //todo Really want to check that list is not empty.
-    return this.job?.submissionList != null;
+    return !this._empty;
+  }
+
+  set empty(value: boolean) {
+    this._empty = value;
   }
 }
 
 export class JobPrepSuggestedSearches extends JobPrepItem {
-  constructor(job: Job) {
-    super(job, "Suggested search(es)", "Searches");
+  constructor() {
+    super("Suggested search(es)", "Searches");
   }
 
   isCompleted(): boolean {
-    return this.job?.suggestedSearches != null;
+    const suggestedSearches = this.job?.suggestedSearches;
+    return suggestedSearches != null && suggestedSearches.length > 0;
   }
 }

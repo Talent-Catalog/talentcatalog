@@ -225,6 +225,14 @@ public interface SavedListService {
     SavedList get(@NonNull User user, String listName);
 
     /**
+     * Returns true if there are no candidates in the list
+     * @param id ID of list
+     * @return True if no candidates in list
+     * @throws NoSuchObjectException if there is no such saved list
+     */
+    boolean isEmpty(long id) throws NoSuchObjectException;
+
+    /**
      * Return all SavedList's associated with the given candidate that match
      * the given request, ordered by name.
      * <p/>

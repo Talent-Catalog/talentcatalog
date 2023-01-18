@@ -17,6 +17,9 @@ import {
   JobPrepSuggestedCandidates,
   JobPrepSuggestedSearches
 } from "../../../../../model/job-prep-item";
+import {
+  CandidateSourceCandidateService
+} from "../../../../../services/candidate-source-candidate.service";
 
 @Component({
   selector: 'app-view-job-preparation-items',
@@ -29,10 +32,20 @@ export class ViewJobPreparationItemsComponent implements OnInit, OnChanges {
 
   selectedItem: JobPrepItem;
   progressPercent: number;
+  error: any;
 
-  jobPrepItems: JobPrepItem[];
+  private jobPrepSuggestedCandidates = new JobPrepSuggestedCandidates();
 
-  constructor() {
+  jobPrepItems: JobPrepItem[] = [
+    new JobPrepJobSummary(),
+    new JobPrepJD(),
+    new JobPrepJOI(),
+    new JobPrepSuggestedSearches(),
+    this.jobPrepSuggestedCandidates,
+    new JobPrepDueDate(),
+  ];
+
+  constructor(private candidateSourceService: CandidateSourceCandidateService) {
   }
 
   ngOnInit(): void {
@@ -40,14 +53,20 @@ export class ViewJobPreparationItemsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.job) {
-      this.jobPrepItems = [
-        new JobPrepDueDate(this.job),
-        new JobPrepJD(this.job),
-        new JobPrepJobSummary(this.job),
-        new JobPrepJOI(this.job),
-        new JobPrepSuggestedCandidates(this.job),
-        new JobPrepSuggestedSearches(this.job)
-      ];
+      this.checkSubmissionListContents();
+      this.jobPrepItems.forEach(j => j.job = this.job)
+    }
+  }
+
+  private checkSubmissionListContents() {
+    const submissionList = this.job?.submissionList;
+    if (submissionList == null) {
+      this.jobPrepSuggestedCandidates.empty = true;
+    } else {
+      this.candidateSourceService.isEmpty(submissionList).subscribe(
+        (empty) => this.jobPrepSuggestedCandidates.empty = empty,
+        (error) => this.error = error
+      )
     }
   }
 

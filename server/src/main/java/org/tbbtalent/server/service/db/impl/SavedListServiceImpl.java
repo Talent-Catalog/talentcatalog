@@ -503,6 +503,12 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public boolean isEmpty(long id) throws NoSuchObjectException {
+        SavedList savedList = get(id);
+        return savedList.getCandidates().isEmpty();
+    }
+
+    @Override
     public void mergeSavedList(long savedListId,
         UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)

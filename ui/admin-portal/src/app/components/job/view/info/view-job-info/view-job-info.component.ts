@@ -4,7 +4,11 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {User} from "../../../../../model/user";
 import {SavedList} from "../../../../../model/saved-list";
-import {JobPrepDueDate, JobPrepItem} from "../../../../../model/job-prep-item";
+import {
+  JobPrepDueDate,
+  JobPrepItem,
+  JobPrepSuggestedCandidates
+} from "../../../../../model/job-prep-item";
 
 @Component({
   selector: 'app-view-job-info',
@@ -61,6 +65,10 @@ export class ViewJobInfoComponent implements OnInit {
       }
     }
     return isSpecial;
+  }
+
+  highlightCandidates() {
+    return this.highlightItem instanceof JobPrepSuggestedCandidates;
   }
 
   highlightSubmissionDate() {

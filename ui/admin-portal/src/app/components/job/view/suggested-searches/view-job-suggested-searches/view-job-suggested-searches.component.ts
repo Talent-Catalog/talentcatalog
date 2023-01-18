@@ -12,11 +12,7 @@ import {SavedSearch} from "../../../../../model/saved-search";
 import {JobService} from "../../../../../services/job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {InputTextComponent} from "../../../../util/input/input-text/input-text.component";
-import {
-  JobPrepItem,
-  JobPrepSuggestedCandidates,
-  JobPrepSuggestedSearches
-} from "../../../../../model/job-prep-item";
+import {JobPrepItem, JobPrepSuggestedSearches} from "../../../../../model/job-prep-item";
 
 @Component({
   selector: 'app-view-job-suggested-searches',
@@ -96,10 +92,6 @@ export class ViewJobSuggestedSearchesComponent implements OnInit, OnChanges {
     //down to this component, which will then update itself when ngOnChanges is called with the
     //updated job.
     this.jobUpdated.emit(job);
-  }
-
-  highlightCandidates() {
-    return this.highlightItem instanceof JobPrepSuggestedCandidates;
   }
 
   highlightSearches() {
