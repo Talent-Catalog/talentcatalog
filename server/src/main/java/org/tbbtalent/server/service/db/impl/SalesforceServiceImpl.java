@@ -1355,20 +1355,20 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
 
-    class EmployerOppStageUpdateRequest {
-
-        public String StageName;
-        public String NextStep;
-        public String Next_Step_Due_Date__c;
+    class EmployerOppStageUpdateRequest extends LinkedHashMap<String, Object> {
 
         public EmployerOppStageUpdateRequest(
-            @NonNull JobOpportunityStage stage, @Nullable String nextStep, @Nullable LocalDate dueDate) {
+            @Nullable JobOpportunityStage stage, @Nullable String nextStep, @Nullable LocalDate dueDate) {
 
             //Copy across to SF fields
-            this.StageName = stage.toString();
-            this.NextStep = nextStep;
+            if (stage != null) {
+                put("StageName", stage.toString());
+            }
+            if (nextStep != null) {
+                put("NextStep", nextStep);
+            }
             if (dueDate != null) {
-                this.Next_Step_Due_Date__c = dueDate.toString();
+                put("Next_Step_Due_Date__c", dueDate.toString());
             }
         }
     }
