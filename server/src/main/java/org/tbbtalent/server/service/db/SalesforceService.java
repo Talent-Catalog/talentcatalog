@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db;
 
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.lang.NonNull;
@@ -24,6 +25,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
@@ -220,6 +222,23 @@ public interface SalesforceService {
     void updateContact(Candidate candidate) throws GeneralSecurityException;
 
     /**
+     * Updates the Salesforce Candidate Opportunity records based on the given employer feedback
+     * on each candidate.
+     * <p/>
+     * Note the candidate job opportunities are identified by the unique
+     * external id TBBCandidateExternalId__c
+     *
+     * @param feedbacks Employer feedback on candidates
+     * @param sfJobOpp Employer job opportunity on Salesforce
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data,
+     * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
+     */
+    void updateCandidateOpportunities(
+        List<EmployerCandidateFeedbackData> feedbacks, SalesforceJobOpp sfJobOpp)
+        throws WebClientException, SalesforceException;
+
+    /**
      * Updates the Salesforce Employer opportunity record corresponding to the sfJoblink in the
      * given request.
      *
@@ -230,21 +249,17 @@ public interface SalesforceService {
     void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request) throws SalesforceException;
 
     /**
-     * Updates the Salesforce Candidate Opportunity records based on the given employer feedback
-     * on each candidate.
-     * <p/>
-     * Note the candidate job opportunities are identified by the unique
-     * external id TBBCandidateExternalId__c
+     * Updates the Salesforce Employer opportunity record corresponding to the given Salesforce id
+     * to the given stage, next step and due date.
      *
-     * @param feedbacks Employer feedback on candidates
-     * @param sfJobOpp Employer job opportunity on Salesforce
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
+     * @param sfId Salesforce id of opportunity.
+     * @param stage New stage
+     * @param nextStep New next step
+     * @param dueDate Next step due date
      * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data,
-     * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
+     * @throws SalesforceException if Salesforce had a problem with the data
      */
-    void updateCandidateOpportunities(
-        List<EmployerCandidateFeedbackData> feedbacks, SalesforceJobOpp sfJobOpp)
-        throws GeneralSecurityException, WebClientException, SalesforceException;
+    void updateEmployerOpportunityStage(
+        String sfId, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
+        throws SalesforceException, WebClientException;
 }

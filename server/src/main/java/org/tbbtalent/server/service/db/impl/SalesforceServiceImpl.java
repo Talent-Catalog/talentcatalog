@@ -63,6 +63,7 @@ import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
@@ -160,6 +161,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
+        classSfPathMap.put(EmployerOppStageUpdateRequest.class, "Opportunity");
         classSfCompositePathMap.put(ContactRequestComposite.class, "Contact");
         classSfCompositePathMap.put(OpportunityRequestComposite.class, "Opportunity");
 
@@ -599,7 +601,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Override
     public void updateCandidateOpportunities(
         List<EmployerCandidateFeedbackData> feedbacks, SalesforceJobOpp jobOpportunity)
-        throws GeneralSecurityException, WebClientException, SalesforceException {
+        throws WebClientException, SalesforceException {
 
         String recordType = getCandidateOpportunityRecordType(jobOpportunity);
 
@@ -642,8 +644,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     private List<CandidateOpportunityRecordComposite> buildCandidateOpportunityRequests(
         List<EmployerCandidateFeedbackData> feedbacks, String recordType,
-        SalesforceJobOpp jobOpportunity)
-        throws GeneralSecurityException {
+        SalesforceJobOpp jobOpportunity) throws SalesforceException {
 
         //Figure out which candidates need an opp created.
         //Extract all candidates from feedback.
@@ -720,6 +721,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
 
+    @Override
+    public void updateEmployerOpportunityStage(
+        String sfId, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
+        throws SalesforceException, WebClientException {
+
+        EmployerOppStageUpdateRequest sfRequest =
+            new EmployerOppStageUpdateRequest(stage, nextStep, dueDate);
+
+        executeUpdate(sfId, sfRequest);
+    }
+
     /**
      * Execute general purpose Salesforce create.
      * <p/>
@@ -727,11 +739,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      *
      * @param obj Object supplying data used to create corresponding Salesforce record.
      * @return CreateRecordResult - contains SF id of created record.
-     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException       if there is a problem connecting to Salesforce
      */
     private CreateRecordResult executeCreate(Object obj)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
 
         Class<?> cl = obj.getClass();
         String path = classSfPathMap.get(cl);
@@ -1340,6 +1352,24 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             CVs_Folder__c = request.getFolderlink();
             Job_Description_Folder__c = request.getFolderjdlink();
             Talent_Catalog_List__c = request.getListlink();
+        }
+    }
+
+    class EmployerOppStageUpdateRequest {
+
+        public String StageName;
+        public String NextStep;
+        public String Next_Step_Due_Date__c;
+
+        public EmployerOppStageUpdateRequest(
+            @NonNull JobOpportunityStage stage, @Nullable String nextStep, @Nullable LocalDate dueDate) {
+
+            //Copy across to SF fields
+            this.StageName = stage.toString();
+            this.NextStep = nextStep;
+            if (dueDate != null) {
+                this.Next_Step_Due_Date__c = dueDate.toString();
+            }
         }
     }
 

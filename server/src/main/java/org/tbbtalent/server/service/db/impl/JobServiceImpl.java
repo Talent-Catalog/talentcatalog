@@ -20,8 +20,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -39,6 +43,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.exception.UnauthorisedActionException;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
@@ -58,6 +63,7 @@ import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.service.db.SalesforceBridgeService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
+import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.UserService;
@@ -69,11 +75,14 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 @Service
 public class JobServiceImpl implements JobService {
     private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
+
+    private final static DateTimeFormatter nextStepDateFormat = DateTimeFormatter.ofPattern("ddMMMyy", Locale.ENGLISH);
     private final AuthService authService;
     private final UserService userService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceBridgeService salesforceBridgeService;
+    private final SalesforceService salesforceService;
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
@@ -83,13 +92,15 @@ public class JobServiceImpl implements JobService {
 
     public JobServiceImpl(
         AuthService authService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
-        SalesforceBridgeService salesforceBridgeService, SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
+        SalesforceBridgeService salesforceBridgeService, SalesforceService salesforceService,
+        SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
         SavedSearchService savedSearchService) {
         this.authService = authService;
         this.userService = userService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
         this.salesforceBridgeService = salesforceBridgeService;
+        this.salesforceService = salesforceService;
         this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.salesforceJobOppService = salesforceJobOppService;
         this.savedListService = savedListService;
@@ -218,6 +229,23 @@ public class JobServiceImpl implements JobService {
         User loggedInUser = authService.getLoggedInUser().orElseThrow(
             () -> new UnauthorisedActionException("publish job")
         );
+
+        final JobOpportunityStage stage = job.getStage();
+        if (stage.compareTo(JobOpportunityStage.candidateSearch) < 0 )  {
+            //Current stage is before CandidateSearch so update it to CandidateSearch here
+            job.setStage(JobOpportunityStage.candidateSearch);
+
+            //Update Salesforce stage to match - setting Next Step and Due date
+            final LocalDate submissionDueDate = job.getSubmissionDueDate();
+
+            //Next step
+            final String nowDate = nextStepDateFormat.format(LocalDateTime.now());
+            final String nextStep = nowDate + ": Waiting to receive candidate CVs for review";
+
+            salesforceService.updateEmployerOpportunityStage(
+                job.getSfId(), JobOpportunityStage.candidateSearch, nextStep, submissionDueDate);
+        }
+
         job.setAccepting(true);
         job.setPublishedBy(loggedInUser);
         job.setPublishedDate(OffsetDateTime.now());
