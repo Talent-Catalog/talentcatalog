@@ -13,7 +13,7 @@
     <p>If a valid link, click displayed button to create the following:</p>
       <ul>
         <li>Create a job on the Talent Catalog</li>
-        <li>Create list associated with job and connect with Salesforce joblink</li>
+        <li>Create submission list and exclusion list associated with job and connect with Salesforce joblink</li>
         <li>Create google folders associated with list and connect to Salesforce joblink</li>
         <li *ngIf="!prepare">Post job information to Slack: list, links to folder and Salesforce opp</li>
       </ul>
@@ -62,10 +62,10 @@
       <div [ngSwitch]="creatingJob">
         <ul class="fa-ul">
           <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
-            Create job and associated list
+            Create job, submission list and exclusion list
           </li>
           <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
-            Creating job and submission list
+            Creating job, submission list and exclusion list
           </li>
           <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
             List <a [href]="listLink" target="_blank>">{{listLink}}</a> is the list that should be populated with job candidates.
