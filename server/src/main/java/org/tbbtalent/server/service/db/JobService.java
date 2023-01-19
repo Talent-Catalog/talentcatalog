@@ -39,7 +39,7 @@ import org.tbbtalent.server.request.link.UpdateLinkRequest;
 public interface JobService {
 
     /**
-     * Registered a new job matching a job opportunity on Salesforce
+     * Creates a new job matching a job opportunity on Salesforce
      * @param request Request which includes a link to the associated Salesforce job opportunity
      * @return Created job
      * @throws EntityExistsException if there is already a job associated with the requested
