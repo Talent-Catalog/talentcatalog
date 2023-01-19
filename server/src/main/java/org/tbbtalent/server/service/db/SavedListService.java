@@ -59,6 +59,19 @@ public interface SavedListService {
      * existing candidates in the list (no duplicates - if a candidate is
      * already present it will still only appear once).
      * <p/>
+     * If a contextNote is supplied it will be added with the candidate.
+     * @param destinationList List to which candidates are added
+     * @param candidate Candidate to add to the destination list
+     * @param contextNote Context note associated with candidate in this list.
+     */
+    void addCandidateToList(@NonNull SavedList destinationList, @NonNull Candidate candidate,
+        @Nullable String contextNote);
+
+    /**
+     * Add the given candidate to the given destination list - merging it in with any
+     * existing candidates in the list (no duplicates - if a candidate is
+     * already present it will still only appear once).
+     * <p/>
      * If a source list is supplied, the original candidate context will be
      * copied across (eg contextNote).
      * @param destinationList List to which candidates are added
@@ -183,7 +196,6 @@ public interface SavedListService {
         throws NoSuchObjectException, GeneralSecurityException, WebClientException;
 
     /**
-     /**
      * Creates a new SavedList unless it is a registered list and a registered list for that
      * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
      * nothing new is created, and the existing list is returned.

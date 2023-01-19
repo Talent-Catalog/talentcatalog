@@ -158,6 +158,27 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public void addCandidateToList(@NonNull SavedList destinationList, @NonNull Candidate candidate,
+        @Nullable String contextNote) {
+
+        //Create new candidate/list link
+        final CandidateSavedList csl =
+            new CandidateSavedList(candidate, destinationList);
+        //Copy across context
+        if (contextNote != null) {
+            csl.setContextNote(contextNote);
+        }
+
+        //Add candidate to the collection of candidates in this list
+        destinationList.getCandidateSavedLists().add(csl);
+        //Also update other side of many-to-many relationship, adding this
+        //list to the candidate's collection of lists that they belong to.
+        candidate.getCandidateSavedLists().add(csl);
+
+        assignListTasksToCandidate(destinationList, candidate);
+    }
+
+    @Override
+    public void addCandidateToList(@NonNull SavedList destinationList, @NonNull Candidate candidate,
         @Nullable SavedList sourceList) {
         //Find any context note for the given candidate and sourceList
         String contextNote = null;
@@ -177,21 +198,7 @@ public class SavedListServiceImpl implements SavedListService {
             }
         }
 
-        //Create new candidate/list link
-        final CandidateSavedList csl =
-            new CandidateSavedList(candidate, destinationList);
-        //Copy across context
-        if (contextNote != null) {
-            csl.setContextNote(contextNote);
-        }
-
-        //Add candidate to the collection of candidates in this list
-        destinationList.getCandidateSavedLists().add(csl);
-        //Also update other side of many to many relationship, adding this
-        //list to the candidate's collection of lists that they belong to.
-        candidate.getCandidateSavedLists().add(csl);
-
-        assignListTasksToCandidate(destinationList, candidate);
+        addCandidateToList(destinationList, candidate, contextNote);
     }
 
     @Override
