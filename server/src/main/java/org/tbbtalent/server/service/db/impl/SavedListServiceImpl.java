@@ -488,7 +488,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
-        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+        throws NoSuchObjectException, SalesforceException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
         SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
         candidateService.createUpdateSalesforce(

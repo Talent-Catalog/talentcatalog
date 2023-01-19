@@ -77,22 +77,30 @@ public interface SalesforceService {
      * <p/>
      * Contact records of candidates are identified because they have a non zero TBBid.
      * @return List of Salesforce Contact records
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    List<Contact> findCandidateContacts()
-            throws GeneralSecurityException, WebClientException;
+    List<Contact> findCandidateContacts() throws WebClientException;
 
     /**
-     * Searches Salesforce for all Contact records matching the given condition.
-     * @param condition Effectively the logical (predicate) part of a
-     *                  SOQL WHERE clause. eg LastName = 'Cameron'
-     * @return List of Salesforce Contact records
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
-     * @throws WebClientException if there is a problem connecting to Salesforce
+     * Searches Salesforce for all Candidate Opportunity records matching the given condition.
+     *
+     * @param condition Effectively the logical (predicate) part of a SOQL WHERE clause.
+     * @return List of Salesforce Candidate Opportunity records
+     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+     * @throws WebClientException       if there is a problem connecting to Salesforce
      */
+    @NonNull
+    List<Opportunity> findCandidateOpportunities(String condition) throws WebClientException;
+    /**
+     * Searches Salesforce for all Contact records matching the given condition.
+     *
+     * @param condition Effectively the logical (predicate) part of a SOQL WHERE clause. eg LastName
+     *                  = 'Cameron'
+     * @return List of Salesforce Contact records
+     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+     * @throws WebClientException       if there is a problem connecting to Salesforce
+     */
+    @NonNull
     List<Contact> findContacts(String condition)
             throws GeneralSecurityException, WebClientException;
 
@@ -114,13 +122,13 @@ public interface SalesforceService {
      * corresponding to the given Salesforce id
      * @param sfId Salesforce id
      * @return Salesforce opportunity, null if none
-     * @throws GeneralSecurityException If there are errors relating to keys
+     * @throws SalesforceException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     @Nullable
     Opportunity findOpportunity(String sfId)
-            throws GeneralSecurityException, WebClientException;
+            throws SalesforceException, WebClientException;
 
     /**
      * Searches for all active Salesforce Employer Job Opportunities.
@@ -162,14 +170,12 @@ public interface SalesforceService {
      * given candidate.
      * @param candidate Candidate - candidate number maps to TBBId__c in Salesforce
      * @return Created/updated Salesforce contact (contains the SF id)
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     @NonNull
     Contact createOrUpdateContact(@NonNull Candidate candidate)
-            throws GeneralSecurityException, WebClientException, SalesforceException;
+            throws WebClientException, SalesforceException;
 
     /**
      * Creates or updates the Salesforce Contact records corresponding to the
@@ -177,14 +183,12 @@ public interface SalesforceService {
      * @param candidates Candidates - candidate number maps to TBBId__c in Salesforce
      * @return Created/updated Salesforce contacts (containing the SF id unless
      * there were problems in which case the id is null).
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     @NonNull
     List<Contact> createOrUpdateContacts(@NonNull Collection<Candidate> candidates)
-            throws GeneralSecurityException, WebClientException, SalesforceException;
+            throws WebClientException, SalesforceException;
 
     /**
      * Creates or updates the Salesforce Candidate Opportunity records corresponding to the
@@ -197,15 +201,13 @@ public interface SalesforceService {
      * @param salesforceOppParams Optional Salesforce fields to set on all given candidates'
      *                            opportunities
      * @param jobOpp Employer job opportunity on Salesforce
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data,
      * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
      */
     void createOrUpdateCandidateOpportunities(List<Candidate> candidates,
         @Nullable SalesforceOppParams salesforceOppParams, SalesforceJobOpp jobOpp)
-            throws GeneralSecurityException, WebClientException, SalesforceException;
+            throws WebClientException, SalesforceException;
 
     /**
      * Updates the Salesforce Contact record corresponding to the given candidate.
@@ -222,11 +224,10 @@ public interface SalesforceService {
      * given request.
      *
      * @param request Contains a link to the opportunity to be updated, plus the data to update.
-     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */
-    void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request) throws GeneralSecurityException;
+    void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request) throws SalesforceException;
 
     /**
      * Updates the Salesforce Candidate Opportunity records based on the given employer feedback

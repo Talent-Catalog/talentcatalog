@@ -188,12 +188,12 @@ public interface SavedListService {
      * @param request Identifies list of candidates as well as optional Salesforce fields to set on
      *                candidate opportunities
      * @throws NoSuchObjectException  if there is no saved list with this id
-     * @throws GeneralSecurityException If there are errors relating to keys
+     * @throws SalesforceException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
-        throws NoSuchObjectException, GeneralSecurityException, WebClientException;
+        throws NoSuchObjectException, SalesforceException, WebClientException;
 
     /**
      * Creates a new SavedList unless it is a registered list and a registered list for that

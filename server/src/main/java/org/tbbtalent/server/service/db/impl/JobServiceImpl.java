@@ -56,6 +56,7 @@ import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.JobService;
+import org.tbbtalent.server.service.db.SalesforceBridgeService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
@@ -67,10 +68,12 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
 public class JobServiceImpl implements JobService {
+    private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
     private final AuthService authService;
     private final UserService userService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
+    private final SalesforceBridgeService salesforceBridgeService;
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
@@ -80,12 +83,13 @@ public class JobServiceImpl implements JobService {
 
     public JobServiceImpl(
         AuthService authService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
-        SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
+        SalesforceBridgeService salesforceBridgeService, SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
         SavedSearchService savedSearchService) {
         this.authService = authService;
         this.userService = userService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
+        this.salesforceBridgeService = salesforceBridgeService;
         this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.salesforceJobOppService = salesforceJobOppService;
         this.savedListService = savedListService;
@@ -117,9 +121,15 @@ public class JobServiceImpl implements JobService {
         UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
         savedListInfoRequest.setRegisteredJob(true);
         savedListInfoRequest.setSfJoblink(sfJoblink);
-        SavedList savedList = savedListService.createSavedList(savedListInfoRequest);
+        SavedList submissionList = savedListService.createSavedList(savedListInfoRequest);
+        job.setSubmissionList(submissionList);
 
-        job.setSubmissionList(savedList);
+        String exclusionListName = submissionList.getName() + EXCLUSION_LIST_SUFFIX;
+
+        //Create exclusion list for the employer (account) associated with this job
+        SavedList exclusionList = salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
+        job.setExclusionList(exclusionList);
+
         return salesforceJobOppRepository.save(job);
     }
 
