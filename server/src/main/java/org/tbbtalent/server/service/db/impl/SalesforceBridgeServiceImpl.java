@@ -65,7 +65,7 @@ public class SalesforceBridgeServiceImpl implements SalesforceBridgeService {
                 log.error("Candidate number " + candidateNumber +
                     " referred to in Salesforce opp " + opp.getName() + " not found on TC");
             } else {
-                String contextNote = opp.getName();
+                String contextNote = "Considered for role: " + opp.getName();
                 savedListService.addCandidateToList(list, candidate, contextNote);
             }
         }
