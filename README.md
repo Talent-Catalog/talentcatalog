@@ -32,10 +32,10 @@ They should be submitted as pull request.
 
 >IMPORTANT NOTE:
 >
->These instructions are tailored for Mac users, as this is what we use for development.
+>These instructions are tailored for Mac users using Intellij, as this is what we use for development.
 >
 >On a Mac, installing with Homebrew usually works well. eg "brew install xxx".
-However, Flyway and Postgres don't install with Homebrew, and the book
+However, Flyway doesn't install with Homebrew, and the book
 "Angular Up & Running" notes that installing Node.js using Homebrew
 can also have problems. Googling you can still see lots of people having
 problems installing Node using brew.
@@ -45,7 +45,9 @@ development IDE - see below) rather than using brew.
 
 Download and install the latest of the following tools.
 
-- IntelliJ IDEA (or the IDE of your choice) - [Intellij website](https://www.jetbrains.com/idea/download/)
+- IntelliJ IDEA - [Intellij website](https://www.jetbrains.com/idea/download/)
+  - todo Import standard settings and run configurations
+  - In development it is best to build
 
 - Java 11
    - At least Java 11 is required because we use the Locale object to provide translations of 
