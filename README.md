@@ -318,6 +318,10 @@ Look at the doc of the library in question to select the correct version
 You may also need to make changes to your Angular code because of changes in Angular, or because of
 changed APIs in the dependent libraries.
 
+### Npm ###
+
+See https://stackoverflow.com/questions/11284634/upgrade-node-js-to-the-latest-version-on-mac-os
+
 ## Version Control ##
 
 We use GitHub. Our repository is called tbbtalentv2 - 
