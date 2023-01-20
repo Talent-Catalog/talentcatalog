@@ -116,12 +116,12 @@ Now you will see the command line starts with <your mac login name>=#":
 Ask another developer for a recent `pg_dump` of their test database - 
 matching the latest version of the code.
     
-    pg_dump --file=<file path.sql> --create --username=tbbtalent --host=localhost --port=5432
+    pg_dump --file=path/to/file.sql --create --username=tbbtalent --host=localhost --port=5432
 
 
 Use `psql` to import that dump file into your newly created database.
 
-    psql -h localhost -d tbbtalent -U tbbtalent -f file.sql
+    psql -h localhost -d tbbtalent -U tbbtalent -f path/to/file.sql
 
 ### Download and edit the code ###
 
