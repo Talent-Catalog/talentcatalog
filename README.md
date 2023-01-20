@@ -96,24 +96,27 @@ Download and install the latest of the following tools.
 
 - Git - [see Git website](https://git-scm.com/downloads)
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
+  - Homebrew - see https://wiki.postgresql.org/wiki/Homebrew 
+  >   brew install postgresql
+  > 
+  >   brew services restart postgresql
+
 
 ### Setup your local database ###
 
-Use PostreSQL pgAdmin tool to...
+ Use the psql tool.
+ > psql
+   
+Now you will see the command line starts with <your mac login name>=#":
 
-- Create a new login role (ie user) called tbbtalent, password tbbtalent with 
-full privileges
-- Create a new database called tbbtalent and set tbbtalent as the owner
-- The database details are defined in bundle/all/resources/application.yml
-- The database is populated/updated using Flyway at start up - see TbbTalentApplication
-- Run data migration script to add additional data - using tool like postman or curl 
-    - call login http://localhost:8080/api/admin/auth/login and save token
-     
-          $ curl -X POST -H ‘Content-Type: application/json’ -d ‘{“username”:”${USERNAME}”,”password”:"${PASSWORD}"}’ http://localhost:8080/api/admin/auth/login
+    CREATE DATABASE tbbtalent;
+    CREATE USER tbbtalent WITH SUPERUSER PASSWORD 'tbbtalent';
+    \q
 
-    - call API http://localhost:8080/api/admin/system/migrate with token
-       
-          $ curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
+Ask another developer for a recent `pg_dump` of their test database - 
+matching the latest version of the code.
+
+Use `psql` to import that dump file into your newly created database.
 
 ### Download and edit the code ###
 
