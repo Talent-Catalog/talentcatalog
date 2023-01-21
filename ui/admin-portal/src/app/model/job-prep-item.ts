@@ -91,7 +91,7 @@ export class JobPrepJobSummary extends JobPrepItem {
 
 export class JobPrepJOI extends JobPrepItem {
   constructor() {
-    super("Provide job opportunity intake (JOI)", "Uploads");
+    super("Provide job opportunity intake (JOI)", "Intake");
   }
 
   isCompleted(): boolean {
