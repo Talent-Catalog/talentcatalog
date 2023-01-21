@@ -45,9 +45,15 @@ development IDE - see below) rather than using brew.
 
 Download and install the latest of the following tools.
 
+- Switch to Bash command line
+  - Some installation instructions - for example the Postgres brew install - don't work properly with the 
+  default Mac OS command line shell which is now Zsh. Run this on your command line to change the shell.
+  > chsh -s /bin/bash  
+
 - IntelliJ IDEA - [Intellij website](https://www.jetbrains.com/idea/download/)
-  - todo Import standard settings and run configurations
-  - In development it is best to build
+  - Import standard settings and run configurations from another developer
+  - In development it is best to build using Intellij rather than gradle. Change the Intellij 
+  setting for "Build, Execution & Deployment" > "Build Tools" > "Gradle" to build with Intellij.
 
 - Java 11
    - At least Java 11 is required because we use the Locale object to provide translations of 
