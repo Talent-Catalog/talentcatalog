@@ -2,7 +2,6 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core'
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {FormBuilder} from "@angular/forms";
 import {Observable} from "rxjs";
-import {Candidate} from "../../../model/candidate";
 import {CandidateSource, UpdateCandidateSourceDescriptionRequest} from "../../../model/base";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
@@ -17,8 +16,9 @@ export class CandidateSourceDescriptionComponent extends AutoSaveComponentBase
 
   @Input() candidateSource: CandidateSource;
 
-  constructor(private fb: FormBuilder, private candidateSourceService: CandidateSourceService) {
-    super();
+  constructor(private fb: FormBuilder, private candidateSourceService: CandidateSourceService,
+              candidateService: CandidateService) {
+    super(candidateService);
   }
 
   ngOnInit(): void {

@@ -4,20 +4,20 @@
   </div>
   <div class="card-body">
     <app-job-occupation
-      [candidate]="candidate"
+      [entity]="candidate"
       [occupations]="occupations"
       [candidateIntakeData]="candidateIntakeData"
       [visaCheckRecord]="visaRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-job-occupation>
     <app-salary-tsmit
-      [candidate]="candidate"
+      [entity]="candidate"
       [candidateIntakeData]="candidateIntakeData"
       [visaCheckRecord]="visaRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-salary-tsmit>
     <app-regional-area
-      [candidate]="candidate"
+      [entity]="candidate"
       [candidateIntakeData]="candidateIntakeData"
       [visaCheckRecord]="visaRecord"
       [selectedJobCheck]="selectedJobCheck">
@@ -42,7 +42,7 @@
   </div>
   <div class="card-body">
     <app-job-interest
-      [candidate]="candidate"
+      [entity]="candidate"
       [candidateIntakeData]="candidateIntakeData"
       [selectedIndex]="jobIndex"
       [visaCheckRecord]="visaRecord"
@@ -50,7 +50,7 @@
     </app-job-interest>
 
     <app-job-eligibility-assessment
-      [candidate]="candidate"
+      [entity]="candidate"
       [candidateIntakeData]="candidateIntakeData"
       [selectedIndex]="jobIndex"
       [visaCheckRecord]="visaRecord"
@@ -157,7 +157,7 @@
   </div>
   <div class="card-body">
     <app-qualification-relevant
-      [candidate]="candidate"
+      [entity]="candidate"
       [candidateIntakeData]="candidateIntakeData"
       [selectedIndex]="jobIndex"
       [visaCheckRecord]="visaRecord"
@@ -174,30 +174,30 @@
   </div>
   <div class="card-body">
     <app-visa-four-nine-four
-      [candidate]="candidate"
+      [entity]="candidate"
       [selectedIndex]="jobIndex"
       [visaCheckRecord]="visaRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-visa-four-nine-four>
     <app-visa-one-eight-six
-      [candidate]="candidate"
+      [entity]="candidate"
       [selectedIndex]="jobIndex"
       [visaCheckRecord]="visaRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-visa-one-eight-six>
     <app-visa-other-options
-      [candidate]="candidate"
+      [entity]="candidate"
       [selectedIndex]="jobIndex"
       [visaCheckRecord]="visaRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-visa-other-options>
     <app-visa-job-put-forward
-      [candidate]="candidate"
+      [entity]="candidate"
       [visaCheckRecord]="visaRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-visa-job-put-forward>
     <app-visa-job-notes
-      [candidate]="candidate"
+      [entity]="candidate"
       [visaCheckRecord]="visaRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-visa-job-notes>

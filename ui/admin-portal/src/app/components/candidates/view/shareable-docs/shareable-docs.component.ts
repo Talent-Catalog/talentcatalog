@@ -25,7 +25,7 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService) {
-    super();
+    super(candidateService);
   }
 
   ngOnInit() {

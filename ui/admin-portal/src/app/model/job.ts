@@ -50,6 +50,10 @@ export interface Job extends JobIds {
   updatedDate: Date;
 }
 
+export interface JobIntakeData {
+  jobDescription?: string;
+}
+
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
   return getExternalHref(router, location, ['job', job.id]);
 }

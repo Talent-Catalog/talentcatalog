@@ -101,11 +101,11 @@
         </ng-template>
         <ng-template ngbPanelContent>
           <app-int-recruitment
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-int-recruitment>
           <app-rural
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-rural>
         </ng-template>
@@ -155,7 +155,7 @@
         </ng-template>
         <ng-template ngbPanelContent>
           <app-lang-assessment
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-lang-assessment>
         </ng-template>
@@ -179,19 +179,19 @@
         </ng-template>
         <ng-template ngbPanelContent>
           <app-residence-status
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-residence-status>
           <app-work-permit
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-work-permit>
           <app-work-status
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-work-status>
           <app-work-abroad
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-work-abroad>
         </ng-template>
@@ -215,20 +215,20 @@
         </ng-template>
         <ng-template ngbPanelContent>
           <app-host-entry
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
             [countries]="countries">
           </app-host-entry>
           <app-home-location
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-home-location>
           <app-resettlement-third
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-resettlement-third>
           <app-host-challenges
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-host-challenges>
         </ng-template>
@@ -255,7 +255,7 @@
             UNHCR
           </div>
           <app-registration-unhcr
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-registration-unhcr>
           <div *ngIf="isPalestinian()">
@@ -263,7 +263,7 @@
               UNRWA
             </div>
             <app-registration-unrwa
-              [candidate]="candidate"
+              [entity]="candidate"
               [candidateIntakeData]="candidateIntakeData">
             </app-registration-unrwa>
           </div>
@@ -297,7 +297,7 @@
         </ng-template>
         <ng-template ngbPanelContent>
           <app-marital-status
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
             [educationLevels]="educationLevels"
             [occupations]="occupations"
@@ -305,7 +305,7 @@
             [nationalities]="nationalities">
           </app-marital-status>
           <app-family
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-family>
         </ng-template>
@@ -337,36 +337,36 @@
         </ng-template>
         <ng-template ngbPanelContent>
           <app-crime
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-crime>
           <app-military-service
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-military-service>
           <app-conflict
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-conflict>
           <app-visa-reject
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-visa-reject>
           <app-health-issues
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-health-issues>
           <app-visa-issues
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-visa-issues>
           <app-driving-license
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
             [countries]="countries">
           </app-driving-license>
           <app-covid-vaccination
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-covid-vaccination>
         </ng-template>

@@ -5,11 +5,12 @@ import {Observable} from "rxjs";
 import {Job, JobDocType, SearchJobRequest, UpdateJobRequest} from "../model/job";
 import {SearchResults} from "../model/search-results";
 import {UpdateLinkRequest} from "../components/util/input/input-link/input-link.component";
+import {IntakeService} from "../components/util/intake/IntakeService";
 
 @Injectable({
   providedIn: 'root'
 })
-export class JobService {
+export class JobService implements IntakeService {
 
   private apiUrl: string = environment.apiUrl + '/job';
 
@@ -64,4 +65,10 @@ export class JobService {
       `${this.apiUrl}/${id}/upload/${docType}`, formData);
 
   }
+
+  updateIntakeData(id: number, formData: Object): Observable<void> {
+    //todo
+    return undefined;
+  }
+
 }

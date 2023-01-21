@@ -36,7 +36,7 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
 
   constructor(private fb: FormBuilder,
               private candidateSourceService: CandidateSourceService) {
-    super();
+    super(null);
   }
 
   ngOnInit() {

@@ -16,8 +16,8 @@
 
 import {Directive, Input, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
-import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../model/candidate';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
+import {Job, JobIntakeData} from "../../../model/job";
 import {IntakeService} from "./IntakeService";
 
 /**
@@ -37,44 +37,37 @@ import {IntakeService} from "./IntakeService";
  * @author John Cameron
  */
 @Directive()
-export abstract class IntakeComponentBase extends AutoSaveComponentBase implements OnInit {
+export abstract class JobIntakeComponentBase extends AutoSaveComponentBase implements OnInit {
 
   /**
    * This is the existing candidate data (if any) which is used to
    * initialize the form data.
    */
-  @Input() candidateIntakeData: CandidateIntakeData;
+  @Input() jobIntakeData: JobIntakeData;
 
   /**
-   * Index into a array member of candidateIntakeData if that is what is
-   * being updated.
+   * Index into a array member of data if that is what is being updated.
    */
   @Input() myRecordIndex: number;
-
-  /**
-   * Visa Check Object for selected country.
-   */
-  @Input() visaCheckRecord: CandidateVisa;
 
   @Input() editable: boolean = true;
 
   /**
-   * Inject in a FormBuilder to create the form and CandidateService
-   * to perform the saves.
+   * Inject in a FormBuilder to create the form and an IntakeService to perform the saves.
    * @param fb FormBuilder
-   * @param intakeService CandidateService which saves the intake data
+   * @param intakeService IntakeService which saves the intake data
    */
   protected constructor(protected fb: FormBuilder, intakeService: IntakeService) {
     super(intakeService);
   }
 
   /**
-   * The entity that we are working with in this class is a Candidate - this returns the entity
-   * cast as a Candidate so that anyone referencing "candidate" will see the entity with all
-   * its Candidate properties.
+   * The entity that we are working with in this class is a Job - this returns the entity
+   * cast as a Job so that anyone referencing "job" will see the entity with all
+   * its Job properties.
    */
-  get candidate(): Candidate {
-    return <Candidate>this.entity;
+  get job(): Job {
+    return <Job>this.entity;
   }
 
   /**
@@ -82,14 +75,14 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
    * the form in this method using the FormBuilder inherited from here.
    * <p/>
    * The names of form controls are used to send the data to the server so they
-   * must match the field names in CandidateIntakeDataUpdate.java, otherwise
+   * must match the field names in JobIntakeDataUpdate.java, otherwise
    * they will be ignored and will not update the database.
    */
   abstract ngOnInit(): void;
 
   /**
    * This must be implemented to do any processing following a successful save.
-   * Typically that will involve updating the locally stored copy of the data that the form
+   * Typically, that will involve updating the locally stored copy of the data that the form
    * is being used to update.
    */
   onSuccessfulSave(): void {
