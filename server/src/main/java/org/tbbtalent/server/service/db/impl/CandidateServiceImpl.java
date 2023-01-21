@@ -2442,7 +2442,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    public void populateIntakeData(Candidate candidate, CandidateIntakeDataUpdate data,
+    private void populateIntakeData(Candidate candidate, CandidateIntakeDataUpdate data,
         @Nullable Candidate partnerCandidate,
         @Nullable EducationLevel partnerEduLevel,
         @Nullable Occupation partnerOccupation,
