@@ -1,0 +1,19 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="description">
+      Job description
+    </label>
+    <div *ngIf="editable" class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="description" [formControlName]="'description'"
+              placeholder=""></textarea>
+  </div>
+</form>

@@ -653,6 +653,9 @@ import {
   ViewJobPreparationItemsComponent
 } from './components/job/view/preparation-items/view-job-preparation-items/view-job-preparation-items.component';
 import {AdminApiComponent} from './components/settings/admin-api/admin-api.component';
+import {
+  JobDescriptionComponent
+} from './components/job/intake/job-description/job-description.component';
 
 @NgModule({
   declarations: [
@@ -909,7 +912,8 @@ import {AdminApiComponent} from './components/settings/admin-api/admin-api.compo
     ViewJobSourceContactsComponent,
     ViewJobPreparationItemsComponent,
     ViewJobSourceContactsComponent,
-    AdminApiComponent
+    AdminApiComponent,
+    JobDescriptionComponent
   ],
   imports: [
     BrowserModule,

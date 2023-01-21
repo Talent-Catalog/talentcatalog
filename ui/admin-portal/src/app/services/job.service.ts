@@ -45,13 +45,14 @@ export class JobService implements IntakeService {
     return this.http.put<Job>(`${this.apiUrl}/${id}`, request);
   }
 
+  updateIntakeData(id: number, formData: Object): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/intake`, formData);
+  }
+
   updateJobLink(id: number, docType: JobDocType, updateLinkRequest: UpdateLinkRequest): Observable<Job> {
     return this.http.put<Job>(`${this.apiUrl}/${id}/${docType}link`, updateLinkRequest);
   }
 
-  //todo With this approach Job needs to return its users - and that is what is used to display star
-  //However on server, it is bidirectional, so that user has jobs. This makes JobSpecification code easier
-  //Bidirectional means that User and SalesforceJob entities update each other
   updateStarred(id: number, starred: boolean): Observable<Job> {
     return this.http.put<Job>(`${this.apiUrl}/${id}/starred`, starred);
   }
@@ -65,10 +66,4 @@ export class JobService implements IntakeService {
       `${this.apiUrl}/${id}/upload/${docType}`, formData);
 
   }
-
-  updateIntakeData(id: number, formData: Object): Observable<void> {
-    //todo
-    return undefined;
-  }
-
 }
