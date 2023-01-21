@@ -71,25 +71,6 @@ export abstract class JobIntakeComponentBase extends AutoSaveComponentBase imple
   }
 
   /**
-   * This must be implemented by subclass which should create and initialize
-   * the form in this method using the FormBuilder inherited from here.
-   * <p/>
-   * The names of form controls are used to send the data to the server so they
-   * must match the field names in JobIntakeDataUpdate.java, otherwise
-   * they will be ignored and will not update the database.
-   */
-  abstract ngOnInit(): void;
-
-  /**
-   * This must be implemented to do any processing following a successful save.
-   * Typically, that will involve updating the locally stored copy of the data that the form
-   * is being used to update.
-   */
-  onSuccessfulSave(): void {
-    //Nothing special to do
-  }
-
-  /**
    * Convert any multiselected enums
    */
   preprocessFormValues(formValue: Object): Object {

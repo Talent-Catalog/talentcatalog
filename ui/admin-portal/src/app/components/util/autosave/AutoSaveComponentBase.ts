@@ -82,7 +82,11 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
 
   /**
    * This must be implemented by subclass which should create and initialize
-   * the form in this method.
+   * the form in this method using the FormBuilder inherited from here.
+   * <p/>
+   * The names of form controls are used to send the data to the server so they
+   * must match the field names in the corresponding server IntakeDataUpdate.java class, otherwise
+   * they will be ignored and will not update the database.
    */
   abstract ngOnInit(): void;
 
@@ -97,11 +101,13 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
   }
 
   /**
-   * This must be implemented to do any processing following a successful save.
-   * Typically that will involve updating the locally stored copy of the data that the form
+   * This can be overridden to do any processing following a successful save.
+   * Typically, that will involve updating the locally stored copy of the data that the form
    * is being used to update.
    */
-  abstract onSuccessfulSave(): void;
+  onSuccessfulSave(): void {
+    //Nothing special to do
+  }
 
   /**
    * Override this if you want to change the formValue before processing it.
