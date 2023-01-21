@@ -46,8 +46,9 @@ development IDE - see below) rather than using brew.
 Download and install the latest of the following tools.
 
 - Mac OS Bash Shell - Switch to Bash command line
-  - Some installation instructions - for example the Postgres brew install - don't work properly with the 
-  default Mac OS command line shell which is now Zsh. Run this on your command line to change the shell.
+  - Some installation instructions - for example the Postgres brew install - don't work properly 
+  with the default Mac OS command line shell which is now Zsh. Run this on your command line to 
+  change the shell.
   > chsh -s /bin/bash  
 
 - Homebrew - [Homebrew website](https://brew.sh)
@@ -105,17 +106,17 @@ Download and install the latest of the following tools.
 - Git - [see Git website](https://git-scm.com/downloads)
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
   - Homebrew - see https://wiki.postgresql.org/wiki/Homebrew 
-  >   brew install postgresql
+  >   brew install postgresql@14
   > 
-  >   brew services restart postgresql
+  >   brew services restart postgresql@14
 
 
 ### Setup your local database ###
 
  Use the psql tool.
- > psql
+ > psql postgres
    
-Now you will see the command line starts with <your mac login name>=#":
+Now you will see the command line prompt =#
 
     CREATE DATABASE tbbtalent;
     CREATE USER tbbtalent WITH SUPERUSER PASSWORD 'tbbtalent';
