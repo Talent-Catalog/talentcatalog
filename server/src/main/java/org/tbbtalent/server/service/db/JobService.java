@@ -27,6 +27,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.request.job.JobInfoForSlackPost;
+import org.tbbtalent.server.request.job.JobIntakeData;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
@@ -113,6 +114,15 @@ public interface JobService {
      * @return Page of jobs
      */
     Page<SalesforceJobOpp> searchJobs(SearchJobRequest request);
+
+    /**
+     * Updates the intake data associated with the given job.
+     * @param id ID of job
+     * @param data Partially populated JobIntakeData record. Null data
+     *             fields are ignored. Only non-null fields are updated.
+     * @throws NoSuchObjectException if no job is found with that id
+     */
+    void updateIntakeData(long id, JobIntakeData data) throws NoSuchObjectException;
 
     /**
      * Updates the job with the given id with data contained in the given request.

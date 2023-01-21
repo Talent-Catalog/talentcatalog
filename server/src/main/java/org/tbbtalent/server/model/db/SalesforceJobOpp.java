@@ -103,6 +103,11 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private String country;
 
     /**
+     * Description given to job in job intake.
+     */
+    private String description;
+
+    /**
      * Name of employer - maps to Account name on Salesforce
      */
     private String employer;

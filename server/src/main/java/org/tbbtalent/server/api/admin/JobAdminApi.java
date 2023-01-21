@@ -34,6 +34,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.request.job.JobIntakeData;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
@@ -46,11 +47,13 @@ public class JobAdminApi implements
     ITableApi<SearchJobRequest, UpdateJobRequest, UpdateJobRequest> {
 
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
+    private final JobIntakeDataBuilderSelector intakeDataBuilderSelector;
 
     private final JobService jobService;
 
     public JobAdminApi(JobService jobService) {
         this.jobService = jobService;
+        this.intakeDataBuilderSelector = new JobIntakeDataBuilderSelector();
     }
 
     @Override
@@ -74,6 +77,13 @@ public class JobAdminApi implements
         throws NoSuchObjectException {
         SalesforceJobOpp job = jobService.createSuggestedSearch(id, suffix);
         return jobDto().build(job);
+    }
+
+    @GetMapping("{id}/intake")
+    public Map<String, Object> getIntakeData(@PathVariable("id") long id) {
+        SalesforceJobOpp job = jobService.getJob(id);
+        DtoBuilder builder = intakeDataBuilderSelector.selectBuilder();
+        return builder.build(job);
     }
 
     @PutMapping("{id}/publish")
@@ -105,6 +115,12 @@ public class JobAdminApi implements
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateJob(id, request);
         return jobDto().build(job);
+    }
+
+    @PutMapping("{id}/intake")
+    public void updateIntakeData(
+        @PathVariable("id") long id, @RequestBody JobIntakeData data) {
+        jobService.updateIntakeData(id, data);
     }
 
     @PutMapping("{id}/jdlink")

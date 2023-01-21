@@ -53,6 +53,7 @@ import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.job.JobInfoForSlackPost;
+import org.tbbtalent.server.request.job.JobIntakeData;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
@@ -320,6 +321,22 @@ public class JobServiceImpl implements JobService {
         job.setAuditFields(loggedInUser);
 
         return salesforceJobOppRepository.save(job);
+    }
+
+    @Override
+    public void updateIntakeData(long id, JobIntakeData data) throws NoSuchObjectException {
+        SalesforceJobOpp job = getJob(id);
+
+        populateIntakeData(job, data);
+
+        salesforceJobOppRepository.save(job);
+    }
+
+    private void populateIntakeData(SalesforceJobOpp job, JobIntakeData data) {
+        final String description = data.getDescription();
+        if (description != null) {
+            job.setDescription(description);
+        }
     }
 
     @NonNull
