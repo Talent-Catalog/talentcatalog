@@ -21,19 +21,9 @@ import {Job, JobIntakeData} from "../../../model/job";
 import {IntakeService} from "./IntakeService";
 
 /**
- * Base class for all candidate intake components.
+ * Base class for all job intake components.
  * <p/>
- * Provides following standard functionality
- * <ul>
- *   <li>Declares standard component @Inputs. Note that these inputs are not all used in this
- *   code but by declaring them here we standardize their naming and purpose, which will
- *   be used by subclasses.</li>
- *   <li>Provide a FormBuilder instance {@link fb} that subclasses can use to create the form</li>
- *   <li>Provides a standard setNoResponse method for form fields</li>
- *   <li>Implements the saving of updated intake data</li>
- *   <li>Adds some special preprocessing of form values</li>
- *   <li>Inherits the standard autosave functionality from {@link AutoSaveComponentBase} </li>
- * </ul>
+ * See IntakeComponentBase doc
  * @author John Cameron
  */
 @Directive()
