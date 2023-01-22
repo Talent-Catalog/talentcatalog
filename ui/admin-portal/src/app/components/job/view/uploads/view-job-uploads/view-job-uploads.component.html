@@ -34,30 +34,6 @@
             {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
         </div>
       </div>
-
-      <div class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label" [ngClass]="{'alert alert-danger': highlightJOI()}">
-          <i class="far fa-file"></i>Job Opportunity Intake (JOI)
-        </label>
-        <span class="actions" *ngIf="editable">
-          <button title="Enter/change a link to the document"
-                  class="btn btn-sm btn-outline-primary" (click)="editJOILink()">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button title="Upload the document from your computer"
-                  class="btn btn-sm btn-outline-primary" (click)="uploadJOI()">
-            <i class="fa-solid fa-upload"></i>
-          </button>
-        </span>
-
-        <div *ngIf="!job.submissionList?.fileJoiLink" class="form-control-plaintext">
-          Please upload, or link to, a job opportunity intake document
-        </div>
-        <div *ngIf="job.submissionList?.fileJoiLink" class="form-control-plaintext">
-          <a target="_blank" href="{{job.submissionList.fileJoiLink}}">
-            {{job.submissionList.fileJoiName ? job.submissionList.fileJoiName : job.submissionList.fileJoiLink}}</a>
-        </div>
-      </div>
     </div>
 
   </div>
