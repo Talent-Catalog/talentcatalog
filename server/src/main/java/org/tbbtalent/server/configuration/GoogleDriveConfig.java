@@ -279,6 +279,12 @@ public class GoogleDriveConfig {
   }
 
   private GoogleCredential computeCredential(NetHttpTransport HTTP_TRANSPORT) throws IOException {
+    if (privateKey == null || privateKey.trim().length() == 0) {
+      throw new IOException("Missing critical configuration data. " 
+          + "If you are running in development, have you requested the secrets file from TBB?" 
+          + " See the README.");
+    }
+
     //Convert to proper newlines. 
     // See https://stackoverflow.com/questions/18865393/java-replaceall-not-working-for-n-characters
     privateKey = privateKey.replaceAll("\\\\n", "\n");

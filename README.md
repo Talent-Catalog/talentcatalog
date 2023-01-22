@@ -164,10 +164,9 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
 - Some secret information such as passwords and private keys are set in 
   environment variables - including programmatic access to Talent Catalog's Amazon AWS, 
   Google and Salesforce accounts. If these environment variables are not set
-  the application should still run in your development environment, but it may
-  not have access to these integrations. Contact TBB if you need access to these
-  "secrets". They are stored in a tbb_secrets.txt file which you can hook into
-  your start up to set the relevant environment variables. 
+  the application will fail at start up. Contact TBB if you need access to these
+  "secrets". On development computers they can be stored in a tbb_secrets.txt file which you can 
+  hook into your computer's start up to set the relevant environment variables. 
   For example add "source ~/tbb_secrets.txt" to .bash_profile or .zshenv
   depending on whether you are running bash or zsh.
 
