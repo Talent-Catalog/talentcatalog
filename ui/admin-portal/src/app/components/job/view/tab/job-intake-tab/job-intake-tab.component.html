@@ -1,0 +1,15 @@
+
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div *ngIf="!loading">
+  <h5>Job Opportunity Intake (JOI)</h5>
+
+  <app-job-description
+    [entity]="job"
+    [editable]="!loggedInUser.readOnly">
+  </app-job-description>
+</div>

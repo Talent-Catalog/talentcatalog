@@ -19,6 +19,7 @@ import {forkJoin} from 'rxjs';
 import {User} from '../../../model/user';
 import {Job, JobIntakeData} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
+import {AuthService} from "../../../services/auth.service";
 
 /**
  * Base class for all job intake tab components.
@@ -68,8 +69,11 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
   loggedInUser: User;
 
   public constructor(
+    protected authService: AuthService,
     protected jobService: JobService,
-  ) { }
+  ) {
+    this.loggedInUser = this.authService.getLoggedInUser();
+  }
 
   ngOnInit(): void {
     this.refreshIntakeDataInternal(true);
