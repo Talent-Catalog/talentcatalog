@@ -73,7 +73,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   private selectDefaultTab() {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.setActiveTabId(defaultActiveTabID == null ? "type:profession" : defaultActiveTabID);
+    this.setActiveTabId(defaultActiveTabID == null ? "LiveJobs" : defaultActiveTabID);
 
     if (defaultActiveTabID == null) {
       this.setSelectedSavedSearchSubtype(this.savedSearchTypeSubInfos[0].savedSearchSubtype);
