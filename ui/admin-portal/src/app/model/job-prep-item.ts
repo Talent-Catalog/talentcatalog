@@ -95,6 +95,7 @@ export class JobPrepJOI extends JobPrepItem {
   }
 
   isCompleted(): boolean {
+    //todo this needs updating. What marks JOI as complete? Non empty Job summary?
     const fileJoiLink = this.job?.submissionList?.fileJoiLink;
     return fileJoiLink != null && fileJoiLink.trim().length > 0;
   }

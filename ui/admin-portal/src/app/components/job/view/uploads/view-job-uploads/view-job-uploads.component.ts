@@ -36,6 +36,9 @@ export class ViewJobUploadsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  //todo No longer have JOI link in here
+
+
   private editJobLink(docType: JobDocType) {
     const inputLinkModal = this.modalService.open(InputLinkComponent, {
       centered: true,
