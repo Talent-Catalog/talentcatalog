@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {JobIntakeComponentTabBase} from "../../../../util/intake/JobIntakeComponentTabBase";
 import {JobService} from "../../../../../services/job.service";
 import {AuthService} from "../../../../../services/auth.service";
@@ -8,16 +8,13 @@ import {AuthService} from "../../../../../services/auth.service";
   templateUrl: './job-intake-tab.component.html',
   styleUrls: ['./job-intake-tab.component.scss']
 })
-export class JobIntakeTabComponent extends JobIntakeComponentTabBase implements OnInit {
+export class JobIntakeTabComponent extends JobIntakeComponentTabBase {
 
   constructor(
     authService: AuthService,
     jobService: JobService
   ) {
     super(authService, jobService);
-  }
-
-  ngOnInit(): void {
   }
 
 }

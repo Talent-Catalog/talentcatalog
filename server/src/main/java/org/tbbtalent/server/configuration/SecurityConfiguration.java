@@ -285,13 +285,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 
                 /*
-                 * INTAKE ENDPOINTS
+                 * CANDIDATE INTAKE ENDPOINTS
                  */
-                // PUT (EXC. READ ONLY)
+                // GET (EXC. READ ONLY)
                 .antMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT (EXC. READ ONLY)
                 .antMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                /*
+                 * JOB INTAKE ENDPOINTS
+                 */
+                // GET (EXC. READ ONLY)
+                .antMatchers(HttpMethod.GET, "/api/admin/job/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT (EXC. READ ONLY)
+                .antMatchers(HttpMethod.PUT, "/api/admin/job/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
 
                 // ALL OTHER END POINTS

@@ -89,7 +89,7 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
   }
 
   private refreshIntakeDataInternal(init: boolean): void {
-    //Load existing candidateIntakeData and other data needed by intake
+    //Load existing intakeData and other data needed by intake
     this.error = null;
     this.loading = true;
     forkJoin({
