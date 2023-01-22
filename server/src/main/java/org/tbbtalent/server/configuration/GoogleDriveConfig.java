@@ -281,7 +281,7 @@ public class GoogleDriveConfig {
   private GoogleCredential computeCredential(NetHttpTransport HTTP_TRANSPORT) throws IOException {
     if (privateKey == null || privateKey.trim().length() == 0) {
       throw new IOException("Missing critical configuration data. " 
-          + "If you are running in development, have you requested the secrets file from TBB?" 
+          + "If you are running in development, have you requested and installed the secrets file?" 
           + " See the README.");
     }
 
@@ -292,7 +292,7 @@ public class GoogleDriveConfig {
 
     Collection<String> emptyScopes = Collections.emptyList();
 
-    /**
+    /*
      * This code follows the service Account flow described in the doc for {@link GoogleCredential}
      */ 
     GoogleCredential.Builder credentialBuilder = new GoogleCredential.Builder()
