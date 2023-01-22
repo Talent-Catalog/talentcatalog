@@ -659,6 +659,13 @@ import {
 import {
   JobIntakeTabComponent
 } from './components/job/view/tab/job-intake-tab/job-intake-tab.component';
+import {JobTitleComponent} from './components/job/intake/job-title/job-title.component';
+import {JobBenefitsComponent} from './components/job/intake/job-benefits/job-benefits.component';
+import {
+  JobExperienceComponent
+} from './components/job/intake/job-experience/job-experience.component';
+import {JobEducationComponent} from './components/job/intake/job-education/job-education.component';
+import {JobSkillsComponent} from './components/job/intake/job-skills/job-skills.component';
 
 @NgModule({
   declarations: [
@@ -917,7 +924,12 @@ import {
     ViewJobSourceContactsComponent,
     AdminApiComponent,
     JobDescriptionComponent,
-    JobIntakeTabComponent
+    JobIntakeTabComponent,
+    JobTitleComponent,
+    JobBenefitsComponent,
+    JobExperienceComponent,
+    JobEducationComponent,
+    JobSkillsComponent
   ],
   imports: [
     BrowserModule,

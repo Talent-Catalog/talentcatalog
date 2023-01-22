@@ -8,9 +8,56 @@
 <div *ngIf="!loading">
   <h5>Job Opportunity Intake (JOI)</h5>
 
-  <app-job-description
-    [entity]="job"
-    [jobIntakeData]="jobIntakeData"
-    [editable]="!loggedInUser.readOnly">
-  </app-job-description>
+  <ngb-accordion activeIds="position-details" [destroyOnHide]="false">
+    <ngb-panel id="position-details">
+      <ng-template ngbPanelHeader>
+        <div class="d-flex align-items-center justify-content-between">
+          Position Details
+        </div>
+      </ng-template>
+      <ng-template ngbPanelContent>
+
+        <app-job-title
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-title>
+
+        <app-job-description
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-description>
+
+        <app-job-benefits
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-benefits>
+
+        <app-job-experience
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-experience>
+
+        <app-job-education
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-education>
+
+        <app-job-skills
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-skills>
+
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+
+  <hr/>
+
+
 </div>

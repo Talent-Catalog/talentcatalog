@@ -51,7 +51,12 @@ export interface Job extends JobIds {
 }
 
 export interface JobIntakeData {
+  benefits?: string;
   description?: string;
+  education?: string;
+  experience?: string;
+  skills?: string;
+  title?: string;
 }
 
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {

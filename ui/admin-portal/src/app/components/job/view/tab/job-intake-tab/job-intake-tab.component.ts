@@ -17,4 +17,5 @@ export class JobIntakeTabComponent extends JobIntakeComponentTabBase {
     super(authService, jobService);
   }
 
+
 }
