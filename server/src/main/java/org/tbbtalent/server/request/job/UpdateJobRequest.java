@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.request.job;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -32,4 +33,6 @@ public class UpdateJobRequest {
     @Nullable
     private String sfJoblink;
 
+    @Nullable
+    private LocalDate submissionDueDate;
 }

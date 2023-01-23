@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,6 +64,7 @@ import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationType;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
@@ -72,6 +74,7 @@ import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.SavedSearchRepository;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.FileSystemService;
@@ -83,7 +86,9 @@ import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 @RestController
@@ -100,6 +105,7 @@ public class SystemAdminApi {
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
     private final CountryService countryService;
     private final FileSystemService fileSystemService;
     private final JobService jobService;
@@ -108,6 +114,7 @@ public class SystemAdminApi {
     private final SalesforceService salesforceService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListRepository savedListRepository;
+    private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
     private final S3ResourceHelper s3ResourceHelper;
 
@@ -145,6 +152,7 @@ public class SystemAdminApi {
         CandidateAttachmentRepository candidateAttachmentRepository,
         CandidateNoteRepository candidateNoteRepository,
         CandidateRepository candidateRepository,
+        CandidateService candidateService,
         CountryService countryService,
         FileSystemService fileSystemService,
         JobService jobService, LanguageService languageService,
@@ -159,6 +167,7 @@ public class SystemAdminApi {
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
         this.countryService = countryService;
         this.fileSystemService = fileSystemService;
         this.jobService = jobService;
@@ -167,6 +176,7 @@ public class SystemAdminApi {
         this.salesforceService = salesforceService;
         this.salesforceJobOppService = salesforceJobOppService;
         this.savedListRepository = savedListRepository;
+        this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
         this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
@@ -177,6 +187,72 @@ public class SystemAdminApi {
     public String SfSyncOpenJobs() {
         jobService.updateOpenJobs();
         return "started";
+    }
+
+    /**
+     * Move candidate to the current candidate data drive.
+     * @param number Candidate number
+     * @throws IOException
+     */
+    @GetMapping("move-candidate-drive/{number}")
+    public void moveCandidate(@PathVariable("number") String number) throws IOException {
+        doMoveCandidate(number);
+    }
+
+    /**
+     * Move candidates from the given list to the current candidate data drive if needed.
+     * <p/>
+     * For large numbers of candidates, the request will timeout (504 response) but it will
+     * continue processing on server.
+     * @param id List of candidates to be processed.
+     */
+    @GetMapping("move-candidates-drive/{listid}")
+    public void moveCandidates(@PathVariable("listid") long id) {
+        SavedList savedList = savedListService.get(id);
+
+        final Set<Candidate> candidates = savedList.getCandidates();
+        int count = candidates.size();
+        log.info(count + " candidates to move");
+        for (Candidate candidate : candidates) {
+            String folder = candidate.getFolderlink();
+            if (folder == null) {
+                log.info("Candidate " + candidate.getCandidateNumber() + " has no folder");
+            } else {
+                GoogleFileSystemFolder candidateFolder = new GoogleFileSystemFolder(folder);
+                try {
+                    final GoogleFileSystemDrive currentDrive =
+                        fileSystemService.getDriveFromEntity(candidateFolder);
+                    if (!googleDriveConfig.getCandidateDataDriveId().equals(currentDrive.getId())) {
+                        doMoveCandidate(candidate.getCandidateNumber());
+                        log.info("Moved candidate " + candidate.getCandidateNumber());
+                    } else {
+                        log.info("Candidate " + candidate.getCandidateNumber() + " already moved");
+                    }
+                } catch (Exception ex) {
+                    log.error("Candidate " + candidate.getCandidateNumber() + " processing error: ", ex);
+                }
+            }
+            count--;
+            if (count%100 == 0) {
+                log.info(count + " candidates still to move");
+            }
+        }
+    }
+
+    private void doMoveCandidate(String number) throws IOException {
+        Candidate candidate = this.candidateService.findByCandidateNumber(number);
+        if (candidate != null) {
+            String folder = candidate.getFolderlink();
+            if (folder != null) {
+                GoogleFileSystemFolder candidateFolder = new GoogleFileSystemFolder(folder);
+                final GoogleFileSystemDrive currentDrive =
+                    fileSystemService.getDriveFromEntity(candidateFolder);
+                if (!googleDriveConfig.getCandidateDataDriveId().equals(currentDrive.getId())) {
+                    fileSystemService.moveEntityToFolder(
+                        candidateFolder, googleDriveConfig.getCandidateRootFolder());
+                }
+            }
+        }
     }
 
 //    @GetMapping("create-sf-job-opps")

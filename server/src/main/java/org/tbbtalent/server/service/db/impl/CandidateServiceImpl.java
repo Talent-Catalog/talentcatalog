@@ -91,6 +91,7 @@ import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.HasTcQueryParameters;
 import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.RootRequest;
@@ -98,7 +99,6 @@ import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SearchJoin;
-import org.tbbtalent.server.model.db.SourcePartnerImpl;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
@@ -735,7 +735,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Add partner
-        user.setSourcePartner((SourcePartnerImpl) partner);
+        user.setPartner((PartnerImpl) partner);
 
         /* Set the password */
         user.setPasswordEnc(passwordEncrypted);
@@ -1183,9 +1183,9 @@ public class CandidateServiceImpl implements CandidateService {
         //Do we have an auto assignable partner in this country
         Partner partner = partnerService.getAutoAssignablePartnerByCountry(country);
         User user = candidate.getUser();
-        if (partner != null && !partner.equals(user.getSourcePartner())) {
+        if (partner != null && !partner.equals(user.getPartner())) {
             //Partner of candidate needs to change
-            user.setSourcePartner((SourcePartnerImpl) partner);
+            user.setPartner((PartnerImpl) partner);
             userRepository.save(user);
         }
     }
@@ -1706,6 +1706,22 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+            countByReferrerOrderByCount(
+                genderStr(gender), countryStr(country),
+                sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+            countByReferrerOrderByCount(
+                genderStr(gender), countryStr(country),
+                sourceCountryIds, dateFrom, dateTo, candidateIds));
+    }
+
+    @Override
     public List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
         final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(
                 sourceCountryIds, dateFrom, dateTo));
@@ -2110,9 +2126,7 @@ public class CandidateServiceImpl implements CandidateService {
             throws NoSuchObjectException, IOException {
         Candidate candidate = getCandidate(id);
 
-        GoogleFileSystemDrive candidateDrive = googleDriveConfig.getCandidateDataDrive();
-        GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
-
+        GoogleFileSystemDrive candidateDrive;
         GoogleFileSystemFolder folder;
 
         String folderlink = candidate.getFolderlink();
@@ -2124,6 +2138,10 @@ public class CandidateServiceImpl implements CandidateService {
             folder = new GoogleFileSystemFolder(folderlink);
         } else {
             //If we don't have a folderlink stored, look for the folder, creating one if needed.
+            //The folder should be located in the current candidate drive and candidate root folder
+            candidateDrive = googleDriveConfig.getCandidateDataDrive();
+            GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
+
             String candidateNumber = candidate.getCandidateNumber();
             folder = fileSystemService.findAFolder(candidateDrive, candidateRoot, candidateNumber);
             if (folder == null) {
@@ -2136,6 +2154,8 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Check that all candidate subfolders are present and links are stored
+        //Use the candidate drive associated with the main folder
+        candidateDrive = fileSystemService.getDriveFromEntity(folder);
         for (CandidateSubfolderType cstype: CandidateSubfolderType.values()) {
             if (getCandidateSubfolderlink(candidate, cstype) == null) {
                 //No link stored = check if folder exists

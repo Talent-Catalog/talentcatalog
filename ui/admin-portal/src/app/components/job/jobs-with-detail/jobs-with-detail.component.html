@@ -1,0 +1,42 @@
+<div class="row">
+  <div class="col-sm-{{mainPanelColWidth}}">
+
+    <app-jobs
+      (jobSelection)="onJobSelected($event)"
+    >
+    </app-jobs>
+
+  </div>
+
+  <div class="col-sm-{{sidePanelColWidth}} admin-panel">
+    <div class="w-100">
+      <div *ngIf="canToggleSizes()" class="float-right">
+        <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+          class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
+      </div>
+
+      <div *ngIf="selectedJob">
+        <app-view-job-summary
+          [job]="selectedJob">
+        </app-view-job-summary>
+
+        <hr/>
+        <div>
+          Submission List
+        </div>
+
+        <app-candidate-source-results *ngIf= "selectedJob.submissionList"
+                                      [candidateSource]="selectedJob.submissionList" >
+  <!--                                    (toggleStarred)="onToggleStarred($event)"-->
+  <!--                                    (toggleWatch)="onToggleWatch($event)"-->
+  <!--                                    (deleteSource)="onDeleteSource($event)"-->
+  <!--                                    (editSource)="onEditSource($event)"-->
+  <!--                                    (copySource)="onCopySource($event)"-->
+        >
+
+        </app-candidate-source-results>
+      </div>
+
+    </div>
+  </div>
+</div>

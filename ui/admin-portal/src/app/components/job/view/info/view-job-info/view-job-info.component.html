@@ -1,0 +1,130 @@
+<div class="card">
+
+  <div class="card-header">
+    Job Information
+    <div class="float-right" *ngIf="editable">
+      <button class="btn btn-sm btn-outline-secondary" (click)="editContactDetails()">
+        <i class="fas fa-edit"></i></button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="row">
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-globe"></i>Country</label>
+        <div class="form-control-plaintext">
+          {{job.country}}
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-solid fa-building"></i>Employer</label>
+        <div class="form-control-plaintext">
+          {{job.employer}}
+        </div>
+      </div>
+
+      <div *ngIf="job.submissionList" class="form-group col-sm-12 col-md-4">
+        <label title="Potential candidates should be added to this list" class="col-form-label">
+          <i class="fas fa-list"></i>Submission List</label>
+
+        <div class="form-control-plaintext">
+          <span><a [routerLink]="['/list',job.submissionList.id]">{{displaySavedList(job.submissionList)}}</a></span>
+        </div>
+      </div>
+
+      <div *ngIf="job.exclusionList" class="form-group col-sm-12 col-md-4">
+        <label title="Candidates who have already been considered and rejected for this job should be added to this list" class="col-form-label">
+          <i class="fas fa-list"></i>Exclusion List</label>
+
+        <div class="form-control-plaintext">
+          <span><a [routerLink]="['/list',job.exclusionList.id]">{{displaySavedList(job.exclusionList)}}</a></span>
+        </div>
+      </div>
+
+      <div *ngIf="job.recruiterPartner" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-id-badge"></i>Recruiter</label>
+
+        <div class="form-control-plaintext">
+          <a target="_blank" href="{{job.recruiterPartner.websiteUrl}}">
+            {{job.recruiterPartner.name}}
+          </a>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-envelope"></i>Job Contact Email</label>
+
+        <div *ngIf="isSpecialContactEmail()" class="form-control-plaintext">
+          <a target="_blank" href="{{showEmailUrl(job.contactEmail)}}">{{job.contactEmail}}</a>
+        </div>
+
+        <div *ngIf="!isSpecialContactEmail()" class="form-control-plaintext">
+          See contact's email
+        </div>
+      </div>
+
+      <div *ngIf="job.contactUser" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-user"></i>Contact</label>
+
+        <div class="form-control-plaintext">
+          <div>{{showUser(job.contactUser)}}</div>
+          <div>
+          <a target="_blank" href="{{showEmailUrl(job.contactUser.email)}}">{{job.contactUser.email}}</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Submission Due</label>
+
+        <div class="form-control-plaintext">
+          <span>{{job.submissionDueDate | date}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="job.createdDate" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Created</label>
+
+        <div class="form-control-plaintext">
+          <span>{{job.createdDate | date}}</span>
+          <span *ngIf="job.createdBy" >
+            <div>{{showUser(job.createdBy)}}</div>
+            <div>
+            <a target="_blank" href="{{showEmailUrl(job.createdBy.email)}}">{{job.createdBy.email}}</a>
+            </div>
+          </span>
+        </div>
+      </div>
+
+      <div *ngIf="job.updatedDate" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Updated</label>
+
+        <div class="form-control-plaintext">
+          <span>{{job.updatedDate | date}} {{showUser(job.updatedBy)}}</span>
+          <span *ngIf="job.updatedBy" >
+            <div>{{showUser(job.updatedBy)}}</div>
+            <div>
+            <a target="_blank" href="{{showEmailUrl(job.updatedBy.email)}}">{{job.updatedBy.email}}</a>
+            </div>
+          </span>
+        </div>
+      </div>
+
+      <div *ngIf="job.publishedDate" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Published</label>
+
+        <div class="form-control-plaintext">
+          <span>{{job.publishedDate | date}}</span>
+          <span *ngIf="job.publishedBy" >
+            <div>{{showUser(job.publishedBy)}}</div>
+            <div>
+            <a target="_blank" href="{{showEmailUrl(job.publishedBy.email)}}">{{job.publishedBy.email}}</a>
+            </div>
+          </span>
+        </div>
+      </div>
+
+  </div>
+</div>

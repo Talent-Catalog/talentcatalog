@@ -53,8 +53,12 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
-import {LanguageLevelFormControlComponent} from '../../util/form/language-proficiency/language-level-form-control.component';
+import {
+  DateRangePickerComponent
+} from '../../util/form/date-range-picker/date-range-picker.component';
+import {
+  LanguageLevelFormControlComponent
+} from '../../util/form/language-proficiency/language-level-form-control.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -64,7 +68,7 @@ import {
   SavedSearch,
   SearchCandidateRequestPaged
 } from '../../../model/saved-search';
-import {canEditSource} from '../../../model/base';
+import {canEditSource, SearchPartnerRequest} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
@@ -74,7 +78,7 @@ import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
 import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
-import {Partner} from "../../../model/partner";
+import {Partner, PartnerType} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 
 @Component({
@@ -205,6 +209,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.loading = true;
     this.error = null;
 
+    const partnerRequest: SearchPartnerRequest = {partnerType: PartnerType.SourcePartner};
     const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
     forkJoin({
       'lists': this.savedListService.search(request),
@@ -214,7 +219,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       'languageLevels': this.languageLevelService.listLanguageLevels(),
       'educationLevels': this.educationLevelService.listEducationLevels(),
       'majors': this.educationMajorService.listMajors(),
-      'partners': this.partnerService.listPartners(),
+      'partners': this.partnerService.listSourcePartners(),
       'verifiedOccupation': this.candidateOccupationService.listVerifiedOccupations(),
       'occupations': this.candidateOccupationService.listOccupations(),
       'surveyTypes': this.surveyTypeService.listSurveyTypes()
@@ -365,6 +370,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   clearForm() {
     this.searchForm.reset();
+    this.searchForm.controls['nationalitySearchType'].patchValue('or');
+
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
     }
@@ -569,6 +576,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['nationalities'].patchValue(nationalities);
+    let searchType = request.nationalitySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
 
     /* JOINED SEARCHES */
     while (this.searchJoinArray.length) {
@@ -688,5 +700,24 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       control.value.forEach(i => tooltip += i.name + ', ');
     }
     return tooltip.slice(0, -2);
+  }
+
+  public getPartnerDefaultMessage(): string {
+
+    const partner = this.loggedInUser?.partner;
+    let partnerType = partner?.partnerType;
+
+    let s: string;
+
+    //Simple non-operating partners default to seeing candidates from all partners
+    if (partnerType === PartnerType.Partner
+      || partnerType === PartnerType.RecruiterPartner
+      || partner && partner.defaultSourcePartner) {
+      s = "If nothing is specified, the default is to show candidates managed by any partner";
+    } else {
+      s = "If nothing is specified, the default is to just show candidates belonging to your partner";
+    }
+
+    return s;
   }
 }

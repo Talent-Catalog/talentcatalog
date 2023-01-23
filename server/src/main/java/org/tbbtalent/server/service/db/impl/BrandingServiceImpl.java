@@ -49,28 +49,30 @@ public class BrandingServiceImpl implements BrandingService {
 
         User user = userService.getLoggedInUser();
 
-        Partner sourcePartner;
+        Partner partner;
         if (user != null) {
             //Logged in - set partner associated with user
-            sourcePartner = user.getSourcePartner();
+            partner = user.getPartner();
         } else {
             //Not logged in - try and determine partner
             //Look up any partnerAbbreviation
-            sourcePartner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+            partner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
         }
 
-        if (sourcePartner == null) {
+        if (partner == null) {
             //Used default partner if none found so far
-            sourcePartner = partnerService.getDefaultSourcePartner();
+            partner = partnerService.getDefaultSourcePartner();
         }
 
-        return extractBrandingInfoFromPartner((SourcePartner) sourcePartner);
+        return extractBrandingInfoFromPartner(partner);
     }
 
-    private @NotNull BrandingInfo extractBrandingInfoFromPartner(@NonNull SourcePartner partner) {
+    private @NotNull BrandingInfo extractBrandingInfoFromPartner(@NonNull Partner partner) {
         BrandingInfo info = new BrandingInfo();
         info.setLogo(partner.getLogo());
-        info.setLandingPage(partner.getRegistrationLandingPage());
+        if (partner instanceof SourcePartner) {
+            info.setLandingPage(((SourcePartner)partner).getRegistrationLandingPage());
+        }
         info.setPartnerName(partner.getName());
         info.setWebsiteUrl(partner.getWebsiteUrl());
         return info;

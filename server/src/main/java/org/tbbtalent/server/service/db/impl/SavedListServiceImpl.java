@@ -107,7 +107,6 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 @Service
 public class SavedListServiceImpl implements SavedListService {
 
-    private final static String LIST_CVS_SUBFOLDER = "CvsForEmployer";
     private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
     private final static String REGISTERED_NAME_SUFFIX = "*";
     private final CandidateRepository candidateRepository;
@@ -371,17 +370,12 @@ public class SavedListServiceImpl implements SavedListService {
             fileSystemService.publishFolder(subfolder);
             savedList.setFolderlink(subfolder.getUrl());
 
-            // JD folder (note that this folder will inherit the published status of its parent)
-            GoogleFileSystemFolder jdfolder =
-                fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
-
-            savedList.setFolderjdlink(jdfolder.getUrl());
-            // CREATE JOB OPPORTUNITY INTAKE FILE IN JD FOLDER
-            String joiFileName = "JobOpportunityIntake - " + savedList.getName();
-            fileSystemService.copyFile(jdfolder, joiFileName, jobOppIntakeTemplate);
+            createJdSubfolder(savedList, foldersDrive, jobOppIntakeTemplate, subfolder);
         } else {
             //Cope with cases where the list folder exists, but sub folders don't.
             //This is unusual but if it does happen, we should handle it and create those subfolders.
+
+            // List name folder
             folderName = savedList.getName();
             GoogleFileSystemFolder subfolder = fileSystemService.findAFolder(foldersDrive, folder, folderName);
             if (subfolder == null) {
@@ -396,12 +390,29 @@ public class SavedListServiceImpl implements SavedListService {
                 fileSystemService.findAFolder(foldersDrive, subfolder,
                     LIST_JOB_DESCRIPTION_SUBFOLDER);
             if (jdfolder == null) {
-                jdfolder =
-                    fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
+                jdfolder = createJdSubfolder(savedList, foldersDrive, jobOppIntakeTemplate, subfolder);
             }
 
             savedList.setFolderjdlink(jdfolder.getUrl());
         }
+    }
+
+    private GoogleFileSystemFolder createJdSubfolder(SavedList savedList, GoogleFileSystemDrive foldersDrive,
+        GoogleFileSystemFile jobOppIntakeTemplate, GoogleFileSystemFolder subfolder)
+        throws IOException {
+        // JD folder (note that this folder will inherit the published status of its parent)
+        GoogleFileSystemFolder jdfolder =
+            fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
+
+        savedList.setFolderjdlink(jdfolder.getUrl());
+
+        // CREATE JOB OPPORTUNITY INTAKE FILE IN JD FOLDER
+        String joiFileName = "JobOpportunityIntake - " + savedList.getName();
+        GoogleFileSystemFile joiFile = fileSystemService.copyFile(jdfolder, joiFileName, jobOppIntakeTemplate);
+        savedList.setFileJoiName(joiFile.getName());
+        savedList.setFileJoiLink(joiFile.getUrl());
+
+        return jdfolder;
     }
 
     @Override
@@ -436,7 +447,7 @@ public class SavedListServiceImpl implements SavedListService {
             }
 
             //Check for a registered list with same sfJobOpp (owned any user)
-            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJobOpp.getId())
+            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJobOpp.getSfId())
                 .orElse(null);
             //If we already have a registered list for this job, just return it
             if (registeredList != null) {
@@ -678,7 +689,7 @@ public class SavedListServiceImpl implements SavedListService {
         //There will only be candidate opportunities if list has a job opp
         final SalesforceJobOpp jobOpp = savedList.getSfJobOpp();
         if (jobOpp != null) {
-            salesforceService.addCandidateOpportunityStages(candidates, jobOpp.getId());
+            salesforceService.addCandidateOpportunityStages(candidates, jobOpp.getSfId());
         }
     }
 

@@ -79,19 +79,43 @@ public class SavedList extends AbstractCandidateSource {
     private Set<TaskImpl> tasks = new HashSet<>();
 
     /**
-     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     * Name of job description file, if one exists
+     */
+    @Nullable
+    private String fileJdName;
+
+    /**
+     * Url link to job description file, if one exists
+     */
+    @Nullable
+    private String fileJdLink;
+
+    /**
+     * Name of job opportunity intakefile, if one exists
+     */
+    @Nullable
+    private String fileJoiName;
+
+    /**
+     * Url link to job opportunity intake file, if one exists
+     */
+    @Nullable
+    private String fileJoiLink;
+
+    /**
+     * Url link to corresponding list folder on Google Drive, if one exists.
+     * <p/>
+     * This is the alpha named folder beneath the folder numerically named folder taken from the
+     * lists's id: eg 12345/NameOfList12345
      */
     @Nullable
     private String folderlink;
 
     /**
-     * Url link to corresponding candidate folder on Google Drive, if one exists.
-     */
-    @Nullable
-    private String foldercvlink;
-
-    /**
-     * Url link to corresponding candidate folder on Google Drive, if one exists.
+     * Url link to corresponding Job Description folder on Google Drive, if one exists.
+     * <p/>
+     * This is subfolder of the folder pointed to by {@link #folderlink}
+     * eg 12345/NameOfList12345/JobDescription
      */
     @Nullable
     private String folderjdlink;
@@ -193,21 +217,48 @@ public class SavedList extends AbstractCandidateSource {
     }
 
     @Nullable
+    public String getFileJdLink() {
+        return fileJdLink;
+    }
+
+    public void setFileJdLink(@Nullable String fileJdLink) {
+        this.fileJdLink = fileJdLink;
+    }
+
+    @Nullable
+    public String getFileJdName() {
+        return fileJdName;
+    }
+
+    public void setFileJdName(@Nullable String fileJdName) {
+        this.fileJdName = fileJdName;
+    }
+
+    @Nullable
+    public String getFileJoiLink() {
+        return fileJoiLink;
+    }
+
+    public void setFileJoiLink(@Nullable String fileJoiLink) {
+        this.fileJoiLink = fileJoiLink;
+    }
+
+    @Nullable
+    public String getFileJoiName() {
+        return fileJoiName;
+    }
+
+    public void setFileJoiName(@Nullable String fileJoiName) {
+        this.fileJoiName = fileJoiName;
+    }
+
+    @Nullable
     public String getFolderlink() {
         return folderlink;
     }
 
     public void setFolderlink(@Nullable String folderlink) {
         this.folderlink = folderlink;
-    }
-
-    @Nullable
-    public String getFoldercvlink() {
-        return foldercvlink;
-    }
-
-    public void setFoldercvlink(@Nullable String foldercvlink) {
-        this.foldercvlink = foldercvlink;
     }
 
     @Nullable

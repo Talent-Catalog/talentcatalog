@@ -16,15 +16,16 @@
 
 <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
-  <!-- Admin Users -->
+  <!-- Users -->
   <ng-container ngbNavItem="users">
-    <a ngbNavLink>Admin Users</a>
+    <a ngbNavLink>Users</a>
     <ng-template ngbNavContent>
       <app-search-users [loggedInUser]="loggedInUser">
       </app-search-users>
     </ng-template>
   </ng-container>
 
+  <!--System admin only settings tabs-->
   <ng-container *ngIf="systemAdminOnly()">
     <!-- Partners -->
     <ng-container ngbNavItem="Partners">
@@ -98,12 +99,18 @@
       </ng-template>
     </ng-container>
 
+    <!-- Admin API -->
+    <ng-container ngbNavItem="Admin API">
+      <a ngbNavLink>Admin API</a>
+      <ng-template ngbNavContent>
+        <app-admin-api>
+        </app-admin-api>
+      </ng-template>
+    </ng-container>
+
   </ng-container>
 
-  <ng-container *ngIf="adminOrGreater()">
-  </ng-container>
-
-  <ng-container *ngIf="sourcePartnerAdminOrGreater()">
+  <ng-container *ngIf="operatingPartnerSourcePartnerAdminOrGreater()">
     <!-- External Links -->
     <ng-container ngbNavItem="links">
       <a ngbNavLink>External Links</a>

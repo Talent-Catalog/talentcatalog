@@ -1,0 +1,96 @@
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+<div *ngIf="!loading && !error">
+
+  <div class="searches">
+    <form [formGroup]="searchForm" (ngSubmit)="search()">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
+               id="keyword">
+        <label>Stage</label>
+        <ng-select
+          id="stage"
+          [items]="stages"
+          [multiple]="true"
+          [closeOnSelect]="true"
+          [searchable]="false"
+          bindLabel="stringValue"
+          bindValue="key"
+          [formControlName]="'selectedStages'">
+        </ng-select>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table table-hover">
+
+      <!--          Header-->
+      <thead class="thead-light">
+      <tr>
+        <th (click)="toggleSort('id')">
+          <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          #
+        </th>
+        <th (click)="toggleSort('submissionList.id')">
+          <app-sorted-by [column]="'submissionList.id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          List#
+        </th>
+        <th (click)="toggleSort('stageOrder')">
+          <app-sorted-by [column]="'stageOrder'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          <i class="fab fa-salesforce"></i>
+        </th>
+        <th (click)="toggleSort('name')">
+          <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          Name
+        </th>
+        <th (click)="toggleSort('submissionDueDate')">
+          <app-sorted-by [column]="'submissionDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          Due
+        </th>
+      </tr>
+      </thead>
+
+      <tbody>
+
+      <!-- Special display for no results-->
+      <tr *ngIf="!results?.totalElements">
+        <td colspan="42">
+          <span class="text-muted">(no matching data)</span>
+        </td>
+      </tr>
+
+      <!--        Job records    -->
+      <tr *ngFor="let job of results?.content" (click)="selectJob(job)">
+        <td>
+          <a [routerLink]="['/job',job.id]">
+            {{job.id}}
+          </a>
+        </td>
+        <td>
+          <a [routerLink]="['/list',job.submissionList.id]">
+            {{job.submissionList.id}}
+          </a>
+        </td>
+        <td title="Contact {{fullUserName(job.contactUser)}}">
+            {{truncate(job.stage,13)}}
+        </td>
+        <td title="{{job.country}}">
+            {{truncate(job.name, 36)}}
+        </td>
+        <td>
+            {{job.submissionDueDate}}
+        </td>
+      </tr>
+
+      </tbody>
+
+    </table>
+  </div>
+
+
+</div>

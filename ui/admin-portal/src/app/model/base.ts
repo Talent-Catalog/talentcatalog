@@ -14,10 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {User} from './user';
+import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
 import {SalesforceJobOpp} from "./job";
+import {PartnerType} from "./partner";
 
 export interface HasName {
   name?: string;
@@ -25,8 +26,7 @@ export interface HasName {
 
 export enum CandidateSourceType {
   SavedList,
-  SavedSearch,
-  Job
+  SavedSearch
 }
 
 export enum Progress {
@@ -170,8 +170,11 @@ export interface Opportunity {
 export interface HasJobRelatedLinks {
   sfJoblink: string;
   listlink?: string;
+  fileJdLink?: string;
+  fileJdName?: string;
+  fileJoiLink?: string;
+  fileJoiName?: string;
   folderlink?: string;
-  foldercvlink?: string;
   folderjdlink?: string;
 }
 
@@ -197,7 +200,15 @@ export class PagedFilteredSearchRequest extends PagedSearchRequest {
   status?: string;
 }
 
-export class SearchPartnerRequest extends PagedFilteredSearchRequest {}
+export class SearchPartnerRequest extends PagedFilteredSearchRequest {
+  contextJobId?: number;
+  partnerType?: PartnerType;
+}
+
+export class SearchUserRequest extends PagedFilteredSearchRequest {
+  partnerId?: number;
+  role?: Role;
+}
 
 export class SearchTaskRequest extends PagedFilteredSearchRequest {}
 

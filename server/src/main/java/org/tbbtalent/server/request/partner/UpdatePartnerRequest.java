@@ -20,6 +20,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
 
 @Getter
 @Setter
@@ -30,6 +31,16 @@ public class UpdatePartnerRequest {
     private String abbreviation;
 
     private boolean autoAssignable;
+
+    private Long defaultContactId;
+
+    /**
+     * Redundant field containing looked up user corresponding to {@link #defaultContactId}.
+     * Should be populated from id before processing.
+     * Gets around mutual dependency between user and partner services due to every user having
+     * a partner and every partner having a default contact user.
+     */
+    private User defaultContact;
 
     private boolean defaultPartnerRef;
 

@@ -111,7 +111,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      */
     @Nullable
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sf_job_opp_id")
+    @JoinColumn(name = "job_id")
     private SalesforceJobOpp sfJobOpp;
 
     /**

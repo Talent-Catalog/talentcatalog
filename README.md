@@ -13,7 +13,7 @@ data, stored in an SQL Database. This module is written in Java / Spring Boot.
 - **candidate-portal**: the frontend module through which candidates (refugees seeking skilled 
 migration) are able to register and manage their details. This is written in Angular and connects 
 to the REST API endpoints under `/api/candidate` provided by the server. 
-- **admin-portal**: the frontend module through which TBB staff are able to view, manage and annotate 
+- **admin-portal**: the frontend module through which admin staff are able to view, manage and annotate 
 candidate details. This is written in Angular and connects to the REST API endpoints under 
 `/api/admin` provided by the server.
 - **public-portal**: a module through which anyone can access publicly available data. 
@@ -143,7 +143,7 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
 ### Run the server ###
 
 - Some secret information such as passwords and private keys are set in 
-  environment variables - including programmatic access to TBB's Amazon AWS, 
+  environment variables - including programmatic access to Talent Catalog's Amazon AWS, 
   Google and Salesforce accounts. If these environment variables are not set
   the application should still run in your development environment, but it may
   not have access to these integrations. Contact TBB if you need access to these

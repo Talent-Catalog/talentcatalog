@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.tbbtalent.server.util.SalesforceHelper.extractIdFromSfUrl;
+
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import java.nio.charset.StandardCharsets;
@@ -35,10 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -66,7 +65,7 @@ import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
+import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
@@ -355,10 +354,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //First creating a map of all candidates indexed by their what their unique
         //opportunity id should be.
         Map<String, Candidate> idCandidateMap =
-            buildCandidateOppsMap(candidates, jobOpportunity.getId());
+            buildCandidateOppsMap(candidates, jobOpportunity.getSfId());
 
         //Now find the ids we actually have for candidate opportunities for this job.
-        List<Opportunity> opps = findCandidateOpportunities(jobOpportunity.getId());
+        List<Opportunity> opps = findCandidateOpportunities(jobOpportunity.getSfId());
 
         //Remove these from map, leaving just those that need to be created
         for (Opportunity opp : opps) {
@@ -367,77 +366,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Extract these candidates from the map.
         return new ArrayList<>(idCandidateMap.values());
-    }
-
-    /**
-     * Extracts the Salesforce record id from the Salesforce url of a record.
-     *
-     * @param url Url of a Salesforce record
-     * @return Salesforce id or null if the url was null or wasn't a valid record url
-     */
-    public static @Nullable
-    String extractIdFromSfUrl(@Nullable String url) {
-        return extractFieldFromSfUrl(url, 2);
-    }
-
-    /**
-     * Extracts the Salesforce record ids from Salesforce record urls.
-     * <p/>
-     * List version go {@link #extractIdFromSfUrl(String)}
-     */
-    public static @NotNull
-    List<String> extractIdFromSfUrl(@NotNull List<String> urls) {
-        return urls.stream()
-            .map(SalesforceServiceImpl::extractIdFromSfUrl)
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * Extracts the Salesforce object type (ag Account, Contact, Opportunity) from the Salesforce
-     * url of a record.
-     *
-     * @param url Url of a Salesforce record
-     * @return Salesforce object type or null if the url was null or wasn't a valid record url
-     */
-    public static @Nullable
-    String extractObjectTypeFromSfUrl(@Nullable String url) {
-        return extractFieldFromSfUrl(url, 1);
-    }
-
-    /**
-     * Extracts the Salesforce record id from the Salesforce url of a record.
-     *
-     * @param url Url of a Salesforce record
-     * @return Salesforce id or null if the url was null or wasn't a valid record url
-     */
-    private static @Nullable
-    String extractFieldFromSfUrl(@Nullable String url, int fieldNum) {
-        if (url == null) {
-            return null;
-        }
-
-        //https://salesforce.stackexchange.com/questions/1653/what-are-salesforce-ids-composed-of
-        String pattern =
-            //This is the standard prefix for our Salesforce.
-            "https://talentbeyondboundaries.lightning.force.com/" +
-
-                //This part just checks for 15 or more "word" characters with
-                //no "punctuation" - eg . or /.
-                //That will be the Salesforce id.
-                //It should be preceeded by the record type surrounded
-                //by "/".
-                ".*/([\\w]+)/([\\w]{15,})[^\\w]?.*";
-
-        Pattern r = Pattern.compile(pattern);
-
-        Matcher m = r.matcher(url);
-
-        final int groupCount = m.groupCount();
-        if (m.find() && groupCount == 2) {
-            return m.group(fieldNum);
-        } else {
-            return null;
-        }
     }
 
     @Override
@@ -1242,7 +1170,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setContactType(candidateContactTypeSFFieldValue);
 
             //Add partner account id
-            SourcePartner partner = user.getSourcePartner();
+            Partner partner = user.getPartner();
             //Update candidate partner Salesforce account id
             if (partner != null) {
                 String partnerSfAccountId = partner.getSfId();
@@ -1430,10 +1358,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setRecordType(new RecordTypeField(recordType));
 
             String candidateNumber = candidate.getCandidateNumber();
-            setExternalCandidateOppId(makeExternalId(candidateNumber, jobOpportunity.getId()));
+            setExternalCandidateOppId(makeExternalId(candidateNumber, jobOpportunity.getSfId()));
 
             User user = candidate.getUser();
-            SourcePartner partner = user.getSourcePartner();
+            Partner partner = user.getPartner();
 
             //Update candidate partner Salesforce account id
             if (partner != null) {
@@ -1450,7 +1378,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 setAccountId(jobOpportunity.getAccountId());
                 setCandidateContactId(candidate.getSfId());
                 setOwnerId(jobOpportunity.getOwnerId());
-                setParentOpportunityId(jobOpportunity.getId());
+                setParentOpportunityId(jobOpportunity.getSfId());
 
                 LocalDateTime close = LocalDateTime.now().plusYears(1);
                 setCloseDate(close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));

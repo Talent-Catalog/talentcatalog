@@ -43,13 +43,14 @@ import {CreateUpdateListComponent} from '../../list/create-update/create-update-
 import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
+import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 
 @Component({
   selector: 'app-view-candidate',
   templateUrl: './view-candidate.component.html',
   styleUrls: ['./view-candidate.component.scss']
 })
-export class ViewCandidateComponent implements OnInit {
+export class ViewCandidateComponent extends MainSidePanelBase implements OnInit {
 
   private lastTabKey: string = 'CandidateLastTab';
 
@@ -60,8 +61,6 @@ export class ViewCandidateComponent implements OnInit {
   selectDropdownText: boolean = true;
   error;
   candidate: Candidate;
-  mainColWidth = 8;
-  sidePanelColWidth = 4;
   loggedInUser: User;
 
   selectedLists: SavedList[] = [];
@@ -84,7 +83,9 @@ export class ViewCandidateComponent implements OnInit {
               private titleService: Title,
               private authService: AuthService,
               private candidateFieldService: CandidateFieldService,
-              private fb: FormBuilder) { }
+              private fb: FormBuilder) {
+    super(2, 4);
+  }
 
   ngOnInit() {
     this.refreshCandidateInfo();
@@ -182,12 +183,6 @@ export class ViewCandidateComponent implements OnInit {
         this.loading = false;
       });
   }
-
-  resizeSidePanel() {
-    this.mainColWidth = this.mainColWidth === 8 ? this.mainColWidth + 2 : this.mainColWidth - 2;
-    this.sidePanelColWidth = this.mainColWidth === 10 ? this.sidePanelColWidth - 2 : this.sidePanelColWidth + 2;
-  }
-
 
   setCandidate(value: Candidate) {
     this.candidate = value;
@@ -353,4 +348,11 @@ export class ViewCandidateComponent implements OnInit {
     )
   }
 
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
+  }
+
+  canViewPrivateInfo() {
+    return this.authService.canViewPrivateCandidateInfo(this.candidate);
+  }
 }

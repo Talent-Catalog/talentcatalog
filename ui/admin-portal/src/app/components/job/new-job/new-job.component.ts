@@ -136,8 +136,11 @@ export class NewJobComponent implements OnInit {
 
     const request: UpdateEmployerOpportunityRequest = {
       sfJoblink: this.salesforceService.joblink(this.savedList),
+      fileJdLink: this.savedList.fileJdLink,
+      fileJdName: this.savedList.fileJdName,
+      fileJoiLink: this.savedList.fileJoiLink,
+      fileJoiName: this.savedList.fileJoiName,
       folderlink: this.savedList.folderlink,
-      foldercvlink: this.savedList.foldercvlink,
       folderjdlink: this.savedList.folderjdlink,
       listlink: this.listLink
     };
@@ -162,8 +165,11 @@ export class NewJobComponent implements OnInit {
     const request: PostJobToSlackRequest = {
       sfJoblink: this.salesforceService.joblink(this.savedList),
       jobName: this.jobName,
+      fileJdLink: this.savedList.fileJdLink,
+      fileJdName: this.savedList.fileJdName,
+      fileJoiLink: this.savedList.fileJoiLink,
+      fileJoiName: this.savedList.fileJoiName,
       folderlink: this.savedList.folderlink,
-      foldercvlink: this.savedList.foldercvlink,
       folderjdlink: this.savedList.folderjdlink,
       listlink: this.listLink
     };

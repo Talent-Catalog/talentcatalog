@@ -46,8 +46,11 @@ public class SavedListBuilderSelector {
                 .add("global")
                 .add("savedSearchSource", savedSearchSourceDto())
                 .add("sfJobOpp", salesforceJobOppDto())
+                .add("fileJdLink")
+                .add("fileJdName")
+                .add("fileJoiLink")
+                .add("fileJoiName")
                 .add("folderlink")
-                .add("foldercvlink")
                 .add("folderjdlink")
                 .add("publishedDocLink")
                 .add("registeredJob")
@@ -65,7 +68,7 @@ public class SavedListBuilderSelector {
 
     private DtoBuilder salesforceJobOppDto() {
         return new DtoBuilder()
-            .add("id")
+            .add("sfId")
             ;
     }
 

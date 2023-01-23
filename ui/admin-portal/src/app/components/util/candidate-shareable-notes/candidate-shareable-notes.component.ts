@@ -14,6 +14,7 @@ export class CandidateShareableNotesComponent extends AutoSaveComponentBase
   implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
+  @Input() editable: boolean;
 
   constructor(private fb: FormBuilder, private candidateService: CandidateService) {
     super();

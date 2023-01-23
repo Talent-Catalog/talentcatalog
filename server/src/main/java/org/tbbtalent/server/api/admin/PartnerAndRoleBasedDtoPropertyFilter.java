@@ -127,7 +127,7 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
             user = (User) o;
         }
 
-        return user == null ? null : user.getSourcePartner();
+        return user == null ? null : user.getPartner();
     }
 }
 

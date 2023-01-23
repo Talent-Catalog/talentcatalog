@@ -14,6 +14,20 @@ logging:
       netty:
         http:
           client: INFO
+    org:
+      hibernate:
+        boot:
+          internal:
+            #Gets rid of DuplicateSeqGen errors at start up.
+            #Caused by Entity inheritance from org/tbbtalent/server/model/db/AbstractDomainObject.java
+            #See notes in that class
+            InFlightMetadataCollectorImpl: ERROR
+      springframework:
+        data:
+          convert:
+            #Gets rid of registering converter warnings at start up
+            #See https://stackoverflow.com/questions/60001034/how-to-remove-spring-data-customconversions-warnings-from-application-startup
+            CustomConversions: ERROR
 
 spring:
   servlet:
@@ -101,7 +115,7 @@ salesforce:
 
 slack:
   workspace: https://refugeejobsmarket.slack.com
-  channelId: C029WMY6H1U
+  channelId: ${SLACK_CHANNEL_ID:C048GS1KHPG}
   token: ${SLACK_TOKEN}
 
 server:
@@ -137,8 +151,8 @@ google:
   # We use a different Google Drive in dev than we do in production.
   # The Drive and folder ids are the latter part of the url you see when you
   # go to that drive or folder.
-    candidateDataDriveId: ${GOOGLE_DRIVE_CANDIDATEDATADRIVEID:0AHvd4Bs-dSp4Uk9PVA}
-    candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1TdqTBpojT07qNPWTgU_wXWON1678beTn}
+    candidateDataDriveId: ${GOOGLE_DRIVE_CANDIDATEDATADRIVEID:0AEU3NTgcBsXLUk9PVA}
+    candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1BzvSDpgRE3hgQHM6bL7LOVWomsWmW28j}
     listFoldersDriveId:  ${GOOGLE_DRIVE_LISTFOLDERSDRIVEID:0AJpRzZk9D_kLUk9PVA}
     listFoldersRootId:  ${GOOGLE_DRIVE_LISTFOLDERSROOTID:1BkMPOr392ubCriQdhBAmFKxlume-c7d2}
 

@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {Country} from "./country";
+import {User} from "./user";
 
 /*
   MODEL - extending interfaces, update request extend object attributes, mapping enums
@@ -24,6 +25,7 @@ import {Country} from "./country";
 */
 
 export enum PartnerType {
+  Partner = "Partner",
   RecruiterPartner = "RecruiterPartner",
   SourcePartner = "SourcePartner"
 }
@@ -33,6 +35,7 @@ export interface PartnerSimpleAttributes {
   abbreviation: string;
   autoAssignable: boolean;
   defaultPartnerRef: boolean;
+  jobContact?: User;
   logo: string;
   name: string;
   notificationEmail: string;
@@ -50,10 +53,18 @@ export interface PartnerSimpleAttributes {
 
 export interface Partner extends PartnerSimpleAttributes {
   id: number;
+  defaultContact?: User;
+  defaultSourcePartner: boolean;
   sourceCountries: Country[];
 }
 
 export interface UpdatePartnerRequest extends PartnerSimpleAttributes {
+  defaultContactId?: number,
   sourceCountryIds: number[];
+}
+
+export interface UpdatePartnerJobContactRequest {
+  jobId: number;
+  userId: number;
 }
 

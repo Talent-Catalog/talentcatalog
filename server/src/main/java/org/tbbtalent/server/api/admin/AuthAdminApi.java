@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidPasswordFormatException;
 import org.tbbtalent.server.exception.PasswordExpiredException;
+import org.tbbtalent.server.model.db.PartnerDtoHelper;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
@@ -125,17 +126,7 @@ public class AuthAdminApi {
                 .add("lastName")
                 .add("usingMfa")
                 .add("mfaConfigured")
-                .add("sourcePartner", partnerDto())
+                .add("partner", PartnerDtoHelper.getPartnerDto())
                 ;
     }
-
-    private DtoBuilder partnerDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("name")
-            .add("abbreviation")
-            .add("websiteUrl")
-            ;
-    }
-
 }

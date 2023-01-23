@@ -29,6 +29,7 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {AuthService} from '../../../services/auth.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
 import {EnumOption, enumOptions} from "../../../util/enum";
+import {SearchUserRequest} from "../../../model/base";
 
 
 @Component({
@@ -93,10 +94,15 @@ export class SearchUsersComponent implements OnInit {
 /* SEARCH FORM */
   search() {
     this.loading = true;
-    const request = this.searchForm.value;
+    const request: SearchUserRequest = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize =  this.pageSize;
-    this.userService.search(request).subscribe(results => {
+
+    //Partners other than the default source partner only see users for their partner.
+    if (!this.authService.isDefaultSourcePartner()) {
+      request.partnerId = this.loggedInUser.partner.id;
+    }
+    this.userService.searchPaged(request).subscribe(results => {
       this.results = results;
       this.loading = false;
     });
@@ -205,7 +211,7 @@ export class SearchUsersComponent implements OnInit {
 
       case Role.admin:
       case Role.sourcepartneradmin:
-        if (user.sourcePartner?.id !== myUser.sourcePartner?.id) {
+        if (user.partner?.id !== myUser.partner?.id) {
           //Can't edit another partner's user.
           editable = false;
         } else {

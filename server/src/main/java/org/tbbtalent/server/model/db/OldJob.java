@@ -40,7 +40,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "job")
 @SequenceGenerator(name = "seq_gen", sequenceName = "job_id_seq", allocationSize = 1)
-public class Job extends AbstractDomainObject<Long> {
+public class OldJob extends AbstractDomainObject<Long> {
 
     /**
      * Date that submission of candidates to employer is due.

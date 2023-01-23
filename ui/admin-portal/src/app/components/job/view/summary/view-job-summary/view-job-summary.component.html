@@ -1,0 +1,25 @@
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+
+  <div class="form-group flex-fill">
+    <label class="h6" for="jobSummary">
+    <span class="mr-2 font-weight-normal">Job Summary: {{job.name}}
+      <span *ngIf="saving">
+         <i class="fas fa-spinner fa-spin"></i>
+      </span>
+      <span *ngIf="jobSummaryControl.dirty">
+        <button class="btn btn-sm btn-secondary" (click)="saveChanges()">
+          <i class="far fa-save"></i>
+        </button>
+        <button class="btn btn-sm btn-secondary" (click)="cancelChanges()">x</button>
+      </span>
+    </span>
+    </label>
+
+    <textarea id="jobSummary" class="md-textarea-auto form-control" rows="{{nRows}}"
+              placeholder="Enter short summary of job..."
+              [formControlName]="'jobSummary'">{{job.jobSummary}}</textarea>
+  </div>
+</form>

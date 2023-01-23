@@ -22,6 +22,7 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -29,30 +30,21 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.db.Job;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 
 /**
- * Specification for sorting and searching {@link Job} entities
+ * Specification for sorting and searching {@link SalesforceJobOpp} entities
  * <p/>
  * MODEL - JPA Specification using table join and sorting
  */
 public class JobSpecification {
 
-    public static Specification<Job> buildSearchQuery(final SearchJobRequest request) {
+    public static Specification<SalesforceJobOpp> buildSearchQuery(final SearchJobRequest request) {
         return (job, query, builder) -> {
             Predicate conjunction = builder.conjunction();
-            query.distinct(true);
-
-            //This will hold the joined sfJobOpp entity. We determine the join differently
-            //depending on whether this is a count query.
-            //(When paging results, query specification code always gets
-            //called twice for any given search request: once to retrieve the results and again
-            //to count the total number of results across all pages).
-            Join<Object, Object> sfJobOpp;
-            Join<Object, Object> submissionList;
 
             /*
               Note that there are two ways of retrieving a join.
@@ -75,22 +67,12 @@ public class JobSpecification {
              */
 
             boolean isCountQuery = query.getResultType().equals(Long.class);
-            if (isCountQuery) {
-                //Just use simple joins
-                submissionList = job.join("submissionList");
-                sfJobOpp = submissionList.join("sfJobOpp");
-            } else {
+            if (!isCountQuery) {
+                Fetch<Object, Object> listFetch = job.fetch("submissionList", JoinType.INNER);
+                Join<Object, Object> submissionList = (Join<Object, Object>) listFetch;
+
                 //Manage sorting for non count queries
-
-                //Set joins from fetches - see notes above.
-                Fetch<Object, Object> submissionListFetch = job.fetch("submissionList");
-                submissionList = (Join<Object, Object>) submissionListFetch;
-
-                Fetch<Object, Object> sfJobOppFetch = submissionList.fetch("sfJobOpp");
-                sfJobOpp = (Join<Object, Object>) sfJobOppFetch;
-
-                //Manage sort order of results
-                List<Order> ordering = getOrdering(request, job, builder, sfJobOpp);
+                List<Order> ordering = getOrdering(request, job, builder, submissionList);
                 query.orderBy(ordering);
             }
 
@@ -100,20 +82,20 @@ public class JobSpecification {
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                 conjunction.getExpressions().add(
                         builder.or(
-                                builder.like(builder.lower(sfJobOpp.get("name")), likeMatchTerm),
-                                builder.like(builder.lower(sfJobOpp.get("country")), likeMatchTerm)
+                                builder.like(builder.lower(job.get("name")), likeMatchTerm),
+                                builder.like(builder.lower(job.get("country")), likeMatchTerm)
                         ));
             }
 
             // STAGE
             List<JobOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
-                conjunction.getExpressions().add(builder.isTrue(sfJobOpp.get("stage").in(stages)));
+                conjunction.getExpressions().add(builder.isTrue(job.get("stage").in(stages)));
             }
 
             //CLOSED
             if (request.getSfOppClosed() != null) {
-                conjunction.getExpressions().add(builder.equal(sfJobOpp.get("closed"), request.getSfOppClosed()));
+                conjunction.getExpressions().add(builder.equal(job.get("closed"), request.getSfOppClosed()));
             }
 
             return conjunction;
@@ -121,21 +103,20 @@ public class JobSpecification {
     }
 
     private static List<Order> getOrdering(PagedSearchRequest request,
-        Root<Job> job,
-        CriteriaBuilder builder,
-        Join<Object, Object> sfJobOpp) {
+        Root<SalesforceJobOpp> job,
+        CriteriaBuilder builder, Join<Object, Object> submissionList) {
 
         List<Order> orders = new ArrayList<>();
         String[] sort = request.getSortFields();
         boolean idSort = false;
         if (sort != null) {
             for (String property : sort) {
-
                 Join<Object, Object> join = null;
                 String subProperty;
-                if (property.startsWith("sfJobOpp.")) {
-                    join = sfJobOpp;
-                    subProperty = property.replaceAll("sfjobOpp.", "");
+
+                if (property.startsWith("submissionList.")) {
+                    join = submissionList;
+                    subProperty = property.replaceAll("submissionList.", "");
                 } else {
                     subProperty = property;
                     if (property.equals("id")) {
@@ -155,7 +136,7 @@ public class JobSpecification {
         }
 
         //Need at least one id sort so that ordering is stable.
-        //Otherwise sorts with equal values will come out in random order,
+        //Otherwise, sorts with equal values will come out in random order,
         //which means that the contents of pages - computed at different times -
         //won't be predictable.
         if (!idSort) {

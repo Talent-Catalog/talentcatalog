@@ -29,7 +29,7 @@ import org.tbbtalent.server.model.db.Status;
 /**
  * MODEL - JPA query joining a collection attribute.
  *
- * See {@link #findByAutoassignableCountry(Country)} - noting join with sourceCountries attribute
+ * See {@link #findSourcePartnerByAutoassignableCountry(Country)} - noting join with sourceCountries attribute
  */
 public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, JpaSpecificationExecutor<PartnerImpl> {
 
@@ -37,18 +37,16 @@ public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, Jpa
     @Query("select p from SourcePartner p where p.defaultSourcePartner = :defaultSourcePartner")
     Optional<PartnerImpl> findByDefaultSourcePartner(@Param("defaultSourcePartner") boolean defaultSourcePartner);
 
-    @Query("select p from SourcePartner p where lower(p.abbreviation) = lower(:abbreviation)")
+    @Query("select p from Partner p where lower(p.abbreviation) = lower(:abbreviation)")
     Optional<PartnerImpl> findByAbbreviation(@Param("abbreviation") String abbreviation);
 
     @Query("select p from SourcePartner p join p.sourceCountries c "
         + "where c = :country and p.autoAssignable = true and p.status = 'active'")
-    List<PartnerImpl> findByAutoassignableCountry(@Param("country") Country country);
+    List<PartnerImpl> findSourcePartnerByAutoassignableCountry(@Param("country") Country country);
 
-    @Query(" select p.name from SourcePartner p "
+    @Query(" select p.name from Partner p "
         + " where p.id in (:ids) order by p.name asc" )
     List<String> getNamesForIds(@Param("ids") List<Long> ids);
 
-    @Query(" select p from SourcePartner p "
-        + " where p.status = :status order by p.name asc")
-    List<PartnerImpl> findByStatus(@Param("status") Status status);
+    List<PartnerImpl> findByStatusOrderByName(Status status);
 }

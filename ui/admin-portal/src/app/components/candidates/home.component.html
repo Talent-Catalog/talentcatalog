@@ -106,10 +106,8 @@
        title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
     >Registered Jobs</a>
     <ng-template ngbNavContent>
-      <app-browse-candidate-sources
-        [sourceType]="CandidateSourceType.Job"
-        [searchBy]="SearchBy.registeredJob" >
-      </app-browse-candidate-sources>
+      <app-jobs-with-detail>
+      </app-jobs-with-detail>
     </ng-template>
   </ng-container>
 

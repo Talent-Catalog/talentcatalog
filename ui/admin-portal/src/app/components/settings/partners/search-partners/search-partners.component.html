@@ -51,6 +51,7 @@
       <th *ngIf="!readOnly"></th>
       <th>Partner</th>
       <th>Abbreviation</th>
+      <th>Contact</th>
       <th>Email</th>
       <th>Type</th>
       <th>Source countries</th>
@@ -77,6 +78,7 @@
         </a>
       </td>
       <td>{{partner.abbreviation}}</td>
+      <td>{{showContact(partner.defaultContact)}}</td>
       <td>{{partner.notificationEmail}}</td>
       <td>{{partner.partnerType}}</td>
       <td>{{sourceCountries(partner)}}</td>

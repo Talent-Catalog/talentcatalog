@@ -27,7 +27,7 @@
       <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
       <li *ngIf="candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
       <li *ngIf="!candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.candidateNumber}}</li>
-      <li *ngIf="isAnAdmin()" class="ml-auto">
+      <li *ngIf="isEditable()" class="ml-auto">
         <div  class="input-group">
           <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
                  value="{{candidate.status | titlecase}}" disabled>
@@ -76,55 +76,58 @@
 
       <div class="col-sm-4">
         <app-candidate-shareable-notes
-          [candidate]="candidate">
+          [candidate]="candidate"
+          [editable] = "isEditable()"
+        >
         </app-candidate-shareable-notes>
       </div>
 
   </div>
 
-    <div class="d-flex align-items-end mb-4">
-      <div class="flex-grow-1">
-        <p class="small text-muted mb-0">Add candidate to a list</p>
-        <ng-select
-          [items]="lists"
-          [multiple]="true"
-          [placeholder]="'Select or Type'"
-          [closeOnSelect]="false"
-          [clearable]="false"
-          [loading]="savingList"
-          bindLabel="name"
-          [clearSearchOnAdd]="true"
-          [(ngModel)]="selectedLists"
-          (add)="onItemSelect($event)"
-          [compareWith]="compareLists"
-          [hideSelected]="true">
-          <ng-template ng-header-tmp>
-            <span class="text-muted ml-2">Selected: {{selectedLists.length}}</span>
-          </ng-template>
-          <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-            <div class="ng-value" *ngFor="let item of items">
-              <span class="ng-value-label">
-                <a [routerLink]="['/list', item.id]"> {{item.name}} </a>
-                <a target="_blank" [routerLink]="['/list', item.id]">
-                  <i class="fas fa-external-link-alt" title="Open list in new tab"></i>
-                </a>
-              </span>
-              <span class="ng-value-icon right" (click)="onItemDeSelect(item)" aria-hidden="true">×</span>
-            </div>
-          </ng-template>
-        </ng-select>
-      </div>
+  <div class="d-flex align-items-end mb-4">
+    <div class="flex-grow-1">
+      <p class="small text-muted mb-0">Add candidate to a list</p>
+      <ng-select
+        [readonly]="!isEditable()"
+        [items]="lists"
+        [multiple]="true"
+        [placeholder]="'Select or Type'"
+        [closeOnSelect]="false"
+        [clearable]="false"
+        [loading]="savingList"
+        bindLabel="name"
+        [clearSearchOnAdd]="true"
+        [(ngModel)]="selectedLists"
+        (add)="onItemSelect($event)"
+        [compareWith]="compareLists"
+        [hideSelected]="true">
+        <ng-template ng-header-tmp>
+          <span class="text-muted ml-2">Selected: {{selectedLists.length}}</span>
+        </ng-template>
+        <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+          <div class="ng-value" *ngFor="let item of items">
+            <span class="ng-value-label">
+              <a [routerLink]="['/list', item.id]"> {{item.name}} </a>
+              <a target="_blank" [routerLink]="['/list', item.id]">
+                <i class="fas fa-external-link-alt" title="Open list in new tab"></i>
+              </a>
+            </span>
+            <span class="ng-value-icon right" (click)="onItemDeSelect(item)" aria-hidden="true">×</span>
+          </div>
+        </ng-template>
+      </ng-select>
+    </div>
 
-      <div class="pl-2 flex-shrink-0">
-        <button class="btn btn-sm btn-secondary" type="button"
-                (click)="onNewList()">+ New List
-        </button>
-      </div>
-
+    <div *ngIf="isEditable()" class="pl-2 flex-shrink-0">
+      <button class="btn btn-sm btn-secondary" type="button"
+              (click)="onNewList()">+ New List
+      </button>
+    </div>
   </div>
 
-    <div class="row">
-      <div class="col-sm-{{mainColWidth}}">
+  <div class="row">
+      <!-- Just have main panel taking up whole screen if they cannot view private data (case notes)-->
+      <div class="col-sm-{{canViewPrivateInfo() ? mainPanelColWidth : totalPanelWidth}}">
         <!-- TABS -->
         <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
@@ -134,7 +137,7 @@
             <ng-template ngbNavContent>
               <app-candidate-general-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly"
+                [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-general-tab>
             </ng-template>
@@ -146,7 +149,7 @@
             <ng-template ngbNavContent>
               <app-candidate-experience-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly"
+                [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-experience-tab>
             </ng-template>
@@ -158,7 +161,7 @@
             <ng-template ngbNavContent>
               <app-candidate-education-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly"
+                [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-education-tab>
             </ng-template>
@@ -170,8 +173,9 @@
             <ng-template ngbNavContent>
               <app-candidate-additional-info-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly"
+                [editable]="isEditable()"
                 [adminUser]="isAnAdmin()"
+                [canViewPrivateInfo]="canViewPrivateInfo()"
                 [loggedInUser]="loggedInUser"
                 (candidateChanged)="onCandidateChanged()">
               </app-candidate-additional-info-tab>
@@ -179,7 +183,7 @@
           </ng-container>
 
           <!-- Mini Intake -->
-          <ng-container ngbNavItem="MiniIntake" *ngIf="isAnAdmin()">
+          <ng-container ngbNavItem="MiniIntake" *ngIf="canViewPrivateInfo()">
             <a ngbNavLink>Mini Intake</a>
             <ng-template ngbNavContent>
               <app-candidate-mini-intake-tab
@@ -189,7 +193,7 @@
           </ng-container>
 
           <!-- Intake -->
-          <ng-container ngbNavItem="FullIntake" *ngIf="isAnAdmin()">
+          <ng-container ngbNavItem="FullIntake" *ngIf="canViewPrivateInfo()">
             <a ngbNavLink>Full Intake</a>
             <ng-template ngbNavContent>
               <app-candidate-intake-tab
@@ -199,7 +203,7 @@
           </ng-container>
 
           <!-- Visa eligibility -->
-          <ng-container ngbNavItem="Visa" *ngIf="isAnAdmin()">
+          <ng-container ngbNavItem="Visa" *ngIf="canViewPrivateInfo()">
             <a ngbNavLink>Visa</a>
             <ng-template ngbNavContent>
               <app-candidate-visa-tab
@@ -209,12 +213,12 @@
           </ng-container>
 
           <!-- TASKS -->
-          <ng-container ngbNavItem="Tasks" *ngIf="isAnAdmin()">
+          <ng-container ngbNavItem="Tasks" *ngIf="canViewPrivateInfo()">
             <a ngbNavLink>Tasks</a>
             <ng-template ngbNavContent>
               <app-candidate-task-tab
                 [candidate]="candidate"
-                [editable]="!loggedInUser.readOnly">
+                [editable]="isEditable()">
               </app-candidate-task-tab>
             </ng-template>
           </ng-container>
@@ -222,20 +226,20 @@
         </nav>
         <div [ngbNavOutlet]="nav" class="mt-2"></div>
       </div>
-      <div class="col-sm-{{sidePanelColWidth}} admin-panel">
+      <div *ngIf="canViewPrivateInfo()" class="col-sm-{{sidePanelColWidth}} admin-panel">
         <div class="w-100">
-          <div class="float-right">
+          <div *ngIf="canToggleSizes()" class="float-right">
             <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
               class="fas fa-arrow-{{sidePanelColWidth == 2 ? 'left' : 'right'}}"></i></button>
           </div>
           <app-view-candidate-note
             [candidate]="candidate"
-            [editable]="!loggedInUser.readOnly"
+            [editable]="isEditable()"
             [characterLimit]="1000"
             (onResize)="resizeSidePanel()">
           </app-view-candidate-note>
         </div>
       </div>
     </div>
-  </div>
+</div>
 

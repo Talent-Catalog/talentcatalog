@@ -73,6 +73,7 @@ import org.tbbtalent.server.model.db.EducationLevel;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
@@ -82,6 +83,7 @@ import org.tbbtalent.server.model.db.SearchType;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateReviewStatusRepository;
@@ -816,7 +818,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 //Non null SavedSearch Job Opp. Check if it is different from Saved List JobOpp
                 final SalesforceJobOpp savedListJobOpp = savedList.getSfJobOpp();
                 if (savedListJobOpp == null ||
-                    !savedSearch.getSfJobOpp().getId().equals(savedListJobOpp.getId())) {
+                    !savedSearch.getSfJobOpp().getSfId().equals(savedListJobOpp.getSfId())) {
                     savedList.setSfJobOpp(savedSearch.getSfJobOpp());
                     savedList = savedListRepository.save(savedList);
                 }
@@ -1490,9 +1492,23 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Modify request, defaulting blank partners
         List<Long> requestedPartners = request.getPartnerIds();
         if (requestedPartners == null || requestedPartners.isEmpty()) {
-            Partner partner = userService.getLoggedInSourcePartner();
+            Partner partner = userService.getLoggedInPartner();
             if (partner != null) {
-                request.setPartnerIds(List.of(partner.getId()));
+                //Some partners default to seeing candidates from all source partners.
+                final boolean isDefaultSourcePartner = partner instanceof SourcePartner
+                    && ((SourcePartner) partner).isDefaultSourcePartner();
+                //Different default for simple (non operating partners)
+                //and default source partner
+                if ("Partner".equals(partner.getPartnerType())
+                    || "RecruiterPartner".equals(partner.getPartnerType())
+                    || isDefaultSourcePartner) {
+                   List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                   List<Long> partnerIds =
+                       sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
+                    request.setPartnerIds(partnerIds);
+                } else {
+                   request.setPartnerIds(List.of(partner.getId()));
+                }
             }
         }
     }

@@ -14,9 +14,10 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<app-view-candidate-additional-info
+<app-view-candidate-additional-info *ngIf="canViewPrivateInfo"
   [candidate]="candidate"
-  [editable]="editable">
+  [editable]="editable"
+>
 </app-view-candidate-additional-info>
 
 <hr/>
@@ -43,7 +44,7 @@
 
   <hr/>
 
-  <app-view-candidate-attachment
+  <app-view-candidate-attachment *ngIf="editable"
     [candidate]="candidate"
     [editable]="editable"
     [adminUser]="adminUser"

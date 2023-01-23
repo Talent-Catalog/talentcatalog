@@ -11,6 +11,7 @@ import {
   CreateUpdatePartnerComponent
 } from "../create-update-partner/create-update-partner.component";
 import {Country} from "../../../../model/country";
+import {User} from "../../../../model/user";
 
 /*
    MODEL - Delegate all authentication logic to authService
@@ -116,5 +117,10 @@ export class SearchPartnersComponent implements OnInit {
       s = countries.map(c => c.name).join(",");
     }
     return s;
+  }
+
+  showContact(user: User): string {
+
+    return user ? user.firstName + " " + user.lastName + "(" + user.email + ")" : "";
   }
 }

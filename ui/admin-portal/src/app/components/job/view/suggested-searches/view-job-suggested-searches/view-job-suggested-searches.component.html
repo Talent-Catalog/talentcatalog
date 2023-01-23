@@ -1,0 +1,61 @@
+<div class="card">
+
+  <div class="card-header">
+    Suggested searches.
+    <div class="float-right" *ngIf="editable">
+      <button title="Create a new suggested search"  class="btn btn-sm btn-primary ml-2"
+              (click)="addSearch()">
+        <i class="fas fa-plus"></i> Search
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+
+    <div *ngIf="!searches?.length">
+      <p >
+        No searches have been specified.
+      </p>
+    </div>
+
+    <div *ngIf="searches.length">
+      <p>
+        Click on a search to run or change it.
+        If you change the search don't forget to click on Update Search.
+        If you find candidates of interest, copy them into the submission list.
+        (<a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>).
+      </p>
+      <p>
+        Created searches will always include the exclusion list associated with this job.
+        You can change the search to remove the exclusion list if you don't want it.
+      </p>
+      <hr/>
+
+      <!-- searches -->
+      <div class="row position-relative mb-3" *ngFor="let search of searches; let i = index">
+
+        <!-- EDIT -->
+        <div class="actions" *ngIf="editable">
+          <button class="btn btn-sm btn-outline-danger" (click)="removeSearch(search)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+
+        <div>
+          <!-- NAME -->
+          <div class="col-12" [class.edit-padding]="editable">
+            <i class="fas fa-search"></i>
+            <a [routerLink]="['/search',search.id]">
+              {{search.name}}
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

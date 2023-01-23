@@ -1,0 +1,16 @@
+<div class="card">
+
+  <div class="card-header">
+    Submission List
+  </div>
+
+  <div class="card-body">
+    <app-show-candidates *ngIf="job.submissionList"
+                         [candidateSource]="job.submissionList"
+                         [pageNumber]="1"
+                         [pageSize]="20"
+                         [showBreadcrumb]="false"
+    ></app-show-candidates>
+
+  </div>
+</div>

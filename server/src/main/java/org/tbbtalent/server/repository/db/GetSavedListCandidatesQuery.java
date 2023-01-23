@@ -78,7 +78,7 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
         if (!isCountQuery) {
             //Fetch to populate the key linked entities
             Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.LEFT);
-            Fetch<Object, Object> partnerFetch = userFetch.fetch("sourcePartner", JoinType.LEFT);
+            Fetch<Object, Object> partnerFetch = userFetch.fetch("partner", JoinType.LEFT);
             Fetch<Object, Object> nationalityFetch = candidate.fetch("nationality", JoinType.LEFT);
             Fetch<Object, Object> countryFetch = candidate.fetch("country", JoinType.LEFT);
             Fetch<Object, Object> educationLevelFetch = candidate.fetch("maxEducationLevel", JoinType.LEFT);

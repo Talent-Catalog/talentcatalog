@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,14 @@ public class UserAdminApi {
     }
 
     @PostMapping("search")
-    public Map<String, Object> search(@RequestBody SearchUserRequest request) {
-        Page<User> users = this.userService.searchUsers(request);
+    public List<Map<String, Object>> search(@RequestBody SearchUserRequest request) {
+        List<User> users = userService.search(request);
+        return userDto().buildList(users);
+    }
+
+    @PostMapping("search-paged")
+    public Map<String, Object> searchPaged(@RequestBody SearchUserRequest request) {
+        Page<User> users = this.userService.searchPaged(request);
         return userDto().buildPage(users);
     }
 
@@ -137,7 +144,7 @@ public class UserAdminApi {
                 .add("lastLogin")
                 .add("usingMfa")
                 .add("mfaConfigured")
-                .add("sourcePartner", partnerDto())
+                .add("partner", partnerDto())
                 ;
     }
 

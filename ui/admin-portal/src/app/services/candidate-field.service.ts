@@ -66,7 +66,7 @@ export class CandidateFieldService {
     "updatedDate",
     "nationality.name",
     "country.name",
-    "user.sourcePartner.abbreviation",
+    "user.partner.abbreviation",
     "gender"
   ];
 
@@ -75,7 +75,7 @@ export class CandidateFieldService {
     "user.lastName",
     "nationality.name",
     "country.name",
-    "user.sourcePartner.abbreviation",
+    "user.partner.abbreviation",
     "gender"
   ];
 
@@ -104,7 +104,7 @@ export class CandidateFieldService {
         null, null),
       new CandidateFieldInfo("Nationality", "nationality.name", null,
         null, this.isCountryViewable),
-      new CandidateFieldInfo("Partner", "user.sourcePartner.abbreviation", null,
+      new CandidateFieldInfo("Partner", "user.partner.abbreviation", null,
         null, null),
       new CandidateFieldInfo("Phone", "phone", null,
         null, null),

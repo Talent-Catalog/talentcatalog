@@ -1,0 +1,65 @@
+<div class="card">
+
+  <div class="card-header">
+    Formal job definitions. <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+  </div>
+
+  <div class="card-body">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+
+    <div class="row">
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label">
+          <i class="far fa-file"></i>Employer's Job Description (JD)
+        </label>
+        <span class="actions" *ngIf="editable">
+          <button title="Enter/change a link to the document"
+                  class="btn btn-sm btn-outline-primary" (click)="editJDLink()">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button title="Upload the document from your computer"
+                  class="btn btn-sm btn-outline-primary" (click)="uploadJD()">
+            <i class="fa-solid fa-upload"></i>
+          </button>
+        </span>
+
+        <div *ngIf="!job.submissionList?.fileJdLink" class="form-control-plaintext alert alert-danger">
+          Please upload, or link to, a job description document
+        </div>
+        <div *ngIf="job.submissionList?.fileJdLink" class="form-control-plaintext">
+          <a target="_blank" href="{{job.submissionList.fileJdLink}}">
+            {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label">
+          <i class="far fa-file"></i>Job Opportunity Intake (JOI)
+        </label>
+        <span class="actions" *ngIf="editable">
+          <button title="Enter/change a link to the document"
+                  class="btn btn-sm btn-outline-primary" (click)="editJOILink()">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button title="Upload the document from your computer"
+                  class="btn btn-sm btn-outline-primary" (click)="uploadJOI()">
+            <i class="fa-solid fa-upload"></i>
+          </button>
+        </span>
+
+        <div *ngIf="!job.submissionList?.fileJoiLink" class="form-control-plaintext alert alert-danger">
+          Please upload, or link to, a job opportunity intake document
+        </div>
+        <div *ngIf="job.submissionList?.fileJoiLink" class="form-control-plaintext">
+          <a target="_blank" href="{{job.submissionList.fileJoiLink}}">
+            {{job.submissionList.fileJoiName ? job.submissionList.fileJoiName : job.submissionList.fileJoiLink}}</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright = c) 2022 Talent Beyond Boundarie.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,20 +13,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {CandidateSource, SearchCandidateSourcesRequest} from "./base";
+import {PagedSearchRequest} from "./base";
 import {SavedList} from "./saved-list";
+import {User} from "./user";
+import {Partner} from "./partner";
+import {SavedSearch} from "./saved-search";
 
-export interface Job extends CandidateSource {
-  employer: string;
+export interface Job {
+  id: number;
+  sfId: string;
+  contactEmail: string;
+  contactUser: User;
   country: string;
+  createdBy: User;
+  createdDate: Date;
+  employer: string;
+  exclusionList: SavedList;
+  jobSummary: string;
+  name: string;
+  publishedBy: User;
+  publishedDate: Date;
+  recruiterPartner: Partner;
   stage: JobOpportunityStage;
   submissionDueDate: Date;
   submissionList: SavedList;
+  suggestedList: SavedList;
+  suggestedSearches: SavedSearch[];
+  updatedBy: User;
+  updatedDate: Date;
 }
 
-export function isJob(source: CandidateSource): source is Job {
-  return source ? 'submissionList' in source : false;
-}
+export type JobDocType = "jd" | "joi";
 
 /**
  * Note that the string values of this enum MUST match the actual stage names for job
@@ -48,23 +65,31 @@ export enum JobOpportunityStage {
   visaPreparation = "Visa preparation",
   postHireEngagement = "Post hire engagement",
   hiringCompleted = "Hiring completed",
-  employerIneligible = "Employer ineligible",
-  noJobOffer = "No job offer",
+  ineligibleEmployer = "Ineligible employer",
+  ineligibleOccupation = "Ineligible occupation",
+  ineligibleRegion = "Ineligible region",
   noInterest = "No interest",
+  noJobOffer = "No job offer",
+  noPrPathway = "No PR pathway",
   noSuitableCandidates = "No suitable candidates",
-  noVisa = "No visa"
+  noVisa = "No visa",
+  tooExpensive = "Too expensive",
+  tooHighWage = "Too high wage",
+  tooLong = "Too long"
 }
 
 export interface SalesforceJobOpp {
-  id: string;
+  sfId: string;
 }
 
-export class SearchJobRequest extends SearchCandidateSourcesRequest {
+export class SearchJobRequest extends PagedSearchRequest {
+  keyword?: string;
   sfOppClosed?: boolean;
   stages?: string[];
 }
 
 export interface UpdateJobRequest {
-  sfJoblink: string;
+  sfJoblink?: string;
+  submissionDueDate?: Date;
 }
 

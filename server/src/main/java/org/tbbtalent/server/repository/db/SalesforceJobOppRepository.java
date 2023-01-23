@@ -16,14 +16,23 @@
 
 package org.tbbtalent.server.repository.db;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.SavedList;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
-public interface SalesforceJobOppRepository extends JpaRepository<SalesforceJobOpp, String> {
+public interface SalesforceJobOppRepository extends JpaRepository<SalesforceJobOpp, Long>,
+    JpaSpecificationExecutor<SalesforceJobOpp> {
+
+    @Query("select distinct j from SalesforceJobOpp j left join j.submissionList list "
+        + " where list = :jobList")
+    SalesforceJobOpp getJobBySubmissionList(@Param("jobList") SavedList jobList);
+
+    @Query(" select j from SalesforceJobOpp j "
+        + " where j.sfId = :sfId ")
+    Optional<SalesforceJobOpp> findBySfId(@Param("sfId") String sfId);
 
 }

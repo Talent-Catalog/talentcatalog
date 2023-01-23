@@ -5,23 +5,23 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.request;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 /**
  * Request that includes paging and sorting fields.
@@ -42,14 +42,10 @@ public class PagedSearchRequest {
     }
 
     public PageRequest getPageRequest() {
-        if (sortFields == null) {
-            return getPageRequestWithoutSort();
-        } else {
-            return PageRequest.of(
-                    pageNumber != null ? pageNumber : 0,
-                    pageSize != null ? pageSize : 25,
-                    Sort.by(sortDirection, sortFields));
-        }
+        return PageRequest.of(
+                pageNumber != null ? pageNumber : 0,
+                pageSize != null ? pageSize : 25,
+                getSort());
     }
 
     public PageRequest getPageRequestWithoutSort() {
@@ -57,6 +53,14 @@ public class PagedSearchRequest {
                 pageNumber != null ? pageNumber : 0,
                 pageSize != null ? pageSize : 25);
 
+    }
+
+    public Sort getSort() {
+        Sort sort = Sort.unsorted();
+        if (sortFields != null) {
+            sort = Sort.by(sortDirection == null ? Direction.ASC : sortDirection, sortFields);
+        }
+        return sort;
     }
 
 }

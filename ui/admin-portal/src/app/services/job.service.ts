@@ -2,7 +2,9 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {Job, UpdateJobRequest} from "../model/job";
+import {Job, JobDocType, SearchJobRequest, UpdateJobRequest} from "../model/job";
+import {SearchResults} from "../model/search-results";
+import {UpdateLinkRequest} from "../components/util/input/input-link/input-link.component";
 
 @Injectable({
   providedIn: 'root'
@@ -18,4 +20,37 @@ export class JobService {
     return this.http.post<Job>(`${this.apiUrl}`, request);
   }
 
+  createSuggestedSearch(id: number, suffix: string): Observable<Job> {
+    return this.http.post<Job>(`${this.apiUrl}/${id}/create-search`, suffix);
+  }
+
+  get(id: number): Observable<Job> {
+    return this.http.get<Job>(`${this.apiUrl}/${id}`);
+  }
+
+  removeSuggestedSearch(id: number, savedSearchId: number): Observable<Job> {
+    return this.http.put<Job>(`${this.apiUrl}/${id}/remove-search`, savedSearchId);
+  }
+
+  searchPaged(request: SearchJobRequest): Observable<SearchResults<Job>> {
+    return this.http.post<SearchResults<Job>>(`${this.apiUrl}/search-paged`, request);
+  }
+
+  update(id: number, request: UpdateJobRequest): Observable<Job> {
+    return this.http.put<Job>(`${this.apiUrl}/${id}`, request);
+  }
+
+  updateJobLink(id: number, docType: JobDocType, updateLinkRequest: UpdateLinkRequest): Observable<Job> {
+    return this.http.put<Job>(`${this.apiUrl}/${id}/${docType}link`, updateLinkRequest);
+  }
+
+  updateSummary(id: number, summary: string): Observable<Job> {
+    return this.http.put<Job>(`${this.apiUrl}/${id}/summary`, summary);
+  }
+
+  uploadJobDoc(id: number, docType: JobDocType, formData: FormData): Observable<Job> {
+    return this.http.post<Job>(
+      `${this.apiUrl}/${id}/upload/${docType}`, formData);
+
+  }
 }

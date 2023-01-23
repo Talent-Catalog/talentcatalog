@@ -38,11 +38,6 @@ import org.tbbtalent.server.model.db.partner.SourcePartner;
 public class SourcePartnerImpl extends PartnerImpl
     implements SourcePartner {
 
-    @Override
-    public String getPartnerType() {
-        return "SourcePartner";
-    }
-
     private boolean defaultPartnerRef;
 
     @Nullable
