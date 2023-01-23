@@ -48,6 +48,7 @@ import lombok.Setter;
  * - Only job opps that have been registered in TC are updated from Salesforce. There will be
  * opportunities on Salesforce that are not reflected on the TC.
  * - Once a day local open opportunities on the TC are updated from Salesforce
+ * (see JobService.updateOpenJobs)
  *
  * @author John Cameron
  */
