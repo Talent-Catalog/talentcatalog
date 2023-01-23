@@ -58,6 +58,13 @@ public class CandidateBuilderSelector {
             "candidateReviewStatusItems",
             "country",
             "nationality",
+            "regoPartnerParam",
+            "regoReferrerParam",
+            "regoUtmCampaign",
+            "regoUtmContent",
+            "regoUtmMedium",
+            "regoUtmSource",
+            "regoUtmTerm",
             "stage"
         ));
 
