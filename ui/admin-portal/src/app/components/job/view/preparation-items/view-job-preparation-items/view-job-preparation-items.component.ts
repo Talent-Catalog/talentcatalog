@@ -13,7 +13,6 @@ import {
   JobPrepItem,
   JobPrepJD,
   JobPrepJobSummary,
-  JobPrepJOI,
   JobPrepSuggestedCandidates,
   JobPrepSuggestedSearches
 } from "../../../../../model/job-prep-item";
@@ -31,7 +30,6 @@ export class ViewJobPreparationItemsComponent implements OnInit, OnChanges {
   @Output() itemSelected = new EventEmitter();
 
   selectedItem: JobPrepItem;
-  progressPercent: number;
   error: any;
 
   private jobPrepSuggestedCandidates = new JobPrepSuggestedCandidates();
@@ -39,7 +37,7 @@ export class ViewJobPreparationItemsComponent implements OnInit, OnChanges {
   jobPrepItems: JobPrepItem[] = [
     new JobPrepJobSummary(),
     new JobPrepJD(),
-    new JobPrepJOI(),
+    //todo temporary comment out: new JobPrepJOI(),
     new JobPrepSuggestedSearches(),
     this.jobPrepSuggestedCandidates,
     new JobPrepDueDate(),
