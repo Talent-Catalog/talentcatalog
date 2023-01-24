@@ -38,19 +38,19 @@
     <form [formGroup]="jobForm">
 
       <!-- SUBMISSION DUE DATE -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="submissionDueDate">Submission Due Date</label>
         <app-date-picker id="submissionDueDate" [control]="jobForm.controls.submissionDueDate"></app-date-picker>
       </div>
 
       <!-- CONTACT EMAIL -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="email">Contact Email</label>
         <input type="email" class="form-control" id="email" placeholder="Enter contact email" [formControlName]="'contactEmail'">
       </div>
 
       <!-- Contact user -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="contactUser">Contact User</label>
         <ng-select
           id="contactUser"
@@ -65,7 +65,7 @@
       </div>
 
       <!-- Recruiter -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="recruiter">Recruiter</label>
         <ng-select
           id="recruiter"

@@ -195,7 +195,7 @@
       <div class="d-flex">
         <div *ngIf="isSavedList()" class="flex-fill w-50 mr-2">
           <form [formGroup]="searchForm">
-            <div class="form-group mb-0 flex-fill">
+            <div class="mb-3 mb-0 flex-fill">
               <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
                      id="keyword" autofocus>
             </div>
@@ -253,7 +253,7 @@
     <form class="filter-form" [formGroup]="searchForm">
 
       <!-- REVIEW STATUS FILTER -->
-      <div *ngIf="isReviewable()" class="form-group col-12">
+      <div *ngIf="isReviewable()" class="mb-3 col-12">
         <ng-select
           id="reviewStatus"
           [items]="statuses"

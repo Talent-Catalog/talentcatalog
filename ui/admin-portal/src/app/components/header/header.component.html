@@ -54,7 +54,7 @@
 
       </ul>
 
-      <div class="form-group" *ngIf="canViewCandidateName()">
+      <div class="mb-3" *ngIf="canViewCandidateName()">
         <input id="quickExternalIdSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doExternalIdSearch"
@@ -68,7 +68,7 @@
         </ng-template>
       </div>
 
-      <div class="form-group" *ngIf="canViewCandidateName()">
+      <div class="mb-3" *ngIf="canViewCandidateName()">
         <input id="quickEmailOrPhoneSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doEmailOrPhoneSearch"

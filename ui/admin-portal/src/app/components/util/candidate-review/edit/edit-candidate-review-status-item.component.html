@@ -37,7 +37,7 @@
 
     <form [formGroup]="form">
 
-      <div class="form-group">
+      <div class="mb-3">
         <label for="reviewStatus">Status</label>
         <ng-select id="reviewStatus" [formControlName]="'reviewStatus'" placeholder="Select">
           <ng-option value="unverified">Unverified</ng-option>
@@ -47,7 +47,7 @@
       </div>
 
       <!-- COMMENT -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="comment">Comment</label>
         <ngx-wig id="comment" formControlName="comment"></ngx-wig>
       </div>

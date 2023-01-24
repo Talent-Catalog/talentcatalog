@@ -18,7 +18,7 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="returnedHome">Have you returned to your home country since entering {{candidate.country.name}}?</label>
     <div class="float-right">
       <app-autosave-status
@@ -32,7 +32,7 @@
   </div>
 
   <div *ngIf="returnedHome === 'Yes'">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="returnedHomeReason">What was the reason for your return?</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="returnedHomeReason" [formControlName]="'returnedHomeReason'"
@@ -40,7 +40,7 @@
     </div>
   </div>
   <div *ngIf="returnedHome === 'No'">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="returnedHomeReasonNo">What are the reasons you have not returned?</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="returnedHomeReasonNo" [formControlName]="'returnedHomeReasonNo'"

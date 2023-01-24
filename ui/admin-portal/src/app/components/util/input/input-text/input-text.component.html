@@ -10,7 +10,7 @@
 
 <div class="modal-body">
   <form [formGroup]="form">
-    <div class="form-group">
+    <div class="mb-3">
       <label *ngIf="message" for="text">{{message}}</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="{{nRows}}"
                 id="text" [formControlName]="'text'"></textarea>

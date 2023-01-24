@@ -18,7 +18,7 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="availImmediate">Are you interested in international employment opportunities now?</label>
     <div class="float-right">
       <app-autosave-status
@@ -32,7 +32,7 @@
   </div>
 
   <div *ngIf="availImmediate === 'Yes'|| availImmediate == 'Unsure'">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="availImmediateJobOps">What type of opportunities are you qualified for?</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="availImmediateJobOps" [formControlName]="'availImmediateJobOps'"
@@ -41,13 +41,13 @@
   </div>
 
   <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="availImmediateReason">Factors preventing immediate availability for international work.</label>
       <ng-select id="availImmediateReason" [formControlName]="'availImmediateReason'" (clear)="setNoResponse('availImmediateReason')"
                  [items]="availImmediateReasonOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
       <label for="availImmediateNotes">If Other, or if you have additional notes please describe here.</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="availImmediateNotes" [formControlName]="'availImmediateNotes'"

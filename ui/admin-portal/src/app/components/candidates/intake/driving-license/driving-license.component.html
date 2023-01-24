@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
 
-  <div class="form-group">
+  <div class="mb-3">
     <label for="canDrive">
       Can you drive?
     </label>
@@ -35,7 +35,7 @@
   </div>
 
   <div *ngIf="canDrive === 'Yes'">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="drivingLicense">
         Do you have a driving license?
       </label>
@@ -45,13 +45,13 @@
     </div>
 
     <div *ngIf="hasDrivingLicense">
-      <div class="form-group">
+      <div class="mb-3">
         <label for="drivingLicenseExp">
           Expiry Date
         </label>
         <app-date-picker id="drivingLicenseExp" [control]="form.controls.drivingLicenseExp"></app-date-picker>
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="drivingLicenseCountryId">
           Country of Issue
         </label>

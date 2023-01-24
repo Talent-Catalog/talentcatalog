@@ -18,7 +18,7 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="workAbroad">
       Have you studied, lived, or worked abroad for more than 90 days?
     </label>
@@ -33,7 +33,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="workAbroad === 'Yes'">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="workAbroadNotes">Please list each country and explain the purpose of work/stay, how many years there and any additional information.</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="workAbroadNotes" [formControlName]="'workAbroadNotes'"

@@ -38,13 +38,13 @@
     <form [formGroup]="candidateForm">
 
       <!-- TITLE -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="title">Title</label>
         <input type="text" class="form-control" id="title" [formControlName]="'title'">
       </div>
 
       <!-- COMMENT -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="comment">Comment</label>
         <ngx-wig id="comment" formControlName="comment"></ngx-wig>
       </div>

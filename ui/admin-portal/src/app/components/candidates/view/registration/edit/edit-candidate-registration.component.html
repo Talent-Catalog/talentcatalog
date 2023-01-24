@@ -38,28 +38,28 @@
     <form [formGroup]="candidateForm">
 
       <!-- Partner reference -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="partnerRef">Partner's internal id for candidate</label>
         <input type="text" class="form-control" id="partnerRef" placeholder=""
                [formControlName]="'partnerRef'">
       </div>
 
       <!-- EXTERNAL ID -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="externalId">External Id</label>
         <input type="text" class="form-control" id="externalId" placeholder=""
                [formControlName]="'externalId'">
       </div>
 
       <!-- EXTERNAL ID SOURCE -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="externalIdSource">External Id Source</label>
         <input type="text" class="form-control" id="externalIdSource" placeholder=""
                [formControlName]="'externalIdSource'">
       </div>
 
       <!-- UNHCR STATUS -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unhcrStatus">What is your registration status with UNHCR?</label>
         <ng-select id="unhcrStatus" [formControlName]="'unhcrStatus'"
                    [items]="unhcrStatusOptions" [clearOnBackspace]="false"
@@ -67,14 +67,14 @@
       </div>
 
       <!-- UNHCR NUMBER -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unhcrNumber">UNHCR Number</label>
         <input type="text" class="form-control" id="unhcrNumber" placeholder=""
                [formControlName]="'unhcrNumber'">
       </div>
 
       <!-- UNHCR CONSENT -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unhcrConsent">UNHCR Consent?</label>
         <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'"
                    [items]="unhcrConsentOptions" [clearOnBackspace]="false"
@@ -82,7 +82,7 @@
       </div>
 
       <!-- UNRWA REGISTERED -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unrwaRegistered">UNRWA Registered?</label>
         <ng-select id="unrwaRegistered" [formControlName]="'unrwaRegistered'"
                    [items]="registeredOptions" [clearOnBackspace]="false"
@@ -90,7 +90,7 @@
       </div>
 
       <!-- UNRWA NUMBER -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unrwaNumber">UNRWA Number</label>
         <input type="text" class="form-control" id="unrwaNumber" placeholder=""
                [formControlName]="'unrwaNumber'">

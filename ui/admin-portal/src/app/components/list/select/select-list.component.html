@@ -31,7 +31,7 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="form-group">
+    <div class="mb-3">
       <div *ngIf="!newList">
         <label>Existing list</label>
         <ng-select
@@ -77,7 +77,7 @@
         <input type="checkbox" class="form-control" formControlName="changeStatuses">
       </div>
 
-      <div *ngIf="changeStatuses" class="form-group">
+      <div *ngIf="changeStatuses" class="mb-3">
         <app-candidate-status-selector
           [candidateStatus]="CandidateStatus.active"
           (statusInfoUpdate)="onStatusInfoUpdate($event)"

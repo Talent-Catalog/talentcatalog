@@ -33,7 +33,7 @@
       <form [formGroup]="assignForm">
 
         <!-- TASKS -->
-        <div class="form-group">
+        <div class="mb-3">
           <label for="task">Task to assign</label>
           <ng-select id="task" appendTo="body" [formControlName]="'task'" [items]="allTasks"
                      [groupBy]="'taskType'" [searchFn]="searchTypeOrName" [clearable]="false"
@@ -42,12 +42,12 @@
 
         <!-- DAYS TO COMPLETE -->
         <div *ngIf="selectedTask">
-          <div class="form-group">
+          <div class="mb-3">
             <div>Description:
               <span class="font-weight-light">{{selectedTask.description}}</span>
             </div>
           </div>
-          <div class="form-group">
+          <div class="mb-3">
             <div>Estimated Due Date:
               <span class="font-weight-light">{{estimatedDueDate | date}}</span>
             </div>

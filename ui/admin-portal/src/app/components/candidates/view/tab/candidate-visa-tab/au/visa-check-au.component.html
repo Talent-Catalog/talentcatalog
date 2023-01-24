@@ -249,7 +249,7 @@ Downside == upside : standard appearance of same question
       <div *ngIf="visaRecord?.candidateVisaJobChecks">
         <form [formGroup]="form">
           <div *ngFor="let jobOpportunity of visaRecord.candidateVisaJobChecks; let i = index;">
-            <div class="form-group align-items-center">
+            <div class="mb-3 align-items-center">
               <input type="radio" [value]="i"
                      name="jobIndex" formControlName="jobIndex"
                      (change)="changeJobOpp($event)">

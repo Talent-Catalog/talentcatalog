@@ -32,7 +32,7 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="name">Name *</label>
       <input type="text" class="form-control" id="name" formControlName="name" required>
       <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-      <div class="form-group">
+      <div class="mb-3">
         <app-joblink [joblink]="salesforceService.joblink(savedSearch)"
                      (updateError)="error=$event"
                      (joblinkValidation)="onJoblinkValidation($event)"
@@ -61,13 +61,13 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="mb-3">
         <label for="savedSearchType">Type *</label>
         <ng-select id="savedSearchType" [formControlName]="'savedSearchType'" [items]="savedSearchTypeInfos" (change)="onSavedSearchTypeChange()"
                    [clearable]="false" placeholder="Select" bindLabel="title" bindValue="savedSearchType"></ng-select>
       </div>
 
-      <div class="form-group" *ngIf="savedSearchTypeSubInfos">
+      <div class="mb-3" *ngIf="savedSearchTypeSubInfos">
         <label for="savedSearchSubtype">Category *</label>
         <ng-select id="savedSearchSubtype" [formControlName]="'savedSearchSubtype'" [items]="savedSearchTypeSubInfos"
                    [clearable]="false" placeholder="Select" bindLabel="title" bindValue="savedSearchSubtype"></ng-select>

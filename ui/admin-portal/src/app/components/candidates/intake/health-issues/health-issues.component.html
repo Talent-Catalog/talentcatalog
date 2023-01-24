@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
 
-  <div class="form-group">
+  <div class="mb-3">
     <label for="healthIssues">
       Do you have any health or disability issues?
     </label>
@@ -19,7 +19,7 @@
     </ng-select>
   </div>
 
-  <div *ngIf="hasNotes" class="form-group">
+  <div *ngIf="hasNotes" class="mb-3">
     <label for="healthIssuesNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="healthIssuesNotes" [formControlName]="'healthIssuesNotes'"

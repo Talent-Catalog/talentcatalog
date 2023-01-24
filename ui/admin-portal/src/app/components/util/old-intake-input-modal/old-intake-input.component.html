@@ -36,12 +36,12 @@
     </div>
 
     <form [formGroup]="form">
-      <div class="form-group">
+      <div class="mb-3">
         <label for="oldIntakeDate">What date was this intake completed</label>
         <app-date-picker id="oldIntakeDate" [control]="form.controls.oldIntakeDate"></app-date-picker>
       </div>
 
-      <div class="form-group">
+      <div class="mb-3">
         <label for="oldIntakeAdmin">Who completed this intake</label>
         <input type="text" class="form-control" id="oldIntakeAdmin" placeholder="" [formControlName]="'oldIntakeAdmin'">
       </div>

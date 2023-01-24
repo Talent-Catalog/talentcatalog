@@ -21,13 +21,13 @@
 
         <div class="row">
 
-          <div class="form-group col-4">
+          <div class="mb-3 col-4">
             <input type="text" class="form-control" placeholder="Search..." aria-label="Search"
                    formControlName="keyword"
                    id="keyword">
           </div>
 
-          <div class="form-group col-4">
+          <div class="mb-3 col-4">
             <ng-select id="type" formControlName="type" placeholder="Select an object type..." [clearable]="false">
               <ng-option value="country">Countries</ng-option>
               <ng-option value="language">Languages</ng-option>
@@ -39,7 +39,7 @@
             </ng-select>
           </div>
 
-          <div class="form-group col-4">
+          <div class="mb-3 col-4">
             <ng-select id="language" [formControlName]="'language'" [items]="systemLanguages" [clearable]="false"
                        placeholder="Select a language..." bindValue="language" bindLabel="label"></ng-select>
           </div>

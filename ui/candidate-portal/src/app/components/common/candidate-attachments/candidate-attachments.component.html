@@ -42,7 +42,7 @@
 
       <div class="col-12">
 
-        <div *ngIf="editTarget?.id !== attachment.id" class="form-group">
+        <div *ngIf="editTarget?.id !== attachment.id" class="mb-3">
           <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}
             <span *ngIf="downloading">
                 ...
@@ -67,7 +67,7 @@
           </p>
         </div>
 
-        <div *ngIf="editTarget?.id == attachment.id" class="form-group">
+        <div *ngIf="editTarget?.id == attachment.id" class="mb-3">
           <label for="attachmentName">{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</label>
           <div class="d-flex">
             <input type="text" class="form-control" placeholder="" id="attachmentName" [(ngModel)]="attachment.name">
@@ -88,7 +88,7 @@
 
       <div class="col-12 col-md-6">
 
-        <div class="form-group m-md-0">
+        <div class="mb-3 m-md-0">
           <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDBY' | translate }}</label>
           <p *ngIf="attachment.createdBy && attachment.createdBy.id == user?.id">{{attachment.createdBy.firstName}} {{attachment.createdBy.lastName}}</p>
           <p *ngIf="attachment.createdBy && attachment.createdBy.id !== user?.id">Admin</p>
@@ -99,7 +99,7 @@
 
       <div class="col-12 col-md-6">
 
-        <div class="form-group m-md-0">
+        <div class="mb-3 m-md-0">
           <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDDATE' | translate }}</label>
           <p>{{attachment.createdDate | date: 'customDateTime'}}</p>
         </div>

@@ -31,7 +31,7 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="form-group" >
+    <div class="mb-3" >
       <label for="name">Name *</label>
       <input class="form-control" id="name" formControlName="name">
       <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"

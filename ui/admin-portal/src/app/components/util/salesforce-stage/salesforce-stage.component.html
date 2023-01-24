@@ -11,30 +11,30 @@
 <div class="modal-body">
   <form [formGroup]="salesforceStageForm">
 
-    <div class="form-group">
+    <div class="mb-3">
       <label for="stage">Candidate Opportunity Stage - order is just a guide, most stages are optional.</label>
       <ng-select id="stage" [formControlName]="'stage'" [items]="candidateOpportunityStageOptions"
                  placeholder="Select" bindLabel="stringValue" bindValue="key" ></ng-select>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
       <label for="nextStep">Next step - please start with date: eg 9Nov21 next step goes here</label>
       <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
       <label for="nextStepDueDate">Next step due date</label>
       <app-date-picker id="nextStepDueDate" [control]="salesforceStageForm.controls.nextStepDueDate"
                        [allowFuture]="true"></app-date-picker>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
       <label for="closingComments">Closing comments</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="closingComments" [formControlName]="'closingComments'"></textarea>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
       <label for="employerFeedback">Employer feedback</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="employerFeedback" [formControlName]="'employerFeedback'"></textarea>

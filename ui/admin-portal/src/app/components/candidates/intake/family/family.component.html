@@ -18,7 +18,7 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="familyMove">
       Do you have non-immediate family members that you would not consider moving without?
     </label>
@@ -34,7 +34,7 @@
     <p class="small mb-0">Note: Explain what is possible with the visa pathway at hand if known, but also explain
       that this will help us determine if other visa pathways are suitable should any opportunities arise.</p>
   </div>
-  <div *ngIf="familyMove === 'Yes'" class="form-group">
+  <div *ngIf="familyMove === 'Yes'" class="mb-3">
     <label for="familyMoveNotes">If yes, please add any additional notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="familyMoveNotes" [formControlName]="'familyMoveNotes'"

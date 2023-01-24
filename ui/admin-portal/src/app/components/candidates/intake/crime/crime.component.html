@@ -18,7 +18,7 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="crimeConvict">
       Have you ever been convicted of a crime?
     </label>
@@ -33,7 +33,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key">
     </ng-select>
   </div>
-  <div *ngIf="hasNotes" class="form-group">
+  <div *ngIf="hasNotes" class="mb-3">
     <label for="crimeConvictNotes">Notes (e.g. If yes, when and where? Can you briefly explain the circumstances?) </label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="crimeConvictNotes" [formControlName]="'crimeConvictNotes'"

@@ -40,7 +40,7 @@
       <div class="row">
 
         <div class="col-12">
-          <div class="form-group">
+          <div class="mb-3">
             <label for="occupationId">Occupation</label>
             <ng-select id="occupationId" name="occupationId" [formControlName]="'occupationId'" [items]="occupations"
                        [clearable]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
@@ -52,7 +52,7 @@
       <div class="row">
 
         <div class="col-12">
-          <div class="form-group">
+          <div class="mb-3">
             <label for="yearsExperience">Years Experience</label>
             <input type="number" min="0" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
           </div>

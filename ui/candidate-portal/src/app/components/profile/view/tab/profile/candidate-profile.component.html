@@ -44,7 +44,7 @@
         <div class="row">
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.CONTACT.EMAIL' | translate }}</label>
               <p>
                 {{candidate?.user?.email || ''}}
@@ -53,7 +53,7 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.CONTACT.PHONE' | translate }}</label>
               <p>
                 {{candidate?.phone || ''}}
@@ -62,7 +62,7 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.CONTACT.WHATSAPP' | translate }}</label>
               <p>
                 {{candidate?.whatsapp || ''}}
@@ -94,7 +94,7 @@
         <div class="row">
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.PERSONAL.FIRSTNAME' | translate }}</label>
               <p>
                 {{candidate?.user?.firstName || ''}}
@@ -103,7 +103,7 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.PERSONAL.LASTNAME' | translate }}</label>
               <p>
                 {{candidate?.user?.lastName || ''}}
@@ -112,7 +112,7 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.PERSONAL.GENDER' | translate }}</label>
               <p>
                 {{candidate?.gender || ''}}
@@ -121,7 +121,7 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.PERSONAL.DOB' | translate }}</label>
               <p>
                 {{(candidate?.dob | date) || ''}}
@@ -132,7 +132,7 @@
           <hr class="w-100 mx-5">
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.PERSONAL.COUNTRY' | translate }}</label>
               <p *ngIf="candidate?.country">
                 {{getCountryName(candidate.country) || ''}}
@@ -141,7 +141,7 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.PERSONAL.YEAROFARRIVAL' | translate }}</label>
               <p>
                 {{candidate?.yearOfArrival || ''}}
@@ -150,7 +150,7 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.PERSONAL.CITY' | translate }}</label>
               <p>
                 {{candidate?.city || ''}}
@@ -159,7 +159,7 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.PERSONAL.STATE' | translate }}</label>
               <p>
                 {{candidate?.state || ''}}
@@ -170,7 +170,7 @@
           <hr class="w-100 mx-5">
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.PERSONAL.NATIONALITY' | translate }}</label>
               <p>
                 {{getCountryName(candidate?.nationality) || '' }}
@@ -179,7 +179,7 @@
           </div>
 
           <div class="col-12 col-md-6" *ngIf="usAfghan">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</label>
               <p>
                 {{candidate?.externalId || '' }}
@@ -190,7 +190,7 @@
           <hr *ngIf="!usAfghan" class="w-100 mx-5">
 
           <div *ngIf="!usAfghan" class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }}</label>
               <p *ngIf="candidate?.unhcrRegistered === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</p>
               <p *ngIf="candidate?.unhcrRegistered === 'No'">{{ 'CONFIRMATION.NO' | translate }}</p>
@@ -199,7 +199,7 @@
           </div>
 
           <div *ngIf="!usAfghan" class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>
               <p>
                 {{candidate?.unhcrNumber || '' }}
@@ -208,7 +208,7 @@
           </div>
 
           <div *ngIf="!usAfghan" class="col-12">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }}</label>
               <p *ngIf="candidate?.unhcrConsent === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</p>
               <p *ngIf="candidate?.unhcrConsent === 'No'">{{ 'CONFIRMATION.NO' | translate }}</p>
@@ -389,7 +389,7 @@
         <div class="row">
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.OTHER.ADDITIONALINFO' | translate }}</label>
               <p>
                 {{candidate?.additionalInfo || ''}}
@@ -398,7 +398,7 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.OTHER.LINKEDIN' | translate }}</label>
               <p>
                 <a href="{{candidate?.linkedInLink}}" target="_blank">{{candidate?.linkedInLink || ''}}</a>
@@ -410,7 +410,7 @@
 
         <div *ngIf="!usAfghan" class="row">
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.OTHER.SURVEY' | translate }}</label>
               <p *ngIf="this.candidate?.surveyType?.name">
                 {{getSurveyTypeName() || ''}}
@@ -418,7 +418,7 @@
             </div>
           </div>
           <div class="col-12 col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label>{{ 'PROFILE.OTHER.SURVEYCOMMENT' | translate }}</label>
               <p>
                 {{candidate?.surveyComment || ''}}

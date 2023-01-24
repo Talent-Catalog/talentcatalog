@@ -18,7 +18,7 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="unrwaRegistered">
       Are you registered with UNRWA?
     </label>
@@ -35,12 +35,12 @@
 
   <div *ngIf="showAll">
     <div *ngIf="unrwaRegistered == 'Yes'">
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unrwaNumber">What is your UNRWA number?</label>
         <input type="text" class="form-control"
                id="unrwaNumber" [formControlName]="'unrwaNumber'">
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unrwaFile">How many people are included on your UNRWA file?</label>
         <input type="number" class="form-control"
                id="unrwaFile" [formControlName]="'unrwaFile'">
@@ -48,7 +48,7 @@
     </div>
 
     <div *ngIf="unrwaRegistered == 'No'">
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unrwaNotRegStatus">
           What best describes your status not being registered?
         </label>
@@ -59,7 +59,7 @@
     </div>
   </div>
   <div *ngIf="hasNotes">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="unrwaNotes">Additional Notes</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="3"
                 id="unrwaNotes" [formControlName]="'unrwaNotes'"

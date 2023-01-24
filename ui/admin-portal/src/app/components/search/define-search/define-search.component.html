@@ -86,7 +86,7 @@
         </div>
         <hr/>
         <div class="row">
-          <div class="form-group col-12 col-md-6">
+          <div class="mb-3 col-12 col-md-6">
             <label for="simpleQueryString">Elasticsearch</label>
             <input id="simpleQueryString" type="text" class="form-control" placeholder="eg welder diesel+mechanic" aria-label="Elastic"
                    formControlName="simpleQueryString"
@@ -94,7 +94,7 @@
           </div>
 
           <!-- STATUS -->
-          <div class="form-group col-12 col-md-3">
+          <div class="mb-3 col-12 col-md-3">
             <label>Status</label>
             <ng-select
               id="statuses"
@@ -133,7 +133,7 @@
           </div>
 
           <!-- ENGLISH LANGUAGE -->
-          <div class="form-group col-12 col-md-3">
+          <div class="mb-3 col-12 col-md-3">
             <label>English</label>
             <app-language-level-form-control #englishLanguage
                                              [model]="englishLanguageModel"
@@ -156,7 +156,7 @@
             <div class="d-flex flex-wrap">
 
               <!-- OCCUPATION MULTISELECT -->
-              <div class="form-group col-12">
+              <div class="mb-3 col-12">
                 <label>Occupation</label>
                 <ng-select
                   id="occupationIds"
@@ -188,14 +188,14 @@
                 <div class="d-flex flex-wrap">
 
                   <!-- MIN AGE -->
-                  <div class="form-group col-6 pl-0">
+                  <div class="mb-3 col-6 pl-0">
                     <label for="minYrs">Min Years Experience</label>
                     <input id="minYrs" type="number" class="form-control"
                            name="minYrs" [formControlName]="'minYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
 
                   <!-- MAX AGE -->
-                  <div class="form-group col-6 pr-0">
+                  <div class="mb-3 col-6 pr-0">
                     <label for="maxYrs">Max Years Experience</label>
                     <input id="maxYrs" type="number" class="form-control"
                            name="maxYrs" [formControlName]="'maxYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
@@ -218,14 +218,14 @@
                 <div class="d-flex flex-wrap">
 
                   <!-- MIN AGE -->
-                  <div class="form-group col-6 pl-0">
+                  <div class="mb-3 col-6 pl-0">
                     <label for="minAge">Min Age</label>
                     <input id="minAge" type="number" class="form-control"
                            name="minAge" [formControlName]="'minAge'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
 
                   <!-- MAX AGE -->
-                  <div class="form-group col-6 pr-0">
+                  <div class="mb-3 col-6 pr-0">
                     <label for="maxAge">Max Age</label>
                     <input id="maxAge" type="number" class="form-control"
                            name="maxAge" [formControlName]="'maxAge'" [readOnly]="elastic()" [placeholder]="'Select'">
@@ -235,7 +235,7 @@
               </div>
 
               <!-- MODIFIED BETWEEN -->
-              <div class="form-group col-12 col-md-6">
+              <div class="mb-3 col-12 col-md-6">
                 <label>Last Modified</label>
                 <app-date-range-picker [readonly]="elastic()"
                   #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
@@ -243,7 +243,7 @@
               </div>
 
               <!-- GENDER -->
-              <div class="form-group col-12 col-md-2">
+              <div class="mb-3 col-12 col-md-2">
                 <label for="gender">Gender</label>
                 <ng-select
                   id="gender"
@@ -258,7 +258,7 @@
 
               <!-- EDUCATION LEVEL -->
 
-<!--              <div class="form-group col-12 col-md-4">-->
+<!--              <div class="mb-3 col-12 col-md-4">-->
 <!--                <label for="minEducationLevel">Education Level (minimum)</label>-->
 <!--                <select class="form-control" id="minEducationLevel" name="minEducationLevel"-->
 <!--                        [formControlName]="'minEducationLevel'" [disabled]="elastic()">-->
@@ -268,7 +268,7 @@
 <!--                  </option>-->
 <!--                </select>-->
 <!--              </div>-->
-              <div class="form-group col-12 col-md-5">
+              <div class="mb-3 col-12 col-md-5">
                 <label>Education Level (minimum)</label>
                 <ng-select
                   id="minEducationLevel"
@@ -283,7 +283,7 @@
               </div>
 
               <!-- EDUCATION MAJOR -->
-              <div class="form-group col-12 col-md-5">
+              <div class="mb-3 col-12 col-md-5">
                 <label>Education major</label>
                 <ng-select
                   id="educationMajorIds"
@@ -314,7 +314,7 @@
           </div>
 
           <!-- OTHER LANGUAGE -->
-          <div class="form-group col-12 col-md-4 mt-2">
+          <div class="mb-3 col-12 col-md-4 mt-2">
             <label>Other Language</label>
             <app-language-level-form-control #otherLanguage
                                              [languages]="languages"
@@ -326,7 +326,7 @@
           </div>
 
           <!-- NATIONALITY -->
-          <div class="form-group col-12 col-md-4 mt-2">
+          <div class="mb-3 col-12 col-md-4 mt-2">
             <label>Nationality (Country)</label>
 
             <div class="operator">
@@ -363,7 +363,7 @@
           </div>
 
           <!-- COUNTRIES  -->
-          <div class="form-group col-12 col-md-4 mt-2">
+          <div class="mb-3 col-12 col-md-4 mt-2">
             <label>Location (Country)</label>
             <ng-select
               id="country"
@@ -387,7 +387,7 @@
             </ng-select>
           </div>
 
-          <div class="form-group col-12 col-md-4 mt-2">
+          <div class="mb-3 col-12 col-md-4 mt-2">
             <label>Survey Type</label>
             <ng-select
               id="surveyType"
@@ -412,7 +412,7 @@
           </div>
 
           <!-- EXCLUSION LIST -->
-          <div class="form-group col-12 col-md-4 mt-2">
+          <div class="mb-3 col-12 col-md-4 mt-2">
             <label for="exclusion">Exclusion list</label>
             <ng-select
               id="exclusion"
@@ -428,7 +428,7 @@
           </div>
 
           <!-- PARTNERS  -->
-          <div class="form-group col-12 col-md-4 mt-2">
+          <div class="mb-3 col-12 col-md-4 mt-2">
             <label>Partners</label>
             <ng-select
               id="partner"

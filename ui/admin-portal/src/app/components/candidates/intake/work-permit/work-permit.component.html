@@ -18,7 +18,7 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="workPermit">Do you have a valid work permit?</label>
     <div class="float-right">
       <app-autosave-status
@@ -32,7 +32,7 @@
     </ng-select>
   </div>
   <div *ngIf="workPermit === 'YesNotDesired' || workPermit === 'No'">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="workPermitDesired">Are you legally able to obtain a work permit in your desired field?</label>
       <ng-select id="workPermitDesired" [formControlName]="'workPermitDesired'" (clear)="setNoResponse('workPermitDesired')"
                  [items]="workPermitDesiredOptions" [clearOnBackspace]="false"
@@ -40,7 +40,7 @@
       </ng-select>
     </div>
     <div *ngIf="workPermitDesired === 'No'">
-      <div class="form-group">
+      <div class="mb-3">
           <label for="workPermitDesiredNotes">If no, please add any additional notes</label>
           <textarea type="text" class="md-textarea-auto form-control" rows="3"
                     id="workPermitDesiredNotes" [formControlName]="'workPermitDesiredNotes'"

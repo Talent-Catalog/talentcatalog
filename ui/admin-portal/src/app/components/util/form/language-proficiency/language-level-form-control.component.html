@@ -27,14 +27,14 @@
   <form [formGroup]="form" class="language-dropdown" *ngIf="showMenu">
 
     <!-- LANGUAGE -->
-    <div class="form-group" [hidden]="languageDisabled">
+    <div class="mb-3" [hidden]="languageDisabled">
       <label>Language</label>
       <ng-select [formControlName]="'languageId'" [items]="languages" [clearOnBackspace]="false"
                  [clearable]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
 
     <!-- SPOKEN LEVEL -->
-    <div class="form-group">
+    <div class="mb-3">
       <label>Spoken Level</label>
 
       <div class="radio" *ngFor="let level of languageLevels">
@@ -47,7 +47,7 @@
     </div>
 
     <!-- WRITTEN LEVEL -->
-    <div class="form-group">
+    <div class="mb-3">
       <label>Written Level</label>
 
       <div class="radio" *ngFor="let level of languageLevels">

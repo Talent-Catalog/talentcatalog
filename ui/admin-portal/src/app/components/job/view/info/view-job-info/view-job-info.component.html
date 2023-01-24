@@ -12,21 +12,21 @@
   <div class="card-body">
     <div class="row">
 
-      <div class="form-group col-sm-12 col-md-4">
+      <div class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-globe"></i>Country</label>
         <div class="form-control-plaintext">
           {{job.country}}
         </div>
       </div>
 
-      <div class="form-group col-sm-12 col-md-4">
+      <div class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fa-solid fa-building"></i>Employer</label>
         <div class="form-control-plaintext">
           {{job.employer}}
         </div>
       </div>
 
-      <div *ngIf="job.submissionList" class="form-group col-sm-12 col-md-4">
+      <div *ngIf="job.submissionList" class="mb-3 col-sm-12 col-md-4">
         <label title="Potential candidates should be added to this list" class="col-form-label"
                [ngClass]="{'alert alert-danger': highlightCandidates()}">
           <i class="fas fa-list"></i>Submission List</label>
@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      <div *ngIf="job.exclusionList" class="form-group col-sm-12 col-md-4">
+      <div *ngIf="job.exclusionList" class="mb-3 col-sm-12 col-md-4">
         <label title="Candidates who have already been considered and rejected for this job should be added to this list" class="col-form-label">
           <i class="fas fa-list"></i>Exclusion List</label>
 
@@ -45,7 +45,7 @@
         </div>
       </div>
 
-      <div *ngIf="job.recruiterPartner" class="form-group col-sm-12 col-md-4">
+      <div *ngIf="job.recruiterPartner" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-id-badge"></i>Recruiter</label>
 
         <div class="form-control-plaintext">
@@ -55,7 +55,7 @@
         </div>
       </div>
 
-      <div class="form-group col-sm-12 col-md-4">
+      <div class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-envelope"></i>Job Contact Email</label>
 
         <div *ngIf="isSpecialContactEmail()" class="form-control-plaintext">
@@ -67,7 +67,7 @@
         </div>
       </div>
 
-      <div *ngIf="job.contactUser" class="form-group col-sm-12 col-md-4">
+      <div *ngIf="job.contactUser" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-user"></i>Contact</label>
 
         <div class="form-control-plaintext">
@@ -78,7 +78,7 @@
         </div>
       </div>
 
-      <div class="form-group col-sm-12 col-md-4">
+      <div class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
           <i class="fa-regular fa-calendar-days"></i>Submission Due</label>
 
@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      <div *ngIf="job.createdDate" class="form-group col-sm-12 col-md-4">
+      <div *ngIf="job.createdDate" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Created</label>
 
         <div class="form-control-plaintext">
@@ -101,7 +101,7 @@
         </div>
       </div>
 
-      <div *ngIf="job.updatedDate" class="form-group col-sm-12 col-md-4">
+      <div *ngIf="job.updatedDate" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Updated</label>
 
         <div class="form-control-plaintext">
@@ -115,7 +115,7 @@
         </div>
       </div>
 
-      <div *ngIf="job.publishedBy" class="form-group col-sm-12 col-md-4">
+      <div *ngIf="job.publishedBy" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Published</label>
 
         <div class="form-control-plaintext">
