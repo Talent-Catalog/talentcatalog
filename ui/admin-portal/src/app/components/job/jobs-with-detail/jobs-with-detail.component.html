@@ -2,6 +2,7 @@
   <div class="col-sm-{{mainPanelColWidth}}">
 
     <app-jobs
+      [searchBy]="searchBy"
       (jobSelection)="onJobSelected($event)"
     >
     </app-jobs>
@@ -16,8 +17,20 @@
       </div>
 
       <div *ngIf="selectedJob">
+        <strong>{{selectedJob.name}}</strong>
+        <button class="btn" (click)="doOpenJob()"><i class="fas fa-expand" title="Open"></i></button>
+        <button class="btn" (click)="doToggleStarred()">
+          <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
+          <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
+        </button>
+
+        <div class="alert alert-danger" *ngIf="error">
+          {{error}}
+        </div>
+
         <app-view-job-summary
-          [job]="selectedJob">
+          [job]="selectedJob"
+        >
         </app-view-job-summary>
 
         <hr/>

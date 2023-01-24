@@ -17,7 +17,7 @@
 import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
-import {SalesforceJobOpp} from "./job";
+import {JobIds} from "./job";
 import {PartnerType} from "./partner";
 
 export interface HasName {
@@ -100,6 +100,13 @@ export enum SearchBy {
   registeredJob
 }
 
+export enum SearchJobsBy {
+  all,
+  mine,
+  starredByMe,
+  live
+}
+
 /**
  * Defines what TBB Salesforce url should look like.
  * <p/>
@@ -158,7 +165,7 @@ export interface CandidateSource extends Auditable {
   exportColumns?: ExportColumn[];
   fixed: boolean;
   global: boolean;
-  sfJobOpp?: SalesforceJobOpp;
+  sfJobOpp?: JobIds;
   users?: User[];
   watcherUserIds?: number[];
 }
@@ -255,11 +262,11 @@ export function isMine(source: CandidateSource, auth: AuthService) {
   return mine;
 }
 
-export function isStarredByMe(source: CandidateSource, auth: AuthService) {
+export function isStarredByMe(users: User[], auth: AuthService) {
   let starredByMe: boolean = false;
   const me: User = auth.getLoggedInUser();
-  if (source && me) {
-    starredByMe = source.users?.find(u => u.id === me.id ) !== undefined;
+  if (users && me) {
+    starredByMe = users.find(u => u.id === me.id ) !== undefined;
   }
   return starredByMe;
 }

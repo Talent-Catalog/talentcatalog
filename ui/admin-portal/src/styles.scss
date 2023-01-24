@@ -69,6 +69,22 @@ h1 {
   margin-bottom: 2rem;
 }
 
+//Table row highlighting
+.table-hover> tbody> tr:hover{
+  background-color: fade-out($color-primary, 0.8)
+}
+
+//Current item - the one whose detailed data is displayed
+tr.current {
+  background-color: fade-out($color-primary-darker, 0.8)
+}
+
+//Selected item(s)- item is one of the selected ones (those with checked selection checkbox)
+tr.selected {
+  background-color: fade-out($color-secondary-lighter, 0.7)
+}
+//end - Table row highlighting
+
 #savedLists .multiselect-dropdown .dropdown-btn{
   margin-bottom: 20px;
 }

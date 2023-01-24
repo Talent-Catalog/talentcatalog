@@ -32,6 +32,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 
@@ -42,7 +44,8 @@ import org.tbbtalent.server.request.job.SearchJobRequest;
  */
 public class JobSpecification {
 
-    public static Specification<SalesforceJobOpp> buildSearchQuery(final SearchJobRequest request) {
+    public static Specification<SalesforceJobOpp> buildSearchQuery(
+        final SearchJobRequest request, User loggedInUser) {
         return (job, query, builder) -> {
             Predicate conjunction = builder.conjunction();
 
@@ -96,6 +99,63 @@ public class JobSpecification {
             //CLOSED
             if (request.getSfOppClosed() != null) {
                 conjunction.getExpressions().add(builder.equal(job.get("closed"), request.getSfOppClosed()));
+            }
+
+            //PUBLISHED
+            if (request.getPublished() != null) {
+                Predicate published;
+                if (request.getPublished()) {
+                    published = builder.isNotNull(job.get("publishedBy"));
+                } else {
+                    published = builder.isNull(job.get("publishedBy"));
+                }
+                conjunction.getExpressions().add(published);
+            }
+
+            //ACCEPTING
+            if (request.getAccepting() != null) {
+                conjunction.getExpressions().add(builder.equal(job.get("accepting"),
+                    request.getAccepting()));
+            }
+
+            // (starred OR owned)
+            Predicate ors = builder.disjunction();
+
+            //If owned by this user (ie by logged in user)
+            if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
+                if (loggedInUser != null) {
+                    ors.getExpressions().add(
+                        builder.equal(job.get("createdBy"), loggedInUser.getId())
+                    );
+                }
+            }
+
+            //If owned by this user's partner
+            if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+                if (loggedInUser != null) {
+                    Partner loggedInUserPartner = loggedInUser.getPartner();
+                    if (loggedInUserPartner != null) {
+                        Join<Object, Object> owner = job.join("createdBy");
+                        Join<Object, Object> partner = owner.join("partner");
+                        ors.getExpressions().add(
+                            builder.equal(partner.get("id"), loggedInUserPartner.getId())
+                        );
+                    }
+                }
+            }
+
+            //If starred is specified, only supply jobs starred by the owner
+            if (request.getStarred() != null && request.getStarred()) {
+                if (loggedInUser != null) {
+                    Join<Object, Object> users = job.join("starringUsers");
+                    ors.getExpressions().add(
+                        builder.equal(users.get("id"), loggedInUser.getId())
+                    );
+                }
+            }
+
+            if (ors.getExpressions().size() != 0) {
+                conjunction.getExpressions().add(ors);
             }
 
             return conjunction;

@@ -306,7 +306,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
-    public Set<Long> searchCandidates(long savedSearchId)
+    public @NotNull Set<Long> searchCandidates(long savedSearchId)
         throws NoSuchObjectException {
         SearchCandidateRequest searchRequest =
             loadSavedSearch(savedSearchId);
@@ -836,6 +836,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         return getSelectionList(id, loggedInUser.getId());
+    }
+
+    @Override
+    public boolean isEmpty(long id) throws NoSuchObjectException {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        final Set<Long> candidateIds = searchCandidates(savedSearch.getId());
+        return candidateIds.isEmpty();
     }
 
     @Override

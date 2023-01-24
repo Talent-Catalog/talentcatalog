@@ -34,6 +34,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.request.job.JobIntakeData;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
@@ -46,11 +47,13 @@ public class JobAdminApi implements
     ITableApi<SearchJobRequest, UpdateJobRequest, UpdateJobRequest> {
 
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
+    private final JobIntakeDataBuilderSelector intakeDataBuilderSelector;
 
     private final JobService jobService;
 
     public JobAdminApi(JobService jobService) {
         this.jobService = jobService;
+        this.intakeDataBuilderSelector = new JobIntakeDataBuilderSelector();
     }
 
     @Override
@@ -73,6 +76,20 @@ public class JobAdminApi implements
         @PathVariable("id") long id, @Valid @RequestBody String suffix)
         throws NoSuchObjectException {
         SalesforceJobOpp job = jobService.createSuggestedSearch(id, suffix);
+        return jobDto().build(job);
+    }
+
+    @GetMapping("{id}/intake")
+    public Map<String, Object> getIntakeData(@PathVariable("id") long id) {
+        SalesforceJobOpp job = jobService.getJob(id);
+        DtoBuilder builder = intakeDataBuilderSelector.selectBuilder();
+        return builder.build(job);
+    }
+
+    @PutMapping("{id}/publish")
+    public @NotNull Map<String, Object> publishJob(@PathVariable("id") long id)
+        throws NoSuchObjectException {
+        SalesforceJobOpp job = jobService.publishJob(id);
         return jobDto().build(job);
     }
 
@@ -100,6 +117,12 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
+    @PutMapping("{id}/intake")
+    public void updateIntakeData(
+        @PathVariable("id") long id, @RequestBody JobIntakeData data) {
+        jobService.updateIntakeData(id, data);
+    }
+
     @PutMapping("{id}/jdlink")
     public @NotNull Map<String, Object> updateJdLink(
         @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
@@ -116,9 +139,17 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
+    @PutMapping("{id}/starred")
+    public @NotNull Map<String, Object> updateStarred(
+        @PathVariable("id") long id, @Valid @RequestBody boolean starred)
+        throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateStarred(id, starred);
+        return jobDto().build(job);
+    }
+
     @PutMapping("{id}/summary")
     public @NotNull Map<String, Object> updateSummary(
-        @PathVariable("id") long id, @Valid @RequestBody String summary)
+        @PathVariable("id") long id, @Valid @RequestBody(required = false) String summary)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateJobSummary(id, summary);
         return jobDto().build(job);
@@ -144,6 +175,7 @@ public class JobAdminApi implements
         return new DtoBuilder()
             .add("id")
             .add("sfId")
+            .add("accepting")
             .add("contactEmail")
             .add("contactUser", userDto())
             .add("country")
@@ -157,6 +189,7 @@ public class JobAdminApi implements
             .add("publishedDate")
             .add("recruiterPartner", partnerDto())
             .add("stage")
+            .add("starringUsers", userDto())
             .add("submissionDueDate")
             .add("submissionList", savedListBuilderSelector.selectBuilder())
             .add("suggestedList", savedListBuilderSelector.selectBuilder())
@@ -175,6 +208,7 @@ public class JobAdminApi implements
 
     private DtoBuilder userDto() {
         return new DtoBuilder()
+            .add("id")
             .add("firstName")
             .add("lastName")
             .add("email")

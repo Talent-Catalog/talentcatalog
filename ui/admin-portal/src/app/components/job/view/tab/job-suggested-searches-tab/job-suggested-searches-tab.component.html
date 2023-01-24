@@ -1,5 +1,6 @@
 <app-view-job-suggested-searches
   [job]="job"
-  [editable]="editable">
-
+  [editable]="editable"
+  [highlightItem]="highlightItem"
+  (jobUpdated)="onJobUpdated($event)">
 </app-view-job-suggested-searches>

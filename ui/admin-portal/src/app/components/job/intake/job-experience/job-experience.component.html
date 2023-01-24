@@ -1,0 +1,18 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="experience">
+      Employment Experience
+    </label>
+    <div *ngIf="editable" class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <ngx-wig id="experience" [formControlName]="'experience'"
+    ></ngx-wig>
+  </div>
+</form>

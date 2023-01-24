@@ -3,10 +3,14 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb align-items-center">
       <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-      <li *ngIf="job.name" class="breadcrumb-item active" aria-current="page">{{job.name}}</li>
+      <li *ngIf="job.name" class="breadcrumb-item active" aria-current="page">Job / {{job.name}}</li>
     </ol>
 
   </nav>
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
 
   <div class="d-flex justify-content-between align-items-center">
     <h1>{{job.name}}
@@ -18,24 +22,38 @@
         <a *ngIf="job.submissionList?.folderjdlink" [href]="job.submissionList.folderjdlink" target="_blank">
           <i class="fab fa-google-drive" title="Show job's Google Doc folder"></i>
         </a>
+        <div class="btn" (click)="doToggleStarred()">
+          <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
+          <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
+        </div>
+
       </span>
     </h1>
 
-<!--todo reinstate this once delayed publishing is introduced -->
-    <!--    <div *ngIf="!job.publishedDate">-->
-<!--      <button type="button" class="btn btn-outline-dark mr-2"-->
-<!--              (click)="publishJob()">Publish Job</button>-->
-<!--    </div>-->
+    <div *ngIf="!job.publishedBy">
+      <button type="button" class="btn btn-outline-dark mr-2"
+              (click)="publishJob()"
+              title="Publish job so that others can see it">
+      Publish Job</button>
+      <i *ngIf="publishing" class="fas fa-spinner fa-spin"></i>
+    </div>
 
     <div class="col-sm-4">
       <app-view-job-summary
         [job]="job"
-        [nRows]=4
+        [nRows]=2
+        [highlight]="currentPrepItemIsSummary()"
       >
       </app-view-job-summary>
     </div>
 
   </div>
+
+  <app-view-job-preparation-items
+    [job] ="job"
+    (itemSelected)="onPrepItemSelected($event)"
+  >
+  </app-view-job-preparation-items>
 
   <div class="row">
     <div class="col-sm-{{mainPanelColWidth}}">
@@ -49,6 +67,8 @@
             <app-job-general-tab
               [job]="job"
               [editable]="!loggedInUser.readOnly"
+              [highlightItem]="currentPrepItem"
+              (jobUpdated)="onJobUpdated($event)"
             >
             </app-job-general-tab>
           </ng-template>
@@ -60,21 +80,35 @@
           <ng-template ngbNavContent>
             <app-job-suggested-searches-tab
               [job]="job"
-              [editable]="!loggedInUser.readOnly">
+              [editable]="!loggedInUser.readOnly"
+              [highlightItem]="currentPrepItem"
+              (jobUpdated)="onJobUpdated($event)">
             </app-job-suggested-searches-tab>
           </ng-template>
         </ng-container>
 
         <!-- UPLOADS -->
         <ng-container ngbNavItem="Uploads">
-          <a ngbNavLink>Job Detail (JD/JOI)</a>
+          <a ngbNavLink>Job Description</a>
           <ng-template ngbNavContent>
             <app-job-upload-tab
               [job]="job"
               [editable]="!loggedInUser.readOnly"
+              [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)"
             >
             </app-job-upload-tab>
+          </ng-template>
+        </ng-container>
+
+        <!-- JOB INTAKE -->
+        <ng-container ngbNavItem="Intake">
+          <a ngbNavLink>Job Intake (JOI)</a>
+          <ng-template ngbNavContent>
+            <app-job-intake-tab
+              [job]="job"
+            >
+            </app-job-intake-tab>
           </ng-template>
         </ng-container>
 

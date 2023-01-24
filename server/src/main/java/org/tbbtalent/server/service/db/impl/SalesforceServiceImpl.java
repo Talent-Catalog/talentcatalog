@@ -63,6 +63,7 @@ import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
@@ -112,7 +113,7 @@ import reactor.core.publisher.Mono;
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
-    private static final String apiVersion = "v54.0";
+    private static final String apiVersion = "v56.0";
     private static final String candidateNumberSFFieldName = "TBBid__c";
     private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
     private static final String candidateContactTypeSFFieldValue = "Candidate";
@@ -125,7 +126,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final String contactRetrievalFields =
         "Id,AccountId," + candidateNumberSFFieldName;
     private final String candidateOpportunityRetrievalFields =
-        "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName,IsClosed,"
+        "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName,IsClosed,Candidate_TC_id__c,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
         "Id,RecordTypeId,Name,AccountId,OwnerId,AccountCountry__c,AccountName__c,StageName,IsClosed";
@@ -160,6 +161,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
+        classSfPathMap.put(EmployerOppStageUpdateRequest.class, "Opportunity");
         classSfCompositePathMap.put(ContactRequestComposite.class, "Contact");
         classSfCompositePathMap.put(OpportunityRequestComposite.class, "Opportunity");
 
@@ -181,7 +183,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             Map<String, Candidate> oppIdCandidateMap = buildCandidateOppsMap(candidates, id);
 
             //Now find the candidate opp ids we actually have for candidate opportunities for this job.
-            List<Opportunity> candidateOpps = findCandidateOpportunities(id);
+            List<Opportunity> candidateOpps = findCandidateOpportunitiesByJobOpp(id);
             for (Opportunity candidateOpp : candidateOpps) {
                 Candidate candidate = oppIdCandidateMap.get(
                     candidateOpp.getTBBCandidateExternalId__c());
@@ -211,8 +213,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Override
     @NonNull
     public Contact createOrUpdateContact(@NonNull Candidate candidate)
-        throws GeneralSecurityException, WebClientException,
-        SalesforceException {
+        throws WebClientException, SalesforceException {
 
         //Create a contact request using data from the candidate
         ContactRequest contactRequest = new ContactRequest(null, candidate);
@@ -242,7 +243,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Override
     @NonNull
     public List<Contact> createOrUpdateContacts(@NonNull Collection<Candidate> candidates)
-        throws GeneralSecurityException, WebClientException, SalesforceException {
+        throws WebClientException, SalesforceException {
         List<ContactRecordComposite> contactRequests = new ArrayList<>();
         for (Candidate candidate : candidates) {
             //Create a contact request using data from the candidate
@@ -289,7 +290,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public void createOrUpdateCandidateOpportunities(
         List<Candidate> candidates, SalesforceOppParams salesforceOppParams,
         SalesforceJobOpp jobOpportunity)
-        throws GeneralSecurityException, WebClientException, SalesforceException {
+        throws WebClientException, SalesforceException {
 
         //Find out which candidates already have opportunities (so just need to be updated)
         //and which need opportunities to be created.
@@ -357,7 +358,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             buildCandidateOppsMap(candidates, jobOpportunity.getSfId());
 
         //Now find the ids we actually have for candidate opportunities for this job.
-        List<Opportunity> opps = findCandidateOpportunities(jobOpportunity.getSfId());
+        List<Opportunity> opps = findCandidateOpportunitiesByJobOpp(jobOpportunity.getSfId());
 
         //Remove these from map, leaving just those that need to be created
         for (Opportunity opp : opps) {
@@ -411,14 +412,37 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public List<Contact> findCandidateContacts()
-        throws GeneralSecurityException, WebClientException {
+    public List<Contact> findCandidateContacts() throws WebClientException {
         return findContacts(candidateNumberSFFieldName + " > 0");
     }
 
+    @NonNull
     @Override
-    public List<Contact> findContacts(String condition)
-        throws GeneralSecurityException, WebClientException {
+    public List<Opportunity> findCandidateOpportunities(String condition)
+        throws WebClientException {
+
+        //Extra condition of Candidate_TC_id__c > '0' rules out Job opportunities for which
+        //it will be ''.
+        String query =
+            "SELECT " + candidateOpportunityRetrievalFields +
+                " FROM Opportunity WHERE Candidate_TC_id__c > '0' AND " + condition;
+
+        ClientResponse response = executeQuery(query);
+        OpportunityQueryResult result =
+            response.bodyToMono(OpportunityQueryResult.class).block();
+
+        //Retrieve the contact from the response
+        List<Opportunity> opportunities = new ArrayList<>();
+        if (result != null) {
+            opportunities = result.records;
+        }
+
+        return opportunities;
+    }
+
+    @Override
+    @NonNull
+    public List<Contact> findContacts(String condition) throws WebClientException {
         String query =
             "SELECT " + contactRetrievalFields +
                 " FROM Contact WHERE " + condition;
@@ -428,7 +452,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             response.bodyToMono(ContactQueryResult.class).block();
 
         //Retrieve the contact from the response
-        List<Contact> contacts = null;
+        List<Contact> contacts = new ArrayList<>();
         if (result != null) {
             contacts = result.records;
         }
@@ -445,30 +469,26 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public List<Opportunity> fetchJobOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds) {
         List<Opportunity> opps = new ArrayList<>();
         if (sfIds.size() > 0) {
-            try {
-                //Construct the String of ids for the WHERE clause
-                final String idsAsString = sfIds.stream().map(s -> "'" + s + "'")
-                    .collect(Collectors.joining(","));
+            //Construct the String of ids for the WHERE clause
+            final String idsAsString = sfIds.stream().map(s -> "'" + s + "'")
+                .collect(Collectors.joining(","));
 
-                String query =
-                    "SELECT " + jobOpportunityRetrievalFields +
-                        " FROM Opportunity WHERE "
-                        + "(Id IN (" + idsAsString + ")"
-                        + " OR (IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
-                        + salesforceConfig.getDaysAgoRecent() + "))"
-                    + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
+            String query =
+                "SELECT " + jobOpportunityRetrievalFields +
+                    " FROM Opportunity WHERE "
+                    + "(Id IN (" + idsAsString + ")"
+                    + " OR (IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
+                    + salesforceConfig.getDaysAgoRecent() + "))"
+                + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
 
-                ClientResponse response = executeQuery(query);
+            ClientResponse response = executeQuery(query);
 
-                OpportunityQueryResult result =
-                    response.bodyToMono(OpportunityQueryResult.class).block();
+            OpportunityQueryResult result =
+                response.bodyToMono(OpportunityQueryResult.class).block();
 
-                //Retrieve the contact from the response
-                if (result != null) {
-                    opps = result.records;
-                }
-            } catch (GeneralSecurityException ex) {
-                throw new SalesforceException("Failed to fetch Opportunities: " + ex);
+            //Retrieve the contact from the response
+            if (result != null) {
+                opps = result.records;
             }
         }
         return opps;
@@ -477,36 +497,28 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Nullable
     @Override
     public Opportunity fetchJobOpportunity(String id) throws SalesforceException {
-        try {
-            return findOpportunity(id, jobOpportunityRetrievalFields);
-        } catch (GeneralSecurityException e) {
-            throw new SalesforceException("Failed to fetch opportunity " + id + ": " + e);
-        }
+        return findOpportunity(id, jobOpportunityRetrievalFields);
     }
 
-    private List<Opportunity> findCandidateOpportunities(String jobOpportunityId)
+    private List<Opportunity> findCandidateOpportunitiesByJobOpp(String jobOpportunityId)
         throws SalesforceException {
-        try {
-            String query =
-                "SELECT " + candidateOpportunityRetrievalFields +
-                    " FROM Opportunity WHERE Parent_Opportunity__c='" +
-                    jobOpportunityId + "'";
+        String query =
+            "SELECT " + candidateOpportunityRetrievalFields +
+                " FROM Opportunity WHERE Parent_Opportunity__c='" +
+                jobOpportunityId + "'";
 
-            ClientResponse response = executeQuery(query);
+        ClientResponse response = executeQuery(query);
 
-            OpportunityQueryResult result =
-                response.bodyToMono(OpportunityQueryResult.class).block();
+        OpportunityQueryResult result =
+            response.bodyToMono(OpportunityQueryResult.class).block();
 
-            //Retrieve the contact from the response
-            List<Opportunity> opps = null;
-            if (result != null) {
-                opps = result.records;
-            }
-
-            return opps;
-        } catch (GeneralSecurityException ex) {
-            throw new SalesforceException("Failed to find Candidate Opportunities: " + ex);
+        //Retrieve the contact from the response
+        List<Opportunity> opps = null;
+        if (result != null) {
+            opps = result.records;
         }
+
+        return opps;
     }
 
     static class OpportunityQueryResult extends QueryResult {
@@ -518,7 +530,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Nullable
     public <T> T findRecordFieldsFromId(
         String objectType, String id, String fields, Class<T> cl)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
         ClientResponse response = executeRecordFieldsGet(objectType, id, fields);
         T result = response.bodyToMono(cl).block();
         return result;
@@ -549,12 +561,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Override
     @Nullable
     public Opportunity findOpportunity(String sfId)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
         return findOpportunity(sfId, "Id,Name,AccountId,OwnerId,AccountCountry__c");
     }
 
     private Opportunity findOpportunity(String sfId, String fields)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
         Opportunity opportunity = null;
         if (sfId != null) {
             try {
@@ -589,7 +601,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Override
     public void updateCandidateOpportunities(
         List<EmployerCandidateFeedbackData> feedbacks, SalesforceJobOpp jobOpportunity)
-        throws GeneralSecurityException, WebClientException, SalesforceException {
+        throws WebClientException, SalesforceException {
 
         String recordType = getCandidateOpportunityRecordType(jobOpportunity);
 
@@ -601,7 +613,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     private void executeCandidateOpportunityRequests(
-        List<CandidateOpportunityRecordComposite> requests) throws GeneralSecurityException {
+        List<CandidateOpportunityRecordComposite> requests) throws SalesforceException {
 
         OpportunityRequestComposite req = new OpportunityRequestComposite();
         req.setRecords(requests);
@@ -632,8 +644,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     private List<CandidateOpportunityRecordComposite> buildCandidateOpportunityRequests(
         List<EmployerCandidateFeedbackData> feedbacks, String recordType,
-        SalesforceJobOpp jobOpportunity)
-        throws GeneralSecurityException {
+        SalesforceJobOpp jobOpportunity) throws SalesforceException {
 
         //Figure out which candidates need an opp created.
         //Extract all candidates from feedback.
@@ -696,7 +707,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request)
-        throws GeneralSecurityException {
+        throws SalesforceException {
 
         String sfJoblink = request.getSfJoblink();
 
@@ -710,6 +721,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
 
+    @Override
+    public void updateEmployerOpportunityStage(
+        String sfId, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
+        throws SalesforceException, WebClientException {
+
+        EmployerOppStageUpdateRequest sfRequest =
+            new EmployerOppStageUpdateRequest(stage, nextStep, dueDate);
+
+        executeUpdate(sfId, sfRequest);
+    }
+
     /**
      * Execute general purpose Salesforce create.
      * <p/>
@@ -717,11 +739,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      *
      * @param obj Object supplying data used to create corresponding Salesforce record.
      * @return CreateRecordResult - contains SF id of created record.
-     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException       if there is a problem connecting to Salesforce
      */
     private CreateRecordResult executeCreate(Object obj)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
 
         Class<?> cl = obj.getClass();
         String path = classSfPathMap.get(cl);
@@ -748,11 +770,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      *
      * @param id  Salesforce id for the record
      * @param obj Object supplying data used to update the Salesforce record.
-     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException       if there is a problem connecting to Salesforce
      */
     private void executeUpdate(String id, Object obj)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
 
         Class<?> cl = obj.getClass();
         String path = classSfPathMap.get(cl);
@@ -795,11 +817,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * @param id             Value of the externalID
      * @param obj            Object supplying data used to update the Salesforce record.
      * @return ClientResponse
-     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException       if there is a problem connecting to Salesforce
      */
     private UpsertResult executeUpsert(String externalIdName, String id, Object obj)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
 
         Class<?> cl = obj.getClass();
         String path = classSfPathMap.get(cl);
@@ -825,11 +847,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      *                       with candidate's candidateNumber.
      * @param obj            Object supplying data used to update the Salesforce record.
      * @return ClientResponses
-     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException       if there is a problem connecting to Salesforce
      */
     private UpsertResult[] executeUpserts(String externalIdName, HasSize obj)
-        throws GeneralSecurityException {
+        throws SalesforceException {
 
         Class<?> cl = obj.getClass();
         String path = classSfCompositePathMap.get(cl);
@@ -861,11 +883,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      *
      * @param query Query to be executed
      * @return ClientResponse - can use bodyToMono method to extract into an object.
-     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException       if there is a problem connecting to Salesforce
      */
     private ClientResponse executeQuery(String query)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
 
         WebClient.RequestHeadersSpec<?> spec = webClient.get()
             .uri(uriBuilder -> uriBuilder.path("/query")
@@ -881,12 +903,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * @param id         ID of record
      * @param fields     Fields requested
      * @return ClientResponse resulting from Get
-     * @throws GeneralSecurityException if there is a problem with our keys and digital signing.
+     * @throws SalesforceException if there is a problem with our keys and digital signing.
      * @throws WebClientException       if there is a problem connecting to Salesforce
      */
     private ClientResponse executeRecordFieldsGet(
         String objectType, String id, String fields)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
         WebClient.RequestHeadersSpec<?> spec = webClient.get()
             .uri("/sobjects/" + objectType + "/" + id +
                 "/?fields=" + fields);
@@ -900,11 +922,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      *
      * @param spec for the request
      * @return ClientResponse received
-     * @throws GeneralSecurityException if there is a problem with our keys and digital signing.
+     * @throws SalesforceException if there is a problem with our keys and digital signing.
      * @throws WebClientException       if there is a problem connecting to Salesforce
      */
     private ClientResponse executeWithRetry(WebClient.RequestHeadersSpec<?> spec)
-        throws GeneralSecurityException, SalesforceException {
+        throws SalesforceException {
         if (accessToken == null) {
             accessToken = requestAccessToken();
         }
@@ -967,10 +989,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * See https://help.salesforce.com/articleView?id=remoteaccess_oauth_jwt_flow.htm&type=5
      *
      * @return Access token provided by Salesforce
-     * @throws GeneralSecurityException if there is a problem with our keys and digital signing.
+     * @throws SalesforceException if there is a problem with our keys and digital signing.
      */
     private @NonNull
-    String requestAccessToken() throws GeneralSecurityException {
+    String requestAccessToken() throws SalesforceException {
         String jwtBearerToken = makeJwtBearerToken();
 
         WebClient client = WebClient
@@ -990,7 +1012,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             .block();
 
         if (response == null) {
-            throw new GeneralSecurityException("Null BearerTokenResponse");
+            throw new SalesforceException("Null BearerTokenResponse");
         }
 
         return response.access_token;
@@ -1017,9 +1039,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * This code is based on https://help.salesforce.com/articleView?id=remoteaccess_oauth_jwt_flow.htm&type=5
      *
      * @return JWTBearerToken
-     * @throws GeneralSecurityException If there are signing problems
+     * @throws SalesforceException If there are signing problems
      */
-    private String makeJwtBearerToken() throws GeneralSecurityException {
+    private String makeJwtBearerToken() throws SalesforceException {
         String header = "{\"alg\":\"RS256\"}";
         String claimTemplate = "'{'" +
             "\"iss\": \"{0}\", " +
@@ -1049,17 +1071,21 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Add the encoded claims object
         token.append(Encoders.BASE64URL.encode(payload.getBytes(StandardCharsets.UTF_8)));
 
-        //Sign the JWT Header + "." + JWT Claims Object
-        Signature signature = Signature.getInstance("SHA256withRSA");
-        signature.initSign(privateKey);
-        signature.update(token.toString().getBytes(StandardCharsets.UTF_8));
-        String signedPayload = Encoders.BASE64URL.encode(signature.sign());
+        try {
+            //Sign the JWT Header + "." + JWT Claims Object
+            Signature signature = Signature.getInstance("SHA256withRSA");
+            signature.initSign(privateKey);
+            signature.update(token.toString().getBytes(StandardCharsets.UTF_8));
+            String signedPayload = Encoders.BASE64URL.encode(signature.sign());
 
-        //Separate with a period
-        token.append(".");
+            //Separate with a period
+            token.append(".");
 
-        //Add the encoded signature
-        token.append(signedPayload);
+            //Add the encoded signature
+            token.append(signedPayload);
+        } catch (GeneralSecurityException ex) {
+            throw new SalesforceException(ex.getMessage());
+        }
 
         return token.toString();
     }
@@ -1326,6 +1352,24 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             CVs_Folder__c = request.getFolderlink();
             Job_Description_Folder__c = request.getFolderjdlink();
             Talent_Catalog_List__c = request.getListlink();
+        }
+    }
+
+    class EmployerOppStageUpdateRequest extends LinkedHashMap<String, Object> {
+
+        public EmployerOppStageUpdateRequest(
+            @Nullable JobOpportunityStage stage, @Nullable String nextStep, @Nullable LocalDate dueDate) {
+
+            //Copy across to SF fields
+            if (stage != null) {
+                put("StageName", stage.toString());
+            }
+            if (nextStep != null) {
+                put("NextStep", nextStep);
+            }
+            if (dueDate != null) {
+                put("Next_Step_Due_Date__c", dueDate.toString());
+            }
         }
     }
 

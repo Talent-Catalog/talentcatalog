@@ -15,12 +15,10 @@
  */
 
 import {Directive, Input, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
 import {FormBuilder} from '@angular/forms';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../model/candidate';
-import {CandidateService} from '../../../services/candidate.service';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
-import {isEnumOption, isEnumOptionArray} from "../../../util/enum";
+import {IntakeService} from "./IntakeService";
 
 /**
  * Base class for all candidate intake components.
@@ -40,10 +38,6 @@ import {isEnumOption, isEnumOptionArray} from "../../../util/enum";
  */
 @Directive()
 export abstract class IntakeComponentBase extends AutoSaveComponentBase implements OnInit {
-  /**
-   * This is the candidate whose intake data we are entering
-   */
-  @Input() candidate: Candidate;
 
   /**
    * This is the existing candidate data (if any) which is used to
@@ -68,43 +62,26 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
    * Inject in a FormBuilder to create the form and CandidateService
    * to perform the saves.
    * @param fb FormBuilder
-   * @param candidateService CandidateService which saves the intake data
+   * @param intakeService CandidateService which saves the intake data
    */
-  protected constructor(protected fb: FormBuilder, private candidateService: CandidateService) {
-    super();
+  protected constructor(protected fb: FormBuilder, intakeService: IntakeService) {
+    super(intakeService);
   }
 
   /**
-   * This must be implemented by subclass which should create and initialize
-   * the form in this method using the FormBuilder inherited from here.
-   * <p/>
-   * The names of form controls are used to send the data to the server so they
-   * must match the field names in CandidateIntakeDataUpdate.java, otherwise
-   * they will be ignored and will not update the database.
+   * The entity that we are working with in this class is a Candidate - this returns the entity
+   * cast as a Candidate so that anyone referencing "candidate" will see the entity with all
+   * its Candidate properties.
    */
-  abstract ngOnInit(): void;
-
-  /**
-   * Save the form data
-   */
-  doSave(formValue: any): Observable<any> {
-    return this.candidateService.updateIntakeData(this.candidate.id, formValue);
-  }
-
-  /**
-   * This must be implemented to do any processing following a successful save.
-   * Typically that will involve updating the locally stored copy of the data that the form
-   * is being used to update.
-   */
-  onSuccessfulSave(): void {
-    //Nothing special to do
+  get candidate(): Candidate {
+    return <Candidate>this.entity;
   }
 
   /**
    * Convert any multiselected enums
    */
   preprocessFormValues(formValue: Object): Object {
-    return IntakeComponentBase.convertEnumOptions(formValue);
+    return AutoSaveComponentBase.convertEnumOptions(formValue);
   }
 
   /**
@@ -114,35 +91,4 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
   setNoResponse(formControlName: string) {
     this.form.controls[formControlName].setValue('NoResponse');
   };
-
-  /**
-   * Converts the data returned by multiselected enums to a simple array of
-   * enum keys suitable for sending to the server.
-   * <p/>
-   * We use ng-multiselect-dropdown for multiselect dropdowns, and given the
-   * way that we have configured it for selecting enums, that component returns
-   * arrays of EnumOption objects. This method converts that data to arrays of
-   * strings corresponding to the enums.
-   * <p/>
-   * Note that the normal single select dropdown - where we use a standard
-   * html <select> and options - returns a single string corresponding to the
-   * selected enum - so not a problem there.
-   * @param formValue Values returned from a form.
-   * @private
-   */
-  private static convertEnumOptions(formValue: Object): Object {
-    //Look through all the formValue object properties looking for a
-    //property with a EnumOption array as a value.
-    for (const [key, value] of Object.entries(formValue)) {
-      if (isEnumOptionArray(value)) {
-        //Convert EnumOption array to a simple string array.
-        const enums: string[] = [];
-        for (const enumOption of value) {
-          enums.push(enumOption.key);
-        }
-        formValue[key] = enums;
-      }
-    }
-    return formValue;
-  }
 }

@@ -46,8 +46,8 @@ export class DatePickerComponent implements OnInit {
 
   update() {
     const customDatePattern = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/;
-    // Only send the string to the component form if date matches the correct format
-    if (this.date.match(customDatePattern) ) {
+    // Only send the string to the component form if date is null or matches the correct format
+    if (this.date == null || this.date.match(customDatePattern) ) {
       this.error = null;
       this.control.patchValue(this.date);
     } else {

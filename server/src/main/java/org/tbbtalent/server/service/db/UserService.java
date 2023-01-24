@@ -33,7 +33,6 @@ import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
 import org.tbbtalent.server.request.user.ResetPasswordRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;
 import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
-import org.tbbtalent.server.request.user.UpdateSharingRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
@@ -90,10 +89,6 @@ public interface UserService {
     User updateUser(long id, UpdateUserRequest request);
 
     void deleteUser(long id);
-
-    User addToSharedWithUser(long id, UpdateSharingRequest request);
-
-    User removeFromSharedWithUser(long id, UpdateSharingRequest request);
 
     /**
      * Clears the mfaSecret for the given user.

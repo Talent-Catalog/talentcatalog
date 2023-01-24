@@ -16,6 +16,38 @@
 
 <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
+  <ng-container ngbNavItem="LiveJobs">
+    <a ngbNavLink
+       title="Jobs associated with active opportunities which have been published on the TC"
+    >Live Jobs</a>
+    <ng-template ngbNavContent>
+      <app-jobs-with-detail
+        [searchBy]="SearchJobsBy.live">
+        >
+      </app-jobs-with-detail>
+    </ng-template>
+  </ng-container>
+
+  <ng-container *ngIf="canCreateJob()" ngbNavItem="MyJobs">
+    <a ngbNavLink title="Jobs created by my partner organization">{{loggedInPartner.abbreviation}} Jobs</a>
+    <ng-template ngbNavContent>
+      <app-jobs-with-detail
+        [searchBy]="SearchJobsBy.mine">
+        >
+      </app-jobs-with-detail>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="StarredJobs">
+    <a ngbNavLink title="Starred jobs (eg those I am working with)"><i class="fas fa-star"></i>Jobs</a>
+    <ng-template ngbNavContent>
+      <app-jobs-with-detail
+        [searchBy]="SearchJobsBy.starredByMe">
+        >
+      </app-jobs-with-detail>
+    </ng-template>
+  </ng-container>
+
   <ng-container *ngFor="let typeInfo of savedSearchTypeInfos">
     <ng-container ngbNavItem="type:{{SavedSearchType[typeInfo.savedSearchType]}}">
       <a ngbNavLink title="Searches of {{typeInfo.title}}">{{typeInfo.title}}</a>
@@ -89,6 +121,7 @@
     </ng-template>
   </ng-container>
 
+<!--  Todo Throw this away - is there anything that is now Zombie code?-->
   <ng-container *ngIf="isExperimental()" ngbNavItem="JobOpps">
     <a ngbNavLink
        title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
@@ -98,16 +131,6 @@
         [sourceType]="CandidateSourceType.SavedList"
         [searchBy]="SearchBy.registeredJob" >
       </app-browse-candidate-sources>
-    </ng-template>
-  </ng-container>
-
-  <ng-container ngbNavItem="JobOppsNew">
-    <a ngbNavLink
-       title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
-    >Registered Jobs</a>
-    <ng-template ngbNavContent>
-      <app-jobs-with-detail>
-      </app-jobs-with-detail>
     </ng-template>
   </ng-container>
 
@@ -140,5 +163,6 @@
         </app-browse-candidate-sources>
     </ng-template>
   </ng-container>
+
 </nav>
 <div [ngbNavOutlet]="nav" class="mt-2"></div>

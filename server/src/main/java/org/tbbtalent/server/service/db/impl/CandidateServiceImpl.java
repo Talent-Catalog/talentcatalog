@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.GeneralSecurityException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -71,6 +70,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateDestination;
@@ -2187,7 +2187,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate createUpdateSalesforce(long id)
-            throws NoSuchObjectException, GeneralSecurityException,
+            throws NoSuchObjectException, SalesforceException,
             WebClientException {
         Candidate candidate = getCandidate(id);
 
@@ -2200,7 +2200,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public void createUpdateSalesforce(UpdateCandidateOppsRequest request)
-        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+        throws NoSuchObjectException, SalesforceException, WebClientException {
 
         List<Candidate> candidates = candidateRepository.findByIds(request.getCandidateIds());
 
@@ -2212,7 +2212,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     public void createUpdateSalesforce(Collection<Candidate> candidates,
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable SalesforceOppParams salesforceOppParams)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
 
         //Need ordered list so that can match with returned contacts.
         List<Candidate> orderedCandidates = new ArrayList<>(candidates);
@@ -2442,7 +2442,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    public void populateIntakeData(Candidate candidate, CandidateIntakeDataUpdate data,
+    private void populateIntakeData(Candidate candidate, CandidateIntakeDataUpdate data,
         @Nullable Candidate partnerCandidate,
         @Nullable EducationLevel partnerEduLevel,
         @Nullable Occupation partnerOccupation,

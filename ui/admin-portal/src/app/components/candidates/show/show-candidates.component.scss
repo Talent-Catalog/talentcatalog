@@ -22,10 +22,6 @@
   }
 }
 
-.table-hover> tbody> tr:hover{
-  background-color: fade-out($color-primary, 0.8)
-}
-
 label {
   font-size: 14px;
 }
@@ -59,14 +55,6 @@ label {
   //    margin-bottom: 2px;
   //  }
   //}
-}
-
-.selected {
-  background-color: fade-out($color-primary, 0.8)
-}
-
-tr.selected-row {
-  background-color: fade-out($color-secondary-lighter, 0.7)
 }
 
 .filter-group {

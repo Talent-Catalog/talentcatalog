@@ -1,11 +1,7 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
-import {
-  PostJobToSlackRequest,
-  PostJobToSlackResponse,
-  UpdateEmployerOpportunityRequest
-} from "../model/base";
+import {PostJobToSlackRequest, PostJobToSlackResponse} from "../model/base";
 import {Observable} from "rxjs";
 
 @Injectable({
@@ -20,4 +16,7 @@ export class SlackService {
     return this.http.post<PostJobToSlackResponse>(`${this.apiUrl}/post-job`, request);
   }
 
+  postJobFromId(id: number, tcJobLink: string): Observable<PostJobToSlackResponse> {
+    return this.http.post<PostJobToSlackResponse>(`${this.apiUrl}/${id}/post-job`, tcJobLink);
+  }
 }

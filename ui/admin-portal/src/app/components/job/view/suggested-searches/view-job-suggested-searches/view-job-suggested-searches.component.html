@@ -2,7 +2,7 @@
 
   <div class="card-header">
     Suggested searches.
-    <div class="float-right" *ngIf="editable">
+    <div class="float-right" *ngIf="editable" [ngClass]="{'alert alert-danger': highlightSearches()}">
       <button title="Create a new suggested search"  class="btn btn-sm btn-primary ml-2"
               (click)="addSearch()">
         <i class="fas fa-plus"></i> Search

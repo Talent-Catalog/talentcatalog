@@ -102,7 +102,7 @@
         </ng-template>
         <ng-template ngbPanelContent>
           <app-avail-immediate
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-avail-immediate>
         </ng-template>
@@ -130,7 +130,7 @@
             [candidateIntakeData]="candidateIntakeData">
           </app-destinations>
           <app-destination-limit
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-destination-limit>
         </ng-template>
@@ -163,25 +163,25 @@
         </ng-template>
         <ng-template ngbPanelContent>
           <app-host-entry
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
             [countries]="countries"
             [showAll]="false">
           </app-host-entry>
           <app-residence-status
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-residence-status>
           <app-crime
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-crime>
           <app-conflict
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-conflict>
           <app-marital-status
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
             [educationLevels]="educationLevels"
             [occupations]="occupations"
@@ -189,7 +189,7 @@
             [nationalities]="nationalities">
           </app-marital-status>
           <app-family
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-family>
         </ng-template>
@@ -221,7 +221,7 @@
         </ng-template>
         <ng-template ngbPanelContent>
           <app-lang-assessment
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-lang-assessment>
         </ng-template>
@@ -248,7 +248,7 @@
             UNHCR
           </div>
           <app-registration-unhcr
-            [candidate]="candidate"
+            [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
             [showAll]="false">
           </app-registration-unhcr>
@@ -257,7 +257,7 @@
               UNRWA
             </div>
             <app-registration-unrwa
-              [candidate]="candidate"
+              [entity]="candidate"
               [candidateIntakeData]="candidateIntakeData"
               [showAll]="false">
             </app-registration-unrwa>

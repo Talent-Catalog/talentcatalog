@@ -649,7 +649,23 @@ import {
 import {
   ViewJobSourceContactsComponent
 } from './components/job/view/source-contacts/view-job-source-contacts/view-job-source-contacts.component';
+import {
+  ViewJobPreparationItemsComponent
+} from './components/job/view/preparation-items/view-job-preparation-items/view-job-preparation-items.component';
 import {AdminApiComponent} from './components/settings/admin-api/admin-api.component';
+import {
+  JobDescriptionComponent
+} from './components/job/intake/job-description/job-description.component';
+import {
+  JobIntakeTabComponent
+} from './components/job/view/tab/job-intake-tab/job-intake-tab.component';
+import {JobTitleComponent} from './components/job/intake/job-title/job-title.component';
+import {JobBenefitsComponent} from './components/job/intake/job-benefits/job-benefits.component';
+import {
+  JobExperienceComponent
+} from './components/job/intake/job-experience/job-experience.component';
+import {JobEducationComponent} from './components/job/intake/job-education/job-education.component';
+import {JobSkillsComponent} from './components/job/intake/job-skills/job-skills.component';
 
 @NgModule({
   declarations: [
@@ -904,7 +920,16 @@ import {AdminApiComponent} from './components/settings/admin-api/admin-api.compo
     InputLinkComponent,
     JobSourceContactsTabComponent,
     ViewJobSourceContactsComponent,
-    AdminApiComponent
+    ViewJobPreparationItemsComponent,
+    ViewJobSourceContactsComponent,
+    AdminApiComponent,
+    JobDescriptionComponent,
+    JobIntakeTabComponent,
+    JobTitleComponent,
+    JobBenefitsComponent,
+    JobExperienceComponent,
+    JobEducationComponent,
+    JobSkillsComponent
   ],
   imports: [
     BrowserModule,

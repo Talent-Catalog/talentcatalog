@@ -21,10 +21,13 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.request.job.JobInfoForSlackPost;
+import org.tbbtalent.server.request.job.JobIntakeData;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
@@ -36,17 +39,16 @@ import org.tbbtalent.server.request.link.UpdateLinkRequest;
  */
 public interface JobService {
 
-    //TODO JC This text needs to change
     /**
-     * Registered a new job matching a job opportunity on Salesforce
+     * Creates a new job matching a job opportunity on Salesforce
      * @param request Request which includes a link to the associated Salesforce job opportunity
      * @return Created job
-     * @throws InvalidRequestException if there is already a job associated with the requested
+     * @throws EntityExistsException if there is already a job associated with the requested
      * Salesforce job opportunity.
      * @throws SalesforceException if there are issues contacting Salesforce
      */
     SalesforceJobOpp createJob(UpdateJobRequest request)
-        throws InvalidRequestException, SalesforceException;
+        throws EntityExistsException, SalesforceException;
 
     /**
      * Get the Job with the given id.
@@ -67,6 +69,26 @@ public interface JobService {
      */
     @NonNull
     SalesforceJobOpp createSuggestedSearch(long id, String suffix) throws NoSuchObjectException;
+
+    /**
+     * Extracts job related information that is used to post to Slack.
+     * @param id Job id
+     * @param tcJobLink Link to job on TC
+     * @return Job information
+     * @throws NoSuchObjectException If no job with that id exists
+     */
+    @NonNull
+    JobInfoForSlackPost extractJobInfoForSlack(long id, String tcJobLink) throws NoSuchObjectException;
+
+    /**
+     * Marks job as published by the current user
+     *
+     * @param id ID of job
+     * @return Updated job
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp publishJob(long id) throws NoSuchObjectException;
 
     /**
      * Removes the given search from the suggested searches for the given job.
@@ -92,6 +114,15 @@ public interface JobService {
      * @return Page of jobs
      */
     Page<SalesforceJobOpp> searchJobs(SearchJobRequest request);
+
+    /**
+     * Updates the intake data associated with the given job.
+     * @param id ID of job
+     * @param data Partially populated JobIntakeData record. Null data
+     *             fields are ignored. Only non-null fields are updated.
+     * @throws NoSuchObjectException if no job is found with that id
+     */
+    void updateIntakeData(long id, JobIntakeData data) throws NoSuchObjectException;
 
     /**
      * Updates the job with the given id with data contained in the given request.
@@ -140,6 +171,16 @@ public interface JobService {
         throws InvalidRequestException, NoSuchObjectException;
 
     /**
+     * Updates whether or not the job wth the given id is starred by the current user
+     * @param id ID of job
+     * @param starred True if job should be starred, false if not
+     * @return Updated job
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp updateStarred(long id, boolean starred)throws NoSuchObjectException;
+
+    /**
      * Updates all open Jobs from their corresponding records on Salesforce
      */
     void updateOpenJobs();
@@ -175,5 +216,4 @@ public interface JobService {
      */
     SalesforceJobOpp uploadJoi(long id, MultipartFile file)
         throws InvalidRequestException, NoSuchObjectException, IOException;
-
 }

@@ -28,22 +28,56 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 @Setter
 @ToString
 public class SearchJobRequest extends PagedSearchRequest {
+
     /**
-     * Used to match sources whose names are like this keyword
+     * If specified, match job opportunities which are currently accepting candidates
+     */
+    @Nullable
+    private Boolean accepting;
+
+    /**
+     * If specified, match job opportunities whose names are like this keyword
      */
     @Nullable
     private String keyword;
 
     /**
-     * If specified, job opportunities will be selected based on whether the opportunity is closed.
+     * If specified, match job opportunities which were created by me
+     */
+    @Nullable
+    private Boolean ownedByMe;
+
+    /**
+     * If specified, match job opportunities which were created by any user working for the same partner
+     * as I do.
+     * eg if I work for TBB, setting this true means that I want to see all TBB job opportunities,
+     * not just the ones that I created.
+     */
+    @Nullable
+    private Boolean ownedByMyPartner;
+
+    /**
+     * If specified, match job opportunities based on whether the job has been published.
+     */
+    @Nullable
+    private Boolean published;
+
+    /**
+     * If specified, match job opportunities based on whether the opportunity is closed.
      */
     @Nullable
     private Boolean sfOppClosed;
 
     /**
-     * If specified, job opportunities are selected if they match any of the stages
+     * If specified, match job opportunities if they match any of the stages
      */
     @Nullable
     private List<JobOpportunityStage> stages;
+
+    /**
+     * If specified, match job opportunities based on whether they have been starred by me
+     */
+    @Nullable
+    private Boolean starred;
 
 }

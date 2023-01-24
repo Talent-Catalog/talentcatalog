@@ -32,10 +32,10 @@ They should be submitted as pull request.
 
 >IMPORTANT NOTE:
 >
->These instructions are tailored for Mac users, as this is what we use for development.
+>These instructions are tailored for Mac users using Intellij, as this is what we use for development.
 >
 >On a Mac, installing with Homebrew usually works well. eg "brew install xxx".
-However, Flyway and Postgres don't install with Homebrew, and the book
+However, Flyway doesn't install with Homebrew, and the book
 "Angular Up & Running" notes that installing Node.js using Homebrew
 can also have problems. Googling you can still see lots of people having
 problems installing Node using brew.
@@ -45,7 +45,18 @@ development IDE - see below) rather than using brew.
 
 Download and install the latest of the following tools.
 
-- IntelliJ IDEA (or the IDE of your choice) - [Intellij website](https://www.jetbrains.com/idea/download/)
+- Mac OS Bash Shell - Switch to Bash command line
+  - Some installation instructions - for example the Postgres brew install - don't work properly 
+  with the default Mac OS command line shell which is now Zsh. Run this on your command line to 
+  change the shell.
+  > chsh -s /bin/bash  
+
+- Homebrew - [Homebrew website](https://brew.sh)
+
+- IntelliJ IDEA - [Intellij website](https://www.jetbrains.com/idea/download/)
+  - Import standard settings and run configurations from another developer
+  - In development it is best to build using Intellij rather than gradle. Change the Intellij 
+  setting for "Build, Execution & Deployment" > "Build Tools" > "Gradle" to build with Intellij.
 
 - Java 11
    - At least Java 11 is required because we use the Locale object to provide translations of 
@@ -94,24 +105,32 @@ Download and install the latest of the following tools.
 
 - Git - [see Git website](https://git-scm.com/downloads)
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
+  - Homebrew - see https://wiki.postgresql.org/wiki/Homebrew 
+  >   brew install postgresql@14
+  > 
+  >   brew services restart postgresql@14
+
 
 ### Setup your local database ###
 
-Use PostreSQL pgAdmin tool to...
+ Use the psql tool.
+ > psql postgres
+   
+Now you will see the command line prompt =#
 
-- Create a new login role (ie user) called tbbtalent, password tbbtalent with 
-full privileges
-- Create a new database called tbbtalent and set tbbtalent as the owner
-- The database details are defined in bundle/all/resources/application.yml
-- The database is populated/updated using Flyway at start up - see TbbTalentApplication
-- Run data migration script to add additional data - using tool like postman or curl 
-    - call login http://localhost:8080/api/admin/auth/login and save token
-     
-          $ curl -X POST -H ‘Content-Type: application/json’ -d ‘{“username”:”${USERNAME}”,”password”:"${PASSWORD}"}’ http://localhost:8080/api/admin/auth/login
+    CREATE DATABASE tbbtalent;
+    CREATE USER tbbtalent WITH SUPERUSER PASSWORD 'tbbtalent';
+    \q
 
-    - call API http://localhost:8080/api/admin/system/migrate with token
-       
-          $ curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
+Ask another developer for a recent `pg_dump` of their test database - 
+matching the latest version of the code.
+    
+    pg_dump --file=path/to/file.sql --create --username=tbbtalent --host=localhost --port=5432
+
+
+Use `psql` to import that dump file into your newly created database.
+
+    psql -h localhost -d tbbtalent -U tbbtalent -f path/to/file.sql
 
 ### Download and edit the code ###
 
@@ -145,10 +164,9 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
 - Some secret information such as passwords and private keys are set in 
   environment variables - including programmatic access to Talent Catalog's Amazon AWS, 
   Google and Salesforce accounts. If these environment variables are not set
-  the application should still run in your development environment, but it may
-  not have access to these integrations. Contact TBB if you need access to these
-  "secrets". They are stored in a tbb_secrets.txt file which you can hook into
-  your start up to set the relevant environment variables. 
+  the application will fail at start up. Contact TBB if you need access to these
+  "secrets". On development computers they can be stored in a tbb_secrets.txt file which you can 
+  hook into your computer's start up to set the relevant environment variables. 
   For example add "source ~/tbb_secrets.txt" to .bash_profile or .zshenv
   depending on whether you are running bash or zsh.
 
@@ -317,6 +335,10 @@ Look at the doc of the library in question to select the correct version
 
 You may also need to make changes to your Angular code because of changes in Angular, or because of
 changed APIs in the dependent libraries.
+
+### Npm ###
+
+See https://stackoverflow.com/questions/11284634/upgrade-node-js-to-the-latest-version-on-mac-os
 
 ## Version Control ##
 

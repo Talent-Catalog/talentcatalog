@@ -13,15 +13,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {PagedSearchRequest} from "./base";
+import {HasId, PagedSearchRequest} from "./base";
 import {SavedList} from "./saved-list";
 import {User} from "./user";
 import {Partner} from "./partner";
 import {SavedSearch} from "./saved-search";
+import {Router} from "@angular/router";
+import {Location} from "@angular/common";
+import {getExternalHref} from "../util/url";
 
-export interface Job {
-  id: number;
+export interface JobIds extends HasId {
   sfId: string;
+}
+
+export interface Job extends JobIds {
+  accepting: boolean;
   contactEmail: string;
   contactUser: User;
   country: string;
@@ -35,12 +41,26 @@ export interface Job {
   publishedDate: Date;
   recruiterPartner: Partner;
   stage: JobOpportunityStage;
+  starringUsers: User[];
   submissionDueDate: Date;
   submissionList: SavedList;
   suggestedList: SavedList;
   suggestedSearches: SavedSearch[];
   updatedBy: User;
   updatedDate: Date;
+}
+
+export interface JobIntakeData {
+  benefits?: string;
+  description?: string;
+  education?: string;
+  experience?: string;
+  skills?: string;
+  title?: string;
+}
+
+export function getJobExternalHref(router: Router, location: Location, job: Job): string {
+  return getExternalHref(router, location, ['job', job.id]);
 }
 
 export type JobDocType = "jd" | "joi";
@@ -78,14 +98,15 @@ export enum JobOpportunityStage {
   tooLong = "Too long"
 }
 
-export interface SalesforceJobOpp {
-  sfId: string;
-}
-
 export class SearchJobRequest extends PagedSearchRequest {
+  accepting?: boolean;
   keyword?: string;
+  ownedByMe?: boolean;
+  ownedByMyPartner?: boolean;
+  published?: boolean;
   sfOppClosed?: boolean;
   stages?: string[];
+  starred?: boolean;
 }
 
 export interface UpdateJobRequest {

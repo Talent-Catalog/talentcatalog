@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {AuthService} from "../../../services/auth.service";
 import {User} from "../../../model/user";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -8,6 +8,8 @@ import {JobService} from "../../../services/job.service";
 import {SearchResults} from "../../../model/search-results";
 import {enumOptions} from "../../../util/enum";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {SearchJobsBy} from "../../../model/base";
+import {indexOfHasId} from "../../../model/saved-search";
 
 @Component({
   selector: 'app-jobs',
@@ -15,13 +17,22 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
   styleUrls: ['./jobs.component.scss']
 })
 export class JobsComponent implements OnInit {
+  @Input() searchBy: SearchJobsBy;
   @Output() jobSelection = new EventEmitter();
 
-  private pageNumber: number;
-  private pageSize: number;
+  /*
+     MODEL: Modal set component focus from code
+   */
+  //Get reference to the search input filter element (see #searchFilter in html)
+  @ViewChild("searchFilter")
+  searchFilter: ElementRef;
+
+  pageNumber: number;
+  pageSize: number;
   private loggedInUser: User;
 
   private filterKeySuffix: string = 'Filter';
+  private savedStateKeyPrefix: string = 'BrowseKey';
   private stagesAcceptingCandidates = [
     'candidateSearch', 'visaEligibility', 'cvPreparation', 'cvReview', 'recruitmentProcess',
   'jobOffer', 'visaPreparation'];
@@ -36,7 +47,8 @@ export class JobsComponent implements OnInit {
   sortField = 'submissionList.id';
   sortDirection = 'DESC';
   currentJob: Job;
-
+  private currentIndex = 0;
+  myJobsOnlyTip = "Only show jobs that were created by me";
 
   constructor(
     private authService: AuthService,
@@ -52,7 +64,8 @@ export class JobsComponent implements OnInit {
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
     this.searchForm = this.fb.group({
       keyword: [filter],
-      selectedStages: [this.stagesAcceptingCandidates]
+      myJobsOnly: [false],
+      selectedStages: [[]]
     });
     this.pageNumber = 1;
     this.pageSize = 30;
@@ -66,11 +79,22 @@ export class JobsComponent implements OnInit {
     return this.searchForm ? this.searchForm.value.keyword : "";
   }
 
+  private get myJobsOnly(): boolean {
+    return this.searchForm ? this.searchForm.value.myJobsOnly : false;
+  }
+
+  get SearchJobsBy() {
+    return SearchJobsBy;
+  }
+
   private get selectedStages(): string[] {
     return this.searchForm ? this.searchForm.value.selectedStages : "";
   }
 
   search() {
+    //Remember keyword filter from last search
+    this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
+
     let req = new SearchJobRequest();
     req.keyword = this.keyword;
     req.pageNumber = this.pageNumber - 1;
@@ -81,14 +105,55 @@ export class JobsComponent implements OnInit {
 
     req.stages = this.selectedStages;
 
-    //Don't want to see closed jobs
-    req.sfOppClosed = false;
+    switch (this.searchBy) {
+      case SearchJobsBy.live:
+
+        //Don't want to see closed jobs
+        req.sfOppClosed = false;
+
+        //Only want jobs which are accepting candidates
+        req.accepting = true;
+        break;
+
+      case SearchJobsBy.mine:
+        if (this.myJobsOnly) {
+          req.ownedByMe = true;
+        } else {
+          req.ownedByMyPartner = true;
+        }
+        break;
+
+      case SearchJobsBy.starredByMe:
+        req.starred = true;
+        break;
+    }
 
     this.error = null;
     this.loading = true;
 
     this.jobService.searchPaged(req).subscribe(results => {
         this.results = results;
+
+        if (results.content.length > 0) {
+          //Select previously selected item if still present in results
+          const id: number = this.localStorageService.get(this.savedStateKey());
+          if (id) {
+            this.currentIndex = indexOfHasId(id, this.results.content);
+            if (this.currentIndex >= 0) {
+              this.selectCurrent(this.results.content[this.currentIndex]);
+            } else {
+              this.selectCurrent(this.results.content[0]);
+            }
+          } else {
+            //Select the first search if no previous
+            this.selectCurrent(this.results.content[0]);
+          }
+        }
+
+        //Following the search filter loses focus, so focus back on it again
+        /* MODEL: Setting component focus*/
+        setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
+
         this.loading = false;
       },
       error => {
@@ -109,7 +174,17 @@ export class JobsComponent implements OnInit {
   }
 
   private savedStateKey(): string {
-    return "Jobs"
+    //This key is constructed from the combination of inputs which are associated with each tab
+    // in home.component.html
+    //This key is used to store the last state associated with each tab.
+
+    //The standard key is "BrowseKey" + "Jobs" +
+    // the search by (corresponding to the specific displayed tab)
+    let key = this.savedStateKeyPrefix
+      + "Jobs"
+      + SearchJobsBy[this.searchBy];
+
+    return key
   }
 
   toggleSort(column: string) {
@@ -122,12 +197,14 @@ export class JobsComponent implements OnInit {
     this.search();
   }
 
-  selectJob(job: Job) {
-    this.setCurrentJob(job);
-  }
-
-  private setCurrentJob(job: Job) {
+  selectCurrent(job: Job) {
     this.currentJob = job;
+
+    const id: number = job.id;
+    this.localStorageService.set(this.savedStateKey(), id);
+
+    this.currentIndex = indexOfHasId(id, this.results.content);
+
     this.jobSelection.emit(job);
   }
 

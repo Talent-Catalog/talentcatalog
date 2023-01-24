@@ -17,7 +17,7 @@ export class CandidateShareableNotesComponent extends AutoSaveComponentBase
   @Input() editable: boolean;
 
   constructor(private fb: FormBuilder, private candidateService: CandidateService) {
-    super();
+    super(candidateService);
   }
 
   ngOnInit() {

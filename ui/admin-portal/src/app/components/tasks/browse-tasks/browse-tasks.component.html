@@ -20,7 +20,7 @@
     <ul class="searches" (window:keydown)="keyDown($event)">
       <li *ngFor="let task of results?.content; let i = index"
           [class.selected]="task === selectedTask"
-          (click)="onSelect(task)">
+          (click)="select(task)">
         {{task.displayName}}
       </li>
 

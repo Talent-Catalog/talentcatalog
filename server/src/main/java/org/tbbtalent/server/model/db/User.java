@@ -119,7 +119,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
             name = "user_source_country",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "country_id"))
-    Set<Country> sourceCountries = new HashSet<Country>();
+    Set<Country> sourceCountries = new HashSet<>();
 
     public User() {
     }
@@ -303,7 +303,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
         sharedSearches.remove(savedSearch);
         savedSearch.getUsers().remove(this);
     }
-
 
     public Set<Country> getSourceCountries() { return sourceCountries; }
 

@@ -14,10 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
-import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {AfterViewChecked, Component, OnInit} from '@angular/core';
+import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
-import {CandidateSourceType, SearchBy} from "../../model/base"
+import {CandidateSourceType, SearchBy, SearchJobsBy} from "../../model/base"
 import {LocalStorageService} from "angular-2-local-storage";
 import {
   SavedSearchService,
@@ -26,6 +26,7 @@ import {
 } from "../../services/saved-search.service";
 import {FormBuilder} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
+import {Partner} from "../../model/partner";
 
 @Component({
   selector: 'app-home',
@@ -37,10 +38,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   activeTabId: string;
   private lastTabKey: string = 'HomeLastTab';
   private lastCategoryTabKey: string = 'HomeLastCategoryTab';
-
-  //Get reference to the nav element
-  @ViewChild(NgbNav)
-  nav: NgbNav;
+  loggedInPartner: Partner;
 
   savedSearchTypeInfos: SavedSearchTypeInfo[];
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
@@ -57,6 +55,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   ngOnInit() {
     this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[0].categories;
+    this.loggedInPartner = this.authService.getLoggedInUser()?.partner;
   }
 
   ngAfterViewChecked(): void {
@@ -74,7 +73,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   private selectDefaultTab() {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.setActiveTabId(defaultActiveTabID == null ? "type:profession" : defaultActiveTabID);
+    this.setActiveTabId(defaultActiveTabID == null ? "LiveJobs" : defaultActiveTabID);
 
     if (defaultActiveTabID == null) {
       this.setSelectedSavedSearchSubtype(this.savedSearchTypeSubInfos[0].savedSearchSubtype);
@@ -86,7 +85,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   private setActiveTabId(id: string) {
 
-    this.nav?.select(id);
+    this.activeTabId = id;
 
     //The typed saved search tabs have id's which look like "type:profession", "type:jobs",
     //"type:other". Unpack the id to identify the search type
@@ -116,8 +115,16 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     return SearchBy;
   }
 
+  get SearchJobsBy() {
+    return SearchJobsBy;
+  }
+
   get SavedSearchType() {
     return SavedSearchType;
+  }
+
+  canCreateJob(): boolean {
+    return this.authService.canCreateJob();
   }
 
   isExperimental() {

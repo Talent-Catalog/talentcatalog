@@ -21,6 +21,7 @@ import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -47,6 +48,7 @@ import lombok.Setter;
  * - Only job opps that have been registered in TC are updated from Salesforce. There will be
  * opportunities on Salesforce that are not reflected on the TC.
  * - Once a day local open opportunities on the TC are updated from Salesforce
+ * (see JobService.updateOpenJobs)
  *
  * @author John Cameron
  */
@@ -62,6 +64,14 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      */
     @Column(name = "sf_job_opp_id")
     private String sfId;
+
+    /**
+     * True if the job is currently accepting processing by other than its creator.
+     * Setting it false will make the job hidden on the TC front end to all but the creator.
+     * The first time accepting is set true for a job effectively "publishes" the job so that
+     * others can see it and process it.
+     */
+    private boolean accepting;
 
     /**
      * Salesforce id of account (ie employer) associated with opportunity
@@ -92,6 +102,11 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      * Name of country where job is located
      */
     private String country;
+
+    /**
+     * Description given to job in job intake.
+     */
+    private String description;
 
     /**
      * Name of employer - maps to Account name on Salesforce
@@ -164,6 +179,17 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      */
     private int stageOrder;
 
+    //Note use of Set rather than List as strongly recommended for Many to Many
+    //relationships here:
+    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+        name = "user_job",
+        joinColumns = @JoinColumn(name = "tc_job_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> starringUsers = new HashSet<>();
+
     /**
      * Date that submission of candidates to employer is due.
      */
@@ -199,6 +225,14 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
         joinColumns = @JoinColumn(name = "tc_job_id"),
         inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
+
+    public void addStarringUser(User user) {
+        starringUsers.add(user);
+    }
+
+    public void removeStarringUser(User user) {
+        starringUsers.remove(user);
+    }
 
     /**
      * Override standard setStage to automatically also update stageOrder

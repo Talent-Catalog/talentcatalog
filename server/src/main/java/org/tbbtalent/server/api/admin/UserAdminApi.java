@@ -33,7 +33,6 @@ import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.user.SearchUserRequest;
-import org.tbbtalent.server.request.user.UpdateSharingRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.security.AuthService;
@@ -92,22 +91,6 @@ public class UserAdminApi {
     public Map<String, Object> update(@PathVariable("id") long id,
                             @RequestBody UpdateUserRequest request) {
         User user = this.userService.updateUser(id, request);
-        return userDto().build(user);
-    }
-
-    @PutMapping("/shared-add/{id}")
-    public Map<String, Object> addToSharedWithMe(
-            @PathVariable("id") long id,
-        @RequestBody UpdateSharingRequest request) {
-        User user = this.userService.addToSharedWithUser(id, request);
-        return userDto().build(user);
-    }
-
-    @PutMapping("/shared-remove/{id}")
-    public Map<String, Object> removeFromSharedWithMe(
-            @PathVariable("id") long id,
-        @RequestBody UpdateSharingRequest request) {
-        User user = this.userService.removeFromSharedWithUser(id, request);
         return userDto().build(user);
     }
 

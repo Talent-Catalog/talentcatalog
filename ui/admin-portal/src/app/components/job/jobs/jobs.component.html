@@ -9,8 +9,15 @@
   <div class="searches">
     <form [formGroup]="searchForm" (ngSubmit)="search()">
       <div class="form-group">
-        <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
+        <div *ngIf="searchBy === SearchJobsBy.mine" class="form-inline">
+          <label [title]="myJobsOnlyTip">My jobs only</label>
+          <input [title]="myJobsOnlyTip" type="checkbox" class="form-control"
+                 formControlName="myJobsOnly" >
+        </div>
+
+        <input #searchFilter type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
                id="keyword">
+
         <label>Stage</label>
         <ng-select
           id="stage"
@@ -57,15 +64,9 @@
 
       <tbody>
 
-      <!-- Special display for no results-->
-      <tr *ngIf="!results?.totalElements">
-        <td colspan="42">
-          <span class="text-muted">(no matching data)</span>
-        </td>
-      </tr>
-
       <!--        Job records    -->
-      <tr *ngFor="let job of results?.content" (click)="selectJob(job)">
+      <tr *ngFor="let job of results?.content" (click)="selectCurrent(job)"
+          [ngClass]="{'current': currentJob?.id == job.id}">
         <td>
           <a [routerLink]="['/job',job.id]">
             {{job.id}}
@@ -90,6 +91,30 @@
       </tbody>
 
     </table>
+
+    <div class="text-muted mb-2 align-middle">
+
+      <ngb-pagination
+        [boundaryLinks]="true"
+        [pageSize]="pageSize"
+        [collectionSize]="results?.totalElements"
+        [(page)]="pageNumber"
+        [maxSize]="5"
+        [ellipses]="true"
+        [rotate]="true"
+        (pageChange)="search()">
+      </ngb-pagination>
+
+      Found {{results?.totalElements}} in total
+    </div>
+
+    <!-- loading -->
+    <div *ngIf="loading">
+      <div>
+        <i class="fas fa-spinner fa-spin"></i> Loading...
+      </div>
+    </div>
+
   </div>
 
 

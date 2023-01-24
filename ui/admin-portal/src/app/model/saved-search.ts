@@ -16,13 +16,7 @@
 
 import {SearchCandidateRequest} from './search-candidate-request';
 import {SavedSearchTypeInfo} from '../services/saved-search.service';
-import {
-  Auditable,
-  CandidateSource,
-  HasId,
-  PagedSearchRequest,
-  SearchCandidateSourcesRequest
-} from './base';
+import {CandidateSource, HasId, PagedSearchRequest, SearchCandidateSourcesRequest} from './base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {getExternalHref} from '../util/url';
@@ -150,9 +144,9 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
   return breadcrumb;
 }
 
-export function indexOfAuditable(id: number, auditables: Auditable[]): number {
-  for (let i = 0; i < auditables.length; i++) {
-    if (auditables[i].id === id) {
+export function indexOfHasId(id: number, hasIds: HasId[]): number {
+  for (let i = 0; i < hasIds.length; i++) {
+    if (hasIds[i].id === id) {
       return i;
     }
   }

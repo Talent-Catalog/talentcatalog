@@ -9,11 +9,11 @@ import {
 } from "../../../model/base";
 import {getCandidateSourceExternalHref} from "../../../model/saved-search";
 import {Location} from "@angular/common";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {SlackService} from "../../../services/slack.service";
 import {AuthService} from "../../../services/auth.service";
-import {UpdateJobRequest} from "../../../model/job";
+import {Job, UpdateJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
 
 @Component({
@@ -23,6 +23,8 @@ import {JobService} from "../../../services/job.service";
 })
 export class NewJobComponent implements OnInit {
   jobName: string;
+  job: Job;
+  prepare: boolean;
   savedList: SavedList;
   sfJoblink: string;
   slacklink: string;
@@ -30,7 +32,6 @@ export class NewJobComponent implements OnInit {
   creatingFolders: Progress = Progress.NotStarted;
   creatingSFLinks: Progress = Progress.NotStarted;
   postingToSlack: Progress = Progress.NotStarted;
-  findingJob: boolean;
   errorFindingJob: string = null;
   errorCreatingFolders: string = null;
   errorCreatingJob: string = null;
@@ -40,6 +41,7 @@ export class NewJobComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private jobService: JobService,
+    private route: ActivatedRoute,
     public salesforceService: SalesforceService,
     private savedListService: SavedListService,
     private slackService: SlackService,
@@ -47,6 +49,9 @@ export class NewJobComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit(): void {
+    this.route.data.subscribe(
+      (data) => {this.prepare = data.prepare}
+    )
   }
 
   get listLink(): string {
@@ -106,6 +111,7 @@ export class NewJobComponent implements OnInit {
     this.jobService.create(request).subscribe(
       (job) => {
         this.creatingJob = Progress.Finished;
+        this.job = job;
         this.savedList = job.submissionList;
         this.createFolders();
       },
@@ -153,9 +159,16 @@ export class NewJobComponent implements OnInit {
         this.creatingSFLinks = Progress.NotStarted;
       });
 
-    //Slack post can run in parallel with creating SF backlinks
-    this.postJobToSlack();
-
+    if (this.prepare) {
+      this.postingToSlack = Progress.Finished;
+    } else {
+      //Todo This is the old way - which will eventually not been needed
+      //Mark job as published and then post to Slack
+      this.jobService.publishJob(this.job.id).subscribe(
+        (job) => {this.job = job; this.postJobToSlack()},
+        (error) => {this.errorPostingToSlack = error}
+      )
+    }
   }
 
   private postJobToSlack() {
@@ -187,5 +200,17 @@ export class NewJobComponent implements OnInit {
 
   doRegistration() {
     this.createRegisteredJob()
+  }
+
+  getBreadCrumb() {
+    return this.prepare ? "Prepare a new job" : "Register a new Job"
+  }
+
+  doPreparation() {
+    this.createRegisteredJob()
+  }
+
+  doShowJob() {
+    this.router.navigate(['job', this.job.id]);
   }
 }

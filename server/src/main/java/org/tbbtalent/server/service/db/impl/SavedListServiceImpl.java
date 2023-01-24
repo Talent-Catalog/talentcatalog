@@ -158,6 +158,27 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public void addCandidateToList(@NonNull SavedList destinationList, @NonNull Candidate candidate,
+        @Nullable String contextNote) {
+
+        //Create new candidate/list link
+        final CandidateSavedList csl =
+            new CandidateSavedList(candidate, destinationList);
+        //Copy across context
+        if (contextNote != null) {
+            csl.setContextNote(contextNote);
+        }
+
+        //Add candidate to the collection of candidates in this list
+        destinationList.getCandidateSavedLists().add(csl);
+        //Also update other side of many-to-many relationship, adding this
+        //list to the candidate's collection of lists that they belong to.
+        candidate.getCandidateSavedLists().add(csl);
+
+        assignListTasksToCandidate(destinationList, candidate);
+    }
+
+    @Override
+    public void addCandidateToList(@NonNull SavedList destinationList, @NonNull Candidate candidate,
         @Nullable SavedList sourceList) {
         //Find any context note for the given candidate and sourceList
         String contextNote = null;
@@ -177,21 +198,7 @@ public class SavedListServiceImpl implements SavedListService {
             }
         }
 
-        //Create new candidate/list link
-        final CandidateSavedList csl =
-            new CandidateSavedList(candidate, destinationList);
-        //Copy across context
-        if (contextNote != null) {
-            csl.setContextNote(contextNote);
-        }
-
-        //Add candidate to the collection of candidates in this list
-        destinationList.getCandidateSavedLists().add(csl);
-        //Also update other side of many to many relationship, adding this
-        //list to the candidate's collection of lists that they belong to.
-        candidate.getCandidateSavedLists().add(csl);
-
-        assignListTasksToCandidate(destinationList, candidate);
+        addCandidateToList(destinationList, candidate, contextNote);
     }
 
     @Override
@@ -481,7 +488,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
-        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+        throws NoSuchObjectException, SalesforceException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
         SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
         candidateService.createUpdateSalesforce(
@@ -500,6 +507,12 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedList get(@NonNull User user, String listName) {
         return listName == null ? null :
             savedListRepository.findByNameIgnoreCase(listName, user.getId()).orElse(null);
+    }
+
+    @Override
+    public boolean isEmpty(long id) throws NoSuchObjectException {
+        SavedList savedList = get(id);
+        return savedList.getCandidates().isEmpty();
     }
 
     @Override
@@ -564,6 +577,9 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public List<SavedList> search(long candidateId, SearchSavedListRequest request) {
         final User loggedInUser = authService.getLoggedInUser().orElse(null);
+
+        //todo This should be loading shared lists not searches!!! But seems to work anyway!
+        //I think the problem was that the above code should have been using userService to get loggged in user.
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(loggedInUser.getId());
         GetSavedListsQuery getSavedListsQuery =

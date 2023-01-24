@@ -31,6 +31,7 @@ import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
 import {CandidateSource} from "../model/base";
+import {IntakeService} from "../components/util/intake/IntakeService";
 
 export interface DownloadCVRequest {
   candidateId: number,
@@ -39,7 +40,7 @@ export interface DownloadCVRequest {
 }
 
 @Injectable({providedIn: 'root'})
-export class CandidateService {
+export class CandidateService implements IntakeService {
 
   private apiUrl = environment.apiUrl + '/candidate';
 
