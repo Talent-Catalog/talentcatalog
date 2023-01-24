@@ -19,7 +19,7 @@
   <div class="card-body d-flex min-height-150 align-items-center">
       <div class="w-75 align-self-center pl-2">
         <div>
-          <strong>{{candidateSource?.name}} </strong>
+          <strong>{{candidateSource?.name + ' (' + candidateSource?.id + ')'}} </strong>
           <span class="d-flex align-items-baseline">
             <i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i>
             <i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i>

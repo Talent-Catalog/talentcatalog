@@ -43,8 +43,8 @@ export class JobsComponent implements OnInit {
   results: SearchResults<Job>;
   stages = enumOptions(JobOpportunityStage);
 
-  //Default sort jobs with most recent job first - ie descending order of id
-  sortField = 'submissionList.id';
+  //Default sort jobs with most recent job first - ie descending order of created date
+  sortField = 'createdDate';
   sortDirection = 'DESC';
   currentJob: Job;
   private currentIndex = 0;
