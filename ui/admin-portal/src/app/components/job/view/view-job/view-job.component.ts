@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {getJobExternalHref, Job} from "../../../../model/job";
-import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
 import {AuthService} from "../../../../services/auth.service";
@@ -12,6 +12,7 @@ import {Location} from "@angular/common";
 import {Router} from "@angular/router";
 import {isStarredByMe} from "../../../../model/base";
 import {JobPrepItem, JobPrepJobSummary} from "../../../../model/job-prep-item";
+import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-view-job',
@@ -36,6 +37,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
     private authService: AuthService,
     private localStorageService: LocalStorageService,
     private jobService: JobService,
+    private modalService: NgbModal,
     private salesforceService: SalesforceService,
     private slackService: SlackService,
     private location: Location,
@@ -64,7 +66,6 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   }
 
   publishJob() {
-    //todo checks - are you sure?
     this.error = null;
     this.publishing = true;
     this.jobService.publishJob(this.job.id).subscribe(
@@ -92,8 +93,20 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
       (response) => {
         this.slacklink = response.slackChannelUrl;
         this.publishing = false;
+        this.displayPublicationReport();
       },
       (error) => {this.error = error; this.publishing = false});
+  }
+
+  private displayPublicationReport() {
+    const showReport = this.modalService.open(ConfirmationComponent, {
+      centered: true, backdrop: 'static'});
+    showReport.componentInstance.title = "Published job: " + this.job.name;
+    showReport.componentInstance.showCancel = false;
+    let mess = "Job has been updated to 'Candidate Search' if it wasn't already at that stage or " +
+      "later. Also posted to Slack.";
+
+    showReport.componentInstance.message = mess;
   }
 
   doToggleStarred() {

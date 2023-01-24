@@ -52,6 +52,7 @@ import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.job.JobInfoForSlackPost;
 import org.tbbtalent.server.request.job.JobIntakeData;
 import org.tbbtalent.server.request.job.SearchJobRequest;
@@ -60,6 +61,7 @@ import org.tbbtalent.server.request.link.UpdateLinkRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.service.db.SalesforceBridgeService;
@@ -79,6 +81,7 @@ public class JobServiceImpl implements JobService {
 
     private final static DateTimeFormatter nextStepDateFormat = DateTimeFormatter.ofPattern("ddMMMyy", Locale.ENGLISH);
     private final AuthService authService;
+    private final CandidateSavedListService candidateSavedListService;
     private final UserService userService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
@@ -92,11 +95,12 @@ public class JobServiceImpl implements JobService {
     private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
     public JobServiceImpl(
-        AuthService authService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
+        AuthService authService, CandidateSavedListService candidateSavedListService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
         SalesforceBridgeService salesforceBridgeService, SalesforceService salesforceService,
         SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
         SavedSearchService savedSearchService) {
         this.authService = authService;
+        this.candidateSavedListService = candidateSavedListService;
         this.userService = userService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
@@ -250,6 +254,20 @@ public class JobServiceImpl implements JobService {
         job.setAccepting(true);
         job.setPublishedBy(loggedInUser);
         job.setPublishedDate(OffsetDateTime.now());
+
+        //Save non-empty submission list to suggested list.
+        SavedList submissionList = job.getSubmissionList();
+        if (!submissionList.getCandidates().isEmpty()) {
+
+            CopySourceContentsRequest request = new CopySourceContentsRequest();
+            request.setSavedListId(0L);
+            request.setNewListName(submissionList.getName() + "-suggest");
+            request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId()));
+            //Copy to the target list.
+            SavedList suggestedList = candidateSavedListService.copy(submissionList, request);
+            job.setSuggestedList(suggestedList);
+        }
+
         return salesforceJobOppRepository.save(job);
     }
 

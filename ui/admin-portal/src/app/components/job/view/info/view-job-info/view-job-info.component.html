@@ -36,6 +36,15 @@
         </div>
       </div>
 
+      <div *ngIf="job.suggestedList" class="form-group col-sm-12 col-md-4">
+        <label title="Potential candidates should be added to this list" class="col-form-label">
+          <i class="fas fa-list"></i>Suggested List</label>
+
+        <div class="form-control-plaintext">
+          <span><a [routerLink]="['/list',job.suggestedList.id]">{{displaySavedList(job.suggestedList)}}</a></span>
+        </div>
+      </div>
+
       <div *ngIf="job.exclusionList" class="form-group col-sm-12 col-md-4">
         <label title="Candidates who have already been considered and rejected for this job should be added to this list" class="col-form-label">
           <i class="fas fa-list"></i>Exclusion List</label>
