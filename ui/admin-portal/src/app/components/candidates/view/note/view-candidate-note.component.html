@@ -47,7 +47,7 @@
       <div>
         {{candidateNote.title}}
       </div>
-      <div class="float-right d-flex ml-3">
+      <div class="float-right d-flex ms-3">
         <button *ngIf="candidateNote.comment" class="btn btn-sm btn-default" (click)="showNote(candidateNote)"><i
           class="fas fa-ellipsis-h"></i></button>
         <button *ngIf="editable" class="btn btn-sm btn-default" (click)="editCandidateNote(candidateNote)"><i

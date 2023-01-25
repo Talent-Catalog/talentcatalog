@@ -27,7 +27,7 @@
       <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
       <li *ngIf="candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
       <li *ngIf="!candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.candidateNumber}}</li>
-      <li *ngIf="isEditable()" class="ml-auto">
+      <li *ngIf="isEditable()" class="ms-auto">
         <div  class="input-group">
           <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
                  value="{{candidate.status | titlecase}}" disabled>
@@ -100,7 +100,7 @@
         [compareWith]="compareLists"
         [hideSelected]="true">
         <ng-template ng-header-tmp>
-          <span class="text-muted ml-2">Selected: {{selectedLists.length}}</span>
+          <span class="text-muted ms-2">Selected: {{selectedLists.length}}</span>
         </ng-template>
         <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
           <div class="ng-value" *ngFor="let item of items">

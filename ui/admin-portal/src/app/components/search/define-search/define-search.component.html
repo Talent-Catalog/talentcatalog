@@ -45,21 +45,21 @@
                   (click)="clearForm()">Clear Search</button>
         </div>
         <div>
-          <button type="button" class="ml-2 btn btn-outline-primary"
+          <button type="button" class="ms-2 btn btn-outline-primary"
                   [hidden]="savedSearch?.defaultSearch"
                   [disabled]="!canChangeSearchRequest()"
                   (click)="updateSavedSearchModal()">
             <i *ngIf="!canChangeSearchRequest()" title="Fixed - can't change"
                class="fas fa-lock"></i>
             Update Search</button>
-          <button type="button" class="ml-2 btn btn-outline-primary"
+          <button type="button" class="ms-2 btn btn-outline-primary"
                   [hidden]="savedSearch?.defaultSearch"
                   [disabled]="!canChangeSearchRequest()"
                   (click)="deleteSavedSearchModal()">
             <i *ngIf="!canChangeSearchRequest()" title="Fixed - can't change"
                class="fas fa-lock"></i>
             Delete Search</button>
-          <button type="button" class="ml-2 btn btn-outline-primary"
+          <button type="button" class="ms-2 btn btn-outline-primary"
                   [hidden]="!savedSearch?.defaultSearch"
                   (click)="createNewSavedSearchModal()">
             Save Search</button>

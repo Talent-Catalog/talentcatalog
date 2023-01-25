@@ -22,7 +22,7 @@
 </div>
 
 <div *ngIf="!loading" id="MiniIntakeForm">
-  <div class="d-flex justify-content-between mb-2 ml-2">
+  <div class="d-flex justify-content-between mb-2 ms-2">
     <div class="d-flex flex-column">
       <div class="d-flex">
         <button class="btn btn-sm btn-primary mb-3" (click)="exportAsPdf('MiniIntakeForm')" [disabled]="saving">
@@ -30,7 +30,7 @@
           Export PDF
         </button>
 
-        <div class="btn-group-sm ml-2">
+        <div class="btn-group-sm ms-2">
           <button (click)="togglePanels(false)" class="btn btn-outline-primary btn-sm mr-2">Close All Tabs</button>
           <button (click)="togglePanels(true)" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>

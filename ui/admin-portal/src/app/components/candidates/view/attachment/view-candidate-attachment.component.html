@@ -31,7 +31,7 @@
 <!--        <i class="fas fa-plus"></i> Link-->
 <!--      </button>-->
 
-      <button class="btn btn-sm btn-primary ml-2" (click)="addAttachment('file')">
+      <button class="btn btn-sm btn-primary ms-2" (click)="addAttachment('file')">
         <i class="fas fa-plus"></i> File
       </button>
     </div>
@@ -94,7 +94,7 @@
               {{attachment.name}}
             </a>
             <span class="small text-dark"> - {{attachment.type}}</span>
-            <div class="d-inline ml-2" *ngIf="attachment.cv">
+            <div class="d-inline ms-2" *ngIf="attachment.cv">
               <app-cv-icon
                 [candidate]="candidate"
                 [attachment]="attachment"
