@@ -31,16 +31,14 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="mb-3" >
-      <div class="form-inline">
-        <label>Include name?</label>
-        <input type="checkbox" class="form-control" formControlName="name">
+      <div>
+        <label for="name">Include name?</label>
+        <input type="checkbox" [formControlName]="'name'" id="name">
       </div>
-      <div class="form-inline">
-        <label>Include contact details?</label>
-        <input type="checkbox" class="form-control" formControlName="contact">
+      <div>
+        <label for="contact">Include contact details?</label>
+        <input type="checkbox" [formControlName]="'contact'" id="contact">
       </div>
-    </div>
   </form>
 
 </div>

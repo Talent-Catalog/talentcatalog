@@ -60,13 +60,9 @@
       </div>
 
       <div class="mb-3">
-        <div class="form-inline">
           <label for="cv">Is this file a CV?</label>
-          <input class="form-control" id="cv" [formControlName]="'cv'" [value]="'cv'" type="checkbox">
-        </div>
-        <div>
-          <small class="text-muted">If it is a CV its text will be checked in keyword searches.</small>
-        </div>
+          <input id="cv" [formControlName]="'cv'" [value]="'cv'" type="checkbox">
+          <div class="form-text">If it is a CV its text will be checked in keyword searches.</div>
       </div>
 
       <app-file-upload *ngIf="!uploading"

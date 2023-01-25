@@ -31,11 +31,12 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="mb-3">
-      <div>External link</div>
-      <div class="form-inline">
+    <div class="row mb-3">
+      <div class="col-form-label col-6 form-text">
         <span class="small text-muted">{{publishUrl}}/</span>
-        <input class="form-control form-inline" id="link" [formControlName]="'tbbShortName'">
+      </div>
+      <div class="col-6">
+        <input class="form-control" id="link" [formControlName]="'tbbShortName'">
       </div>
     </div>
   </form>

@@ -8,28 +8,29 @@
 
   <div class="searches">
     <form [formGroup]="searchForm" (ngSubmit)="search()">
-      <div class="mb-3">
-        <div *ngIf="searchBy === SearchJobsBy.mine" class="form-inline">
-          <label [title]="myJobsOnlyTip">My jobs only</label>
-          <input [title]="myJobsOnlyTip" type="checkbox" class="form-control"
-                 formControlName="myJobsOnly" >
+        <div *ngIf="searchBy === SearchJobsBy.mine" class="mt-2 mb-3">
+          <label [title]="myJobsOnlyTip" for="myJobsOnlyTip">My jobs only</label>
+          <input [title]="myJobsOnlyTip" type="checkbox" [formControlName]="'myJobsOnly'" id="myJobsOnlyTip">
         </div>
 
-        <input #searchFilter type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
-               id="keyword">
+        <div class="mb-3">
+          <input #searchFilter type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                 id="keyword">
+        </div>
 
-        <label>Stage</label>
-        <ng-select
-          id="stage"
-          [items]="stages"
-          [multiple]="true"
-          [closeOnSelect]="true"
-          [searchable]="false"
-          bindLabel="stringValue"
-          bindValue="key"
-          [formControlName]="'selectedStages'">
-        </ng-select>
-      </div>
+        <div class="mb-3">
+          <label>Stage</label>
+          <ng-select
+            id="stage"
+            [items]="stages"
+            [multiple]="true"
+            [closeOnSelect]="true"
+            [searchable]="false"
+            bindLabel="stringValue"
+            bindValue="key"
+            [formControlName]="'selectedStages'">
+          </ng-select>
+        </div>
     </form>
   </div>
 

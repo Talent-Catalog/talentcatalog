@@ -45,45 +45,47 @@
           formControlName="savedList">
         </ng-select>
       </div>
+    </div>
 
-      <div class="form-inline">
-        <label>New list?</label>
-        <input type="checkbox" class="form-control" formControlName="newList" >
-      </div>
-      <div *ngIf="newList">
-        <label>Name</label>
-        <input type="text" class="form-control" formControlName="newListName" [readOnly]="loading">
+    <div class="mb-3">
+      <label for="newList">New list?</label>
+      <input type="checkbox" [formControlName]="'newList'" id="newList">
+    </div>
+    <div *ngIf="newList">
+      <div class="mb-3">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" [formControlName]="'newListName'" [readOnly]="loading" id="name">
         <div *ngIf="form.errors?.invalidName" class="alert alert-danger" >
           {{form.errors.invalidName}}
         </div>
-
-        <app-joblink [joblink]="sfJoblink"
-                     (updateError)="error=$event"
-                     (joblinkValidation)="onJoblinkValidation($event)"
-        ></app-joblink>
-        <div *ngIf="jobName">
-          {{jobName}}
-        </div>
-
       </div>
 
-      <div class="form-inline">
-        <label>Replace existing list contents?</label>
-        <input type="checkbox" class="form-control" formControlName="replace">
+      <app-joblink [joblink]="sfJoblink"
+                   (updateError)="error=$event"
+                   (joblinkValidation)="onJoblinkValidation($event)"
+      ></app-joblink>
+      <div *ngIf="jobName">
+        {{jobName}}
       </div>
 
-      <div class="form-inline">
-        <label>Change status for all candidates in list?</label>
-        <input type="checkbox" class="form-control" formControlName="changeStatuses">
-      </div>
+    </div>
 
-      <div *ngIf="changeStatuses" class="mb-3">
-        <app-candidate-status-selector
-          [candidateStatus]="CandidateStatus.active"
-          (statusInfoUpdate)="onStatusInfoUpdate($event)"
-        >
-        </app-candidate-status-selector>
-      </div>
+    <div class="mb-3">
+      <label for="replace">Replace existing list contents?</label>
+      <input type="checkbox" [formControlName]="'replace'" id="replace">
+    </div>
+
+    <div class="mb-3">
+      <label for="changeStatuses">Change status for all candidates in list?</label>
+      <input type="checkbox" [formControlName]="'changeStatuses'" id="changeStatuses">
+    </div>
+
+    <div *ngIf="changeStatuses" class="mb-3">
+      <app-candidate-status-selector
+        [candidateStatus]="CandidateStatus.active"
+        (statusInfoUpdate)="onStatusInfoUpdate($event)"
+      >
+      </app-candidate-status-selector>
     </div>
   </form>
 </div>

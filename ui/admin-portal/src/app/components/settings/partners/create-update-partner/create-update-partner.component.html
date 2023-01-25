@@ -15,9 +15,9 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="mb-3" >
+    <div class="mb-3">
 
-      <div *ngIf="isCreate()" class="form-inline">
+      <div *ngIf="isCreate()" class="mb-3">
         <label>Type? *</label>
         <ng-select
           id="partnerType"
@@ -30,9 +30,11 @@
           [formControlName]="'partnerType'">
         </ng-select>
       </div>
-      <label for="name">Name *</label>
-      <input class="form-control" id="name" formControlName="name">
-      <div class="form-inline">
+      <div class="mb-3">
+        <label for="name">Name *</label>
+        <input class="form-control" id="name" formControlName="name">
+      </div>
+      <div class="mb-3">
         <label>Status? *</label>
         <ng-select
           id="status"
