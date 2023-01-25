@@ -17,7 +17,7 @@
 <div class="card">
 <!--  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>-->
   <div class="card-body d-flex min-height-150 align-items-center">
-      <div class="w-75 align-self-center pl-2">
+      <div class="w-75 align-self-center ps-2">
         <div>
           <strong>{{candidateSource?.name}} </strong>
           <span class="d-flex align-items-baseline">
@@ -78,7 +78,7 @@
           <button class="btn" *ngIf="showMore && isSavedSearch()" (click)="toggleShowMore()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
         </div>
       </div>
-    <div class="row pl-2 pt-1" *ngIf="seeMore && isSavedSearch()">
+    <div class="row ps-2 pt-1" *ngIf="seeMore && isSavedSearch()">
       <div class="w-100" *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
       <div class="w-100" *ngIf="savedSearch.simpleQueryString">Elasticsearch: {{savedSearch.simpleQueryString}},</div>
       <div class="w-100" *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>
