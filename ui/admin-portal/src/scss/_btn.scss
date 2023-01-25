@@ -20,7 +20,7 @@
 @import "~bootstrap/scss/buttons";
 
 .btn-primary {
-  @include button-variant($color-primary, $color-primary, $color-primary-dark, $color-primary-dark, $color-primary-darker, $color-primary-darker);
+  @include button-variant($color-primary, $color-primary, white, $color-primary-dark, $color-primary-dark, white);
 }
 
 .btn-outline-primary {
