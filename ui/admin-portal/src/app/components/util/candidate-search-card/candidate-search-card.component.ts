@@ -19,16 +19,13 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnInit,
   Output,
-  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
 import {CandidateSource} from '../../../model/base';
-import {CandidateAttachment} from "../../../model/candidate-attachment";
 import {isSavedSearch} from "../../../model/saved-search";
 import {isSavedList} from "../../../model/saved-list";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
@@ -39,7 +36,7 @@ import {LocalStorageService} from "angular-2-local-storage";
   templateUrl: './candidate-search-card.component.html',
   styleUrls: ['./candidate-search-card.component.scss']
 })
-export class CandidateSearchCardComponent implements OnInit, OnChanges, AfterViewChecked {
+export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
 
   @Input() candidate: Candidate;
   @Input() loggedInUser: User;
@@ -49,9 +46,6 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges, AfterVie
   @Input() savedSearchSelectionChange: boolean;
 
   @Output() closeEvent = new EventEmitter();
-
-  cvs: CandidateAttachment[];
-  other: CandidateAttachment[];
 
   showAttachments: boolean = false;
   showNotes: boolean = true;
@@ -68,11 +62,6 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges, AfterVie
   ) { }
 
   ngOnInit() {
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    this.cvs = this.candidate.candidateAttachments?.filter(a => a.cv === true);
-    this.other = this.candidate.candidateAttachments?.filter(a => a.cv === false);
   }
 
   close() {
