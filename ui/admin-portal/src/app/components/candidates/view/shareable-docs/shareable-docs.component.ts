@@ -18,8 +18,8 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
 
-  @Input() cvs: CandidateAttachment[];
-  @Input() other: CandidateAttachment[];
+  cvs: CandidateAttachment[];
+  other: CandidateAttachment[];
 
   savedList: boolean;
 
@@ -29,6 +29,9 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   }
 
   ngOnInit() {
+    this.cvs = this.candidate.candidateAttachments?.filter(a => a.cv === true);
+    this.other = this.candidate.candidateAttachments?.filter(a => a.cv === false);
+
     // if is saved search if is saved list (remove source type)
     if (this.isList) {
       this.form = this.fb.group({
