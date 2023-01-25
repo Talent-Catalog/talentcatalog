@@ -35,16 +35,16 @@
     <h5>{{jobName}}</h5>
       <ng-container *ngIf="prepare">
         <button *ngIf="jobName && progressPercent != 100" type="button"
-                class="btn btn-primary float-right" (click)="doPreparation()">
+                class="btn btn-primary float-end" (click)="doPreparation()">
           Prepare Job
         </button>
         <button *ngIf="jobName && progressPercent == 100" type="button"
-                class="btn btn-primary float-right" (click)="doShowJob()">
+                class="btn btn-primary float-end" (click)="doShowJob()">
           Show Job
         </button>
       </ng-container>
       <ng-container *ngIf="!prepare">
-        <button *ngIf="jobName" type="button" class="btn btn-primary float-right" (click)="doRegistration()"
+        <button *ngIf="jobName" type="button" class="btn btn-primary float-end" (click)="doRegistration()"
                 [hidden]="progressPercent == 100"  [disabled]="!jobName">
           Register Job
         </button>

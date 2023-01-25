@@ -20,7 +20,7 @@
 <form [formGroup]="form">
   <div class="mb-3">
     <label for="militaryService">Have you ever completed military service?</label>
-    <div *ngIf="editable" class="float-right">
+    <div *ngIf="editable" class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">

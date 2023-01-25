@@ -21,7 +21,7 @@
     <span *ngIf="loading">
           <i class="fas fa-spinner fa-spin"></i>
     </span>
-    <div class="float-right" *ngIf="!loading">
+    <div class="float-end" *ngIf="!loading">
       <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
         <i class="fas fa-plus"></i>
       </button>
@@ -39,7 +39,7 @@
                  name="visaCountry" formControlName="visaCountry"
                  (change)="changeVisaCountry($event)">
           {{visaCheck?.country?.name}}
-          <button class="float-right btn" (click)="deleteRecord(i)">
+          <button class="float-end btn" (click)="deleteRecord(i)">
             <span class="align-top">
               <i class="fas fa-trash"></i>
             </span>

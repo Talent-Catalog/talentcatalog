@@ -28,7 +28,7 @@
 
   <div class="dropdown my-2" ngbDropdown>
     <!-- ADD OCCUPATION BTN-->
-    <div class="float-right" *ngIf="editable && adminUser">
+    <div class="float-end" *ngIf="editable && adminUser">
       <button class="btn btn-sm btn-primary" (click)="createCandidateOccupation()">
         <i class="fas fa-plus"></i> Occupation
       </button>
@@ -65,7 +65,7 @@
       <div class="card-header">
         <span>{{experience.role}}</span>
 
-        <div class="float-right" *ngIf="editable">
+        <div class="float-end" *ngIf="editable">
           <button type="button" class="btn btn-default" (click)="editCandidateJobExperience(experience)"><i
             class="fas fa-edit"></i></button>
         </div>

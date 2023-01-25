@@ -1,7 +1,7 @@
 <div>
   <div class="section">
     <div>
-      <div class="float-right">
+      <div class="float-end">
         <button *ngIf="!readOnly" class="btn btn-primary" (click)="addPartner()">Add</button>
       </div>
     </div>
@@ -30,7 +30,7 @@
 
   <div class="text-muted mb-2 align-middle">
 
-    <ngb-pagination class="float-right"
+    <ngb-pagination class="float-end"
                     [boundaryLinks]="true"
                     [pageSize]="pageSize"
                     [collectionSize]="results?.totalElements"

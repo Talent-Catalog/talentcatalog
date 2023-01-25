@@ -236,7 +236,7 @@ Downside == upside : standard appearance of same question
   <div class="card">
     <div class="card-header">
       Job Specific Assessment
-      <div class="float-right">
+      <div class="float-end">
         <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
           <i class="fas fa-plus"></i>
         </button>
@@ -254,7 +254,7 @@ Downside == upside : standard appearance of same question
                      name="jobIndex" formControlName="jobIndex"
                      (change)="changeJobOpp($event)">
               {{jobOpportunity.name}}
-              <button class="float-right btn" (click)="deleteRecord(i)">
+              <button class="float-end btn" (click)="deleteRecord(i)">
               <span class="align-top">
                 <i class="fas fa-trash"></i>
               </span>

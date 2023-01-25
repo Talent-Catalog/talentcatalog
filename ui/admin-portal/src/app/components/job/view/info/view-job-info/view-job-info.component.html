@@ -2,7 +2,7 @@
 
   <div class="card-header">
     Job Information
-    <div class="float-right" *ngIf="editable" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
+    <div class="float-end" *ngIf="editable" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
       <button class="btn btn-sm btn-outline-secondary" (click)="editJobInfo()">
         <i class="fas fa-edit"></i>
       </button>
