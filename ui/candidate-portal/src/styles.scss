@@ -38,13 +38,13 @@ label > i.fa {
   margin-right: 8px;
 }
 
-a.is-link, a > i.is-link {
-  color: $color-primary;
-  cursor: pointer;
-  @include hover() {
-    color: $color-primary-dark;
-  }
-}
+//a.is-link, a > i.is-link {
+//  color: $color-primary;
+//  cursor: pointer;
+//  @include hover() {
+//    color: $color-primary-dark;
+//  }
+//}
 
 .text-alert {
   color: #ed770f;
