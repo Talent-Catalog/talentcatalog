@@ -31,9 +31,7 @@
         <div  class="input-group">
           <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
                  value="{{candidate.status | titlecase}}" disabled>
-          <div class="input-group-append">
-            <button class="btn btn-sm btn-secondary" (click)="editCandidate()"><i class="fas fa-edit fa-sm"></i></button>
-          </div>
+          <button class="btn btn-sm btn-secondary" (click)="editCandidate()"><i class="fas fa-edit fa-sm"></i></button>
         </div>
       </li>
     </ol>

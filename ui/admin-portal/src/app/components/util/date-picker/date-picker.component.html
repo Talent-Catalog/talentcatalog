@@ -9,16 +9,13 @@
          [outsideDays]="'hidden'"
          [minDate]="minDate"
          [maxDate]="maxDate">
-  <div class="input-group-append">
-    <small class="btn btn-link text-secondary"
-           (click)="clear()">
-      <span>Clear</span>
-    </small>
-
-    <div class="btn btn-link"
-         (click)="picker.toggle()">
-      <span>Choose</span>
-    </div>
+  <div class="btn btn-primary"
+       (click)="picker.toggle()">
+    <span>Choose</span>
+  </div>
+  <div class="btn btn-secondary"
+       (click)="clear()">
+    <span>Clear</span>
   </div>
 </div>
 <small class="text-muted">If day or month unknown, select or type 01.</small>
