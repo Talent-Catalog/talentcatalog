@@ -193,7 +193,7 @@
       </div>
 
       <div class="d-flex">
-        <div *ngIf="isSavedList()" class="flex-fill w-50 mr-2">
+        <div *ngIf="isSavedList()" class="flex-fill w-50 me-2">
           <form [formGroup]="searchForm">
             <div class="mb-3 mb-0 flex-fill">
               <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
@@ -222,7 +222,7 @@
 <!--  List operation log - eg Save/Replace again, or Copied to list  -->
     <div class="text-muted pt-0 mb-3" *ngIf="!searching">
       <div *ngIf="haveTargetList() && savedSelection" class="d-flex pt-1 align-items-center">
-        <button class="btn btn-sm btn-outline-secondary mr-2"
+        <button class="btn btn-sm btn-outline-secondary me-2"
                 (click)="saveSelectionAgain()">
           <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
           {{(targetListReplace ? "Replace" : "Save")}} Again

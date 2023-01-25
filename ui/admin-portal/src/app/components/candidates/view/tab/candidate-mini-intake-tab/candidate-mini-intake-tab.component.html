@@ -31,7 +31,7 @@
         </button>
 
         <div class="btn-group-sm ms-2">
-          <button (click)="togglePanels(false)" class="btn btn-outline-primary btn-sm mr-2">Close All Tabs</button>
+          <button (click)="togglePanels(false)" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
           <button (click)="togglePanels(true)" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>
       </div>
@@ -271,7 +271,7 @@
 
 <div class="d-flex align-items-end flex-column justify-content-between">
   <div class="d-flex float-right">
-    <button class="btn btn-sm btn-outline-dark mr-1 mt-3 mb-2" (click)="createIntakeNote('Mini Intake', 'complete', $event.target)" [disabled]="saving">
+    <button class="btn btn-sm btn-outline-dark me-1 mt-3 mb-2" (click)="createIntakeNote('Mini Intake', 'complete', $event.target)" [disabled]="saving">
       Complete Intake
     </button>
   </div>

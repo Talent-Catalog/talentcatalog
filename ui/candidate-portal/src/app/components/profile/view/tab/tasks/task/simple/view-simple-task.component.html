@@ -6,7 +6,7 @@
     <div class="mb-3 mb-0">
 
       <div class="form-check-inline">
-        <label class="form-check-label mb-0 mr-2" for="completed">
+        <label class="form-check-label mb-0 me-2" for="completed">
           <div *ngIf="hasDoc; else noDocLabel"> {{ 'TASKS.SIMPLE.DOC.LABEL' | translate }}</div>
           <ng-template #noDocLabel>{{ 'TASKS.SIMPLE.LABEL' | translate }}</ng-template>
         </label>
