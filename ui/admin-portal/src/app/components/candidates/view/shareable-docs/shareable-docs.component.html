@@ -7,11 +7,11 @@
 <form [formGroup]="form">
   <div  class="flex-wrap justify-content-around">
     <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start mb-2">
-          <span for="shareableCvId" class="mr-4">
+          <span class="mr-4">
             <i class="far fa-star fa-sm"></i>CV
           </span>
-      <ng-select id="shareableCvId" class="mr-2" [formControlName]="'shareableCvAttachmentId'" [items]="cvs"
-                 placeholder="Select" bindValue="id" bindLabel="name">
+      <ng-select id="shareableCvId" class="mr-2" [formControlName]="'shareableCvAttachmentId'"
+                 [items]="cvs" placeholder="Select" bindValue="id" bindLabel="name">
         <ng-template ng-option-tmp let-item="item">
           <span [ngbTooltip]="item.name" container="body">{{item.name}}</span>
         </ng-template>
@@ -23,11 +23,11 @@
     </div>
 
     <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start">
-          <span for="shareableDocId" class="mr-2">
+          <span class="mr-2">
             <i class="far fa-star fa-sm"></i>Other
           </span>
-      <ng-select id="shareableDocId" class="mr-2" [formControlName]="'shareableDocAttachmentId'" [items]="other"
-                 placeholder="Select" bindValue="id" bindLabel="name">
+      <ng-select id="shareableDocId" class="mr-2" [formControlName]="'shareableDocAttachmentId'"
+                 [items]="other" placeholder="Select" bindValue="id" bindLabel="name">
         <ng-template ng-option-tmp let-item="item">
           <span [ngbTooltip]="item.name" container="body">{{item.name}}</span>
         </ng-template>
