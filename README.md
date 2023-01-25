@@ -70,11 +70,12 @@ Download and install the latest of the following tools.
   > brew install gradle
 
 - NodeJS: Install as described here [https://nodejs.org/en/](https://nodejs.org/en/)
-    - Note that you should use the LTS version of node - which is not normally the latest.
-    
-    "Production applications should only use Active LTS or Maintenance LTS releases." -       
-  https://nodejs.org/en/about/releases/
-
+  
+    - Note that developers should use the latest version of Node for which Intellij supports 
+    Angular debugging - currently that is Node 16.
+    - See [https://www.jetbrains.com/help/idea/angular.html](https://www.jetbrains.com/help/idea/angular.html) 
+    and https://nodejs.org/en/about/releases/
+  
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
   > npm install -g @angular/cli
