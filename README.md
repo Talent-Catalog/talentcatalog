@@ -72,7 +72,8 @@ Download and install the latest of the following tools.
 - NodeJS: Install as described here [https://nodejs.org/en/](https://nodejs.org/en/)
   
     - Note that developers should use the latest version of Node for which Intellij supports 
-    Angular debugging - currently that is Node 16.
+    Angular debugging - currently that is Node 16 (which is not the latest Node with long term 
+    support LTS).
     - See [https://www.jetbrains.com/help/idea/angular.html](https://www.jetbrains.com/help/idea/angular.html) 
     and https://nodejs.org/en/about/releases/
   
