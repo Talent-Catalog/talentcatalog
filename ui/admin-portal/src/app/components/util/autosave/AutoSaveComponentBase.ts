@@ -19,7 +19,9 @@ import {catchError, debounceTime, map, switchMap, takeUntil, tap} from "rxjs/ope
 import {FormGroup} from "@angular/forms";
 import {isEnumOptionArray} from "../../../util/enum";
 import {HasId} from "../../../model/base";
-import {IntakeService} from "../intake/IntakeService";
+
+//See https://stackoverflow.com/questions/40841641/cannot-import-exported-interface-export-not-found
+import type {IntakeService} from "../intake/IntakeService";
 
 /**
  * Base class for autosave components.
