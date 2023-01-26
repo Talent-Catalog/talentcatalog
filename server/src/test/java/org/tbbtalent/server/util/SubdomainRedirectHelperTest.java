@@ -38,5 +38,8 @@ class SubdomainRedirectHelperTest {
 
         s = SubdomainRedirectHelper.computeRedirectUrl("tctalent.org");
         assertNull(s);
+
+        s = SubdomainRedirectHelper.computeRedirectUrl("172.31.31.31:8080");
+        assertNull(s);
     }
 }
