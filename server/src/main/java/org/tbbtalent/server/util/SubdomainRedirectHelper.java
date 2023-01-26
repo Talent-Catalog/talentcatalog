@@ -38,10 +38,16 @@ public class SubdomainRedirectHelper {
     public static String computeRedirectUrl(String url) {
         String redirectUrl = null;
         //See https://stackoverflow.com/questions/7217271/extract-main-domain-name-from-a-given-url/
-        final InternetDomainName internetDomainName = InternetDomainName.from(url);
+        InternetDomainName internetDomainName;
+        try {
+            internetDomainName = InternetDomainName.from(url);
+        } catch (IllegalArgumentException e) {
+            //This will happen when we receive raw internet addresses.
+            internetDomainName = null;
+        }
         //This is a way of checking whether there is a subdomain. If the domain name is not the top
         //private domain then it will be a subdomain.
-        if (!internetDomainName.isTopPrivateDomain()) {
+        if (internetDomainName != null && !internetDomainName.isTopPrivateDomain()) {
             //The top private domain will be our basic domain name - eg tctalent.org
             String ourDomain = InternetDomainName.from(url).topPrivateDomain().toString();
             String suffix = "." + ourDomain;
