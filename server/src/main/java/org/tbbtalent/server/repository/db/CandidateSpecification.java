@@ -56,6 +56,9 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 public class CandidateSpecification {
 
+    //Hard coded id of Country USA - nasty but temporary hack - see use below
+    private static final int usaId = 6178;
+
     public static Specification<Candidate> buildSearchQuery(
             final SearchCandidateRequest request, @Nullable User loggedInUser,
             final @Nullable Collection<Candidate> excludedCandidates) {
@@ -250,7 +253,7 @@ public class CandidateSpecification {
             // We want US-afghans out of the searches w/ source countries or not BUT if candidate is US SOURCE COUNTRY then in the searches.
             //if source countries is not null, check that it's not US
             if (loggedInUser != null && !Collections.isEmpty(loggedInUser.getSourceCountries())) {
-                boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == 6178);
+                boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == usaId);
                 if (!us) {
                     //This is not a US user, so don't show US Afghans
                   Join<Candidate, SurveyType> surveyType

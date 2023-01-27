@@ -205,6 +205,9 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 @Service
 public class CandidateServiceImpl implements CandidateService {
 
+    private static final int afghanistanCountryId = 6180;
+    private static final int ukraineCountryId = 6406;
+
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private static final Map<CandidateSubfolderType, String> candidateSubfolderNames;
@@ -1384,13 +1387,13 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate submitRegistration() {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        int afghanistanCountryId = 6180;
         // Don't update status to pending if status is already pending
         final CandidateStatus candidateStatus = candidate.getStatus();
         if (!candidateStatus.equals(CandidateStatus.pending)) {
             if (candidate.getNationality() != candidate.getCountry() ||
-                    candidate.getCountry().getId() == afghanistanCountryId &&
-                        candidate.getNationality().getId() == afghanistanCountryId) {
+                    candidate.getCountry().getId() == afghanistanCountryId ||
+                    candidate.getCountry().getId() == ukraineCountryId
+            ) {
                 UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
 
                 //Only set status to pending if current status is draft. This addresses the case
@@ -1408,7 +1411,7 @@ public class CandidateServiceImpl implements CandidateService {
             } else {
                 UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
                 info.setStatus(CandidateStatus.ineligible);
-                info.setComment("TBB criteria not met: Country located is same as country of nationality.");
+                info.setComment("TC criteria not met: Country located is same as country of nationality.");
                 candidate = updateCandidateStatus(candidate, info);
             }
         }
@@ -2782,22 +2785,28 @@ public class CandidateServiceImpl implements CandidateService {
 
     private String checkStatusValidity(long countryReq, long nationalityReq, Candidate candidate) {
         String newStatus = "";
-        // If candidate pending, but they updating country & nationality as same. Change to ineligible.
-        // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN
+        // If candidate pending, but they are updating country & nationality as same. Change to ineligible.
+        // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN or Ukrainian in Ukraine
         if (candidate.getStatus() == CandidateStatus.pending) {
-            if (countryReq == nationalityReq && countryReq != 6180) {
+            if (countryReq == nationalityReq
+                && countryReq != afghanistanCountryId && countryReq != ukraineCountryId) {
                 newStatus = "ineligible";
             }
         // If candidate ineligible & it has country & nationality the same (causing the status) BUT the request
         // has nationality & country as different. We can change ineligible status to pending. This determines
         // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
         } else if (candidate.getStatus() == CandidateStatus.ineligible) {
-            if (candidate.getCountry().equals(candidate.getNationality()) && countryReq != nationalityReq) {
-                newStatus = "pending";
-            }
-            // EXCEPTION: IF AFGHAN IN AFGHANISTAN SET PENDING
-            if (countryReq == 6180 && nationalityReq == 6180) {
-                newStatus = "pending";
+            if (candidate.getCountry().equals(candidate.getNationality())) {
+                //If the candidate currently has country and nationality the same, that is
+                //probably why they were ineligible.
+                if (countryReq != nationalityReq) {
+                    //But if requested country and nationality are now different, set status back to pending
+                    newStatus = "pending";
+                } else if (countryReq == afghanistanCountryId || countryReq == ukraineCountryId) {
+                    //or if country and nationality are the same, but either Afghanistan or Ukraine
+                    //that can also be changed to pending.
+                    newStatus = "pending";
+                }
             }
         }
         return newStatus;
