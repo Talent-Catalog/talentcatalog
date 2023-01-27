@@ -1170,12 +1170,12 @@ public class CandidateServiceImpl implements CandidateService {
         if (newStatus.equals("ineligible")) {
             UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
             info.setStatus(CandidateStatus.ineligible);
-            info.setComment("TBB criteria not met: Country located is same as country of nationality.");
+            info.setComment("TC criteria not met: Country located is same as country of nationality.");
             candidate = updateCandidateStatus(candidate, info);
         } else if (newStatus.equals("pending")) {
             UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
             info.setStatus(CandidateStatus.pending);
-            info.setComment("TBB criteria met: Country located different to country of nationality.");
+            info.setComment("TC criteria met: Country located different to country of nationality.");
             candidate = updateCandidateStatus(candidate, info);
         }
 
@@ -2796,7 +2796,7 @@ public class CandidateServiceImpl implements CandidateService {
         // has nationality & country as different. We can change ineligible status to pending. This determines
         // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
         } else if (candidate.getStatus() == CandidateStatus.ineligible) {
-            if (candidate.getCountry().equals(candidate.getNationality())) {
+            if (candidate.getCountry().getId().equals(candidate.getNationality().getId())) {
                 //If the candidate currently has country and nationality the same, that is
                 //probably why they were ineligible.
                 if (countryReq != nationalityReq) {

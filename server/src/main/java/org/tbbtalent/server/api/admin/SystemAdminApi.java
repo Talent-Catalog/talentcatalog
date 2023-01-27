@@ -647,7 +647,7 @@ public class SystemAdminApi {
                         CandidateNote candidateNote = new CandidateNote();
                         candidateNote.setCandidate(candidate);
                         candidateNote.setTitle("Status change from pending to ineligible");
-                        candidateNote.setComment("TBB criteria not met: Country located is same as country of nationality.");
+                        candidateNote.setComment("TC criteria not met: Country located is same as country of nationality.");
                         candidateNote.setNoteType(NoteType.admin);
                         candidateNote.setAuditFields(loggedInUser);
                         candidateNoteRepository.save(candidateNote);
