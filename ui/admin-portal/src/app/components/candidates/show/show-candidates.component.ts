@@ -374,6 +374,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   doSearch(refresh: boolean, usePageNumber = true) {
 
+    //Todo - need to trigger search when review status changes
+
     this.results = null;
     this.error = null;
 

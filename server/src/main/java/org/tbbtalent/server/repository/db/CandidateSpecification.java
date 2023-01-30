@@ -226,25 +226,29 @@ public class CandidateSpecification {
                 }
             }
 
-            // PARTNER SEARCH
-            if (!Collections.isEmpty(request.getPartnerIds())) {
-                conjunction.getExpressions().add(
-                        builder.isTrue(user.get("partner").in(request.getPartnerIds()))
-                );
-            }
-
             // COUNTRY SEARCH - taking into account user source country limitations
             // If request ids is NOT EMPTY we can just accept them because the options
             // presented to the user will be limited to the allowed source countries
             if (!Collections.isEmpty(request.getCountryIds())) {
-                conjunction.getExpressions().add(
+                if (request.getCountrySearchType() == null || SearchType.or.equals(request.getCountrySearchType())) {
+                    conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(request.getCountryIds()))
-                );
-                // If request ids IS EMPTY only show source countries
+                    );
+                } else {
+                    conjunction.getExpressions().add(candidate.get("country").in(request.getCountryIds()).not());
+                }
+            // If request ids IS EMPTY only show source countries
             } else if (loggedInUser != null &&
                     !Collections.isEmpty(loggedInUser.getSourceCountries())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(loggedInUser.getSourceCountries()))
+                );
+            }
+
+            // PARTNER SEARCH
+            if (!Collections.isEmpty(request.getPartnerIds())) {
+                conjunction.getExpressions().add(
+                    builder.isTrue(user.get("partner").in(request.getPartnerIds()))
                 );
             }
 

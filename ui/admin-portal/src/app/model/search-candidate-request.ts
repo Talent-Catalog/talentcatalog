@@ -29,6 +29,7 @@ export interface SearchCandidateRequest {
   nationalityIds?: number[];
   nationalitySearchType?: string;
   countryIds?: number[];
+  countrySearchType?: string;
   englishMinWrittenLevel?: number;
   englishMinSpokenLevel?: number;
   otherLanguageId?: number;
