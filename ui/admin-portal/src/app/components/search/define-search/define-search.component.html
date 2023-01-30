@@ -72,421 +72,434 @@
       </div>
 
       <form class="filter-form" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
-        <div>
-          <p>Introducing Elasticsearch which <strong>searches all CV's as well!</strong> When searching + means AND, space means OR. For example <strong>welder diesel+mechanic</strong>
-            will find all candidate profiles containing the word 'welder' OR both words 'diesel' AND 'mechanic'.
-            You can just match the first part of a word using *. For example 'account*' will match 'accounting' or
-            'accountant'. You can also search for phrases as well as words by using double quotes.
-            For example <strong>accountant + "hospital director"</strong> will find profiles with the word 'accountant'
-            AND the phrase 'hospital director'. You can use brackets to group terms. For example
-            <strong>accountant + (excel powerpoint)</strong> means find profiles
-            containing the word 'accountant' AND either one of 'excel' or 'powerpoint'.
-            But <strong>(accountant + excel) powerpoint</strong> means find profiles containing both words
-            'accountant' and 'excel' OR profiles containing the word 'powerpoint'.</p>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
+              <p>Introducing Elasticsearch which <strong>searches all CV's as well!</strong> When searching + means AND, space means OR. For example <strong>welder diesel+mechanic</strong>
+                will find all candidate profiles containing the word 'welder' OR both words 'diesel' AND 'mechanic'.
+                You can just match the first part of a word using *. For example 'account*' will match 'accounting' or
+                'accountant'. You can also search for phrases as well as words by using double quotes.
+                For example <strong>accountant + "hospital director"</strong> will find profiles with the word 'accountant'
+                AND the phrase 'hospital director'. You can use brackets to group terms. For example
+                <strong>accountant + (excel powerpoint)</strong> means find profiles
+                containing the word 'accountant' AND either one of 'excel' or 'powerpoint'.
+                But <strong>(accountant + excel) powerpoint</strong> means find profiles containing both words
+                'accountant' and 'excel' OR profiles containing the word 'powerpoint'.</p>
+            </div>
+          </div>
         </div>
         <hr/>
-        <div class="row">
-          <div class="mb-3 col-12 col-md-6">
-            <label for="simpleQueryString">Elasticsearch</label>
-            <input id="simpleQueryString" type="text" class="form-control" placeholder="eg welder diesel+mechanic" aria-label="Elastic"
-                   formControlName="simpleQueryString"
-            >
+        <div class="container-fluid">
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <label for="simpleQueryString">Elasticsearch</label>
+              <input id="simpleQueryString" type="text" class="form-control" placeholder="eg welder diesel+mechanic" aria-label="Elastic"
+                     formControlName="simpleQueryString"
+              >
+            </div>
+
+            <!-- STATUS -->
+            <div class="mb-3 col-md-3">
+              <label>Status</label>
+              <ng-select
+                id="statuses"
+                [items]="candidateStatusOptions"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                [clearSearchOnAdd]="true"
+                placeholder="Select or type..."
+                bindLabel="stringValue"
+                [formControlName]="'statusesDisplay'">
+                <ng-template ng-header-tmp>
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-sm btn-link" (click)="onSelectAll(candidateStatusOptions, 'statusesDisplay'); $event.preventDefault()">Select All</button>
+                    <button class="btn btn-sm btn-link" (click)="onClearAll('statusesDisplay'); $event.preventDefault()">Clear All</button>
+                  </div>
+                </ng-template>
+
+                <!--This improves display of selections -->
+                <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                  <!-- Allow individual selections to be removed by clicking on x next to name -->
+                  <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                    <span class="ng-value-label">{{item.stringValue}}</span>
+                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                  </div>
+                  <!-- Display "more..." if more than 3 selections and add a tooltip displaying
+                  all selections when hovering over the "more..." text -->
+                  <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('statusesDisplay')" popoverTitle="Statuses"
+                       triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+              <p class="small text-muted mt-1">
+                If nothing is specified, the default is to exclude inactive statuses such as draft,
+                deleted, employed, ineligible etc</p>
+            </div>
+
+            <!-- ENGLISH LANGUAGE -->
+            <div class="mb-3 col-12 col-md-3">
+              <label>English</label>
+              <app-language-level-form-control #englishLanguage
+                                               [model]="englishLanguageModel"
+                                               [languages]="languages"
+                                               [languageLevels]="languageLevels"
+                                               [languageDisabled]="true"
+                                               (modelUpdated)="handleLanguageLevelChange($event, 'english')">
+              </app-language-level-form-control>
+            </div>
+
           </div>
-
-          <!-- STATUS -->
-          <div class="mb-3 col-12 col-md-3">
-            <label>Status</label>
-            <ng-select
-              id="statuses"
-              [items]="candidateStatusOptions"
-              [multiple]="true"
-              [closeOnSelect]="false"
-              [clearSearchOnAdd]="true"
-              placeholder="Select or type..."
-              bindLabel="stringValue"
-              [formControlName]="'statusesDisplay'">
-              <ng-template ng-header-tmp>
-                <div class="d-flex justify-content-between">
-                  <button class="btn btn-sm btn-link" (click)="onSelectAll(candidateStatusOptions, 'statusesDisplay'); $event.preventDefault()">Select All</button>
-                  <button class="btn btn-sm btn-link" (click)="onClearAll('statusesDisplay'); $event.preventDefault()">Clear All</button>
-                </div>
-              </ng-template>
-
-              <!--This improves display of selections -->
-              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-                <!-- Allow individual selections to be removed by clicking on x next to name -->
-                <div *ngFor="let item of items | slice:0:3" class="ng-value">
-                  <span class="ng-value-label">{{item.stringValue}}</span>
-                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
-                </div>
-                <!-- Display "more..." if more than 3 selections and add a tooltip displaying
-                all selections when hovering over the "more..." text -->
-                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('statusesDisplay')" popoverTitle="Statuses"
-                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
-                  <span class="ng-value-label">{{items.length - 3}} more...</span>
-                </div>
-              </ng-template>
-            </ng-select>
-            <p class="small text-muted mt-1">
-              If nothing is specified, the default is to exclude inactive statuses such as draft,
-              deleted, employed, ineligible etc</p>
-          </div>
-
-          <!-- ENGLISH LANGUAGE -->
-          <div class="mb-3 col-12 col-md-3">
-            <label>English</label>
-            <app-language-level-form-control #englishLanguage
-                                             [model]="englishLanguageModel"
-                                             [languages]="languages"
-                                             [languageLevels]="languageLevels"
-                                             [languageDisabled]="true"
-                                             (modelUpdated)="handleLanguageLevelChange($event, 'english')">
-            </app-language-level-form-control>
-          </div>
-
         </div>
 
-        <div class="row">
+        <hr class="w-100">
 
-          <hr class="w-100">
+        <div class="container-fluid">
+          <div class="row gy-3 pb-3">
 
-          <!-- OCCUPATION + PROFILE GROUP -->
-          <div class="col-12 col-md-4 filter-group">
+            <!-- OCCUPATION + PROFILE GROUP -->
+            <div class="col-md-4 filter-group">
 
-            <div class="d-flex flex-wrap">
+              <div class="row gy-3 pb-3">
 
-              <!-- OCCUPATION MULTISELECT -->
-              <div class="mb-3 col-12">
-                <label>Occupation</label>
-                <ng-select
-                  id="occupationIds"
-                  [ngClass]="{'disabled' : elastic()}"
-                  [items]="candidateOccupations"
-                  [multiple]="true"
-                  [closeOnSelect]="false"
-                  [clearSearchOnAdd]="true"
-                  placeholder="Select or type..."
-                  bindLabel="name"
-                  [readonly]="elastic()"
-                  [formControlName]="'occupations'">
-                  <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-                    <div *ngFor="let item of items | slice:0:3" class="ng-value">
-                      <span class="ng-value-label">{{item.name}}</span>
-                      <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
-                    </div>
-                    <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('occupations')" popoverTitle="Occupations"
-                         triggers="mouseenter:mouseleave"  container="body" class="ng-value">
-                      <span class="ng-value-label">{{items.length - 3}} more...</span>
-                    </div>
-                  </ng-template>
-                </ng-select>
+                <!-- OCCUPATION MULTISELECT -->
+                <div class="col">
+                  <label>Occupation</label>
+                  <ng-select
+                    id="occupationIds"
+                    [ngClass]="{'disabled' : elastic()}"
+                    [items]="candidateOccupations"
+                    [multiple]="true"
+                    [closeOnSelect]="false"
+                    [clearSearchOnAdd]="true"
+                    placeholder="Select or type..."
+                    bindLabel="name"
+                    [readonly]="elastic()"
+                    [formControlName]="'occupations'">
+                    <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                      <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                        <span class="ng-value-label">{{item.name}}</span>
+                        <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                      </div>
+                      <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('occupations')" popoverTitle="Occupations"
+                           triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                        <span class="ng-value-label">{{items.length - 3}} more...</span>
+                      </div>
+                    </ng-template>
+                  </ng-select>
+                </div>
               </div>
-
               <!-- AGE -->
-              <div class="col-12 ">
-
-                <div class="d-flex flex-wrap">
+              <div class="row">
 
                   <!-- MIN AGE -->
-                  <div class="mb-3 col-6 ps-0">
+                  <div class="col-6">
                     <label for="minYrs">Min Years Experience</label>
                     <input id="minYrs" type="number" class="form-control"
                            name="minYrs" [formControlName]="'minYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
 
                   <!-- MAX AGE -->
-                  <div class="mb-3 col-6 pe-0">
+                  <div class="col-6">
                     <label for="maxYrs">Max Years Experience</label>
                     <input id="maxYrs" type="number" class="form-control"
                            name="maxYrs" [formControlName]="'maxYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
                 </div>
 
-              </div>
 
             </div>
 
-          </div>
+            <div class="col-md-8">
 
-          <div class="col-12 col-md-8">
-
-            <div class="d-flex flex-wrap">
-
-              <!-- AGE -->
-              <div class="col-12 col-md-6">
-
-                <div class="d-flex flex-wrap">
-
-                  <!-- MIN AGE -->
-                  <div class="mb-3 col-6 ps-0">
-                    <label for="minAge">Min Age</label>
-                    <input id="minAge" type="number" class="form-control"
-                           name="minAge" [formControlName]="'minAge'" [readOnly]="elastic()" [placeholder]="'Select'">
-                  </div>
-
-                  <!-- MAX AGE -->
-                  <div class="mb-3 col-6 pe-0">
-                    <label for="maxAge">Max Age</label>
-                    <input id="maxAge" type="number" class="form-control"
-                           name="maxAge" [formControlName]="'maxAge'" [readOnly]="elastic()" [placeholder]="'Select'">
+              <div class="row gy-3 pb-3">
+                <!-- AGE -->
+                <div class="col-md-6">
+                    <!-- MIN AGE -->
+                  <div class="row">
+                    <div class="col-6">
+                      <label for="minAge">Min Age</label>
+                      <input id="minAge" type="number" class="form-control"
+                             name="minAge" [formControlName]="'minAge'" [readOnly]="elastic()" [placeholder]="'Select'">
+                    </div>
+                    <!-- MAX AGE -->
+                    <div class="col-6">
+                      <label for="maxAge">Max Age</label>
+                      <input id="maxAge" type="number" class="form-control"
+                             name="maxAge" [formControlName]="'maxAge'" [readOnly]="elastic()" [placeholder]="'Select'">
+                    </div>
                   </div>
                 </div>
 
+
+                <!-- MODIFIED BETWEEN -->
+                <div class="col-md-6">
+                  <label>Last Modified</label>
+                  <app-date-range-picker [readonly]="elastic()"
+                                         #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
+                  </app-date-range-picker>
+                </div>
               </div>
 
-              <!-- MODIFIED BETWEEN -->
-              <div class="mb-3 col-12 col-md-6">
-                <label>Last Modified</label>
-                <app-date-range-picker [readonly]="elastic()"
-                  #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
-                </app-date-range-picker>
+              <div class="row gy-3">
+                <!-- GENDER -->
+                <div class="col-md-2">
+                  <label for="gender">Gender</label>
+                  <ng-select
+                    id="gender"
+                    [items]="genderOptions"
+                    [searchable]="false"
+                    placeholder="Select"
+                    bindLabel="stringValue"
+                    bindValue="key"
+                    [formControlName]="'gender'">
+                  </ng-select>
+                </div>
+
+                <!-- EDUCATION LEVEL -->
+
+                <!--              <div class="mb-3 col-12 col-md-4">-->
+                <!--                <label for="minEducationLevel">Education Level (minimum)</label>-->
+                <!--                <select class="form-control" id="minEducationLevel" name="minEducationLevel"-->
+                <!--                        [formControlName]="'minEducationLevel'" [disabled]="elastic()">-->
+                <!--                  <option value="" [disabled]="elastic()"></option>-->
+                <!--                  <option *ngFor="let level of educationLevels" [value]="level.level" [disabled]="elastic()">-->
+                <!--                    {{level.name}}-->
+                <!--                  </option>-->
+                <!--                </select>-->
+                <!--              </div>-->
+                <div class="col-md-5">
+                  <label>Education Level (minimum)</label>
+                  <ng-select
+                    id="minEducationLevel"
+                    [ngClass]="{'disabled' : elastic()}"
+                    [items]="educationLevels"
+                    placeholder="Select or type..."
+                    bindLabel="name"
+                    bindValue="level"
+                    [readonly]="elastic()"
+                    [formControlName]="'minEducationLevel'">
+                  </ng-select>
+                </div>
+
+                <!-- EDUCATION MAJOR -->
+                <div class="col-md-5">
+                  <label>Education major</label>
+                  <ng-select
+                    id="educationMajorIds"
+                    [ngClass]="{'disabled' : elastic()}"
+                    [items]="educationMajors"
+                    [multiple]="true"
+                    [closeOnSelect]="false"
+                    [clearSearchOnAdd]="true"
+                    placeholder="Select or type..."
+                    bindLabel="name"
+                    [readonly]="elastic()"
+                    [formControlName]="'educationMajors'">
+                    <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                      <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                        <span class="ng-value-label">{{item.name}}</span>
+                        <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                      </div>
+                      <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('educationMajors')" popoverTitle="Education Majors"
+                           triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                        <span class="ng-value-label">{{items.length - 3}} more...</span>
+                      </div>
+                    </ng-template>
+                  </ng-select>
+                </div>
+
               </div>
 
-              <!-- GENDER -->
-              <div class="mb-3 col-12 col-md-2">
-                <label for="gender">Gender</label>
-                <ng-select
-                  id="gender"
-                  [items]="genderOptions"
-                  [searchable]="false"
-                  placeholder="Select"
-                  bindLabel="stringValue"
-                  bindValue="key"
-                  [formControlName]="'gender'">
-                </ng-select>
-              </div>
 
-              <!-- EDUCATION LEVEL -->
-
-<!--              <div class="mb-3 col-12 col-md-4">-->
-<!--                <label for="minEducationLevel">Education Level (minimum)</label>-->
-<!--                <select class="form-control" id="minEducationLevel" name="minEducationLevel"-->
-<!--                        [formControlName]="'minEducationLevel'" [disabled]="elastic()">-->
-<!--                  <option value="" [disabled]="elastic()"></option>-->
-<!--                  <option *ngFor="let level of educationLevels" [value]="level.level" [disabled]="elastic()">-->
-<!--                    {{level.name}}-->
-<!--                  </option>-->
-<!--                </select>-->
-<!--              </div>-->
-              <div class="mb-3 col-12 col-md-5">
-                <label>Education Level (minimum)</label>
-                <ng-select
-                  id="minEducationLevel"
-                  [ngClass]="{'disabled' : elastic()}"
-                  [items]="educationLevels"
-                  placeholder="Select or type..."
-                  bindLabel="name"
-                  bindValue="level"
-                  [readonly]="elastic()"
-                  [formControlName]="'minEducationLevel'">
-                </ng-select>
-              </div>
-
-              <!-- EDUCATION MAJOR -->
-              <div class="mb-3 col-12 col-md-5">
-                <label>Education major</label>
-                <ng-select
-                  id="educationMajorIds"
-                  [ngClass]="{'disabled' : elastic()}"
-                  [items]="educationMajors"
-                  [multiple]="true"
-                  [closeOnSelect]="false"
-                  [clearSearchOnAdd]="true"
-                  placeholder="Select or type..."
-                  bindLabel="name"
-                  [readonly]="elastic()"
-                  [formControlName]="'educationMajors'">
-                  <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-                    <div *ngFor="let item of items | slice:0:3" class="ng-value">
-                      <span class="ng-value-label">{{item.name}}</span>
-                      <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
-                    </div>
-                    <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('educationMajors')" popoverTitle="Education Majors"
-                         triggers="mouseenter:mouseleave"  container="body" class="ng-value">
-                      <span class="ng-value-label">{{items.length - 3}} more...</span>
-                    </div>
-                  </ng-template>
-                </ng-select>
-              </div>
 
             </div>
-
           </div>
 
-          <!-- OTHER LANGUAGE -->
-          <div class="mb-3 col-12 col-md-4 mt-2">
-            <label>Other Language</label>
-            <app-language-level-form-control #otherLanguage
-                                             [languages]="languages"
-                                             [languageLevels]="languageLevels"
-                                             [model]="otherLanguageModel"
-                                             [disable]="elastic()"
-                                             (modelUpdated)="handleLanguageLevelChange($event, 'other')">
-            </app-language-level-form-control>
-          </div>
+          <div class="row gy-3">
 
-          <!-- NATIONALITY -->
-          <div class="mb-3 col-12 col-md-4 mt-2">
-            <label>Nationality (Country)</label>
-
-            <div class="operator">
-              <button class="btn btn-link" type="button"
-                      [class.active]="searchForm.value.nationalitySearchType === 'or'"
-                      (click)="handleSearchTypeChange('nationalitySearchType', 'or')">any
-              </button>
-              <button class="btn btn-link" type="button"
-                      [class.active]="searchForm.value.nationalitySearchType === 'not'"
-                      (click)="handleSearchTypeChange('nationalitySearchType', 'not')">not
-              </button>
+            <!-- OTHER LANGUAGE -->
+            <div class="col-md-4">
+              <label>Other Language</label>
+              <app-language-level-form-control #otherLanguage
+                                               [languages]="languages"
+                                               [languageLevels]="languageLevels"
+                                               [model]="otherLanguageModel"
+                                               [disable]="elastic()"
+                                               (modelUpdated)="handleLanguageLevelChange($event, 'other')">
+              </app-language-level-form-control>
             </div>
 
-            <ng-select
-              id="selectedNationalities"
-              [items]="nationalities"
-              [multiple]="true"
-              [closeOnSelect]="false"
-              [clearSearchOnAdd]="true"
-              placeholder="Select or type..."
-              bindLabel="name"
-              [formControlName]="'nationalities'">
-              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-                <div *ngFor="let item of items | slice:0:3" class="ng-value">
-                  <span class="ng-value-label">{{item.name}}</span>
-                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
-                </div>
-                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('nationalities')" popoverTitle="Nationalities"
-                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
-                  <span class="ng-value-label">{{items.length - 3}} more...</span>
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
+            <!-- NATIONALITY -->
+            <div class="col-md-4">
+              <label>Nationality (Country)</label>
 
-          <!-- COUNTRIES  -->
-          <div class="mb-3 col-12 col-md-4 mt-2">
-            <label>Location (Country)</label>
-            <ng-select
-              id="country"
-              [items]="countries"
-              [multiple]="true"
-              [closeOnSelect]="false"
-              [clearSearchOnAdd]="true"
-              placeholder="Select or type..."
-              bindLabel="name"
-              [formControlName]="'countries'">
-              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-                <div *ngFor="let item of items | slice:0:3" class="ng-value">
-                  <span class="ng-value-label">{{item.name}}</span>
-                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
-                </div>
-                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('countries')" popoverTitle="Countries"
-                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
-                  <span class="ng-value-label">{{items.length - 3}} more...</span>
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
+              <div class="operator">
+                <button class="btn btn-link" type="button"
+                        [class.active]="searchForm.value.nationalitySearchType === 'or'"
+                        (click)="handleSearchTypeChange('nationalitySearchType', 'or')">any
+                </button>
+                <button class="btn btn-link" type="button"
+                        [class.active]="searchForm.value.nationalitySearchType === 'not'"
+                        (click)="handleSearchTypeChange('nationalitySearchType', 'not')">not
+                </button>
+              </div>
 
-          <div class="mb-3 col-12 col-md-4 mt-2">
-            <label>Survey Type</label>
-            <ng-select
-              id="surveyType"
-              [items]="surveyTypes"
-              [multiple]="true"
-              [closeOnSelect]="false"
-              [clearSearchOnAdd]="true"
-              placeholder="Select or type..."
-              bindLabel="name"
-              [formControlName]="'surveyTypes'">
-              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-                <div *ngFor="let item of items | slice:0:3" class="ng-value">
-                  <span class="ng-value-label">{{item.name}}</span>
-                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
-                </div>
-                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('surveyTypes')" popoverTitle="Survey Types"
-                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
-                  <span class="ng-value-label">{{items.length - 3}} more...</span>
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
+              <ng-select
+                id="selectedNationalities"
+                [items]="nationalities"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                [clearSearchOnAdd]="true"
+                placeholder="Select or type..."
+                bindLabel="name"
+                [formControlName]="'nationalities'">
+                <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                  <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                    <span class="ng-value-label">{{item.name}}</span>
+                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                  </div>
+                  <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('nationalities')" popoverTitle="Nationalities"
+                       triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
 
-          <!-- EXCLUSION LIST -->
-          <div class="mb-3 col-12 col-md-4 mt-2">
-            <label for="exclusion">Exclusion list</label>
-            <ng-select
-              id="exclusion"
-              [items]="lists"
-              [closeOnSelect]="true"
-              [clearable]="true"
-              [searchable]="true"
-              placeholder="Select or type..."
-              bindLabel="name"
-              bindValue="id"
-              formControlName="exclusionListId">
-            </ng-select>
-          </div>
+            <!-- COUNTRIES  -->
+            <div class="col-md-4">
+              <label>Location (Country)</label>
+              <ng-select
+                id="country"
+                [items]="countries"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                [clearSearchOnAdd]="true"
+                placeholder="Select or type..."
+                bindLabel="name"
+                [formControlName]="'countries'">
+                <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                  <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                    <span class="ng-value-label">{{item.name}}</span>
+                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                  </div>
+                  <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('countries')" popoverTitle="Countries"
+                       triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
 
-          <!-- PARTNERS  -->
-          <div class="mb-3 col-12 col-md-4 mt-2">
-            <label>Partners</label>
-            <ng-select
-              id="partner"
-              [items]="partners"
-              [multiple]="true"
-              [closeOnSelect]="false"
-              [clearSearchOnAdd]="true"
-              placeholder="Select or type..."
-              bindLabel="name"
-              [formControlName]="'partners'">
-              <ng-template ng-header-tmp>
-                <div class="d-flex justify-content-between">
-                  <button class="btn btn-sm btn-link" (click)="onSelectAll(partners, 'partners'); $event.preventDefault()">Select All</button>
-                  <button class="btn btn-sm btn-link" (click)="onClearAll('partners'); $event.preventDefault()">Clear All</button>
-                </div>
-              </ng-template>
-              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-                <div *ngFor="let item of items | slice:0:3" class="ng-value">
-                  <span class="ng-value-label">{{item.name}}</span>
-                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
-                </div>
-                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('partners')" popoverTitle="Partners"
-                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
-                  <span class="ng-value-label">{{items.length - 3}} more...</span>
-                </div>
-              </ng-template>
-            </ng-select>
-            <p class="small text-muted mt-1">
-              {{getPartnerDefaultMessage()}}
-            </p>
-          </div>
+            <div class="col-md-4">
+              <label>Survey Type</label>
+              <ng-select
+                id="surveyType"
+                [items]="surveyTypes"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                [clearSearchOnAdd]="true"
+                placeholder="Select or type..."
+                bindLabel="name"
+                [formControlName]="'surveyTypes'">
+                <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                  <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                    <span class="ng-value-label">{{item.name}}</span>
+                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                  </div>
+                  <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('surveyTypes')" popoverTitle="Survey Types"
+                       triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+
+            <!-- EXCLUSION LIST -->
+            <div class="col-md-4">
+              <label for="exclusion">Exclusion list</label>
+              <ng-select
+                id="exclusion"
+                [items]="lists"
+                [closeOnSelect]="true"
+                [clearable]="true"
+                [searchable]="true"
+                placeholder="Select or type..."
+                bindLabel="name"
+                bindValue="id"
+                formControlName="exclusionListId">
+              </ng-select>
+            </div>
+
+            <!-- PARTNERS  -->
+            <div class="col-md-4">
+              <label>Partners</label>
+              <ng-select
+                id="partner"
+                [items]="partners"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                [clearSearchOnAdd]="true"
+                placeholder="Select or type..."
+                bindLabel="name"
+                [formControlName]="'partners'">
+                <ng-template ng-header-tmp>
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-sm btn-link" (click)="onSelectAll(partners, 'partners'); $event.preventDefault()">Select All</button>
+                    <button class="btn btn-sm btn-link" (click)="onClearAll('partners'); $event.preventDefault()">Clear All</button>
+                  </div>
+                </ng-template>
+                <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                  <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                    <span class="ng-value-label">{{item.name}}</span>
+                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                  </div>
+                  <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('partners')" popoverTitle="Partners"
+                       triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+              <p class="small text-muted mt-1">
+                {{getPartnerDefaultMessage()}}
+              </p>
+            </div>
 
 
-          <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
-            <p *ngIf="searchForm.errors.invalidDate">Email is required</p>
-          </div>
-
-          <hr class="w-100">
-
-          <div class="col-12">
-            <app-join-saved-search
-              (addBaseSearch)="addBaseSearchJoin($event)"
-              (deleteBaseSearch)="deleteBaseSearchJoin()"
-              [baseSearch]= "selectedBaseJoin"
-              [readonly]="elastic()"
-            ></app-join-saved-search>
+            <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
+              <p *ngIf="searchForm.errors.invalidDate">Email is required</p>
+            </div>
           </div>
 
         </div>
 
         <hr class="w-100">
 
-        <div class="col-12">
-          <div class="d-flex justify-content-end">
-            <button type="submit" class="btn btn-outline-primary" [disabled]="loading || searchForm.invalid">Apply</button>
+        <div class="container-fluid">
+          <div class="row">
+
+            <div class="col">
+              <app-join-saved-search
+                (addBaseSearch)="addBaseSearchJoin($event)"
+                (deleteBaseSearch)="deleteBaseSearchJoin()"
+                [baseSearch]= "selectedBaseJoin"
+                [readonly]="elastic()"
+              ></app-join-saved-search>
+            </div>
           </div>
         </div>
 
+
+        <hr class="w-100">
+
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
+              <button type="submit" class="btn btn-outline-primary" [disabled]="loading || searchForm.invalid">Apply</button>
+            </div>
+          </div>
+        </div>
 
       </form>
 
