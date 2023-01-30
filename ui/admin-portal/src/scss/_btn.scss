@@ -20,7 +20,9 @@
 @import "~bootstrap/scss/buttons";
 
 .btn-primary {
-  @include button-variant($color-primary, $color-primary, white, $color-primary-dark, $color-primary-dark, white);
+  @include button-variant($color-primary, $color-primary, white, $color-primary-dark, $color-primary-dark, white,
+  $disabled-background: $color-secondary-light, $disabled-border: $color-secondary-light
+  );
 }
 
 .btn-outline-primary {
@@ -83,6 +85,7 @@ a {
   &:disabled,
   &.disabled {
     color: $color-text-light;
+    background-color: $color-secondary-light;
   }
 }
 

@@ -16,10 +16,7 @@
 
 <div class="modal-header">
   <h4 class="modal-title">Assign Task to Candidate</h4>
-  <button type="button" class="close" aria-label="Close"
-          (click)="cancel()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
 </div>
 <div class="modal-body">
   <div *ngIf="loading">
