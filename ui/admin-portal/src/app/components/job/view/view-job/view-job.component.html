@@ -50,7 +50,7 @@
   </div>
 
   <app-view-job-preparation-items *ngIf="!job.publishedBy"
-    [job] ="job"
+    [jobPrepItems]="jobPrepItems"
     (itemSelected)="onPrepItemSelected($event)"
   >
   </app-view-job-preparation-items>
