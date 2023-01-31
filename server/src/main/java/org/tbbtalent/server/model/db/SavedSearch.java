@@ -67,6 +67,8 @@ public class SavedSearch extends AbstractCandidateSource {
     private SearchType nationalitySearchType;
 
     private String countryIds;
+    @Enumerated(EnumType.STRING)
+    private SearchType countrySearchType;
 
     private String surveyTypeIds;
 
@@ -254,6 +256,14 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setCountryIds(String countryIds) {
         this.countryIds = countryIds;
+    }
+
+    public SearchType getCountrySearchType() {
+        return countrySearchType;
+    }
+
+    public void setCountrySearchType(SearchType countrySearchType) {
+        this.countrySearchType = countrySearchType;
     }
 
     public String getSurveyTypeIds() {return surveyTypeIds;}

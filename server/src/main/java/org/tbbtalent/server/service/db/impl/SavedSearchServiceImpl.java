@@ -994,8 +994,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         if (reqCountries.size() > 0) {
-            boolQueryBuilder = addElasticTermFilter(
-                boolQueryBuilder, null,"country.keyword", reqCountries);
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                request.getCountrySearchType(),
+                "country.keyword", reqCountries);
         }
 
         //Partners
@@ -1287,6 +1288,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     getListAsString(request.getNationalityIds()));
             savedSearch.setNationalitySearchType(request.getNationalitySearchType());
             savedSearch.setCountryIds(getListAsString(request.getCountryIds()));
+            savedSearch.setCountrySearchType(request.getCountrySearchType());
             savedSearch.setSurveyTypeIds(getListAsString(request.getSurveyTypeIds()));
             savedSearch.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
             savedSearch.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
@@ -1337,6 +1339,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
         searchCandidateRequest.setSurveyTypeIds(getIdsFromString(request.getSurveyTypeIds()));
         searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
+        searchCandidateRequest.setCountrySearchType(request.getCountrySearchType());
 
         // Check if the saved search countries match the source countries of the user
         List<Long> requestCountries = getIdsFromString(request.getCountryIds());
