@@ -20,6 +20,7 @@ export interface SearchCandidateRequest {
   simpleQueryString?: string;
   keyword?: string;
   gender?: string;
+  regoReferrerParam?: string;
   statuses?: string[];
   occupationIds?: number[];
   orProfileKeyword?: string;

@@ -286,6 +286,13 @@ public class CandidateSpecification {
                 );
             }
 
+            // REFERRER
+            if (request.getRegoReferrerParam() != null) {
+                conjunction.getExpressions().add(
+                        builder.equal(candidate.get("regoReferrerParam"), request.getRegoReferrerParam())
+                );
+            }
+
             // GENDER SEARCH
             if (request.getGender() != null) {
                 conjunction.getExpressions().add(

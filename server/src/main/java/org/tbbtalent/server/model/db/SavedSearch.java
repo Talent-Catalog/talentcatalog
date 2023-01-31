@@ -100,6 +100,8 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer minEducationLevel;
     private String educationMajorIds;
 
+    private String regoReferrerParam;
+
     /**
      * Reviewable searches allow the front end to supply review filters to the search
      * in the form of a List of ReviewStatus's. Using the review filters engages the
@@ -543,6 +545,14 @@ public class SavedSearch extends AbstractCandidateSource {
                 log.error("Bad type '" + type + "' of saved search " + getId(), ex);
             }
         }
+    }
+
+    public String getRegoReferrerParam() {
+        return regoReferrerParam;
+    }
+
+    public void setRegoReferrerParam(String regoReferrerParam) {
+        this.regoReferrerParam = regoReferrerParam;
     }
 
     public Boolean getReviewable() {

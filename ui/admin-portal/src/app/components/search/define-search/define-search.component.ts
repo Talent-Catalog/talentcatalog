@@ -194,6 +194,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       partners: [[]],
       educationMajors: [[]],
       nationalities: [[]],
+      regoReferrerParam: [null],
       statusesDisplay: [[]],
       surveyTypes: [[]],
       exclusionListId: [null],

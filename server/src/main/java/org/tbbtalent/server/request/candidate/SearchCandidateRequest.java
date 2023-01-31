@@ -122,6 +122,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Integer maxAge;
     private Integer minEducationLevel;
     private List<Long> educationMajorIds;
+    private String regoReferrerParam;
     private List<ReviewStatus> reviewStatusFilter;
     private boolean includeNew;
     private Boolean includeUploadedFiles;

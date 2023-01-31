@@ -1039,6 +1039,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     null,"status.keyword", reqStatuses);
         }
 
+        //Referrer
+        String referrer = request.getRegoReferrerParam();
+        if (referrer != null) {
+            boolQueryBuilder = boolQueryBuilder.filter(
+                QueryBuilders.termQuery("regoReferrerParam", referrer));
+        }
+
         //Gender
         Gender gender = request.getGender();
         if (gender != null) {
@@ -1279,6 +1286,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
             savedSearch.setMinYrs(request.getMinYrs());
             savedSearch.setMaxYrs(request.getMaxYrs());
+            savedSearch.setRegoReferrerParam(request.getRegoReferrerParam());
             savedSearch.setVerifiedOccupationIds(
                     getListAsString(request.getVerifiedOccupationIds()));
             savedSearch.setVerifiedOccupationSearchType(
@@ -1333,6 +1341,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setOccupationIds(getIdsFromString(request.getOccupationIds()));
         searchCandidateRequest.setMinYrs(request.getMinYrs());
         searchCandidateRequest.setMaxYrs(request.getMaxYrs());
+        searchCandidateRequest.setRegoReferrerParam(request.getRegoReferrerParam());
         searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
         searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
         searchCandidateRequest.setPartnerIds(getIdsFromString(request.getPartnerIds()));
