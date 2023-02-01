@@ -72,7 +72,8 @@ export class DependantsComponent implements OnInit {
     }
   }
 
-  addRecord() {
+  addRecord(e: MouseEvent) {
+    e.stopPropagation();
     this.saving = true;
     this.open = true;
     this.setActiveIds();

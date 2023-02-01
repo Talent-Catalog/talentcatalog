@@ -63,18 +63,7 @@
 
   <div>
     <ngb-accordion #confirm="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-      <ngb-panel id="intake-confirm">
-        <ng-template ngbPanelHeader>
-          <div class="d-flex align-items-center justify-content-between">
-            Confirm General Information
-            <button ngbPanelToggle class="btn btn-link">
-              <ng-container *ngIf="confirm.activeIds.includes('intake-confirm')"
-              ><i class="d-flex fas fa-chevron-up"></i></ng-container
-              >
-              <ng-container *ngIf="!confirm.activeIds.includes('intake-confirm')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
-            </button>
-          </div>
-        </ng-template>
+      <ngb-panel id="intake-confirm" title="Confirm General Information">
         <ng-template ngbPanelContent>
           <app-confirm-contact
             [candidate]="candidate"
@@ -87,18 +76,7 @@
     <hr/>
 
     <ngb-accordion #recruit="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-      <ngb-panel id="intake-int-recruit">
-        <ng-template ngbPanelHeader>
-          <div class="d-flex align-items-center justify-content-between">
-            Interest in International Recruitment
-            <button ngbPanelToggle class="btn btn-link">
-                <ng-container *ngIf="recruit.activeIds.includes('intake-int-recruit')"
-                ><i class="d-flex fas fa-chevron-up"></i></ng-container
-                >
-                <ng-container *ngIf="!recruit.activeIds.includes('intake-int-recruit')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
-              </button>
-          </div>
-        </ng-template>
+      <ngb-panel id="intake-int-recruit" title="Interest in International Recruitment">
         <ng-template ngbPanelContent>
           <app-int-recruitment
             [entity]="candidate"
@@ -141,18 +119,7 @@
     <hr/>
 
     <ngb-accordion #english="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-      <ngb-panel id="intake-english-assessment">
-        <ng-template ngbPanelHeader>
-          <div class="d-flex align-items-center justify-content-between">
-            English Assessment
-            <button ngbPanelToggle class="btn btn-link">
-              <ng-container *ngIf="english.activeIds.includes('intake-english-assessment')"
-              ><i class="d-flex fas fa-chevron-up"></i></ng-container
-              >
-              <ng-container *ngIf="!english.activeIds.includes('intake-english-assessment')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
-            </button>
-          </div>
-        </ng-template>
+      <ngb-panel id="intake-english-assessment" title="English Assessment">
         <ng-template ngbPanelContent>
           <app-lang-assessment
             [entity]="candidate"
@@ -165,18 +132,7 @@
     <hr/>
 
     <ngb-accordion #residency="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-      <ngb-panel id="intake-residency">
-        <ng-template ngbPanelHeader>
-          <div class="d-flex align-items-center justify-content-between">
-            Residency and Work Status
-            <button ngbPanelToggle class="btn btn-link">
-              <ng-container *ngIf="residency.activeIds.includes('intake-residency')"
-              ><i class="d-flex fas fa-chevron-up"></i></ng-container
-              >
-              <ng-container *ngIf="!residency.activeIds.includes('intake-residency')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
-            </button>
-          </div>
-        </ng-template>
+      <ngb-panel id="intake-residency" title="Residency and Work Status">
         <ng-template ngbPanelContent>
           <app-residence-status
             [entity]="candidate"
@@ -201,18 +157,7 @@
     <hr/>
 
     <ngb-accordion #host="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-      <ngb-panel id="intake-host-country">
-        <ng-template ngbPanelHeader>
-          <div class="d-flex align-items-center justify-content-between">
-            Host Country Status
-            <button ngbPanelToggle class="btn btn-link">
-              <ng-container *ngIf="host.activeIds.includes('intake-host-country')"
-              ><i class="d-flex fas fa-chevron-up"></i></ng-container
-              >
-              <ng-container *ngIf="!host.activeIds.includes('intake-host-country')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
-            </button>
-          </div>
-        </ng-template>
+      <ngb-panel id="intake-host-country" title="Host Country Status">
         <ng-template ngbPanelContent>
           <app-host-entry
             [entity]="candidate"
@@ -238,18 +183,7 @@
     <hr/>
 
     <ngb-accordion #registration="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-      <ngb-panel id="intake-registration">
-        <ng-template ngbPanelHeader>
-          <div class="d-flex align-items-center justify-content-between">
-            Registration
-            <button ngbPanelToggle class="btn btn-link">
-              <ng-container *ngIf="registration.activeIds.includes('intake-registration')"
-              ><i class="d-flex fas fa-chevron-up"></i></ng-container
-              >
-              <ng-container *ngIf="!registration.activeIds.includes('intake-registration')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
-            </button>
-          </div>
-        </ng-template>
+      <ngb-panel id="intake-registration" title="Registration">
         <ng-template ngbPanelContent>
           <div class="card-title h6">
             UNHCR
@@ -274,27 +208,7 @@
     <hr/>
 
     <ngb-accordion #partner="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-      <ngb-panel id="intake-partner-info">
-        <ng-template ngbPanelHeader>
-          <div class="d-flex align-items-center justify-content-between">
-            Partner Information
-            <button ngbPanelToggle class="btn btn-link">
-              <ng-container *ngIf="partner.activeIds.includes('intake-partner-info')"
-              ><i class="d-flex fas fa-chevron-up"></i></ng-container
-              >
-              <ng-container *ngIf="!partner.activeIds.includes('intake-partner-info')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
-            </button>
-          </div>
-        </ng-template>
-        <ng-template ngbPanelHeader let-opened="opened">
-          <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
-
-            <button ngbPanelToggle class="btn btn-link p-0 ms-4 btn-outline-none">
-              <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
-              <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
-            </button>
-          </div>
-        </ng-template>
+      <ngb-panel id="intake-partner-info" title="Partner Information">
         <ng-template ngbPanelContent>
           <app-marital-status
             [entity]="candidate"
@@ -323,18 +237,7 @@
     <hr/>
 
     <ngb-accordion #eligibility="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-      <ngb-panel id="intake-additional-eligibility">
-        <ng-template ngbPanelHeader>
-          <div class="d-flex align-items-center justify-content-between">
-            Additional Eligibility
-            <button ngbPanelToggle class="btn btn-link">
-              <ng-container *ngIf="eligibility.activeIds.includes('intake-additional-eligibility')"
-              ><i class="d-flex fas fa-chevron-up"></i></ng-container
-              >
-              <ng-container *ngIf="!eligibility.activeIds.includes('intake-additional-eligibility')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
-            </button>
-          </div>
-        </ng-template>
+      <ngb-panel id="intake-additional-eligibility" title="Additional Eligibility">
         <ng-template ngbPanelContent>
           <app-crime
             [entity]="candidate"
@@ -376,18 +279,7 @@
     <hr/>
 
     <ngb-accordion #agreement="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-      <ngb-panel id="intake-final-agreement">
-        <ng-template ngbPanelHeader>
-          <div class="d-flex align-items-center justify-content-between">
-            End of Intake
-            <button ngbPanelToggle class="btn btn-link">
-              <ng-container *ngIf="residency.activeIds.includes('intake-final-agreement')"
-              ><i class="d-flex fas fa-chevron-up"></i></ng-container
-              >
-              <ng-container *ngIf="!residency.activeIds.includes('intake-final-agreement')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
-            </button>
-          </div>
-        </ng-template>
+      <ngb-panel id="intake-final-agreement" title="End of Intake">
         <ng-template ngbPanelContent>
           <app-final-agreement>
           </app-final-agreement>

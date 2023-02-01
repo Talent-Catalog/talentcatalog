@@ -17,21 +17,11 @@
 <!-- EXISTING RECORDS -->
 <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
   <ngb-panel id="intake-dependants">
-    <ng-template ngbPanelHeader let-opened="opened">
-      <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
-        <div class="d-flex flex-column">
-          Dependants
-        </div>
-        <div class="d-flex">
-          <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
-            <i class="fas fa-plus"></i>
-          </button>
-          <button ngbPanelToggle (click)="toggleOpen()" class="btn btn-link p-0 ms-4 btn-outline-none">
-            <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
-            <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
-          </button>
-        </div>
-      </div>
+    <ng-template ngbPanelTitle let-opened="opened">
+      <span class="me-2">Dependants</span>
+      <button type="button" class="btn btn-primary btn-sm" (click)="addRecord($event)">
+        <i class="fas fa-plus"></i>
+      </button>
     </ng-template>
     <ng-template ngbPanelContent>
       <div *ngIf="error">

@@ -18,22 +18,12 @@
 
 <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
   <ngb-panel id="intake-citizenships">
-    <ng-template ngbPanelHeader >
-      <div class="d-flex align-items-center justify-content-between" >
-        <div class="d-flex flex-column">
-          Citizenships
-          <span class="small">Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</span>
-        </div>
-        <div class="d-flex">
-          <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
-            <i class="fas fa-plus"></i>
-          </button>
-          <button (click)="toggleOpen()" class="btn btn-link p-0 ms-4 btn-outline-none">
-            <i *ngIf="open" class="d-flex fas fa-chevron-up"></i>
-            <i *ngIf="!open" class="d-flex fas fa-chevron-down"></i>
-          </button>
-        </div>
-      </div>
+    <ng-template ngbPanelTitle let-opened="opened">
+      <span>Citizenships</span>
+      <small class="ms-2">Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
+      <button type="button" class="btn btn-primary btn-sm ms-2" (click)="addRecord($event)">
+        <i class="fas fa-plus"></i>
+      </button>
     </ng-template>
     <ng-template ngbPanelContent>
       <div *ngIf="error">

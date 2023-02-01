@@ -72,7 +72,9 @@ export class CitizenshipsComponent implements OnInit {
     }
   }
 
-  addRecord() {
+  addRecord(e: MouseEvent) {
+    // Stop the button from opening/closing the accordion
+    e.stopPropagation();
     this.saving = true;
     this.open = true;
     this.setActiveIds();
