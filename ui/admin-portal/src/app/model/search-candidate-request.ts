@@ -20,6 +20,7 @@ export interface SearchCandidateRequest {
   simpleQueryString?: string;
   keyword?: string;
   gender?: string;
+  regoReferrerParam?: string;
   statuses?: string[];
   occupationIds?: number[];
   orProfileKeyword?: string;
@@ -29,6 +30,7 @@ export interface SearchCandidateRequest {
   nationalityIds?: number[];
   nationalitySearchType?: string;
   countryIds?: number[];
+  countrySearchType?: string;
   englishMinWrittenLevel?: number;
   englishMinSpokenLevel?: number;
   otherLanguageId?: number;

@@ -128,6 +128,7 @@ export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 export const linkedInUrl: string = 'https://www.linkedin.com/in/';
 
 export const defaultReviewStatusFilter: string[] = [
+  ReviewStatus[ReviewStatus.rejected],
   ReviewStatus[ReviewStatus.unverified],
   ReviewStatus[ReviewStatus.verified]
 ];

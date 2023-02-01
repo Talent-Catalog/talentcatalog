@@ -108,6 +108,8 @@ export class CandidateFieldService {
         null, null),
       new CandidateFieldInfo("Phone", "phone", null,
         null, null),
+      new CandidateFieldInfo("Referrer", "regoReferrerParam", null,
+        null, null),
       new CandidateFieldInfo("Status", "status", null,
         this.titleCaseFormatter, null),
       new CandidateFieldInfo("UNHCR Status", "unhcrStatus", this.unhcrStatusTooltip,

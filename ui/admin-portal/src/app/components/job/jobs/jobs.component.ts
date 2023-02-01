@@ -33,6 +33,9 @@ export class JobsComponent implements OnInit {
 
   private filterKeySuffix: string = 'Filter';
   private savedStateKeyPrefix: string = 'BrowseKey';
+  private sortDirectionSuffix: string = 'SortDir';
+  private sortFieldSuffix: string = 'Sort';
+
   private stagesAcceptingCandidates = [
     'candidateSearch', 'visaEligibility', 'cvPreparation', 'cvReview', 'recruitmentProcess',
   'jobOffer', 'visaPreparation'];
@@ -43,8 +46,8 @@ export class JobsComponent implements OnInit {
   results: SearchResults<Job>;
   stages = enumOptions(JobOpportunityStage);
 
-  //Default sort jobs with most recent job first - ie descending order of id
-  sortField = 'submissionList.id';
+  //Default sort jobs with most recent job first - ie descending order of created date
+  sortField = 'createdDate';
   sortDirection = 'DESC';
   currentJob: Job;
   private currentIndex = 0;
@@ -62,6 +65,17 @@ export class JobsComponent implements OnInit {
 
     //Pick up any previous keyword filter
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
+
+    //Pick up previous sort
+    const previousSortDirection: string = this.localStorageService.get(this.savedStateKey() + this.sortDirectionSuffix);
+    if (previousSortDirection) {
+      this.sortDirection = previousSortDirection;
+    }
+    const previousSortField: string = this.localStorageService.get(this.savedStateKey() + this.sortFieldSuffix);
+    if (previousSortField) {
+      this.sortField = previousSortField;
+    }
+
     this.searchForm = this.fb.group({
       keyword: [filter],
       myJobsOnly: [false],
@@ -92,8 +106,12 @@ export class JobsComponent implements OnInit {
   }
 
   search() {
-    //Remember keyword filter from last search
+    //Remember keyword filter
     this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
+
+    //Remember sort
+    this.localStorageService.set(this.savedStateKey()+this.sortFieldSuffix, this.sortField);
+    this.localStorageService.set(this.savedStateKey()+this.sortDirectionSuffix, this.sortDirection);
 
     let req = new SearchJobRequest();
     req.keyword = this.keyword;
@@ -194,6 +212,7 @@ export class JobsComponent implements OnInit {
       this.sortField = column;
       this.sortDirection = 'ASC';
     }
+
     this.search();
   }
 

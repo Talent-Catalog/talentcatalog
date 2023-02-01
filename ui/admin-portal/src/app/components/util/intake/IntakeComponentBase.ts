@@ -18,7 +18,7 @@ import {Directive, Input, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../model/candidate';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
-import {IntakeService} from "./IntakeService";
+import {CandidateService} from "../../../services/candidate.service";
 
 /**
  * Base class for all candidate intake components.
@@ -62,10 +62,10 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
    * Inject in a FormBuilder to create the form and CandidateService
    * to perform the saves.
    * @param fb FormBuilder
-   * @param intakeService CandidateService which saves the intake data
+   * @param candidateService CandidateService which saves the intake data
    */
-  protected constructor(protected fb: FormBuilder, intakeService: IntakeService) {
-    super(intakeService);
+  protected constructor(protected fb: FormBuilder, candidateService: CandidateService) {
+    super(candidateService);
   }
 
   /**

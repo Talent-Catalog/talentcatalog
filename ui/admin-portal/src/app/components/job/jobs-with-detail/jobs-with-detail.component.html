@@ -17,7 +17,7 @@
       </div>
 
       <div *ngIf="selectedJob">
-        <strong>{{selectedJob.name}}</strong>
+        <strong>{{selectedJob.name + ' (' + selectedJob.id + ')'}}</strong>
         <button class="btn" (click)="doOpenJob()"><i class="fas fa-expand" title="Open"></i></button>
         <button class="btn" (click)="doToggleStarred()">
           <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>

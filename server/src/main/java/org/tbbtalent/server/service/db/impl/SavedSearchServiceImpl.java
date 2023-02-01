@@ -994,8 +994,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         if (reqCountries.size() > 0) {
-            boolQueryBuilder = addElasticTermFilter(
-                boolQueryBuilder, null,"country.keyword", reqCountries);
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                request.getCountrySearchType(),
+                "country.keyword", reqCountries);
         }
 
         //Partners
@@ -1036,6 +1037,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             boolQueryBuilder =
                 addElasticTermFilter(boolQueryBuilder,
                     null,"status.keyword", reqStatuses);
+        }
+
+        //Referrer
+        String referrer = request.getRegoReferrerParam();
+        if (referrer != null) {
+            boolQueryBuilder = boolQueryBuilder.filter(
+                QueryBuilders.termQuery("regoReferrerParam", referrer));
         }
 
         //Gender
@@ -1278,6 +1286,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
             savedSearch.setMinYrs(request.getMinYrs());
             savedSearch.setMaxYrs(request.getMaxYrs());
+            savedSearch.setRegoReferrerParam(request.getRegoReferrerParam());
             savedSearch.setVerifiedOccupationIds(
                     getListAsString(request.getVerifiedOccupationIds()));
             savedSearch.setVerifiedOccupationSearchType(
@@ -1287,6 +1296,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     getListAsString(request.getNationalityIds()));
             savedSearch.setNationalitySearchType(request.getNationalitySearchType());
             savedSearch.setCountryIds(getListAsString(request.getCountryIds()));
+            savedSearch.setCountrySearchType(request.getCountrySearchType());
             savedSearch.setSurveyTypeIds(getListAsString(request.getSurveyTypeIds()));
             savedSearch.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
             savedSearch.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
@@ -1331,12 +1341,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setOccupationIds(getIdsFromString(request.getOccupationIds()));
         searchCandidateRequest.setMinYrs(request.getMinYrs());
         searchCandidateRequest.setMaxYrs(request.getMaxYrs());
+        searchCandidateRequest.setRegoReferrerParam(request.getRegoReferrerParam());
         searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
         searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
         searchCandidateRequest.setPartnerIds(getIdsFromString(request.getPartnerIds()));
         searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
         searchCandidateRequest.setSurveyTypeIds(getIdsFromString(request.getSurveyTypeIds()));
         searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
+        searchCandidateRequest.setCountrySearchType(request.getCountrySearchType());
 
         // Check if the saved search countries match the source countries of the user
         List<Long> requestCountries = getIdsFromString(request.getCountryIds());

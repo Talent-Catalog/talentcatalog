@@ -62,6 +62,7 @@ public class CandidateEs {
     private static final String[] sortingFields = {
             "masterId",
             "country",
+            "regoReferrerParam",
             "state",
             "city",
             "gender",
@@ -126,6 +127,8 @@ public class CandidateEs {
     private Integer minEnglishSpokenLevel;
 
     private Integer minEnglishWrittenLevel;
+
+    private String regoReferrerParam;
 
     private Long updated;
 
@@ -201,6 +204,7 @@ public class CandidateEs {
                 : candidate.getNationality().getName();
         this.partner = candidate.getUser() == null ? null
                 : candidate.getUser().getPartner().getAbbreviation();
+        this.regoReferrerParam = candidate.getRegoReferrerParam();
         this.status = candidate.getStatus();
 
         this.phone = candidate.getPhone();

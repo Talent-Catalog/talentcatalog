@@ -84,7 +84,7 @@ export class SavedSearchService {
     ];
     this.savedSearchTypeInfos[SavedSearchType.profession] =
       {savedSearchType: SavedSearchType.profession,
-        title: 'Professions',
+        title: 'Occupations',
         categories: profCategories
       };
 

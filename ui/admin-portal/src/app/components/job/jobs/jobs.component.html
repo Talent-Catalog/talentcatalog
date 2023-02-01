@@ -40,21 +40,18 @@
       <!--          Header-->
       <thead class="thead-light">
       <tr>
-        <th (click)="toggleSort('id')">
-          <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          #
-        </th>
-        <th (click)="toggleSort('submissionList.id')">
-          <app-sorted-by [column]="'submissionList.id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          List#
+        <th (click)="toggleSort('name')">
+          <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          Name
         </th>
         <th (click)="toggleSort('stageOrder')">
           <app-sorted-by [column]="'stageOrder'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           <i class="fab fa-salesforce"></i>
         </th>
-        <th (click)="toggleSort('name')">
-          <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          Name
+
+        <th (click)="toggleSort('createdDate')">
+          <app-sorted-by [column]="'createdDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          Created
         </th>
         <th (click)="toggleSort('submissionDueDate')">
           <app-sorted-by [column]="'submissionDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
@@ -68,21 +65,16 @@
       <!--        Job records    -->
       <tr *ngFor="let job of results?.content" (click)="selectCurrent(job)"
           [ngClass]="{'current': currentJob?.id == job.id}">
-        <td>
+        <td title="{{job.country}}">
           <a [routerLink]="['/job',job.id]">
-            {{job.id}}
-          </a>
-        </td>
-        <td>
-          <a [routerLink]="['/list',job.submissionList.id]">
-            {{job.submissionList.id}}
+            {{truncate(job.name, 36)}}
           </a>
         </td>
         <td title="Contact {{fullUserName(job.contactUser)}}">
-            {{truncate(job.stage,13)}}
+          {{truncate(job.stage,13)}}
         </td>
-        <td title="{{job.country}}">
-            {{truncate(job.name, 36)}}
+        <td>
+          {{job.createdDate | date}}
         </td>
         <td>
             {{job.submissionDueDate}}

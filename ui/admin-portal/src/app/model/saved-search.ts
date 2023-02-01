@@ -111,7 +111,7 @@ export function isSavedSearch(source: CandidateSource): source is SavedSearch {
 export function getCandidateSourceBreadcrumb(candidateSource: CandidateSource): string {
   const sourceType = getCandidateSourceType(candidateSource);
   return candidateSource != null ?
-    (sourceType + ': ' + candidateSource.name) : sourceType;
+    (sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')') : sourceType;
 }
 
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
@@ -138,7 +138,7 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
         }
       }
 
-      breadcrumb += ": " + savedSearch.name;
+      breadcrumb += ": " + savedSearch.name + " (" + savedSearch.id + ")";
     }
   }
   return breadcrumb;

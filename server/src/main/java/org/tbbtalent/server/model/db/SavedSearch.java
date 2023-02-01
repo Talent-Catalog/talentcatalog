@@ -67,6 +67,8 @@ public class SavedSearch extends AbstractCandidateSource {
     private SearchType nationalitySearchType;
 
     private String countryIds;
+    @Enumerated(EnumType.STRING)
+    private SearchType countrySearchType;
 
     private String surveyTypeIds;
 
@@ -97,6 +99,8 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private Integer minEducationLevel;
     private String educationMajorIds;
+
+    private String regoReferrerParam;
 
     /**
      * Reviewable searches allow the front end to supply review filters to the search
@@ -254,6 +258,14 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setCountryIds(String countryIds) {
         this.countryIds = countryIds;
+    }
+
+    public SearchType getCountrySearchType() {
+        return countrySearchType;
+    }
+
+    public void setCountrySearchType(SearchType countrySearchType) {
+        this.countrySearchType = countrySearchType;
     }
 
     public String getSurveyTypeIds() {return surveyTypeIds;}
@@ -533,6 +545,14 @@ public class SavedSearch extends AbstractCandidateSource {
                 log.error("Bad type '" + type + "' of saved search " + getId(), ex);
             }
         }
+    }
+
+    public String getRegoReferrerParam() {
+        return regoReferrerParam;
+    }
+
+    public void setRegoReferrerParam(String regoReferrerParam) {
+        this.regoReferrerParam = regoReferrerParam;
     }
 
     public Boolean getReviewable() {

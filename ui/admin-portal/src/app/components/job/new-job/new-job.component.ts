@@ -203,7 +203,7 @@ export class NewJobComponent implements OnInit {
   }
 
   getBreadCrumb() {
-    return this.prepare ? "Prepare a new job" : "Register a new Job"
+    return this.prepare ? "Create a new job" : "Register a new Job"
   }
 
   doPreparation() {

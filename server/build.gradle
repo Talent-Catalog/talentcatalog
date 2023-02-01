@@ -46,8 +46,16 @@ repositories {
 
 dependencies {
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    //Instead of defaulting Lombok version, specify recent Lombok version to address this issue:
+    // https://stackoverflow.com/questions/65380359/lomboks-access-to-jdk-compilers-internal-packages-incompatible-with-java-16
+    //We were getting this error when building server:
+    //java: java.lang.IllegalAccessError: class lombok.javac.apt.LombokProcessor
+    // (in unnamed module @0x3dd0aa6) cannot access class
+    // com.sun.tools.javac.processing.JavacProcessingEnvironment (in module jdk.compiler) because
+    // module jdk.compiler does not export com.sun.tools.javac.processing to unnamed module @0x3dd0aa6
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
     if (!isDev) {

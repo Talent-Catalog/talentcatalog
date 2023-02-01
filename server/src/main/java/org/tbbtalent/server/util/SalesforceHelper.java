@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
 
 /**
- * TODO JC Doc
+ * Some useful Salesforce utilities.
  *
  * @author John Cameron
  */

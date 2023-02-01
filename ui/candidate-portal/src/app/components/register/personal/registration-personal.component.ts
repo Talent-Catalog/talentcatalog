@@ -38,6 +38,10 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   @Output() onSave = new EventEmitter();
 
+  static afghanistanId = 6180;
+  static ukraineId = 6406;
+  static usaId = 6178;
+
   form: FormGroup;
   error: any;
   // Component states
@@ -122,10 +126,10 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
         // If afghan parolee set default nationality to Afghanistan
         if (this.languageService.isUsAfghan()) {
           if (this.form.value.nationalityId == null) {
-            this.form.controls['nationalityId'].patchValue(6180);
+            this.form.controls['nationalityId'].patchValue(RegistrationPersonalComponent.afghanistanId);
           }
           if (this.form.value.countryId == null) {
-            this.form.controls['countryId'].patchValue(6178);
+            this.form.controls['countryId'].patchValue(RegistrationPersonalComponent.usaId);
           }
           this.form.get('unhcrRegistered').setValidators(null);
         }
@@ -152,16 +156,23 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       });
   }
 
-  get tbbCriteriaFailed() {
+  get tcCriteriaFailed() {
     let failed: boolean = false;
     if (this.country !== null) {
-      if (this.country === this.nationality && this.country !== 6180) {
+      if (this.country === this.nationality && !this.inCountryRegistrationAllowed(this.country)) {
         failed = true;
       } else {
         failed = false;
       }
     }
     return failed;
+  }
+
+  private inCountryRegistrationAllowed(country: number): boolean {
+    return [
+      RegistrationPersonalComponent.afghanistanId,
+      RegistrationPersonalComponent.ukraineId
+    ].includes(country);
   }
 
   get nationality() {

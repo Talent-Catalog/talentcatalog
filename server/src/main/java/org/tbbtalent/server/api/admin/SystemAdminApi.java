@@ -647,7 +647,7 @@ public class SystemAdminApi {
                         CandidateNote candidateNote = new CandidateNote();
                         candidateNote.setCandidate(candidate);
                         candidateNote.setTitle("Status change from pending to ineligible");
-                        candidateNote.setComment("TBB criteria not met: Country located is same as country of nationality.");
+                        candidateNote.setComment("TC criteria not met: Country located is same as country of nationality.");
                         candidateNote.setNoteType(NoteType.admin);
                         candidateNote.setAuditFields(loggedInUser);
                         candidateNoteRepository.save(candidateNote);
@@ -790,14 +790,13 @@ public class SystemAdminApi {
     }
 
     @GetMapping("esload")
-    public String loadElasticsearch(
+    public void loadElasticsearch(
             @RequestParam(value = "reset", required = false) String reset) {
         populateElasticsearchService.populateElasticCandidates(reset != null);
-        return "started";
     }
 
     @GetMapping("migrate/extract")
-    public String migrateExtract() {
+    public void migrateExtract() {
         TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
         Long userId = 1L;
         if (authService != null) {
@@ -810,13 +809,11 @@ public class SystemAdminApi {
         List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
         extractTextFromMigratedFiles(textExtractHelper, types);
         extractTextFromNewFiles(textExtractHelper, types);
-        return "done";
     }
 
-    @GetMapping("es-to-db/unhcr-status")
-    public String migrateUnhcrStatus() {
+//    @GetMapping("es-to-db/unhcr-status")
+    public void migrateUnhcrStatus() {
         populateElasticsearchService.populateCandidateFromElastic();
-        return "started";
     }
 
     private void extractTextFromMigratedFiles(TextExtractHelper textExtractHelper, List<String> types) {

@@ -116,13 +116,12 @@ export class CreateUpdateSearchComponent implements OnInit {
 
   ngOnInit() {
 
+    //Note that we now only support creation of "Other" search types. That is hardcoded in form.
     this.form = this.fb.group({
       name: [this.savedSearch.defaultSearch ? null : this.savedSearch.name,
         Validators.required],
-      savedSearchType: [this.savedSearch.defaultSearch ? null
-        : this.savedSearch.savedSearchType, Validators.required],
-      savedSearchSubtype: [this.savedSearch.defaultSearch ? null
-        : this.savedSearch.savedSearchSubtype, this.subtypeRequiredValidator()],
+      savedSearchType: [SavedSearchType.other],
+      savedSearchSubtype: [null],
       reviewable: [this.savedSearch?.reviewable,
         Validators.required],
     });
