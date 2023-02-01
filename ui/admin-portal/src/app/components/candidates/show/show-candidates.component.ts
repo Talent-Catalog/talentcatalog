@@ -210,11 +210,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService
 
-  ) {
-    this.searchForm = this.fb.group({
-      statusesDisplay: [defaultReviewStatusFilter],
-    });
-  }
+  ) {}
 
   ngOnInit() {
 
@@ -222,37 +218,40 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.loggedInUser = this.authService.getLoggedInUser();
     this.selectedCandidates = [];
 
-    this.statuses = [];
-    for (const key in ReviewStatus) {
-      if (isNaN(Number(key))) {
-        this.statuses.push(key);
-      }
+    this.statuses = [ReviewStatus[ReviewStatus.rejected], ReviewStatus[ReviewStatus.verified]];
+
+    //Different use of searchForm depending on whether saved search or saved list
+
+    if (isSavedSearch(this.candidateSource)) {
+      this.searchForm = this.fb.group({
+        statusesDisplay: [defaultReviewStatusFilter],
+      });
     }
+    if (isSavedList(this.candidateSource)) {
+      this.searchForm = this.fb.group({
+        keyword: ['']
+      });
+      this.subscribeToFilterChanges();
 
-    this.searchForm = this.fb.group({
-      keyword: ['']
-    });
-    this.subscribeToFilterChanges();
-
-    this.doNumberOrNameSearch = (text$: Observable<string>) =>
-      text$.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        tap(() => {
-          this.error = null
-        }),
-        switchMap(candidateNumberOrName =>
-          this.candidateService.findByCandidateNumberOrName(
-            {candidateNumberOrName: candidateNumberOrName, pageSize: 10}).pipe(
-            tap(() => this.searchFailed = false),
-            map(result => result.content),
-            catchError(() => {
-              this.searchFailed = true;
-              return of([]);
-            }))
-        )
-      );
-
+      this.doNumberOrNameSearch = (text$: Observable<string>) =>
+        text$.pipe(
+          debounceTime(300),
+          distinctUntilChanged(),
+          tap(() => {
+            this.error = null
+          }),
+          switchMap(candidateNumberOrName =>
+            this.candidateService.findByCandidateNumberOrName(
+              {candidateNumberOrName: candidateNumberOrName, pageSize: 10}).pipe(
+              tap(() => this.searchFailed = false),
+              map(result => result.content),
+              catchError(() => {
+                this.searchFailed = true;
+                return of([]);
+              }))
+          )
+        );
+    }
   }
 
   get pluralType() {
@@ -373,8 +372,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   doSearch(refresh: boolean, usePageNumber = true) {
-
-    //Todo - need to trigger search when review status changes
 
     this.results = null;
     this.error = null;

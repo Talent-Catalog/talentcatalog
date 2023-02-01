@@ -249,8 +249,9 @@
     </div>
 
 
-<!-- Review status - unverified, verified, rejected -->
-    <form class="filter-form" [formGroup]="searchForm">
+<!-- Review status - verified, rejected -->
+    <label for="reviewStatuses">Don't show candidates reviewed as: </label>
+    <form id="reviewStatuses" class="filter-form" [formGroup]="searchForm">
 
       <!-- REVIEW STATUS FILTER -->
       <div *ngIf="isReviewable()" class="form-group col-12">
@@ -261,7 +262,7 @@
           [searchable]="true"
           [multiple]="true"
           (ngModelChange)="onReviewStatusFilterChange()"
-          [placeholder]="'Review status: Empty displays everything'"
+          [placeholder]="'Empty shows all candidates'"
           bindLabel="name"
           formControlName="statusesDisplay">
         </ng-select>

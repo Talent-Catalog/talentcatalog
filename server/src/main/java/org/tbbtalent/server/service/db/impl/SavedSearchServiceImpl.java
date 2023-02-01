@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
@@ -1494,11 +1496,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             excludedCandidates.addAll(exclusionList.getCandidates());
         }
 
-        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
-            //Compute excluded candidates based on review statuses
-            excludedCandidates.addAll(candidateReviewStatusRepository
-                .findCandidatesExcludedFromSearch(request.getSavedSearchId(),
-                    request.getReviewStatusFilter()));
+        if (isNotEmpty(request.getReviewStatusFilter())) {
+            //Exclude candidates who have been reviewed with statuses given in filter
+            final Set<Candidate> candidatesToFilterOut =
+                candidateReviewStatusRepository.findReviewedCandidatesForSearch(
+                    request.getSavedSearchId(), request.getReviewStatusFilter());
+
+            excludedCandidates.addAll(candidatesToFilterOut);
         }
         return excludedCandidates;
     }
