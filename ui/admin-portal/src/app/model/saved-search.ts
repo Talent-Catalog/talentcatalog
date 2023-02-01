@@ -122,9 +122,6 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
     if (savedSearch.defaultSearch) {
       breadcrumb += "Unsaved"
     } else {
-      if (savedSearch.savedSearchType != null) {
-        breadcrumb += infos[savedSearch.savedSearchType].title;
-      }
       let subtypeTitle: string = '';
       if (savedSearch.savedSearchSubtype != null) {
         const savedSearchTypeSubInfos = infos[savedSearch.savedSearchType].categories;
@@ -134,11 +131,11 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
           if (savedSearchTypeSubInfo) {
             subtypeTitle = savedSearchTypeSubInfo.title;
           }
-          breadcrumb += " " + subtypeTitle;
+          breadcrumb += " " + subtypeTitle + ": ";
         }
       }
 
-      breadcrumb += ": " + savedSearch.name + " (" + savedSearch.id + ")";
+      breadcrumb += savedSearch.name + " (" + savedSearch.id + ")";
     }
   }
   return breadcrumb;
