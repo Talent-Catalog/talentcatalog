@@ -40,23 +40,21 @@
       <hr/>
 
       <!-- searches -->
-      <div class="row position-relative mb-3" *ngFor="let search of searches; let i = index">
+      <div class="row mb-3" *ngFor="let search of searches; let i = index">
+
+        <!-- NAME -->
+        <div class="col-10 col-sm" [class.edit-padding]="editable">
+          <i class="fas fa-search"></i>
+          <a [routerLink]="['/search',search.id]">
+            {{search.name}}
+          </a>
+        </div>
 
         <!-- EDIT -->
-        <div class="actions" *ngIf="editable">
+        <div class="col-2 col-sm-auto" *ngIf="editable">
           <button class="btn btn-sm btn-outline-danger" (click)="removeSearch(search)">
             <i class="fas fa-trash"></i>
           </button>
-        </div>
-
-        <div>
-          <!-- NAME -->
-          <div class="col-12" [class.edit-padding]="editable">
-            <i class="fas fa-search"></i>
-            <a [routerLink]="['/search',search.id]">
-              {{search.name}}
-            </a>
-          </div>
         </div>
 
       </div>
