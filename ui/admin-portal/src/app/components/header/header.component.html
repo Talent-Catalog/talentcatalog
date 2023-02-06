@@ -18,7 +18,7 @@
   <div class="container-fluid">
 
     <!-- LOGO -->
-    <a [href]="websiteUrl" target="_blank">
+    <a class="navbar-brand" [href]="websiteUrl" target="_blank">
       <img class="logo" [src]="logo" alt="Logo">
     </a>
 
@@ -54,7 +54,7 @@
 
       </ul>
 
-      <div class="mb-3" *ngIf="canViewCandidateName()">
+      <div class="me-3" *ngIf="canViewCandidateName()">
         <input id="quickExternalIdSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doExternalIdSearch"
@@ -68,7 +68,7 @@
         </ng-template>
       </div>
 
-      <div class="mb-3" *ngIf="canViewCandidateName()">
+      <div class="me-3" *ngIf="canViewCandidateName()">
         <input id="quickEmailOrPhoneSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doEmailOrPhoneSearch"
@@ -82,24 +82,21 @@
         </ng-template>
       </div>
 
-      <app-candidate-name-num-search *ngIf="canViewCandidateName()"></app-candidate-name-num-search>
-
-      <ul class="navbar-nav">
-        <li class="nav-item dropdown" ngbDropdown>
-
-          <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-            <i class="fas fa-user" [title]="loggedInUserInfo()"></i>
-          </a>
-          <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-            <div>
-              {{loggedInUserInfo()}}
-            </div>
-            <hr/>
-            <a class="dropdown-item" (click)="logout()">Logout</a>
-          </div>
-
-        </li>
-      </ul>
+      <div class="me-3">
+        <app-candidate-name-num-search *ngIf="canViewCandidateName()"></app-candidate-name-num-search>
+      </div>
     </div>
+    <ul class="navbar-nav">
+      <li ngbDropdown class="nav-item">
+        <a href (click)="false" class="nav-link" ngbDropdownToggle>
+          <i class="fas fa-user" [title]="loggedInUserInfo()"></i>
+        </a>
+        <div ngbDropdownMenu class="dropdown-menu-end">
+          <div ngbDropdownItem disabled>{{loggedInUserInfo()}}</div>
+          <div class="dropdown-divider"></div>
+          <button ngbDropdownItem (click)="logout()">Logout</button>
+        </div>
+      </li>
+    </ul>
   </div>
 </nav>
