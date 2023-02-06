@@ -1906,7 +1906,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String getCandidateExternalHref(String candidateNumber) {
-        return "https://www.tbbtalent.org/admin-portal/candidate/" + candidateNumber;
+        return "https://tctalent.org/admin-portal/candidate/" + candidateNumber;
     }
 
     public String formatCandidateMajor(List<CandidateEducation> candidateEducations){

@@ -125,7 +125,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     /**
      * From https://www.google.com/recaptcha/admin
-     * @return Google reCaptcha site key for tbbtalent.org
+     * @return Google reCaptcha site key for tctalent.org
      */
     @Override
     public String getReCaptchaSite() {
@@ -134,7 +134,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     /**
      * From https://www.google.com/recaptcha/admin
-     * @return Google reCaptcha secret key for tbbtalent.org
+     * @return Google reCaptcha secret key for tctalent.org
      */
     @Override
     public String getReCaptchaSecret() {

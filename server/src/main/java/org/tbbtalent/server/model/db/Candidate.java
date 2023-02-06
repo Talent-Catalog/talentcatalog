@@ -947,7 +947,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public String getTcLink() {
-        return "https://tbbtalent.org/admin-portal/candidate/" + candidateNumber;
+        return "https://tctalent.org/admin-portal/candidate/" + candidateNumber;
     }
 
     /**

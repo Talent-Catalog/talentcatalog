@@ -30,7 +30,7 @@ import org.tbbtalent.server.exception.ReCaptchaInvalidException;
  *     Talent Catalog is currently managed out of Google account john@cameronfoundation.org,
  *     with jcameron@talentbeyondboundaries.org as a notifiable email.
  *     The one reCaptcha can serve multiple domains associated with the same site - eg
- *     tbbtalent.org, unhcrtalent.org, iomtalent.org, localhost, 127.0.0.1 etc.
+ *     tctalent.org, unhcrtalent.org, iomtalent.org, localhost, 127.0.0.1 etc.
  *     Note that subdomains do not need extra configuration - you just need to configure the
  *     domain. So the fact that displacedtalent.org is currently configured in reCaptcha means that
  *     any subdomain of that doesn't require any extra configuration - eg tbb.displacedtalent.org,
