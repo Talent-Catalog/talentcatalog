@@ -223,8 +223,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Different use of searchForm depending on whether saved search or saved list
 
     if (isSavedSearch(this.candidateSource)) {
+      const reviewable = this.candidateSource.reviewable;
       this.searchForm = this.fb.group({
-        statusesDisplay: [defaultReviewStatusFilter],
+        statusesDisplay: [reviewable ? defaultReviewStatusFilter: []],
       });
     }
     if (isSavedList(this.candidateSource)) {
@@ -260,6 +261,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   get keyword(): string {
     return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  get ReviewStatus() {
+    return ReviewStatus;
   }
 
   subscribeToFilterChanges(): void {
@@ -396,7 +401,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
             this.results = cached.results;
             this.sortField = cached.sortFields[0];
             this.sortDirection = cached.sortDirection;
-            this.reviewStatusFilter = defaultReviewStatusFilter;
+            this.reviewStatusFilter = []; //We don't cache reviewable sources
             this.timestamp = cached.timestamp;
             this.pageNumber = cached.pageNumber;
             this.pageSize = cached.pageSize;
@@ -453,7 +458,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
         //Create the appropriate request
         let request;
+        let reviewable = false;
         if (isSavedSearch(this.candidateSource)) {
+          reviewable = this.candidateSource.reviewable;
           request = new SavedSearchGetRequest();
         } else {
           request = new SavedListGetRequest();
@@ -463,7 +470,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         request.pageSize = this.pageSize;
         request.sortFields = [this.sortField];
         request.sortDirection = this.sortDirection;
-        if (request instanceof SavedSearchGetRequest) {
+        if (reviewable) {
           request.reviewStatusFilter = this.reviewStatusFilter;
         }
 
@@ -505,9 +512,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private isCacheable(): boolean {
-    return !this.isReviewable() ||
-      //If reviewable, the only results that are cached are for the default review filter
-      this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString();
+    //Reviewable sources are not cacheable because the review filtering makes it too complicated.
+    return !this.isReviewable();
   }
 
   setCurrentCandidate(candidate: Candidate) {
@@ -586,7 +592,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     //Create the appropriate request
     let request;
+    let reviewable = false;
     if (isSavedSearch(this.candidateSource)) {
+      reviewable = this.candidateSource.reviewable;
       request = new SavedSearchGetRequest();
     } else {
       request = new SavedListGetRequest();
@@ -596,7 +604,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Only the sort fields are processed.
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
-    if (request instanceof SavedSearchGetRequest) {
+    if (reviewable) {
       request.reviewStatusFilter = this.reviewStatusFilter;
     }
 
@@ -1674,6 +1682,18 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
       return activeTaskAssignments.filter(ta => (ta.completedDate != null || ta.abandonedDate != null) && !ta.task.optional);
     }
+  }
+
+  getReviewStatus(candidate: Candidate): ReviewStatus {
+    let item: CandidateReviewStatusItem = null;
+    const items: CandidateReviewStatusItem[] = candidate.candidateReviewStatusItems;
+    if (items) {
+      item = items.find(s => s.savedSearch.id === this.candidateSource.id);
+    }
+
+    const reviewStatus: ReviewStatus = item == null ? ReviewStatus.unverified : ReviewStatus[item.reviewStatus];
+
+    return reviewStatus;
   }
 
   getTotalMonitoredTasks(candidate: Candidate) {

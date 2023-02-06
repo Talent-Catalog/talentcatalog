@@ -68,11 +68,10 @@ export class CandidateSourceResultsCacheService {
    * Note that it is up to the caller to ensure that the given page number,
    * sort and any other requested filtering is what is required.
    * <p/>
-   * In particular, note that SavedSearch's have review filters which affect
+   * In particular, note that reviewable SavedSearch's have review filters which affect
    * the returned results (in addition to the standard paging and sorting).
    * This common caching does not take into account review filtering so
-   * it is up to the caller to ensure that all SavedSearch results caching
-   * is associated with a standard, unchanging, review filter.
+   * caching should be turned off for reviewable searches.
    * @param source Candidate source whose cache is requested
    * @return Cached results or null if none found.
    */
