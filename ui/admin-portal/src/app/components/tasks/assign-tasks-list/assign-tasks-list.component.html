@@ -32,7 +32,7 @@
         <!-- TASKS -->
         <div class="mb-3">
           <label for="task">Task to assign</label>
-          <ng-select id="task" appendTo="body" [formControlName]="'task'" [items]="allTasks"
+          <ng-select id="task" appendTo=".modal-content" [formControlName]="'task'" [items]="allTasks"
                      [groupBy]="'taskType'" [searchFn]="searchTypeOrName" [clearable]="false"
                      placeholder="Select or type to search..." bindLabel="displayName"></ng-select>
         </div>
