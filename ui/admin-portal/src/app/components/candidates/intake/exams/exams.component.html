@@ -18,10 +18,18 @@
 <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
   <ngb-panel id="intake-exams">
     <ng-template ngbPanelTitle let-opened="opened">
-        <span class="me-2">English Exams</span>
-        <button type="button" class="btn btn-primary btn-sm" (click)="addRecord($event)">
-          <i class="fas fa-plus"></i>
-        </button>
+      <div class="container gx-0">
+        <div class="row">
+          <div class="col-11">
+            <span>English Exams</span>
+          </div>
+          <div class="col-1">
+            <button type="button" class="btn btn-primary btn-sm" (click)="addRecord($event)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </ng-template>
     <ng-template ngbPanelContent>
       <div *ngIf="error">

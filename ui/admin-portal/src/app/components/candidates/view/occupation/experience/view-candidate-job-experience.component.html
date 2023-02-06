@@ -28,7 +28,7 @@
   <div class="card-header">
     {{candidateOccupation.occupation.name}} ({{candidateOccupation.yearsExperience}} years)
 
-    <div class="button-group float-end" *ngIf="editable">
+    <div class="float-end" *ngIf="editable">
 <!--      <button class="btn btn-sm btn-outline-dark me-2" (click)="verifyOccupation()">-->
 <!--        <i *ngIf="candidateOccupation.verified" class="fas fa-check" title="Verified by TBB"></i>-->
 <!--        <i *ngIf="!candidateOccupation.verified" class="fas fa-question" title="Candidate specified, not verified"></i>-->
@@ -63,36 +63,39 @@
 
         <div class="col-10">
           <h6 class="card-title">{{experience.role}}</h6>
+          <p *ngIf="experience.description">{{experience.description}}</p>
+          <small class="text-muted">
+            {{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}
+          </small>
+          <small class="text-muted">
+            {{experience.fullTime ? 'Full Time' : 'Part Time'}}
+            {{experience.paid ? 'Paid' : 'Voluntary'}}
+          </small>
         </div>
 
-        <div class="col-2 text-right mb-2" *ngIf="editable">
-          <button class="btn btn-default" (click)="editCandidateJobExperience(experience)">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateJobExperience(experience)">
-            <i class="fas fa-trash"></i>
-          </button>
+        <div class="col-2" *ngIf="editable">
+          <div class="btn-group float-end">
+            <button class="btn btn-default" (click)="editCandidateJobExperience(experience)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateJobExperience(experience)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
         </div>
 
-        <div class="col-12" *ngIf="experience.description">
-          <p>{{experience.description}}</p>
-        </div>
+
 
         <div class="col-12">
           <span class="font-italic">{{experience.companyName}}, {{experience.country.name}}</span>
         </div>
 
         <div class="col-12">
-          <small class="text-muted">
-            {{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}
-          </small>
+
         </div>
 
         <div class="col-12">
-          <small class="text-muted">
-            {{experience.fullTime ? 'Full Time' : 'Part Time'}}
-            {{experience.paid ? 'Paid' : 'Voluntary'}}
-          </small>
+
         </div>
 
       </div>

@@ -43,17 +43,21 @@
           <div class="col-10 mb-2">
             {{language.language.name}}
           </div>
-          <div class="col-2 text-right" *ngIf="editable">
-            <button class="btn btn-default"
-                    (click)="editCandidateLanguage(language)">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-default"
-                    *ngIf="adminUser"
-                    (click)="deleteCandidateLanguage(language)">
-              <i class="fas fa-trash"></i>
-            </button>
+          <div class="col-2" *ngIf="editable">
+            <div class="btn-group float-end">
+              <button class="btn btn-default"
+                      (click)="editCandidateLanguage(language)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-default"
+                      *ngIf="adminUser"
+                      (click)="deleteCandidateLanguage(language)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
           </div>
+        </div>
+        <div class="row">
           <div class="col-12" *ngIf="language.migrationLanguage">
             Migrated Language: {{language.migrationLanguage}}
           </div>
