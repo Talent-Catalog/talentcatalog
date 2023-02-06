@@ -53,9 +53,9 @@
 
         <!-- CUSTOM DUE DATE -->
         <div class="mb-3">
-          <div>
-            <label for="customDate">Do you want to set a custom due date?</label>
-            <input class="form-control" id="customDate" [formControlName]="'customDate'" type="checkbox">
+          <div class="form-check-inline">
+            <label class="form-check-label" for="customDate">Do you want to set a custom due date?</label>
+            <input class="form-check-input" id="customDate" [formControlName]="'customDate'" type="checkbox">
           </div>
           <div *ngIf="this.assignForm.value.customDate">
               <app-date-picker id="dueDate" [control]="assignForm.controls.dueDate" [allowPast]="false"></app-date-picker>
