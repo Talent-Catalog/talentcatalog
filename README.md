@@ -92,15 +92,15 @@ Download and install the latest of the following tools.
     - Install Docker image. 
       See [Elastic search website](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
       Just pull the image to install. See later for how to run. 
-      Currently in dev we use version 7 rather than the latest because it doesn't require security 
+      Currently in dev we use version 7.12.0 rather than the latest because it doesn't require security 
       enabled.
-    > docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    > docker pull docker.elastic.co/elasticsearch/elasticsearch:7.12.0
 
 - Kibana (for monitoring Elasticsearch)
     - Install Docker image.
       See [Elastic search website](https://www.elastic.co/guide/en/kibana/current/docker.html)
       Just pull the image to install. See later for how to run.
-    > docker pull docker.elastic.co/kibana/kibana:7.17.9
+    > docker pull docker.elastic.co/kibana/kibana:7.12.0
 
 - Git - [see Git website](https://git-scm.com/downloads)
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
@@ -142,7 +142,7 @@ Can run from Docker desktop for Mac, or (replacing appropriate version number)..
 
 > docker rm elasticsearch
 
-> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.12.0
 
 Elasticsearch will run listening on port 9200. 
 You can verify this by going to [localhost:9200](http://localhost:9200) in your browser
@@ -153,7 +153,7 @@ Can run from Docker desktop for Mac, or (replacing appropriate version number)..
 
 > docker rm kibana
 
-> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.17.9
+> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.12.0
 
 Kibana runs listening on port 5601. 
 You can verify this by going to [localhost:5601](http://localhost:5601) in your browser 
@@ -291,6 +291,10 @@ into the server and serve through Apache Tomcat._
 - On startup, the server automatically creates a default user with username `SystemAdmin` 
 and password `password` that can be used to log in to the admin portal in development.
 - Details about this user can be found in `org/tbbtalent/server/configuration/SystemAdminConfiguration.java`
+
+### Populate ElasticSearch from Postgres Database ###
+
+- Log in to Admin Portal as SystemAdmin, go to Settings | Admin API and make API call `esload` 
 
 ## Upgrades ##
 
