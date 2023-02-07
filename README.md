@@ -35,10 +35,6 @@ They should be submitted as pull request.
 >These instructions are tailored for Mac users using Intellij, as this is what we use for development.
 >
 >On a Mac, installing with Homebrew usually works well. eg "brew install xxx".
-However, Flyway doesn't install with Homebrew, and the book
-"Angular Up & Running" notes that installing Node.js using Homebrew
-can also have problems. Googling you can still see lots of people having
-problems installing Node using brew.
 >
 >It is also probably easier to install Java directly (or from your
 development IDE - see below) rather than using brew.
@@ -69,7 +65,7 @@ Download and install the latest of the following tools.
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
   > brew install gradle
 
-- NodeJS: Install as described here [https://nodejs.org/en/](https://nodejs.org/en/)
+- Node [https://nodejs.org/en/](https://nodejs.org/en/)
   
     - Note that developers should use the latest version of Node for which Intellij supports 
     Angular debugging - currently that is Node 16 (which is not the latest Node with long term 
@@ -77,18 +73,15 @@ Download and install the latest of the following tools.
     - See [https://www.jetbrains.com/help/idea/angular.html](https://www.jetbrains.com/help/idea/angular.html) 
     and https://nodejs.org/en/about/releases/
   
+  > brew install node@16
+    - Note the messages from brew at the end of the install. 
+  You will have to manually set up the path.  
+  
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
   > npm install -g @angular/cli
   - To upgrade Angular versions, see https://update.angular.io/
-    
 
-- cURL (for database migrations, can also use Postman) 
-  > brew install curl
-  > 
-  > or...
-  > 
-  > brew install --cask postman
 
 - Docker
     - Install Docker Desktop for Mac - 
@@ -98,12 +91,16 @@ Download and install the latest of the following tools.
 - Elasticsearch (for text search)
     - Install Docker image. 
       See [Elastic search website](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
-      Just pull the image to install. See later for how to run.
+      Just pull the image to install. See later for how to run. 
+      Currently in dev we use version 7 rather than the latest because it doesn't require security 
+      enabled.
+    > docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.9
 
 - Kibana (for monitoring Elasticsearch)
     - Install Docker image.
       See [Elastic search website](https://www.elastic.co/guide/en/kibana/current/docker.html)
       Just pull the image to install. See later for how to run.
+    > docker pull docker.elastic.co/kibana/kibana:7.17.9
 
 - Git - [see Git website](https://git-scm.com/downloads)
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
@@ -145,7 +142,7 @@ Can run from Docker desktop for Mac, or (replacing appropriate version number)..
 
 > docker rm elasticsearch
 
-> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.12.0
+> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.9
 
 Elasticsearch will run listening on port 9200. 
 You can verify this by going to [localhost:9200](http://localhost:9200) in your browser
@@ -156,7 +153,7 @@ Can run from Docker desktop for Mac, or (replacing appropriate version number)..
 
 > docker rm kibana
 
-> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.12.0
+> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.17.9
 
 Kibana runs listening on port 5601. 
 You can verify this by going to [localhost:5601](http://localhost:5601) in your browser 
@@ -187,7 +184,7 @@ Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
 
 ### Run the Candidate Portal ###
 
-The "Candidate Portal" is an Angular Module and can be found in the diretory `tbbtalentv2\ui\candidate-portal`.
+The "Candidate Portal" is an Angular Module and can be found in the directory `tbbtalentv2\ui\candidate-portal`.
 
 Before running, make sure all the libraries have been downloaded locally by running `npm install` from the root 
 directory of the module (i.e. `tbbtalentv2\ui\candidate-portal`):
