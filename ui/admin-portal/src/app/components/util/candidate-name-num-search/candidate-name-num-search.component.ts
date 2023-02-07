@@ -72,6 +72,18 @@ export class CandidateNameNumSearchComponent implements OnInit {
       );
   }
 
+  get placeholderText(): string {
+    let text = '';
+    if (this.displayValue === null) {
+      if (this.isUserLimited()) {
+        text = 'Candidate number...';
+      } else {
+        text = 'Name or number...'
+      }
+    }
+    return text;
+  }
+
   renderCandidateRow(candidate: Candidate) {
     if (this.isUserLimited()) {
       return candidate.candidateNumber;
@@ -94,7 +106,7 @@ export class CandidateNameNumSearchComponent implements OnInit {
   }
 
   isUserLimited(): boolean {
-    return !this.authService.isAnAdmin();
+    return !this.authService.canViewCandidateName();
   }
 
 }
