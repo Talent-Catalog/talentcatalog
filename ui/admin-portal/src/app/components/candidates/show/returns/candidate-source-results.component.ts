@@ -40,13 +40,17 @@ import {
   CandidateSourceResultsCacheService
 } from '../../../../services/candidate-source-results-cache.service';
 import {CandidateSource, defaultReviewStatusFilter} from '../../../../model/base';
-import {CandidateSourceCandidateService} from '../../../../services/candidate-source-candidate.service';
+import {
+  CandidateSourceCandidateService
+} from '../../../../services/candidate-source-candidate.service';
 import {SavedListGetRequest} from '../../../../model/saved-list';
 import {AuthService} from '../../../../services/auth.service';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {CandidateFieldInfo} from "../../../../model/candidate-field-info";
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
-import {CandidateColumnSelectorComponent} from "../../../util/candidate-column-selector/candidate-column-selector.component";
+import {
+  CandidateColumnSelectorComponent
+} from "../../../util/candidate-column-selector/candidate-column-selector.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
@@ -175,7 +179,9 @@ constructor(
 
       //Create the appropriate request
       let request;
+      let reviewable = false;
       if (isSavedSearch(this.candidateSource)) {
+        reviewable = this.candidateSource.reviewable;
         request = new SavedSearchGetRequest();
       } else {
         request = new SavedListGetRequest();
@@ -184,7 +190,7 @@ constructor(
       request.pageSize = this.pageSize;
       request.sortFields = [this.sortField];
       request.sortDirection = this.sortDirection;
-      if (request instanceof SavedSearchGetRequest) {
+      if (reviewable) {
         request.reviewStatusFilter = defaultReviewStatusFilter;
       }
 

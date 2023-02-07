@@ -170,6 +170,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       nationalityIds: [[]],
       nationalitySearchType: ['or'],
       countryIds: [[]],
+      countrySearchType: ['or'],
       englishMinWrittenLevel: [null],
       englishMinSpokenLevel: [null],
       otherLanguageId: [null],
@@ -193,6 +194,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       partners: [[]],
       educationMajors: [[]],
       nationalities: [[]],
+      regoReferrerParam: [null],
       statusesDisplay: [[]],
       surveyTypes: [[]],
       exclusionListId: [null],
@@ -370,6 +372,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   clearForm() {
     this.searchForm.reset();
+    this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
 
     while (this.searchJoinArray.length) {
@@ -533,13 +536,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       this.modifiedDatePicker.selectDate(date);
     }
 
-    /* COUNTRIES */
-    let countries = [];
-    if (request.countryIds && this.countries) {
-      countries = this.countries.filter(c => request.countryIds.indexOf(c.id) !== -1);
-    }
-    this.searchForm.controls['countries'].patchValue(countries);
-
     /* PARTNERS */
     let partners = [];
     if (request.partnerIds && this.partners) {
@@ -569,6 +565,18 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       writtenLevel: request.otherMinWrittenLevel,
       spokenLevel: request.otherMinSpokenLevel
     });
+
+    /* COUNTRIES */
+    let countries = [];
+    if (request.countryIds && this.countries) {
+      countries = this.countries.filter(c => request.countryIds.indexOf(c.id) !== -1);
+    }
+    this.searchForm.controls['countries'].patchValue(countries);
+    let countrySearchType = request.countrySearchType;
+    if (countrySearchType == null) {
+      countrySearchType = 'or';
+    }
+    this.searchForm.controls['countrySearchType'].patchValue(countrySearchType);
 
     /* NATIONALITIES */
     let nationalities = [];

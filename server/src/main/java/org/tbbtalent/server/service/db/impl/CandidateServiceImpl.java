@@ -429,6 +429,7 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(savedSearch.getNationalitySearchType());
         searchCandidateRequest.setCountryIds(getIdsFromString(savedSearch.getCountryIds()));
+        searchCandidateRequest.setCountrySearchType(savedSearch.getCountrySearchType());
         searchCandidateRequest.setSurveyTypeIds(getIdsFromString(savedSearch.getSurveyTypeIds()));
         searchCandidateRequest.setEnglishMinSpokenLevel(savedSearch.getEnglishMinSpokenLevel());
         searchCandidateRequest.setEnglishMinWrittenLevel(savedSearch.getEnglishMinWrittenLevel());
@@ -1905,7 +1906,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String getCandidateExternalHref(String candidateNumber) {
-        return "https://www.tbbtalent.org/admin-portal/candidate/" + candidateNumber;
+        return "https://tctalent.org/admin-portal/candidate/" + candidateNumber;
     }
 
     public String formatCandidateMajor(List<CandidateEducation> candidateEducations){

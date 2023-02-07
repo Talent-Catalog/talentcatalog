@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {getJobExternalHref, Job} from "../../../../model/job";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
@@ -11,15 +19,25 @@ import {SlackService} from "../../../../services/slack.service";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
 import {isStarredByMe} from "../../../../model/base";
-import {JobPrepItem, JobPrepJobSummary} from "../../../../model/job-prep-item";
+import {
+  JobPrepDueDate,
+  JobPrepItem,
+  JobPrepJD,
+  JobPrepJobSummary,
+  JobPrepSuggestedCandidates,
+  JobPrepSuggestedSearches
+} from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {
+  CandidateSourceCandidateService
+} from "../../../../services/candidate-source-candidate.service";
 
 @Component({
   selector: 'app-view-job',
   templateUrl: './view-job.component.html',
   styleUrls: ['./view-job.component.scss']
 })
-export class ViewJobComponent extends MainSidePanelBase implements OnInit {
+export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnChanges {
   @Input() job: Job;
   @Output() jobUpdated = new EventEmitter<Job>();
 
@@ -31,10 +49,24 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   publishing: boolean;
   slacklink: string;
 
+  private jobPrepJobSummary = new JobPrepJobSummary();
+  private jobPrepJD = new JobPrepJD();
+  private jobPrepSuggestedCandidates = new JobPrepSuggestedCandidates();
+
+  jobPrepItems: JobPrepItem[] = [
+    this.jobPrepJobSummary,
+    this.jobPrepJD,
+    //todo temporary comment out: new JobPrepJOI(),
+    new JobPrepSuggestedSearches(),
+    this.jobPrepSuggestedCandidates,
+    new JobPrepDueDate(),
+  ];
+
   private lastTabKey: string = 'JobLastTab';
 
   constructor(
     private authService: AuthService,
+    private candidateSourceService: CandidateSourceCandidateService,
     private localStorageService: LocalStorageService,
     private jobService: JobService,
     private modalService: NgbModal,
@@ -49,6 +81,25 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   ngOnInit(): void {
     this.loggedInUser = this.authService.getLoggedInUser();
     this.selectDefaultTab();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.job) {
+      this.checkSubmissionListContents();
+      this.jobPrepItems.forEach(j => j.job = this.job)
+    }
+  }
+
+  private checkSubmissionListContents() {
+    const submissionList = this.job?.submissionList;
+    if (submissionList == null) {
+      this.jobPrepSuggestedCandidates.empty = true;
+    } else {
+      this.candidateSourceService.isEmpty(submissionList).subscribe(
+        (empty) => this.jobPrepSuggestedCandidates.empty = empty,
+        (error) => this.error = error
+      )
+    }
   }
 
   private selectDefaultTab() {
@@ -66,12 +117,29 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit {
   }
 
   publishJob() {
-    this.error = null;
-    this.publishing = true;
-    this.jobService.publishJob(this.job.id).subscribe(
-      (job) => {this.fireJobEventAndPostOnSlack(job)},
-      (error) => {this.error = error; this.publishing = false}
-    )
+    //Reject if not enough info has been supplied about the job.
+    if (!this.jobPrepJD.isCompleted() || !this.jobPrepJobSummary.isCompleted()) {
+      const showReport = this.modalService.open(ConfirmationComponent, {
+        centered: true, backdrop: 'static'});
+      showReport.componentInstance.title = "More information needed about job";
+      showReport.componentInstance.showCancel = false;
+      let mess = "At the minimum you need to supply a job summary and job description document " +
+        "before publishing a job. Otherwise our source colleagues won't have enough information to " +
+        "work with. Please consider providing more information than the absolute minimum " +
+        "if you have it, as suggested in the preparation items. " +
+        "The more information source has about the job, the better the results for employer and " +
+        "candidates, and the less work for our source staff.";
+
+      showReport.componentInstance.message = mess;
+
+    } else {
+      this.error = null;
+      this.publishing = true;
+      this.jobService.publishJob(this.job.id).subscribe(
+        (job) => {this.fireJobEventAndPostOnSlack(job)},
+        (error) => {this.error = error; this.publishing = false}
+      )
+    }
   }
 
   onJobUpdated(job: Job) {

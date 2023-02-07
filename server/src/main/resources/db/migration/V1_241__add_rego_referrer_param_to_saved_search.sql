@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,23 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.candidate;
-
-import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.tbbtalent.server.model.db.ReviewStatus;
-import org.tbbtalent.server.request.PagedSearchRequest;
-
-@Getter
-@Setter
-@ToString(callSuper = true)
-public class SavedSearchGetRequest extends PagedSearchRequest {
-
-    /**
-     * Candidates with search review statuses matching the statuses in this list will be excluded
-     * from the search results.
-     */
-    private List<ReviewStatus> reviewStatusFilter;
-}
+alter table saved_search add column rego_referrer_param text;

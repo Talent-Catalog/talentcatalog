@@ -365,6 +365,18 @@
           <!-- COUNTRIES  -->
           <div class="form-group col-12 col-md-4 mt-2">
             <label>Location (Country)</label>
+
+            <div class="operator">
+              <button class="btn btn-link" type="button"
+                      [class.active]="searchForm.value.countrySearchType === 'or'"
+                      (click)="handleSearchTypeChange('countrySearchType', 'or')">any
+              </button>
+              <button class="btn btn-link" type="button"
+                      [class.active]="searchForm.value.countrySearchType === 'not'"
+                      (click)="handleSearchTypeChange('countrySearchType', 'not')">not
+              </button>
+            </div>
+
             <ng-select
               id="country"
               [items]="countries"
@@ -409,6 +421,13 @@
                 </div>
               </ng-template>
             </ng-select>
+          </div>
+
+          <!-- REFERRER -->
+          <div class="form-group col-12 col-md-4 mt-2">
+            <label for="referrer">Referrer</label>
+            <input id="referrer" class="form-control"
+                   name="referrer" [formControlName]="'regoReferrerParam'" >
           </div>
 
           <!-- EXCLUSION LIST -->
