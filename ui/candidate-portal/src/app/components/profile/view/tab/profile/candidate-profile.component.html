@@ -43,33 +43,27 @@
 
         <div class="row">
 
-          <div class="col-12 col-md-6">
-            <div class="mb-3">
+          <div class="col-md-6">
               <h6>{{ 'PROFILE.CONTACT.EMAIL' | translate }}</h6>
               <p>
                 {{candidate?.user?.email || ''}}
               </p>
-            </div>
           </div>
 
-          <div class="col-12 col-md-6">
-            <div class="mb-3">
+          <div class="col-md-6">
               <h6>{{ 'PROFILE.CONTACT.PHONE' | translate }}</h6>
               <p>
                 {{candidate?.phone || ''}}
               </p>
-            </div>
           </div>
-
-          <div class="col-12 col-md-6">
-            <div class="mb-3">
+        </div>
+        <div class="row">
+          <div class="col-md-6">
               <h6>{{ 'PROFILE.CONTACT.WHATSAPP' | translate }}</h6>
               <p>
                 {{candidate?.whatsapp || ''}}
               </p>
-            </div>
           </div>
-
         </div>
 
       </div>
@@ -92,146 +86,111 @@
       <div class="card">
 
         <div class="row">
-
           <div class="col-md-6">
-            <div class="mb-3">
-              <h6>{{ 'PROFILE.PERSONAL.FIRSTNAME' | translate }}</h6>
-              <p>
-                {{candidate?.user?.firstName || ''}}
-              </p>
-            </div>
+            <h6>{{ 'PROFILE.PERSONAL.FIRSTNAME' | translate }}</h6>
+            <p>
+              {{candidate?.user?.firstName || ''}}
+            </p>
           </div>
-
           <div class="col-md-6">
-            <div class="mb-3">
-              <h6>{{ 'PROFILE.PERSONAL.LASTNAME' | translate }}</h6>
-              <p>
-                {{candidate?.user?.lastName || ''}}
-              </p>
-            </div>
+            <h6>{{ 'PROFILE.PERSONAL.LASTNAME' | translate }}</h6>
+            <p>
+              {{candidate?.user?.lastName || ''}}
+            </p>
           </div>
+        </div>
 
+        <div class="row">
           <div class="col-md-6">
-            <div class="mb-3">
-              <h6>{{ 'PROFILE.PERSONAL.GENDER' | translate }}</h6>
-              <p>
-                {{candidate?.gender || ''}}
-              </p>
-            </div>
+            <h6>{{ 'PROFILE.PERSONAL.GENDER' | translate }}</h6>
+            <p>
+              {{candidate?.gender || ''}}
+            </p>
           </div>
-
           <div class="col-md-6">
-            <div class="mb-3">
-              <h6>{{ 'PROFILE.PERSONAL.DOB' | translate }}</h6>
-              <p>
-                {{(candidate?.dob | date) || ''}}
-              </p>
-            </div>
+            <h6>{{ 'PROFILE.PERSONAL.DOB' | translate }}</h6>
+            <p>
+              {{(candidate?.dob | date) || ''}}
+            </p>
           </div>
+        </div>
 
-          <hr class="w-100 mx-5">
+        <hr>
 
+        <div class="row">
           <div class="col-md-6">
-            <div class="mb-3">
-              <h6>{{ 'PROFILE.PERSONAL.COUNTRY' | translate }}</h6>
-              <p *ngIf="candidate?.country">
-                {{getCountryName(candidate.country) || ''}}
-              </p>
-            </div>
+            <h6>{{ 'PROFILE.PERSONAL.COUNTRY' | translate }}</h6>
+            <p *ngIf="candidate?.country">
+              {{getCountryName(candidate.country) || ''}}
+            </p>
           </div>
-
           <div class="col-md-6">
-            <div class="mb-3">
               <h6>{{ 'PROFILE.PERSONAL.YEAROFARRIVAL' | translate }}</h6>
               <p>
                 {{candidate?.yearOfArrival || ''}}
               </p>
-            </div>
           </div>
+        </div>
 
+        <div class="row">
           <div class="col-md-6">
-            <div class="mb-3">
-              <h6>{{ 'PROFILE.PERSONAL.CITY' | translate }}</h6>
-              <p>
-                {{candidate?.city || ''}}
-              </p>
-            </div>
+            <h6>{{ 'PROFILE.PERSONAL.CITY' | translate }}</h6>
+            <p>
+              {{candidate?.city || ''}}
+            </p>
           </div>
-
           <div class="col-md-6">
-            <div class="mb-3">
-              <h6>{{ 'PROFILE.PERSONAL.STATE' | translate }}</h6>
-              <p>
-                {{candidate?.state || ''}}
-              </p>
-            </div>
+            <h6>{{ 'PROFILE.PERSONAL.STATE' | translate }}</h6>
+            <p>
+              {{candidate?.state || ''}}
+            </p>
           </div>
+        </div>
 
-          <hr class="w-100 mx-5">
-
+        <div class="row">
           <div class="col-md-6">
-            <div class="mb-3">
-              <h6>{{ 'PROFILE.PERSONAL.NATIONALITY' | translate }}</h6>
-              <p>
-                {{getCountryName(candidate?.nationality) || '' }}
-              </p>
-            </div>
+            <h6>{{ 'PROFILE.PERSONAL.NATIONALITY' | translate }}</h6>
+            <p>{{getCountryName(candidate?.nationality) || '' }}</p>
           </div>
+           <div class="col-md-6" *ngIf="usAfghan">
+             <h6>{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</h6>
+             <p>{{candidate?.externalId || '' }}</p>
+           </div>
+        </div>
 
-          <div class="col-md-6" *ngIf="usAfghan">
-            <div class="mb-3">
-              <h6>{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</h6>
-              <p>
-                {{candidate?.externalId || '' }}
-              </p>
-            </div>
+        <hr *ngIf="!usAfghan">
+
+        <div *ngIf="!usAfghan" class="row">
+          <div  class="col-md-6">
+            <h6>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }}</h6>
+            <p *ngIf="candidate?.unhcrRegistered === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</p>
+            <p *ngIf="candidate?.unhcrRegistered === 'No'">{{ 'CONFIRMATION.NO' | translate }}</p>
+            <p *ngIf="candidate?.unhcrRegistered === 'Unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</p>
           </div>
-
-          <hr *ngIf="!usAfghan" class="w-100 mx-5">
-
-          <div *ngIf="!usAfghan" class="col-md-6">
-            <div class="mb-3">
-              <h6>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }}</h6>
-              <p *ngIf="candidate?.unhcrRegistered === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</p>
-              <p *ngIf="candidate?.unhcrRegistered === 'No'">{{ 'CONFIRMATION.NO' | translate }}</p>
-              <p *ngIf="candidate?.unhcrRegistered === 'Unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</p>
-            </div>
+          <div class="col-md-6">
+            <h6>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</h6>
+            <p>
+              {{candidate?.unhcrNumber || '' }}
+            </p>
           </div>
-
-          <div *ngIf="!usAfghan" class="col-md-6">
-            <div class="mb-3">
-              <h6>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</h6>
-              <p>
-                {{candidate?.unhcrNumber || '' }}
-              </p>
-            </div>
-          </div>
-
-          <div *ngIf="!usAfghan" class="col-12">
-            <div class="mb-3">
+          <div class="row">
+            <div class="col-md-6">
               <h6>{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }}</h6>
               <p *ngIf="candidate?.unhcrConsent === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</p>
               <p *ngIf="candidate?.unhcrConsent === 'No'">{{ 'CONFIRMATION.NO' | translate }}</p>
             </div>
           </div>
-
         </div>
-
       </div>
-
     </section>
 
     <!-- OCCUPATION -->
     <section>
-
       <div class="section-heading">
-
         <h5>{{ 'PROFILE.OCCUPATIONS.TITLE' | translate }}</h5>
-
         <a class="btn btn-outline-primary" [routerLink]="['edit', 'occupations']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
         </a>
-
       </div>
 
       <div class="card">
@@ -244,7 +203,7 @@
           </app-candidate-occupation-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateOccupations?.length - 1">
-            <hr class="w-75 my-4">
+            <hr>
           </div>
         </ng-container>
 
@@ -274,7 +233,7 @@
           </app-candidate-job-experience-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateJobExperiences?.length - 1">
-            <hr class="w-75 my-4">
+            <hr>
           </div>
         </ng-container>
 
@@ -305,7 +264,7 @@
           </app-candidate-education-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateEducations?.length - 1">
-            <hr class="w-75 my-4">
+            <hr>
           </div>
         </ng-container>
 
@@ -333,7 +292,7 @@
           </app-candidate-certification-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateCertifications?.length - 1">
-            <hr class="w-75 my-4">
+            <hr>
           </div>
         </ng-container>
       </div>
@@ -361,10 +320,7 @@
                                        [languageLevels]="languageLevels"
                                        [preview]="true">
           </app-candidate-language-card>
-
-          <div class="text-center" *ngIf="i < candidate?.candidateLanguages?.length - 1">
-            <hr class="w-75 my-4">
-          </div>
+          <hr *ngIf="i < candidate?.candidateLanguages?.length - 1">
         </ng-container>
 
       </div>
@@ -389,41 +345,33 @@
         <div class="row">
 
           <div class="col-md-6">
-            <div class="mb-3">
               <h6>{{ 'PROFILE.OTHER.ADDITIONALINFO' | translate }}</h6>
               <p>
                 {{candidate?.additionalInfo || ''}}
               </p>
-            </div>
           </div>
 
           <div class="col-md-6">
-            <div class="mb-3">
               <h6>{{ 'PROFILE.OTHER.LINKEDIN' | translate }}</h6>
               <p>
                 <a href="{{candidate?.linkedInLink}}" target="_blank">{{candidate?.linkedInLink || ''}}</a>
               </p>
-            </div>
           </div>
 
         </div>
 
         <div *ngIf="!usAfghan" class="row">
           <div class="col-md-6">
-            <div class="mb-3">
               <h6>{{ 'PROFILE.OTHER.SURVEY' | translate }}</h6>
               <p *ngIf="this.candidate?.surveyType?.name">
                 {{getSurveyTypeName() || ''}}
               </p>
-            </div>
           </div>
           <div class="col-md-6">
-            <div class="mb-3">
               <h6>{{ 'PROFILE.OTHER.SURVEYCOMMENT' | translate }}</h6>
               <p>
                 {{candidate?.surveyComment || ''}}
               </p>
-            </div>
           </div>
         </div>
 
