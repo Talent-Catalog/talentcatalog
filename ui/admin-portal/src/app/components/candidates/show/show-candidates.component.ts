@@ -210,11 +210,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService
 
-  ) {
-    this.searchForm = this.fb.group({
-      statusesDisplay: [defaultReviewStatusFilter],
-    });
-  }
+  ) {}
 
   ngOnInit() {
 
@@ -222,37 +218,41 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.loggedInUser = this.authService.getLoggedInUser();
     this.selectedCandidates = [];
 
-    this.statuses = [];
-    for (const key in ReviewStatus) {
-      if (isNaN(Number(key))) {
-        this.statuses.push(key);
-      }
+    this.statuses = [ReviewStatus[ReviewStatus.rejected], ReviewStatus[ReviewStatus.verified]];
+
+    //Different use of searchForm depending on whether saved search or saved list
+
+    if (isSavedSearch(this.candidateSource)) {
+      const reviewable = this.candidateSource.reviewable;
+      this.searchForm = this.fb.group({
+        statusesDisplay: [reviewable ? defaultReviewStatusFilter: []],
+      });
     }
+    if (isSavedList(this.candidateSource)) {
+      this.searchForm = this.fb.group({
+        keyword: ['']
+      });
+      this.subscribeToFilterChanges();
 
-    this.searchForm = this.fb.group({
-      keyword: ['']
-    });
-    this.subscribeToFilterChanges();
-
-    this.doNumberOrNameSearch = (text$: Observable<string>) =>
-      text$.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        tap(() => {
-          this.error = null
-        }),
-        switchMap(candidateNumberOrName =>
-          this.candidateService.findByCandidateNumberOrName(
-            {candidateNumberOrName: candidateNumberOrName, pageSize: 10}).pipe(
-            tap(() => this.searchFailed = false),
-            map(result => result.content),
-            catchError(() => {
-              this.searchFailed = true;
-              return of([]);
-            }))
-        )
-      );
-
+      this.doNumberOrNameSearch = (text$: Observable<string>) =>
+        text$.pipe(
+          debounceTime(300),
+          distinctUntilChanged(),
+          tap(() => {
+            this.error = null
+          }),
+          switchMap(candidateNumberOrName =>
+            this.candidateService.findByCandidateNumberOrName(
+              {candidateNumberOrName: candidateNumberOrName, pageSize: 10}).pipe(
+              tap(() => this.searchFailed = false),
+              map(result => result.content),
+              catchError(() => {
+                this.searchFailed = true;
+                return of([]);
+              }))
+          )
+        );
+    }
   }
 
   get pluralType() {
@@ -261,6 +261,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   get keyword(): string {
     return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  get ReviewStatus() {
+    return ReviewStatus;
   }
 
   subscribeToFilterChanges(): void {
@@ -374,8 +378,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   doSearch(refresh: boolean, usePageNumber = true) {
 
-    //Todo - need to trigger search when review status changes
-
     this.results = null;
     this.error = null;
 
@@ -399,7 +401,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
             this.results = cached.results;
             this.sortField = cached.sortFields[0];
             this.sortDirection = cached.sortDirection;
-            this.reviewStatusFilter = defaultReviewStatusFilter;
+            this.reviewStatusFilter = []; //We don't cache reviewable sources
             this.timestamp = cached.timestamp;
             this.pageNumber = cached.pageNumber;
             this.pageSize = cached.pageSize;
@@ -456,7 +458,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
         //Create the appropriate request
         let request;
+        let reviewable = false;
         if (isSavedSearch(this.candidateSource)) {
+          reviewable = this.candidateSource.reviewable;
           request = new SavedSearchGetRequest();
         } else {
           request = new SavedListGetRequest();
@@ -466,7 +470,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         request.pageSize = this.pageSize;
         request.sortFields = [this.sortField];
         request.sortDirection = this.sortDirection;
-        if (request instanceof SavedSearchGetRequest) {
+        if (reviewable) {
           request.reviewStatusFilter = this.reviewStatusFilter;
         }
 
@@ -508,9 +512,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private isCacheable(): boolean {
-    return !this.isReviewable() ||
-      //If reviewable, the only results that are cached are for the default review filter
-      this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString();
+    //Reviewable sources are not cacheable because the review filtering makes it too complicated.
+    return !this.isReviewable();
   }
 
   setCurrentCandidate(candidate: Candidate) {
@@ -589,7 +592,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     //Create the appropriate request
     let request;
+    let reviewable = false;
     if (isSavedSearch(this.candidateSource)) {
+      reviewable = this.candidateSource.reviewable;
       request = new SavedSearchGetRequest();
     } else {
       request = new SavedListGetRequest();
@@ -599,7 +604,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Only the sort fields are processed.
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
-    if (request instanceof SavedSearchGetRequest) {
+    if (reviewable) {
       request.reviewStatusFilter = this.reviewStatusFilter;
     }
 
@@ -1677,6 +1682,18 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
       return activeTaskAssignments.filter(ta => (ta.completedDate != null || ta.abandonedDate != null) && !ta.task.optional);
     }
+  }
+
+  getReviewStatus(candidate: Candidate): ReviewStatus {
+    let item: CandidateReviewStatusItem = null;
+    const items: CandidateReviewStatusItem[] = candidate.candidateReviewStatusItems;
+    if (items) {
+      item = items.find(s => s.savedSearch.id === this.candidateSource.id);
+    }
+
+    const reviewStatus: ReviewStatus = item == null ? ReviewStatus.unverified : ReviewStatus[item.reviewStatus];
+
+    return reviewStatus;
   }
 
   getTotalMonitoredTasks(candidate: Candidate) {

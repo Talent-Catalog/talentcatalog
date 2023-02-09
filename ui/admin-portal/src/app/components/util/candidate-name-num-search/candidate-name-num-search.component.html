@@ -22,7 +22,7 @@
        [value]="displayValue"
        [editable]="false"
        (selectItem)="selectSearchResult($event, input)"
-       [placeholder]="displayValue === null ? 'Name or number...' : ''"/>
+       [placeholder]="placeholderText"/>
 <ng-template #rt let-r="result" let-t="term">
   <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
 </ng-template>

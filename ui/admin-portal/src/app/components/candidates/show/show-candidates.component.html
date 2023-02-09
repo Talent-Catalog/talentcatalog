@@ -21,7 +21,7 @@
 
   <ng-content></ng-content>
 
-  <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb" class="h5">
+  <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
       <li class="breadcrumb-item active" aria-current="page">
@@ -249,24 +249,27 @@
     </div>
 
 
-<!-- Review status - unverified, verified, rejected -->
-    <form class="filter-form" [formGroup]="searchForm">
+<!-- Review status -->
+    <div *ngIf="isReviewable()">
+      <label for="reviewStatuses">Don't show candidates reviewed as: </label>
+      <form id="reviewStatuses" class="filter-form" [formGroup]="searchForm">
 
-      <!-- REVIEW STATUS FILTER -->
-      <div *ngIf="isReviewable()" class="mb-3 col-12">
-        <ng-select
-          id="reviewStatus"
-          [items]="statuses"
-          [closeOnSelect]="false"
-          [searchable]="true"
-          [multiple]="true"
-          (ngModelChange)="onReviewStatusFilterChange()"
-          [placeholder]="'Review status: Empty displays everything'"
-          bindLabel="name"
-          formControlName="statusesDisplay">
-        </ng-select>
-      </div>
-    </form>
+        <!-- REVIEW STATUS FILTER -->
+        <div *ngIf="isReviewable()" class="mb-3 col-12">
+          <ng-select
+            id="reviewStatus"
+            [items]="statuses"
+            [closeOnSelect]="false"
+            [searchable]="true"
+            [multiple]="true"
+            (ngModelChange)="onReviewStatusFilterChange()"
+            [placeholder]="'Empty shows all candidates'"
+            bindLabel="name"
+            formControlName="statusesDisplay">
+          </ng-select>
+        </div>
+      </form>
+    </div>
 
 <!--  Task selection - select just one task to focus on  -->
     <div *ngIf="hasTasksAssigned()" class="mb-3">
@@ -288,6 +291,9 @@
 <!--          Header-->
           <thead class="thead-light">
           <tr>
+            <th *ngIf="isReviewable()">
+              <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
+            </th>
             <th class="candidate-number-row" (click)="toggleSort('id')">
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
@@ -296,7 +302,7 @@
               <i class="fab fa-salesforce"></i>
             </th>
             <th>
-              <i class="far fa-hand-pointer"></i>
+              <i class="far fa-hand-pointer" title="Select candidates"></i>
             </th>
             <th *ngFor="let field of selectedFields" (click)="toggleSort(field.fieldPath)">
               <app-sorted-by [column]="field.fieldPath" [sortColumn]="sortField"
@@ -326,6 +332,14 @@
             <!-- MODEL: Highlighting current table record. See also scss file. -->
             <tr *ngFor="let candidate of results?.content" (click)="selectCandidate(candidate)"
                 [ngClass]="{'current': currentCandidate?.id == candidate.id, 'selected': candidate.selected}">
+              <td *ngIf="isReviewable()">
+                <div [ngSwitch]="getReviewStatus(candidate)" title="Review status. Click to change."
+                     (click)="review(candidate)">
+                  <i *ngSwitchCase="ReviewStatus.verified" class="fa-solid fa-circle-check"></i>
+                  <i *ngSwitchCase="ReviewStatus.rejected" class="fa-solid fa-circle-xmark"></i>
+                  <i *ngSwitchCase="ReviewStatus.unverified" class="fa-solid fa-circle-question"></i>
+                </div>
+              </td>
               <td>
                 <a [routerLink]="['/candidate',candidate.candidateNumber]">
                   {{candidate.candidateNumber}}

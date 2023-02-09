@@ -130,7 +130,7 @@ public class SavedList extends AbstractCandidateSource {
      * This is the suffix to used to construct a TBB hosted published url link, if one exists.
      * <p/>
      * For example in this public link...
-     *   https://tbbtalent.org/published/physios
+     *   https://tctalent.org/published/physios
      * probably associated with a list of physiotherapists, the short name is "physios"
      */
     @Nullable

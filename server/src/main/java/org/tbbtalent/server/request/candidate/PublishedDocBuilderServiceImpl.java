@@ -16,6 +16,10 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
@@ -23,11 +27,6 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateProperty;
 import org.tbbtalent.server.security.CandidateTokenProvider;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * Used to build the published Google sheet doc
@@ -101,7 +100,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
           } else if (fieldName.equals("shareableDoc.url") && candidate.getListShareableDoc() != null) {
             val = candidate.extractField("listShareableDoc.url");
           } else if (fieldName.equals("autoCvLink")) {
-            val = "https://tbbtalent.org/public-portal/cv/" + candidateTokenProvider.generateToken(
+            val = "https://tctalent.org/public-portal/cv/" + candidateTokenProvider.generateToken(
                     candidate.getCandidateNumber(), 365L);
           } else if(fieldName.equals("smartCvLink")) {
             // If a candidate has a shareable CV use that link, otherwise use the autogen CV link.
@@ -110,7 +109,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
             } else if (candidate.getShareableCv() != null) {
               val = candidate.extractField("shareableCv.url");
             } else {
-              val = "https://tbbtalent.org/public-portal/cv/" + candidateTokenProvider.generateToken(
+              val = "https://tctalent.org/public-portal/cv/" + candidateTokenProvider.generateToken(
                       candidate.getCandidateNumber(), 365L);
             }
           } else {

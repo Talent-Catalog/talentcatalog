@@ -5,12 +5,12 @@
   ~ the terms of the GNU Affero General Public License as published by the Free
   ~ Software Foundation, either version 3 of the License, or any later version.
   ~
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT 
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
   ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
   ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
   ~ for more details.
   ~
-  ~ You should have received a copy of the GNU Affero General Public License 
+  ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
@@ -26,13 +26,13 @@
 
     <p>
         In the last 24 hours new candidates have registered who match the
-        saved searches below. Click on any link to see the details. 
+        saved searches below. Click on any link to see the details.
     </p>
-    
+
     <ul>
-        <li th:each="search : ${searches}"> 
-            <a th:href="'https://tbbtalent.org/admin-portal/search/'+ ${search.getId()}" 
-               th:text="${search.getName()}">Search name</a> 
+        <li th:each="search : ${searches}">
+            <a th:href="'https://tctalent.org/admin-portal/search/'+ ${search.getId()}"
+               th:text="${search.getName()}">Search name</a>
         </li>
     </ul>
 
