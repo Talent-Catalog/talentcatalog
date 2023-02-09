@@ -20,9 +20,15 @@
 @import "~bootstrap/scss/buttons";
 
 .btn-primary {
-  @include button-variant($color-primary, $color-primary, white, $color-primary-dark, $color-primary-dark, white,
-  $disabled-background: $color-secondary-light, $disabled-border: $color-secondary-light
-  );
+  @include button-variant(
+      // Regular button (background, border, color)
+      $color-primary, $color-primary, white,
+      // Hover
+      $color-primary-dark, $color-primary-dark, white,
+      // Active
+      $color-primary, $color-primary, white,
+      // Disabled
+      $color-secondary-light, $color-secondary-light, white);
 }
 
 .btn-outline-primary {
