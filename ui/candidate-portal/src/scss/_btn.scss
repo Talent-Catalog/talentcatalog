@@ -109,6 +109,13 @@ a {
   color: $color-primary;
 }
 
+.nav-link {
+  color: $color-primary;
+  &:hover {
+    color: $color-primary-darker;
+  }
+}
+
 /* Disabled styles are last so that they always take precedence */
 .btn.disabled,
 .btn:disabled {
