@@ -36,18 +36,18 @@
 
 <div class="row">
 
-  <div class="col-12 col-md-4 text-left">
+  <div class="col-12 col-md-4 text-start">
     <span class="icon"></span>
     {{getCountryName(experience.country)}}
   </div>
-  <div class="col-12 col-md-4 text-left">
+  <div class="col-12 col-md-4 text-start">
     <span class="icon"></span>
     <span *ngIf="experience?.fullTime === true">{{ 'CARD.JOBEXPERIENCE.LABEL.FULLTIME' | translate }}</span>
     <span *ngIf="experience?.fullTime === false">{{ 'CARD.JOBEXPERIENCE.LABEL.PARTTIME' | translate }}</span>,
     <span *ngIf="experience?.paid === true">{{ 'CARD.JOBEXPERIENCE.LABEL.PAID' | translate }}</span>
     <span *ngIf="experience?.paid === false">{{ 'CARD.JOBEXPERIENCE.LABEL.VOLUNTEER' | translate }}</span>
   </div>
-  <div class="col-12 col-md-4 text-left">
+  <div class="col-12 col-md-4 text-start">
     <span class="icon"></span>
     {{experience?.startDate ? (experience?.startDate | date: 'yyyy') : '?'}} - {{experience?.endDate ? (experience?.endDate | date: 'yyyy') : 'current'}}
   </div>
