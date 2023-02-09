@@ -43,11 +43,11 @@
       <div class="col-12">
 
         <div *ngIf="editTarget?.id !== attachment.id" class="mb-3">
-          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}
+          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}
             <span *ngIf="downloading">
                 ...
             </span>
-          </label>
+          </h6>
           <p>
             <!-- Non Google files - ie links and AWS files -
              we can just follow their urls-->
@@ -68,7 +68,7 @@
         </div>
 
         <div *ngIf="editTarget?.id == attachment.id" class="mb-3">
-          <label for="attachmentName">{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</label>
+          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</h6>
           <div class="d-flex">
             <input type="text" class="form-control" placeholder="" id="attachmentName" [(ngModel)]="attachment.name">
             <div>
@@ -89,7 +89,7 @@
       <div class="col-12 col-md-6">
 
         <div class="mb-3 m-md-0">
-          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDBY' | translate }}</label>
+          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDBY' | translate }}</h6>
           <p *ngIf="attachment.createdBy && attachment.createdBy.id == user?.id">{{attachment.createdBy.firstName}} {{attachment.createdBy.lastName}}</p>
           <p *ngIf="attachment.createdBy && attachment.createdBy.id !== user?.id">Admin</p>
           <p *ngIf="!attachment.createdBy">Unknown</p>
@@ -100,7 +100,7 @@
       <div class="col-12 col-md-6">
 
         <div class="mb-3 m-md-0">
-          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDDATE' | translate }}</label>
+          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDDATE' | translate }}</h6>
           <p>{{attachment.createdDate | date: 'customDateTime'}}</p>
         </div>
 

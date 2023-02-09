@@ -28,9 +28,17 @@
 
 
 // Card specific
-.card.parent-card .card {
-  padding: 0;
-  box-shadow: none;
+.card {
+  &.parent-card {
+    .card {
+      padding: 0;
+      box-shadow: none;
+    }
+    h5 {
+      font-weight: 700;
+    }
+  }
+
 }
 
 /* FONT AWESOME */
@@ -52,7 +60,7 @@ label > i.fa {
 
 section {
   margin-top: 2rem;
-  h5 {
+  h5, h6 {
     font-weight: 700;
   }
 }
