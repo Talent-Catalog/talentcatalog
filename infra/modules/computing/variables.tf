@@ -3,6 +3,11 @@ variable "app" {
   description = "Name of the application"
 }
 
+variable "env" {
+  type        = string
+  description = "Name of the environment"
+}
+
 variable "vpc_id" {
   type        = string
   description = "VPC ID for the network"
@@ -31,4 +36,9 @@ variable "container_image" {
 variable "certificate_domain" {
   type        = string
   description = "The primary domain name of the certificate in ACM"
+}
+
+variable "ecs_tasks_count" {
+  type        = number
+  description = "The desired number of ECS tasks"
 }

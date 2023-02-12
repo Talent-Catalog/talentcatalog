@@ -3,6 +3,11 @@ variable "app" {
   description = "Name of the application"
 }
 
+variable "env" {
+  type        = string
+  description = "Name of the environment"
+}
+
 variable "db_public_access" {
   default     = true
   description = "Flag to set if the database publicly accessible"
@@ -36,4 +41,10 @@ variable "container_image" {
 variable "container_port" {
   type        = number
   description = "Container port"
+}
+
+variable "ecs_tasks_count" {
+  type        = number
+  description = "The desired number of ECS tasks"
+  default     = 1
 }

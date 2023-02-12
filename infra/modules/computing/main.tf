@@ -1,5 +1,5 @@
 data "aws_ssm_parameters_by_path" "secrets" {
-  path = "/${var.app}/${terraform.workspace}/"
+  path = "/tbbtalent/develop/" # TODO: change tbbtalent to var.app, and develop to var.env
 }
 
 // Create map from all the SSM parameters that related to the app to add it to the fargate tasks environment variables
@@ -13,7 +13,7 @@ locals {
 module "ecs" {
   source = "terraform-aws-modules/ecs/aws"
 
-  cluster_name = "${var.app}-${terraform.workspace}"
+  cluster_name = "${var.app}-${var.env}"
 
   cluster_configuration = {
     execute_command_configuration = {
@@ -39,15 +39,15 @@ module "ecs" {
 }
 
 resource "aws_ecs_service" "web-app" {
-  name            = "${var.app}-${terraform.workspace}"
+  name            = "${var.app}-${var.env}"
   cluster         = module.ecs.cluster_id
   task_definition = aws_ecs_task_definition.web-app.arn
-  desired_count   = 2
+  desired_count   = var.ecs_tasks_count
   launch_type     = "FARGATE"
 
   load_balancer {
     target_group_arn = module.alb.target_group_arns[0]
-    container_name   = "${var.app}-${terraform.workspace}"
+    container_name   = "${var.app}-${var.env}"
     container_port   = var.container_port
   }
 
@@ -62,7 +62,7 @@ resource "aws_ecs_service" "web-app" {
 }
 
 resource "aws_ecs_task_definition" "web-app" {
-  family                   = "${var.app}-${terraform.workspace}"
+  family                   = "${var.app}-${var.env}"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
@@ -70,7 +70,7 @@ resource "aws_ecs_task_definition" "web-app" {
   memory                   = 2048
   container_definitions = jsonencode([
     {
-      name                   = "${var.app}-${terraform.workspace}"
+      name                   = "${var.app}-${var.env}"
       image                  = var.container_image
       essential              = true
       readonlyRootFilesystem = false
@@ -78,7 +78,7 @@ resource "aws_ecs_task_definition" "web-app" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "/fargate/service/${var.app}-${terraform.workspace}-fargate-log"
+          awslogs-group         = "/fargate/service/${var.app}-${var.env}-fargate-log"
           awslogs-stream-prefix = "ecs"
           awslogs-region        = "us-east-1"
         }

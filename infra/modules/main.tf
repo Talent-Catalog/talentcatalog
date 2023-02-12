@@ -2,6 +2,7 @@
 module "network" {
   source = "./network"
   app    = var.app
+  env    = var.env
 }
 
 # The RDS Postgresql database
@@ -11,6 +12,7 @@ module "database" {
   ]
   source               = "./database"
   app                  = var.app
+  env                  = var.env
   db_enable            = var.db_enable
   db_multi_az          = var.db_multi_az
   db_public_access     = var.db_public_access
@@ -27,12 +29,14 @@ module "computing" {
   ]
   source             = "./computing"
   app                = var.app
+  env                = var.env
   vpc_id             = module.network.vpc_id
   public_subnet_ids  = module.network.vpc_public_subnets
   private_subnet_ids = module.network.vpc_private_subnets
   certificate_domain = var.site_domain
   container_image    = var.container_image
   container_port     = var.container_port
+  ecs_tasks_count    = var.ecs_tasks_count
 }
 
 # Add DNS record to Route53
@@ -41,6 +45,7 @@ module "dns" {
     module.computing
   ]
   source      = "./dns"
+  env         = var.env
   site_domain = var.site_domain
   lb_dns_name = module.computing.dns_name
   lb_zone_id  = module.computing.zone_id

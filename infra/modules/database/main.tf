@@ -1,8 +1,8 @@
 data "aws_ssm_parameter" "rds_password" {
-  name = "/${var.app}/${terraform.workspace}/SPRING_DATASOURCE_PASSWORD"
+  name = "/tbbtalent/develop/SPRING_DATASOURCE_PASSWORD" # TODO: change tbbtalent to var.app, and develop to var.env
 }
 data "aws_ssm_parameter" "rds_username" {
-  name = "/${var.app}/${terraform.workspace}/SPRING_DATASOURCE_USERNAME"
+  name = "/tbbtalent/develop/SPRING_DATASOURCE_USERNAME" # TODO: change tbbtalent to var.app, and develop to var.env
 }
 
 module "database" {
@@ -10,7 +10,7 @@ module "database" {
   source  = "terraform-aws-modules/rds/aws"
   version = "5.1.0"
 
-  identifier        = "${var.app}-${terraform.workspace}"
+  identifier        = "${var.app}-${var.env}"
   engine            = "postgres"
   engine_version    = "14.3"
   instance_class    = var.db_instance_class

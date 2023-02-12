@@ -8,7 +8,7 @@ data "aws_acm_certificate" "certificate" {
 module "alb" {
   source             = "terraform-aws-modules/alb/aws"
   version            = "~> 6.0"
-  name               = "${var.app}-${terraform.workspace}"
+  name               = "${var.app}-${var.env}"
   load_balancer_type = "application"
 
   vpc_id          = var.vpc_id

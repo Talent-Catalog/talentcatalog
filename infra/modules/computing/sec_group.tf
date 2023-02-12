@@ -1,5 +1,5 @@
 resource "aws_security_group" "fargate" {
-  name   = "${var.app}-${terraform.workspace}-fargate-sg"
+  name   = "${var.app}-${var.env}-fargate-sg"
   vpc_id = var.vpc_id
 
   ingress {
@@ -20,7 +20,7 @@ resource "aws_security_group" "fargate" {
 }
 
 resource "aws_security_group" "alb" {
-  name   = "${var.app}-${terraform.workspace}-alb-sg"
+  name   = "${var.app}-${var.env}-alb-sg"
   vpc_id = var.vpc_id
 
   ingress {

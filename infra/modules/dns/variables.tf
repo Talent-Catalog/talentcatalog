@@ -3,6 +3,11 @@ variable "site_domain" {
   description = "The primary domain name of the website"
 }
 
+variable "env" {
+  type        = string
+  description = "Name of the environment"
+}
+
 variable "lb_dns_name" {
   type        = string
   description = "The DNS name of the load balancer"
