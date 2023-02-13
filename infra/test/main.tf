@@ -1,3 +1,7 @@
+# This file is the main entry to the test infrastructure
+# It is a copy of prod env, the idea of using a separate directory is to use different remote state backends,
+# and isolate test, and prod environments totally, also to be able to do customization based on environment
+# it can be changed later to use workspaces instead of directories to follow the DRY concept!
 terraform {
   required_version = ">= 1.3.0"
 }
