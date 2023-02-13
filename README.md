@@ -6,7 +6,7 @@ This is the repository for the Talent Catalog (TC), which manages data
 for refugees looking for skilled migration pathways into safe countries and employment. 
  
 This repository is a "mono-repo", meaning it contains multiple sub-modules all of which 
-make up the Talent Catalog system. In particular it contains: 
+make up the Talent Catalog system. In particular, it contains: 
 
 - **server**: the backend module of the system providing secure API (REST) access to the 
 data, stored in an SQL Database. This module is written in Java / Spring Boot.
@@ -102,13 +102,21 @@ Download and install the latest of the following tools.
       Just pull the image to install. See later for how to run.
     > docker pull docker.elastic.co/kibana/kibana:7.12.0
 
-- Git - [see Git website](https://git-scm.com/downloads)
+- Git - [see Git website](https://git-scm.com/downloads) - Not really necessary now with Intellij 
+ which will prompt you install Git if needed
+
+
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
   - Homebrew - see https://wiki.postgresql.org/wiki/Homebrew 
   >   brew install postgresql@14
   > 
   >   brew services restart postgresql@14
+     
+- AWS CLI - [see AWS website](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+                          
 
+- Terraform (for setting up our AWS infrastructure)
+  > brew install terraform 
 
 ### Setup your local database ###
 
