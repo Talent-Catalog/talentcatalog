@@ -1,10 +1,3 @@
-data "aws_ssm_parameter" "rds_password" {
-  name = "/tbbtalent/develop/SPRING_DATASOURCE_PASSWORD" # TODO: change tbbtalent to var.app, and develop to var.env
-}
-data "aws_ssm_parameter" "rds_username" {
-  name = "/tbbtalent/develop/SPRING_DATASOURCE_USERNAME" # TODO: change tbbtalent to var.app, and develop to var.env
-}
-
 module "database" {
   count   = var.db_enable ? 1 : 0
   source  = "terraform-aws-modules/rds/aws"
@@ -23,8 +16,8 @@ module "database" {
 
   db_name                = var.app
   port                   = "5432"
-  username               = data.aws_ssm_parameter.rds_username.value
-  password               = data.aws_ssm_parameter.rds_password.value
+  username               = var.db_username
+  password               = var.db_password
   create_random_password = false
 
   db_subnet_group_name = var.db_subnet_group_name

@@ -66,3 +66,13 @@ variable "db_multi_az" {
   type        = bool
   description = "Flag to define if database is multiaz"
 }
+
+variable "db_username" {
+  type        = string
+  description = "The database username"
+}
+
+variable "db_password" {
+  type        = string
+  description = "The database password"
+}

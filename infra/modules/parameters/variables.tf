@@ -1,51 +1,11 @@
 variable "app" {
-  type        = string
   description = "Name of the application"
+  type        = string
 }
 
 variable "env" {
   type        = string
   description = "Name of the environment"
-}
-
-variable "db_public_access" {
-  type        = bool
-  description = "Flag to set if the database publicly accessible"
-}
-
-variable "db_enable" {
-  type        = bool
-  description = "Flag to define the app will use an existance database (e.g. test env) or create new one"
-}
-
-variable "db_multi_az" {
-  type        = bool
-  description = "Flag to define if database is multiaz"
-}
-
-variable "db_instance_class" {
-  type        = string
-  description = "The database db instance class"
-}
-
-variable "site_domain" {
-  type        = string
-  description = "The domain name of the website"
-}
-
-variable "container_image" {
-  type        = string
-  description = "The ecr url for the docker image"
-}
-
-variable "container_port" {
-  type        = number
-  description = "Container port"
-}
-
-variable "ecs_tasks_count" {
-  type        = number
-  description = "The desired number of ECS tasks"
 }
 
 variable "aws_access_key" {
@@ -181,6 +141,16 @@ variable "spring_client_url" {
 variable "spring_datasource_password" {
   type        = string
   description = "Spring datasource password"
+}
+
+variable "db_enable" {
+  default     = false
+  description = "Flag to define the app will use an existance database (e.g. test env) or create new one"
+}
+
+variable "database_url" {
+  type        = string
+  description = "Spring datasource URL"
 }
 
 variable "spring_datasource_url" {

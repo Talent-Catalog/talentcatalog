@@ -1,12 +1,12 @@
 data "aws_ssm_parameters_by_path" "secrets" {
-  path = "/tbbtalent/develop/" # TODO: change tbbtalent to var.app, and develop to var.env
+  path = "/${var.app}/${var.env}/"
 }
 
 // Create map from all the SSM parameters that related to the app to add it to the fargate tasks environment variables
 locals {
   env_secrets = [for name in data.aws_ssm_parameters_by_path.secrets.names : {
-    "name" : split("/", name)[3],                                                                                        // item name
-    "value" : data.aws_ssm_parameters_by_path.secrets.values[index(data.aws_ssm_parameters_by_path.secrets.names, name)] // item value
+    "name" : split("/", name)[3],                                                                                                   // item name
+    "value" : trimspace(data.aws_ssm_parameters_by_path.secrets.values[index(data.aws_ssm_parameters_by_path.secrets.names, name)]) // item value
   }]
 }
 
