@@ -2,19 +2,20 @@
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
     <li class="breadcrumb-item active" aria-current="page">
-      Register a New Job
+      {{getBreadCrumb()}}
     </li>
   </ol>
 </nav>
 
 <div class="d-flex mb-3">
-  <div class="mr-4">
+  <div class="me-4">
     <h5>Add a salesforce job link to begin</h5>
-    <p>If a valid link, click Register to create the following:</p>
+    <p>If a valid link, click displayed button to create the following:</p>
       <ul>
-        <li>Create list associated with job and connect with Salesforce joblink</li>
+        <li>Create a job on the Talent Catalog</li>
+        <li>Create submission list and exclusion list associated with job and connect with Salesforce joblink</li>
         <li>Create google folders associated with list and connect to Salesforce joblink</li>
-        <li>Post job information to Slack: list, links to folder and Salesforce opp</li>
+        <li *ngIf="!prepare">Post job information to Slack: list, links to folder and Salesforce opp</li>
       </ul>
   </div>
 
@@ -30,13 +31,48 @@
 </div>
 
 <div *ngIf="jobName" class="card">
+  <div class="alert alert-danger">
+    <p>
+      NOTE: Creating a new job is now a two stage process.
+    </p>
+    <p>
+      This allows you to prepare a job - for example uploading the employer's job description
+      - before letting everyone see it.
+    </p>
+    <p>
+      Click on the button below to create the job.
+      The job will be created - but so far only you can see it.
+      When the creation process is done, the button will change to display "Show Job".
+      Click on it to display all the job details. You can then provide whatever you think our
+      source team and source partners will need to help them find candidates matching the job.
+      When you are ready you can click on the job's "Publish"
+      button to make the job visible to everyone (including posting it on Slack, as before).
+    </p>
+    <p>
+      Note that you can take as long as you like or need to prepare a job. For example you might now
+      choose to create the job early on in your discussions with the employer - maybe working
+      with them to do some trial searches or look at some sample candidate CVs - updating your
+      notes on the job as you go. Then you finally publish the job when you are happy with it.
+    </p>
+  </div>
   <div class="card-header d-flex align-items-baseline justify-content-between">
     <h5>{{jobName}}</h5>
-      <button *ngIf="jobName" type="button" class="btn btn-primary float-right" (click)="doRegistration()"
-             [hidden]="progressPercent == 100"  [disabled]="!jobName || findingJob">
-        <i class="fas fa-spinner fa-spin" *ngIf="findingJob"></i>
-        Register Job
-      </button>
+      <ng-container *ngIf="prepare">
+        <button *ngIf="jobName && progressPercent != 100" type="button"
+                class="btn btn-primary float-end" (click)="doPreparation()">
+          Create Job
+        </button>
+        <button *ngIf="jobName && progressPercent == 100" type="button"
+                class="btn btn-primary float-end" (click)="doShowJob()">
+          Show Job
+        </button>
+      </ng-container>
+      <ng-container *ngIf="!prepare">
+        <button *ngIf="jobName" type="button" class="btn btn-primary float-end" (click)="doRegistration()"
+                [hidden]="progressPercent == 100"  [disabled]="!jobName">
+          Register Job
+        </button>
+      </ng-container>
   </div>
   <div class="card-body">
     <div class="progress">
@@ -50,10 +86,10 @@
       <div [ngSwitch]="creatingJob">
         <ul class="fa-ul">
           <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
-            Create job and associated list
+            Create job, submission list and exclusion list
           </li>
           <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
-            Creating job and submission list
+            Creating job, submission list and exclusion list
           </li>
           <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
             List <a [href]="listLink" target="_blank>">{{listLink}}</a> is the list that should be populated with job candidates.
@@ -107,7 +143,7 @@
         </div>
       </div>
 
-      <div [ngSwitch]="postingToSlack">
+      <div *ngIf="!prepare" [ngSwitch]="postingToSlack">
         <ul class="fa-ul">
           <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
             Post job information to Slack: list, links to folder and Salesforce opp

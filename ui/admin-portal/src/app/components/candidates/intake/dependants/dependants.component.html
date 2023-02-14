@@ -17,19 +17,17 @@
 <!-- EXISTING RECORDS -->
 <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
   <ngb-panel id="intake-dependants">
-    <ng-template ngbPanelHeader let-opened="opened">
-      <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
-        <div class="d-flex flex-column">
-          Dependants
-        </div>
-        <div class="d-flex">
-          <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
-            <i class="fas fa-plus"></i>
-          </button>
-          <button ngbPanelToggle (click)="toggleOpen()" class="btn btn-link p-0 ml-4 btn-outline-none">
-            <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
-            <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
-          </button>
+    <ng-template ngbPanelTitle let-opened="opened">
+      <div class="container gx-0">
+        <div class="row">
+          <div class="col">
+            <span>Dependants</span>
+          </div>
+          <div class="col-1">
+            <button type="button" class="btn btn-primary btn-sm" (click)="addRecord($event)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
         </div>
       </div>
     </ng-template>
@@ -42,7 +40,7 @@
       </div>
       <div *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;" class="dependant-card">
         <app-dependants-card
-          [candidate]="candidate"
+          [entity]="candidate"
           [candidateIntakeData]="candidateIntakeData"
           [myRecordIndex]="i"
           (delete)="deleteRecord(i)">

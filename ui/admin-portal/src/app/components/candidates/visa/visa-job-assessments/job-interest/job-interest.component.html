@@ -2,9 +2,9 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="visaJobInterest">Candidate genuinely interested in the role and would move to accept offer?</label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -14,7 +14,7 @@
                [items]="jobInterestOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
-  <div *ngIf="hasNotes" class="form-group">
+  <div *ngIf="hasNotes" class="mb-3">
     <label for="visaJobInterestNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="2"
               id="visaJobInterestNotes" formControlName="visaJobInterestNotes"

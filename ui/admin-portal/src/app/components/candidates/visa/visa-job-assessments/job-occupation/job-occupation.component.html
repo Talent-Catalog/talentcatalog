@@ -2,9 +2,9 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div *ngIf="editable" class="form-group">
+  <div *ngIf="editable" class="mb-3">
     <label for="visaJobOccupationId">What occupation is the job on the TBB list?</label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -13,7 +13,7 @@
     <ng-select id="visaJobOccupationId" [formControlName]="'visaJobOccupationId'" [items]="occupations"
                placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
   </div>
-  <div *ngIf="editable" class="form-group">
+  <div *ngIf="editable" class="mb-3">
     <label for="visaJobOccupationNotes">Notes on occupation (eg. regional code) </label>
     <textarea type="text" class="md-textarea-auto form-control" rows="2"
               id="visaJobOccupationNotes" formControlName="visaJobOccupationNotes"

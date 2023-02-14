@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Edit Industry</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 
@@ -36,11 +34,11 @@
     </div>
 
     <form [formGroup]="industryForm">
-      <div class="form-group">
+      <div class="mb-3">
         <label for="name">Name</label>
         <input type="text" class="form-control" id="name" formControlName="name">
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="status">Status</label>
         <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
           <ng-option value="active">Active</ng-option>

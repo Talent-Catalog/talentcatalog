@@ -33,7 +33,7 @@
   <div class="flex-fill">
     <!-- SAVED LIST -->
     <div class="d-flex flex-fill mb-2">
-      <div class="mr-2 flex-fill w-50">
+      <div class="me-2 flex-fill w-50">
         <label>List</label>
         <!-- Disabled if saved search is entered -->
         <ng-select
@@ -72,7 +72,7 @@
 
   <div class="d-flex align-items-center flex-fill">
     <!-- DATE FROM -->
-    <div class="ml-2">
+    <div class="ms-2">
       <label for="dateFrom">Date From:</label>
       <app-date-picker id="dateFrom" [control]="statsFilter.controls.dateFrom" [allowFuture]="false"></app-date-picker>
     </div>
@@ -101,8 +101,8 @@
 
     <nav class="navbar sticky-top navbar-expand-md navbar-light bg-light second-nav">
       <span class="navbar-brand">Stats for {{statsName}}</span>
-        <ul class="navbar-nav ml-auto">
-          <button class="btn btn-outline-secondary float-right" [disabled]="!dataLoaded" (click)="exportStats()">
+        <ul class="navbar-nav ms-auto">
+          <button class="btn btn-outline-secondary float-end" [disabled]="!dataLoaded" (click)="exportStats()">
             <i class="fas fa-file-excel"></i> Export
           </button>
 

@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Add Certification</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 
@@ -38,19 +36,19 @@
     <form [formGroup]="candidateForm">
 
       <!-- COURSE NAME -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="name">Course Name</label>
         <input type="text" class="form-control" id="name" [formControlName]="'name'">
       </div>
 
       <!-- INSTITUTION NAME -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="institution">City</label>
         <input type="text" class="form-control" id="institution" [formControlName]="'institution'">
       </div>
 
       <!-- DATE OF COMPLETION -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="dateCompleted">Date of Completion</label>
         <app-date-picker id="dateCompleted" [control]="candidateForm.controls.dateCompleted"></app-date-picker>
       </div>

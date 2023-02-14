@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.security.GeneralSecurityException;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
@@ -27,10 +26,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
+import org.tbbtalent.server.util.SalesforceHelper;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -44,28 +44,28 @@ public class SalesforceAdminApi {
   }
 
   /**
-   * Returns info (including "name") about the Salesforce opportunity corresponding to the given 
+   * Returns info (including "name") about the Salesforce opportunity corresponding to the given
    * url - or null if the url does not refer to a Salesforce opportunity.
    * <p/>
-   * Note that the url is passed as request param - it is not possible to pass another url in the 
+   * Note that the url is passed as request param - it is not possible to pass another url in the
    * request url itself.
    * @param sfUrl Link to salesforce opportunity
-   * @return Map containing "name" attribute and other opportunity attributes (as defined in the 
+   * @return Map containing "name" attribute and other opportunity attributes (as defined in the
    * dto), or null if not an opportunity.
-   * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+   * @throws SalesforceException If there are errors relating to keys and digital signing.
    * @throws WebClientException if there is a problem connecting to Salesforce
    */
   @GetMapping("opportunity")
   @Nullable
   public Map<String, Object> getOpportunity(@RequestParam(value = "url") String sfUrl)
-      throws GeneralSecurityException, WebClientException {
+      throws SalesforceException, WebClientException {
 
     Opportunity opp = null;
 
     //Make sure that it is referring to a Salesforce Opportunity record
-    String objectType = SalesforceServiceImpl.extractObjectTypeFromSfUrl(sfUrl);
+    String objectType = SalesforceHelper.extractObjectTypeFromSfUrl(sfUrl);
     if ("Opportunity".equals(objectType)) {
-      String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfUrl);
+      String sfId = SalesforceHelper.extractIdFromSfUrl(sfUrl);
       if (sfId != null) {
         opp = salesforceService.findOpportunity(sfId);
       }
@@ -75,14 +75,14 @@ public class SalesforceAdminApi {
 
   @PutMapping("update-emp-opp")
   public void updateEmployerOpportunity(@RequestBody UpdateEmployerOpportunityRequest request)
-      throws GeneralSecurityException {
+      throws SalesforceException {
     salesforceService.updateEmployerOpportunity(request);
   }
-  
+
   private DtoBuilder opportunityDto() {
     return new DtoBuilder()
         .add("name")
         ;
   }
-  
+
 }

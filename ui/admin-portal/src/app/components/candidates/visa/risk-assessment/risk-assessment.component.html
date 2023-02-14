@@ -3,9 +3,9 @@
 </div>
 
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="visaOverallRisk">Overall risk assessment? (health/character/security)</label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -14,7 +14,7 @@
     <ng-select id="visaOverallRisk" [formControlName]="'visaOverallRisk'" [items]="riskLevelOptions"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
-  <div *ngIf="hasNotes" class="form-group">
+  <div *ngIf="hasNotes" class="mb-3">
     <label for="visaOverallRiskNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="visaOverallRiskNotes" [formControlName]="'visaOverallRiskNotes'"

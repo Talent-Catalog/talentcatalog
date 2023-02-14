@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Select fields to publish</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="cancel()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
 
 </div>
 
@@ -63,16 +61,16 @@
               <ng-template #defaultHeader>
                 <span>{{field.columnDef.header}}</span>
               </ng-template>
-              <i class="fa fa-pencil"></i>
+              <i class="fa fa-pencil ms-3"></i>
             </button>
             <div ngbDropdownMenu aria-labelledby="dropdownForm">
               <div class="px-4 py-3">
                 <h6 class="py-1">{{field.columnDef.header}}</h6>
-                <div class="form-group">
+                <div class="mb-3">
                   <label [for]="'header'+ i">New Header Name</label>
                   <input type="text" class="form-control" [id]="'header'+ i" [(ngModel)]="field.columnProps.header">
                 </div>
-                <div *ngIf="!hasFieldName(field)" class="form-group">
+                <div *ngIf="!hasFieldName(field)" class="mb-3">
                   <label [for]="'constant'+ i">Constant Name</label>
                   <input type="text" class="form-control" [id]="'constant'+ i" [(ngModel)]="field.columnProps.constant">
                 </div>

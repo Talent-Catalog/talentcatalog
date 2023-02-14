@@ -14,10 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {User} from './user';
+import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
-import {SalesforceJobOpp} from "./job";
+import {JobIds} from "./job";
+import {PartnerType} from "./partner";
 
 export interface HasName {
   name?: string;
@@ -25,8 +26,7 @@ export interface HasName {
 
 export enum CandidateSourceType {
   SavedList,
-  SavedSearch,
-  Job
+  SavedSearch
 }
 
 export enum Progress {
@@ -100,6 +100,13 @@ export enum SearchBy {
   registeredJob
 }
 
+export enum SearchJobsBy {
+  all,
+  mine,
+  starredByMe,
+  live
+}
+
 /**
  * Defines what TBB Salesforce url should look like.
  * <p/>
@@ -121,8 +128,7 @@ export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 export const linkedInUrl: string = 'https://www.linkedin.com/in/';
 
 export const defaultReviewStatusFilter: string[] = [
-  ReviewStatus[ReviewStatus.unverified],
-  ReviewStatus[ReviewStatus.verified]
+  ReviewStatus[ReviewStatus.rejected]
 ];
 
 export interface HasId {
@@ -158,7 +164,7 @@ export interface CandidateSource extends Auditable {
   exportColumns?: ExportColumn[];
   fixed: boolean;
   global: boolean;
-  sfJobOpp?: SalesforceJobOpp;
+  sfJobOpp?: JobIds;
   users?: User[];
   watcherUserIds?: number[];
 }
@@ -170,8 +176,11 @@ export interface Opportunity {
 export interface HasJobRelatedLinks {
   sfJoblink: string;
   listlink?: string;
+  fileJdLink?: string;
+  fileJdName?: string;
+  fileJoiLink?: string;
+  fileJoiName?: string;
   folderlink?: string;
-  foldercvlink?: string;
   folderjdlink?: string;
 }
 
@@ -197,7 +206,15 @@ export class PagedFilteredSearchRequest extends PagedSearchRequest {
   status?: string;
 }
 
-export class SearchPartnerRequest extends PagedFilteredSearchRequest {}
+export class SearchPartnerRequest extends PagedFilteredSearchRequest {
+  contextJobId?: number;
+  partnerType?: PartnerType;
+}
+
+export class SearchUserRequest extends PagedFilteredSearchRequest {
+  partnerId?: number;
+  role?: Role;
+}
 
 export class SearchTaskRequest extends PagedFilteredSearchRequest {}
 
@@ -244,11 +261,11 @@ export function isMine(source: CandidateSource, auth: AuthService) {
   return mine;
 }
 
-export function isStarredByMe(source: CandidateSource, auth: AuthService) {
+export function isStarredByMe(users: User[], auth: AuthService) {
   let starredByMe: boolean = false;
   const me: User = auth.getLoggedInUser();
-  if (source && me) {
-    starredByMe = source.users?.find(u => u.id === me.id ) !== undefined;
+  if (users && me) {
+    starredByMe = users.find(u => u.id === me.id ) !== undefined;
   }
   return starredByMe;
 }

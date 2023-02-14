@@ -56,6 +56,9 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 public class CandidateSpecification {
 
+    //Hard coded id of Country USA - nasty but temporary hack - see use below
+    private static final int usaId = 6178;
+
     public static Specification<Candidate> buildSearchQuery(
             final SearchCandidateRequest request, @Nullable User loggedInUser,
             final @Nullable Collection<Candidate> excludedCandidates) {
@@ -100,7 +103,7 @@ public class CandidateSpecification {
                 Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.INNER);
                 user = (Join<Object, Object>) userFetch;
 
-                Fetch<Object, Object> partnerFetch = user.fetch("sourcePartner", JoinType.INNER);
+                Fetch<Object, Object> partnerFetch = user.fetch("partner", JoinType.INNER);
                 partner = (Join<Object, Object>) partnerFetch;
 
                 Fetch<Object, Object> nationalityFetch = candidate.fetch("nationality");
@@ -120,7 +123,7 @@ public class CandidateSpecification {
             } else {
                 //Count query - sort doesn't matter
                 user = candidate.join("user");
-                partner = user.join("sourcePartner");
+                partner = user.join("partner");
                 nationality = candidate.join("nationality");
                 country = candidate.join("country");
                 maxEducationLevel = candidate.join("maxEducationLevel");
@@ -223,25 +226,29 @@ public class CandidateSpecification {
                 }
             }
 
-            // PARTNER SEARCH
-            if (!Collections.isEmpty(request.getPartnerIds())) {
-                conjunction.getExpressions().add(
-                        builder.isTrue(user.get("sourcePartner").in(request.getPartnerIds()))
-                );
-            }
-
             // COUNTRY SEARCH - taking into account user source country limitations
             // If request ids is NOT EMPTY we can just accept them because the options
             // presented to the user will be limited to the allowed source countries
             if (!Collections.isEmpty(request.getCountryIds())) {
-                conjunction.getExpressions().add(
+                if (request.getCountrySearchType() == null || SearchType.or.equals(request.getCountrySearchType())) {
+                    conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(request.getCountryIds()))
-                );
-                // If request ids IS EMPTY only show source countries
+                    );
+                } else {
+                    conjunction.getExpressions().add(candidate.get("country").in(request.getCountryIds()).not());
+                }
+            // If request ids IS EMPTY only show source countries
             } else if (loggedInUser != null &&
                     !Collections.isEmpty(loggedInUser.getSourceCountries())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(loggedInUser.getSourceCountries()))
+                );
+            }
+
+            // PARTNER SEARCH
+            if (!Collections.isEmpty(request.getPartnerIds())) {
+                conjunction.getExpressions().add(
+                    builder.isTrue(user.get("partner").in(request.getPartnerIds()))
                 );
             }
 
@@ -250,7 +257,7 @@ public class CandidateSpecification {
             // We want US-afghans out of the searches w/ source countries or not BUT if candidate is US SOURCE COUNTRY then in the searches.
             //if source countries is not null, check that it's not US
             if (loggedInUser != null && !Collections.isEmpty(loggedInUser.getSourceCountries())) {
-                boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == 6178);
+                boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == usaId);
                 if (!us) {
                     //This is not a US user, so don't show US Afghans
                   Join<Candidate, SurveyType> surveyType
@@ -276,6 +283,13 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getSurveyTypeIds())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("surveyType").in(request.getSurveyTypeIds()))
+                );
+            }
+
+            // REFERRER
+            if (request.getRegoReferrerParam() != null) {
+                conjunction.getExpressions().add(
+                        builder.equal(candidate.get("regoReferrerParam"), request.getRegoReferrerParam())
                 );
             }
 

@@ -55,6 +55,7 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
+<!--      Icons -->
       <div class="d-flex flex-grow-1 space-evenly">
         <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()">
           <i class="fas fa-link" title="Copy shareable link"></i>
@@ -75,16 +76,20 @@
         <button class="btn" (click)="doSelectColumns()">
           <i class="fas fa-columns" title="Select columns to display"></i>
         </button>
-        <button class="btn" (click)="assignTasks()">
+        <button class="btn" *ngIf="canAssignTasks()" (click)="assignTasks()">
           <i class="fas fa-tasks" title="Assign/show tasks"></i>
         </button>
         <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()">
           <i class="fas fa-chart-bar" title="Run stats"></i>
         </button>
+        <button class="btn" *ngIf="candidateSource?.sfJobOpp"
+           [routerLink]="['/job',candidateSource.sfJobOpp.id]">
+          <i class="fas fa-hands-helping" title="Associated Job"></i>
+        </button>
         <button class="btn" *ngIf="salesforceService.joblink(candidateSource)">
           <a target="_blank"
              [href]="salesforceService.joblink(candidateSource)">
-            <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
+            <i class="fab fa-salesforce" title="Associated Job Opportunity on Salesforce"></i>
           </a>
         </button>
         <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">
@@ -98,12 +103,14 @@
         </button>
       </div>
 
-      <div class="text-right">
+<!--    Results summary-->
+      <div class="text-end">
         <span>{{results?.totalElements}} candidates returned</span><br/>
         <span class="small">Timestamp {{timestamp | date: 'customDateTime'}}</span>
       </div>
     </div>
 
+<!--    Buttons -->
     <div class="d-flex">
 
       <div class="d-flex flex-wrap buttons-spacing flex-fill">
@@ -186,16 +193,16 @@
       </div>
 
       <div class="d-flex">
-        <div *ngIf="isSavedList()" class="flex-fill w-50 mr-2">
+        <div *ngIf="isSavedList()" class="flex-fill w-50 me-2">
           <form [formGroup]="searchForm">
-            <div class="form-group mb-0 flex-fill">
+            <div class="mb-3 mb-0 flex-fill">
               <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
                      id="keyword" autofocus>
             </div>
           </form>
         </div>
 
-        <div *ngIf="isContentModifiable()" class="flex-fill w-50 ml-2">
+        <div *ngIf="isContentModifiable()" class="flex-fill w-50 ms-2">
           <input id="quickNumberOrNameSearch"
                  type="text" class="form-control" #input
                  [ngbTypeahead]="doNumberOrNameSearch"
@@ -212,9 +219,10 @@
 
     </div>
 
+<!--  List operation log - eg Save/Replace again, or Copied to list  -->
     <div class="text-muted pt-0 mb-3" *ngIf="!searching">
       <div *ngIf="haveTargetList() && savedSelection" class="d-flex pt-1 align-items-center">
-        <button class="btn btn-sm btn-outline-secondary mr-2"
+        <button class="btn btn-sm btn-outline-secondary me-2"
                 (click)="saveSelectionAgain()">
           <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
           {{(targetListReplace ? "Replace" : "Save")}} Again
@@ -241,24 +249,29 @@
     </div>
 
 
-    <form class="filter-form" [formGroup]="searchForm">
+<!-- Review status -->
+    <div *ngIf="isReviewable()">
+      <label for="reviewStatuses">Don't show candidates reviewed as: </label>
+      <form id="reviewStatuses" class="filter-form" [formGroup]="searchForm">
 
-      <!-- REVIEW STATUS FILTER -->
-      <div *ngIf="isReviewable()" class="form-group col-12">
-        <ng-select
-          id="reviewStatus"
-          [items]="statuses"
-          [closeOnSelect]="false"
-          [searchable]="true"
-          [multiple]="true"
-          (ngModelChange)="onReviewStatusFilterChange()"
-          [placeholder]="'Review status: Empty displays everything'"
-          bindLabel="name"
-          formControlName="statusesDisplay">
-        </ng-select>
-      </div>
-    </form>
+        <!-- REVIEW STATUS FILTER -->
+        <div *ngIf="isReviewable()" class="mb-3 col-12">
+          <ng-select
+            id="reviewStatus"
+            [items]="statuses"
+            [closeOnSelect]="false"
+            [searchable]="true"
+            [multiple]="true"
+            (ngModelChange)="onReviewStatusFilterChange()"
+            [placeholder]="'Empty shows all candidates'"
+            bindLabel="name"
+            formControlName="statusesDisplay">
+          </ng-select>
+        </div>
+      </form>
+    </div>
 
+<!--  Task selection - select just one task to focus on  -->
     <div *ngIf="hasTasksAssigned()" class="mb-3">
       <ng-select [items]="tasksAssignedToList"
                  bindLabel="displayName"
@@ -268,13 +281,19 @@
       </ng-select>
     </div>
 
+<!--    Table of list contents - plus candidate details of selected candidate-->
     <div class="split-view">
 
+<!--     Table of list contents -->
       <div class="table-wrapper">
         <table class="table table-hover">
 
+<!--          Header-->
           <thead class="thead-light">
           <tr>
+            <th *ngIf="isReviewable()">
+              <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
+            </th>
             <th class="candidate-number-row" (click)="toggleSort('id')">
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
@@ -283,7 +302,7 @@
               <i class="fab fa-salesforce"></i>
             </th>
             <th>
-              <i class="far fa-hand-pointer"></i>
+              <i class="far fa-hand-pointer" title="Select candidates"></i>
             </th>
             <th *ngFor="let field of selectedFields" (click)="toggleSort(field.fieldPath)">
               <app-sorted-by [column]="field.fieldPath" [sortColumn]="sortField"
@@ -295,27 +314,38 @@
           </thead>
 
           <tbody>
-            <!-- loading -->
+            <!--  Loading icon while loading  -->
             <tr *ngIf="searching">
               <td colspan="42">
                 <i class="fas fa-spinner fa-spin"></i> Loading...
               </td>
             </tr>
 
-            <!-- no results -->
+            <!-- Special display for no results-->
             <tr *ngIf="!searching && !results?.totalElements">
               <td colspan="42">
                 <span class="text-muted">(no matching candidates)</span>
               </td>
             </tr>
 
-            <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)" [ngClass]="{'selected': currentCandidate?.id == candidate.id, 'selected-row': candidate.selected}">
+<!--        Candidate records    -->
+            <!-- MODEL: Highlighting current table record. See also scss file. -->
+            <tr *ngFor="let candidate of results?.content" (click)="selectCandidate(candidate)"
+                [ngClass]="{'current': currentCandidate?.id == candidate.id, 'selected': candidate.selected}">
+              <td *ngIf="isReviewable()">
+                <div [ngSwitch]="getReviewStatus(candidate)" title="Review status. Click to change."
+                     (click)="review(candidate)">
+                  <i *ngSwitchCase="ReviewStatus.verified" class="fa-solid fa-circle-check"></i>
+                  <i *ngSwitchCase="ReviewStatus.rejected" class="fa-solid fa-circle-xmark"></i>
+                  <i *ngSwitchCase="ReviewStatus.unverified" class="fa-solid fa-circle-question"></i>
+                </div>
+              </td>
               <td>
                 <a [routerLink]="['/candidate',candidate.candidateNumber]">
                   {{candidate.candidateNumber}}
                 </a>
-                <a target="_blank" [href]="candidate.user.sourcePartner.websiteUrl">
-                  <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.sourcePartner.name"></i>
+                <a target="_blank" [href]="candidate.user.partner.websiteUrl">
+                  <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
                 </a>
                 <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
                   <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
@@ -387,6 +417,7 @@
         </table>
       </div>
 
+<!--      Data on selected candidate-->
       <app-candidate-search-card class="profile"
                                  *ngIf="currentCandidate"
                                  [candidateSource]="candidateSource"
@@ -407,9 +438,7 @@
   <div class="modal-header">
     <h4 class="modal-title">CSV download failed</h4>
 
-    <button type="button" class="close" aria-label="Close" (click)="d(false)">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="d(false)"></button>
   </div>
   <div class="modal-body">
     <p><strong>Oops! Something went wrong</strong></p>

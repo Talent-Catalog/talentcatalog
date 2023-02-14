@@ -48,7 +48,7 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
+import org.tbbtalent.server.util.SalesforceHelper;
 
 @Entity
 @Table(name = "candidate")
@@ -947,7 +947,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public String getTcLink() {
-        return "https://tbbtalent.org/admin-portal/candidate/" + candidateNumber;
+        return "https://tctalent.org/admin-portal/candidate/" + candidateNumber;
     }
 
     /**
@@ -2001,7 +2001,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     public String getSfId() {
-        return SalesforceServiceImpl.extractIdFromSfUrl(sflink);
+        return SalesforceHelper.extractIdFromSfUrl(sflink);
     }
 
     @Nullable

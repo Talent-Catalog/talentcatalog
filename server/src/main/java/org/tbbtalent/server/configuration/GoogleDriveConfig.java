@@ -279,6 +279,12 @@ public class GoogleDriveConfig {
   }
 
   private GoogleCredential computeCredential(NetHttpTransport HTTP_TRANSPORT) throws IOException {
+    if (privateKey == null || privateKey.trim().length() == 0) {
+      throw new IOException("Missing critical configuration data. " 
+          + "If you are running in development, have you requested and installed the secrets file?" 
+          + " See the README.");
+    }
+
     //Convert to proper newlines. 
     // See https://stackoverflow.com/questions/18865393/java-replaceall-not-working-for-n-characters
     privateKey = privateKey.replaceAll("\\\\n", "\n");
@@ -286,7 +292,7 @@ public class GoogleDriveConfig {
 
     Collection<String> emptyScopes = Collections.emptyList();
 
-    /**
+    /*
      * This code follows the service Account flow described in the doc for {@link GoogleCredential}
      */ 
     GoogleCredential.Builder credentialBuilder = new GoogleCredential.Builder()

@@ -31,10 +31,15 @@ class SubdomainRedirectHelperTest {
         assertNotNull(s);
         assertEquals("https://tctalent.org?p=rp", s);
 
-        s = SubdomainRedirectHelper.computeRedirectUrl(".tctalent.org");
-        assertNull(s);
+        //Note that www is treated as a partner - that is OK for our purposes.
+        s = SubdomainRedirectHelper.computeRedirectUrl("www.tctalent.org");
+        assertNotNull(s);
+        assertEquals("https://tctalent.org?p=www", s);
 
         s = SubdomainRedirectHelper.computeRedirectUrl("tctalent.org");
+        assertNull(s);
+
+        s = SubdomainRedirectHelper.computeRedirectUrl("172.31.31.31:8080");
         assertNull(s);
     }
 }

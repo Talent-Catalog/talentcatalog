@@ -18,8 +18,8 @@ package org.tbbtalent.server.model.db.partner;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
 
 /**
  * A partner is an organization that works to implement displaced talent mobility.
@@ -38,16 +38,13 @@ public interface Partner {
     String getAbbreviation();
     void setAbbreviation(@Nullable String s);
 
-    /**
-     * If true, candidates managed by this partner will use {@link Candidate#getCandidateNumber()}
-     * as their own internal reference identifying this candidate.
-     * <p/>
-     * The internal partner reference is stored in {@link Candidate#getPartnerRef()}. If this is
-     * true, that field will automatically be populated with candidateNumber.
-     * @return True if candidateNumber is used as internal partner ref
-     */
-    boolean isDefaultPartnerRef();
-    void setDefaultPartnerRef(boolean defaultPartnerRef);
+    @Nullable
+    Long getContextJobId();
+    void setContextJobId(@Nullable Long contextJobId);
+
+    @Nullable
+    User getDefaultContact();
+    void setDefaultContact(@Nullable User defaultContact);
 
     /**
      * Unique id identifying this partner
@@ -55,6 +52,14 @@ public interface Partner {
      */
     Long getId();
     void setId(Long id);
+
+    /**
+     * Gets the contact associated with {@link #getContextJobId()} if it is not null, otherwise
+     * returns the default partner contact, {@link #getDefaultContact()}
+     * @return Contact user
+     */
+    @Nullable
+    User getJobContact();
 
     /**
      * Partner's logo.

@@ -24,11 +24,11 @@
     </div>
     <div *ngFor="let ta of ongoingTasks; let i = index;">
       <div class="set-height d-flex justify-content-between">
-        <div [ngClass]="{'custom-flex-40 pr-3' : editable, 'custom-flex-75' : !editable}">
+        <div [ngClass]="{'custom-flex-40 pe-3' : editable, 'custom-flex-75' : !editable}">
           <p class="mb-0" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">
             <span *ngIf="!ta.task.optional">*</span> {{ta.task.displayName}}
-            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ml-1"></i>
-            <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ml-1"></i>
+            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ms-1"></i>
+            <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ms-1"></i>
           </p>
           <div class="font-r80" [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date}}</div>
         </div>
@@ -40,7 +40,7 @@
               <span *ngIf="ta.candidateNotes?.length >=80">...</span>
             </span>
           </div>
-          <div class="d-flex float-right text-right">
+          <div class="d-flex float-end text-end">
             <button class="btn btn-default" (click)="editTaskAssignment(ta)">
               <i class="fas fa-edit fa-sm"></i></button>
             <button class="btn btn-default" (click)="deleteTaskAssignment(ta)">
@@ -81,16 +81,16 @@
       <div class="d-flex">
 
         <div [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">
-          <p class="mb-0 pr-3">
+          <p class="mb-0 pe-3">
             <span *ngIf="!ta.task.optional">*</span> {{ta.task.displayName}}
-            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ml-1"></i>
-            <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ml-1"></i>
+            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ms-1"></i>
+            <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ms-1"></i>
           </p>
           <!-- SEARCH CARD DISPLAY ANSWER -->
-          <div *ngIf="!editable && ta.answer" [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pr-3"
+          <div *ngIf="!editable && ta.answer" [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pe-3"
                [disablePopover]="ta.answer?.length <=40">
             <i class="fas fa-angle-right"></i>
-            <span *ngIf="ta.answer" class="font-r80 font-italic font-weight-normal ml-1">{{ta.answer | slice: 0 : 40}}
+            <span *ngIf="ta.answer" class="font-r80 font-italic font-weight-normal ms-1">{{ta.answer | slice: 0 : 40}}
               <span *ngIf="ta.answer?.length >=40">...</span>
             </span>
           </div>
@@ -102,19 +102,19 @@
 
         <!-- IF EDITABLE SHOW FULL RESULTS (COMMENTS, ANSWERS AND EDIT BUTTONS) -->
         <ng-container *ngIf="editable">
-          <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pr-3"
+          <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pe-3"
                [disablePopover]="ta.candidateNotes?.length <=40">
             <span *ngIf="ta.candidateNotes" class="font-r80">{{ta.candidateNotes | slice: 0 : 40}}
               <span *ngIf="ta.candidateNotes?.length >=40">...</span>
             </span>
           </div>
-          <div [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pr-3"
+          <div [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pe-3"
                [disablePopover]="ta.answer?.length <=40">
           <span *ngIf="ta.answer" class="font-r80">{{ta.answer | slice: 0 : 40}}
             <span *ngIf="ta.answer?.length >=40">...</span>
           </span>
           </div>
-          <div class="flex-fill text-right">
+          <div class="flex-fill text-end">
             <button class="btn btn-default" title="Edit task" (click)="editTaskAssignment(ta)">
               <i class="fas fa-edit fa-sm"></i></button>
             <button class="btn btn-default" title="See response to task" (click)="viewResponse(ta)">

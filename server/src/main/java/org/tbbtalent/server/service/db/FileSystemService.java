@@ -16,15 +16,15 @@
 
 package org.tbbtalent.server.service.db;
 
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
-import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
-import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemBaseEntity;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
  * Standard interface to Google filesystem - tailored to Talent Catalog's use for
@@ -38,6 +38,8 @@ public interface FileSystemService {
      * Finds a folder with the given name.
      * If there is more than one folder with that name, any one could be
      * returned.
+     * @param drive Search this drive
+     * @param parentFolder Search this folder and its subfolders
      * @param folderName Name of folder being searched for
      * @return Found folder, null if no folder found
      * @throws IOException If problem accessing file system
@@ -50,7 +52,7 @@ public interface FileSystemService {
     /**
      * Creates a file with the given name.
      * Does not check if file with that name already exists - may create
-     * create a duplicate file with the same name if the file system allows it.
+     * a duplicate file with the same name if the file system allows it.
      * @param fileName Name of folder to be created
      * @param mimeType Type of file - see https://developers.google.com/drive/api/v3/mime-types
      * @return File created
@@ -92,6 +94,23 @@ public interface FileSystemService {
             throws IOException;
 
     /**
+     * Returns drive where given entity (a file or folder) is located.
+     * @param fileOrFolder File or folder
+     * @return Drive object
+     * @throws IOException If there was a problem accessing the given entity
+     */
+    GoogleFileSystemDrive getDriveFromEntity(GoogleFileSystemBaseEntity fileOrFolder) throws IOException;
+
+    /**
+     * Moves the given entity (a file or folder) into the given parent folder.
+     * @param fileOrFolder File or folder
+     * @param parentFolder Destination folder
+     * @throws IOException If there was a problem with the move
+     */
+    void moveEntityToFolder(
+        GoogleFileSystemBaseEntity fileOrFolder, GoogleFileSystemFolder parentFolder) throws IOException;
+
+    /**
      * Makes the given file viewable by anyone.
      * @param file Describes file to be published
      * @throws IOException If there was a problem changing the file's accessibility.
@@ -128,10 +147,11 @@ public interface FileSystemService {
 
     /**
      * This creates a copy of a Google document and places it in the parent folder
-     * under the provided copy title.
+     * with the provided name.
      * @param parentFolder - this is the folder where the new copy will belong.
      * @param name - this is the name for the new copy.
      * @param sourceFile - this is the file to be copied.
+     * @return Copy of file
      * @throws IOException If there was a problem copying the file.
      */
     GoogleFileSystemFile copyFile(

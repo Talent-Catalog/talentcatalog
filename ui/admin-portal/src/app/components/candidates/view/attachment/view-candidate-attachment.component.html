@@ -25,13 +25,13 @@
       </span>
     </span>
 
-    <div class="float-right" *ngIf="editable">
+    <div class="float-end" *ngIf="editable">
       <!-- HIDDEN BUTTON NEED TO REMOVE REST OF CODE -->
 <!--      <button class="btn btn-sm btn-primary" (click)="addAttachment('link')">-->
 <!--        <i class="fas fa-plus"></i> Link-->
 <!--      </button>-->
 
-      <button class="btn btn-sm btn-primary ml-2" (click)="addAttachment('file')">
+      <button class="btn btn-sm btn-primary ms-2" (click)="addAttachment('file')">
         <i class="fas fa-plus"></i> File
       </button>
     </div>
@@ -53,60 +53,58 @@
     <div *ngIf="attachments.length">
       <div class="mb-4">
         <app-shareable-docs
-          [candidate]="candidate"
-          [cvs]="cvs"
-          [other]="other">
+          [candidate]="candidate">
         </app-shareable-docs>
       </div>
 
       <div class="card-title">All attachments</div>
 
       <!-- ATTACHMENTS -->
-      <div class="row position-relative mb-3" *ngFor="let attachment of attachments; let i = index">
+      <div class="row mb-3" *ngFor="let attachment of attachments; let i = index">
 
-        <!-- EDIT -->
-        <div class="actions" *ngIf="editable && adminUser">
-          <button class="btn btn-sm btn-outline-primary" (click)="editCandidateAttachment(attachment)">
-            <i class="fas fa-edit"></i>
-          </button>
-
-          <button class="btn btn-sm btn-outline-danger" (click)="deleteCandidateAttachment(attachment)">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-
-        <div>
+        <div class="col-10 col-sm">
           <!-- NAME -->
-          <div class="col-12" [class.edit-padding]="editable">
-            <!-- Non Google files - ie links and AWS files -
-             we can just follow their urls-->
-            <a *ngIf="attachment.type!==AttachmentType.googlefile"
-               target="_blank" [href]="attachment.url">
-              {{attachment.name}}
-            </a>
-            <!-- With Google files we can't link to the Google Shared Drive
-             because Google's security prevents that.
-             So instead, we download a copy of the file to the browser computer
-             and show that-->
-            <a *ngIf="attachment.type===AttachmentType.googlefile"
-                    (click)="downloadCandidateAttachment(attachment)"
-            target="_blank" class="is-link">
-              {{attachment.name}}
-            </a>
-            <span class="small text-dark"> - {{attachment.type}}</span>
-            <div class="d-inline ml-2" *ngIf="attachment.cv">
-              <app-cv-icon
-                [candidate]="candidate"
-                [attachment]="attachment"
-                (loadingStatus)="loading = $event"
-              >
-              </app-cv-icon>
-            </div>
+          <!-- Non Google files - ie links and AWS files -
+           we can just follow their urls-->
+          <a *ngIf="attachment.type!==AttachmentType.googlefile"
+             target="_blank" [href]="attachment.url">
+            {{attachment.name}}
+          </a>
+          <!-- With Google files we can't link to the Google Shared Drive
+           because Google's security prevents that.
+           So instead, we download a copy of the file to the browser computer
+           and show that-->
+          <a *ngIf="attachment.type===AttachmentType.googlefile"
+             (click)="downloadCandidateAttachment(attachment)"
+             target="_blank" class="is-link">
+            {{attachment.name}}
+          </a>
+          <span class="small text-dark"> - {{attachment.type}}</span>
+          <div class="d-inline ms-2" *ngIf="attachment.cv">
+            <app-cv-icon
+              [candidate]="candidate"
+              [attachment]="attachment"
+              (loadingStatus)="loading = $event"
+            >
+            </app-cv-icon>
           </div>
 
           <!-- AUDIT DATA -->
-          <div class="col-12" *ngIf="attachment">
+          <div *ngIf="attachment">
             <app-updated-by [object]="attachment"></app-updated-by>
+          </div>
+        </div>
+
+        <!-- EDIT -->
+        <div class="col-2 col-sm-auto" *ngIf="editable && adminUser">
+          <div class="float-end">
+            <button class="btn btn-sm btn-outline-primary me-2" (click)="editCandidateAttachment(attachment)">
+              <i class="fas fa-edit"></i>
+            </button>
+
+            <button class="btn btn-sm btn-outline-danger " (click)="deleteCandidateAttachment(attachment)">
+              <i class="fas fa-trash"></i>
+            </button>
           </div>
         </div>
 

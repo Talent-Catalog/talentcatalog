@@ -26,7 +26,7 @@
 <div class="attachments">
   <div class="mb-3" *ngFor="let attachment of attachments; let i = index;" [class.card]="!preview">
 
-    <div class="text-right" *ngIf="!preview && attachment.createdBy.id == user?.id">
+    <div class="text-end" *ngIf="!preview && attachment.createdBy.id == user?.id">
       <button class="btn btn-secondary btn-card"
               (click)="editCandidateAttachment(attachment)">
         <fa-icon class="d-flex" icon="edit" size="xs"></fa-icon></button>
@@ -42,12 +42,12 @@
 
       <div class="col-12">
 
-        <div *ngIf="editTarget?.id !== attachment.id" class="form-group">
-          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}
+        <div *ngIf="editTarget?.id !== attachment.id" class="mb-3">
+          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}
             <span *ngIf="downloading">
                 ...
             </span>
-          </label>
+          </h6>
           <p>
             <!-- Non Google files - ie links and AWS files -
              we can just follow their urls-->
@@ -67,8 +67,8 @@
           </p>
         </div>
 
-        <div *ngIf="editTarget?.id == attachment.id" class="form-group">
-          <label for="attachmentName">{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</label>
+        <div *ngIf="editTarget?.id == attachment.id" class="mb-3">
+          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</h6>
           <div class="d-flex">
             <input type="text" class="form-control" placeholder="" id="attachmentName" [(ngModel)]="attachment.name">
             <div>
@@ -88,8 +88,8 @@
 
       <div class="col-12 col-md-6">
 
-        <div class="form-group m-md-0">
-          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDBY' | translate }}</label>
+        <div class="mb-3 m-md-0">
+          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDBY' | translate }}</h6>
           <p *ngIf="attachment.createdBy && attachment.createdBy.id == user?.id">{{attachment.createdBy.firstName}} {{attachment.createdBy.lastName}}</p>
           <p *ngIf="attachment.createdBy && attachment.createdBy.id !== user?.id">Admin</p>
           <p *ngIf="!attachment.createdBy">Unknown</p>
@@ -99,8 +99,8 @@
 
       <div class="col-12 col-md-6">
 
-        <div class="form-group m-md-0">
-          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDDATE' | translate }}</label>
+        <div class="mb-3 m-md-0">
+          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDDATE' | translate }}</h6>
           <p>{{attachment.createdDate | date: 'customDateTime'}}</p>
         </div>
 

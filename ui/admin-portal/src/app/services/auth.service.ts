@@ -26,6 +26,8 @@ import {Role, User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {Observable} from "rxjs/index";
 import {EncodedQrImage} from "../util/qr";
+import {Candidate} from "../model/candidate";
+import {PartnerType} from "../model/partner";
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +82,24 @@ export class AuthService {
     return loggedInUser == null ? false : Role[loggedInUser.role] === Role.systemadmin;
   }
 
+  canAssignTask(): boolean {
+    //For now only TBB can do this.
+    //Todo Need to make this more broadly available. It gets complicated when assigning tasks
+    //to a list - if that list has candidates from multiple partners.
+    return this.isDefaultSourcePartner();
+  }
+
+  canCreateJob() : boolean {
+    let result: boolean = false;
+
+    let partnerType = this.getPartnerType();
+    if (partnerType != null && partnerType != PartnerType.Partner) {
+      result = this.isDefaultSourcePartner() || partnerType == PartnerType.RecruiterPartner;
+    }
+
+    return result;
+  }
+
   canViewCandidateCountry(): boolean {
     let result: boolean = false;
     switch (this.getLoggedInRole()) {
@@ -92,26 +112,71 @@ export class AuthService {
      return result;
   }
 
+  /**
+   * True if the currently logged in user is permitted to see candidate CVs
+   */
   canViewCandidateCV(): boolean {
     let result: boolean = false;
-    switch (this.getLoggedInRole()) {
-       case Role.systemadmin:
-       case Role.admin:
-       case Role.sourcepartneradmin:
-        result = true;
-     }
+
+    let partnerType = this.getPartnerType();
+    if (partnerType != null && partnerType != PartnerType.Partner) {
+      switch (this.getLoggedInRole()) {
+        case Role.systemadmin:
+        case Role.admin:
+        case Role.sourcepartneradmin:
+          result = true;
+      }
+    }
      return result;
   }
 
+  /**
+   * True if the currently logged in user is permitted to see candidate names
+   */
   canViewCandidateName(): boolean {
     let result: boolean = false;
-    switch (this.getLoggedInRole()) {
-       case Role.systemadmin:
-       case Role.admin:
-       case Role.sourcepartneradmin:
-        result = true;
-     }
-     return result;
+    let partnerType = this.getPartnerType();
+    if (partnerType != null && partnerType != PartnerType.Partner) {
+      switch (this.getLoggedInRole()) {
+        case Role.systemadmin:
+        case Role.admin:
+        case Role.sourcepartneradmin:
+          result = true;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * True if the currently logged in user is permitted to see the given candidate's private
+   * and potentially sensitive information - such as intake data
+   * @param candidate Candidate to be checked
+   */
+  canViewPrivateCandidateInfo(candidate: Candidate): boolean {
+    let visible = false;
+    const loggedInUser = this.getLoggedInUser()
+    //Must be logged in
+    if (loggedInUser) {
+
+      //Must have more than a basic Partner type.
+      let partnerType = this.getPartnerType();
+      if (partnerType != null && partnerType != PartnerType.Partner) {
+
+        //Must have some kind of admin role
+        const role = this.getLoggedInRole();
+        if (role !== Role.limited && role !== Role.semilimited) {
+          if (this.isDefaultSourcePartner()) {
+            //Default source partners with admin roles can see all candidate info
+            visible = true;
+          } else {
+            //Can only see private candidate info if the candidate is assigned to the user's partner
+            const candidateSourcePartner = candidate.user.partner;
+            visible = candidateSourcePartner.id === loggedInUser.partner.id;
+          }
+        }
+      }
+    }
+    return visible;
   }
 
   isAnAdmin(): boolean {
@@ -166,6 +231,11 @@ export class AuthService {
     return this.loggedInUser;
   }
 
+  getPartnerType(): string {
+    const loggedInUser = this.getLoggedInUser();
+    return loggedInUser == null ? null : loggedInUser.partner?.partnerType;
+  }
+
   setNewLoggedInUser(new_user) {
     this.localStorageService.set('user', new_user);
   }
@@ -213,4 +283,43 @@ export class AuthService {
     this.loggedInUser = response.user;
   }
 
+  /**
+   * True if the currently logged in user is permitted to edit the given candidate's details
+   * @param candidate Candidate to be checked
+   */
+  isEditableCandidate(candidate: Candidate): boolean {
+    let editable = false;
+    const loggedInUser = this.getLoggedInUser()
+    //Must be logged in
+    if (loggedInUser) {
+      //Cannot be a read only user
+      if (!this.isReadOnly()) {
+        const role = this.getLoggedInRole();
+        //Must have some kind of admin role
+        if (role !== Role.limited && role !== Role.semilimited) {
+          if (this.isDefaultSourcePartner()) {
+            //Default source partners with admin roles can edit all candidates
+            editable = true;
+          } else {
+            //Can only edit candidate if the candidate is assigned to the user's partner
+            const candidateSourcePartner = candidate.user.partner;
+            editable = candidateSourcePartner.id === loggedInUser.partner.id;
+          }
+        }
+      }
+    }
+    return editable;
+  }
+
+  /**
+   * True if a user is logged in and they are associated with the default source partner.
+   */
+  isDefaultSourcePartner(): boolean {
+    let defaultSourcePartner = false;
+    const loggedInUser = this.getLoggedInUser();
+    if (loggedInUser) {
+      defaultSourcePartner = loggedInUser.partner?.defaultSourcePartner;
+    }
+    return defaultSourcePartner;
+  }
 }

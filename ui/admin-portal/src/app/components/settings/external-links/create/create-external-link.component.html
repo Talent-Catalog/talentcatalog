@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Add External Link</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 
@@ -31,17 +29,18 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="form-group">
-      <label>Saved List</label>
+    <div class="mb-3">
+      <label class="form-label">Saved List</label>
       <ng-select id="savedListId" [formControlName]="'savedListId'" [items]="savedLists" [closeOnSelect]="true"
                  [clearOnBackspace]="false" placeholder="Select or type..." bindLabel="name" bindValue="id"></ng-select>
-      <p class="text-muted">If you can't see your list here, it will already have an external link assigned to it.</p>
+      <div class="form-text">If you can't see your list here, it will already have an external link assigned to it.</div>
     </div>
-    <div class="form-group">
-      <div>External link</div>
-      <div class="form-inline">
-        <span class="small text-muted">{{publishUrl}}/</span>
-        <input class="form-control form-inline" id="link" [formControlName]="'tbbShortName'">
+
+    <div>External link</div>
+    <div class="row mb-3">
+      <span class="col-form-label col-6 form-text">{{publishUrl}}/</span>
+      <div class="col-6">
+        <input class="form-control" id="link" [formControlName]="'tbbShortName'">
       </div>
     </div>
   </form>

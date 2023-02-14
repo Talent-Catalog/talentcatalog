@@ -14,12 +14,12 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="text-right" *ngIf="!isEnglish(language.languageId) && !preview">
+<div class="text-end" *ngIf="!isEnglish(language.languageId) && !preview">
   <button class="btn btn-danger btn-card" (click)="delete()">&times;</button>
 </div>
 
 <!-- WHICH LANGUAGE -->
-<div class="form-group" *ngIf="!isEnglish(language.languageId)">
+<div class="mb-3" *ngIf="!isEnglish(language.languageId)">
   <label>{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
 
   <ng-select [disabled]="" [(ngModel)]="language.languageId" disabled *ngIf="!preview"
@@ -32,7 +32,7 @@
 </div>
 
 <!-- HOW WELL DO YOU SPEAK -->
-<div class="form-group">
+<div class="mb-3">
   <label translate dir="auto">
     {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language)} }}
   </label>
@@ -47,7 +47,7 @@
 </div>
 
 <!-- HOW WELL DO YOU READ AND WRITE -->
-<div class="form-group">
+<div class="mb-3">
   <label translate dir="auto" [translateParams]="{languageName: getLanguageName(language)}">
     {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language)} }}
   </label>

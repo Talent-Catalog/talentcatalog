@@ -29,9 +29,9 @@
     <img [src]="qr.base64Encoding"/>
   </div>
   <div class="modal-footer">
-    <div class="form-group d-flex align-items-baseline">
+    <div class="mb-3 d-flex align-items-baseline">
       <input type="checkbox" id="confirm" [ngModel]="checked" (change)="checked = !checked">
-      <label for="confirm" class="ml-3 mb-0">I have scanned the QR code with an authenticator app.</label>
+      <label for="confirm" class="ms-3 mb-0">I have scanned the QR code with an authenticator app.</label>
     </div>
     <p class="small text-muted mb-3">
       Note: If you don't do this you won't be able to login again.

@@ -2,9 +2,7 @@
 
   <h4 class="modal-title">{{title}}</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 
@@ -15,16 +13,26 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="form-group" >
-      <label for="name">Name *</label>
-      <input class="form-control" id="name" formControlName="name">
-<!--      <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"-->
-<!--           class="alert alert-danger">-->
-<!--        <div *ngIf="nameControl.errors.required">-->
-<!--          Name is required.-->
-<!--        </div>-->
-<!--      </div>-->
-      <div class="form-inline">
+    <div class="mb-3">
+
+      <div *ngIf="isCreate()" class="mb-3">
+        <label>Type? *</label>
+        <ng-select
+          id="partnerType"
+          [items]="partnerTypes"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="false"
+          bindLabel="stringValue"
+          bindValue="key"
+          [formControlName]="'partnerType'">
+        </ng-select>
+      </div>
+      <div class="mb-3">
+        <label for="name">Name *</label>
+        <input class="form-control" id="name" formControlName="name">
+      </div>
+      <div class="mb-3">
         <label>Status? *</label>
         <ng-select
           id="status"
@@ -41,6 +49,13 @@
       <label for="name">Abbreviated name *</label>
       <input class="form-control" id="abbreviation" formControlName="abbreviation">
 
+      <label for="defaultContact">Default contact</label>
+      <ng-select id="defaultContact" [formControlName]="'defaultContact'"
+                [items]="partnerUsers"
+                 bindLabel="name"
+                placeholder="Select" [clearable]="true">
+      </ng-select>
+
       <label for="sflink">Salesforce account link</label>
       <input class="form-control" id="sflink" formControlName="sflink">
       <div *ngIf="isInvalid(form.controls.sflink)" class="alert alert-danger">
@@ -55,35 +70,35 @@
       <label for="logo">Logo</label>
       <input class="form-control" id="logo" formControlName="logo">
 
-      <label for="registrationLandingPage">Registration Landing Page (url)</label>
-      <input class="form-control" id="registrationLandingPage" formControlName="registrationLandingPage">
-
       <label for="websiteUrl">Website Url</label>
       <input class="form-control" id="websiteUrl" formControlName="websiteUrl">
 
-      <label for="autoAssignable">Auto assignable by country?</label>
-      <input type="checkbox" formControlName="autoAssignable" id="autoAssignable">
+      <div *ngIf="isSourcePartner()">
+        <label for="registrationLandingPage">Registration Landing Page (url)</label>
+        <input class="form-control" id="registrationLandingPage" formControlName="registrationLandingPage">
 
-      <label for="defaultPartnerRef">Default partner ref?</label>
-      <input type="checkbox" formControlName="defaultPartnerRef" id="defaultPartnerRef">
+        <label for="autoAssignable">Auto assignable by country?</label>
+        <input type="checkbox" formControlName="autoAssignable" id="autoAssignable">
+
+        <label for="defaultPartnerRef">Default partner ref?</label>
+        <input type="checkbox" formControlName="defaultPartnerRef" id="defaultPartnerRef">
+
+        <!-- SOURCE COUNTRIES  -->
+        <label>Source Country</label>
+        <ng-select
+          id="sourceCountry"
+          [items]="countries"
+          [multiple]="true"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          [formControlName]="'sourceCountries'">
+        </ng-select>
+        <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
+      </div>
 
     </div>
-    <!-- SOURCE COUNTRIES  -->
-    <div class="form-group">
-      <label>Source Country</label>
-      <ng-select
-        id="sourceCountry"
-        [items]="countries"
-        [multiple]="true"
-        [closeOnSelect]="false"
-        [searchable]="true"
-        placeholder="Select or type..."
-        bindLabel="name"
-        [formControlName]="'sourceCountries'">
-      </ng-select>
-      <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
-    </div>
-
     <hr/>
   </form>
 </div>

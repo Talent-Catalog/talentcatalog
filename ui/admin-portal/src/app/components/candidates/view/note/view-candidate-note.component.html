@@ -25,7 +25,7 @@
     <h3 *ngIf="!loading && editable">Notes</h3>
   </div>
   <div>
-    <button type="button" class="btn btn-sm btn-primary mr-2" (click)="createCandidateNote()">
+    <button *ngIf="editable" type="button" class="btn btn-sm btn-primary me-2" (click)="createCandidateNote()">
       <i class="fas fa-plus"></i> Add Note
     </button>
   </div>
@@ -47,7 +47,7 @@
       <div>
         {{candidateNote.title}}
       </div>
-      <div class="float-right d-flex ml-3">
+      <div class="float-end d-flex ms-3">
         <button *ngIf="candidateNote.comment" class="btn btn-sm btn-default" (click)="showNote(candidateNote)"><i
           class="fas fa-ellipsis-h"></i></button>
         <button *ngIf="editable" class="btn btn-sm btn-default" (click)="editCandidateNote(candidateNote)"><i

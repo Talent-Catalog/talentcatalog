@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.util;
 
+import com.google.common.net.InternetDomainName;
 import org.springframework.lang.Nullable;
 
 /**
@@ -26,15 +27,33 @@ import org.springframework.lang.Nullable;
  * @author John Cameron
  */
 public class SubdomainRedirectHelper {
+
+    /**
+     * Check whether given url is a subdomain. If it is, treat it as a partner domain and
+     * redirect it to the equivalent query param formatted url.
+     * @param url Url to be examined
+     * @return null if not a subdomain, otherwise returns equivalent query based url
+     */
     @Nullable
-    public static String computeRedirectUrl(String host) {
+    public static String computeRedirectUrl(String url) {
         String redirectUrl = null;
-        String rootDomain = "tctalent.org";
-        String suffix = "." + rootDomain;
-        if (host != null && host.endsWith(suffix)) {
-            String subdomain = host.substring(0, host.indexOf(suffix));
+        //See https://stackoverflow.com/questions/7217271/extract-main-domain-name-from-a-given-url/
+        InternetDomainName internetDomainName;
+        try {
+            internetDomainName = InternetDomainName.from(url);
+        } catch (IllegalArgumentException e) {
+            //This will happen when we receive raw internet addresses.
+            internetDomainName = null;
+        }
+        //This is a way of checking whether there is a subdomain. If the domain name is not the top
+        //private domain then it will be a subdomain.
+        if (internetDomainName != null && !internetDomainName.isTopPrivateDomain()) {
+            //The top private domain will be our basic domain name - eg tctalent.org
+            String ourDomain = InternetDomainName.from(url).topPrivateDomain().toString();
+            String suffix = "." + ourDomain;
+            String subdomain = url.substring(0, url.indexOf(suffix));
             if (subdomain.length() > 0) {
-                redirectUrl = "https://" + rootDomain + "?p=" + subdomain;
+                redirectUrl = "https://" + ourDomain + "?p=" + subdomain;
             }
         }
         return redirectUrl;

@@ -16,31 +16,40 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
+import org.tbbtalent.server.util.SalesforceHelper;
 
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name = "Partner")
 @Table(name = "partner")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "partner_type")
 @DiscriminatorValue("Partner")
-public abstract class PartnerImpl extends AbstractDomainObject<Long>
+public class PartnerImpl extends AbstractDomainObject<Long>
     implements Partner {
 
     private Long id;
@@ -48,7 +57,14 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     @Nullable
     private String abbreviation;
 
-    private boolean defaultPartnerRef;
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "default_contact_id")
+    private User defaultContact;
+
+    @Nullable
+    @Transient
+    private Long contextJobId;
 
     @Nullable
     private String logo;
@@ -59,11 +75,16 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
     @Nullable
     private String notificationEmail;
 
-    abstract public String getPartnerType();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "partner", cascade = CascadeType.MERGE)
+    private Set<PartnerJobRelation> partnerJobRelations = new HashSet<>();
+
+    //See https://stackoverflow.com/questions/43570875/how-to-access-discriminator-column-in-jpa
+    @Column(name="partner_type", insertable = false, updatable = false)
+    private String partnerType;
 
     @Nullable
     public String getSfId() {
-        return SalesforceServiceImpl.extractIdFromSfUrl(sflink);
+        return SalesforceHelper.extractIdFromSfUrl(sflink);
     }
 
     @Nullable
@@ -75,4 +96,18 @@ public abstract class PartnerImpl extends AbstractDomainObject<Long>
 
     @Nullable
     private String websiteUrl;
+
+    public User getJobContact() {
+        //User partner contact as default contact.
+        User contact = this.defaultContact;
+        if (contextJobId != null) {
+            for (PartnerJobRelation partnerJob : partnerJobRelations) {
+                if (contextJobId.equals(partnerJob.getJob().getId())) {
+                    contact = partnerJob.getContact();
+                    break;
+                }
+            }
+        }
+        return contact;
+    }
 }

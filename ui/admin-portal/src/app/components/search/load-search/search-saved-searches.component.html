@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Load Searches</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 <div class="modal-body">
@@ -30,9 +28,9 @@
     </div>
     <form [formGroup]="searchForm" (ngSubmit)="search()">
 
-      <div class="form-row d-flex justify-content-between align-items-end">
+      <div class="row">
 
-        <div class="form-group col-4">
+        <div class="mb-3 col-4">
           <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
                  id="keyword">
         </div>
@@ -42,7 +40,7 @@
 
   <div class="text-muted mb-2 align-middle">
 
-    <ngb-pagination class="float-right"
+    <ngb-pagination class="float-end"
                     [boundaryLinks]="true"
                     [pageSize]="pageSize"
                     [collectionSize]="results?.totalElements"

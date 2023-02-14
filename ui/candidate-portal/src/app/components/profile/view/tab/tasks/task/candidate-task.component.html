@@ -25,10 +25,10 @@
 
   <div class="mt-4 mx-3 text-center flex-shrink-0">
     <div class="mb-2" *ngIf="selectedTask?.task?.helpLink">
-      <a class="btn btn-sm btn-primary" target="_blank" [href]="selectedTask?.task?.helpLink">{{ 'TASKS.TASK.VIEWHELP' | translate }} <fa-icon class="ml-1" icon="question-circle"></fa-icon></a>
+      <a class="btn btn-sm btn-primary" target="_blank" [href]="selectedTask?.task?.helpLink">{{ 'TASKS.TASK.VIEWHELP' | translate }} <fa-icon class="ms-1" icon="question-circle"></fa-icon></a>
     </div>
     <button class="btn btn-sm btn-secondary" (click)="goBack()">
-      <fa-icon class="mr-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
+      <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
     </button>
   </div>
 </div>
@@ -73,9 +73,9 @@
       <h5>{{ 'TASKS.COMMENT.HEADER' | translate }}</h5>
     </div>
     <div class="card">
-        <div *ngIf="!completedTask" class="form-group">
+        <div *ngIf="!completedTask" class="mb-3">
           <div class="form-check-inline">
-            <label class="form-check-label mb-0 mr-2" for="abandoned">{{ 'TASKS.COMMENT.ABANDONED.LABEL' | translate }}</label>
+            <label class="form-check-label mb-0 me-2" for="abandoned">{{ 'TASKS.COMMENT.ABANDONED.LABEL' | translate }}</label>
             <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
           </div>
           <div>
@@ -83,7 +83,7 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="mb-3">
           <label class="font-weight-bold" for="comment">
             {{ 'TASKS.COMMENT.LABEL' | translate }}
           </label>

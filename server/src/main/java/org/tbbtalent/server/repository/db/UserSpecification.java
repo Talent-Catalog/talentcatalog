@@ -17,12 +17,18 @@
 package org.tbbtalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.user.SearchUserRequest;
+
+/*
+MODEL: Simple join in specification
+ */
 
 public class UserSpecification {
 
@@ -56,6 +62,13 @@ public class UserSpecification {
                 );
             }
 
+            // PARTNER
+            if (request.getPartnerId() != null){
+                Join<Object, Object> partner = user.join("partner", JoinType.LEFT);
+                conjunction.getExpressions().add(builder.equal(partner.get("id"), request.getPartnerId()));
+            }
+
+            // STATUS
             if (request.getStatus() != null){
                 conjunction.getExpressions().add(builder.equal(user.get("status"), request.getStatus()));
             }

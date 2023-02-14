@@ -33,6 +33,7 @@ import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.util.SalesforceHelper;
 
 @Service
 public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
@@ -51,13 +52,13 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     @Nullable
     @Override
     public SalesforceJobOpp getJobOppById(String sfId) {
-        return salesforceJobOppRepository.findById(sfId).orElse(null);
+        return salesforceJobOppRepository.findBySfId(sfId).orElse(null);
     }
 
     @Nullable
     @Override
     public SalesforceJobOpp getJobOppByUrl(String sfUrl) {
-        return getJobOppById(SalesforceServiceImpl.extractIdFromSfUrl(sfUrl));
+        return getJobOppById(SalesforceHelper.extractIdFromSfUrl(sfUrl));
     }
 
     @Override
@@ -65,7 +66,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     public SalesforceJobOpp createJobOpp(String sfId)
         throws InvalidRequestException, SalesforceException {
         SalesforceJobOpp salesforceJobOpp = new SalesforceJobOpp();
-        salesforceJobOpp.setId(sfId);
+        salesforceJobOpp.setSfId(sfId);
 
         Opportunity op = salesforceService.fetchJobOpportunity(sfId);
         if (op == null) {
@@ -100,7 +101,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         if (sfJoblink == null || sfJoblink.trim().length() == 0) {
             jobOpp = null;
         } else {
-            String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfJoblink);
+            String sfId = SalesforceHelper.extractIdFromSfUrl(sfJoblink);
             if (sfId == null) {
                 throw new InvalidRequestException("Not a valid link to a Salesforce opportunity: " + sfJoblink);
             }
@@ -111,7 +112,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
 
     @Override
     public SalesforceJobOpp updateJob(SalesforceJobOpp sfJobOpp) {
-        Opportunity op = salesforceService.fetchJobOpportunity(sfJobOpp.getId());
+        Opportunity op = salesforceService.fetchJobOpportunity(sfJobOpp.getSfId());
         if (op != null) {
             copyOpportunityToJobOpp(op, sfJobOpp);
         }
@@ -132,7 +133,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             for (Opportunity op : ops) {
                 String id = op.getId();
                 //Fetch DB with id
-                SalesforceJobOpp salesforceJobOpp = salesforceJobOppRepository.findById(id)
+                SalesforceJobOpp salesforceJobOpp = salesforceJobOppRepository.findBySfId(id)
                     .orElse(null);
                 if (salesforceJobOpp != null) {
                     copyOpportunityToJobOpp(op, salesforceJobOpp);
@@ -160,6 +161,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setEmployer(op.getAccountName__c());
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
+        salesforceJobOpp.setClosed(op.isIsClosed());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());

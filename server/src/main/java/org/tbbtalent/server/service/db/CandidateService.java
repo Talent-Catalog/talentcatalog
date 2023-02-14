@@ -18,7 +18,6 @@ package org.tbbtalent.server.service.db;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -37,6 +36,7 @@ import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateSubfolderType;
 import org.tbbtalent.server.model.db.Country;
@@ -318,6 +318,12 @@ public interface CandidateService {
     List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
+    List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom,
+        LocalDate dateTo, List<Long> sourceCountryIds);
+
+    List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom,
+        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
+
     List<DataRow> computeRegistrationStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeRegistrationStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
@@ -398,12 +404,12 @@ public interface CandidateService {
      * Salesforce Contact record (created or
      * existing) in {@link Candidate#getSflink()}
      * @throws NoSuchObjectException if no candidate is found with that id
-     * @throws GeneralSecurityException If there are errors relating to keys
+     * @throws SalesforceException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     Candidate createUpdateSalesforce(long id)
-            throws NoSuchObjectException, GeneralSecurityException, WebClientException;
+            throws NoSuchObjectException, SalesforceException, WebClientException;
 
     /**
      * Creates or updates Contact records on Salesforce for the given candidates and, if sfJoblink
@@ -414,13 +420,13 @@ public interface CandidateService {
      * @param candidates Candidates to update
      * @param sfJobOpp If not null the candidate opportunities are created/updated
      * @param salesforceOppParams Used to create/update candidate opportunities
-     * @throws GeneralSecurityException If there are errors relating to keys
+     * @throws SalesforceException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     void createUpdateSalesforce(Collection<Candidate> candidates,
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable SalesforceOppParams salesforceOppParams)
-        throws GeneralSecurityException, WebClientException;
+        throws SalesforceException, WebClientException;
 
     /**
      * Creates/updates Salesforce records corresponding to the given candidates.
@@ -432,12 +438,12 @@ public interface CandidateService {
      *
      * @param request Identifies candidates as well as optional Salesforce fields to set on
      *                candidate opportunities
-     * @throws GeneralSecurityException If there are errors relating to keys
+     * @throws SalesforceException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     void createUpdateSalesforce(UpdateCandidateOppsRequest request)
-        throws GeneralSecurityException, WebClientException;
+        throws SalesforceException, WebClientException;
 
     /**
      * Updates the intake data associated with the given candidate.

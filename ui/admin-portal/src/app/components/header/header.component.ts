@@ -124,15 +124,15 @@ export class HeaderComponent implements OnInit {
   }
 
   renderCandidateRow(candidate: Candidate) {
-    if (this.isUserLimited()) {
-      return candidate.candidateNumber;
-    } else {
+    if (this.canViewCandidateName()) {
       return candidate.candidateNumber + ": " + candidate.user.firstName + " " + candidate.user.lastName;
+    } else {
+      return candidate.candidateNumber;
     }
   }
 
   loggedInUserInfo(): string {
-    if (this.loggedInUser?.sourcePartner == null) {
+    if (this.loggedInUser?.partner == null) {
       //If we don't know our source partner, major issue - so just logout.
       this.logout();
     }
@@ -141,7 +141,7 @@ export class HeaderComponent implements OnInit {
     if (this.loggedInUser == null) {
       info = "Not logged in";
     } else {
-      info = this.loggedInUser.username + " (" + this.loggedInUser.sourcePartner?.abbreviation
+      info = this.loggedInUser.username + " (" + this.loggedInUser.partner?.abbreviation
         + " " + this.loggedInUser.role + ")";
     }
     return info;
@@ -160,7 +160,15 @@ export class HeaderComponent implements OnInit {
 
   }
 
-  isUserLimited(): boolean {
-    return !this.authService.isAnAdmin();
+  canCreateJob(): boolean {
+    return this.authService.canCreateJob();
+  }
+
+  canViewCandidateName(): boolean {
+    return this.authService.canViewCandidateName();
+  }
+
+  isAnAdmin(): boolean {
+    return this.authService.isAnAdmin();
   }
 }

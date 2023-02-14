@@ -24,7 +24,7 @@
 
   <div class="card-header">
     Certifications
-    <div class="float-right" *ngIf="editable">
+    <div class="float-end" *ngIf="editable">
       <button type="button" class="btn btn-primary btn-sm" (click)="createCandidateCertification()">
         <i class="fas fa-plus"></i>
       </button>
@@ -46,7 +46,7 @@
         </div>
 
         <div class="col-6">
-          <div class="float-right" *ngIf="editable">
+          <div class="btn-group float-end" *ngIf="editable">
             <button type="button" class="btn btn-default" (click)="editCandidateCertification(candidateCertification)"><i
               class="fas fa-edit"></i></button>
             <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateCertification(candidateCertification)">

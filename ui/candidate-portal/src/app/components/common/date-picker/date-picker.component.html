@@ -11,15 +11,11 @@
          [maxDate]="maxDate"
          (click)="picker.toggle()"
          [readOnly]="true">
-  <div class="input-group-append">
-    <small class="btn btn-link text-secondary"
-           (click)="clear()">
-      <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>
-    </small>
+  <small class="btn btn-link text-secondary" (click)="clear()">
+    <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>
+  </small>
 
-    <div class="btn btn-link"
-         (click)="picker.toggle()">
-      <span>{{ 'FORM.LABEL.CHOOSE' | translate}}</span>
-    </div>
+  <div class="btn btn-link" (click)="picker.toggle()">
+    <span>{{ 'FORM.LABEL.CHOOSE' | translate}}</span>
   </div>
 </div>

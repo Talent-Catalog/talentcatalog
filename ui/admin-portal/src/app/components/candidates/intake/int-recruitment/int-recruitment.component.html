@@ -18,11 +18,11 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="intRecruitReasons">
       Why are you interested in international recruitment?
     </label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -41,7 +41,7 @@
   </div>
 
   <div *ngIf="hasOther">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="intRecruitOther">If other, please explain</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="intRecruitOther" [formControlName]="'intRecruitOther'"

@@ -1,0 +1,90 @@
+<!--
+  ~ Copyright (c) 2022 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="modal-header">
+
+  <h4 class="modal-title">Edit Job</h4>
+
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
+
+</div>
+
+<div class="modal-body">
+
+  <div *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i>
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+
+    <form [formGroup]="jobForm">
+
+      <!-- SUBMISSION DUE DATE -->
+      <div class="mb-3">
+        <label for="submissionDueDate">Submission Due Date</label>
+        <app-date-picker id="submissionDueDate" [control]="jobForm.controls.submissionDueDate"></app-date-picker>
+      </div>
+
+      <!-- CONTACT EMAIL -->
+      <div class="mb-3">
+        <label for="email">Contact Email</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter contact email" [formControlName]="'contactEmail'">
+      </div>
+
+      <!-- Contact user -->
+      <div class="mb-3">
+        <label for="contactUser">Contact User</label>
+        <ng-select
+          id="contactUser"
+          [items]="users"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [clearSearchOnAdd]="true"
+          placeholder="Select or type..."
+          bindLabel="fullName"
+          [formControlName]="'contactUser'">
+        </ng-select>
+      </div>
+
+      <!-- Recruiter -->
+      <div class="mb-3">
+        <label for="recruiter">Recruiter</label>
+        <ng-select
+          id="recruiter"
+          [items]="recruiters"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [clearSearchOnAdd]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          [formControlName]="'recruiterPartner'">
+        </ng-select>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="onSave()"
+                [disabled]="jobForm.invalid || loading || saving">
+          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+          Save
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

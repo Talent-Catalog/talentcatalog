@@ -66,7 +66,9 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
                 .setIncludeItemsFromAllDrives(true)
                 .setCorpora("drive")
                 .setDriveId(drive.getId())
-                .setQ("name='" + folderName + "'" +
+
+                //Escape out any quotes in the folderName
+                .setQ("name='" + folderName.replace("'", "\\'") + "'" +
                       " and '" + parentFolder.getId() + "' in parents" +
                       " and mimeType='" + FOLDER_MIME_TYPE + "'")
                 .setPageSize(10)
@@ -141,6 +143,52 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         googleDriveService.files().get(id)
                 .setSupportsAllDrives(true)
                 .executeMediaAndDownloadTo(out);
+    }
+
+    @Override
+    public GoogleFileSystemDrive getDriveFromEntity(GoogleFileSystemBaseEntity fileOrFolder) throws IOException {
+        String id = fileOrFolder.getId();
+
+        //https://developers.google.com/drive/api/guides/fields-parameter
+        File fileInfo = googleDriveService.files().get(id)
+            .setSupportsAllDrives(true)
+            .setFields("driveId")
+            .execute();
+
+        //Return an object representing the drive associated with the file
+        GoogleFileSystemDrive drive = new GoogleFileSystemDrive(null);
+        drive.setId(fileInfo.getDriveId());
+
+        return drive;
+    }
+
+    /*
+     * See https://developers.google.com/drive/api/guides/folder#move_files_between_folders
+     */
+    @Override
+    public void moveEntityToFolder(GoogleFileSystemBaseEntity fileOrFolder,
+        GoogleFileSystemFolder parentFolder) throws IOException {
+        String entityId = fileOrFolder.getId();
+        String folderId = parentFolder.getId();
+
+        // Retrieve the existing parents to remove
+        File file = googleDriveService.files().get(entityId)
+            .setSupportsAllDrives(true)
+            .setFields("parents")
+            .execute();
+        StringBuilder previousParents = new StringBuilder();
+        for (String parent : file.getParents()) {
+            previousParents.append(parent);
+            previousParents.append(',');
+        }
+
+        // Move the entity to the new folder
+        googleDriveService.files().update(entityId, null)
+            .setSupportsAllDrives(true)
+            .setAddParents(folderId)
+            .setRemoveParents(previousParents.toString())
+            .setFields("id, parents")
+            .execute();
     }
 
     private void publishFileOrFolder(@NonNull GoogleFileSystemBaseEntity fileOrFolder)

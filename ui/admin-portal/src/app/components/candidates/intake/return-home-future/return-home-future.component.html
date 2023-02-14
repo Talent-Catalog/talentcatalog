@@ -18,11 +18,11 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="returnHomeFuture">
       Do you plan to return to your country of origin in the near future?
     </label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -34,7 +34,7 @@
   </div>
 
   <div *ngIf="returnHomeFuture === 'Yes'">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="returnHomeWhen">If yes, when do you plan to return? </label>
       <input type="text" class="form-control" id="returnHomeWhen" [formControlName]="'returnHomeWhen'">
     </div>

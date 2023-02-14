@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Edit Candidate</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 
@@ -36,78 +34,78 @@
     </div>
 
     <form [formGroup]="candidateForm">
-      <div class="form-group">
+      <div class="mb-3">
         <label for="firstName">First name</label>
         <input type="text" class="form-control" id="firstName" formControlName="firstName">
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="lastName">Last name</label>
         <input type="text" class="form-control" id="lastName" formControlName="lastName">
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="gender">Gender</label>
         <ng-select id="gender" [formControlName]="'gender'" [items]="genderOptions" placeholder="Select"
                    name="gender" bindLabel="stringValue" bindValue="key" ></ng-select>
       </div>
 
       <!-- NATIONALITY -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="nationalityId">Country of Nationality *</label>
         <ng-select id="nationalityId" name="nationality" [formControlName]="'nationalityId'" [items]="nationalities"
                    [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- DOB -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="dob">Date of birth</label>
         <app-date-picker id="dob" [control]="candidateForm.controls.dob" [allowFuture]="false"></app-date-picker>
       </div>
 
       <!-- ADDRESS -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="address1">Address</label>
         <input type="text" class="form-control" id="address1" placeholder="Enter address (if have one)"
                [formControlName]="'address1'">
       </div>
 
       <!-- City -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="city">City</label>
         <input type="text" class="form-control" id="city" placeholder="Enter city" [formControlName]="'city'">
       </div>
 
       <!-- City -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="state">State</label>
         <input type="text" class="form-control" id="state" placeholder="Enter state" [formControlName]="'state'">
       </div>
 
-      <div class="form-group">
+      <div class="mb-3">
         <label for="countryId">Current country *</label>
         <ng-select id="countryId" name="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
                    placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- YEAR OF ARRIVAL -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="yearOfArrival">What year did they arrive in this country?</label>
         <ng-select id="yearOfArrival" name="yearOfArrival" [formControlName]="'yearOfArrival'"
                    [items]="years" placeholder="Select"></ng-select>
       </div>
 
-      <div class="form-group">
+      <div class="mb-3">
         <label for="email">Email</label>
         <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
       </div>
 
       <!-- PHONE # -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="phone">Phone / mobile</label>
         <input type="text" class="form-control" id="phone" placeholder="Enter phone number" [formControlName]="'phone'">
       </div>
 
       <!-- WHATSAPP -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="whatsapp">Whatsapp</label>
         <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp"
                [formControlName]="'whatsapp'">

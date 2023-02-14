@@ -19,7 +19,7 @@
 <div class="position-relative">
 
   <div class="form-control language-label" [ngClass]="disabledClasses" (click)="toggle()">
-      <span class="placeholder" *ngIf="!renderLevel()">Select</span>
+      <span class="placeholder-text" *ngIf="!renderLevel()">Select</span>
       <span class="input-text">{{renderLevel()}}</span>
       <span class="fas fa-caret-down"></span>
   </div>
@@ -27,14 +27,14 @@
   <form [formGroup]="form" class="language-dropdown" *ngIf="showMenu">
 
     <!-- LANGUAGE -->
-    <div class="form-group" [hidden]="languageDisabled">
+    <div class="mb-3" [hidden]="languageDisabled">
       <label>Language</label>
       <ng-select [formControlName]="'languageId'" [items]="languages" [clearOnBackspace]="false"
                  [clearable]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
 
     <!-- SPOKEN LEVEL -->
-    <div class="form-group">
+    <div class="mb-3">
       <label>Spoken Level</label>
 
       <div class="radio" *ngFor="let level of languageLevels">
@@ -42,12 +42,12 @@
       </div>
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
       <button class="btn btn-link" (click)="clearSpoken()">Clear</button>
     </div>
 
     <!-- WRITTEN LEVEL -->
-    <div class="form-group">
+    <div class="mb-3">
       <label>Written Level</label>
 
       <div class="radio" *ngFor="let level of languageLevels">
@@ -55,7 +55,7 @@
       </div>
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
       <button class="btn btn-link" (click)="clearWritten()">Clear</button>
     </div>
 

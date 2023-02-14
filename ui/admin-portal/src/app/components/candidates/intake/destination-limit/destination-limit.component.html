@@ -18,11 +18,11 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="destLimit">
       Are there any destination countries or cities that you would be unwilling to move to?
     </label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -32,7 +32,7 @@
                [items]="destLimitOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
-  <div *ngIf="destLimit === 'Yes'" class="form-group">
+  <div *ngIf="destLimit === 'Yes'" class="mb-3">
     <label for="destLimitNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="destLimitNotes" [formControlName]="'destLimitNotes'"

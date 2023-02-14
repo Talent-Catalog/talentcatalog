@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.service.db;
 
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.request.job.JobInfoForSlackPost;
 import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
 
 /**
@@ -26,9 +28,17 @@ import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
 public interface SlackService {
 
   /**
-   * Sends a post TBB's Slack workspace containing information about a job.
-   * @param request Contains the information to be posted 
+   * Sends a post to TBB's Slack workspace containing information about a job.
+   * @param request Contains the information to be posted
    * @return Url of Slack channel posted to
    */
   String postJob(PostJobToSlackRequest request);
+
+  /**
+   * Sends a post to TBB's Slack workspace containing information about a job.
+   * @param jobInfo Job details which will be posted to Slack
+   * @return Url of Slack channel posted to
+   * @throws NoSuchObjectException if there is no job with that id
+   */
+  String postJob(JobInfoForSlackPost jobInfo) throws NoSuchObjectException;
 }

@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="text-right" *ngIf="!preview">
+<div class="text-end" *ngIf="!preview">
   <button class="btn btn-danger btn-card"
           [disabled]="disabled"
           (click)="deleteCertificate()">&times;</button>
@@ -25,6 +25,6 @@
 
 <p>{{certificate.dateCompleted | date}}</p>
 
-<h4>{{certificate.name}}</h4>
+<h5>{{certificate.name}}</h5>
 
 <p>{{certificate.institution}}</p>

@@ -16,56 +16,35 @@
 
 <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
-  <ng-container *ngFor="let typeInfo of savedSearchTypeInfos">
-    <ng-container ngbNavItem="type:{{SavedSearchType[typeInfo.savedSearchType]}}">
-      <a ngbNavLink title="Searches of {{typeInfo.title}}">{{typeInfo.title}}</a>
-
-      <ng-template ngbNavContent>
-
-        <!-- Saved Searches with subtypes -->
-        <div *ngIf="savedSearchTypeSubInfos" class="no-gutters">
-          <app-browse-candidate-sources
-            [sourceType]="CandidateSourceType.SavedSearch"
-            [searchBy]="SearchBy.type"
-            [savedSearchType]="typeInfo.savedSearchType"
-            [savedSearchSubtype]="selectedSavedSearchSubtype"
-            [savedSearchTypeSubInfos]="savedSearchTypeSubInfos"
-            (subtypeChange)="onSavedSearchSubtypeChange($event)"
-          >
-          </app-browse-candidate-sources>
-        </div>
-
-        <!-- Saved Searches with no subtype -->
-        <div *ngIf="!savedSearchTypeSubInfos">
-          <app-browse-candidate-sources
-            [sourceType]="CandidateSourceType.SavedSearch"
-            [searchBy]="SearchBy.type"
-            [savedSearchType]="typeInfo.savedSearchType"
-            [savedSearchSubtype]="null"
-          >
-          </app-browse-candidate-sources>
-        </div>
-      </ng-template>
-    </ng-container>
-  </ng-container>
-
-  <ng-container ngbNavItem="AllSearches">
-    <a ngbNavLink title="All searches that I currently see">All</a>
+  <ng-container ngbNavItem="LiveJobs">
+    <a ngbNavLink
+       title="Jobs associated with active opportunities which have been published on the TC"
+    >Live Jobs</a>
     <ng-template ngbNavContent>
-      <app-browse-candidate-sources
-        [sourceType]="CandidateSourceType.SavedSearch"
-        [searchBy]="SearchBy.all">
-      </app-browse-candidate-sources>
+      <app-jobs-with-detail
+        [searchBy]="SearchJobsBy.live">
+        >
+      </app-jobs-with-detail>
     </ng-template>
   </ng-container>
 
-  <ng-container ngbNavItem="MyWatchedSearches">
-    <a ngbNavLink title="Searches that I want to be notified of new candidates">My Watches</a>
+  <ng-container *ngIf="canCreateJob()" ngbNavItem="MyJobs">
+    <a ngbNavLink title="Jobs created by my partner organization">{{loggedInPartner.abbreviation}} Jobs</a>
     <ng-template ngbNavContent>
-      <app-browse-candidate-sources
-        [sourceType]="CandidateSourceType.SavedSearch"
-        [searchBy]="SearchBy.watched" >
-      </app-browse-candidate-sources>
+      <app-jobs-with-detail
+        [searchBy]="SearchJobsBy.mine">
+        >
+      </app-jobs-with-detail>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="StarredJobs">
+    <a ngbNavLink title="Starred jobs (eg those I am working with)"><i class="fas fa-star"></i>Jobs</a>
+    <ng-template ngbNavContent>
+      <app-jobs-with-detail
+        [searchBy]="SearchJobsBy.starredByMe">
+        >
+      </app-jobs-with-detail>
     </ng-template>
   </ng-container>
 
@@ -89,6 +68,17 @@
     </ng-template>
   </ng-container>
 
+  <ng-container ngbNavItem="MyWatchedSearches">
+    <a ngbNavLink title="Searches that I want to be notified of new candidates"><i class="fas fa-eye"></i>Searches</a>
+    <ng-template ngbNavContent>
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.SavedSearch"
+        [searchBy]="SearchBy.watched" >
+      </app-browse-candidate-sources>
+    </ng-template>
+  </ng-container>
+
+<!--  Todo Throw this away - is there anything that is now Zombie code?-->
   <ng-container *ngIf="isExperimental()" ngbNavItem="JobOpps">
     <a ngbNavLink
        title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
@@ -96,18 +86,6 @@
     <ng-template ngbNavContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedList"
-        [searchBy]="SearchBy.registeredJob" >
-      </app-browse-candidate-sources>
-    </ng-template>
-  </ng-container>
-
-  <ng-container ngbNavItem="JobOppsNew">
-    <a ngbNavLink
-       title="Lists associated with active Salesforce job opportunities which have been registered on the TC"
-    >Registered Jobs</a>
-    <ng-template ngbNavContent>
-      <app-browse-candidate-sources
-        [sourceType]="CandidateSourceType.Job"
         [searchBy]="SearchBy.registeredJob" >
       </app-browse-candidate-sources>
     </ng-template>
@@ -142,5 +120,25 @@
         </app-browse-candidate-sources>
     </ng-template>
   </ng-container>
+
+  <!--  Standard searches for occupations-->
+  <ng-container ngbNavItem="type:{{SavedSearchType[SavedSearchType.profession]}}">
+    <a ngbNavLink title="Searches of {{savedSearchTypeInfos[SavedSearchType.profession].title}}">{{savedSearchTypeInfos[SavedSearchType.profession].title}}</a>
+
+    <ng-template ngbNavContent>
+      <div *ngIf="savedSearchTypeSubInfos" class="no-gutters">
+        <app-browse-candidate-sources
+          [sourceType]="CandidateSourceType.SavedSearch"
+          [searchBy]="SearchBy.type"
+          [savedSearchType]="SavedSearchType.profession"
+          [savedSearchSubtype]="selectedSavedSearchSubtype"
+          [savedSearchTypeSubInfos]="savedSearchTypeSubInfos"
+          (subtypeChange)="onSavedSearchSubtypeChange($event)"
+        >
+        </app-browse-candidate-sources>
+      </div>
+    </ng-template>
+  </ng-container>
+
 </nav>
 <div [ngbNavOutlet]="nav" class="mt-2"></div>

@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Add attachment</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="cancel()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
 
 </div>
 
@@ -34,12 +32,12 @@
 
     <ng-container *ngIf="type === 'link'">
 
-      <div class="form-group">
+      <div class="mb-3">
         <label for="name">Attachment Name</label>
         <input class="form-control" id="name" [formControlName]="'name'" type="text">
       </div>
 
-      <div class="form-group">
+      <div class="mb-3">
         <label for="location">Attachment URL</label>
         <div>
           <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
@@ -59,14 +57,10 @@
         Successfully uploaded {{attachments.length}} attachments
       </div>
 
-      <div class="form-group">
-        <div class="form-inline">
+      <div class="mb-3">
           <label for="cv">Is this file a CV?</label>
-          <input class="form-control" id="cv" [formControlName]="'cv'" [value]="'cv'" type="checkbox">
-        </div>
-        <div>
-          <small class="text-muted">If it is a CV its text will be checked in keyword searches.</small>
-        </div>
+          <input id="cv" [formControlName]="'cv'" [value]="'cv'" type="checkbox">
+          <div class="form-text">If it is a CV its text will be checked in keyword searches.</div>
       </div>
 
       <app-file-upload *ngIf="!uploading"

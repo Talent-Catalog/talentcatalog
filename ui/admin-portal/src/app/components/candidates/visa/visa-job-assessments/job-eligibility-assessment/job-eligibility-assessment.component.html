@@ -2,9 +2,9 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div *ngIf="editable" class="form-group">
+  <div *ngIf="editable" class="mb-3">
     <label for="visaJobTbbEligibility">TBB Eligibility Assessment?</label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">

@@ -18,21 +18,6 @@
   display: none;
 }
 
-.actions {
-  position: absolute;
-  top: 0;
-  right: 1em;
-  z-index: 2;
-
-  .btn {
-    width: 32px;
-  }
-
-  .btn + .btn {
-    margin-left: 8px;
-  }
-}
-
 .edit-padding {
   padding-right: 90px;
 }

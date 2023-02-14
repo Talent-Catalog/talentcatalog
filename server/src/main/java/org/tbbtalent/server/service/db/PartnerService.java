@@ -25,7 +25,10 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.PartnerImpl;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.request.partner.SearchPartnerRequest;
 import org.tbbtalent.server.request.partner.UpdatePartnerRequest;
 
@@ -51,7 +54,7 @@ public interface PartnerService {
      * @throws NoSuchObjectException if no default source partner is configured
      */
     @NonNull
-    Partner getDefaultSourcePartner() throws NoSuchObjectException;
+    SourcePartner getDefaultSourcePartner() throws NoSuchObjectException;
 
     /**
      * Returns partner who can be auto assigned to a candidate based on the country the candidate
@@ -74,17 +77,31 @@ public interface PartnerService {
     Partner getPartnerFromAbbreviation(@Nullable String partnerAbbreviation);
 
     /**
-     * Get all partners
-     * @return List of partners
+     * Lists all active partners
+     * @return
      */
     List<PartnerImpl> listPartners();
+
+    /**
+     * Convenience method which just delegates to {@link #search(SearchPartnerRequest)} with an
+     * appropriate request.
+     * @return All active source partners
+     */
+    List<PartnerImpl> listSourcePartners();
+
+    /**
+     * Get the partners from search request
+     * @param request - Search Request
+     * @return Matching partners
+     */
+    List<PartnerImpl> search(SearchPartnerRequest request);
 
     /**
      * Get the partners as a paged search request
      * @param request - Paged Search Request
      * @return Page of partners
      */
-    Page<PartnerImpl> searchPartners(SearchPartnerRequest request);
+    Page<PartnerImpl> searchPaged(SearchPartnerRequest request);
 
     /**
      * Create a partner.
@@ -107,5 +124,10 @@ public interface PartnerService {
      * @throws NoSuchObjectException if there is not a partner with this id.
      */
     @NonNull
-    PartnerImpl update(long id, UpdatePartnerRequest request) throws EntityExistsException, NoSuchObjectException;
+    PartnerImpl update(long id, UpdatePartnerRequest request) throws InvalidRequestException, NoSuchObjectException;
+
+    /**
+     * Update the given user contact for the given partner and job
+     */
+    void updateJobContact(Partner partner, SalesforceJobOpp job, User contactUser);
 }

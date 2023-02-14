@@ -1,0 +1,23 @@
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder} from "@angular/forms";
+import {JobService} from "../../../../services/job.service";
+import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
+
+@Component({
+  selector: 'app-job-experience',
+  templateUrl: './job-experience.component.html',
+  styleUrls: ['./job-experience.component.scss']
+})
+export class JobExperienceComponent extends JobIntakeComponentBase implements OnInit {
+
+  constructor(fb: FormBuilder, jobService: JobService) {
+    super(fb, jobService);
+  }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      experience: [{value: this.jobIntakeData?.experience, disabled: !this.editable}],
+    });
+  }
+
+}

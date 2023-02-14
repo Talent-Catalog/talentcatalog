@@ -28,9 +28,17 @@
 
 
 // Card specific
-.card.parent-card .card {
-  padding: 0;
-  box-shadow: none;
+.card {
+  &.parent-card {
+    .card {
+      padding: 0;
+      box-shadow: none;
+    }
+    h5 {
+      font-weight: 700;
+    }
+  }
+
 }
 
 /* FONT AWESOME */
@@ -38,13 +46,13 @@ label > i.fa {
   margin-right: 8px;
 }
 
-a.is-link, a > i.is-link {
-  color: $color-primary;
-  cursor: pointer;
-  @include hover() {
-    color: $color-primary-dark;
-  }
-}
+//a.is-link, a > i.is-link {
+//  color: $color-primary;
+//  cursor: pointer;
+//  @include hover() {
+//    color: $color-primary-dark;
+//  }
+//}
 
 .text-alert {
   color: #ed770f;
@@ -52,7 +60,7 @@ a.is-link, a > i.is-link {
 
 section {
   margin-top: 2rem;
-  h5 {
+  h5, h6 {
     font-weight: 700;
   }
 }

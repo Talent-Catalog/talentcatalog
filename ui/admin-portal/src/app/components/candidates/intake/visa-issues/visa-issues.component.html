@@ -18,10 +18,10 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="visaIssues">Is there anything else about your background that could
       be of concern in the visa process? (e.g. work for foreign government)</label>
-    <div *ngIf="editable" class="float-right">
+    <div *ngIf="editable" class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -33,7 +33,7 @@
   </div>
 
   <div *ngIf="hasNotes">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="visaIssuesNotes">Please explain concerns further</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="visaIssuesNotes" [formControlName]="'visaIssuesNotes'"

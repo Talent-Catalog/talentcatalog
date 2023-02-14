@@ -46,8 +46,16 @@ repositories {
 
 dependencies {
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    //Instead of defaulting Lombok version, specify recent Lombok version to address this issue:
+    // https://stackoverflow.com/questions/65380359/lomboks-access-to-jdk-compilers-internal-packages-incompatible-with-java-16
+    //We were getting this error when building server:
+    //java: java.lang.IllegalAccessError: class lombok.javac.apt.LombokProcessor
+    // (in unnamed module @0x3dd0aa6) cannot access class
+    // com.sun.tools.javac.processing.JavacProcessingEnvironment (in module jdk.compiler) because
+    // module jdk.compiler does not export com.sun.tools.javac.processing to unnamed module @0x3dd0aa6
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
     if (!isDev) {
@@ -89,7 +97,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.opencsv/opencsv
     implementation group: 'com.opencsv', name: 'opencsv', version: '5.4'
 
-    implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'com.google.guava:guava:31.1-jre'
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
     implementation 'com.google.api-client:google-api-client:1.32.1'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'

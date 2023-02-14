@@ -32,6 +32,9 @@ public abstract class SalesforceObjectBase {
   static final String urlRoot = "https://talentbeyondboundaries.lightning.force.com/lightning/r/";
   static final String urlSuffix = "/view";
 
+  /**
+   * This is the Salesforce Id that every Salesforce record has.
+   */
   public String Id;
 
   /**

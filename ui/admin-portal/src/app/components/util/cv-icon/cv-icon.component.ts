@@ -21,6 +21,7 @@ import {
   SearchCandidateAttachmentsRequest
 } from '../../../services/candidate-attachment.service';
 import {Candidate} from '../../../model/candidate';
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-cv-icon',
@@ -41,7 +42,10 @@ export class CvIconComponent implements OnInit {
   loading: boolean;
   error: string;
 
-  constructor(private candidateAttachmentService: CandidateAttachmentService) { }
+  constructor(
+    private authService: AuthService,
+    private candidateAttachmentService: CandidateAttachmentService
+  ) { }
 
   ngOnInit() {
     this.getAttachments();
@@ -69,6 +73,10 @@ export class CvIconComponent implements OnInit {
         })
       ;
     }
+  }
+
+  canOpen(): boolean {
+    return this.authService.canViewCandidateCV() && this.cvs?.length > 0;
   }
 
   openCVs() {

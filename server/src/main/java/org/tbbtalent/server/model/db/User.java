@@ -81,9 +81,13 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //Note that this has to be an EAGER fetch (ie not LAZY) because the partner has to be fully
+    //loaded in order to know its type because it uses a discriminator column to determine class
+    //type.
+    //See https://stackoverflow.com/questions/70394739/behavior-of-hibernate-get-vs-load-with-discriminator
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "partner_id")
-    private SourcePartnerImpl sourcePartner;
+    private PartnerImpl partner;
 
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
@@ -115,7 +119,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
             name = "user_source_country",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "country_id"))
-    Set<Country> sourceCountries = new HashSet<Country>();
+    Set<Country> sourceCountries = new HashSet<>();
 
     public User() {
     }
@@ -300,17 +304,16 @@ public class User extends AbstractAuditableDomainObject<Long> {
         savedSearch.getUsers().remove(this);
     }
 
-
     public Set<Country> getSourceCountries() { return sourceCountries; }
 
     public void setSourceCountries(Set<Country> sourceCountries) { this.sourceCountries = sourceCountries; }
 
-    public SourcePartnerImpl getSourcePartner() {
-        return sourcePartner;
+    public PartnerImpl getPartner() {
+        return partner;
     }
 
-    public void setSourcePartner(SourcePartnerImpl sourcePartner) {
-        this.sourcePartner = sourcePartner;
+    public void setPartner(PartnerImpl partner) {
+        this.partner = partner;
     }
 
     @Transient

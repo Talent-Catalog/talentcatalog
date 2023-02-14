@@ -18,7 +18,6 @@ package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.GeneralSecurityException;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -38,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -274,13 +274,13 @@ public class CandidateAdminApi {
      * Salesforce Contact record (created or
      * existing) in {@link Candidate#getSflink()}
      * @throws NoSuchObjectException if no candidate is found with that id
-     * @throws GeneralSecurityException If there are errors relating to keys
+     * @throws SalesforceException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     @PutMapping("{id}/update-sf")
     public Map<String, Object> createUpdateSalesforce(@PathVariable("id") long id)
-            throws NoSuchObjectException, GeneralSecurityException,
+            throws NoSuchObjectException, SalesforceException,
             WebClientException {
         Candidate candidate = candidateService.createUpdateSalesforce(id);
         DtoBuilder builder = builderSelector.selectBuilder();
@@ -289,14 +289,14 @@ public class CandidateAdminApi {
 
     @PutMapping("update-sf")
     public void createUpdateSalesforce(@RequestBody UpdateCandidateOppsRequest request)
-            throws GeneralSecurityException, WebClientException {
+            throws WebClientException {
         candidateService.createUpdateSalesforce(request);
     }
 
     @PutMapping(value = "update-sf-by-list")
     public void createUpdateSalesforce(
         @Valid @RequestBody UpdateCandidateListOppsRequest request)
-        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+        throws NoSuchObjectException, SalesforceException, WebClientException {
 
         savedListService.createUpdateSalesforce(request);
     }

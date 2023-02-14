@@ -1,0 +1,18 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="mb-3">
+    <label for="skills">
+      Specific Skills to Screen For
+    </label>
+    <div *ngIf="editable" class="float-end">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <ngx-wig id="skills" [formControlName]="'skills'"
+    ></ngx-wig>
+  </div>
+</form>

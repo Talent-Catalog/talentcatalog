@@ -6,14 +6,14 @@ This is the repository for the Talent Catalog (TC), which manages data
 for refugees looking for skilled migration pathways into safe countries and employment. 
  
 This repository is a "mono-repo", meaning it contains multiple sub-modules all of which 
-make up the Talent Catalog system. In particular it contains: 
+make up the Talent Catalog system. In particular, it contains: 
 
 - **server**: the backend module of the system providing secure API (REST) access to the 
 data, stored in an SQL Database. This module is written in Java / Spring Boot.
 - **candidate-portal**: the frontend module through which candidates (refugees seeking skilled 
 migration) are able to register and manage their details. This is written in Angular and connects 
 to the REST API endpoints under `/api/candidate` provided by the server. 
-- **admin-portal**: the frontend module through which TBB staff are able to view, manage and annotate 
+- **admin-portal**: the frontend module through which admin staff are able to view, manage and annotate 
 candidate details. This is written in Angular and connects to the REST API endpoints under 
 `/api/admin` provided by the server.
 - **public-portal**: a module through which anyone can access publicly available data. 
@@ -32,20 +32,27 @@ They should be submitted as pull request.
 
 >IMPORTANT NOTE:
 >
->These instructions are tailored for Mac users, as this is what we use for development.
+>These instructions are tailored for Mac users using Intellij, as this is what we use for development.
 >
 >On a Mac, installing with Homebrew usually works well. eg "brew install xxx".
-However, Flyway and Postgres don't install with Homebrew, and the book
-"Angular Up & Running" notes that installing Node.js using Homebrew
-can also have problems. Googling you can still see lots of people having
-problems installing Node using brew.
 >
 >It is also probably easier to install Java directly (or from your
 development IDE - see below) rather than using brew.
 
 Download and install the latest of the following tools.
 
-- IntelliJ IDEA (or the IDE of your choice) - [Intellij website](https://www.jetbrains.com/idea/download/)
+- Mac OS Bash Shell - Switch to Bash command line
+  - Some installation instructions - for example the Postgres brew install - don't work properly 
+  with the default Mac OS command line shell which is now Zsh. Run this on your command line to 
+  change the shell.
+  > chsh -s /bin/bash  
+
+- Homebrew - [Homebrew website](https://brew.sh)
+
+- IntelliJ IDEA - [Intellij website](https://www.jetbrains.com/idea/download/)
+  - Import standard settings and run configurations from another developer
+  - In development it is best to build using Intellij rather than gradle. Change the Intellij 
+  setting for "Build, Execution & Deployment" > "Build Tools" > "Gradle" to build with Intellij.
 
 - Java 11
    - At least Java 11 is required because we use the Locale object to provide translations of 
@@ -58,24 +65,23 @@ Download and install the latest of the following tools.
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
   > brew install gradle
 
-- NodeJS: Install as described here [https://nodejs.org/en/](https://nodejs.org/en/)
-    - Note that you should use the LTS version of node - which is not normally the latest.
-    
-    "Production applications should only use Active LTS or Maintenance LTS releases." -       
-  https://nodejs.org/en/about/releases/
-
+- Node [https://nodejs.org/en/](https://nodejs.org/en/)
+  
+    - Note that developers should use the latest version of Node for which Intellij supports 
+    Angular debugging - currently that is Node 16 (which is not the latest Node with long term 
+    support LTS).
+    - See [https://www.jetbrains.com/help/idea/angular.html](https://www.jetbrains.com/help/idea/angular.html) 
+    and https://nodejs.org/en/about/releases/
+  
+  > brew install node@16
+    - Note the messages from brew at the end of the install. 
+  You will have to manually set up the path.  
+  
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
   > npm install -g @angular/cli
   - To upgrade Angular versions, see https://update.angular.io/
-    
 
-- cURL (for database migrations, can also use Postman) 
-  > brew install curl
-  > 
-  > or...
-  > 
-  > brew install --cask postman
 
 - Docker
     - Install Docker Desktop for Mac - 
@@ -85,33 +91,53 @@ Download and install the latest of the following tools.
 - Elasticsearch (for text search)
     - Install Docker image. 
       See [Elastic search website](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
-      Just pull the image to install. See later for how to run.
+      Just pull the image to install. See later for how to run. 
+      Currently in dev we use version 7.12.0 rather than the latest because it doesn't require security 
+      enabled.
+    > docker pull docker.elastic.co/elasticsearch/elasticsearch:7.12.0
 
 - Kibana (for monitoring Elasticsearch)
     - Install Docker image.
       See [Elastic search website](https://www.elastic.co/guide/en/kibana/current/docker.html)
       Just pull the image to install. See later for how to run.
+    > docker pull docker.elastic.co/kibana/kibana:7.12.0
 
-- Git - [see Git website](https://git-scm.com/downloads)
+- Git - [see Git website](https://git-scm.com/downloads) - Not really necessary now with Intellij 
+ which will prompt you install Git if needed
+
+
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
+  - Homebrew - see https://wiki.postgresql.org/wiki/Homebrew 
+  >   brew install postgresql@14
+  > 
+  >   brew services restart postgresql@14
+     
+- AWS CLI - [see AWS website](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+                          
+
+- Terraform (for setting up our AWS infrastructure)
+  > brew install terraform 
 
 ### Setup your local database ###
 
-Use PostreSQL pgAdmin tool to...
+ Use the psql tool.
+ > psql postgres
+   
+Now you will see the command line prompt =#
 
-- Create a new login role (ie user) called tbbtalent, password tbbtalent with 
-full privileges
-- Create a new database called tbbtalent and set tbbtalent as the owner
-- The database details are defined in bundle/all/resources/application.yml
-- The database is populated/updated using Flyway at start up - see TbbTalentApplication
-- Run data migration script to add additional data - using tool like postman or curl 
-    - call login http://localhost:8080/api/admin/auth/login and save token
-     
-          $ curl -X POST -H ‘Content-Type: application/json’ -d ‘{“username”:”${USERNAME}”,”password”:"${PASSWORD}"}’ http://localhost:8080/api/admin/auth/login
+    CREATE DATABASE tbbtalent;
+    CREATE USER tbbtalent WITH SUPERUSER PASSWORD 'tbbtalent';
+    \q
 
-    - call API http://localhost:8080/api/admin/system/migrate with token
-       
-          $ curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
+Ask another developer for a recent `pg_dump` of their test database - 
+matching the latest version of the code.
+    
+    pg_dump --file=path/to/file.sql --create --username=tbbtalent --host=localhost --port=5432
+
+
+Use `psql` to import that dump file into your newly created database.
+
+    psql -h localhost -d tbbtalent -U tbbtalent -f path/to/file.sql
 
 ### Download and edit the code ###
 
@@ -143,12 +169,11 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
 ### Run the server ###
 
 - Some secret information such as passwords and private keys are set in 
-  environment variables - including programmatic access to TBB's Amazon AWS, 
+  environment variables - including programmatic access to Talent Catalog's Amazon AWS, 
   Google and Salesforce accounts. If these environment variables are not set
-  the application should still run in your development environment, but it may
-  not have access to these integrations. Contact TBB if you need access to these
-  "secrets". They are stored in a tbb_secrets.txt file which you can hook into
-  your start up to set the relevant environment variables. 
+  the application will fail at start up. Contact TBB if you need access to these
+  "secrets". On development computers they can be stored in a tbb_secrets.txt file which you can 
+  hook into your computer's start up to set the relevant environment variables. 
   For example add "source ~/tbb_secrets.txt" to .bash_profile or .zshenv
   depending on whether you are running bash or zsh.
 
@@ -167,7 +192,7 @@ Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
 
 ### Run the Candidate Portal ###
 
-The "Candidate Portal" is an Angular Module and can be found in the diretory `tbbtalentv2\ui\candidate-portal`.
+The "Candidate Portal" is an Angular Module and can be found in the directory `tbbtalentv2\ui\candidate-portal`.
 
 Before running, make sure all the libraries have been downloaded locally by running `npm install` from the root 
 directory of the module (i.e. `tbbtalentv2\ui\candidate-portal`):
@@ -275,6 +300,10 @@ into the server and serve through Apache Tomcat._
 and password `password` that can be used to log in to the admin portal in development.
 - Details about this user can be found in `org/tbbtalent/server/configuration/SystemAdminConfiguration.java`
 
+### Populate ElasticSearch from Postgres Database ###
+
+- Log in to Admin Portal as SystemAdmin, go to Settings | Admin API and make API call `esload` 
+
 ## Upgrades ##
 
 ### Angular ###
@@ -317,6 +346,10 @@ Look at the doc of the library in question to select the correct version
 
 You may also need to make changes to your Angular code because of changes in Angular, or because of
 changed APIs in the dependent libraries.
+
+### Npm ###
+
+See https://stackoverflow.com/questions/11284634/upgrade-node-js-to-the-latest-version-on-mac-os
 
 ## Version Control ##
 

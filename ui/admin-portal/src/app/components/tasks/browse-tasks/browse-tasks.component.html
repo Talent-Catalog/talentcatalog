@@ -8,7 +8,7 @@
       <!--      </div>-->
 
       <!--      <form [formGroup]="searchForm" (ngSubmit)="search()">-->
-      <!--        <div class="form-group">-->
+      <!--        <div class="mb-3">-->
       <!--          <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"-->
       <!--                 id="keyword">-->
       <!--        </div>-->
@@ -20,7 +20,7 @@
     <ul class="searches" (window:keydown)="keyDown($event)">
       <li *ngFor="let task of results?.content; let i = index"
           [class.selected]="task === selectedTask"
-          (click)="onSelect(task)">
+          (click)="select(task)">
         {{task.displayName}}
       </li>
 

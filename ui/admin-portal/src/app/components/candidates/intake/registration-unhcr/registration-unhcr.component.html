@@ -18,11 +18,11 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="unhcrRegistered">
       Are you registered with UNHCR?
     </label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -35,7 +35,7 @@
 
   <div *ngIf="showAll">
     <div *ngIf="unhcrRegistered == 'Yes'">
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unhcrStatus">
           What is your registration status with UNHCR?
         </label>
@@ -43,15 +43,15 @@
                    [items]="unhcrStatusOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unhcrNumber">What is your UNHCR ID number?</label>
         <input type="text" class="form-control" id="unhcrNumber" [formControlName]="'unhcrNumber'">
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unhcrFile">How many people are included on your UNHCR file?</label>
         <input type="number" class="form-control" id="unhcrFile" [formControlName]="'unhcrFile'">
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unhcrConsent">
           Permission to share with UNHCR?
         </label>
@@ -62,7 +62,7 @@
     </div>
 
     <div *ngIf="unhcrRegistered == 'No'">
-      <div class="form-group">
+      <div class="mb-3">
         <label for="unhcrNotRegStatus">
           What best describes your status not being registered?
         </label>
@@ -75,7 +75,7 @@
   </div>
 
   <div *ngIf="hasNotes">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="unhcrNotes">Additional Notes</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="3"
                 id="unhcrNotes" [formControlName]="'unhcrNotes'"

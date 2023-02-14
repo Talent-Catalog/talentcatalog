@@ -13,10 +13,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {AfterViewInit, Directive, OnDestroy, OnInit} from "@angular/core";
+import {AfterViewInit, Directive, Input, OnDestroy, OnInit} from "@angular/core";
 import {Observable, Subject} from "rxjs";
 import {catchError, debounceTime, map, switchMap, takeUntil, tap} from "rxjs/operators";
 import {FormGroup} from "@angular/forms";
+import {isEnumOptionArray} from "../../../util/enum";
+import {HasId} from "../../../model/base";
+
+//See https://stackoverflow.com/questions/40841641/cannot-import-exported-interface-export-not-found
+import type {IntakeService} from "../intake/IntakeService";
 
 /**
  * Base class for autosave components.
@@ -35,9 +40,11 @@ import {FormGroup} from "@angular/forms";
 @Directive()
 export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy, OnInit {
 
+  @Input() entity: HasId;
+
   /**
    * Error which should be displayed to user if not null.
-   * Typically an error connecting to the Spring server.
+   * Typically, an error connecting to the Spring server.
    */
   error: string;
 
@@ -65,22 +72,44 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
   private unsubscribe = new Subject<void>()
 
   /**
+   * If using the default save implementation, a non-null service that implements IntakeService
+   * must be passed in.
+   * If the subclass is overriding doSave to manage the saving themselves, they can pass in a
+   * null service.
+   * @param intakeService If non-null, will be used to perform saves using the default doSave.
+   * @protected
+   */
+  protected constructor(private intakeService: IntakeService) {
+  }
+
+  /**
    * This must be implemented by subclass which should create and initialize
-   * the form in this method.
+   * the form in this method using the FormBuilder inherited from here.
+   * <p/>
+   * The names of form controls are used to send the data to the server so they
+   * must match the field names in the corresponding server IntakeDataUpdate.java class, otherwise
+   * they will be ignored and will not update the database.
    */
   abstract ngOnInit(): void;
 
   /**
-   * This must be implemented by subclass to save the current contents of the form.
+   * Default is to save the form data using the intakeService
    */
-  abstract doSave(formValue: any): Observable<any>;
+  doSave(formValue: any): Observable<any>{
+    if (this.intakeService) {
+      return this.intakeService.updateIntakeData(this.entity.id, formValue);
+    }
+    //todo Return an error or throw an exception if intakeService has not been set.
+  }
 
   /**
-   * This must be implemented to do any processing following a successful save.
-   * Typically that will involve updating the locally stored copy of the data that the form
+   * This can be overridden to do any processing following a successful save.
+   * Typically, that will involve updating the locally stored copy of the data that the form
    * is being used to update.
    */
-  abstract onSuccessfulSave(): void;
+  onSuccessfulSave(): void {
+    //Nothing special to do
+  }
 
   /**
    * Override this if you want to change the formValue before processing it.
@@ -166,4 +195,37 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
     //See takeUntil in the above pipe.
     this.unsubscribe.next();
   }
+
+
+  /**
+   * Converts the data returned by multiselected enums to a simple array of
+   * enum keys suitable for sending to the server.
+   * <p/>
+   * We use ng-multiselect-dropdown for multiselect dropdowns, and given the
+   * way that we have configured it for selecting enums, that component returns
+   * arrays of EnumOption objects. This method converts that data to arrays of
+   * strings corresponding to the enums.
+   * <p/>
+   * Note that the normal single select dropdown - where we use a standard
+   * html <select> and options - returns a single string corresponding to the
+   * selected enum - so not a problem there.
+   * @param formValue Values returned from a form.
+   * @private
+   */
+  protected static convertEnumOptions(formValue: Object): Object {
+    //Look through all the formValue object properties looking for a
+    //property with a EnumOption array as a value.
+    for (const [key, value] of Object.entries(formValue)) {
+      if (isEnumOptionArray(value)) {
+        //Convert EnumOption array to a simple string array.
+        const enums: string[] = [];
+        for (const enumOption of value) {
+          enums.push(enumOption.key);
+        }
+        formValue[key] = enums;
+      }
+    }
+    return formValue;
+  }
+
 }

@@ -16,13 +16,7 @@
 
 import {SearchCandidateRequest} from './search-candidate-request';
 import {SavedSearchTypeInfo} from '../services/saved-search.service';
-import {
-  Auditable,
-  CandidateSource,
-  HasId,
-  PagedSearchRequest,
-  SearchCandidateSourcesRequest
-} from './base';
+import {CandidateSource, HasId, PagedSearchRequest, SearchCandidateSourcesRequest} from './base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {getExternalHref} from '../util/url';
@@ -117,7 +111,7 @@ export function isSavedSearch(source: CandidateSource): source is SavedSearch {
 export function getCandidateSourceBreadcrumb(candidateSource: CandidateSource): string {
   const sourceType = getCandidateSourceType(candidateSource);
   return candidateSource != null ?
-    (sourceType + ': ' + candidateSource.name) : sourceType;
+    (sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')') : sourceType;
 }
 
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
@@ -128,9 +122,6 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
     if (savedSearch.defaultSearch) {
       breadcrumb += "Unsaved"
     } else {
-      if (savedSearch.savedSearchType != null) {
-        breadcrumb += infos[savedSearch.savedSearchType].title;
-      }
       let subtypeTitle: string = '';
       if (savedSearch.savedSearchSubtype != null) {
         const savedSearchTypeSubInfos = infos[savedSearch.savedSearchType].categories;
@@ -140,19 +131,19 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
           if (savedSearchTypeSubInfo) {
             subtypeTitle = savedSearchTypeSubInfo.title;
           }
-          breadcrumb += " " + subtypeTitle;
+          breadcrumb += " " + subtypeTitle + ": ";
         }
       }
 
-      breadcrumb += ": " + savedSearch.name;
+      breadcrumb += savedSearch.name + " (" + savedSearch.id + ")";
     }
   }
   return breadcrumb;
 }
 
-export function indexOfAuditable(id: number, auditables: Auditable[]): number {
-  for (let i = 0; i < auditables.length; i++) {
-    if (auditables[i].id === id) {
+export function indexOfHasId(id: number, hasIds: HasId[]): number {
+  for (let i = 0; i < hasIds.length; i++) {
+    if (hasIds[i].id === id) {
       return i;
     }
   }

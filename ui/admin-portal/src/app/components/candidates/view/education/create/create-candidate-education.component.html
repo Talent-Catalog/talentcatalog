@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Add Education</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 
@@ -38,7 +36,7 @@
     <form [formGroup]="candidateForm">
 
       <!-- EDUCATION TYPE -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="educationType">Education Type</label>
         <ng-select id="educationType" [formControlName]="'educationType'" placeholder="Select" [clearable]="false">
           <ng-option value="Associate">Associate</ng-option>
@@ -50,39 +48,39 @@
       </div>
 
       <!-- MAJOR -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="educationMajorId">Major *</label>
         <ng-select id="educationMajorId" name="educationMajorId" [formControlName]="'educationMajorId'" [items]="majors"
                    [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- COURSE NAME -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="courseName">Course Name</label>
         <input type="text" class="form-control" id="courseName" [formControlName]="'courseName'">
       </div>
 
       <!-- INSTITUTION NAME -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="institution">Institution</label>
         <input type="text" class="form-control" id="institution" [formControlName]="'institution'">
       </div>
 
       <!-- COUNTRY -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="countryId">Country *</label>
         <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="countries"
                    [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- COURSE LENGTH -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="lengthOfCourseYears">Length of Course Years</label>
         <input type="number" class="form-control" placeholder="" id="lengthOfCourseYears"
                [formControlName]="'lengthOfCourseYears'">
       </div>
       <!-- Year -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="yearCompleted">Year of completion</label>
         <ng-select id="yearCompleted" name="yearCompleted" [formControlName]="'yearCompleted'" [items]="years"
                    placeholder="Select"></ng-select>

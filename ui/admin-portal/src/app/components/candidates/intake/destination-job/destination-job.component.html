@@ -18,10 +18,10 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="destJob">Would you feel comfortable applying for a visa through work visa and/or humanitarian visa
       pathways if there was a job in a specific country?</label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -33,7 +33,7 @@
   </div>
 
   <div *ngIf="destJob === 'No'">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="destJobNotes">Notes</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="destJobNotes" [formControlName]="'destJobNotes'"

@@ -18,11 +18,11 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="hostEntryLegally">
       Did you enter legally?
     </label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -32,7 +32,7 @@
                [items]="hostEntryLegallyOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
-  <div *ngIf="enterLegally === 'No'" class="form-group">
+  <div *ngIf="enterLegally === 'No'" class="mb-3">
     <label for="hostEntryLegallyNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="hostEntryLegallyNotes" [formControlName]="'hostEntryLegallyNotes'"

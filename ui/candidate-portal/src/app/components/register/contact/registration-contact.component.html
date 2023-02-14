@@ -21,14 +21,14 @@
   <form [formGroup]="form" *ngIf="!loading">
 
     <!-- EMAIL -->
-    <div class="form-group">
+    <div class="mb-3">
       <label for="email">{{'REGISTRATION.CONTACT.LABEL.EMAIL' | translate }} <sup>*</sup></label>
       <input type="email" class="form-control" id="email" placeholder="" [formControlName]="'email'">
       <app-form-control-error [control]="form.controls.email"></app-form-control-error>
     </div>
 
     <!-- PHONE # -->
-    <div class="form-group">
+    <div class="mb-3">
       <label for="phone">{{ 'REGISTRATION.CONTACT.LABEL.PHONE' | translate }}</label>
       <input type="text" class="form-control" id="phone" placeholder=""
              [formControlName]="'phone'">
@@ -36,7 +36,7 @@
     </div>
 
     <!-- WHATSAPP -->
-    <div class="form-group">
+    <div class="mb-3">
       <label for="whatsapp">{{ 'REGISTRATION.CONTACT.LABEL.WHATSAPP' | translate }}</label>
       <input type="text" class="form-control" id="whatsapp" placeholder=""
              [formControlName]="'whatsapp'">
@@ -44,19 +44,19 @@
 
 
     <ng-container *ngIf="!authenticated">
-      <!--      <div class="form-group">-->
+      <!--      <div class="mb-3">-->
       <!--        <label for="username" >{{ 'REGISTRATION.CONTACT.LABEL.USERNAME' | translate}} <sup>*</sup></label>-->
       <!--        <input type="username" class="form-control" id="username" placeholder="Enter username" [formControlName]="'username'">-->
       <!--      </div>-->
 
-      <div class="form-group">
+      <div class="mb-3">
         <label for="password">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORD' | translate }} <sup>*</sup></label>
         <input type="password" class="form-control" id="password" placeholder=""
                [formControlName]="'password'">
         <app-form-control-error [control]="form.controls.password"></app-form-control-error>
       </div>
 
-      <div class="form-group">
+      <div class="mb-3">
         <label for="passwordConfirmation">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION' | translate }}
           <sup>*</sup></label>
         <input type="password" class="form-control" id="passwordConfirmation" placeholder=""

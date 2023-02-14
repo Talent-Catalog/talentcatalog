@@ -1,19 +1,12 @@
-import {Component, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
-import {
-  CandidateSource,
-  CandidateSourceType,
-  PagedSearchRequest,
-  SearchBy, SearchTaskRequest
-} from "../../../model/base";
+import {SearchTaskRequest} from "../../../model/base";
 import {User} from "../../../model/user";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Router} from "@angular/router";
 import {AuthService} from "../../../services/auth.service";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {indexOfAuditable, SearchSavedSearchRequest} from "../../../model/saved-search";
-import {SearchSavedListRequest} from "../../../model/saved-list";
+import {indexOfHasId} from "../../../model/saved-search";
 import {TaskService} from "../../../services/task.service";
 import {Task} from "../../../model/task";
 
@@ -70,17 +63,17 @@ export class BrowseTasksComponent implements OnInit {
           //Selected previously search if any
           const id: number = this.localStorageService.get(this.savedStateKeyPrefix + "Tasks");
           if (id) {
-            this.selectedIndex = indexOfAuditable(id, this.results.content);
+            this.selectedIndex = indexOfHasId(id, this.results.content);
             if (this.selectedIndex >= 0) {
               this.selectedTask = this.results.content[this.selectedIndex];
             } else {
               //Select the first search if can't find previous (category of search
               // may have changed)
-              this.onSelect(this.results.content[0]);
+              this.select(this.results.content[0]);
             }
           } else {
             //Select the first search if no previous
-            this.onSelect(this.results.content[0]);
+            this.select(this.results.content[0]);
           }
         }
 
@@ -93,17 +86,16 @@ export class BrowseTasksComponent implements OnInit {
   }
 
   /**
-   * Called when a particular source (ie list of search) is selected from browse results
-   * of the search of sources.
-   * @param source Selected candidate source
+   * Called when a particular task is selected from browse results
+   * @param task Selected task
    */
-  onSelect(task: Task) {
+  select(task: Task) {
     this.selectedTask = task;
 
     const id: number = task.id;
     this.localStorageService.set(this.savedStateKeyPrefix + "Tasks", id);
 
-    this.selectedIndex = indexOfAuditable(id, this.results.content);
+    this.selectedIndex = indexOfHasId(id, this.results.content);
   }
 
   // private savedStateKey() {
@@ -132,7 +124,7 @@ export class BrowseTasksComponent implements OnInit {
         break;
     }
     if (this.selectedIndex !== oldSelectedIndex) {
-      this.onSelect(this.results.content[this.selectedIndex])
+      this.select(this.results.content[this.selectedIndex])
     }
   }
 

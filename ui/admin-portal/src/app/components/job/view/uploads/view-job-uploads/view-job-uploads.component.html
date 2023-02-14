@@ -1,0 +1,39 @@
+<div class="card">
+
+  <div class="card-header">
+    Formal job definitions. <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+  </div>
+
+  <div class="card-body">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+
+    <div class="row">
+
+      <div class="col-10 col-sm">
+        <label class="col-form-label" [ngClass]="{'alert alert-danger': highlightJD()}">
+          <i class="far fa-file"></i>Employer's Job Description (JD)
+        </label>
+
+        <div *ngIf="!job.submissionList?.fileJdLink" class="form-control-plaintext">
+          Please upload, or link to, a job description document
+        </div>
+        <div *ngIf="job.submissionList?.fileJdLink" class="form-control-plaintext">
+          <a target="_blank" href="{{job.submissionList.fileJdLink}}">
+            {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
+        </div>
+      </div>
+      <div class="col-2 col-sm-auto" *ngIf="editable">
+          <button title="Enter/change a link to the document" class="btn btn-sm btn-outline-primary me-2" (click)="editJDLink()">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button title="Upload the document from your computer" class="btn btn-sm btn-outline-primary" (click)="uploadJD()">
+            <i class="fa-solid fa-upload"></i>
+          </button>
+        </div>
+    </div>
+
+  </div>
+
+</div>

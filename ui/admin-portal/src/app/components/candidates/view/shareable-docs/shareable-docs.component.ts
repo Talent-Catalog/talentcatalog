@@ -18,18 +18,21 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
 
-  @Input() cvs: CandidateAttachment[];
-  @Input() other: CandidateAttachment[];
+  cvs: CandidateAttachment[];
+  other: CandidateAttachment[];
 
   savedList: boolean;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService) {
-    super();
+    super(candidateService);
   }
 
   ngOnInit() {
-    // if is saved search if is saved list (remove source type)
+    this.cvs = this.candidate.candidateAttachments?.filter(a => a.cv === true);
+    this.other = this.candidate.candidateAttachments?.filter(a => a.cv === false);
+
+    // Only lists have listShareable attachments
     if (this.isList) {
       this.form = this.fb.group({
         shareableCvAttachmentId: [this.candidate?.listShareableCv?.id],
@@ -56,8 +59,9 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   }
 
   onSuccessfulSave() {
-    // How to avoid loosing the value in the front end when changing? Have only the ID not the full value so can't set
-    // with form value.
+    // How to set the value in the front end when changing?
+    // Have only the ID not the full value so can't set with form value.
+    // Answer - search attachments by id.
     if (this.isList) {
       if (this.shareableCvId != null) {
         this.candidate.listShareableCv = this.cvs.find(att => att.id === this.shareableCvId);
@@ -88,6 +92,8 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   ngOnChanges(changes: SimpleChanges): void {
     //Replace the form value with the new candidates context notes when
     //changing from one candidate to the next or when selection has changed.
+    this.cvs = this.candidate.candidateAttachments?.filter(a => a.cv === true);
+    this.other = this.candidate.candidateAttachments?.filter(a => a.cv === false);
     if (this.form) {
       if (this.isList) {
         this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);

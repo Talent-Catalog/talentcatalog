@@ -17,7 +17,7 @@
 <div>
   <div>
     <form [formGroup]="importForm">
-      <div class="form-group col-4">
+      <div class="mb-3 col-4">
         <label for="langCode">Importing language?</label>
         <input type="text" class="form-control" placeholder="Language code..."
                formControlName="langCode" id="langCode">
@@ -29,7 +29,7 @@
   </div>
   <div class="section">
     <div>
-      <div class="float-right">
+      <div class="float-end">
         <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="addEducationLevel()">Add</button>
       </div>
     </div>
@@ -38,14 +38,14 @@
     </div>
     <form [formGroup]="searchForm" (ngSubmit)="search()">
 
-      <div class="form-row d-flex justify-content-between align-items-end">
+      <div class="row">
 
-        <div class="form-group col-4">
+        <div class="mb-3 col-4">
           <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
                  id="keyword">
         </div>
 
-        <div class="form-group col-4">
+        <div class="mb-3 col-4">
           <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
             <ng-option value="active">Active</ng-option>
             <ng-option value="inactive">Inactive</ng-option>
@@ -58,7 +58,7 @@
 
   <div class="text-muted mb-2 align-middle">
 
-    <ngb-pagination class="float-right"
+    <ngb-pagination class="float-end"
                     [boundaryLinks]="true"
                     [pageSize]="pageSize"
                     [collectionSize]="results?.totalElements"

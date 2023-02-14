@@ -23,7 +23,7 @@
 
     <form [formGroup]="form">
 
-      <div class="form-group">
+      <div class="mb-3">
         <label class="font-weight-bold" for="additionalInfo">
           {{ 'REGISTRATION.SUBMIT.LABEL.ADDITIONALINFO' | translate }}
         </label>
@@ -32,7 +32,7 @@
       </div>
 
       <div *ngIf="!usAfghan">
-        <div class="form-group">
+        <div class="mb-3">
           <label for="surveyTypeId">
             {{ 'REGISTRATION.SUBMIT.LABEL.SURVEY' | translate }} <sup>*</sup>
           </label>
@@ -42,7 +42,7 @@
         </div>
 
         <ng-container *ngIf="form.controls.surveyTypeId.value !== ''">
-          <div class="form-group">
+          <div class="mb-3">
             <label class="font-weight-bold" for="surveyComment">
               {{ 'REGISTRATION.SUBMIT.LABEL.COMMENT' | translate }}
             </label>
@@ -51,7 +51,7 @@
         </ng-container>
       </div>
 
-      <div class="form-group">
+      <div class="mb-3">
         <div>
           <label for="linkedInLink">
             {{ 'REGISTRATION.SUBMIT.LINKEDIN.LABEL' | translate }}

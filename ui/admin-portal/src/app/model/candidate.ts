@@ -380,6 +380,7 @@ export enum CandidateOpportunityStage {
   noInterview = "No interview",
   candidateLeavesDestination = "Candidate leaves destination",
   candidateRejectsOffer = "Candidate rejects offer",
+  candidateUnreachable = "Candidate unreachable",
   candidateWithdraws = "Candidate withdraws"
 
 }

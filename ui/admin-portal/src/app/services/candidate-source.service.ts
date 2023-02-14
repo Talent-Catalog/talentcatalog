@@ -38,7 +38,6 @@ export class CandidateSourceService {
 
   private savedListApiUrl = environment.apiUrl + '/saved-list';
   private savedSearchApiUrl = environment.apiUrl + '/saved-search';
-  private jobApiUrl = environment.apiUrl + '/job';
 
   constructor(private http: HttpClient,
               private candidateFieldService: CandidateFieldService
@@ -95,9 +94,6 @@ export class CandidateSourceService {
         break;
       case CandidateSourceType.SavedList:
         apiUrl = this.savedListApiUrl;
-        break;
-      case CandidateSourceType.Job:
-        apiUrl = this.jobApiUrl;
         break;
     }
 

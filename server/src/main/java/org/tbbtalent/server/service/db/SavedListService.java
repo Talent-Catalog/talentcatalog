@@ -59,6 +59,19 @@ public interface SavedListService {
      * existing candidates in the list (no duplicates - if a candidate is
      * already present it will still only appear once).
      * <p/>
+     * If a contextNote is supplied it will be added with the candidate.
+     * @param destinationList List to which candidates are added
+     * @param candidate Candidate to add to the destination list
+     * @param contextNote Context note associated with candidate in this list.
+     */
+    void addCandidateToList(@NonNull SavedList destinationList, @NonNull Candidate candidate,
+        @Nullable String contextNote);
+
+    /**
+     * Add the given candidate to the given destination list - merging it in with any
+     * existing candidates in the list (no duplicates - if a candidate is
+     * already present it will still only appear once).
+     * <p/>
      * If a source list is supplied, the original candidate context will be
      * copied across (eg contextNote).
      * @param destinationList List to which candidates are added
@@ -137,15 +150,14 @@ public interface SavedListService {
     void deassociateTaskFromList(User user, TaskImpl task, SavedList list);
 
     /**
-     * Creates a folder for the given list on Google Drive with two subfolders, one for CVs and
-     * the other for Job Description (JD) docs.
+     * Creates a folder for the given list on Google Drive with a subfolder for Job Description docs.
      * <p/>
      * If a folder already exists for the list, does nothing.
      *
      * @param id ID of list
      * @return Updated saved list object, containing link to folder (created or
-     * existing) in {@link SavedList#getFolderlink()} and also links to the subfolders
-     * in {@link SavedList#getFoldercvlink()} and {@link SavedList#getFolderjdlink()}
+     * existing) in {@link SavedList#getFolderlink()} and also link to the subfolder
+     * {@link SavedList#getFolderjdlink()}
      * @throws NoSuchObjectException if no list is found with that id
      * @throws IOException           if there is a problem creating the folder.
      */
@@ -176,15 +188,14 @@ public interface SavedListService {
      * @param request Identifies list of candidates as well as optional Salesforce fields to set on
      *                candidate opportunities
      * @throws NoSuchObjectException  if there is no saved list with this id
-     * @throws GeneralSecurityException If there are errors relating to keys
+     * @throws SalesforceException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
-        throws NoSuchObjectException, GeneralSecurityException, WebClientException;
+        throws NoSuchObjectException, SalesforceException, WebClientException;
 
     /**
-     /**
      * Creates a new SavedList unless it is a registered list and a registered list for that
      * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
      * nothing new is created, and the existing list is returned.
@@ -224,6 +235,14 @@ public interface SavedListService {
      */
     @Nullable
     SavedList get(@NonNull User user, String listName);
+
+    /**
+     * Returns true if there are no candidates in the list
+     * @param id ID of list
+     * @return True if no candidates in list
+     * @throws NoSuchObjectException if there is no such saved list
+     */
+    boolean isEmpty(long id) throws NoSuchObjectException;
 
     /**
      * Return all SavedList's associated with the given candidate that match

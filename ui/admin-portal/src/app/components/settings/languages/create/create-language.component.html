@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Add System Language</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 
@@ -31,7 +29,7 @@
   </div>
 
   <form [formGroup]="languageForm">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="langCode">2 character language code</label>
       <input type="text" class="form-control" id="langCode" formControlName="langCode">
     </div>

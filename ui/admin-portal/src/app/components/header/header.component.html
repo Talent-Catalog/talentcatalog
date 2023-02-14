@@ -18,7 +18,7 @@
   <div class="container-fluid">
 
     <!-- LOGO -->
-    <a [href]="websiteUrl" target="_blank">
+    <a class="navbar-brand" [href]="websiteUrl" target="_blank">
       <img class="logo" [src]="logo" alt="Logo">
     </a>
 
@@ -29,12 +29,15 @@
     </button>
 
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
-      <ul class="navbar-nav mr-auto">
+      <ul class="navbar-nav me-auto">
          <li class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/'">Home</a>
         </li>
-        <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/job'">New Job</a>
+<!--        <li *ngIf="canCreateJob()" class="nav-item" [routerLinkActive]="'active'">-->
+<!--          <a class="nav-link" [routerLink]="'/job'">New Job <br/> (old way)</a>-->
+<!--        </li>-->
+        <li *ngIf="canCreateJob()" class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/job/prepare'">New Job</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/list'">New List</a>
@@ -45,13 +48,13 @@
         <li class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/infographics'">Stats</a>
         </li>
-        <li class="nav-item" [routerLinkActive]="'active'">
-          <a *ngIf="loggedInUser && !isUserLimited()" class="nav-link" [routerLink]="'/settings'">Settings</a>
+        <li *ngIf="isAnAdmin()" class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/settings'">Settings</a>
         </li>
 
       </ul>
 
-      <div class="form-group" *ngIf="!isUserLimited()">
+      <div class="me-3" *ngIf="canViewCandidateName()">
         <input id="quickExternalIdSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doExternalIdSearch"
@@ -65,7 +68,7 @@
         </ng-template>
       </div>
 
-      <div class="form-group" *ngIf="!isUserLimited()">
+      <div class="me-3" *ngIf="canViewCandidateName()">
         <input id="quickEmailOrPhoneSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doEmailOrPhoneSearch"
@@ -79,24 +82,21 @@
         </ng-template>
       </div>
 
-      <app-candidate-name-num-search></app-candidate-name-num-search>
-
-      <ul class="navbar-nav">
-        <li class="nav-item dropdown" ngbDropdown>
-
-          <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-            <i class="fas fa-user" [title]="loggedInUserInfo()"></i>
-          </a>
-          <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-            <div>
-              {{loggedInUserInfo()}}
-            </div>
-            <hr/>
-            <a class="dropdown-item" (click)="logout()">Logout</a>
-          </div>
-
-        </li>
-      </ul>
+      <div class="me-3">
+        <app-candidate-name-num-search></app-candidate-name-num-search>
+      </div>
     </div>
+    <ul class="navbar-nav">
+      <li ngbDropdown class="nav-item">
+        <a href (click)="false" class="nav-link" ngbDropdownToggle>
+          <i class="fas fa-user" [title]="loggedInUserInfo()"></i>
+        </a>
+        <div ngbDropdownMenu class="dropdown-menu-end">
+          <div ngbDropdownItem disabled>{{loggedInUserInfo()}}</div>
+          <div class="dropdown-divider"></div>
+          <button ngbDropdownItem (click)="logout()">Logout</button>
+        </div>
+      </li>
+    </ul>
   </div>
 </nav>

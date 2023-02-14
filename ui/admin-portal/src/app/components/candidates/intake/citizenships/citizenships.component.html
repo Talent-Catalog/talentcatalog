@@ -18,20 +18,18 @@
 
 <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
   <ngb-panel id="intake-citizenships">
-    <ng-template ngbPanelHeader >
-      <div class="d-flex align-items-center justify-content-between" >
-        <div class="d-flex flex-column">
-          Citizenships
-          <span class="small">Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</span>
-        </div>
-        <div class="d-flex">
-          <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
-            <i class="fas fa-plus"></i>
-          </button>
-          <button (click)="toggleOpen()" class="btn btn-link p-0 ml-4 btn-outline-none">
-            <i *ngIf="open" class="d-flex fas fa-chevron-up"></i>
-            <i *ngIf="!open" class="d-flex fas fa-chevron-down"></i>
-          </button>
+    <ng-template ngbPanelTitle let-opened="opened">
+      <div class="container gx-0">
+        <div class="row align-items-center">
+          <div class="col">
+            <p class="mb-0">Citizenships</p>
+            <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
+          </div>
+          <div class="col-1">
+            <button type="button" class="btn btn-primary btn-sm" (click)="addRecord($event)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
         </div>
       </div>
     </ng-template>
@@ -44,7 +42,7 @@
       </div>
       <div *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;" class="citizenship-card">
         <app-candidate-citizenship-card
-          [candidate]="candidate"
+          [entity]="candidate"
           [candidateIntakeData]="candidateIntakeData"
           [editable]="editable"
           [myRecordIndex]="i"

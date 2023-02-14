@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,6 @@ import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.user.SearchUserRequest;
-import org.tbbtalent.server.request.user.UpdateSharingRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.security.AuthService;
@@ -53,8 +53,14 @@ public class UserAdminApi {
     }
 
     @PostMapping("search")
-    public Map<String, Object> search(@RequestBody SearchUserRequest request) {
-        Page<User> users = this.userService.searchUsers(request);
+    public List<Map<String, Object>> search(@RequestBody SearchUserRequest request) {
+        List<User> users = userService.search(request);
+        return userDto().buildList(users);
+    }
+
+    @PostMapping("search-paged")
+    public Map<String, Object> searchPaged(@RequestBody SearchUserRequest request) {
+        Page<User> users = this.userService.searchPaged(request);
         return userDto().buildPage(users);
     }
 
@@ -85,22 +91,6 @@ public class UserAdminApi {
     public Map<String, Object> update(@PathVariable("id") long id,
                             @RequestBody UpdateUserRequest request) {
         User user = this.userService.updateUser(id, request);
-        return userDto().build(user);
-    }
-
-    @PutMapping("/shared-add/{id}")
-    public Map<String, Object> addToSharedWithMe(
-            @PathVariable("id") long id,
-        @RequestBody UpdateSharingRequest request) {
-        User user = this.userService.addToSharedWithUser(id, request);
-        return userDto().build(user);
-    }
-
-    @PutMapping("/shared-remove/{id}")
-    public Map<String, Object> removeFromSharedWithMe(
-            @PathVariable("id") long id,
-        @RequestBody UpdateSharingRequest request) {
-        User user = this.userService.removeFromSharedWithUser(id, request);
         return userDto().build(user);
     }
 
@@ -137,7 +127,7 @@ public class UserAdminApi {
                 .add("lastLogin")
                 .add("usingMfa")
                 .add("mfaConfigured")
-                .add("sourcePartner", partnerDto())
+                .add("partner", partnerDto())
                 ;
     }
 

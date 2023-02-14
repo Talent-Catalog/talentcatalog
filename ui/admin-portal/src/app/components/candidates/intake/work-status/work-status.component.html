@@ -18,9 +18,9 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="workDesired">Are you currently working in your desired field?</label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -32,7 +32,7 @@
     </ng-select>
   </div>
   <div *ngIf="hasWorkDesired">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="workDesiredNotes">Please explain more</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="workDesiredNotes" [formControlName]="'workDesiredNotes'"

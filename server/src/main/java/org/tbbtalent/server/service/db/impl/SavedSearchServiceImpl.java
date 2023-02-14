@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
@@ -73,6 +75,7 @@ import org.tbbtalent.server.model.db.EducationLevel;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
@@ -82,6 +85,7 @@ import org.tbbtalent.server.model.db.SearchType;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateReviewStatusRepository;
@@ -304,7 +308,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
-    public Set<Long> searchCandidates(long savedSearchId)
+    public @NotNull Set<Long> searchCandidates(long savedSearchId)
         throws NoSuchObjectException {
         SearchCandidateRequest searchRequest =
             loadSavedSearch(savedSearchId);
@@ -816,7 +820,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 //Non null SavedSearch Job Opp. Check if it is different from Saved List JobOpp
                 final SalesforceJobOpp savedListJobOpp = savedList.getSfJobOpp();
                 if (savedListJobOpp == null ||
-                    !savedSearch.getSfJobOpp().getId().equals(savedListJobOpp.getId())) {
+                    !savedSearch.getSfJobOpp().getSfId().equals(savedListJobOpp.getSfId())) {
                     savedList.setSfJobOpp(savedSearch.getSfJobOpp());
                     savedList = savedListRepository.save(savedList);
                 }
@@ -834,6 +838,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         return getSelectionList(id, loggedInUser.getId());
+    }
+
+    @Override
+    public boolean isEmpty(long id) throws NoSuchObjectException {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        final Set<Long> candidateIds = searchCandidates(savedSearch.getId());
+        return candidateIds.isEmpty();
     }
 
     @Override
@@ -983,8 +996,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         if (reqCountries.size() > 0) {
-            boolQueryBuilder = addElasticTermFilter(
-                boolQueryBuilder, null,"country.keyword", reqCountries);
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                request.getCountrySearchType(),
+                "country.keyword", reqCountries);
         }
 
         //Partners
@@ -1025,6 +1039,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             boolQueryBuilder =
                 addElasticTermFilter(boolQueryBuilder,
                     null,"status.keyword", reqStatuses);
+        }
+
+        //Referrer
+        String referrer = request.getRegoReferrerParam();
+        if (referrer != null) {
+            boolQueryBuilder = boolQueryBuilder.filter(
+                QueryBuilders.termQuery("regoReferrerParam", referrer));
         }
 
         //Gender
@@ -1267,6 +1288,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
             savedSearch.setMinYrs(request.getMinYrs());
             savedSearch.setMaxYrs(request.getMaxYrs());
+            savedSearch.setRegoReferrerParam(request.getRegoReferrerParam());
             savedSearch.setVerifiedOccupationIds(
                     getListAsString(request.getVerifiedOccupationIds()));
             savedSearch.setVerifiedOccupationSearchType(
@@ -1276,6 +1298,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     getListAsString(request.getNationalityIds()));
             savedSearch.setNationalitySearchType(request.getNationalitySearchType());
             savedSearch.setCountryIds(getListAsString(request.getCountryIds()));
+            savedSearch.setCountrySearchType(request.getCountrySearchType());
             savedSearch.setSurveyTypeIds(getListAsString(request.getSurveyTypeIds()));
             savedSearch.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
             savedSearch.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
@@ -1320,12 +1343,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setOccupationIds(getIdsFromString(request.getOccupationIds()));
         searchCandidateRequest.setMinYrs(request.getMinYrs());
         searchCandidateRequest.setMaxYrs(request.getMaxYrs());
+        searchCandidateRequest.setRegoReferrerParam(request.getRegoReferrerParam());
         searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
         searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
         searchCandidateRequest.setPartnerIds(getIdsFromString(request.getPartnerIds()));
         searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
         searchCandidateRequest.setSurveyTypeIds(getIdsFromString(request.getSurveyTypeIds()));
         searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
+        searchCandidateRequest.setCountrySearchType(request.getCountrySearchType());
 
         // Check if the saved search countries match the source countries of the user
         List<Long> requestCountries = getIdsFromString(request.getCountryIds());
@@ -1471,11 +1496,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             excludedCandidates.addAll(exclusionList.getCandidates());
         }
 
-        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
-            //Compute excluded candidates based on review statuses
-            excludedCandidates.addAll(candidateReviewStatusRepository
-                .findCandidatesExcludedFromSearch(request.getSavedSearchId(),
-                    request.getReviewStatusFilter()));
+        if (isNotEmpty(request.getReviewStatusFilter())) {
+            //Exclude candidates who have been reviewed with statuses given in filter
+            final Set<Candidate> candidatesToFilterOut =
+                candidateReviewStatusRepository.findReviewedCandidatesForSearch(
+                    request.getSavedSearchId(), request.getReviewStatusFilter());
+
+            excludedCandidates.addAll(candidatesToFilterOut);
         }
         return excludedCandidates;
     }
@@ -1490,9 +1517,23 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Modify request, defaulting blank partners
         List<Long> requestedPartners = request.getPartnerIds();
         if (requestedPartners == null || requestedPartners.isEmpty()) {
-            Partner partner = userService.getLoggedInSourcePartner();
+            Partner partner = userService.getLoggedInPartner();
             if (partner != null) {
-                request.setPartnerIds(List.of(partner.getId()));
+                //Some partners default to seeing candidates from all source partners.
+                final boolean isDefaultSourcePartner = partner instanceof SourcePartner
+                    && ((SourcePartner) partner).isDefaultSourcePartner();
+                //Different default for simple (non operating partners)
+                //and default source partner
+                if ("Partner".equals(partner.getPartnerType())
+                    || "RecruiterPartner".equals(partner.getPartnerType())
+                    || isDefaultSourcePartner) {
+                   List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                   List<Long> partnerIds =
+                       sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
+                    request.setPartnerIds(partnerIds);
+                } else {
+                   request.setPartnerIds(List.of(partner.getId()));
+                }
             }
         }
     }

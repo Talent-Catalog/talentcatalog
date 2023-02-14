@@ -18,11 +18,11 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="residenceStatus">
       What is your current residence or legal status?
     </label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -33,7 +33,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes">
-    <div class="form-group">
+    <div class="mb-3">
       <label for="residenceStatusNotes">Please explain more</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="residenceStatusNotes" [formControlName]="'residenceStatusNotes'"

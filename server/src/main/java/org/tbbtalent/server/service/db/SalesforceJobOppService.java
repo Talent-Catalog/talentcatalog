@@ -24,7 +24,8 @@ import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 
 /**
- * Access the cache of Salesforce records - in the form of SalesforceJobOpp's.
+ * Interface between local job related entities on our database and their counterparts
+ * on Salesforce.
  *
  * @author John Cameron
  */

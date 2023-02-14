@@ -16,8 +16,8 @@
 
 <div>
   <div class="section">
-<!--    <div class="float-right">-->
-<!--      <div class="float-right">-->
+<!--    <div class="float-end">-->
+<!--      <div class="float-end">-->
 <!--        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="addUser()">Add</button>-->
 <!--      </div>-->
 <!--    </div>-->
@@ -26,9 +26,9 @@
     </div>
     <form [formGroup]="searchForm" (ngSubmit)="search()">
 
-      <div class="form-row d-flex justify-content-between align-items-end">
+      <div class="row">
 
-        <div class="form-group col-4">
+        <div class="mb-3 col-4">
           <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
                  id="keyword">
         </div>
@@ -39,7 +39,7 @@
 
   <div class="text-muted mb-2 align-middle">
 
-    <ngb-pagination class="float-right"
+    <ngb-pagination class="float-end"
                     [boundaryLinks]="true"
                     [pageSize]="pageSize"
                     [collectionSize]="results?.totalElements"
@@ -50,7 +50,7 @@
                     (pageChange)="search()">
     </ngb-pagination>
 
-    Found {{results?.totalElements}} users
+    Found {{results?.totalElements}} tasks
   </div>
 
   <table class="table">

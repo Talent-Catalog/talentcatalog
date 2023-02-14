@@ -17,10 +17,7 @@
 <div class="modal-header">
 
   <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 
@@ -31,7 +28,7 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="form-group" >
+    <div class="mb-3">
       <label for="name">Name *</label>
       <input class="form-control" id="name" formControlName="name">
       <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"
@@ -40,22 +37,21 @@
           Name is required.
         </div>
       </div>
-      <div class="form-inline">
-        <label>Fixed?</label>
-        <input type="checkbox" class="form-control" formControlName="fixed">
-      </div>
-
-      <app-joblink [joblink]="salesforceService.joblink(savedList)"
-                   (updateError)="error=$event"
-                   (joblinkValidation)="onJoblinkValidation($event)"
-      ></app-joblink>
-
-      <div *ngIf="jobName">
-        {{jobName}}
-      </div>
-
     </div>
-    <hr/>
+    <div class="mb-3">
+      <label for="fixed">Fixed?</label>
+      <input type="checkbox" formControlName="fixed" id="fixed">
+    </div>
+
+    <app-joblink [joblink]="salesforceService.joblink(savedList)"
+                 (updateError)="error=$event"
+                 (joblinkValidation)="onJoblinkValidation($event)"
+    ></app-joblink>
+
+    <div *ngIf="jobName">
+      {{jobName}}
+    </div>
+
     <div *ngIf="savedList">
       <!--todo-->
       <!--      <app-saved-list [savedList]="savedList" [seeMore]="true" [showMore]="false" [showOpen]="false"></app-saved-list>-->

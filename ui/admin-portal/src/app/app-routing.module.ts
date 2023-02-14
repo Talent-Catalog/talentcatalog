@@ -32,6 +32,12 @@ import {
 import {NewJobComponent} from "./components/job/new-job/new-job.component";
 import {Role} from "./model/user";
 import {RoleGuardService} from "./services/role-guard.service";
+import {
+  ViewJobFromUrlComponent
+} from "./components/job/view/view-job-from-url/view-job-from-url.component";
+import {
+  JobsWithDetailComponent
+} from "./components/job/jobs-with-detail/jobs-with-detail.component";
 
 const routes: Routes = [
   {
@@ -71,8 +77,30 @@ const routes: Routes = [
       },
       {
         path: 'job',
-        component: NewJobComponent,
-        data: {title: 'TC Job'}
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: NewJobComponent,
+            data: {title: 'TC New Job', prepare: false}
+          },
+          {
+            path: 'prepare',
+            pathMatch: 'full',
+            component: NewJobComponent,
+            data: {title: 'TC New Job', prepare: true}
+          },
+          {
+            path: ':id',
+            component: ViewJobFromUrlComponent,
+            data: {title: 'TC Job'}
+          },
+        ]
+      },
+      {
+        path: 'jobs',
+        component: JobsWithDetailComponent,
+        data: {title: 'TC Jobs'}
       },
       {
         path: 'list',

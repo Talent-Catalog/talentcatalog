@@ -17,9 +17,9 @@
 <div class="card">
 <!--  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>-->
   <div class="card-body d-flex min-height-150 align-items-center">
-      <div class="w-75 align-self-center pl-2">
+      <div class="w-75 align-self-center ps-2">
         <div>
-          <strong>{{candidateSource?.name}} </strong>
+          <strong>{{candidateSource?.name + ' (' + candidateSource?.id + ')'}} </strong>
           <span class="d-flex align-items-baseline">
             <i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i>
             <i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i>
@@ -40,7 +40,7 @@
           </div>
         </div>
       </div>
-      <div class="w-25 float-right">
+      <div class="w-25 float-end">
         <div class="btn-toolbar">
           <button class="btn" *ngIf="showOpen" (click)="doOpenSource()"><i class="fas fa-expand" title="Open"></i></button>
           <button class="btn" *ngIf="showLink" (click)="doCopyLink()"><i class="fas fa-link" title="Copy shareable link"></i></button>
@@ -58,9 +58,13 @@
           <button class="btn" *ngIf="showEdit && isEditable()" (click)="doSelectColumns()">
             <i class="fas fa-columns" title="Select columns to display"></i>
           </button>
+          <a class="btn" *ngIf="candidateSource?.sfJobOpp"
+             [routerLink]="['/job',candidateSource.sfJobOpp.id]">
+            <i class="fas fa-hands-helping" title="Associated Job"></i>
+          </a>
           <a class="btn" *ngIf="salesforceService.joblink(candidateSource)" target="_blank"
              [href]="salesforceService.joblink(candidateSource)">
-            <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
+            <i class="fab fa-salesforce" title="Associated Job Opportunity on Salesforce"></i>
           </a>
           <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">
             <i class="fab fa-google-drive" title="Create/show Google folder"></i>
@@ -74,7 +78,7 @@
           <button class="btn" *ngIf="showMore && isSavedSearch()" (click)="toggleShowMore()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
         </div>
       </div>
-    <div class="row pl-2 pt-1" *ngIf="seeMore && isSavedSearch()">
+    <div class="row ps-2 pt-1" *ngIf="seeMore && isSavedSearch()">
       <div class="w-100" *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
       <div class="w-100" *ngIf="savedSearch.simpleQueryString">Elasticsearch: {{savedSearch.simpleQueryString}},</div>
       <div class="w-100" *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>

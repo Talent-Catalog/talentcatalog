@@ -1,0 +1,15 @@
+<form [formGroup]="form">
+  <div class="mb-3">
+    <label for="apicall">API call</label>
+    <input id="apicall" type="text" class="form-control" formControlName="apicall">
+  </div>
+</form>
+<button type="button" class="btn btn-primary" (click)="send()">
+  Send
+</button>
+<div *ngIf="ack">
+  {{ack}}
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>

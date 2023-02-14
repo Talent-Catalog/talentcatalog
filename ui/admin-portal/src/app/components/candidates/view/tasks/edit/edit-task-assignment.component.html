@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Edit Task Assignment</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 
@@ -39,14 +37,14 @@
 
       <!-- DUE DATE -->
       <div *ngIf="!isComplete && !isAbandoned">
-        <div class="form-group">
+        <div class="mb-3">
           <label for="dueDate">Due date</label>
           <app-date-picker id="dueDate" [control]="form.controls.dueDate" [allowPast]="false"></app-date-picker>
         </div>
       </div>
 
       <!-- COMPLETED -->
-      <div class="form-group">
+      <div class="mb-3">
         <div class="form-check-inline">
           <label class="form-check-label" for="complete">Is this task assignment completed?</label>
           <input class="form-check-input" id="complete" [formControlName]="'complete'" type="checkbox">

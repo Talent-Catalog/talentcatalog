@@ -25,7 +25,7 @@
   <div class="card" *ngIf="!loading">
     <!-- HEADER -->
     <div class="card-header">Languages
-      <div class="float-right" *ngIf="editable">
+      <div class="float-end" *ngIf="editable">
         <button class="btn btn-primary btn-sm" (click)="createCandidateLanguage()">
           <i class="fas fa-plus"></i>
         </button>
@@ -43,17 +43,21 @@
           <div class="col-10 mb-2">
             {{language.language.name}}
           </div>
-          <div class="col-2 text-right" *ngIf="editable">
-            <button class="btn btn-default"
-                    (click)="editCandidateLanguage(language)">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-default"
-                    *ngIf="adminUser"
-                    (click)="deleteCandidateLanguage(language)">
-              <i class="fas fa-trash"></i>
-            </button>
+          <div class="col-2" *ngIf="editable">
+            <div class="btn-group float-end">
+              <button class="btn btn-default"
+                      (click)="editCandidateLanguage(language)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-default"
+                      *ngIf="adminUser"
+                      (click)="deleteCandidateLanguage(language)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
           </div>
+        </div>
+        <div class="row">
           <div class="col-12" *ngIf="language.migrationLanguage">
             Migrated Language: {{language.migrationLanguage}}
           </div>
@@ -86,16 +90,7 @@
 
 <div *ngIf="accordion">
   <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-    <ngb-panel id="intake-language">
-      <ng-template ngbPanelHeader let-opened="opened">
-        <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
-          Languages
-          <button ngbPanelToggle (click)="toggleOpen()" class="btn btn-link p-0 ml-4 btn-outline-none">
-            <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
-            <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
-          </button>
-        </div>
-      </ng-template>
+    <ngb-panel id="intake-language" title="Languages">
       <ng-template ngbPanelContent>
         <p *ngIf="!candidateLanguages?.length" class="m-1">
           No language data has been entered by this candidate.

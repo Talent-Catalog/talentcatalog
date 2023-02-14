@@ -2,11 +2,11 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="visaProtection">
       Is the candidate in need of international protection?
     </label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -15,7 +15,7 @@
     <ng-select id="visaProtection" [formControlName]="'visaProtection'" [items]="visaProtectionOptions"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
-  <div *ngIf="form.controls.visaProtection.value === 'Yes'" class="form-group">
+  <div *ngIf="form.controls.visaProtection.value === 'Yes'" class="mb-3">
     <label for="visaProtectionGrounds">If yes, on what grounds? (refer to <a href="https://drive.google.com/file/d/1U1KjoOXlITTWaucNvJXQSh9movNWEPTu/view" target="_blank">TBB eligibility policy</a>)</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="visaProtectionGrounds" [formControlName]="'visaProtectionGrounds'"

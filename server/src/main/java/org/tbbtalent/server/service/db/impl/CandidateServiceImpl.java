@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.GeneralSecurityException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -71,6 +70,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateDestination;
@@ -91,6 +91,7 @@ import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.HasTcQueryParameters;
 import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.RootRequest;
@@ -98,7 +99,6 @@ import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SearchJoin;
-import org.tbbtalent.server.model.db.SourcePartnerImpl;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.model.db.TaskAssignmentImpl;
@@ -107,6 +107,7 @@ import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.YesNoUnsure;
 import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 import org.tbbtalent.server.model.db.task.Task;
@@ -203,6 +204,9 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
  */
 @Service
 public class CandidateServiceImpl implements CandidateService {
+
+    private static final int afghanistanCountryId = 6180;
+    private static final int ukraineCountryId = 6406;
 
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
@@ -425,6 +429,7 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(savedSearch.getNationalitySearchType());
         searchCandidateRequest.setCountryIds(getIdsFromString(savedSearch.getCountryIds()));
+        searchCandidateRequest.setCountrySearchType(savedSearch.getCountrySearchType());
         searchCandidateRequest.setSurveyTypeIds(getIdsFromString(savedSearch.getSurveyTypeIds()));
         searchCandidateRequest.setEnglishMinSpokenLevel(savedSearch.getEnglishMinSpokenLevel());
         searchCandidateRequest.setEnglishMinWrittenLevel(savedSearch.getEnglishMinWrittenLevel());
@@ -718,7 +723,7 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
 
-    private Candidate createCandidate(CreateCandidateRequest request, Partner partner, String ipAddress,
+    private Candidate createCandidate(CreateCandidateRequest request, SourcePartner partner, String ipAddress,
         HasTcQueryParameters queryParameters, String passwordEncrypted)
         throws UsernameTakenException {
         User user = new User(
@@ -734,7 +739,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Add partner
-        user.setSourcePartner((SourcePartnerImpl) partner);
+        user.setPartner((PartnerImpl) partner);
 
         /* Set the password */
         user.setPasswordEnc(passwordEncrypted);
@@ -1055,10 +1060,10 @@ public class CandidateServiceImpl implements CandidateService {
             log.info("Registration with partner abbreviation: " + partnerAbbreviation);
         }
 
-        Partner partner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
-        if (partner == null) {
+        SourcePartner sourcePartner = (SourcePartner) partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+        if (sourcePartner == null) {
             //Use default partner.
-            partner = partnerService.getDefaultSourcePartner();
+            sourcePartner = partnerService.getDefaultSourcePartner();
         }
 
         //Pick up query parameters from request if they are passed in
@@ -1076,7 +1081,7 @@ public class CandidateServiceImpl implements CandidateService {
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
 
-        Candidate candidate = createCandidate(createCandidateRequest, partner, ipAddress,
+        Candidate candidate = createCandidate(createCandidateRequest, sourcePartner, ipAddress,
             queryParameters, passwordEncrypted);
 
         /* Log the candidate in */
@@ -1166,12 +1171,12 @@ public class CandidateServiceImpl implements CandidateService {
         if (newStatus.equals("ineligible")) {
             UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
             info.setStatus(CandidateStatus.ineligible);
-            info.setComment("TBB criteria not met: Country located is same as country of nationality.");
+            info.setComment("TC criteria not met: Country located is same as country of nationality.");
             candidate = updateCandidateStatus(candidate, info);
         } else if (newStatus.equals("pending")) {
             UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
             info.setStatus(CandidateStatus.pending);
-            info.setComment("TBB criteria met: Country located different to country of nationality.");
+            info.setComment("TC criteria met: Country located different to country of nationality.");
             candidate = updateCandidateStatus(candidate, info);
         }
 
@@ -1182,9 +1187,9 @@ public class CandidateServiceImpl implements CandidateService {
         //Do we have an auto assignable partner in this country
         Partner partner = partnerService.getAutoAssignablePartnerByCountry(country);
         User user = candidate.getUser();
-        if (partner != null && !partner.equals(user.getSourcePartner())) {
+        if (partner != null && !partner.equals(user.getPartner())) {
             //Partner of candidate needs to change
-            user.setSourcePartner((SourcePartnerImpl) partner);
+            user.setPartner((PartnerImpl) partner);
             userRepository.save(user);
         }
     }
@@ -1383,13 +1388,13 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate submitRegistration() {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        int afghanistanCountryId = 6180;
         // Don't update status to pending if status is already pending
         final CandidateStatus candidateStatus = candidate.getStatus();
         if (!candidateStatus.equals(CandidateStatus.pending)) {
             if (candidate.getNationality() != candidate.getCountry() ||
-                    candidate.getCountry().getId() == afghanistanCountryId &&
-                        candidate.getNationality().getId() == afghanistanCountryId) {
+                    candidate.getCountry().getId() == afghanistanCountryId ||
+                    candidate.getCountry().getId() == ukraineCountryId
+            ) {
                 UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
 
                 //Only set status to pending if current status is draft. This addresses the case
@@ -1407,7 +1412,7 @@ public class CandidateServiceImpl implements CandidateService {
             } else {
                 UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
                 info.setStatus(CandidateStatus.ineligible);
-                info.setComment("TBB criteria not met: Country located is same as country of nationality.");
+                info.setComment("TC criteria not met: Country located is same as country of nationality.");
                 candidate = updateCandidateStatus(candidate, info);
             }
         }
@@ -1705,6 +1710,22 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+            countByReferrerOrderByCount(
+                genderStr(gender), countryStr(country),
+                sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+            countByReferrerOrderByCount(
+                genderStr(gender), countryStr(country),
+                sourceCountryIds, dateFrom, dateTo, candidateIds));
+    }
+
+    @Override
     public List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
         final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(
                 sourceCountryIds, dateFrom, dateTo));
@@ -1885,7 +1906,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String getCandidateExternalHref(String candidateNumber) {
-        return "https://www.tbbtalent.org/admin-portal/candidate/" + candidateNumber;
+        return "https://tctalent.org/admin-portal/candidate/" + candidateNumber;
     }
 
     public String formatCandidateMajor(List<CandidateEducation> candidateEducations){
@@ -2109,9 +2130,7 @@ public class CandidateServiceImpl implements CandidateService {
             throws NoSuchObjectException, IOException {
         Candidate candidate = getCandidate(id);
 
-        GoogleFileSystemDrive candidateDrive = googleDriveConfig.getCandidateDataDrive();
-        GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
-
+        GoogleFileSystemDrive candidateDrive;
         GoogleFileSystemFolder folder;
 
         String folderlink = candidate.getFolderlink();
@@ -2123,6 +2142,10 @@ public class CandidateServiceImpl implements CandidateService {
             folder = new GoogleFileSystemFolder(folderlink);
         } else {
             //If we don't have a folderlink stored, look for the folder, creating one if needed.
+            //The folder should be located in the current candidate drive and candidate root folder
+            candidateDrive = googleDriveConfig.getCandidateDataDrive();
+            GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
+
             String candidateNumber = candidate.getCandidateNumber();
             folder = fileSystemService.findAFolder(candidateDrive, candidateRoot, candidateNumber);
             if (folder == null) {
@@ -2135,6 +2158,8 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Check that all candidate subfolders are present and links are stored
+        //Use the candidate drive associated with the main folder
+        candidateDrive = fileSystemService.getDriveFromEntity(folder);
         for (CandidateSubfolderType cstype: CandidateSubfolderType.values()) {
             if (getCandidateSubfolderlink(candidate, cstype) == null) {
                 //No link stored = check if folder exists
@@ -2166,7 +2191,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate createUpdateSalesforce(long id)
-            throws NoSuchObjectException, GeneralSecurityException,
+            throws NoSuchObjectException, SalesforceException,
             WebClientException {
         Candidate candidate = getCandidate(id);
 
@@ -2179,7 +2204,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public void createUpdateSalesforce(UpdateCandidateOppsRequest request)
-        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+        throws NoSuchObjectException, SalesforceException, WebClientException {
 
         List<Candidate> candidates = candidateRepository.findByIds(request.getCandidateIds());
 
@@ -2191,7 +2216,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     public void createUpdateSalesforce(Collection<Candidate> candidates,
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable SalesforceOppParams salesforceOppParams)
-        throws GeneralSecurityException, WebClientException {
+        throws SalesforceException, WebClientException {
 
         //Need ordered list so that can match with returned contacts.
         List<Candidate> orderedCandidates = new ArrayList<>(candidates);
@@ -2421,7 +2446,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    public void populateIntakeData(Candidate candidate, CandidateIntakeDataUpdate data,
+    private void populateIntakeData(Candidate candidate, CandidateIntakeDataUpdate data,
         @Nullable Candidate partnerCandidate,
         @Nullable EducationLevel partnerEduLevel,
         @Nullable Occupation partnerOccupation,
@@ -2761,22 +2786,28 @@ public class CandidateServiceImpl implements CandidateService {
 
     private String checkStatusValidity(long countryReq, long nationalityReq, Candidate candidate) {
         String newStatus = "";
-        // If candidate pending, but they updating country & nationality as same. Change to ineligible.
-        // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN
+        // If candidate pending, but they are updating country & nationality as same. Change to ineligible.
+        // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN or Ukrainian in Ukraine
         if (candidate.getStatus() == CandidateStatus.pending) {
-            if (countryReq == nationalityReq && countryReq != 6180) {
+            if (countryReq == nationalityReq
+                && countryReq != afghanistanCountryId && countryReq != ukraineCountryId) {
                 newStatus = "ineligible";
             }
         // If candidate ineligible & it has country & nationality the same (causing the status) BUT the request
         // has nationality & country as different. We can change ineligible status to pending. This determines
         // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
         } else if (candidate.getStatus() == CandidateStatus.ineligible) {
-            if (candidate.getCountry().equals(candidate.getNationality()) && countryReq != nationalityReq) {
-                newStatus = "pending";
-            }
-            // EXCEPTION: IF AFGHAN IN AFGHANISTAN SET PENDING
-            if (countryReq == 6180 && nationalityReq == 6180) {
-                newStatus = "pending";
+            if (candidate.getCountry().getId().equals(candidate.getNationality().getId())) {
+                //If the candidate currently has country and nationality the same, that is
+                //probably why they were ineligible.
+                if (countryReq != nationalityReq) {
+                    //But if requested country and nationality are now different, set status back to pending
+                    newStatus = "pending";
+                } else if (countryReq == afghanistanCountryId || countryReq == ukraineCountryId) {
+                    //or if country and nationality are the same, but either Afghanistan or Ukraine
+                    //that can also be changed to pending.
+                    newStatus = "pending";
+                }
             }
         }
         return newStatus;

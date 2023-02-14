@@ -3,9 +3,9 @@
 </div>
 
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="visaEnglishThreshold">Meets English threshold?</label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -15,7 +15,7 @@
                [items]="englishThresholdOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
-  <div *ngIf="hasNotes" class="form-group">
+  <div *ngIf="hasNotes" class="mb-3">
     <label for="visaEnglishThresholdNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="2"
               id="visaEnglishThresholdNotes" [formControlName]="'visaEnglishThresholdNotes'"

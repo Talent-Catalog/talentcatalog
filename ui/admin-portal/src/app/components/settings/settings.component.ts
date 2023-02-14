@@ -19,6 +19,7 @@ import {User} from "../../model/user";
 import {AuthService} from "../../services/auth.service";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
+import {PartnerType} from "../../model/partner";
 
 
 @Component({
@@ -69,11 +70,10 @@ export class SettingsComponent implements OnInit, AfterViewChecked {
     return this.authService.isSystemAdminOnly();
   }
 
-  adminOrGreater(): boolean {
-    return this.authService.isAdminOrGreater();
-  }
-
-  sourcePartnerAdminOrGreater(): boolean {
+  operatingPartnerSourcePartnerAdminOrGreater(): boolean {
+    if (this.authService.getPartnerType() === PartnerType.Partner) {
+      return false;
+    }
     return this.authService.isSourcePartnerAdminOrGreater();
   }
 }

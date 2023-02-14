@@ -17,20 +17,19 @@
 package org.tbbtalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.tbbtalent.server.model.db.Job;
+import org.tbbtalent.server.model.db.OldJob;
 import org.tbbtalent.server.model.db.SavedList;
 
-public interface JobRepository extends JpaRepository<Job, Long>,JpaSpecificationExecutor<Job> {
+public interface OldJobRepository extends JpaRepository<OldJob, Long> {
 
-    @Query("select distinct j from Job j left join j.submissionList list "
+    @Query("select distinct j from OldJob j left join j.submissionList list "
         + " where list = :jobList")
-    Job getJobBySubmissionList(@Param("jobList") SavedList jobList);
+    OldJob getJobBySubmissionList(@Param("jobList") SavedList jobList);
 
-    @Query(" select j from Job j "
-        + " where j.submissionList.sfJobOpp.id = :sfId ")
-    Job findBySfId(@Param("sfId") String sfId);
+    @Query(" select j from OldJob j "
+        + " where j.submissionList.sfJobOpp.sfId = :sfId ")
+    OldJob findBySfId(@Param("sfId") String sfId);
 
 }

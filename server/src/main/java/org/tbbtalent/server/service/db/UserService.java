@@ -33,7 +33,6 @@ import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
 import org.tbbtalent.server.request.user.ResetPasswordRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;
 import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
-import org.tbbtalent.server.request.user.UpdateSharingRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
@@ -60,7 +59,7 @@ public interface UserService {
      * Returns a live JPA entity representing the logged in partner.
      * @return Partner associated with logged in partner or null if no user.
      */
-    Partner getLoggedInSourcePartner();
+    Partner getLoggedInPartner();
 
     User getSystemAdminUser();
 
@@ -72,7 +71,10 @@ public interface UserService {
 
     User findByUsernameAndRole(String username, Role role);
 
-    Page<User> searchUsers(SearchUserRequest request);
+
+    List<User> search(SearchUserRequest request);
+
+    Page<User> searchPaged(SearchUserRequest request);
 
     User getUser(long id);
 
@@ -87,10 +89,6 @@ public interface UserService {
     User updateUser(long id, UpdateUserRequest request);
 
     void deleteUser(long id);
-
-    User addToSharedWithUser(long id, UpdateSharingRequest request);
-
-    User removeFromSharedWithUser(long id, UpdateSharingRequest request);
 
     /**
      * Clears the mfaSecret for the given user.

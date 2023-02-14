@@ -18,9 +18,7 @@
 
   <h4 class="modal-title">Add Note</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
 </div>
 
@@ -38,13 +36,13 @@
     <form [formGroup]="candidateForm">
 
       <!-- TITLE -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="title">Title</label>
         <input type="text" class="form-control" id="title" [formControlName]="'title'">
       </div>
 
       <!-- COMMENT -->
-      <div class="form-group">
+      <div class="mb-3">
         <label for="comment">Comment</label>
         <ngx-wig id="comment" formControlName="comment"></ngx-wig>
       </div>

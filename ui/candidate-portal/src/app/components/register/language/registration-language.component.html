@@ -36,7 +36,7 @@
     <form class="card" [formGroup]="form" *ngIf="addingLanguage">
 
       <!-- WHICH LANGUAGE -->
-      <div class="form-group" *ngIf="!isEnglish()">
+      <div class="mb-3" *ngIf="!isEnglish()">
         <label for="id">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }} <sup>*</sup></label>
         <ng-select id="id" [disabled]="" [formControlName]="'languageId'" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
@@ -47,7 +47,7 @@
       <ng-container *ngIf="selectedFormLanguage">
 
         <!-- HOW WELL DO YOU SPEAK -->
-        <div class="form-group">
+        <div class="mb-3">
           <label for="spokenLevelId">
             {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
           </label>
@@ -57,7 +57,7 @@
         </div>
 
         <!-- HOW WELL DO YOU READ AND WRITE -->
-        <div class="form-group">
+        <div class="mb-3">
           <label for="writtenLevelId">
             {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
           </label>

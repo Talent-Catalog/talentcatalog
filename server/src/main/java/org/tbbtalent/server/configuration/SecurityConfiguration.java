@@ -35,7 +35,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -45,6 +44,7 @@ import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
 import org.tbbtalent.server.security.JwtAuthenticationFilter;
 import org.tbbtalent.server.security.LanguageFilter;
 import org.tbbtalent.server.security.TbbAuthenticationProvider;
+import org.tbbtalent.server.security.TbbPasswordEncoder;
 import org.tbbtalent.server.security.TbbUserDetailsService;
 
 /**
@@ -285,13 +285,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 
                 /*
-                 * INTAKE ENDPOINTS
+                 * CANDIDATE INTAKE ENDPOINTS
                  */
-                // PUT (EXC. READ ONLY)
+                // GET (EXC. READ ONLY)
                 .antMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT (EXC. READ ONLY)
                 .antMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                /*
+                 * JOB INTAKE ENDPOINTS
+                 */
+                // GET (EXC. READ ONLY)
+                .antMatchers(HttpMethod.GET, "/api/admin/job/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT (EXC. READ ONLY)
+                .antMatchers(HttpMethod.PUT, "/api/admin/job/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
 
                 // ALL OTHER END POINTS
@@ -354,7 +363,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new TbbPasswordEncoder();
     }
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)

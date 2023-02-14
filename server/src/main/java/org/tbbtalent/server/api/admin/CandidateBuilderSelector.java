@@ -55,16 +55,24 @@ public class CandidateBuilderSelector {
             "updatedDate",
             "contextNote",
             "user",
-            "candidateReviewStatusItems"
+            "candidateReviewStatusItems",
+            "country",
+            "nationality",
+            "regoPartnerParam",
+            "regoReferrerParam",
+            "regoUtmCampaign",
+            "regoUtmContent",
+            "regoUtmMedium",
+            "regoUtmSource",
+            "regoUtmTerm",
+            "stage"
         ));
 
     private final Set<String> candidateSemiLimitedExtraProperties =
         new HashSet<>(Arrays.asList(
             "city",
             "state",
-            "address1",
-            "country",
-            "nationality"
+            "address1"
         ));
 
     private final Set<String> userPublicProperties =
@@ -72,7 +80,7 @@ public class CandidateBuilderSelector {
             "id",
             "createdDate",
             "updatedDate",
-            "sourcePartner"
+            "partner"
         ));
 
     public CandidateBuilderSelector(UserService userService) {
@@ -82,7 +90,7 @@ public class CandidateBuilderSelector {
     @NonNull
     public DtoBuilder selectBuilder() {
         User user = userService.getLoggedInUser();
-        Partner partner = user == null ? null : user.getSourcePartner();
+        Partner partner = user == null ? null : user.getPartner();
 
         //Default to Role.limited if user is null.
         Role role = user == null ? Role.limited : user.getRole();
@@ -170,7 +178,7 @@ public class CandidateBuilderSelector {
                 .add("email")
                 .add("createdDate")
                 .add("updatedDate")
-                .add("sourcePartner", partnerDto())
+                .add("partner", partnerDto())
                 ;
     }
 

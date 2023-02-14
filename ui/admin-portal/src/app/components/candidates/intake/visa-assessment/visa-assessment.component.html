@@ -18,9 +18,9 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div class="mb-3">
     <label for="visaJobPutForward">Put candidate forward to employer?</label>
-    <div class="float-right">
+    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -30,7 +30,7 @@
                [items]="visaEligibilityOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
-  <div class="form-group">
+  <div class="mb-3">
     <label for="visaJobNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="visaJobNotes" formControlName="visaJobNotes"

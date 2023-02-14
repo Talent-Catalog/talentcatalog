@@ -4,13 +4,13 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SearchResults} from "../../../../model/search-results";
-import {Partner} from "../../../../model/partner";
+import {Partner, sourceCountriesAsString} from "../../../../model/partner";
 import {PartnerService} from "../../../../services/partner.service";
 import {SearchPartnerRequest} from "../../../../model/base";
 import {
   CreateUpdatePartnerComponent
 } from "../create-update-partner/create-update-partner.component";
-import {Country} from "../../../../model/country";
+import {User} from "../../../../model/user";
 
 /*
    MODEL - Delegate all authentication logic to authService
@@ -110,11 +110,11 @@ export class SearchPartnersComponent implements OnInit {
   }
 
   sourceCountries(partner: Partner) {
-    let s = '';
-    const countries: Country[] = partner.sourceCountries;
-    if (countries != null) {
-      s = countries.map(c => c.name).join(",");
-    }
-    return s;
+    return sourceCountriesAsString(partner);
+  }
+
+  showContact(user: User): string {
+
+    return user ? user.firstName + " " + user.lastName + "(" + user.email + ")" : "";
   }
 }
