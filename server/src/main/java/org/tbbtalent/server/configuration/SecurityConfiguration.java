@@ -316,10 +316,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
             .csrf().disable()
 
-            //TODO JC Is this the problem?
-            //Force https in production ie when behind proxy - eg load balancer - but allow HTTP
-            //when running locally.
-            //See https://www.lenar.io/force-redirect-http-to-https-in-spring-boot/
+
+        //Commented out below code because it was causing "Too many redirects" error as described below
+        //https://stackoverflow.com/questions/42715718/aws-load-balancer-err-too-many-redirects/52598630#52598630
+        //This code was really only needed when the Spring Server was NOT running behind the
+        //Amazon Load Balancer. Then it was necessary for the server itself to require HTTPS
+        //connections. However, the load balancer also forces HTTPS connections and it seems
+        //that having both the load balancer and the server forcing https connections leads
+        //to the "Too many redirects" error.
+        // - John Cameron
+
+//Force https in production ie when behind proxy - eg load balancer - but allow HTTP
+//when running locally.
+//See https://www.lenar.io/force-redirect-http-to-https-in-spring-boot/
 //            .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
 
         ;
