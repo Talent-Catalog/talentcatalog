@@ -111,9 +111,13 @@ Download and install the latest of the following tools.
   >   brew install postgresql@14
   > 
   >   brew services restart postgresql@14
+
+### Extra config todo ###
      
 - AWS CLI - [see AWS website](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-                          
+  - Once installed, needs to be configured. Log in to your AWS account, click on user top right, 
+   select Security Credentials, create access key, then download to CSV file. Then...
+  > aws configure import --csv path-to-downloaded-file.csv
 
 - Terraform (for setting up our AWS infrastructure)
   > brew install terraform 

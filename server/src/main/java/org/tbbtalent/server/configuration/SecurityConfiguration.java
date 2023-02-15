@@ -320,7 +320,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             //Force https in production ie when behind proxy - eg load balancer - but allow HTTP
             //when running locally.
             //See https://www.lenar.io/force-redirect-http-to-https-in-spring-boot/
-            .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
+//            .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
 
         ;
 
