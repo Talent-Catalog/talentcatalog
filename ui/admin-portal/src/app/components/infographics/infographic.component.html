@@ -28,12 +28,13 @@
     </li>
   </ol>
 </nav>
-<form [formGroup]="statsFilter" class="d-flex align-items-baseline">
 
-  <div class="flex-fill">
-    <!-- SAVED LIST -->
-    <div class="d-flex flex-fill mb-2">
-      <div class="me-2 flex-fill w-50">
+<form [formGroup]="statsFilter">
+  <div class="container-fluid">
+
+    <div class="row gy-4">
+
+      <div class="col-12 col-md-3">
         <label>List</label>
         <!-- Disabled if saved search is entered -->
         <ng-select
@@ -47,9 +48,7 @@
           formControlName="savedList">
         </ng-select>
       </div>
-
-      <!-- SAVED SEARCH -->
-      <div class="flex-fill w-50">
+      <div class="col-12 col-md-3">
         <label>Search</label>
         <!-- Disabled if saved list is entered -->
         <ng-select
@@ -63,31 +62,23 @@
           formControlName="savedSearch">
         </ng-select>
       </div>
-    </div>
-    <div class="text-muted small">
-      <p>Notes: Either List or Search can be specified, but not both.
-        Default date filters go from start of registrations to today's date.</p>
-    </div>
-  </div>
-
-  <div class="d-flex align-items-center flex-fill">
-    <!-- DATE FROM -->
-    <div class="ms-2">
-      <label for="dateFrom">Date From:</label>
-      <app-date-picker id="dateFrom" [control]="statsFilter.controls.dateFrom" [allowFuture]="false"></app-date-picker>
-    </div>
-    <!-- DATE TO -->
-    <div class="">
-      <label for="dateTo">Date To:</label>
-      <app-date-picker id="dateTo" [control]="statsFilter.controls.dateTo" [allowFuture]="false"></app-date-picker>
+      <div class="col-12 col-md-3">
+        <label for="dateFrom">Date From:</label>
+        <app-date-picker id="dateFrom" [control]="statsFilter.controls.dateFrom" [allowFuture]="false"></app-date-picker>
+      </div>
+      <div class="col-12 col-md-3">
+          <label for="dateTo">Date To:</label>
+          <app-date-picker id="dateTo" [control]="statsFilter.controls.dateTo" [allowFuture]="false"></app-date-picker>
+      </div>
     </div>
 
-
-  </div>
-  <div class="d-flex align-self-center flex-fill justify-content-end">
-    <button class="btn btn-primary btn-block" (click)="submitStatsRequest()">
-      <i class="fas fa-calendar-alt"></i> Run stats
-    </button>
+    <div class="row mt-4">
+      <div class="col">
+        <button class="btn btn-success float-end" (click)="submitStatsRequest()">
+          <i class="fas fa-calendar-alt"></i> Run stats
+        </button>
+      </div>
+    </div>
   </div>
 </form>
 
