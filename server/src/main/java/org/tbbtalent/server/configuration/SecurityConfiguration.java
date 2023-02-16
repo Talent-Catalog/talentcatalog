@@ -324,16 +324,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         //connections. However, the load balancer also forces HTTPS connections and it seems
         //that having both the load balancer and the server forcing https connections leads
         //to the "Too many redirects" error.
+        //
         //See also this post which says that you can also avoid the problem by setting
         //server.forward-headers-strategy=NATIVE
-        //Haven't tested that.
         //https://stackoverflow.com/questions/26655875/spring-boot-redirect-http-to-https/58061590#58061590
+        //However, we tested using that setting and the problem persists, so we need to pull out
+        //the following code altogether
         // - John Cameron
 
 //Force https in production ie when behind proxy - eg load balancer - but allow HTTP
 //when running locally.
 //See https://www.lenar.io/force-redirect-http-to-https-in-spring-boot/
-        .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
+//        .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
 
         ;
 

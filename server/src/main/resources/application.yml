@@ -123,7 +123,8 @@ server:
   forward-headers-strategy: NATIVE
   tomcat:
     redirect-context-root: false
-#  todo not sure this is used
+
+#  todo These heroku entries don't do anything and should come out
   url: https://tbbtalent-staging.herokuapp.com
 web:
   portal: ${WEB_PORTAL:https://tbbtalent-staging.herokuapp.com/candidate-portal}
