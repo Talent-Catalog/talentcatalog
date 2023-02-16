@@ -20,7 +20,7 @@
 <form [formGroup]="form">
 
   <div class="mb-3">
-    <label for="visaReject">
+    <label class="form-label" for="visaReject">
       Have you ever been rejected for a visa?
     </label>
     <div *ngIf="editable" class="float-end">
@@ -34,7 +34,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="visaReject === 'Yes' || visaReject === 'Unsure'" class="mb-3">
-    <label for="visaRejectNotes">Notes</label>
+    <label class="form-label" for="visaRejectNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="visaRejectNotes" [formControlName]="'visaRejectNotes'"
               placeholder="" ></textarea>

@@ -35,25 +35,25 @@
 
     <form [formGroup]="taskForm">
       <div class="mb-3">
-        <label for="displayName">Display Name</label>
+        <label class="form-label" for="displayName">Display Name</label>
         <input type="text" class="form-control" id="displayName" formControlName="displayName">
       </div>
       <div class="mb-3">
-        <label for="description">Description</label>
+        <label class="form-label" for="description">Description</label>
         <textarea type="text" class="md-textarea-auto form-control" rows="4"
                   id="description" [formControlName]="'description'"></textarea>
       </div>
       <div class="mb-3">
-        <label for="daysToComplete">Days to Complete</label>
+        <label class="form-label" for="daysToComplete">Days to Complete</label>
         <input type="number" class="form-control" id="daysToComplete" formControlName="daysToComplete">
       </div>
       <div class="mb-3">
-        <label for="helpLink">Help Link</label>
+        <label class="form-label" for="helpLink">Help Link</label>
         <input type="text" class="form-control" id="helpLink" formControlName="helpLink">
         <div *ngIf="taskForm.controls.helpLink.errors?.pattern">Please provide valid url</div>
       </div>
       <div class="form-check-inline mb-3">
-        <label for="optional">Optional?</label>
+        <label class="form-label" for="optional">Optional?</label>
         <input type="checkbox" id="optional" formControlName="optional">
       </div>
 

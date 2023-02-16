@@ -24,7 +24,7 @@
     <form [formGroup]="form">
 
       <div class="mb-3">
-        <label class="font-weight-bold" for="additionalInfo">
+        <label class="fw-bold form-label" for="additionalInfo">
           {{ 'REGISTRATION.SUBMIT.LABEL.ADDITIONALINFO' | translate }}
         </label>
         <textarea id="additionalInfo" class="md-textarea-auto form-control" rows="5"
@@ -33,7 +33,7 @@
 
       <div *ngIf="!usAfghan">
         <div class="mb-3">
-          <label for="surveyTypeId">
+          <label class="form-label" for="surveyTypeId">
             {{ 'REGISTRATION.SUBMIT.LABEL.SURVEY' | translate }} <sup>*</sup>
           </label>
           <ng-select id="surveyTypeId" [formControlName]="'surveyTypeId'" [items]="surveyTypes" [clearable]="false"
@@ -43,7 +43,7 @@
 
         <ng-container *ngIf="form.controls.surveyTypeId.value !== ''">
           <div class="mb-3">
-            <label class="font-weight-bold" for="surveyComment">
+            <label class="fw-bold form-label" for="surveyComment">
               {{ 'REGISTRATION.SUBMIT.LABEL.COMMENT' | translate }}
             </label>
             <input type="text" class="form-control" id="surveyComment" placeholder="" [formControlName]="'surveyComment'">
@@ -53,7 +53,7 @@
 
       <div class="mb-3">
         <div>
-          <label for="linkedInLink">
+          <label class="form-label" for="linkedInLink">
             {{ 'REGISTRATION.SUBMIT.LINKEDIN.LABEL' | translate }}
           </label>
         </div>

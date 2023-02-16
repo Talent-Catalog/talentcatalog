@@ -24,7 +24,7 @@
     <form [formGroup]="form">
       <div class="mb-3">
         <div class="citizenship d-flex align-items-baseline justify-content-between">
-          <label [for]="'nationality'+myRecordIndex">Country of Citizenship</label>
+          <label class="form-label" [for]="'nationality'+myRecordIndex">Country of Citizenship</label>
           <div class="float-end d-flex align-items-center">
             <app-autosave-status
               [saving]="saving"
@@ -44,14 +44,14 @@
 
       <ng-container *ngIf="hasSelectedNationality">
         <div class="mb-3">
-          <label [for]="'hasPassport'+myRecordIndex">Passport?</label>
+          <label class="form-label" [for]="'hasPassport'+myRecordIndex">Passport?</label>
           <ng-select [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'" (clear)="setNoResponse('citizenHasPassport')"
                      [items]="hasPassportOptions" [clearOnBackspace]="false"
                      placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
         </div>
         <div *ngIf="hasPassport === 'ValidPassport'">
           <div class="mb-3">
-            <label [for]="'passportExp'+myRecordIndex">Passport Expiry Date?</label>
+            <label class="form-label" [for]="'passportExp'+myRecordIndex">Passport Expiry Date?</label>
             <app-date-picker [id]="'passportExp'+myRecordIndex" [control]="form.controls.citizenPassportExp" [allowPast]="false"></app-date-picker>
             <div *ngIf="dateDifference()"
                  class="alert alert-danger">
@@ -60,7 +60,7 @@
           </div>
         </div>
         <div class="mb-3">
-          <label [for]="'citizenNotes'+myRecordIndex">Notes</label>
+          <label class="form-label" [for]="'citizenNotes'+myRecordIndex">Notes</label>
           <textarea type="text" class="md-textarea-auto form-control" rows="4"
                     [id]="'citizenNotes'+myRecordIndex" [formControlName]="'citizenNotes'"
                     placeholder="" ></textarea>

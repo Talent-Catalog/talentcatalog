@@ -16,7 +16,7 @@
     <div class="mb-3">
 
       <div *ngIf="isCreate()" class="mb-3">
-        <label>Type? *</label>
+        <label class="form-label">Type? *</label>
         <ng-select
           id="partnerType"
           [items]="partnerTypes"
@@ -29,11 +29,11 @@
         </ng-select>
       </div>
       <div class="mb-3">
-        <label for="name">Name *</label>
+        <label class="form-label" for="name">Name *</label>
         <input class="form-control" id="name" formControlName="name">
       </div>
       <div class="mb-3">
-        <label>Status? *</label>
+        <label class="form-label">Status? *</label>
         <ng-select
           id="status"
           [items]="statuses"
@@ -46,17 +46,17 @@
         </ng-select>
       </div>
 
-      <label for="name">Abbreviated name *</label>
+      <label class="form-label" for="name">Abbreviated name *</label>
       <input class="form-control" id="abbreviation" formControlName="abbreviation">
 
-      <label for="defaultContact">Default contact</label>
+      <label class="form-label" for="defaultContact">Default contact</label>
       <ng-select id="defaultContact" [formControlName]="'defaultContact'"
                 [items]="partnerUsers"
                  bindLabel="name"
                 placeholder="Select" [clearable]="true">
       </ng-select>
 
-      <label for="sflink">Salesforce account link</label>
+      <label class="form-label" for="sflink">Salesforce account link</label>
       <input class="form-control" id="sflink" formControlName="sflink">
       <div *ngIf="isInvalid(form.controls.sflink)" class="alert alert-danger">
         This doesn't look like a Salesforce link to me!
@@ -64,27 +64,27 @@
         Copy and paste from Salesforce.
       </div>
 
-      <label for="notificationEmail">Email</label>
+      <label class="form-label" for="notificationEmail">Email</label>
       <input class="form-control" id="notificationEmail" formControlName="notificationEmail">
 
-      <label for="logo">Logo</label>
+      <label class="form-label" for="logo">Logo</label>
       <input class="form-control" id="logo" formControlName="logo">
 
-      <label for="websiteUrl">Website Url</label>
+      <label class="form-label" for="websiteUrl">Website Url</label>
       <input class="form-control" id="websiteUrl" formControlName="websiteUrl">
 
       <div *ngIf="isSourcePartner()">
-        <label for="registrationLandingPage">Registration Landing Page (url)</label>
+        <label class="form-label" for="registrationLandingPage">Registration Landing Page (url)</label>
         <input class="form-control" id="registrationLandingPage" formControlName="registrationLandingPage">
 
-        <label for="autoAssignable">Auto assignable by country?</label>
+        <label class="form-label" for="autoAssignable">Auto assignable by country?</label>
         <input type="checkbox" formControlName="autoAssignable" id="autoAssignable">
 
-        <label for="defaultPartnerRef">Default partner ref?</label>
+        <label class="form-label" for="defaultPartnerRef">Default partner ref?</label>
         <input type="checkbox" formControlName="defaultPartnerRef" id="defaultPartnerRef">
 
         <!-- SOURCE COUNTRIES  -->
-        <label>Source Country</label>
+        <label class="form-label">Source Country</label>
         <ng-select
           id="sourceCountry"
           [items]="countries"

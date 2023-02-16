@@ -22,14 +22,14 @@
 
     <!-- EMAIL -->
     <div class="mb-3">
-      <label for="email">{{'REGISTRATION.CONTACT.LABEL.EMAIL' | translate }} <sup>*</sup></label>
+      <label class="form-label" for="email">{{'REGISTRATION.CONTACT.LABEL.EMAIL' | translate }} <sup>*</sup></label>
       <input type="email" class="form-control" id="email" placeholder="" [formControlName]="'email'">
       <app-form-control-error [control]="form.controls.email"></app-form-control-error>
     </div>
 
     <!-- PHONE # -->
     <div class="mb-3">
-      <label for="phone">{{ 'REGISTRATION.CONTACT.LABEL.PHONE' | translate }}</label>
+      <label class="form-label" for="phone">{{ 'REGISTRATION.CONTACT.LABEL.PHONE' | translate }}</label>
       <input type="text" class="form-control" id="phone" placeholder=""
              [formControlName]="'phone'">
       <app-form-control-error [control]="form.controls.phone"></app-form-control-error>
@@ -37,7 +37,7 @@
 
     <!-- WHATSAPP -->
     <div class="mb-3">
-      <label for="whatsapp">{{ 'REGISTRATION.CONTACT.LABEL.WHATSAPP' | translate }}</label>
+      <label class="form-label" for="whatsapp">{{ 'REGISTRATION.CONTACT.LABEL.WHATSAPP' | translate }}</label>
       <input type="text" class="form-control" id="whatsapp" placeholder=""
              [formControlName]="'whatsapp'">
     </div>
@@ -45,19 +45,19 @@
 
     <ng-container *ngIf="!authenticated">
       <!--      <div class="mb-3">-->
-      <!--        <label for="username" >{{ 'REGISTRATION.CONTACT.LABEL.USERNAME' | translate}} <sup>*</sup></label>-->
+      <!--        <label class="form-label" for="username" >{{ 'REGISTRATION.CONTACT.LABEL.USERNAME' | translate}} <sup>*</sup></label>-->
       <!--        <input type="username" class="form-control" id="username" placeholder="Enter username" [formControlName]="'username'">-->
       <!--      </div>-->
 
       <div class="mb-3">
-        <label for="password">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORD' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="password">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORD' | translate }} <sup>*</sup></label>
         <input type="password" class="form-control" id="password" placeholder=""
                [formControlName]="'password'">
         <app-form-control-error [control]="form.controls.password"></app-form-control-error>
       </div>
 
       <div class="mb-3">
-        <label for="passwordConfirmation">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION' | translate }}
+        <label class="form-label" for="passwordConfirmation">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION' | translate }}
           <sup>*</sup></label>
         <input type="password" class="form-control" id="passwordConfirmation" placeholder=""
                [formControlName]="'passwordConfirmation'">

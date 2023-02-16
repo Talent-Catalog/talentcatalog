@@ -3,8 +3,8 @@
   <div>
     <div class="mb-4">
       <h4>{{selectedTask?.task?.displayName}}
-        <span class="font-weight-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.REQUIRED' | translate }}</span>
-        <span class="font-weight-bolder font-italic" *ngIf="selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.OPTIONAL' | translate }}</span>
+        <span class="fw-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.REQUIRED' | translate }}</span>
+        <span class="fw-bolder font-italic" *ngIf="selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.OPTIONAL' | translate }}</span>
       </h4>
       <div *ngIf="selectedTask.task.taskType !== 'Question'">{{selectedTask?.task?.description}}</div>
     </div>
@@ -84,7 +84,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="font-weight-bold" for="comment">
+          <label class="fw-bold form-label" for="comment">
             {{ 'TASKS.COMMENT.LABEL' | translate }}
           </label>
           <textarea id="comment" class="md-textarea-auto form-control" rows="5"

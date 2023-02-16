@@ -92,7 +92,7 @@
         <div class="container-fluid">
           <div class="row">
             <div class="mb-3 col-md-6">
-              <label for="simpleQueryString">Elasticsearch</label>
+              <label class="form-label" for="simpleQueryString">Elasticsearch</label>
               <input id="simpleQueryString" type="text" class="form-control" placeholder="eg welder diesel+mechanic" aria-label="Elastic"
                      formControlName="simpleQueryString"
               >
@@ -100,7 +100,7 @@
 
             <!-- STATUS -->
             <div class="mb-3 col-md-3">
-              <label>Status</label>
+              <label class="form-label">Status</label>
               <ng-select
                 id="statuses"
                 [items]="candidateStatusOptions"
@@ -139,7 +139,7 @@
 
             <!-- ENGLISH LANGUAGE -->
             <div class="mb-3 col-12 col-md-3">
-              <label>English</label>
+              <label class="form-label">English</label>
               <app-language-level-form-control #englishLanguage
                                                [model]="englishLanguageModel"
                                                [languages]="languages"
@@ -164,7 +164,7 @@
 
                 <!-- OCCUPATION MULTISELECT -->
                 <div class="col">
-                  <label>Occupation</label>
+                  <label class="form-label">Occupation</label>
                   <ng-select
                     id="occupationIds"
                     [ngClass]="{'disabled' : elastic()}"
@@ -194,14 +194,14 @@
 
                   <!-- MIN AGE -->
                   <div class="col-6">
-                    <label for="minYrs">Min Years Experience</label>
+                    <label class="form-label" for="minYrs">Min Years Experience</label>
                     <input id="minYrs" type="number" class="form-control"
                            name="minYrs" [formControlName]="'minYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
 
                   <!-- MAX AGE -->
                   <div class="col-6">
-                    <label for="maxYrs">Max Years Experience</label>
+                    <label class="form-label" for="maxYrs">Max Years Experience</label>
                     <input id="maxYrs" type="number" class="form-control"
                            name="maxYrs" [formControlName]="'maxYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
@@ -218,13 +218,13 @@
                     <!-- MIN AGE -->
                   <div class="row">
                     <div class="col-6">
-                      <label for="minAge">Min Age</label>
+                      <label class="form-label" for="minAge">Min Age</label>
                       <input id="minAge" type="number" class="form-control"
                              name="minAge" [formControlName]="'minAge'" [readOnly]="elastic()" [placeholder]="'Select'">
                     </div>
                     <!-- MAX AGE -->
                     <div class="col-6">
-                      <label for="maxAge">Max Age</label>
+                      <label class="form-label" for="maxAge">Max Age</label>
                       <input id="maxAge" type="number" class="form-control"
                              name="maxAge" [formControlName]="'maxAge'" [readOnly]="elastic()" [placeholder]="'Select'">
                     </div>
@@ -234,7 +234,7 @@
 
                 <!-- MODIFIED BETWEEN -->
                 <div class="col-md-6">
-                  <label>Last Modified</label>
+                  <label class="form-label">Last Modified</label>
                   <app-date-range-picker [readonly]="elastic()"
                                          #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
                   </app-date-range-picker>
@@ -244,7 +244,7 @@
               <div class="row gy-3">
                 <!-- GENDER -->
                 <div class="col-md-2">
-                  <label for="gender">Gender</label>
+                  <label class="form-label" for="gender">Gender</label>
                   <ng-select
                     id="gender"
                     [items]="genderOptions"
@@ -259,7 +259,7 @@
                 <!-- EDUCATION LEVEL -->
 
                 <!--              <div class="mb-3 col-12 col-md-4">-->
-                <!--                <label for="minEducationLevel">Education Level (minimum)</label>-->
+                <!--                <label class="form-label" for="minEducationLevel">Education Level (minimum)</label>-->
                 <!--                <select class="form-control" id="minEducationLevel" name="minEducationLevel"-->
                 <!--                        [formControlName]="'minEducationLevel'" [disabled]="elastic()">-->
                 <!--                  <option value="" [disabled]="elastic()"></option>-->
@@ -269,7 +269,7 @@
                 <!--                </select>-->
                 <!--              </div>-->
                 <div class="col-md-5">
-                  <label>Education Level (minimum)</label>
+                  <label class="form-label">Education Level (minimum)</label>
                   <ng-select
                     id="minEducationLevel"
                     [ngClass]="{'disabled' : elastic()}"
@@ -284,7 +284,7 @@
 
                 <!-- EDUCATION MAJOR -->
                 <div class="col-md-5">
-                  <label>Education major</label>
+                  <label class="form-label">Education major</label>
                   <ng-select
                     id="educationMajorIds"
                     [ngClass]="{'disabled' : elastic()}"
@@ -320,7 +320,7 @@
 
             <!-- OTHER LANGUAGE -->
             <div class="col-md-4">
-              <label>Other Language</label>
+              <label class="form-label">Other Language</label>
               <app-language-level-form-control #otherLanguage
                                                [languages]="languages"
                                                [languageLevels]="languageLevels"
@@ -332,7 +332,7 @@
 
             <!-- NATIONALITY -->
             <div class="col-md-4">
-              <label>Nationality (Country)</label>
+              <label class="form-label">Nationality (Country)</label>
 
               <div class="operator">
                 <button class="btn btn-link" type="button"
@@ -369,7 +369,7 @@
 
           <!-- COUNTRIES  -->
           <div class="col-md-4">
-            <label>Location (Country)</label>
+            <label class="form-label">Location (Country)</label>
 
             <div class="operator">
               <button class="btn btn-link" type="button"
@@ -405,7 +405,7 @@
             </div>
 
             <div class="col-md-4">
-              <label>Survey Type</label>
+              <label class="form-label">Survey Type</label>
               <ng-select
                 id="surveyType"
                 [items]="surveyTypes"
@@ -430,14 +430,14 @@
 
           <!-- REFERRER -->
           <div class="col-md-4">
-            <label for="referrer">Referrer</label>
+            <label class="form-label" for="referrer">Referrer</label>
             <input id="referrer" class="form-control"
                    name="referrer" [formControlName]="'regoReferrerParam'" >
           </div>
 
             <!-- EXCLUSION LIST -->
             <div class="col-md-4">
-              <label for="exclusion">Exclusion list</label>
+              <label class="form-label" for="exclusion">Exclusion list</label>
               <ng-select
                 id="exclusion"
                 [items]="lists"
@@ -453,7 +453,7 @@
 
             <!-- PARTNERS  -->
             <div class="col-md-4">
-              <label>Partners</label>
+              <label class="form-label">Partners</label>
               <ng-select
                 id="partner"
                 [items]="partners"
@@ -515,7 +515,7 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col">
-              <button type="submit" class="btn btn-outline-primary" [disabled]="loading || searchForm.invalid">Apply</button>
+              <button type="submit" class="btn btn-outline-primary float-end" [disabled]="loading || searchForm.invalid">Apply</button>
             </div>
           </div>
         </div>

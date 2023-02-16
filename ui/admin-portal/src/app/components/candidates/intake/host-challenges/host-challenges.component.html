@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="hostChallenges">What have been the major challenges for you in {{candidate.country.name}}? </label>
+    <label class="form-label" for="hostChallenges">What have been the major challenges for you in {{candidate.country.name}}? </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
         [saving]="saving"

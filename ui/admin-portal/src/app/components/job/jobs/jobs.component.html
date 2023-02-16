@@ -9,7 +9,7 @@
   <div class="searches">
     <form [formGroup]="searchForm" (ngSubmit)="search()">
         <div *ngIf="searchBy === SearchJobsBy.mine" class="mt-2 mb-3">
-          <label [title]="myJobsOnlyTip" for="myJobsOnlyTip">My jobs only</label>
+          <label class="form-label" [title]="myJobsOnlyTip" for="myJobsOnlyTip">My jobs only</label>
           <input [title]="myJobsOnlyTip" type="checkbox" [formControlName]="'myJobsOnly'" id="myJobsOnlyTip">
         </div>
 
@@ -19,7 +19,7 @@
         </div>
 
         <div class="mb-3">
-          <label>Stage</label>
+          <label class="form-label">Stage</label>
           <ng-select
             id="stage"
             [items]="stages"
@@ -38,7 +38,7 @@
     <table class="table table-hover">
 
       <!--          Header-->
-      <thead class="thead-light">
+      <thead class="table-light">
       <tr>
         <th (click)="toggleSort('name')">
           <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>

@@ -30,7 +30,7 @@
 
   <form [formGroup]="form">
     <div class="mb-3">
-      <label for="name">Name *</label>
+      <label class="form-label" for="name">Name *</label>
       <input type="text" class="form-control" id="name" formControlName="name" required>
       <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"
            class="alert alert-danger">
@@ -41,7 +41,7 @@
       <div class="operator">
         <input type="checkbox" class="custom-checkbox" id="reviewable"
                [value]="false" formControlName="reviewable">
-        <label for="reviewable" class="custom-checkbox">
+        <label class="form-label custom-checkbox" for="reviewable">
           Should result of searches be reviewable?
         </label>
       </div>

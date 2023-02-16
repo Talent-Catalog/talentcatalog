@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="residenceStatus">
+    <label class="form-label" for="residenceStatus">
       What is your current residence or legal status?
     </label>
     <div class="float-end">
@@ -34,7 +34,7 @@
   </div>
   <div *ngIf="hasNotes">
     <div class="mb-3">
-      <label for="residenceStatusNotes">Please explain more</label>
+      <label class="form-label" for="residenceStatusNotes">Please explain more</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="residenceStatusNotes" [formControlName]="'residenceStatusNotes'"
                 placeholder="" ></textarea>

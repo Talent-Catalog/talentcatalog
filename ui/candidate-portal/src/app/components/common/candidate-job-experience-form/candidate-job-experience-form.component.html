@@ -23,7 +23,7 @@
   <!-- OCCUPATION -->
   <div class="col-12" *ngIf="!candidateOccupation">
     <div class="mb-3">
-      <label for="candidateOccupationId">
+      <label class="form-label" for="candidateOccupationId">
         {{ 'FORM.JOBEXPERIENCE.LABEL.CANDIDATEOCCUPATIONID' | translate }} <sup>*</sup>
       </label>
 
@@ -38,7 +38,7 @@
   <!-- COMPANY NAME -->
   <div class="col-12 col-md-6">
     <div class="mb-3">
-      <label for="companyName">
+      <label class="form-label" for="companyName">
         {{ 'FORM.JOBEXPERIENCE.LABEL.COMPANYNAME' | translate }} <sup>*</sup>
       </label>
 
@@ -51,7 +51,7 @@
   <!-- COMPANY LOCATION -->
   <div class="col-12 col-md-6">
     <div class="mb-3">
-      <label for="country">
+      <label class="form-label" for="country">
         {{ 'FORM.JOBEXPERIENCE.LABEL.COUNTRY' | translate }} <sup>*</sup>
       </label>
       <ng-select id="country" [formControlName]="'country'" [items]="countries" [clearable]="false"
@@ -64,7 +64,7 @@
   <!-- START DATE -->
   <div class="col-12 col-md-6">
     <div class="mb-3">
-      <label for="startDate">
+      <label class="form-label" for="startDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.STARTDATE' | translate }} <sup>*</sup>
       </label>
       <app-date-picker id="startDate" [control]="form.controls.startDate"></app-date-picker>
@@ -82,7 +82,7 @@
   <!-- END DATE -->
   <div class="col-12 col-md-6">
     <div class="mb-3">
-      <label for="endDate">
+      <label class="form-label" for="endDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.ENDDATE' | translate }}
       </label>
       <app-date-picker id="endDate" [control]="form.controls.endDate"></app-date-picker>
@@ -97,7 +97,7 @@
   <!-- JOB TITLE -->
   <div class="col-12">
     <div class="mb-3">
-      <label for="role">
+      <label class="form-label" for="role">
         {{ 'FORM.JOBEXPERIENCE.LABEL.ROLE' | translate }} <sup>*</sup>
       </label>
 
@@ -110,7 +110,7 @@
   <!-- ROLE DESCRIPTION -->
   <div class="col-12">
     <div class="mb-3">
-      <label for="description">
+      <label class="form-label" for="description">
         {{ 'FORM.JOBEXPERIENCE.LABEL.DESCRIPTION' | translate }} <sup>*</sup>
       </label>
 
@@ -124,7 +124,7 @@
   <!-- FULLTIME? -->
   <div class="col-12">
     <div class="mb-3">
-      <label>{{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.TITLE' | translate }} <sup>*</sup></label>
+      <label class="form-label">{{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.TITLE' | translate }} <sup>*</sup></label>
 
       <div class="form-check">
         <input class="form-check-input" type="radio" id="fullTime" [value]="true" [formControlName]="'fullTime'">
@@ -147,7 +147,7 @@
   <!-- VOLUNTEER / PAID -->
   <div class="col-12">
     <div class="mb-3">
-      <label>{{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.TITLE' | translate }} <sup>*</sup></label>
+      <label class="form-label">{{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.TITLE' | translate }} <sup>*</sup></label>
 
       <div class="form-check">
         <input class="form-check-input" type="radio" id="paid" [value]="true" [formControlName]="'paid'">

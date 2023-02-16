@@ -18,7 +18,7 @@
   <div>
     <form [formGroup]="importForm">
       <div class="mb-3 col-4 ps-0">
-        <label for="langCode">Importing language?</label>
+        <label class="form-label" for="langCode">Importing language?</label>
         <input type="text" class="form-control" placeholder="Language code..."
                formControlName="langCode" id="langCode">
       </div>
@@ -67,9 +67,9 @@
     Found {{results?.totalElements}} occupations
   </div>
 
-  <table class="table">
+  <table class="table align-middle">
 
-    <thead class="thead-light">
+    <thead class="table-light">
     <tr>
       <th>Name (TBB id-ISCO08 code)</th>
       <th>Status</th>

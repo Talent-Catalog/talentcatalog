@@ -4,7 +4,7 @@
 <form [formGroup]="form">
 
   <div class="mb-3 flex-fill">
-    <label for="jobSummary">
+    <label class="form-label" for="jobSummary">
     <span class="me-2 font-weight-normal" [ngClass]="{'alert alert-danger': highlight}">
       Job Summary
       <span *ngIf="saving">
