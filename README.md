@@ -132,9 +132,13 @@ just run this and manually copy/paste the values from the CSV file as prompted.
 - Terraform (for setting up our AWS infrastructure)
   > brew install terraform 
 
-Once installed, you can run Terraform by going to the deirectory containing your main Terraform
-file (main.tf), then running `init` (only need to do this once), and then `plan` or `apply`, as 
-needed.
+Once installed, you can run Terraform from the directory containing your main Terraform
+file (main.tf).
+In order to populate "secret" configuration values that Terraform needs to set up as
+environment variables for the TC software, you need to copy a special file `terraform.tfvars`
+to that directory before running terraform. Contact TBB for a copy of that file.
+
+Then you can run `init` (only need to do this once), and then `plan` or `apply`, as needed.
 
   > terraform init
   >
