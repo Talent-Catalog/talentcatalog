@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="returnedHome">Have you returned to your home country since entering {{candidate.country.name}}?</label>
+    <label class="form-label" for="returnedHome">Have you returned to your home country since entering {{candidate.country.name}}?</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -33,7 +33,7 @@
 
   <div *ngIf="returnedHome === 'Yes'">
     <div class="mb-3">
-      <label for="returnedHomeReason">What was the reason for your return?</label>
+      <label class="form-label" for="returnedHomeReason">What was the reason for your return?</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="returnedHomeReason" [formControlName]="'returnedHomeReason'"
                 placeholder="" ></textarea>
@@ -41,7 +41,7 @@
   </div>
   <div *ngIf="returnedHome === 'No'">
     <div class="mb-3">
-      <label for="returnedHomeReasonNo">What are the reasons you have not returned?</label>
+      <label class="form-label" for="returnedHomeReasonNo">What are the reasons you have not returned?</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="returnedHomeReasonNo" [formControlName]="'returnedHomeReasonNo'"
                 placeholder="" ></textarea>

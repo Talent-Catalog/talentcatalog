@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="workDesired">Are you currently working in your desired field?</label>
+    <label class="form-label" for="workDesired">Are you currently working in your desired field?</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -33,7 +33,7 @@
   </div>
   <div *ngIf="hasWorkDesired">
     <div class="mb-3">
-      <label for="workDesiredNotes">Please explain more</label>
+      <label class="form-label" for="workDesiredNotes">Please explain more</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="workDesiredNotes" [formControlName]="'workDesiredNotes'"
                 placeholder="" ></textarea>

@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div *ngIf="editable" class="mb-3">
-    <label for="visaJobEligibleOther">Other Visa Options?</label>
+    <label class="form-label" for="visaJobEligibleOther">Other Visa Options?</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -15,7 +15,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="mb-3">
-    <label for="visaJobEligibleOtherNotes">Notes</label>
+    <label class="form-label" for="visaJobEligibleOtherNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="visaJobEligibleOtherNotes" [formControlName]="'visaJobEligibleOtherNotes'"
               placeholder=""></textarea>

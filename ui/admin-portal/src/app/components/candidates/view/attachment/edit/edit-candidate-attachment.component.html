@@ -31,12 +31,12 @@
   <form [formGroup]="form">
 
     <div class="mb-3">
-      <label for="name">Attachment Name</label>
+      <label class="form-label" for="name">Attachment Name</label>
       <input class="form-control" id="name" [formControlName]="'name'" type="text">
     </div>
 
     <div class="mb-3" *ngIf="attachment?.type === 'link'">
-      <label for="location">Attachment URL</label>
+      <label class="form-label" for="location">Attachment URL</label>
       <div>
         <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
       </div>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="mb-3" *ngIf="attachment?.type === 'file'">
-        <label for="cv">Is this file a CV?</label>
+        <label class="form-label" for="cv">Is this file a CV?</label>
         <input id="cv" [formControlName]="'cv'" type="checkbox" [checked]="attachment?.cv">
         <div class="form-text">If it is a CV it will have the text extracted to assist keyword search (if include CV files is checked).</div>
     </div>

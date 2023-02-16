@@ -35,7 +35,7 @@
 
     <form [formGroup]="candidateForm">
       <div class="mb-3">
-        <label for="surveyTypeId">
+        <label class="form-label" for="surveyTypeId">
           How did you hear about us?
         </label>
         <ng-select id="surveyTypeId" name="surveyTypeId" [formControlName]="'surveyTypeId'" [items]="surveyTypes"
@@ -43,7 +43,7 @@
       </div>
 
       <div class="mb-3">
-        <label for="surveyComment">
+        <label class="form-label" for="surveyComment">
           Comment
         </label>
         <input type="text" class="form-control" id="surveyComment" placeholder="" [formControlName]="'surveyComment'">

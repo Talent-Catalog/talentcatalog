@@ -4,7 +4,7 @@
 
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="visaCharacterAssessment">Meets character requirement? (e.g. no criminal record)</label>
+    <label class="form-label" for="visaCharacterAssessment">Meets character requirement? (e.g. no criminal record)</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -16,7 +16,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="mb-3">
-    <label for="visaCharacterAssessmentNotes">Notes</label>
+    <label class="form-label" for="visaCharacterAssessmentNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="visaCharacterAssessmentNotes" [formControlName]="'visaCharacterAssessmentNotes'"
               placeholder="" ></textarea>

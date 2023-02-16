@@ -4,7 +4,7 @@
 
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="visaHealthAssessment">Meets health requirement? (e.g. no major health issues)</label>
+    <label class="form-label" for="visaHealthAssessment">Meets health requirement? (e.g. no major health issues)</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -16,7 +16,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="mb-3">
-    <label for="visaHealthAssessmentNotes">Notes</label>
+    <label class="form-label" for="visaHealthAssessmentNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="visaHealthAssessmentNotes" [formControlName]="'visaHealthAssessmentNotes'"
               placeholder="" ></textarea>

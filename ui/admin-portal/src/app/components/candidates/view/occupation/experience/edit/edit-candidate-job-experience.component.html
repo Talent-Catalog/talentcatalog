@@ -37,33 +37,33 @@
 
       <!-- COMPANY NAME -->
       <div class="mb-3">
-        <label for="companyName">Company Name *</label>
+        <label class="form-label" for="companyName">Company Name *</label>
         <input type="text" class="form-control" id="companyName"
                [formControlName]="'companyName'">
       </div>
 
       <!-- COUNTRY -->
       <div class="mb-3">
-        <label for="countryId">Country *</label>
+        <label class="form-label" for="countryId">Country *</label>
         <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="countries"
                    [clearable]="false" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- START DATE -->
       <div class="mb-3">
-        <label for="startDate">Start Date *</label>
+        <label class="form-label" for="startDate">Start Date *</label>
         <app-date-picker id="startDate" [control]="candidateForm.controls.startDate"></app-date-picker>
       </div>
 
       <!-- END DATE -->
       <div class="mb-3">
-        <label for="endDate">End Date</label>
+        <label class="form-label" for="endDate">End Date</label>
         <app-date-picker id="endDate" [control]="candidateForm.controls.endDate"></app-date-picker>
       </div>
 
       <!-- FULL TIME -->
       <div class="mb-3">
-        <label for="fullTime">Contract Type *</label>
+        <label class="form-label" for="fullTime">Contract Type *</label>
         <ng-select id="fullTime" [formControlName]="'fullTime'" [clearable]="false" [items]="fullTime"
                    bindLabel="displayText" bindValue="value">
         </ng-select>
@@ -71,7 +71,7 @@
 
       <!-- PAID -->
       <div class="mb-3">
-        <label for="paid">Employment Type *</label>
+        <label class="form-label" for="paid">Employment Type *</label>
         <ng-select id="paid" [formControlName]="'paid'" [clearable]="false" [items]="paid"
                    bindLabel="displayText" bindValue="value">
         </ng-select>
@@ -79,13 +79,13 @@
 
       <!-- ROLE NAME -->
       <div class="mb-3">
-        <label for="role">Role *</label>
+        <label class="form-label" for="role">Role *</label>
         <input type="text" class="form-control" id="role" [formControlName]="'role'">
       </div>
 
       <!-- DESCRIPTION -->
       <div class="mb-3">
-        <label for="description">Description *</label>
+        <label class="form-label" for="description">Description *</label>
         <textarea type="text" class="md-textarea-auto form-control" rows="8" id="description" placeholder="" [formControlName]="'description'"></textarea>
       </div>
 

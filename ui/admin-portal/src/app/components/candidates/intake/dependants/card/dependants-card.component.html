@@ -24,7 +24,7 @@
     <form [formGroup]="form">
       <div class="mb-3">
         <div class="citizenship d-flex align-items-baseline justify-content-between">
-          <label [for]="'dependantRelation'+myRecordIndex">Relation to candidate</label>
+          <label class="form-label" [for]="'dependantRelation'+myRecordIndex">Relation to candidate</label>
           <div class="float-end d-flex align-items-center">
             <app-autosave-status
               [saving]="saving"
@@ -45,14 +45,14 @@
       <div *ngIf="hasDependant">
         <div *ngIf="dependantRelationship == 'Other'">
           <div class="mb-3">
-            <label [for]="'dependantRelationOther'+myRecordIndex">If other, please explain relationship</label>
+            <label class="form-label" [for]="'dependantRelationOther'+myRecordIndex">If other, please explain relationship</label>
 
             <input type="text" class="form-control"
                    [id]="'dependantRelationOther'+myRecordIndex" [formControlName]="'dependantRelationOther'">
           </div>
         </div>
         <div class="mb-3">
-          <label [for]="'dependantGender'+myRecordIndex">Gender</label>
+          <label class="form-label" [for]="'dependantGender'+myRecordIndex">Gender</label>
 
           <ng-select [id]="'dependantGender'+myRecordIndex" [formControlName]="'dependantGender'"
                      [items]="dependantGenders" [clearable]="false"
@@ -60,20 +60,20 @@
         </div>
 
         <div class="mb-3">
-          <label [for]="'dependantName'+myRecordIndex">Name</label>
+          <label class="form-label" [for]="'dependantName'+myRecordIndex">Name</label>
 
           <input type="text" class="form-control"
                  [id]="'dependantName'+myRecordIndex" [formControlName]="'dependantName'">
         </div>
 
         <div class="mb-3">
-          <label [for]="'dependantDob'+myRecordIndex">DOB</label>
+          <label class="form-label" [for]="'dependantDob'+myRecordIndex">DOB</label>
           <app-date-picker [id]="'dependantDob'+myRecordIndex" [control]="form.controls.dependantDob"></app-date-picker>
           <p class="small">Age: {{dependantAge}}</p>
         </div>
 
         <div class="mb-3">
-          <label [for]="'dependantHealthConcerns'+myRecordIndex">
+          <label class="form-label" [for]="'dependantHealthConcerns'+myRecordIndex">
             Any health concerns?
           </label>
           <ng-select [id]="'dependantHealthConcerns'+myRecordIndex" [formControlName]="'dependantHealthConcerns'"
@@ -82,14 +82,14 @@
                      placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
         </div>
         <div *ngIf="hasHealthConcern === 'Yes'" class="mb-3">
-          <label [for]="'dependantHealthNotes'+myRecordIndex">Notes</label>
+          <label class="form-label" [for]="'dependantHealthNotes'+myRecordIndex">Notes</label>
           <textarea type="text" class="md-textarea-auto form-control" rows="3"
                     [id]="'dependantHealthNotes'+myRecordIndex" [formControlName]="'dependantHealthNotes'"
                     placeholder="" ></textarea>
         </div>
 
         <div class="mb-3">
-          <label [for]="'dependantRegistered'+myRecordIndex">
+          <label class="form-label" [for]="'dependantRegistered'+myRecordIndex">
             Are they registered?
           </label>
           <ng-select [id]="'dependantRegistered'+myRecordIndex" [formControlName]="'dependantRegistered'"
@@ -100,12 +100,12 @@
 
         <div *ngIf="dependantRegisteredNumber">
           <div class="mb-3">
-            <label [for]="'dependantRegisteredNumber'+myRecordIndex">If spouse or child, what is their ID number? (only if different from yours)</label>
+            <label class="form-label" [for]="'dependantRegisteredNumber'+myRecordIndex">If spouse or child, what is their ID number? (only if different from yours)</label>
             <input type="text" class="form-control"
                    [id]="'dependantRegisteredNumber'+myRecordIndex" [formControlName]="'dependantRegisteredNumber'">
           </div>
           <div class="mb-3">
-            <label [for]="'dependantRegisteredNotes'+myRecordIndex">Notes</label>
+            <label class="form-label" [for]="'dependantRegisteredNotes'+myRecordIndex">Notes</label>
             <textarea type="text" class="md-textarea-auto form-control" rows="3"
                       [id]="'dependantRegisteredNotes'+myRecordIndex" [formControlName]="'dependantRegisteredNotes'"
                       placeholder="" ></textarea>

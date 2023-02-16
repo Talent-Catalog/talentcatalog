@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="returnHomeSafe">Do you feel it is safe to permanently return to your home country?</label>
+    <label class="form-label" for="returnHomeSafe">Do you feel it is safe to permanently return to your home country?</label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
         [saving]="saving"

@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="availImmediate">Are you interested in international employment opportunities now?</label>
+    <label class="form-label" for="availImmediate">Are you interested in international employment opportunities now?</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -33,7 +33,7 @@
 
   <div *ngIf="availImmediate === 'Yes'|| availImmediate == 'Unsure'">
     <div class="mb-3">
-      <label for="availImmediateJobOps">What type of opportunities are you qualified for?</label>
+      <label class="form-label" for="availImmediateJobOps">What type of opportunities are you qualified for?</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="availImmediateJobOps" [formControlName]="'availImmediateJobOps'"
                 placeholder="" ></textarea>
@@ -42,13 +42,13 @@
 
   <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
     <div class="mb-3">
-      <label for="availImmediateReason">Factors preventing immediate availability for international work.</label>
+      <label class="form-label" for="availImmediateReason">Factors preventing immediate availability for international work.</label>
       <ng-select id="availImmediateReason" [formControlName]="'availImmediateReason'" (clear)="setNoResponse('availImmediateReason')"
                  [items]="availImmediateReasonOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
     <div class="mb-3">
-      <label for="availImmediateNotes">If Other, or if you have additional notes please describe here.</label>
+      <label class="form-label" for="availImmediateNotes">If Other, or if you have additional notes please describe here.</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="availImmediateNotes" [formControlName]="'availImmediateNotes'"
                 placeholder="" ></textarea>

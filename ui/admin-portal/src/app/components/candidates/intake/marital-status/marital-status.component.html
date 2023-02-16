@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="maritalStatus">
+    <label class="form-label" for="maritalStatus">
       Are you engaged or married?
     </label>
     <div class="float-end">
@@ -39,7 +39,7 @@
 
   <div *ngIf="hasPartner">
     <div class="mb-3">
-      <label for="partnerRegistered">
+      <label class="form-label" for="partnerRegistered">
         Is your partner registered with TBB?
       </label>
       <ng-select id="partnerRegistered" [formControlName]="'partnerRegistered'" (clear)="setNoResponse('partnerRegistered')"
@@ -61,7 +61,7 @@
       </div>
     </div>
     <div class="mb-3">
-      <label for="partnerEduLevelId">
+      <label class="form-label" for="partnerEduLevelId">
         What is your partner’s highest level of education?
       </label>
       <ng-select id="partnerEduLevelId" [formControlName]="'partnerEduLevelId'" [items]="educationLevels"
@@ -70,7 +70,7 @@
     </div>
     <div *ngIf="eduLevelSelected">
       <div class="mb-3">
-        <label for="partnerEduLevelNotes">
+        <label class="form-label" for="partnerEduLevelNotes">
           Additional notes about partner's education level
         </label>
         <textarea type="text" class="md-textarea-auto form-control" rows="4"
@@ -79,7 +79,7 @@
       </div>
     </div>
     <div class="mb-3">
-      <label for="partnerOccupationId">
+      <label class="form-label" for="partnerOccupationId">
         What is your partner’s occupation?
       </label>
       <ng-select id="partnerOccupationId" [formControlName]="'partnerOccupationId'" [closeOnSelect]="true"
@@ -88,7 +88,7 @@
     </div>
     <div>
       <div class="mb-3">
-        <label for="partnerOccupationNotes">
+        <label class="form-label" for="partnerOccupationNotes">
           Additional notes about selected occupation, or description of an occupation that does
           not appear in the above list.
         </label>
@@ -98,7 +98,7 @@
       </div>
     </div>
     <div class="mb-3">
-      <label for="partnerEnglish">
+      <label class="form-label" for="partnerEnglish">
         Does your partner speak English?
       </label>
       <ng-select id="partnerEnglish" [formControlName]="'partnerEnglish'" (clear)="setNoResponse('partnerEnglish')"
@@ -107,7 +107,7 @@
     </div>
     <div *ngIf="partnerEnglish === 'Yes'">
       <div class="mb-3">
-        <label for="partnerEnglishLevelId">
+        <label class="form-label" for="partnerEnglishLevelId">
           What level of English does your partner speak?
         </label>
         <ng-select id="partnerEnglishLevelId" [formControlName]="'partnerEnglishLevelId'" (clear)="setNoResponse('partnerEnglishLevelId')"
@@ -115,7 +115,7 @@
                    placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
       </div>
       <div class="mb-3">
-        <label for="partnerIelts">
+        <label class="form-label" for="partnerIelts">
           Has your partner completed IELTS?
         </label>
         <ng-select id="partnerIelts" [formControlName]="'partnerIelts'" (clear)="setNoResponse('partnerIelts')"
@@ -124,7 +124,7 @@
       </div>
       <div *ngIf="takenIelts">
         <div class="mb-3">
-          <label for="partnerIeltsScore">
+          <label class="form-label" for="partnerIeltsScore">
             What was your partner's score?
           </label>
           <app-ielts-score-validation
@@ -133,7 +133,7 @@
           </app-ielts-score-validation>
         </div>
         <div class="mb-3">
-          <label for="partnerIeltsYr">
+          <label class="form-label" for="partnerIeltsYr">
             In what year did your partner take the test?
           </label>
           <ng-select id="partnerIeltsYr" [formControlName]="'partnerIeltsYr'" [items]="years" [closeOnSelect]="true"
@@ -143,7 +143,7 @@
     </div>
 
     <div class="mb-3">
-      <label for="partnerCitizenshipId">
+      <label class="form-label" for="partnerCitizenshipId">
         What is your partners current country of citizenship?
       </label>
       <ng-select id="partnerCitizenshipId" [formControlName]="'partnerCitizenshipId'"
@@ -155,7 +155,7 @@
 
   <div *ngIf="hasNotes">
     <div class="mb-3">
-      <label for="maritalStatusNotes">
+      <label class="form-label" for="maritalStatusNotes">
         Additional notes about marital status
       </label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"

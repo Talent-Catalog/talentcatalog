@@ -38,7 +38,7 @@
       <!-- DUE DATE -->
       <div *ngIf="!isComplete && !isAbandoned">
         <div class="mb-3">
-          <label for="dueDate">Due date</label>
+          <label class="form-label" for="dueDate">Due date</label>
           <app-date-picker id="dueDate" [control]="form.controls.dueDate" [allowPast]="false"></app-date-picker>
         </div>
       </div>

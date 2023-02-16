@@ -37,19 +37,19 @@
 
       <!-- SUBMISSION DUE DATE -->
       <div class="mb-3">
-        <label for="submissionDueDate">Submission Due Date</label>
+        <label class="form-label" for="submissionDueDate">Submission Due Date</label>
         <app-date-picker id="submissionDueDate" [control]="jobForm.controls.submissionDueDate"></app-date-picker>
       </div>
 
       <!-- CONTACT EMAIL -->
       <div class="mb-3">
-        <label for="email">Contact Email</label>
+        <label class="form-label" for="email">Contact Email</label>
         <input type="email" class="form-control" id="email" placeholder="Enter contact email" [formControlName]="'contactEmail'">
       </div>
 
       <!-- Contact user -->
       <div class="mb-3">
-        <label for="contactUser">Contact User</label>
+        <label class="form-label" for="contactUser">Contact User</label>
         <ng-select
           id="contactUser"
           [items]="users"
@@ -64,7 +64,7 @@
 
       <!-- Recruiter -->
       <div class="mb-3">
-        <label for="recruiter">Recruiter</label>
+        <label class="form-label" for="recruiter">Recruiter</label>
         <ng-select
           id="recruiter"
           [items]="recruiters"

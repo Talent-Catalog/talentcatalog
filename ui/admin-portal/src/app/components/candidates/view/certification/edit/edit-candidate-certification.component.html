@@ -37,19 +37,19 @@
 
       <!-- COURSE NAME -->
       <div class="mb-3">
-        <label for="name">Course Name</label>
+        <label class="form-label" for="name">Course Name</label>
         <input type="text" class="form-control" id="name" [formControlName]="'name'">
       </div>
 
       <!-- INSTITUTION NAME -->
       <div class="mb-3">
-        <label for="institution">City</label>
+        <label class="form-label" for="institution">City</label>
         <input type="text" class="form-control" id="institution" [formControlName]="'institution'">
       </div>
 
       <!-- DATE OF COMPLETION -->
       <div class="mb-3">
-        <label for="dateCompleted">Date of Completion</label>
+        <label class="form-label" for="dateCompleted">Date of Completion</label>
         <app-date-picker id="dateCompleted" [control]="candidateForm.controls.dateCompleted"></app-date-picker>
       </div>
 

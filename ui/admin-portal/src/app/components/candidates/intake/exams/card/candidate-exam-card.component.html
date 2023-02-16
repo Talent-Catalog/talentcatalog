@@ -24,7 +24,7 @@
     <form [formGroup]="form">
       <div class="mb-3">
         <div class="exam d-flex align-items-baseline justify-content-between">
-          <label [for]="'exam'+myRecordIndex">Exam</label>
+          <label class="form-label" [for]="'exam'+myRecordIndex">Exam</label>
           <div class="float-end d-flex align-items-center">
             <app-autosave-status
               [saving]="saving"
@@ -42,14 +42,14 @@
 
       <div *ngIf="isOtherExam">
         <div class="mb-3">
-          <label [for]="'otherExam'+myRecordIndex">Other Exam Name</label>
+          <label class="form-label" [for]="'otherExam'+myRecordIndex">Other Exam Name</label>
           <input type="text" class="form-control" [id]="'otherExam'+myRecordIndex" [formControlName]="'otherExam'">
         </div>
       </div>
 
       <div *ngIf="hasSelectedExam">
         <div class="mb-3">
-          <label [for]="'examScore'+myRecordIndex">Score</label>
+          <label class="form-label" [for]="'examScore'+myRecordIndex">Score</label>
           <app-ielts-score-validation
             [id]="'examScore'+myRecordIndex"
             [control]="form.controls.examScore"
@@ -59,14 +59,14 @@
 
 
         <div class="mb-3">
-          <label [for]="'examYear'+myRecordIndex">
+          <label class="form-label" [for]="'examYear'+myRecordIndex">
             In what year did you take the test?
           </label>
           <ng-select [id]="'examYear'+myRecordIndex" [formControlName]="'examYear'" [items]="years"
                      [clearOnBackspace]="false" placeholder="Select"></ng-select>
         </div>
         <div class="mb-3">
-          <label [for]="'examNotes'+myRecordIndex">Notes</label>
+          <label class="form-label" [for]="'examNotes'+myRecordIndex">Notes</label>
           <textarea type="text" class="md-textarea-auto form-control" rows="3"
                     [id]="'examNotes'+myRecordIndex" [formControlName]="'examNotes'"
                     placeholder=""></textarea>
