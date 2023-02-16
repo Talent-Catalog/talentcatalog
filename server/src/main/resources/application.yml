@@ -120,9 +120,10 @@ slack:
 
 server:
 #  See https://docs.spring.io/spring-boot/docs/2.7.0/reference/htmlsingle/#howto.webserver.use-behind-a-proxy-server
-  forward-headers-strategy: native
+  forward-headers-strategy: NATIVE
   tomcat:
     redirect-context-root: false
+#  todo not sure this is used
   url: https://tbbtalent-staging.herokuapp.com
 web:
   portal: ${WEB_PORTAL:https://tbbtalent-staging.herokuapp.com/candidate-portal}
