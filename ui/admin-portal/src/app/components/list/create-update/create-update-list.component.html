@@ -29,7 +29,7 @@
 
   <form [formGroup]="form">
     <div class="mb-3">
-      <label for="name">Name *</label>
+      <label class="form-label" for="name">Name *</label>
       <input class="form-control" id="name" formControlName="name">
       <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"
            class="alert alert-danger">
@@ -39,7 +39,7 @@
       </div>
     </div>
     <div class="mb-3">
-      <label for="fixed">Fixed?</label>
+      <label class="form-label" for="fixed">Fixed?</label>
       <input type="checkbox" formControlName="fixed" id="fixed">
     </div>
 

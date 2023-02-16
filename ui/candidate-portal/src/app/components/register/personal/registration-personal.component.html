@@ -23,7 +23,7 @@
     <!-- FIRST NAME -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label for="firstName">{{ 'REGISTRATION.PERSONAL.LABEL.FIRSTNAME' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="firstName">{{ 'REGISTRATION.PERSONAL.LABEL.FIRSTNAME' | translate }} <sup>*</sup></label>
         <input type="text" class="form-control" id="firstName" placeholder="" [formControlName]="'firstName'">
         <app-form-control-error [control]="form.controls.firstName"></app-form-control-error>
       </div>
@@ -32,7 +32,7 @@
     <!-- LAST NAME -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label for="lastName">{{ 'REGISTRATION.PERSONAL.LABEL.LASTNAME' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="lastName">{{ 'REGISTRATION.PERSONAL.LABEL.LASTNAME' | translate }} <sup>*</sup></label>
         <input type="text" class="form-control" id="lastName" placeholder="" [formControlName]="'lastName'">
         <app-form-control-error [control]="form.controls.lastName"></app-form-control-error>
       </div>
@@ -41,7 +41,7 @@
     <!-- GENDER -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label for="gender">{{ 'REGISTRATION.PERSONAL.LABEL.GENDER' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="gender">{{ 'REGISTRATION.PERSONAL.LABEL.GENDER' | translate }} <sup>*</sup></label>
 
         <ng-select id="gender" [formControlName]="'gender'" [clearable]="false" [searchable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
@@ -57,7 +57,7 @@
     <!-- DOB -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>
         <app-date-picker id="dob" [control]="form.controls.dob" [allowFuture]="false"></app-date-picker>
         <app-form-control-error [control]="form.controls.dob"></app-form-control-error>
       </div>
@@ -68,7 +68,7 @@
     <!-- COUNTRY -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label for="countryId">{{ 'REGISTRATION.PERSONAL.LABEL.COUNTRYID' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="countryId">{{ 'REGISTRATION.PERSONAL.LABEL.COUNTRYID' | translate }} <sup>*</sup></label>
         <ng-select id="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
                    (ngModelChange)="onCountryChange()"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindValue="id" bindLabel="name">
@@ -80,7 +80,7 @@
     <!-- YEAR OF ARRIVAL -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label for="yearOfArrival">
+        <label class="form-label" for="yearOfArrival">
           {{ 'REGISTRATION.PERSONAL.LABEL.YEAROFARRIVAL' | translate }}
         </label>
         <ng-select id="yearOfArrival" [formControlName]="'yearOfArrival'" [items]="years"
@@ -93,7 +93,7 @@
     <!-- CITY -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label for="city">
+        <label class="form-label" for="city">
           {{ 'REGISTRATION.PERSONAL.LABEL.CITY' | translate }}
         </label>
         <input type="text" class="form-control" id="city" placeholder="" [formControlName]="'city'">
@@ -103,7 +103,7 @@
     <!-- STATE -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label for="state">
+        <label class="form-label" for="state">
           {{ 'REGISTRATION.PERSONAL.LABEL.STATE' | translate }}
         </label>
         <div *ngIf="states; else state_as_text">
@@ -123,7 +123,7 @@
     <!-- NATIONALITY -->
     <div class="col-12">
       <div class="mb-3">
-        <label for="nationalityId">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="nationalityId">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
         <ng-select id="nationalityId" [formControlName]="'nationalityId'" [items]="countries" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindLabel="name" bindValue="id">
         </ng-select>
@@ -136,7 +136,7 @@
 
     <div *ngIf="languageService.isUsAfghan()" class="col-12 col-md-6" >
       <div class="mb-3">
-        <label for="externalId">{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</label>
+        <label class="form-label" for="externalId">{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</label>
         <input type="text" class="form-control" id="externalId" placeholder="" [formControlName]="'externalId'">
       </div>
     </div>
@@ -146,7 +146,7 @@
     <!-- UNHCR REGISTRATION -->
     <div *ngIf="!languageService.isUsAfghan()" class="col-12 col-md-6">
       <div class="mb-3">
-        <label for="unhcrRegistered">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="unhcrRegistered">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }} <sup>*</sup></label>
         <ng-select id="unhcrRegistered" class="custom" [formControlName]="'unhcrRegistered'" [clearable]="false" [searchable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</ng-option>
@@ -162,7 +162,7 @@
     <!-- REGISTRATION NUMBER -->
     <div *ngIf="hasUnhcr && !languageService.isUsAfghan()" class="col-12 col-md-6" >
       <div class="mb-3">
-        <label for="unhcrNumber">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>
+        <label class="form-label" for="unhcrNumber">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>
         <input type="text" class="form-control" id="unhcrNumber" placeholder="" [formControlName]="'unhcrNumber'">
       </div>
     </div>
@@ -170,7 +170,7 @@
     <!-- UNHCR REGISTRATION -->
     <div *ngIf="hasUnhcr && !languageService.isUsAfghan()" class="col-12" >
       <div class="mb-3">
-        <label for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></label>
         <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'" [clearable]="false" [searchable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</ng-option>

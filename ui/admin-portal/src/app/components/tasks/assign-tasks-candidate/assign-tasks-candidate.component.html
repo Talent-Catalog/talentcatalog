@@ -31,7 +31,7 @@
 
       <!-- TASKS -->
       <div class="mb-3">
-        <label for="task">Assign to task:</label>
+        <label class="form-label" for="task">Assign to task:</label>
         <ng-select id="task" [formControlName]="'task'" [items]="allTasks"
                    [groupBy]="'taskType'" [searchFn]="searchTypeOrName" [clearable]="false"
                     placeholder="Select or type to search..." bindLabel="displayName"></ng-select>
