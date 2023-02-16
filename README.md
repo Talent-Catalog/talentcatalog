@@ -6,7 +6,7 @@ This is the repository for the Talent Catalog (TC), which manages data
 for refugees looking for skilled migration pathways into safe countries and employment. 
  
 This repository is a "mono-repo", meaning it contains multiple sub-modules all of which 
-make up the Talent Catalog system. In particular it contains: 
+make up the Talent Catalog system. In particular, it contains: 
 
 - **server**: the backend module of the system providing secure API (REST) access to the 
 data, stored in an SQL Database. This module is written in Java / Spring Boot.
@@ -102,13 +102,45 @@ Download and install the latest of the following tools.
       Just pull the image to install. See later for how to run.
     > docker pull docker.elastic.co/kibana/kibana:7.12.0
 
-- Git - [see Git website](https://git-scm.com/downloads)
+- Git - [see Git website](https://git-scm.com/downloads) - Not really necessary now with Intellij 
+ which will prompt you install Git if needed
+
+
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
   - Homebrew - see https://wiki.postgresql.org/wiki/Homebrew 
   >   brew install postgresql@14
   > 
   >   brew services restart postgresql@14
 
+### AWS management tools ###
+
+These tools do not need to be installed in order to get the code up and running on your development
+machine. However, they are needed if you want to build the TC's AWS cloud infrastructure
+from the Terraform definitions in the `infra` folder.
+    
+- AWS CLI - [see AWS CLI website](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+   
+Once installed, needs to be configured. Log in to your AWS account, click on user top right, 
+   select Security Credentials, create access key, then download to CSV file. 
+   Then, theoretically this should work
+  > aws configure import --csv path-to-downloaded-file.csv
+    
+...but it doesn't currently (it fails saying that it is missing a User Name header). Instead,
+just run this and manually copy/paste the values from the CSV file as prompted.
+> aws configure
+
+- Terraform (for setting up our AWS infrastructure)
+  > brew install terraform 
+
+Once installed, you can run Terraform by going to the deirectory containing your main Terraform
+file (main.tf), then running `init` (only need to do this once), and then `plan` or `apply`, as 
+needed.
+
+  > terraform init
+  >
+  > terraform plan
+  > 
+  > terraform apply
 
 ### Setup your local database ###
 
