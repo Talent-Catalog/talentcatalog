@@ -784,7 +784,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isSalesforceUpdatable(): boolean {
-    return !isSavedSearch(this.candidateSource);
+    return !isSavedSearch(this.candidateSource) && this.authService.canUpdateSalesforce();
+  }
+
+  canResolveTasks(): boolean {
+    return isSavedList(this.candidateSource) && this.authService.canManageCandidateTasks();
   }
 
   isSavedList(): boolean {
@@ -823,7 +827,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isPublishable(): boolean {
-    return isSavedList(this.candidateSource);
+    return isSavedList(this.candidateSource) && this.authService.canPublishList();
   }
 
   isStarred(): boolean {

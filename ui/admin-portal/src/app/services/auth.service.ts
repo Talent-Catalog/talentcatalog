@@ -179,6 +179,51 @@ export class AuthService {
     return visible;
   }
 
+  private commonSeniorPartnerAuth(): boolean {
+    let ok = false;
+    const loggedInUser = this.getLoggedInUser()
+    //Must be logged in
+    if (loggedInUser) {
+
+      //Only certain partner types
+      let partnerType = this.getPartnerType();
+      if (partnerType != null) {
+        if (this.isDefaultSourcePartner()) {
+          //Default source partners can
+          ok = true;
+        } else {
+          switch (partnerType) {
+            case PartnerType.SourcePartner:
+            case PartnerType.RecruiterPartner:
+              ok = true;
+          }
+        }
+      }
+    }
+    return ok;
+  }
+  /**
+   * True if the currently logged in user is permitted to manage candidate tasks.
+   */
+  canManageCandidateTasks(): boolean {
+    return this.commonSeniorPartnerAuth();
+  }
+
+  /**
+   * True if the currently logged in user is permitted to publish lists.
+   */
+  canPublishList(): boolean {
+    return this.commonSeniorPartnerAuth();
+  }
+
+
+  /**
+   * True if the currently logged in user is permitted to update salesforce.
+   */
+  canUpdateSalesforce(): boolean {
+    return this.commonSeniorPartnerAuth();
+  }
+
   isAnAdmin(): boolean {
     let admin: boolean = false;
     switch (this.getLoggedInRole()) {
