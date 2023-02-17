@@ -1068,24 +1068,25 @@ public class CandidateServiceImpl implements CandidateService {
             queryParameters = rootRequest;
         }
 
-        // TODO: 17/2/2023 Change Alight to source partner 
-        // TODO: 17/2/2023 DB update - replace partial "alight" referrals with "alight" 
-        // TODO: 17/2/2023 DB reassign - assign all alight referrals to Alight as source partner 
+        //Assign partner based on the partner abbreviation, if any
         SourcePartner sourcePartner = (SourcePartner) partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
         if (sourcePartner == null) {
-            
-            // TODO: 17/2/2023 Hack for Alight, using referral query parameter if necessary to assign source partner
+            //No source partner found based on partner query param.
+
+            //HACK - Start - Hack for Alight, using referral query parameter if necessary to assign source partner
+            //Gets around problem that registration link was shared with alight as referral query
+            // param instead of partner query param.
             if (queryParameters != null) {
                 String referral = queryParameters.getReferrerParam();
                 if (referral != null) {
                     if ("alight".equalsIgnoreCase(referral)) {
-                        // TODO: 17/2/2023 Set source partner to Alight 
+                        //Referral was to alight - Set source partner to Alight
                         sourcePartner = (SourcePartner) partnerService.getPartnerFromAbbreviation(referral);
                     }
                 }
             }
-            // TODO: 17/2/2023 End hack 
-            
+            //HACK - End
+
             if (sourcePartner == null) {
                 //Use default partner.
                 sourcePartner = partnerService.getDefaultSourcePartner();
