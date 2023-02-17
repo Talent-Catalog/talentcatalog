@@ -211,6 +211,8 @@ public class CandidateServiceImpl implements CandidateService {
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private static final Map<CandidateSubfolderType, String> candidateSubfolderNames;
+    private static final String NOT_AUTHORIZED = "Hidden";
+
     static {
         candidateSubfolderNames = new HashMap<>();
         candidateSubfolderNames.put(CandidateSubfolderType.address, "Address");
@@ -1851,26 +1853,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     public String[] getExportTitles() {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
-        Role role = loggedInUser.getRole();
-        if(role == Role.semilimited){
-            return new String[]{
-                    "Candidate Number", "Gender", "Country Residing", "Nationality",
-                    "Dob", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Context Note", "Link"
-            };
-        }else if(role == Role.limited){
-            return new String[]{
-                    "Candidate Number", "Gender", "Dob", "Max Education Level", "Education Major",
-                    "English Spoken Level", "Occupation", "Context Note", "Link"
-            };
-        } else {
-            return new String[]{
-                    "Candidate Number", "Candidate First Name", "Candidate Last Name", "Gender", "Country Residing", "Nationality",
-                    "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Context Note", "Link"
-            };
-        }
+        return new String[]{
+            "Candidate Number", "Candidate First Name", "Candidate Last Name", "Gender", "Country Residing", "Nationality",
+            "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Context Note", "Link"
+        };
     }
 
     public String[] getExportCandidateStrings(Candidate candidate) {
@@ -1878,13 +1864,27 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Role role = loggedInUser.getRole();
+
+        //If the candidate is managed by the logged-in user's partner, then data is visible based
+        //on the user's role. However, if the candidate is managed by another partner, the user is
+        //treated as if their role was semilimited.
+        Partner userPartner = loggedInUser.getPartner();
+        Partner candidatePartner = candidate.getUser().getPartner();
+        if (userPartner == null || candidatePartner == null ||
+            !userPartner.getId().equals(candidatePartner.getId())) {
+            role = Role.semilimited;
+        }
+
         if (role == Role.semilimited) {
             return new String[] {
                     candidate.getCandidateNumber(),
+                    NOT_AUTHORIZED, //First name
+                    NOT_AUTHORIZED, //Last name
                     candidate.getGender() != null ? candidate.getGender().toString() : null,
                     candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
                     candidate.getNationality() != null ? candidate.getNationality().getName() : null,
                     candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                    NOT_AUTHORIZED, //Email
                     candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
@@ -1895,8 +1895,13 @@ public class CandidateServiceImpl implements CandidateService {
         } else if (role == Role.limited) {
             return new String[] {
                     candidate.getCandidateNumber(),
+                    NOT_AUTHORIZED, //First name
+                    NOT_AUTHORIZED, //Last name
                     candidate.getGender() != null ? candidate.getGender().toString() : null,
+                    NOT_AUTHORIZED, //Country
+                    NOT_AUTHORIZED, //Nationality
                     candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                    NOT_AUTHORIZED, //Email
                     candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
