@@ -1060,18 +1060,22 @@ public class CandidateServiceImpl implements CandidateService {
             log.info("Registration with partner abbreviation: " + partnerAbbreviation);
         }
 
-        SourcePartner sourcePartner = (SourcePartner) partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
-        if (sourcePartner == null) {
-            //Use default partner.
-            sourcePartner = partnerService.getDefaultSourcePartner();
-        }
-
         //Pick up query parameters from request if they are passed in
         HasTcQueryParameters queryParameters;
         if (areQueryParametersPresent(request)) {
             queryParameters = request;
         } else {
             queryParameters = rootRequest;
+        }
+
+        // TODO: 17/2/2023 Change Alight to source partner 
+        // TODO: 17/2/2023 DB update - replace partial "alight" referrals with "alight" 
+        // TODO: 17/2/2023 DB reassign - assign all alight referrals to Alight as source partner 
+        SourcePartner sourcePartner = (SourcePartner) partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+        if (sourcePartner == null) {
+            // TODO: 17/2/2023 Hack for Alight, using referral query parameter if necessary to assign source partner 
+            //Use default partner.
+            sourcePartner = partnerService.getDefaultSourcePartner();
         }
 
         /* Create the candidate */
