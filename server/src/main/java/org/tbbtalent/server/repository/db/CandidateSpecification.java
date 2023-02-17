@@ -50,7 +50,6 @@ import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.model.db.SearchType;
-import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
@@ -256,28 +255,28 @@ public class CandidateSpecification {
             // This is a temporary hack for the us-afghan parolee push.
             // We want US-afghans out of the searches w/ source countries or not BUT if candidate is US SOURCE COUNTRY then in the searches.
             //if source countries is not null, check that it's not US
-            if (loggedInUser != null && !Collections.isEmpty(loggedInUser.getSourceCountries())) {
-                boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == usaId);
-                if (!us) {
-                    //This is not a US user, so don't show US Afghans
-                  Join<Candidate, SurveyType> surveyType
-                      = candidate.join("surveyType", JoinType.LEFT);
-                  conjunction.getExpressions()
-                      .add(builder.or(
-                          builder.isNull(candidate.get("surveyType")),
-                          builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
-                      ));
-                }
-            } else {
-                // if source countries is null, remove us afghans
-              Join<Candidate, SurveyType> surveyType
-                  = candidate.join("surveyType", JoinType.LEFT);
-                conjunction.getExpressions()
-                    .add(builder.or(
-                        builder.isNull(candidate.get("surveyType")),
-                        builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
-                    ));
-            }
+//            if (loggedInUser != null && !Collections.isEmpty(loggedInUser.getSourceCountries())) {
+//                boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == usaId);
+//                if (!us) {
+//                    //This is not a US user, so don't show US Afghans
+//                  Join<Candidate, SurveyType> surveyType
+//                      = candidate.join("surveyType", JoinType.LEFT);
+//                  conjunction.getExpressions()
+//                      .add(builder.or(
+//                          builder.isNull(candidate.get("surveyType")),
+//                          builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
+//                      ));
+//                }
+//            } else {
+//                // if source countries is null, remove us afghans
+//              Join<Candidate, SurveyType> surveyType
+//                  = candidate.join("surveyType", JoinType.LEFT);
+//                conjunction.getExpressions()
+//                    .add(builder.or(
+//                        builder.isNull(candidate.get("surveyType")),
+//                        builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
+//                    ));
+//            }
 
             // SURVEY TYPE SEARCH
             if (!Collections.isEmpty(request.getSurveyTypeIds())) {
