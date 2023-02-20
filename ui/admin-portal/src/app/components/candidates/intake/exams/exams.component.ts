@@ -14,11 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
-import {CandidateExamService, CreateCandidateExamRequest} from '../../../../services/candidate-exam.service';
-import {Subject} from "rxjs";
-import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateExamService} from '../../../../services/candidate-exam.service';
 
 @Component({
   selector: 'app-exams',
@@ -30,59 +28,16 @@ export class ExamsComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   error: boolean;
-  saving: boolean;
-  activeIds: string;
-  open: boolean;
 
-  @Input() toggleAll: Subject<any>;
-
-  @ViewChild(NgbAccordion) acc: NgbAccordion;
 
   constructor(
     private candidateExamService: CandidateExamService
   ) {}
 
   ngOnInit(): void {
-    this.activeIds = 'intake-exams';
-    this.open = true;
-    // called when the toggleAll method is called in the parent component
-    this.toggleAll.subscribe(isOpen => {
-      this.open = isOpen;
-      this.setActiveIds();
-    })
   }
 
-  toggleOpen() {
-    this.open = !this.open
-    this.setActiveIds();
-  }
 
-  setActiveIds(){
-    if (this.open) {
-      this.acc.expandAll();
-      this.activeIds = 'intake-exams';
-    } else {
-      this.acc.collapseAll();
-      this.activeIds = '';
-    }
-  }
-
-  addRecord(e: MouseEvent) {
-    e.stopPropagation();
-    this.saving = true;
-    this.open = true;
-    this.setActiveIds();
-    const request: CreateCandidateExamRequest = {};
-    this.candidateExamService.create(this.candidate.id, request).subscribe(
-      (exam) => {
-        this.candidateIntakeData.candidateExams.unshift(exam)
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      });
-  }
 
   deleteRecord(i: number) {
     this.candidateIntakeData.candidateExams.splice(i, 1);

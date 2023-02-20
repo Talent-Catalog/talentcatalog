@@ -63,7 +63,7 @@
   <hr/>
 
   <div>
-    <ngb-accordion #confirm="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #confirm="ngbAccordion" [destroyOnHide]="false">
       <ngb-panel id="intake-confirm" title="Confirm General Information">
         <ng-template ngbPanelContent>
           <app-confirm-contact
@@ -76,7 +76,7 @@
 
     <hr/>
 
-    <ngb-accordion #recruit="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #recruit="ngbAccordion" [destroyOnHide]="false">
       <ngb-panel id="intake-int-recruit" title="Interest in International Recruitment">
         <ng-template ngbPanelContent>
           <app-avail-immediate
@@ -89,7 +89,7 @@
 
     <hr/>
 
-    <ngb-accordion #destinations="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #destinations="ngbAccordion" [destroyOnHide]="false">
       <ngb-panel id="intake-destinations" title="Destinations">
         <ng-template ngbPanelContent>
           <app-destinations
@@ -109,13 +109,12 @@
     <app-citizenships
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData"
-      [nationalities]="nationalities"
-      [toggleAll]="toggleAll">
+      [nationalities]="nationalities">
     </app-citizenships>
 
     <hr/>
 
-    <ngb-accordion #personal="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #personal="ngbAccordion" [destroyOnHide]="false">
       <ngb-panel id="intake-personal-status" title="Personal Status/Program Eligibility">
         <ng-template ngbPanelContent>
           <app-host-entry
@@ -156,13 +155,12 @@
 
     <app-exams
       [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData"
-      [toggleAll]="toggleAll">
+      [candidateIntakeData]="candidateIntakeData">
     </app-exams>
 
     <hr/>
 
-    <ngb-accordion #english="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #english="ngbAccordion" [destroyOnHide]="false">
       <ngb-panel id="intake-english-assessment" title="English Assessment">
         <ng-template ngbPanelContent>
           <app-lang-assessment
@@ -175,7 +173,7 @@
 
     <hr/>
 
-    <ngb-accordion #registration="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #registration="ngbAccordion" [destroyOnHide]="false">
       <ngb-panel id="intake-registration" title="Registration">
         <ng-template ngbPanelContent>
           <div class="card-title h6">

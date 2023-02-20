@@ -89,30 +89,24 @@
 </div>
 
 <div *ngIf="accordion">
-  <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-    <ngb-panel id="intake-language" title="Languages">
-      <ng-template ngbPanelContent>
-        <p *ngIf="!candidateLanguages?.length" class="m-1">
-          No language data has been entered by this candidate.
-        </p>
-        <ng-container *ngFor="let language of candidateLanguages; let i = index;">
-          <div class="row">
-            <div class="col-sm-11">
-              {{language.language.name}}
-            </div>
-            <div class="col-12" *ngIf="language.migrationLanguage">
-              Migrated Language: {{language.migrationLanguage}}
-            </div>
-            <div class="col-sm-12 col-md-6">
-              <span>Speaking: <i>{{language.spokenLevel.name}}</i></span>
-            </div>
-            <div class="col-sm-12 col-md-6">
-              <span>Reading and Writing: <i>{{language.writtenLevel.name}}</i></span>
-            </div>
-          </div>
-          <hr *ngIf="i < candidateLanguages?.length - 1">
-        </ng-container>
-      </ng-template>
-    </ngb-panel>
-  </ngb-accordion>
+  <p *ngIf="!candidateLanguages?.length" class="m-1">
+    No language data has been entered by this candidate.
+  </p>
+  <ng-container *ngFor="let language of candidateLanguages; let i = index;">
+    <div class="row">
+      <div class="col-sm-11">
+        {{language.language.name}}
+      </div>
+      <div class="col-12" *ngIf="language.migrationLanguage">
+        Migrated Language: {{language.migrationLanguage}}
+      </div>
+      <div class="col-sm-12 col-md-6">
+        <span>Speaking: <i>{{language.spokenLevel.name}}</i></span>
+      </div>
+      <div class="col-sm-12 col-md-6">
+        <span>Reading and Writing: <i>{{language.writtenLevel.name}}</i></span>
+      </div>
+    </div>
+    <hr *ngIf="i < candidateLanguages?.length - 1">
+  </ng-container>
 </div>
