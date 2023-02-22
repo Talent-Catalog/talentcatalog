@@ -41,12 +41,6 @@ development IDE - see below) rather than using brew.
 
 Download and install the latest of the following tools.
 
-- Mac OS Bash Shell - Switch to Bash command line
-  - Some installation instructions - for example the Postgres brew install - don't work properly 
-  with the default Mac OS command line shell which is now Zsh. Run this on your command line to 
-  change the shell.
-  > chsh -s /bin/bash  
-
 - Homebrew - [Homebrew website](https://brew.sh)
 
 - IntelliJ IDEA - [Intellij website](https://www.jetbrains.com/idea/download/)
