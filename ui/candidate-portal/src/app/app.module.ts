@@ -106,6 +106,7 @@ import {ExtendDatePipe} from "./util/date-adapter/extend-date-pipe";
 import {ViewSimpleTaskComponent} from './components/profile/view/tab/tasks/task/simple/view-simple-task.component';
 import {ViewQuestionTaskComponent} from './components/profile/view/tab/tasks/task/question/view-question-task.component';
 import {ViewUploadTaskComponent} from './components/profile/view/tab/tasks/task/upload/view-upload-task.component';
+import {NgxWigModule} from 'ngx-wig';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -196,7 +197,8 @@ export function HttpLoaderFactory(http: HttpClient) {
       }
     }),
     FontAwesomeModule,
-    NgSelectModule
+    NgSelectModule,
+    NgxWigModule
   ],
   providers: [
     {provide: RedirectGuard},

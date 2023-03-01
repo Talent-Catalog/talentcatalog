@@ -32,6 +32,7 @@ import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.CandidateCertification;
@@ -57,6 +58,7 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 @Getter
 @Setter
 @Document(indexName = "candidates")
+@Setting(settingPath = "es/candidate-settings.json")
 public class CandidateEs {
 
     private static final String[] sortingFields = {
@@ -119,7 +121,7 @@ public class CandidateEs {
 
     private String firstName;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, analyzer = "htmlAnalyzer")
     private List<String> jobExperiences;
 
     private String lastName;

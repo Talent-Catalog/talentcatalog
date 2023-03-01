@@ -1,0 +1,48 @@
+version: '3.2'
+
+services:
+  postgresdb-tools:
+    image: ${DEFAULT_DOCKER_REPO}/postgres:14-alpine
+    working_dir: /workspace
+    entrypoint: /bin/bash
+    environment:
+      - PGHOST=postgresdb
+      - PGUSER=postgres
+    depends_on:
+      - postgresdb
+    volumes:
+      - .:/workspace:rw
+
+  postgresdb:
+    # https://hub.docker.com/_/postgres
+    image: ${DEFAULT_DOCKER_REPO}/postgres:14-alpine
+    container_name: tbb-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+
+  elasticsearch:
+    image: ${DEFAULT_DOCKER_REPO}/elasticsearch:7.12.0
+    container_name: tbb-elasticsearch
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.12.0
+    container_name: tbb-kibana
+    restart: unless-stopped
+    ports:
+      - "5601:5601"
+
+volumes:
+  pg_data:

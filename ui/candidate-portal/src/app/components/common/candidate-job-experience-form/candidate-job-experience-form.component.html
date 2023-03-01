@@ -114,8 +114,7 @@
         {{ 'FORM.JOBEXPERIENCE.LABEL.DESCRIPTION' | translate }} <sup>*</sup>
       </label>
 
-      <textarea class="form-control" id="description" placeholder="" rows="5"
-                [formControlName]="'description'"></textarea>
+      <ngx-wig id="description" formControlName="description"></ngx-wig>
 
       <app-form-control-error [control]="form.controls.description"></app-form-control-error>
     </div>
