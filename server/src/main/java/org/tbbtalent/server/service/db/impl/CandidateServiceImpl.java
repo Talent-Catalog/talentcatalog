@@ -837,11 +837,24 @@ public class CandidateServiceImpl implements CandidateService {
                 log.info("Incomplete email sent to " + candidate.getUser().getEmail());
             }
         }
+
+        //Keep user status in sync with candidate status.
+        //When candidate status is deleted, user status should also be deleted.
+        //When candidate status is not deleted, user status cannot be. Set it to active.
+        User user = candidate.getUser();
         if (candidate.getStatus().equals(CandidateStatus.deleted)) {
-            User user = candidate.getUser();
             user.setStatus(Status.deleted);
             userRepository.save(user);
+        } else {
+            //Candidate status is not deleted - make sure that user status is also not deleted.
+            if (Status.deleted.equals(user.getStatus())) {
+                user.setStatus(Status.active);
+                userRepository.save(user);
+            }
         }
+
+
+
         return candidate;
     }
 
