@@ -31,8 +31,8 @@
         </button>
 
         <div class="btn-group-sm ms-2">
-          <button (click)="confirm.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-          <button (click)="confirm.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
+          <button (click)="fullIntake.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
+          <button (click)="fullIntake.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>
       </div>
       <h5>Full Intake</h5>
@@ -62,7 +62,7 @@
   </div>
 
   <div>
-    <ngb-accordion #confirm="ngbAccordion" [destroyOnHide]="false">
+    <ngb-accordion #fullIntake="ngbAccordion" [destroyOnHide]="false">
 
       <!-- GENERAL INFORMATION -->
       <ngb-panel id="intake-confirm" title="Confirm General Information">

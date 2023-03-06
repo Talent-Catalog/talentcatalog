@@ -17,9 +17,7 @@
 import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  OldIntakeInputComponent
-} from "../../../../util/old-intake-input-modal/old-intake-input.component";
+import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
@@ -31,10 +29,7 @@ import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
-import {
-  CandidateExamService,
-  CreateCandidateExamRequest
-} from "../../../../../services/candidate-exam.service";
+import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
 import {
   CandidateDependantService,
   CreateCandidateDependantRequest
@@ -46,7 +41,6 @@ import {
   styleUrls: ['./candidate-intake-tab.component.scss']
 })
 export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
-
   clickedOldIntake: boolean;
 
   constructor(candidateService: CandidateService,
@@ -98,10 +92,6 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
         this.error = error;
         this.saving = false;
       });
-  }
-
-  deleteCitizenshipRecord(i: number) {
-    this.candidateIntakeData.candidateCitizenships.splice(i, 1);
   }
 
   addExamRecord(e: MouseEvent) {
