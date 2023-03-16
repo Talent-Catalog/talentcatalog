@@ -51,6 +51,12 @@ export interface Job extends JobIds {
 }
 
 export interface JobIntakeData {
+
+  minSalary?: string;
+  occupationCode?: string;
+  salary?: string;
+  locationDetails?: string;
+  location?: string;
   benefits?: string;
   description?: string;
   education?: string;

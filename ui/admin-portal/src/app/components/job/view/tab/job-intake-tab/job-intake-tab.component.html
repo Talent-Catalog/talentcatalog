@@ -6,46 +6,97 @@
   {{error}}
 </div>
 <div *ngIf="!loading">
-  <h5>Job Opportunity Intake (JOI)</h5>
+  <div class="d-flex justify-content-between">
+    <h5 class="mb-4">Job Opportunity Intake (JOI)</h5>
+  </div>
 
-  <ngb-accordion #position="ngbAccordion" [destroyOnHide]="false">
-    <ngb-panel id="position-details" title="Position Details">
+    <div *ngFor="let country of countriesExample; let i = index;">
+      <div class="mb-3 align-items-center">
+        <input type="radio" [value]="i"
+               name="country" formControlName="country">
+        {{country}}
+        <button class="float-end btn">
+            <span class="align-top">
+              <i class="fas fa-trash"></i>
+            </span>
+        </button>
+      </div>
+    </div>
+
+  <ngb-accordion #joi="ngbAccordion" [destroyOnHide]="false">
+    <ngb-panel id="immigrationGen" [title]="'Immigration Considerations (Australia) *PREFILLED/PULLED FROM OTHER COMPLETED AUSTRALIAN JOI*'">
       <ng-template ngbPanelContent>
-        <app-job-title
+        <app-min-salary
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
-        </app-job-title>
-        <app-job-description
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-description>
-        <app-job-benefits
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-benefits>
-        <app-job-experience
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-experience>
-        <app-job-education
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-education>
-        <app-job-skills
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-skills>
+        </app-min-salary>
       </ng-template>
     </ngb-panel>
   </ngb-accordion>
 
   <hr/>
+
+    <ngb-accordion #joi="ngbAccordion" [destroyOnHide]="false">
+      <ngb-panel id="position-details" title="Position Details">
+        <ng-template ngbPanelContent>
+          <app-job-title
+            [entity]="job"
+            [jobIntakeData]="jobIntakeData"
+            [editable]="!loggedInUser.readOnly">
+          </app-job-title>
+          <app-job-description
+            [entity]="job"
+            [jobIntakeData]="jobIntakeData"
+            [editable]="!loggedInUser.readOnly">
+          </app-job-description>
+          <app-job-salary
+            [entity]="job"
+            [jobIntakeData]="jobIntakeData"
+            [editable]="!loggedInUser.readOnly">
+          </app-job-salary>
+          <app-job-location
+            [entity]="job"
+            [jobIntakeData]="jobIntakeData"
+            [editable]="!loggedInUser.readOnly">
+          </app-job-location>
+          <app-job-location-details
+            [entity]="job"
+            [jobIntakeData]="jobIntakeData"
+            [editable]="!loggedInUser.readOnly">
+          </app-job-location-details>
+          <app-job-benefits
+            [entity]="job"
+            [jobIntakeData]="jobIntakeData"
+            [editable]="!loggedInUser.readOnly">
+          </app-job-benefits>
+          <app-job-experience
+            [entity]="job"
+            [jobIntakeData]="jobIntakeData"
+            [editable]="!loggedInUser.readOnly">
+          </app-job-experience>
+          <app-job-education
+            [entity]="job"
+            [jobIntakeData]="jobIntakeData"
+            [editable]="!loggedInUser.readOnly">
+          </app-job-education>
+          <app-job-skills
+            [entity]="job"
+            [jobIntakeData]="jobIntakeData"
+            [editable]="!loggedInUser.readOnly">
+          </app-job-skills>
+        </ng-template>
+      </ngb-panel>
+      <ngb-panel id="immigrationJob" title="Immigration Considerations (Job)">
+        <ng-template ngbPanelContent>
+          <app-occupation-code
+            [entity]="job"
+            [jobIntakeData]="jobIntakeData"
+            [editable]="!loggedInUser.readOnly">
+          </app-occupation-code>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
 
 
 </div>
