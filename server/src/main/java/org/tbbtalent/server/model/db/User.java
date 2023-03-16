@@ -34,6 +34,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "users")
@@ -128,7 +129,17 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public User() {
     }
 
-    public User(String username, String firstName, String lastName, String email, Role role, String approver, String purpose) {
+    /**
+     * @param username
+     * @param firstName
+     * @param lastName
+     * @param email
+     * @param role
+     * @param approver
+     * @param purpose
+     */
+
+    public User(String username, String firstName, String lastName, String email, Role role, @Nullable String approver, @Nullable String purpose) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;

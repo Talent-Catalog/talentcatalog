@@ -733,7 +733,9 @@ public class CandidateServiceImpl implements CandidateService {
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
-                Role.user);
+                Role.user,
+                null,
+                null);
 
         User existing = userRepository.findByUsernameAndRole(user.getUsername(), Role.user);
         if (existing != null) {
