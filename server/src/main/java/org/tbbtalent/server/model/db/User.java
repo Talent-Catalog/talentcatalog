@@ -190,7 +190,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public String setPurpose(String purpose) { this.purpose = purpose; }
 
-
     public void setReadOnly(boolean readOnly) { this.readOnly = readOnly; }
 
     public String getPasswordEnc() {

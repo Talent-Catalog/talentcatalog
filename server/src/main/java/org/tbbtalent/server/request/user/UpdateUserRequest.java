@@ -41,6 +41,10 @@ public class UpdateUserRequest {
 
     private Role role;
 
+    private String approver;
+
+    private String purpose;
+
     //TODO JC Just ids
     private List<Country> sourceCountries;
 
