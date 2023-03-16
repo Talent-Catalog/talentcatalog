@@ -48,6 +48,10 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String approver;
+
+    private String purpose;
+
     /**
      * Use boolean rather than Boolean so that default value is false, not null.
      * Null is not allowed in Db definition
@@ -124,12 +128,14 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public User() {
     }
 
-    public User(String username, String firstName, String lastName, String email, Role role) {
+    public User(String username, String firstName, String lastName, String email, Role role, String approver, String purpose) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.role = role;
+        this.approver = approver;
+        this.purpose = purpose;
         this.status = Status.active;
         this.setCreatedDate(OffsetDateTime.now());
     }
@@ -175,6 +181,15 @@ public class User extends AbstractAuditableDomainObject<Long> {
     }
 
     public boolean getReadOnly() { return readOnly; }
+
+    public String getApprover(String approver) { return approver; }
+
+    public String setApprover(String approver) { this.approver = approver; }
+
+    public String getPurpose(String purpose) { return purpose; }
+
+    public String setPurpose(String purpose) { this.purpose = purpose; }
+
 
     public void setReadOnly(boolean readOnly) { this.readOnly = readOnly; }
 
