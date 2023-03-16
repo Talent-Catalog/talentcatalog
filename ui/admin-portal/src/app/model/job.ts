@@ -21,12 +21,30 @@ import {SavedSearch} from "./saved-search";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
+import {Country} from "./country";
 
 export interface JobIds extends HasId {
   sfId: string;
 }
 
 export interface Job extends JobIds {
+  /**
+   * We need to get fields:
+   * - Website
+   * - Employer Description
+   * - Employer Hiring commitment
+   * We need to calculate:
+   * - Have they hired from us before
+   * Should these fields related to the employer sit in own table, an employer table?
+   */
+  // todo get field from SF Account to display in JOI
+  website: string;
+  // todo get field from SF Account to display in JOI
+  employerDescription: string;
+  // todo get field from SF Job Opp to display in JOI
+  employerHiringCommitment: number;
+  // todo calculate this using data from SF
+  employerPreviousHire: boolean;
   accepting: boolean;
   contactEmail: string;
   contactUser: User;
@@ -51,12 +69,21 @@ export interface Job extends JobIds {
 }
 
 export interface JobIntakeData {
+  minSalaryAgreement?: boolean;
+  minSalaryRequired?: string;
+  immigrationPathways?: VisaPathway[];
   benefits?: string;
   description?: string;
   education?: string;
   experience?: string;
   skills?: string;
   title?: string;
+}
+
+export interface VisaPathway {
+  name: string;
+  description: string;
+  country: Country;
 }
 
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
