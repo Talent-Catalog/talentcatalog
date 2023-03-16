@@ -119,6 +119,8 @@ public class UserAdminApi {
                 .add("lastName")
                 .add("email")
                 .add("role")
+                .add("approver")
+                .add("purpose")
                 .add("sourceCountries", countryDto())
                 .add("readOnly")
                 .add("status")
