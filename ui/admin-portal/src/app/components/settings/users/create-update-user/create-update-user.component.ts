@@ -61,6 +61,8 @@ export class CreateUpdateUserComponent implements OnInit {
       partnerId: [this.user?.partner.id],
       status: [this.user ? this.user.status : Status.active],
       role: [this.user?.role, Validators.required],
+      approver: [this.user?.approver],
+      purpose: [this.user?.purpose],
       sourceCountries: [this.user?.sourceCountries],
       readOnly: [this.user ? this.user.readOnly : false],
       usingMfa: [this.user ? this.user.usingMfa : true]
@@ -124,8 +126,8 @@ export class CreateUpdateUserComponent implements OnInit {
       partnerId: this.userForm.value.partnerId,
       readOnly: this.userForm.value.readOnly,
       role: this.userForm.value.role,
-      approver: this.userForm.value.approver;
-      purpose: this.userForm.value.purpose;
+      approver: this.userForm.value.approver,
+      purpose: this.userForm.value.purpose,
       sourceCountries: this.userForm.value.sourceCountries,
       status: this.userForm.value.status,
       username: this.userForm.value.username,
