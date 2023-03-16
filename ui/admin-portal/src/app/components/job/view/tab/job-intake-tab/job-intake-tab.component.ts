@@ -10,7 +10,6 @@ import {AuthService} from "../../../../../services/auth.service";
 })
 export class JobIntakeTabComponent extends JobIntakeComponentTabBase {
 
-  countriesExample: String[] = ['Australia', 'Canada'];
   constructor(
     authService: AuthService,
     jobService: JobService
