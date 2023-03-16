@@ -184,11 +184,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public String getApprover(String approver) { return approver; }
 
-    public String setApprover(String approver) { this.approver = approver; }
+    public void setApprover(String approver) { this.approver = approver; }
 
     public String getPurpose(String purpose) { return purpose; }
 
-    public String setPurpose(String purpose) { this.purpose = purpose; }
+    public void setPurpose(String purpose) { this.purpose = purpose; }
 
     public void setReadOnly(boolean readOnly) { this.readOnly = readOnly; }
 

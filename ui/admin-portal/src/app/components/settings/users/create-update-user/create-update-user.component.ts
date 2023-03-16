@@ -124,6 +124,8 @@ export class CreateUpdateUserComponent implements OnInit {
       partnerId: this.userForm.value.partnerId,
       readOnly: this.userForm.value.readOnly,
       role: this.userForm.value.role,
+      approver: this.userForm.value.approver;
+      purpose: this.userForm.value.purpose;
       sourceCountries: this.userForm.value.sourceCountries,
       status: this.userForm.value.status,
       username: this.userForm.value.username,
