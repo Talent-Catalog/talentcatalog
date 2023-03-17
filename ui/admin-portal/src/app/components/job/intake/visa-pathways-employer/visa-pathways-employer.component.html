@@ -5,7 +5,7 @@
 
   <div class="mb-3">
     <label class="form-label" for="visaPathways">
-      Select the immigration pathways
+      Does {{job.employer}} meet the immigration pathway requirements?
     </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
@@ -14,13 +14,13 @@
       </app-autosave-status>
     </div>
     <ng-select id="visaPathways"
-               [formControlName]="'visaPathways'"
-               (clear)="setNoResponse('visaPathways')"
-               [items]="visaPathwayOptions"
+               [formControlName]="'visaPathwaysEmployer'"
+               (clear)="setNoResponse('visaPathwaysEmployer')"
+               [items]="visaPathwaysEmployerOptions"
                [clearOnBackspace]="false"
                placeholder="Select"
-               bindLabel="name"
-               bindValue="id">
+               bindLabel="stringValue"
+               bindValue="key">
     </ng-select>
   </div>
 

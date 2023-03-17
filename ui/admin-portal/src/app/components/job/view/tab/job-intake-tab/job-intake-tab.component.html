@@ -93,21 +93,26 @@
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-job-skills>
-        <app-visa-pathways
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-visa-pathways>
-        <app-occupation-code
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-occupation-code>
       </ng-template>
     </ngb-panel>
 
     <ngb-panel id="immigration-considerations" title="Immigration Considerations">
       <ng-template ngbPanelContent>
+        <app-visa-pathways
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-visa-pathways>
+        <app-visa-pathways-employer
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-visa-pathways-employer>
+        <app-occupation-code
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-occupation-code>
         <app-min-salary
           [entity]="job"
           [jobIntakeData]="jobIntakeData"

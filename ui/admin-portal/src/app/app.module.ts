@@ -456,6 +456,9 @@ import {JobSalaryComponent} from './components/job/intake/job-salary/job-salary.
 import {OccupationCodeComponent} from './components/job/intake/occupation-code/occupation-code.component';
 import {MinSalaryComponent} from './components/job/intake/min-salary/min-salary.component';
 import {VisaPathwaysComponent} from './components/job/intake/visa-pathways/visa-pathways.component';
+import {
+  VisaPathwaysEmployerComponent
+} from './components/job/intake/visa-pathways-employer/visa-pathways-employer.component';
 
 @NgModule({
   declarations: [
@@ -725,7 +728,8 @@ import {VisaPathwaysComponent} from './components/job/intake/visa-pathways/visa-
     JobSalaryComponent,
     OccupationCodeComponent,
     MinSalaryComponent,
-    VisaPathwaysComponent
+    VisaPathwaysComponent,
+    VisaPathwaysEmployerComponent
   ],
   imports: [
     BrowserModule,
