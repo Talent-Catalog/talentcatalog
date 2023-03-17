@@ -21,7 +21,7 @@ import {SavedSearch} from "./saved-search";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
-import {Country} from "./country";
+import {VisaPathway} from "../services/visa-pathway.service";
 
 export interface JobIds extends HasId {
   sfId: string;
@@ -76,19 +76,13 @@ export interface JobIntakeData {
   location?: string;
   minSalaryAgreement?: boolean;
   minSalaryRequired?: string;
-  immigrationPathways?: VisaPathway[];
+  visaPathways?: VisaPathway[];
   benefits?: string;
   description?: string;
   education?: string;
   experience?: string;
   skills?: string;
   title?: string;
-}
-
-export interface VisaPathway {
-  name: string;
-  description: string;
-  country: Country;
 }
 
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
