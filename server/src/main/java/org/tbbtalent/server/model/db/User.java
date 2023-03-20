@@ -130,13 +130,13 @@ public class User extends AbstractAuditableDomainObject<Long> {
     }
 
     /**
-     * @param username
-     * @param firstName
-     * @param lastName
-     * @param email
-     * @param role
-     * @param approver
-     * @param purpose
+     * @param username created by the user (must be unique)
+     * @param firstName actual first name
+     * @param lastName actual surname
+     * @param email currently not used by TC functionality (must be unique)
+     * @param role type of access to the TC (system admin / full admin / source partner admin / semi limited / limited)
+     * @param approver if relevant, TBB person who approved the access request (see #pro-tcpartner-access-int Slack channel for process) — set as nullable because it'll only apply to external admin users
+     * @param purpose reason given for TC access by whichever TBB person requested it — set as nullable because it'll only apply to external admin users
      */
 
     public User(String username, String firstName, String lastName, String email, Role role, @Nullable String approver, @Nullable String purpose) {
