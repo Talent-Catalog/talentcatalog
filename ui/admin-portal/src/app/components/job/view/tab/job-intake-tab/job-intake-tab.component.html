@@ -43,10 +43,17 @@
             <span>{{job.employerDescription}}</span>
           </div>
         </div>
+        <hr>
+        <app-recruitment-process
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-recruitment-process>
+        <div>TODO: Employer Costs Commitment. Form or prefilled from SF?</div>
       </ng-template>
     </ngb-panel>
 
-    <ngb-panel id="position-details" title="Position Details">
+    <ngb-panel id="position-details" title="Position Details: {{job.name}}">
       <ng-template ngbPanelContent>
         <app-job-title
           [entity]="job"
@@ -118,6 +125,11 @@
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-min-salary>
+        <app-min-salary-employer
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-min-salary-employer>
       </ng-template>
     </ngb-panel>
 

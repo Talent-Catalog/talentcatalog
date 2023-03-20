@@ -4,8 +4,8 @@
 <form [formGroup]="form">
 
   <div class="mb-3">
-    <label class="form-label" for="visaPathwaysEmployer">
-      Does {{job.employer}} meet the immigration pathway requirements?
+    <label class="form-label" for="minSalaryEmployer">
+      Does {{job.employer}} commit to paying the prevailing wage?
     </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
@@ -13,10 +13,10 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="visaPathwaysEmployer"
-               [formControlName]="'visaPathwaysEmployer'"
-               (clear)="setNoResponse('visaPathwaysEmployer')"
-               [items]="visaPathwaysEmployerOptions"
+    <ng-select id="minSalaryEmployer"
+               [formControlName]="'minSalaryEmployer'"
+               (clear)="setNoResponse('minSalaryEmployer')"
+               [items]="minSalaryEmployerOptions"
                [clearOnBackspace]="false"
                placeholder="Select"
                bindLabel="stringValue"

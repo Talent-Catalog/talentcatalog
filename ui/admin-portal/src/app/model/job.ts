@@ -34,8 +34,7 @@ export interface Job extends JobIds {
    * - Website
    * - Employer Description
    * - Employer Hiring commitment
-   * We need to calculate:
-   * - Have they hired from us before
+   * - Have they hired from abroad before (not on SF yet)
    * Should these fields related to the employer sit in own table, an employer table?
    */
   // todo get field from SF Account to display in JOI
@@ -44,7 +43,7 @@ export interface Job extends JobIds {
   employerDescription: string;
   // todo get field from SF Job Opp to display in JOI
   employerHiringCommitment: number;
-  // todo calculate this using data from SF
+  // todo get field from SF Job Opp to display in JOI - not currently in SF, do we add?
   employerPreviousHire: boolean;
   accepting: boolean;
   contactEmail: string;
@@ -70,13 +69,13 @@ export interface Job extends JobIds {
 }
 
 export interface JobIntakeData {
+  recruitmentProcess?: string;
   minSalary?: string;
+  minSalaryEmployer?: YesNo;
   occupationCode?: string;
   salary?: string;
   locationDetails?: string;
   location?: string;
-  minSalaryAgreement?: boolean;
-  minSalaryRequired?: string;
   visaPathways?: VisaPathway[];
   visaPathwaysEmployer?: YesNo;
   benefits?: string;

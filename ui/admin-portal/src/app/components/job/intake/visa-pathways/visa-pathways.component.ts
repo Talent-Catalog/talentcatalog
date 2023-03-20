@@ -3,6 +3,8 @@ import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBas
 import {FormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
 import {VisaPathway, VisaPathwayService} from "../../../../services/visa-pathway.service";
+import {EnumOption, enumOptions} from "../../../../util/enum";
+import {OtherVisas} from "../../../../model/candidate";
 
 @Component({
   selector: 'app-visa-pathways',
@@ -11,6 +13,8 @@ import {VisaPathway, VisaPathwayService} from "../../../../services/visa-pathway
 })
 export class VisaPathwaysComponent extends JobIntakeComponentBase implements OnInit {
 
+  // todo: temporary options to use for display now. Will eventually have all visas from table.
+  public visaOtherOptions: EnumOption[] = enumOptions(OtherVisas);
   visaPathwayOptions: VisaPathway[];
 
   constructor(fb: FormBuilder,
@@ -20,10 +24,14 @@ export class VisaPathwaysComponent extends JobIntakeComponentBase implements OnI
   }
 
   ngOnInit(): void {
-    this.getVisaPathwayOptions();
+    //this.getVisaPathwayOptions();
     this.form = this.fb.group({
       visaPathways: [{value: this.jobIntakeData?.visaPathways, disabled: !this.editable}],
     });
+  }
+
+  get visaPathways() {
+    return this.form.value.visaPathways;
   }
 
   /**
