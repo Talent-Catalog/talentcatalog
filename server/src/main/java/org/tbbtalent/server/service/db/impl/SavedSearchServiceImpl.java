@@ -1207,7 +1207,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public void notifySearchWatchers() {
         String currentSearch = "";
         try {
-            Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
+            Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNull();
             Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
 
             log.info("Notify watchers: running " + searches.size() + " searches");
