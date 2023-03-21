@@ -73,6 +73,8 @@
       <th>Role</th>
       <th>Partner</th>
       <th>Source Countries</th>
+      <th>Approver</th>
+      <th>Purpose</th>
       <th>Read Only?</th>
       <th>Status</th>
     </tr>
@@ -104,6 +106,8 @@
       <td><a [href]="user.partner.websiteUrl" target="_blank"
              [title]="user.partner.name">{{user.partner.abbreviation}}</a></td>
       <td>{{getSourceCountries(user)}}</td>
+      <td>{{user.approver}}</td>
+      <td>{{user.purpose}}</td>
       <td>{{user.readOnly}}</td>
       <td>{{user.status}}</td>
     </tr>
