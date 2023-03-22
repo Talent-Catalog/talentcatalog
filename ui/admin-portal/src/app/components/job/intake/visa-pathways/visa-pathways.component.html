@@ -24,7 +24,7 @@
     </ng-select>
   </div>
 
-  <div *ngIf="visaPathways?.length > 0">
+  <div *ngIf="this.form.value.visaPathways?.length > 0">
     <table class="table">
       <thead>
       <tr>
@@ -37,8 +37,8 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let visa of visaPathways">
-        <td>{{visa.stringValue}}</td>
+      <tr *ngFor="let visa of this.form.value.visaPathways">
+        <td>{{visa}}</td>
         <td>Otto</td>
         <td>@mdo</td>
         <td>@mdo</td>
