@@ -58,7 +58,7 @@ class UserServiceImplTest {
     @BeforeEach
     void authenticate() {
         User loggedInUser = new User("username", "first", "last",
-                "email@test.com", Role.admin);
+                "email@test.com", Role.admin, "Approver", "Testing the TC");
         when(authService.getLoggedInUser()).thenReturn(Optional.of(loggedInUser));
     }
 
@@ -68,7 +68,7 @@ class UserServiceImplTest {
         assertNotNull(userRepository);
         User user = new User(
                 "username", "first", "last",
-                "email@test.com", Role.admin);
+                "email@test.com", Role.admin, "Approver", "Testing the TC");
 
         when(userRepository.save(user)).thenReturn(user);
         userRepository.save(user);
@@ -83,6 +83,8 @@ class UserServiceImplTest {
         request.setUsername("username2");
         request.setEmail("email2@test.com");
         request.setRole(Role.admin);
+        request.setApprover("Approver");
+        request.setPurpose("Testing the TC");
         request.setPassword("xxxxxxxxxx");
         request.setReadOnly(false);
         request.setUsingMfa(false);
@@ -108,7 +110,7 @@ class UserServiceImplTest {
 
     //@Test
     void updateUser() {
-        User user = new User("username2", "first", "last", "email2@test.com", Role.admin);
+        User user = new User("username2", "first", "last", "email2@test.com", Role.admin, "Approver", "Testing the TC");
         user.setId(1L);
 
         UpdateUserRequest update = new UpdateUserRequest();
@@ -116,6 +118,8 @@ class UserServiceImplTest {
         update.setLastName("last");
         update.setEmail("email2@test.com");
         update.setRole(Role.admin);
+        update.setApprover("Approver");
+        update.setPurpose("Purpose");
         update.setStatus(Status.active);
         update.setReadOnly(false);
         update.setUsingMfa(false);
