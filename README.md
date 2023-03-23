@@ -48,12 +48,11 @@ Download and install the latest of the following tools.
   - In development it is best to build using Intellij rather than gradle. Change the Intellij 
   setting for "Build, Execution & Deployment" > "Build Tools" > "Gradle" to build with Intellij.
 
-- Java 11
-   - At least Java 11 is required because we use the Locale object to provide translations of 
-  countries and languages and that support is not complete in Java 8, for example.
+- Java 17
+   - At least Java 17 is required - to support the Spring Boot Framework.
    - If you are using a recent version of Intellij the version of Java that comes with it works 
  fine except that it does not have library source code - so probably best to download a new SDK
-     (which you can from inside Intellij).
+     (which you can from inside Intellij - see Project Structure|Project|SDK).
     
 
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
