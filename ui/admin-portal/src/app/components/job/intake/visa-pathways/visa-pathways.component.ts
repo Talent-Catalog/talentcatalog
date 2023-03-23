@@ -3,8 +3,6 @@ import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBas
 import {FormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
 import {VisaPathway, VisaPathwayService} from "../../../../services/visa-pathway.service";
-import {EnumOption, enumOptions} from "../../../../util/enum";
-import {OtherVisas} from "../../../../model/candidate";
 
 @Component({
   selector: 'app-visa-pathways',
@@ -14,7 +12,10 @@ import {OtherVisas} from "../../../../model/candidate";
 export class VisaPathwaysComponent extends JobIntakeComponentBase implements OnInit {
 
   // todo: temporary options to use for display now. Will eventually have all visas from table.
-  public visaOtherOptions: EnumOption[] = enumOptions(OtherVisas);
+  public visaOtherOptions: VisaPathway[] = [
+      {name: "482 temporary skilled (medium stream)"},
+      {name: "186 direct entry permanent stream"},
+      {name: "494"}];
   visaPathwayOptions: VisaPathway[];
 
   constructor(fb: FormBuilder,
@@ -24,31 +25,35 @@ export class VisaPathwaysComponent extends JobIntakeComponentBase implements OnI
   }
 
   ngOnInit(): void {
-    //this.getVisaPathwayOptions();
     this.form = this.fb.group({
       visaPathways: [{value: this.jobIntakeData?.visaPathways, disabled: !this.editable}],
     });
+    this.getVisaPathwayOptions();
   }
 
-  get visaPathways() {
+  get selectedVisaPathways(): VisaPathway[] {
     return this.form.value.visaPathways;
   }
 
-  /**
-   * Get the visa pathways depending on the country of the job opportunity. Perhaps a better way to do this than an if statement...
-   */
   getVisaPathwayOptions() {
-    // todo Can we make the country associated with a Job a country object in the DTO so that I can use IDs as opposed to names
-    if (this.job.country == "Australia") {
       /**
        * Method stub to get all visa pathways from server depending on the country, using Australia as example.
        */
-      this.visaPathwayService.listVisaPathwaysAU().subscribe(
+      let countryId = 6191
+      this.visaPathwayService.getVisaPathwaysCountry(countryId).subscribe(
         (results) => {
-          this.visaPathwayOptions = results;
+          //this.visaPathwayOptions = results;
         }
       )
-    }
+    // todo REMOVE hardcoded temporary visa pathway options
+    this.visaPathwayOptions = [
+      {name: "482: Temporary Skill Shortage",
+        description: "This temporary visa lets an employer sponsor a suitably skilled worker to fill a position they can’t find a suitably skilled Australian to fill.",
+        age: "< 50 yrs old"},
+      {name: "186: Employer Nomination Scheme",
+        description: "This visa lets skilled workers, who are nominated by their employer, live and work in Australia permanently."},
+      {name: "494: Skilled Employer Sponsored Regional (Provisional)",
+        description: "This visa enables regional employers to address identified labour shortages within their region by sponsoring skilled workers where employers can't source an appropriately skilled Australian worker."}];
   }
 
 

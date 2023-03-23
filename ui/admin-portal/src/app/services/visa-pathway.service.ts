@@ -6,8 +6,16 @@ import {Country} from "../model/country";
 
 export interface VisaPathway {
   name: string;
-  description: string;
-  country: Country;
+  description?: string;
+  country?: Country;
+  age?: string;
+  language?: string;
+  empCommitment?: string;
+  inclusions?: string;
+  other?: string;
+  workExperience?: string;
+  education?: string;
+  educationCredential?: string;
 }
 
 @Injectable({
@@ -19,8 +27,8 @@ export class VisaPathwayService {
 
   constructor(private http: HttpClient) { }
 
-  listVisaPathwaysAU(): Observable<VisaPathway[]> {
-    return this.http.get<VisaPathway[]>(`${this.apiUrl}/AU`);
+  getVisaPathwaysCountry(countryId: number): Observable<VisaPathway[]> {
+    return this.http.get<VisaPathway[]>(`${this.apiUrl}/country/${countryId}`);
   }
 
 }

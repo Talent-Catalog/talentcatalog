@@ -44,10 +44,11 @@ export interface Job extends JobIds {
   // todo get field from SF Job Opp to display in JOI
   employerHiringCommitment: number;
   // todo get field from SF Job Opp to display in JOI - not currently in SF, do we add?
-  employerPreviousHire: boolean;
+  employerPreviousHire: string;
   accepting: boolean;
   contactEmail: string;
   contactUser: User;
+  // todo Can we make the country associated with a Job a country object in the DTO so that I can use IDs as opposed to names when getting visa pathways
   country: string;
   createdBy: User;
   createdDate: Date;
@@ -69,6 +70,7 @@ export interface Job extends JobIds {
 }
 
 export interface JobIntakeData {
+  costCommitEmployer?: string;
   recruitmentProcess?: string;
   minSalary?: string;
   minSalaryEmployer?: YesNo;

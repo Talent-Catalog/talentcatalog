@@ -17,7 +17,7 @@
     <!-- GENERAL INFORMATION -->
     <ngb-panel id="employer-details" title="Employer Details: {{job.employer}}">
       <ng-template ngbPanelContent>
-        <div class="row mb-2">
+        <div class="row mb-3">
           <div class="col">
             <label>Destination: </label>
             <span>{{job.country}}</span>
@@ -26,21 +26,19 @@
             <label>Company website: </label>
             <span><a [href]="job.website" target="_blank">{{job.website}}</a></span>
           </div>
-        </div>
-        <div class="row mb-2">
-          <div class="col">
-            <label>Has {{job.employer}} hired from abroad before? </label>
-            <span>{{job.employerPreviousHire}}</span>
-          </div>
           <div class="col">
             <label>Hiring commitment: </label>
             <span>{{job.employerHiringCommitment}}</span>
           </div>
+          <div class="col">
+            <label>Has {{job.employer}} hired from abroad before? </label>
+            <span>{{job.employerPreviousHire}}</span>
+          </div>
         </div>
-        <div class="row mb-2">
+        <div class="row">
           <div class="col">
             <label>Brief description of {{job.employer}}: </label>
-            <span>{{job.employerDescription}}</span>
+            <p>{{job.employerDescription}}</p>
           </div>
         </div>
         <hr>
@@ -49,7 +47,11 @@
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-recruitment-process>
-        <div>TODO: Employer Costs Commitment. Form or prefilled from SF?</div>
+        <app-cost-commit-employer
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-cost-commit-employer>
       </ng-template>
     </ngb-panel>
 
