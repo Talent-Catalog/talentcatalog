@@ -406,6 +406,9 @@ As a shared resource, staging is the best way to share your code with other
 team members to allow them to merge your code into their own branches and
 also to allow them to review your code and help with testing.
 
+Rebuild and upload of build artifacts to the AWS testing environment is automatic when any 
+push is made to "staging".
+
 ### Personal branches ###
 
 New development should be done in branches. 
