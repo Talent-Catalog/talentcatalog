@@ -4,7 +4,7 @@
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="minSalary">
-      Minimum salary required
+      Minimum salary as agreed with employer
     </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
@@ -12,6 +12,6 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <input id="minSalary" type="text" class="form-control" formControlName="minSalary">
+    <input id="minSalary" type="number" class="form-control" formControlName="minSalary">
   </div>
 </form>
