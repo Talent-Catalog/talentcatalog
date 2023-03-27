@@ -201,7 +201,7 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
    * Converts the data returned by multiselected enums to a simple array of
    * enum keys suitable for sending to the server.
    * <p/>
-   * We use ng-multiselect-dropdown for multiselect dropdowns, and given the
+   * We use ng-select for multiselect dropdowns, and given the
    * way that we have configured it for selecting enums, that component returns
    * arrays of EnumOption objects. This method converts that data to arrays of
    * strings corresponding to the enums.

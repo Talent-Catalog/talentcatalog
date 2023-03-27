@@ -17,7 +17,6 @@
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 import {DatePipe, TitleCasePipe} from '@angular/common';
 
@@ -746,7 +745,6 @@ import { CostCommitEmployerComponent } from './components/job/intake/cost-commit
     RecaptchaV3Module,
     FormsModule,
     InfiniteScrollModule,
-    NgMultiSelectDropDownModule.forRoot(),
     ChartsModule,
     NgxWigModule,
     NgSelectModule,

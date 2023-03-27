@@ -28,7 +28,6 @@ import {EditCandidateStatusComponent} from './status/edit-candidate-status.compo
 import {Title} from '@angular/platform-browser';
 import {AuthService} from '../../../services/auth.service';
 import {User} from '../../../model/user';
-import {ListItem} from 'ng-multiselect-dropdown/multiselect.model';
 import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
@@ -243,7 +242,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   /*
     Methods for ng-select list selection
    */
-  onItemSelect($event: ListItem) {
+  onItemSelect($event) {
     const savedListId: number = +$event.id;
     this.addCandidateToList(savedListId, false);
   }
