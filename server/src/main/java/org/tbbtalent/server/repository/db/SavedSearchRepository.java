@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -18,7 +18,6 @@ package org.tbbtalent.server.repository.db;
 
 import java.util.Optional;
 import java.util.Set;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -45,7 +44,7 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
     //Theoretically it should work to use Status.deleted.
     //(see, for example, https://stackoverflow.com/questions/8217144/problems-with-making-a-query-when-using-enum-in-entity)
     //But it doesn't in this code for some reason.
-    //Fortunately using the text value (which is what is actually in the 
+    //Fortunately using the text value (which is what is actually in the
     //database) does work.
     // - JC, 7 Jul 2020
     @Query(" select distinct s from SavedSearch s "
@@ -61,16 +60,15 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
     Optional<SavedSearch> findByIdLoadAudit(@Param("id") long id);
 
     @Query(" select distinct s from SavedSearch s "
-            + " left join fetch s.searchJoins"
-            + " where s.watcherIds is not null " 
+            + " where s.watcherIds is not null "
             + " and s.status <> 'deleted'"
     )
-    Set<SavedSearch> findByWatcherIdsIsNotNullLoadSearchJoins();
+    Set<SavedSearch> findByWatcherIdsIsNotNull();
 
     @Query(value=" select * from saved_search s "
             + " where cast(:userId as text) in " +
             " (select * from regexp_split_to_table(s.watcher_ids, ','))" +
-            " and s.status <> 'deleted'", 
+            " and s.status <> 'deleted'",
             nativeQuery = true )
     Set<SavedSearch> findUserWatchedSearches(@Param("userId") long userId);
 
@@ -79,5 +77,5 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
             " where s.createdBy.id = :userId " +
             " and s.defaultSearch = true" )
     Optional<SavedSearch> findDefaultSavedSearch(@Param("userId")Long userId);
-    
+
 }
