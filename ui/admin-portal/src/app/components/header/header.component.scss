@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import "~src/scss/variables";
+
 :host {
   display: block;
   width: 100%;
 }
 
 .navbar {
-  background-color: black;
+  background-color: $color-primary-darker;
   width: 100%;
 
   .logo {
