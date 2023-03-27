@@ -18,7 +18,7 @@
     <ngb-panel id="employer-details" title="Employer Details: {{job.employer}}">
       <ng-template ngbPanelContent>
         <div class="row mb-3">
-          <div class="col">
+          <div class="col-2">
             <label>Destination: </label>
             <span>{{job.country}}</span>
           </div>
@@ -31,7 +31,7 @@
             <span>{{job.employerHiringCommitment}}</span>
           </div>
           <div class="col">
-            <label>Has {{job.employer}} hired from abroad before? </label>
+            <label>Have they hired from abroad before? </label>
             <span>{{job.employerPreviousHire}}</span>
           </div>
         </div>
@@ -112,11 +112,11 @@
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-visa-pathways>
-        <app-visa-pathways-employer
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-visa-pathways-employer>
+<!--        <app-visa-pathways-employer-->
+<!--          [entity]="job"-->
+<!--          [jobIntakeData]="jobIntakeData"-->
+<!--          [editable]="!loggedInUser.readOnly">-->
+<!--        </app-visa-pathways-employer>-->
         <app-occupation-code
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
