@@ -13,40 +13,18 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-
-<!-- EXISTING RECORDS -->
-<ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-  <ngb-panel id="intake-dependants">
-    <ng-template ngbPanelTitle let-opened="opened">
-      <div class="container-fluid gx-0">
-        <div class="row">
-          <div class="col">
-            <span>Dependants</span>
-          </div>
-          <div class="col-1">
-            <button type="button" class="btn btn-primary btn-sm" (click)="addRecord($event)">
-              <i class="fas fa-plus"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </ng-template>
-    <ng-template ngbPanelContent>
-      <div *ngIf="error">
-        {{error}}
-      </div>
-      <div *ngIf="candidateIntakeData.candidateDependants.length == 0">
-        <p class="mb-0">No Dependants Added</p>
-      </div>
-      <div *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;" class="dependant-card">
-        <app-dependants-card
-          [entity]="candidate"
-          [candidateIntakeData]="candidateIntakeData"
-          [myRecordIndex]="i"
-          (delete)="deleteRecord(i)">
-        </app-dependants-card>
-        <hr/>
-      </div>
-    </ng-template>
-  </ngb-panel>
-</ngb-accordion>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div *ngIf="candidateIntakeData.candidateDependants.length == 0">
+  <p class="mb-0">No Dependants Added</p>
+</div>
+<div *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;" class="dependant-card">
+  <app-dependants-card
+    [entity]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [myRecordIndex]="i"
+    (delete)="deleteRecord(i)">
+  </app-dependants-card>
+  <hr/>
+</div>

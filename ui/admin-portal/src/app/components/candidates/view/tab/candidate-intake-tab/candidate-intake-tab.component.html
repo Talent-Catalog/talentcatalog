@@ -31,8 +31,8 @@
         </button>
 
         <div class="btn-group-sm ms-2">
-          <button (click)="togglePanels(false)" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-          <button (click)="togglePanels(true)" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
+          <button (click)="fullIntake.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
+          <button (click)="fullIntake.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>
       </div>
       <h5>Full Intake</h5>
@@ -62,7 +62,9 @@
   </div>
 
   <div>
-    <ngb-accordion #confirm="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #fullIntake="ngbAccordion" [destroyOnHide]="false">
+
+      <!-- GENERAL INFORMATION -->
       <ngb-panel id="intake-confirm" title="Confirm General Information">
         <ng-template ngbPanelContent>
           <app-confirm-contact
@@ -71,11 +73,8 @@
           </app-confirm-contact>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
-
-    <ngb-accordion #recruit="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <!-- INTERNATIONAL RECRUITMENT -->
       <ngb-panel id="intake-int-recruit" title="Interest in International Recruitment">
         <ng-template ngbPanelContent>
           <app-int-recruitment
@@ -88,37 +87,58 @@
           </app-rural>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
+      <!-- CITIZENSHIPS -->
+      <ngb-panel id="intake-citizenships">
+        <ng-template ngbPanelTitle let-opened="opened">
+          <div class="container-fluid gx-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <p class="mb-0">Citizenships</p>
+                <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
+              </div>
+              <div class="col-1">
+                <button type="button" class="btn btn-primary btn-sm" (click)="addCitizenshipRecord($event)">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-citizenships
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [nationalities]="nationalities">
+          </app-citizenships>
+        </ng-template>
+      </ngb-panel>
 
-    <app-citizenships
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData"
-      [nationalities]="nationalities"
-      [toggleAll]="toggleAll">
-    </app-citizenships>
+      <!-- EXAMS -->
+      <ngb-panel id="intake-exams">
+        <ng-template ngbPanelTitle let-opened="opened">
+          <div class="container-fluid gx-0">
+            <div class="row">
+              <div class="col-11">
+                <span>English Exams</span>
+              </div>
+              <div class="col-1">
+                <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-exams
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-exams>
+        </ng-template>
+      </ngb-panel>
 
-    <hr/>
-
-    <app-exams
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData"
-      [toggleAll]="toggleAll">
-    </app-exams>
-
-    <hr/>
-
-    <app-view-candidate-language
-      [candidate]="candidate"
-      [editable]="false"
-      [accordion]="true"
-      [toggleAll]="toggleAll">
-    </app-view-candidate-language>
-
-    <hr/>
-
-    <ngb-accordion #english="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <!-- ENGLISH ASSESSMENT-->
       <ngb-panel id="intake-english-assessment" title="English Assessment">
         <ng-template ngbPanelContent>
           <app-lang-assessment
@@ -127,11 +147,43 @@
           </app-lang-assessment>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
+      <!-- CANDIDATE LANGUAGES-->
+      <ngb-panel id="intake-languages" title="Languages">
+        <ng-template ngbPanelContent>
+          <app-view-candidate-language
+            [candidate]="candidate"
+            [editable]="false"
+            [accordion]="true">
+          </app-view-candidate-language>
+        </ng-template>
+      </ngb-panel>
 
-    <ngb-accordion #residency="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <!-- DEPENDANTS -->
+      <ngb-panel id="intake-dependants">
+        <ng-template ngbPanelTitle let-opened="opened">
+          <div class="container-fluid gx-0">
+            <div class="row">
+              <div class="col">
+                <span>Dependants</span>
+              </div>
+              <div class="col-1">
+                <button type="button" class="btn btn-primary btn-sm" (click)="addDependantRecord($event)">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-dependants
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-dependants>
+        </ng-template>
+      </ngb-panel>
+
+      <!-- RESIDENCY AND WORK STATUS -->
       <ngb-panel id="intake-residency" title="Residency and Work Status">
         <ng-template ngbPanelContent>
           <app-residence-status
@@ -152,11 +204,8 @@
           </app-work-abroad>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
-
-    <ngb-accordion #host="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <!-- HOST COUNTRY STATUS -->
       <ngb-panel id="intake-host-country" title="Host Country Status">
         <ng-template ngbPanelContent>
           <app-host-entry
@@ -178,11 +227,8 @@
           </app-host-challenges>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
-
-    <ngb-accordion #registration="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <!-- REGISTRATION -->
       <ngb-panel id="intake-registration" title="Registration">
         <ng-template ngbPanelContent>
           <div class="card-title h6">
@@ -203,11 +249,8 @@
           </div>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
-
-    <ngb-accordion #partner="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <!-- PARTNER INFORMATION -->
       <ngb-panel id="intake-partner-info" title="Partner Information">
         <ng-template ngbPanelContent>
           <app-marital-status
@@ -224,19 +267,8 @@
           </app-family>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
-
-    <app-dependants
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData"
-      [toggleAll]="toggleAll">
-    </app-dependants>
-
-    <hr/>
-
-    <ngb-accordion #eligibility="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <!-- ADDITIONAL ELIGIBILITY -->
       <ngb-panel id="intake-additional-eligibility" title="Additional Eligibility">
         <ng-template ngbPanelContent>
           <app-crime
@@ -274,11 +306,8 @@
           </app-covid-vaccination>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
-
-    <ngb-accordion #agreement="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+      <!-- FINAL AGREEMENT -->
       <ngb-panel id="intake-final-agreement" title="End of Intake">
         <ng-template ngbPanelContent>
           <app-final-agreement>
@@ -287,7 +316,6 @@
       </ngb-panel>
     </ngb-accordion>
   </div>
-
 </div>
 
 <div class="d-flex align-items-end flex-column justify-content-between">

@@ -14,13 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, QueryList, ViewChildren} from '@angular/core';
+import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
-import {Subject} from "rxjs/index";
-import {NgbAccordion, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  OldIntakeInputComponent
-} from "../../../../util/old-intake-input-modal/old-intake-input.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
@@ -28,6 +25,15 @@ import {OccupationService} from "../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {CandidateNoteService} from "../../../../../services/candidate-note.service";
 import {AuthService} from "../../../../../services/auth.service";
+import {
+  CandidateCitizenshipService,
+  CreateCandidateCitizenshipRequest
+} from "../../../../../services/candidate-citizenship.service";
+import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateDependantService,
+  CreateCandidateDependantRequest
+} from "../../../../../services/candidate-dependant.service";
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -35,12 +41,6 @@ import {AuthService} from "../../../../../services/auth.service";
   styleUrls: ['./candidate-intake-tab.component.scss']
 })
 export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
-  toggleAll: Subject<any> = new Subject();
-  activeIds: string[] = ['intake-confirm', 'intake-int-recruit', 'intake-english-assessment', 'intake-residency',
-    'intake-host-country', 'intake-registration', 'intake-partner-info', 'intake-additional-eligibility', 'intake-final-agreement']
-
-  @ViewChildren(NgbAccordion) accs: QueryList<NgbAccordion>;
-
   clickedOldIntake: boolean;
 
   constructor(candidateService: CandidateService,
@@ -50,21 +50,11 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
               languageLevelService: LanguageLevelService,
               noteService: CandidateNoteService,
               authService: AuthService,
+              private candidateCitizenshipService: CandidateCitizenshipService,
+              private candidateExamService: CandidateExamService,
+              private candidateDependantService: CandidateDependantService,
               private modalService: NgbModal) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
-  }
-
-  togglePanels(openAll: boolean) {
-    this.toggleAll.next(openAll);
-    if (openAll) {
-      this.accs.forEach(acc => {
-        acc.expandAll();
-      })
-    } else {
-      this.accs.forEach(acc => {
-        acc.collapseAll();
-      })
-    }
   }
 
   public inputOldIntakeNote(formName: string, button) {
@@ -86,5 +76,50 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
 
   isPalestinian(): boolean {
     return this.countryService.isPalestine(this.candidate?.nationality)
+  }
+
+  addCitizenshipRecord(e: MouseEvent) {
+    // Stop the button from opening/closing the accordion
+    e.stopPropagation();
+    this.saving = true;
+    const request: CreateCandidateCitizenshipRequest = {};
+    this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
+      (citizenship) => {
+        this.candidateIntakeData.candidateCitizenships.unshift(citizenship)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
+  }
+
+  addExamRecord(e: MouseEvent) {
+    e.stopPropagation();
+    this.saving = true;
+    const request: CreateCandidateExamRequest = {};
+    this.candidateExamService.create(this.candidate.id, request).subscribe(
+      (exam) => {
+        this.candidateIntakeData.candidateExams.unshift(exam)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
+  }
+
+  addDependantRecord(e: MouseEvent) {
+    e.stopPropagation();
+    const request: CreateCandidateDependantRequest = {};
+    this.candidateDependantService.create(this.candidate.id, request).subscribe(
+      (dependant) => {
+        this.candidateIntakeData?.candidateDependants.unshift(dependant)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
   }
 }

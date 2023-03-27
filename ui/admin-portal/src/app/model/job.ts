@@ -21,15 +21,34 @@ import {SavedSearch} from "./saved-search";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
+import {VisaPathway} from "../services/visa-pathway.service";
+import {YesNo} from "./candidate";
 
 export interface JobIds extends HasId {
   sfId: string;
 }
 
 export interface Job extends JobIds {
+  /**
+   * We need to get fields:
+   * - Website
+   * - Employer Description
+   * - Employer Hiring commitment
+   * - Have they hired from abroad before (not on SF yet)
+   * Should these fields related to the employer sit in own table, an employer table?
+   */
+  // todo get field from SF Account to display in JOI
+  website: string;
+  // todo get field from SF Account to display in JOI
+  employerDescription: string;
+  // todo get field from SF Job Opp to display in JOI
+  employerHiringCommitment: number;
+  // todo get field from SF Job Opp to display in JOI - not currently in SF, do we add?
+  employerPreviousHire: string;
   accepting: boolean;
   contactEmail: string;
   contactUser: User;
+  // todo Can we make the country associated with a Job a country object in the DTO so that I can use IDs as opposed to names when getting visa pathways
   country: string;
   createdBy: User;
   createdDate: Date;
@@ -51,6 +70,16 @@ export interface Job extends JobIds {
 }
 
 export interface JobIntakeData {
+  costCommitEmployer?: string;
+  recruitmentProcess?: string;
+  minSalary?: string;
+  minSalaryEmployer?: YesNo;
+  occupationCode?: string;
+  salary?: string;
+  locationDetails?: string;
+  location?: string;
+  visaPathways?: VisaPathway[];
+  visaPathwaysEmployer?: YesNo;
   benefits?: string;
   description?: string;
   education?: string;
