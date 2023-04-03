@@ -92,10 +92,19 @@
         </ng-select>
       </div>
 
-      <!-- Approver must be a TBB user -->
+      <!-- Approver must be a TC user -->
       <div class="mb-3">
         <label class="form-label" for="approver">Approver</label>
-        <input type="text" class="form-control" id="approver" formControlName="approver">
+        <ng-select
+          id="approver"
+          [items]="users"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          bindValue="id"
+          [formControlName]="'approverId'">
+        </ng-select>
         <p class="text-muted">If required, who approved this registration?</p>
       </div>
 

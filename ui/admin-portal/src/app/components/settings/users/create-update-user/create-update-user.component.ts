@@ -43,6 +43,7 @@ export class CreateUpdateUserComponent implements OnInit {
   roleOptions: EnumOption[] = enumOptions(Role);
   countries: Country[];
   partners: Partner[];
+  users: User[];
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -87,6 +88,7 @@ export class CreateUpdateUserComponent implements OnInit {
         this.working = false;
         this.countries = results['countries'];
         this.partners = results['partners'];
+        this.users = results['users'];
       },
       (error) => {
         this.error = error;
@@ -127,7 +129,7 @@ export class CreateUpdateUserComponent implements OnInit {
       partnerId: this.userForm.value.partnerId,
       readOnly: this.userForm.value.readOnly,
       role: this.userForm.value.role,
-      approver: this.userForm.value.approver,
+      approver: this.userForm.value.approverId,
       purpose: this.userForm.value.purpose,
       sourceCountries: this.userForm.value.sourceCountries,
       status: this.userForm.value.status,
