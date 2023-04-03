@@ -24,7 +24,7 @@ export class User {
   lastName: string;
   email: string;
   role: string;
-  approver: string;
+  approver: User;
   purpose: string;
   readOnly: boolean;
   sourceCountries: Country[];
@@ -49,7 +49,7 @@ export interface UpdateUserRequest {
   password?: string;
   readOnly: boolean;
   role: string;
-  approver: string;
+  approver: User;
   purpose: string;
   sourceCountries: Country[];
   status: string;
