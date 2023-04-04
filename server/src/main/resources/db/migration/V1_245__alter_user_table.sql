@@ -14,5 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-ALTER TABLE users RENAME COLUMN approver to approver_id;
-ALTER TABLE users ALTER COLUMN approver_id TYPE bigint;
+ALTER TABLE users DROP COLUMN approver;
+ALTER TABLE users ADD COLUMN approver_id bigint;
