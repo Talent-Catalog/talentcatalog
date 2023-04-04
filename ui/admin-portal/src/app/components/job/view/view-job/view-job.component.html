@@ -102,16 +102,15 @@
         </ng-container>
 
 <!--        todo remove for now-->
-<!--        &lt;!&ndash; JOB INTAKE &ndash;&gt;-->
-<!--        <ng-container ngbNavItem="Intake">-->
-<!--          <a ngbNavLink>Job Intake (JOI)</a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <app-job-intake-tab-->
-<!--              [job]="job"-->
-<!--            >-->
-<!--            </app-job-intake-tab>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
+        <!-- JOB INTAKE -->
+        <ng-container ngbNavItem="Intake">
+          <a ngbNavLink>Job Intake (JOI)</a>
+          <ng-template ngbNavContent>
+            <app-job-intake-tab
+              [job]="job">
+            </app-job-intake-tab>
+          </ng-template>
+        </ng-container>
 
         <!-- SOURCE CONTACTS -->
         <ng-container ngbNavItem="Source">

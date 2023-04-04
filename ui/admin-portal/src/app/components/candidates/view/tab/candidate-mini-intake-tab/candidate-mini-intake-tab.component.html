@@ -31,8 +31,8 @@
         </button>
 
         <div class="btn-group-sm ms-2">
-          <button (click)="togglePanels(false)" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-          <button (click)="togglePanels(true)" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
+          <button (click)="miniIntake.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
+          <button (click)="miniIntake.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>
       </div>
       <h5>Mini Intake</h5>
@@ -63,7 +63,8 @@
   <hr/>
 
   <div>
-    <ngb-accordion #confirm="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #miniIntake="ngbAccordion" [destroyOnHide]="false">
+
       <ngb-panel id="intake-confirm" title="Confirm General Information">
         <ng-template ngbPanelContent>
           <app-confirm-contact
@@ -72,11 +73,7 @@
           </app-confirm-contact>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
-
-    <ngb-accordion #recruit="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-int-recruit" title="Interest in International Recruitment">
         <ng-template ngbPanelContent>
           <app-avail-immediate
@@ -85,11 +82,7 @@
           </app-avail-immediate>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
-
-    <ngb-accordion #destinations="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-destinations" title="Destinations">
         <ng-template ngbPanelContent>
           <app-destinations
@@ -102,20 +95,33 @@
           </app-destination-limit>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
+      <!-- CITIZENSHIPS -->
+      <ngb-panel id="intake-citizenships">
+        <ng-template ngbPanelTitle let-opened="opened">
+          <div class="container-fluid gx-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <p class="mb-0">Citizenships</p>
+                <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
+              </div>
+              <div class="col-1">
+                <button type="button" class="btn btn-primary btn-sm" (click)="addCitizenshipRecord($event)">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+        <app-citizenships
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [nationalities]="nationalities">
+        </app-citizenships>
+        </ng-template>
+      </ngb-panel>
 
-    <app-citizenships
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData"
-      [nationalities]="nationalities"
-      [toggleAll]="toggleAll">
-    </app-citizenships>
-
-    <hr/>
-
-    <ngb-accordion #personal="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-personal-status" title="Personal Status/Program Eligibility">
         <ng-template ngbPanelContent>
           <app-host-entry
@@ -150,19 +156,31 @@
           </app-family>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
+      <!-- EXAMS -->
+      <ngb-panel id="intake-exams">
+        <ng-template ngbPanelTitle let-opened="opened">
+          <div class="container-fluid gx-0">
+            <div class="row">
+              <div class="col-11">
+                <span>English Exams</span>
+              </div>
+              <div class="col-1">
+                <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-exams
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-exams>
+        </ng-template>
+      </ngb-panel>
 
-    <app-exams
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData"
-      [toggleAll]="toggleAll">
-    </app-exams>
-
-    <hr/>
-
-    <ngb-accordion #english="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-english-assessment" title="English Assessment">
         <ng-template ngbPanelContent>
           <app-lang-assessment
@@ -171,11 +189,7 @@
           </app-lang-assessment>
         </ng-template>
       </ngb-panel>
-    </ngb-accordion>
 
-    <hr/>
-
-    <ngb-accordion #registration="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-registration" title="Registration">
         <ng-template ngbPanelContent>
           <div class="card-title h6">
@@ -198,6 +212,7 @@
           </div>
         </ng-template>
       </ngb-panel>
+
     </ngb-accordion>
   </div>
 

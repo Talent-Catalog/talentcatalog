@@ -6,58 +6,136 @@
   {{error}}
 </div>
 <div *ngIf="!loading">
-  <h5>Job Opportunity Intake (JOI)</h5>
+  <div class="d-flex justify-content-between">
+    <h5 class="mb-4">Job Opportunity Intake (JOI)</h5>
+  </div>
+  <!-- JOB DESTINATION -->
 
-  <ngb-accordion activeIds="position-details" [destroyOnHide]="false">
-    <ngb-panel id="position-details">
-      <ng-template ngbPanelHeader>
-        <div class="d-flex align-items-center justify-content-between">
-          Position Details
-        </div>
-      </ng-template>
+
+  <ngb-accordion #joi="ngbAccordion" [destroyOnHide]="false" activeIds="employer-details, position-details, immigration-considerations">
+
+    <!-- GENERAL INFORMATION -->
+    <ngb-panel id="employer-details" title="Employer Details: {{job.employer}}">
       <ng-template ngbPanelContent>
+        <div class="row mb-3">
+          <div class="col-2">
+            <label>Destination: </label>
+            <span>{{job.country}}</span>
+          </div>
+          <div class="col">
+            <label>Company website: </label>
+            <span><a [href]="job.website" target="_blank">{{job.website}}</a></span>
+          </div>
+          <div class="col">
+            <label>Hiring commitment: </label>
+            <span>{{job.employerHiringCommitment}}</span>
+          </div>
+          <div class="col">
+            <label>Have they hired from abroad before? </label>
+            <span>{{job.employerPreviousHire}}</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label>Brief description of {{job.employer}}: </label>
+            <p>{{job.employerDescription}}</p>
+          </div>
+        </div>
+        <hr>
+        <app-recruitment-process
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-recruitment-process>
+        <app-cost-commit-employer
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-cost-commit-employer>
+      </ng-template>
+    </ngb-panel>
 
+    <ngb-panel id="position-details" title="Position Details: {{job.name}}">
+      <ng-template ngbPanelContent>
         <app-job-title
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-job-title>
-
         <app-job-description
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-job-description>
-
+        <app-job-salary
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-salary>
+        <app-job-location
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-location>
+        <app-job-location-details
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-location-details>
         <app-job-benefits
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-job-benefits>
-
         <app-job-experience
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-job-experience>
-
         <app-job-education
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-job-education>
-
         <app-job-skills
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-job-skills>
-
       </ng-template>
     </ngb-panel>
-  </ngb-accordion>
 
-  <hr/>
+    <ngb-panel id="immigration-considerations" title="Immigration Considerations">
+      <ng-template ngbPanelContent>
+        <app-visa-pathways
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-visa-pathways>
+<!--        <app-visa-pathways-employer-->
+<!--          [entity]="job"-->
+<!--          [jobIntakeData]="jobIntakeData"-->
+<!--          [editable]="!loggedInUser.readOnly">-->
+<!--        </app-visa-pathways-employer>-->
+        <app-occupation-code
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-occupation-code>
+        <app-min-salary
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-min-salary>
+<!--        <app-min-salary-employer-->
+<!--          [entity]="job"-->
+<!--          [jobIntakeData]="jobIntakeData"-->
+<!--          [editable]="!loggedInUser.readOnly">-->
+<!--        </app-min-salary-employer>-->
+      </ng-template>
+    </ngb-panel>
+
+  </ngb-accordion>
 
 
 </div>

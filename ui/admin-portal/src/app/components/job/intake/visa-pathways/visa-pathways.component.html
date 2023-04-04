@@ -1,0 +1,56 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+
+  <div class="mb-3">
+    <label class="form-label" for="visaPathways">
+      Select the immigration pathways that meet job & employer requirements
+    </label>
+    <div *ngIf="editable" class="float-end">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <ng-select id="visaPathways"
+               [formControlName]="'visaPathways'"
+               (clear)="setNoResponse('visaPathways')"
+               [items]="visaPathwayOptions"
+               [clearOnBackspace]="false"
+               [multiple]="true"
+               placeholder="Select"
+               bindLabel="name">
+    </ng-select>
+  </div>
+
+  <div *ngIf="selectedVisaPathways?.length > 0">
+    <div class="table-responsive">
+      <table class="table">
+        <thead class="table-light">
+        <tr>
+          <th scope="col">Visa</th>
+          <th scope="col">Current Location</th>
+          <th scope="col">Age Requirement</th>
+          <th scope="col">Language Requirement</th>
+          <th scope="col">Employment Commitment</th>
+          <th scope="col">Who can be included?</th>
+          <th scope="col">Other Requirements</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let visa of selectedVisaPathways">
+          <td>{{visa.name}}</td>
+          <td>Outside home country (exception Afghan)</td>
+          <td>< 50 years old</td>
+          <td>IELTS equiv.= 4.5 total, Pearson Academic equiv.= 30, Tofel</td>
+          <td>Min 2 yrs with employer</td>
+          <td>Only partner and children</td>
+          <td></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</form>

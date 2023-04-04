@@ -15,42 +15,20 @@
   -->
 
 <!-- EXISTING RECORDS -->
-
-<ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
-  <ngb-panel id="intake-citizenships">
-    <ng-template ngbPanelTitle let-opened="opened">
-      <div class="container-fluid gx-0">
-        <div class="row align-items-center">
-          <div class="col">
-            <p class="mb-0">Citizenships</p>
-            <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
-          </div>
-          <div class="col-1">
-            <button type="button" class="btn btn-primary btn-sm" (click)="addRecord($event)">
-              <i class="fas fa-plus"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </ng-template>
-    <ng-template ngbPanelContent>
-      <div *ngIf="error">
-        {{error}}
-      </div>
-      <div *ngIf="candidateIntakeData.candidateCitizenships.length == 0">
-        <p class="mb-0">No Citizenships Added</p>
-      </div>
-      <div *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;" class="citizenship-card">
-        <app-candidate-citizenship-card
-          [entity]="candidate"
-          [candidateIntakeData]="candidateIntakeData"
-          [editable]="editable"
-          [myRecordIndex]="i"
-          [nationalities]="nationalities"
-          (delete)="deleteRecord(i)">
-        </app-candidate-citizenship-card>
-        <hr/>
-      </div>
-    </ng-template>
-  </ngb-panel>
-</ngb-accordion>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div *ngIf="candidateIntakeData.candidateCitizenships.length == 0">
+  <p class="mb-0">No Citizenships Added</p>
+</div>
+<div *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;" class="citizenship-card">
+  <app-candidate-citizenship-card
+    [entity]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [editable]="editable"
+    [myRecordIndex]="i"
+    [nationalities]="nationalities"
+    (delete)="deleteRecord(i)">
+  </app-candidate-citizenship-card>
+  <hr/>
+</div>

@@ -14,12 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, Input, OnInit} from '@angular/core';
+import {Directive, Input, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {User} from '../../../model/user';
 import {Job, JobIntakeData} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
 import {AuthService} from "../../../services/auth.service";
+import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 
 /**
  * Base class for all job intake tab components.
@@ -68,6 +69,11 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
    */
   loggedInUser: User;
 
+  /**
+   * Access to all accordions on the page, which we can then toggle open/close on.
+   */
+  @ViewChildren(NgbAccordion) accs: QueryList<NgbAccordion>;
+
   public constructor(
     protected authService: AuthService,
     protected jobService: JobService,
@@ -78,6 +84,23 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
   ngOnInit(): void {
     this.refreshIntakeDataInternal(true);
   }
+
+  /**
+   * Open/close all accordions on page.
+   * @param openAll: True to open all, false to close all.
+   */
+  // togglePanels(openAll: boolean) {
+  //   this.toggleAll.next(openAll);
+  //   if (openAll) {
+  //     this.accs.forEach(acc => {
+  //       acc.expandAll();
+  //     })
+  //   } else {
+  //     this.accs.forEach(acc => {
+  //       acc.collapseAll();
+  //     })
+  //   }
+  // }
 
   /**
    * Loads all the job's intake data from the server, as well as
@@ -96,6 +119,7 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
       'intakeData':  this.jobService.getIntakeData(this.job.id),
     }).subscribe(results => {
       this.loading = false;
+      // todo add hardcoded data to test with
       this.jobIntakeData = results['intakeData'];
       this.onDataLoaded(init);
     }, error => {
