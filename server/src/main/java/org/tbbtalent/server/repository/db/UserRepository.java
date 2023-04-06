@@ -71,3 +71,5 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
         + "and u.status != 'deleted'")
     List<User> searchStaffNotUsingMfa();
 }
+
+

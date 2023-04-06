@@ -41,7 +41,7 @@ public class UpdateUserRequest {
 
     private Role role;
 
-    private String approver;
+    private Long approverId;
 
     private String purpose;
 

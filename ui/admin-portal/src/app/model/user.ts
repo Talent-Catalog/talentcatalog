@@ -49,7 +49,7 @@ export interface UpdateUserRequest {
   password?: string;
   readOnly: boolean;
   role: string;
-  approver: User;
+  approverId: number;
   purpose: string;
   sourceCountries: Country[];
   status: string;

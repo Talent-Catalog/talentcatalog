@@ -256,7 +256,7 @@ public class UserServiceImpl implements UserService {
         user.setLastName(request.getLastName());
         user.setStatus(request.getStatus());
         user.setUsingMfa(request.getUsingMfa());
-        user.setApprover(request.getApprover());
+        user.setApproverId(request.getApproverId());
         user.setPurpose(request.getPurpose());
 
         if (creatingUser == null) {

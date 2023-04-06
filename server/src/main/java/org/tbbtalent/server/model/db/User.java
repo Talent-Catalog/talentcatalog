@@ -33,6 +33,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import com.sun.xml.bind.v2.TODO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
@@ -49,7 +51,9 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private String approver;
+    // The 'approver' is a TC user whose ID will need to be stored
+    @Column(name = "approver_id")
+    private Long approverId;
 
     private String purpose;
 
@@ -135,17 +139,17 @@ public class User extends AbstractAuditableDomainObject<Long> {
      * @param lastName actual surname
      * @param email currently not used by TC functionality (must be unique)
      * @param role type of access to the TC (system admin / full admin / source partner admin / semi limited / limited)
-     * @param approver if relevant, TBB person who approved the access request (see #pro-tcpartner-access-int Slack channel for process) — set as nullable because it'll only apply to external admin users
-     * @param purpose reason given for TC access by whichever TBB person requested it — set as nullable because it'll only apply to external admin users
+     * @param approver if required, this is the TC user who approved the access request — set as nullable because it's only required in certain instances
+     * @param purpose reason given for the new user's TC access in their approval process — set as nullable because it's only required in certain instances
      */
 
-    public User(String username, String firstName, String lastName, String email, Role role, @Nullable String approver, @Nullable String purpose) {
+    public User(String username, String firstName, String lastName, String email, Role role, @Nullable Long approverId, @Nullable String purpose) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.role = role;
-        this.approver = approver;
+        this.approverId = approverId;
         this.purpose = purpose;
         this.status = Status.active;
         this.setCreatedDate(OffsetDateTime.now());
@@ -193,9 +197,9 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public boolean getReadOnly() { return readOnly; }
 
-    public String getApprover() { return approver; }
+    public Long getApproverId() { return approverId; }
 
-    public void setApprover(String approver) { this.approver = approver; }
+    public void setApproverId(Long approverId) { this.approverId = approverId; }
 
     public String getPurpose() { return purpose; }
 
