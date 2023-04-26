@@ -94,12 +94,13 @@
 
       <!-- Approver must be a TC user -->
       <div class="mb-3">
-        <label class="form-label" for="approver">Approver</label>
+        <label class="form-label">Approver</label>
         <ng-select
           id="approver"
           [items]="users"
           [multiple]="false"
           [closeOnSelect]="true"
+          [searchable]="true"
           placeholder="Select or type..."
           bindLabel="username"
           bindValue="id"
