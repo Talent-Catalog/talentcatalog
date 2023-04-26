@@ -51,11 +51,10 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // The 'approver' is a TC user whose ID will need to be stored
-    @Column(name = "approver_id")
-    private Long approverId;
-
     private String purpose;
+
+    // The 'approver' is a TC user whose ID we will store
+    private Long approverId;
 
     /**
      * Use boolean rather than Boolean so that default value is false, not null.
@@ -139,7 +138,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
      * @param lastName actual surname
      * @param email currently not used by TC functionality (must be unique)
      * @param role type of access to the TC (system admin / full admin / source partner admin / semi limited / limited)
-     * @param approver if required, this is the TC user who approved the access request — set as nullable because it's only required in certain instances
+     * @param approverId if approval required, this is the ID of the TC user who approved the access request — set as nullable because it's only required in certain instances
      * @param purpose reason given for the new user's TC access in their approval process — set as nullable because it's only required in certain instances
      */
 
