@@ -3,8 +3,8 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="skills">
-      Specific skills to screen for
+    <label class="form-label" for="language">
+      Employer-required language proficiency for role
     </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
@@ -12,7 +12,6 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ngx-wig id="skills" [formControlName]="'skills'"
-    ></ngx-wig>
+    <ngx-wig id="language" [formControlName]="'language'"></ngx-wig>
   </div>
 </form>

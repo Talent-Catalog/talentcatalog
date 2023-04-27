@@ -455,12 +455,9 @@ import {JobSalaryComponent} from './components/job/intake/job-salary/job-salary.
 import {OccupationCodeComponent} from './components/job/intake/occupation-code/occupation-code.component';
 import {MinSalaryComponent} from './components/job/intake/min-salary/min-salary.component';
 import {VisaPathwaysComponent} from './components/job/intake/visa-pathways/visa-pathways.component';
-import {
-  VisaPathwaysEmployerComponent
-} from './components/job/intake/visa-pathways-employer/visa-pathways-employer.component';
-import {MinSalaryEmployerComponent} from './components/job/intake/min-salary-employer/min-salary-employer.component';
 import {RecruitmentProcessComponent} from './components/job/intake/recruitment-process/recruitment-process.component';
 import { CostCommitEmployerComponent } from './components/job/intake/cost-commit-employer/cost-commit-employer.component';
+import { JobLanguageComponent } from './components/job/intake/job-language/job-language.component';
 
 @NgModule({
   declarations: [
@@ -731,10 +728,9 @@ import { CostCommitEmployerComponent } from './components/job/intake/cost-commit
     OccupationCodeComponent,
     MinSalaryComponent,
     VisaPathwaysComponent,
-    VisaPathwaysEmployerComponent,
-    MinSalaryEmployerComponent,
     RecruitmentProcessComponent,
-    CostCommitEmployerComponent
+    CostCommitEmployerComponent,
+    JobLanguageComponent
   ],
   imports: [
     BrowserModule,

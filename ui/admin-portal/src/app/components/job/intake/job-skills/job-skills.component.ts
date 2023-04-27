@@ -16,7 +16,7 @@ export class JobSkillsComponent extends JobIntakeComponentBase implements OnInit
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      skills: [{value: this.jobIntakeData?.skills, disabled: !this.editable}],
+      skills: [{value: this.jobIntakeData?.skillRequirements, disabled: !this.editable}],
     });
   }
 

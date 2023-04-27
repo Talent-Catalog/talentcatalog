@@ -87,6 +87,11 @@
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-job-benefits>
+        <app-job-language
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-language>
         <app-job-experience
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
@@ -112,11 +117,6 @@
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-visa-pathways>
-<!--        <app-visa-pathways-employer-->
-<!--          [entity]="job"-->
-<!--          [jobIntakeData]="jobIntakeData"-->
-<!--          [editable]="!loggedInUser.readOnly">-->
-<!--        </app-visa-pathways-employer>-->
         <app-occupation-code
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
@@ -127,11 +127,6 @@
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-min-salary>
-<!--        <app-min-salary-employer-->
-<!--          [entity]="job"-->
-<!--          [jobIntakeData]="jobIntakeData"-->
-<!--          [editable]="!loggedInUser.readOnly">-->
-<!--        </app-min-salary-employer>-->
       </ng-template>
     </ngb-panel>
 

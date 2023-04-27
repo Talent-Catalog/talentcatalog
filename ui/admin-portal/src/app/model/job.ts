@@ -72,19 +72,18 @@ export interface Job extends JobIds {
 export interface JobIntakeData {
   costCommitEmployer?: string;
   recruitmentProcess?: string;
-  minSalary?: string;
-  minSalaryEmployer?: YesNo;
+  minSalary?: number;
   occupationCode?: string;
-  salary?: string;
+  salaryRange?: string;
   locationDetails?: string;
   location?: string;
   visaPathways?: VisaPathway[];
-  visaPathwaysEmployer?: YesNo;
   benefits?: string;
   description?: string;
-  education?: string;
-  experience?: string;
-  skills?: string;
+  educationRequirements?: string;
+  languageRequirements?: string;
+  employmentExperience?: string;
+  skillRequirements?: string;
   title?: string;
 }
 

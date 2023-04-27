@@ -86,23 +86,6 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
   }
 
   /**
-   * Open/close all accordions on page.
-   * @param openAll: True to open all, false to close all.
-   */
-  // togglePanels(openAll: boolean) {
-  //   this.toggleAll.next(openAll);
-  //   if (openAll) {
-  //     this.accs.forEach(acc => {
-  //       acc.expandAll();
-  //     })
-  //   } else {
-  //     this.accs.forEach(acc => {
-  //       acc.collapseAll();
-  //     })
-  //   }
-  // }
-
-  /**
    * Loads all the job's intake data from the server, as well as
    * standard data used for intake data entry, such as lists of all countries
    * and nationalities.
