@@ -442,9 +442,7 @@ import {
   ViewJobPreparationItemsComponent
 } from './components/job/view/preparation-items/view-job-preparation-items/view-job-preparation-items.component';
 import {AdminApiComponent} from './components/settings/admin-api/admin-api.component';
-import {JobDescriptionComponent} from './components/job/intake/job-description/job-description.component';
 import {JobIntakeTabComponent} from './components/job/view/tab/job-intake-tab/job-intake-tab.component';
-import {JobTitleComponent} from './components/job/intake/job-title/job-title.component';
 import {JobBenefitsComponent} from './components/job/intake/job-benefits/job-benefits.component';
 import {JobExperienceComponent} from './components/job/intake/job-experience/job-experience.component';
 import {JobEducationComponent} from './components/job/intake/job-education/job-education.component';
@@ -715,9 +713,7 @@ import { JobLanguageComponent } from './components/job/intake/job-language/job-l
     ViewJobPreparationItemsComponent,
     ViewJobSourceContactsComponent,
     AdminApiComponent,
-    JobDescriptionComponent,
     JobIntakeTabComponent,
-    JobTitleComponent,
     JobBenefitsComponent,
     JobExperienceComponent,
     JobEducationComponent,

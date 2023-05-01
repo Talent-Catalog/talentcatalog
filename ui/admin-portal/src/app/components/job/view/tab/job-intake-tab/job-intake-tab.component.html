@@ -57,16 +57,19 @@
 
     <ngb-panel id="position-details" title="Position Details: {{job.name}}">
       <ng-template ngbPanelContent>
-        <app-job-title
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-title>
-        <app-job-description
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-description>
+        <div class="row mb-3">
+          <div class="col">
+            <label>Job Description: </label>
+            <span *ngIf="job.submissionList?.fileJdLink; else noJd">
+              <a target="_blank" href="{{job.submissionList.fileJdLink}}">
+                {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
+              <div class="form-text">You can update this link under the Job Description tab</div>
+            </span>
+            <ng-template #noJd>
+              <span>Please upload or provide link under Job Description tab</span>
+            </ng-template>
+          </div>
+        </div>
         <app-job-salary
           [entity]="job"
           [jobIntakeData]="jobIntakeData"

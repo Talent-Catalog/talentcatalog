@@ -79,12 +79,10 @@ export interface JobIntakeData {
   location?: string;
   visaPathways?: VisaPathway[];
   benefits?: string;
-  description?: string;
   educationRequirements?: string;
   languageRequirements?: string;
   employmentExperience?: string;
   skillRequirements?: string;
-  title?: string;
 }
 
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
