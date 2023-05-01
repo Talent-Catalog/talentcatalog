@@ -1,14 +1,14 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {FormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
 import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
 
 @Component({
-  selector: 'app-job-title',
-  templateUrl: './job-title.component.html',
-  styleUrls: ['./job-title.component.scss']
+  selector: 'app-job-language',
+  templateUrl: './job-language.component.html',
+  styleUrls: ['./job-language.component.scss']
 })
-export class JobTitleComponent extends JobIntakeComponentBase implements OnInit {
+export class JobLanguageComponent extends JobIntakeComponentBase implements OnInit {
 
   constructor(fb: FormBuilder, jobService: JobService) {
     super(fb, jobService);
@@ -16,7 +16,7 @@ export class JobTitleComponent extends JobIntakeComponentBase implements OnInit 
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      title: [{value: this.jobIntakeData?.title, disabled: !this.editable}],
+      experience: [{value: this.jobIntakeData?.languageRequirements, disabled: !this.editable}],
     });
   }
 

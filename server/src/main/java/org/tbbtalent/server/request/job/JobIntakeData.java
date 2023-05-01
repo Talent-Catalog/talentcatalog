@@ -37,5 +37,5 @@ import lombok.ToString;
 @ToString
 public class JobIntakeData {
 
-    private String description;
+    private String salaryRange;
 }

@@ -351,9 +351,9 @@ public class JobServiceImpl implements JobService {
     }
 
     private void populateIntakeData(SalesforceJobOpp job, JobIntakeData data) {
-        final String description = data.getDescription();
-        if (description != null) {
-            job.setDescription(description);
+        final String salaryRange = data.getSalaryRange();
+        if (salaryRange != null) {
+            job.setSalaryRange(salaryRange);
         }
     }
 

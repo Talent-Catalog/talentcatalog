@@ -39,12 +39,12 @@ export class VisaPathwaysComponent extends JobIntakeComponentBase implements OnI
       /**
        * Method stub to get all visa pathways from server depending on the country, using Australia as example.
        */
-      let countryId = 6191
-      this.visaPathwayService.getVisaPathwaysCountry(countryId).subscribe(
-        (results) => {
-          //this.visaPathwayOptions = results;
-        }
-      )
+      // let countryId = 6191
+      // this.visaPathwayService.getVisaPathwaysCountry(countryId).subscribe(
+      //   (results) => {
+      //     //this.visaPathwayOptions = results;
+      //   }
+      // )
     // todo REMOVE hardcoded temporary visa pathway options
     this.visaPathwayOptions = [
       {name: "482: Temporary Skill Shortage",

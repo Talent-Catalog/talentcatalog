@@ -104,10 +104,16 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private String country;
 
     /**
+     * todo: this is no longer a field in the JOI, remove field. We only use a JD file upload.
      * Description given to job in job intake.
      */
     private String description;
-
+    
+    /**
+     * Salary range given to job in job intake.
+     */
+    private String salaryRange;
+    
     /**
      * Name of employer - maps to Account name on Salesforce
      */

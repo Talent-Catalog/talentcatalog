@@ -15,7 +15,7 @@ export class JobSalaryComponent extends JobIntakeComponentBase implements OnInit
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      salary: [{value: this.jobIntakeData?.salary, disabled: !this.editable}],
+      salaryRange: [{value: this.jobIntakeData?.salaryRange, disabled: !this.editable}],
     });
   }
 

@@ -442,9 +442,7 @@ import {
   ViewJobPreparationItemsComponent
 } from './components/job/view/preparation-items/view-job-preparation-items/view-job-preparation-items.component';
 import {AdminApiComponent} from './components/settings/admin-api/admin-api.component';
-import {JobDescriptionComponent} from './components/job/intake/job-description/job-description.component';
 import {JobIntakeTabComponent} from './components/job/view/tab/job-intake-tab/job-intake-tab.component';
-import {JobTitleComponent} from './components/job/intake/job-title/job-title.component';
 import {JobBenefitsComponent} from './components/job/intake/job-benefits/job-benefits.component';
 import {JobExperienceComponent} from './components/job/intake/job-experience/job-experience.component';
 import {JobEducationComponent} from './components/job/intake/job-education/job-education.component';
@@ -455,12 +453,9 @@ import {JobSalaryComponent} from './components/job/intake/job-salary/job-salary.
 import {OccupationCodeComponent} from './components/job/intake/occupation-code/occupation-code.component';
 import {MinSalaryComponent} from './components/job/intake/min-salary/min-salary.component';
 import {VisaPathwaysComponent} from './components/job/intake/visa-pathways/visa-pathways.component';
-import {
-  VisaPathwaysEmployerComponent
-} from './components/job/intake/visa-pathways-employer/visa-pathways-employer.component';
-import {MinSalaryEmployerComponent} from './components/job/intake/min-salary-employer/min-salary-employer.component';
 import {RecruitmentProcessComponent} from './components/job/intake/recruitment-process/recruitment-process.component';
 import { CostCommitEmployerComponent } from './components/job/intake/cost-commit-employer/cost-commit-employer.component';
+import { JobLanguageComponent } from './components/job/intake/job-language/job-language.component';
 
 @NgModule({
   declarations: [
@@ -718,9 +713,7 @@ import { CostCommitEmployerComponent } from './components/job/intake/cost-commit
     ViewJobPreparationItemsComponent,
     ViewJobSourceContactsComponent,
     AdminApiComponent,
-    JobDescriptionComponent,
     JobIntakeTabComponent,
-    JobTitleComponent,
     JobBenefitsComponent,
     JobExperienceComponent,
     JobEducationComponent,
@@ -731,10 +724,9 @@ import { CostCommitEmployerComponent } from './components/job/intake/cost-commit
     OccupationCodeComponent,
     MinSalaryComponent,
     VisaPathwaysComponent,
-    VisaPathwaysEmployerComponent,
-    MinSalaryEmployerComponent,
     RecruitmentProcessComponent,
-    CostCommitEmployerComponent
+    CostCommitEmployerComponent,
+    JobLanguageComponent
   ],
   imports: [
     BrowserModule,
