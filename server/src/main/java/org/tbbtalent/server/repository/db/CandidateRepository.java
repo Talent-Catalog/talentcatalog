@@ -16,10 +16,6 @@
 
 package org.tbbtalent.server.repository.db;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,6 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Country;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * See notes on "join fetch" in the doc for {@link #findByIdLoadCandidateOccupations}
@@ -311,12 +312,21 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
         Count By Unhcr Registered
      **************************************************************************/
     String countByUnhcrRegisteredSelectSQL =
-            "select unhcr_registered, count(distinct c) as PeopleCount" +
+            "select case" +
+                    " when unhcr_status = 'NotRegistered' then 'No'" +
+                    " when unhcr_status = 'RegisteredAsylum' then 'Yes'" +
+                    " when unhcr_status = 'MandateRefugee' then 'Yes'" +
+                    " when unhcr_status = 'RegisteredStateless' then 'Yes'" +
+                    " when unhcr_status = 'RegisteredStatusUnknown' then 'Yes'" +
+                    " when unhcr_status = 'Unsure' then 'Unsure'" +
+                    " when unhcr_status = 'NoResponse' then 'NoResponse'" +
+                    " else 'NoResponse' end as UNHCRRegistered," +
+            " count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
             " where c.country_id in (:sourceCountryIds)" +
                     " and " + countingStandardFilter + dateConditionFilter;
     String countByUnhcrRegisteredGroupBySQL =
-                    " group by unhcr_registered order by PeopleCount desc";
+                    " group by UNHCRRegistered order by PeopleCount desc";
 
     @Query(value = countByUnhcrRegisteredSelectSQL + excludeIneligible +
             countByUnhcrRegisteredGroupBySQL, nativeQuery = true)
