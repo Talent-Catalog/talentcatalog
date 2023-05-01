@@ -35,7 +35,7 @@ public class JobIntakeDataBuilderSelector {
 
     private DtoBuilder jobIntakeDto() {
         return new DtoBuilder()
-                .add("description")
+                .add("salaryRange")
                 ;
     }
 }

@@ -196,6 +196,7 @@ public class JobAdminApi implements
             .add("suggestedSearches", savedSearchDto())
             .add("updatedBy", userDto())
             .add("updatedDate")
+            .add("salaryRange")
             ;
     }
 
