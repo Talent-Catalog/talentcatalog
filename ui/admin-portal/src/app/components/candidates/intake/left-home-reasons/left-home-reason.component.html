@@ -20,7 +20,7 @@
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="leftHomeReasons">
-      What are the primary reasons you left your home country and currently live in Lebanon or Jordan?
+      What are the primary reasons you left your home country and currently live in {{candidate.country.name}}?
     </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
