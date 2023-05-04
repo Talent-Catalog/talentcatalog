@@ -106,7 +106,7 @@
       <td><a [href]="user.partner.websiteUrl" target="_blank"
              [title]="user.partner.name">{{user.partner.abbreviation}}</a></td>
       <td>{{getSourceCountries(user)}}</td>
-      <td>{{user.approver.username}}</td>
+      <td>{{user.approver?.username}}</td>
       <td>{{user.purpose}}</td>
       <td>{{user.readOnly}}</td>
       <td>{{user.status}}</td>

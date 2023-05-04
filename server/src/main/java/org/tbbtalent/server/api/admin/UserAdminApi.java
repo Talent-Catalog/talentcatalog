@@ -37,6 +37,7 @@ import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.UserService;
+import org.tbbtalent.server.service.db.impl.UserServiceImpl;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -55,6 +56,13 @@ public class UserAdminApi {
     @PostMapping("search")
     public List<Map<String, Object>> search(@RequestBody SearchUserRequest request) {
         List<User> users = userService.search(request);
+        return userDto().buildList(users);
+    }
+
+//    This method responds to a get request to '../users' and currently responds with a list of all users (to be parsed later)
+    @GetMapping()
+    public List<Map<String, Object>> getAllAdminUsers() {
+        List<User> users = userService.getAllAdminUsers();
         return userDto().buildList(users);
     }
 

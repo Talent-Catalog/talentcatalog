@@ -680,4 +680,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public List<User> getAllAdminUsers() {
+        return userRepository.getAllAdminUsers();
+    }
+
 }
