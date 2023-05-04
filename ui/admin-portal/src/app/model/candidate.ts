@@ -298,6 +298,7 @@ export interface CandidateVisa {
   createdDate?: number;
   updatedBy?: User;
   updatedDate?: number;
+  visaEligibilityAssessment?: YesNo;
   candidateVisaJobChecks?: CandidateVisaJobCheck[];
 
 }
