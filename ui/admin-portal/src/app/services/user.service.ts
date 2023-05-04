@@ -30,7 +30,7 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   // This method is to display users for the 'approver' field in the create-update-user component's form
-  listUsers(): Observable<User[]> {
+  listAdminUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}`);
   }
 

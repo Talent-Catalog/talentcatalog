@@ -62,7 +62,7 @@ export class CreateUpdateUserComponent implements OnInit {
       partnerId: [this.user?.partner.id],
       status: [this.user ? this.user.status : Status.active],
       role: [this.user?.role, Validators.required],
-      approverId: [this.user?.approver.id],
+      approverId: [this.user?.approver?.id],
       purpose: [this.user?.purpose],
       sourceCountries: [this.user?.sourceCountries],
       readOnly: [this.user ? this.user.readOnly : false],
@@ -82,7 +82,7 @@ export class CreateUpdateUserComponent implements OnInit {
     forkJoin({
       'countries': this.countryService.listCountriesRestricted(),
       'partners': this.partnerService.listPartners(),
-      'users': this.userService.listUsers()
+      'users': this.userService.listAdminUsers()
     }).subscribe(
       results => {
         this.working = false;

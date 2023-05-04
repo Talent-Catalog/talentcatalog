@@ -37,7 +37,6 @@ import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.UserService;
-import org.tbbtalent.server.service.db.impl.UserServiceImpl;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -59,7 +58,7 @@ public class UserAdminApi {
         return userDto().buildList(users);
     }
 
-//    This method responds to a get request to '../users' and currently responds with a list of all users (to be parsed later)
+    //    Used to populate options for the 'Approver' field of the 'Add' form for new users (approvers will always be admin users and this stops candidates being fetched)
     @GetMapping()
     public List<Map<String, Object>> getAllAdminUsers() {
         List<User> users = userService.getAllAdminUsers();

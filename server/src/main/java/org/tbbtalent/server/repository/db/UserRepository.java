@@ -73,9 +73,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
         + "and u.status != 'deleted'")
     List<User> searchStaffNotUsingMfa();
 
+//    Used to populate options for the 'Approver' field of the 'Add' form for new users (approvers will always be admin users and this stops candidates being fetched)
     @Query("SELECT u FROM User u " +
             "WHERE u.role != 'user'")
     List<User> getAllAdminUsers();
 }
-
-

@@ -102,9 +102,16 @@
           [closeOnSelect]="true"
           [searchable]="true"
           placeholder="Select or type..."
-          bindLabel="username"
+          bindLabel="firstName"
           bindValue="id"
           [formControlName]="'approverId'">
+<!-- Enables viewing and searching potential approvers (admin users) by full name -->
+          <ng-template ng-label-tmp let-item="item">
+            {{item.firstName}} {{item.lastName}}
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+            {{item.firstName}} {{item.lastName}}
+          </ng-template>
         </ng-select>
         <p class="text-muted">If required, who approved this registration?</p>
       </div>
