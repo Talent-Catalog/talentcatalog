@@ -50,9 +50,9 @@ public class CandidateSpecificationUtil {
 
                 Join<Object, Object> join = null;
                 String subProperty;
-                if (property.startsWith("user.sourcePartner.")) {
+                if (property.startsWith("user.partner.")) {
                     join = partner;
-                    subProperty = property.replaceAll("user.sourcePartner.", "");
+                    subProperty = property.replaceAll("user.partner.", "");
                 } else if (property.startsWith("user.")) {
                     join = user;
                     subProperty = property.replaceAll("user.", "");
