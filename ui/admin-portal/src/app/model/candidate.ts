@@ -344,12 +344,6 @@ export enum AvailImmediateReason {
   Other = "Other"
 }
 
-/**
- * Note that the string values of this enum MUST match the actual stage names for candidate
- * opportunities on Salesforce.
- * <p/>
- * See https://docs.google.com/document/d/1B6DmpYaONV_yNmyAqL76cu0TUQcpNgKtOmKELCkpRoc/edit#heading=h.qx7je1tuwoqv
- */
 export enum CandidateOpportunityStage {
   prospect = "0. Prospect",
   miniIntake = "1. Mini intake",
