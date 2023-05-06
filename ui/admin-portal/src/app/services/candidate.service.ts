@@ -32,6 +32,7 @@ import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
 import {CandidateSource} from "../model/base";
 import {IntakeService} from "../components/util/intake/IntakeService";
+import {CandidateOpportunity, CandidateOpportunityStage} from "../model/candidate-opportunity";
 
 export interface DownloadCVRequest {
   candidateId: number,
@@ -67,7 +68,24 @@ export class CandidateService implements IntakeService {
   }
 
   getByNumber(number: string): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/number/${number}`);
+    return this.http.get<Candidate>(`${this.apiUrl}/number/${number}`)
+    // todo Mock test data
+    .pipe(
+      map(candidate => {
+        const opp: CandidateOpportunity = {
+          jobId: 123,
+          jobName: 'Mock Job',
+          name: 'Mock Candidate Opp name',
+          nextStep: 'Tell employer he is dreaming',
+          nextStepDueDate: new Date('2023-11-9'),
+          stage: CandidateOpportunityStage.prospect
+        };
+        candidate.candidateOpportunities = [opp];
+
+        return candidate;
+      })
+    );
+
   }
 
   get(id: number): Observable<Candidate> {

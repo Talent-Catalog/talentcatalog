@@ -22,6 +22,8 @@ import {SearchResults} from "../model/search-results";
 import {Candidate} from "../model/candidate";
 import {CandidateSource, PagedSearchRequest, SearchCandidateSourcesRequest} from "../model/base";
 import {isSavedSearch} from "../model/saved-search";
+import {map} from "rxjs/operators";
+import {CandidateOpportunity, CandidateOpportunityStage} from "../model/candidate-opportunity";
 
 @Injectable({providedIn: 'root'})
 export class CandidateSourceCandidateService {
@@ -48,7 +50,27 @@ export class CandidateSourceCandidateService {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
     return this.http.post<SearchResults<Candidate>>(
-      `${apiUrl}/${source.id}/search-paged`, request);
+      `${apiUrl}/${source.id}/search-paged`, request)
+    // todo Mock test data
+    .pipe(
+      map(result => this.mockCandidateOpps(result))
+    );
+  }
+
+  // todo Mock test data
+  private mockCandidateOpps(results: SearchResults<Candidate>): SearchResults<Candidate> {
+    results.content.forEach(x => {
+      const opp: CandidateOpportunity = {
+        jobId: 123,
+        jobName: 'Mock Job',
+        name: 'Mock Candidate Opp name',
+        nextStep: 'Tell employer he is dreaming',
+        nextStepDueDate: new Date('2023-11-9'),
+        stage: CandidateOpportunityStage.prospect
+      };
+      return x.candidateOpportunities = [opp];
+    })
+    return results;
   }
 
   export(source: CandidateSource, request: PagedSearchRequest) {
