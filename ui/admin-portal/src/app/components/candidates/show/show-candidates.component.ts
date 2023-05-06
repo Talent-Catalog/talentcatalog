@@ -477,6 +477,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.candidateSourceCandidateService.searchPaged(
           this.candidateSource, request).subscribe(
           results => {
+
+            //todo Should allow modification of results to be displayed. For example, a job list will filter
+            //candidate opportunities matching the job.
             this.results = results;
             this.cacheResults();
 
