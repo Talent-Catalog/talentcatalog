@@ -1,1 +1,27 @@
-<p>view-candidate-jobs works!</p>
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<div class="card" *ngIf="!loading">
+
+  <div class="card-body">
+    <div *ngIf="candidate?.candidateOpportunities?.length <= 0">
+      <p class="text-center text-muted small mb-0">No ongoing tasks</p>
+    </div>
+    <div *ngFor="let opp of candidate?.candidateOpportunities; let i = index;">
+      <div class="set-height d-flex justify-content-between">
+        <div class="custom-flex-75">
+          <p class="mb-0">
+            {{opp.jobName}} {{opp.name}}
+            {{opp.nextStep}} {{opp.nextStepDueDate}}
+<!--            todo etc other opp fields-->
+          </p>
+        </div>
+      </div>
+      <hr>
+    </div>
+  </div>
+</div>

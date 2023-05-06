@@ -9,6 +9,9 @@ import {Candidate} from "../../../../../model/candidate";
 export class ViewCandidateJobsComponent implements OnInit {
   @Input() candidate: Candidate;
 
+  loading: boolean;
+  error;
+
   constructor() { }
 
   ngOnInit(): void {
