@@ -92,12 +92,12 @@
         </ng-select>
       </div>
 
-      <!-- Approver must be a TC user -->
+      <!-- Approver who will be a TC admin user -->
       <div class="mb-3">
         <label class="form-label">Approver</label>
         <ng-select
           id="approver"
-          [items]="users"
+          [items]="approvers"
           [multiple]="false"
           [closeOnSelect]="true"
           [searchable]="true"

@@ -44,7 +44,7 @@ export class CreateUpdateUserComponent implements OnInit {
   roleOptions: EnumOption[] = enumOptions(Role);
   countries: Country[];
   partners: Partner[];
-  users: User[];
+  approvers: User[];
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -64,7 +64,6 @@ export class CreateUpdateUserComponent implements OnInit {
       status: [this.user? this.user.status : Status.active],
       role: [this.user?.role, Validators.required],
       approverId: [this.user?.approver?.id],
-      // approver: [this.user?.approver.id],
       purpose: [this.user?.purpose],
       sourceCountries: [this.user?.sourceCountries],
       readOnly: [this.user ? this.user.readOnly : false],
@@ -84,13 +83,13 @@ export class CreateUpdateUserComponent implements OnInit {
     forkJoin({
       'countries': this.countryService.listCountriesRestricted(),
       'partners': this.partnerService.listPartners(),
-      'users': this.userService.listAdminUsers()
+      'approvers': this.userService.listAdminUsers()
     }).subscribe(
       results => {
         this.working = false;
         this.countries = results['countries'];
         this.partners = results['partners'];
-        this.users = results['users'];
+        this.approvers = results['approvers'];
       },
       (error) => {
         this.error = error;
