@@ -58,7 +58,7 @@ public class UserAdminApi {
         return userDto().buildList(users);
     }
 
-    //    Used to populate options for the 'Approver' field of the 'Add' form for new users (approvers will always be admin users and this stops candidates being fetched)
+    //    Used to populate options for the 'Approver' field of the Add/Update user registration (approvers will always be admin users and this stops candidates being fetched)
     @GetMapping()
     public List<Map<String, Object>> getAllAdminUsers() {
         List<User> users = userService.getAllAdminUsers();
@@ -126,7 +126,7 @@ public class UserAdminApi {
                 .add("lastName")
                 .add("email")
                 .add("role")
-                .add("approverId")
+                .add("approver", userDtoApprover())
                 .add("purpose")
                 .add("sourceCountries", countryDto())
                 .add("readOnly")
@@ -165,6 +165,15 @@ public class UserAdminApi {
                 .add("lastLogin")
                 .add("usingMfa")
                 .add("mfaConfigured")
+                ;
+    }
+
+//    For providing limited details of a user's approver (who is another user with admin access)
+    private DtoBuilder userDtoApprover() {
+        return new DtoBuilder()
+                .add("id")
+                .add("firstName")
+                .add("lastName")
                 ;
     }
 

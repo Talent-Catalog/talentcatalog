@@ -250,13 +250,38 @@ public class UserServiceImpl implements UserService {
             user.setPartner((PartnerImpl) newSourcePartner);
         }
 
+        //Possibly update the user's approver
+        User currentApprover = user.getApprover();
+        Long currentApproverId = currentApprover == null ? null : currentApprover.getId();
+        User newApprover = null;
+        Long approverId = request.getApproverId();
+        if (approverId != null) {
+            //Approver specified - is it a new one?
+            if (!approverId.equals(currentApproverId)) {
+                if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
+                    //Only system admins can change approver
+                    throw new InvalidRequestException("You don't have permission to assign an approver.");
+                } else {
+                    //Changing approver
+                    newApprover = getUser(approverId);
+                }
+            }
+        } else {
+            //If user does not already have an approver, assign one
+            if (currentApprover == null) {
+                newApprover = creatingUser.getApprover();
+            }
+        }
+        //If we have a new approver, update it.
+        if (newApprover != null) {
+            user.setApprover((User) newApprover);
+        }
 
         user.setReadOnly(request.getReadOnly());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setStatus(request.getStatus());
         user.setUsingMfa(request.getUsingMfa());
-        user.setApproverId(request.getApproverId());
         user.setPurpose(request.getPurpose());
 
         if (creatingUser == null) {
@@ -289,7 +314,6 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new InvalidRequestException("You don't have permission to create a user.");
         }
-
     }
 
     @Override

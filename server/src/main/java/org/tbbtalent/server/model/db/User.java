@@ -51,11 +51,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private String purpose;
-
-    // The 'approver' is a TC user whose ID we will store
-    private Long approverId;
-
     /**
      * Use boolean rather than Boolean so that default value is false, not null.
      * Null is not allowed in Db definition
@@ -96,6 +91,13 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "partner_id")
     private PartnerImpl partner;
+
+//    This is to fetch a user's approver, who is another user with admin access
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approver_id")
+    private User approver;
+
+    private String purpose;
 
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
@@ -138,17 +140,15 @@ public class User extends AbstractAuditableDomainObject<Long> {
      * @param lastName actual surname
      * @param email currently not used by TC functionality (must be unique)
      * @param role type of access to the TC (system admin / full admin / source partner admin / semi limited / limited)
-     * @param approverId if approval required, this is the ID of the TC user who approved the access request — set as nullable because it's only required in certain instances
      * @param purpose reason given for the new user's TC access in their approval process — set as nullable because it's only required in certain instances
      */
 
-    public User(String username, String firstName, String lastName, String email, Role role, @Nullable Long approverId, @Nullable String purpose) {
+    public User(String username, String firstName, String lastName, String email, Role role, @Nullable String purpose) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.role = role;
-        this.approverId = approverId;
         this.purpose = purpose;
         this.status = Status.active;
         this.setCreatedDate(OffsetDateTime.now());
@@ -195,10 +195,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
     }
 
     public boolean getReadOnly() { return readOnly; }
-
-    public Long getApproverId() { return approverId; }
-
-    public void setApproverId(Long approverId) { this.approverId = approverId; }
 
     public String getPurpose() { return purpose; }
 
@@ -342,6 +338,14 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setPartner(PartnerImpl partner) {
         this.partner = partner;
+    }
+
+    public User getApprover() {
+        return approver;
+    }
+
+    public void setApprover(User approver) {
+        this.approver = approver;
     }
 
     @Transient

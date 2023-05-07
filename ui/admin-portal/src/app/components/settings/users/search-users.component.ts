@@ -30,6 +30,7 @@ import {AuthService} from '../../../services/auth.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {SearchUserRequest} from "../../../model/base";
+import {Observable} from "rxjs/index";
 
 
 @Component({
@@ -105,6 +106,7 @@ export class SearchUsersComponent implements OnInit {
     this.userService.searchPaged(request).subscribe(results => {
       this.results = results;
       this.loading = false;
+      console.log(results.content)
     });
   }
 

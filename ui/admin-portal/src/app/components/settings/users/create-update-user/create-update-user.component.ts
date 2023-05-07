@@ -27,6 +27,7 @@ import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
 import {forkJoin} from "rxjs";
 import {Status} from "../../../../model/base";
+import {Observable} from "rxjs/index";
 
 @Component({
   selector: 'app-create-update-user',
@@ -60,9 +61,10 @@ export class CreateUpdateUserComponent implements OnInit {
       firstName: [this.user?.firstName, Validators.required],
       lastName: [this.user?.lastName, Validators.required],
       partnerId: [this.user?.partner.id],
-      status: [this.user ? this.user.status : Status.active],
+      status: [this.user? this.user.status : Status.active],
       role: [this.user?.role, Validators.required],
       approverId: [this.user?.approver?.id],
+      // approver: [this.user?.approver.id],
       purpose: [this.user?.purpose],
       sourceCountries: [this.user?.sourceCountries],
       readOnly: [this.user ? this.user.readOnly : false],
