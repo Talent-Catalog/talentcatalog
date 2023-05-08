@@ -382,6 +382,9 @@ public class JobServiceImpl implements JobService {
         if (data.getEmploymentExperience() != null) {
             job.setEmploymentExperience(data.getEmploymentExperience());
         }
+        if (data.getOccupationCode() != null) {
+            job.setOccupationCode(data.getOccupationCode());
+        }
     }
 
     @NonNull

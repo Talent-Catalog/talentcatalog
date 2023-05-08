@@ -240,6 +240,7 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private String educationRequirements;
     private String skillRequirements;
     private String employmentExperience;
+    private String occupationCode;
 
     public void addStarringUser(User user) {
         starringUsers.add(user);

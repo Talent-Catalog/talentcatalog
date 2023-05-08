@@ -47,4 +47,5 @@ public class JobIntakeData {
     private String educationRequirements;
     private String skillRequirements;
     private String employmentExperience;
+    private String occupationCode;
 }

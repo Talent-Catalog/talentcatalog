@@ -45,6 +45,7 @@ public class JobIntakeDataBuilderSelector {
                 .add("educationRequirements")
                 .add("skillRequirements")
                 .add("employmentExperience")
+                .add("occupationCode")
                 ;
     }
 }
