@@ -355,6 +355,33 @@ public class JobServiceImpl implements JobService {
         if (salaryRange != null) {
             job.setSalaryRange(salaryRange);
         }
+        if (data.getRecruitmentProcess() != null) {
+            job.setRecruitmentProcess(data.getRecruitmentProcess());
+        }
+        if (data.getEmployerCostCommitment() != null) {
+            job.setEmployerCostCommitment(data.getEmployerCostCommitment());
+        }
+        if (data.getLocation() != null) {
+            job.setLocation(data.getLocation());
+        }
+        if (data.getLocationDetails() != null) {
+            job.setLocationDetails(data.getLocationDetails());
+        }
+        if (data.getBenefits() != null) {
+            job.setBenefits(data.getBenefits());
+        }
+        if (data.getLanguageRequirements() != null) {
+            job.setLanguageRequirements(data.getLanguageRequirements());
+        }
+        if (data.getEducationRequirements() != null) {
+            job.setEducationRequirements(data.getEducationRequirements());
+        }
+        if (data.getSkillRequirements() != null) {
+            job.setSkillRequirements(data.getSkillRequirements());
+        }
+        if (data.getEmploymentExperience() != null) {
+            job.setEmploymentExperience(data.getEmploymentExperience());
+        }
     }
 
     @NonNull

@@ -16,7 +16,7 @@ export class JobLanguageComponent extends JobIntakeComponentBase implements OnIn
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      experience: [{value: this.jobIntakeData?.languageRequirements, disabled: !this.editable}],
+      languageRequirements: [{value: this.jobIntakeData?.languageRequirements, disabled: !this.editable}],
     });
   }
 

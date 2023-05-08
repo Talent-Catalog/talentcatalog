@@ -110,11 +110,6 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private String description;
     
     /**
-     * Salary range given to job in job intake.
-     */
-    private String salaryRange;
-    
-    /**
      * Name of employer - maps to Account name on Salesforce
      */
     private String employer;
@@ -231,6 +226,20 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
         joinColumns = @JoinColumn(name = "tc_job_id"),
         inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
+
+    /**
+     * JOB INTAKE FIELDS
+     */
+    private String salaryRange;
+    private String recruitmentProcess;
+    private String employerCostCommitment;
+    private String location;
+    private String locationDetails;
+    private String benefits;
+    private String languageRequirements;
+    private String educationRequirements;
+    private String skillRequirements;
+    private String employmentExperience;
 
     public void addStarringUser(User user) {
         starringUsers.add(user);

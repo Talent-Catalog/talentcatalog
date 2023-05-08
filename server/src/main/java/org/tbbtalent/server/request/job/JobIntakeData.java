@@ -38,4 +38,13 @@ import lombok.ToString;
 public class JobIntakeData {
 
     private String salaryRange;
+    private String recruitmentProcess;
+    private String employerCostCommitment;
+    private String location;
+    private String locationDetails;
+    private String benefits;
+    private String languageRequirements;
+    private String educationRequirements;
+    private String skillRequirements;
+    private String employmentExperience;
 }

@@ -70,7 +70,7 @@ export interface Job extends JobIds {
 }
 
 export interface JobIntakeData {
-  costCommitEmployer?: string;
+  employerCostCommitment?: string;
   recruitmentProcess?: string;
   minSalary?: number;
   occupationCode?: string;
