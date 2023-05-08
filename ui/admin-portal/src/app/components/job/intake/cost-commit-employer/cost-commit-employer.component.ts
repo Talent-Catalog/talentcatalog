@@ -16,7 +16,7 @@ export class CostCommitEmployerComponent extends JobIntakeComponentBase implemen
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      costCommitEmployer: [{value: this.jobIntakeData?.costCommitEmployer, disabled: !this.editable}],
+      employerCostCommitment: [{value: this.jobIntakeData?.employerCostCommitment, disabled: !this.editable}],
     });
   }
 

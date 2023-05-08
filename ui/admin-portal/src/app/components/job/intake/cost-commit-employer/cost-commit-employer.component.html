@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="costCommitEmployer">
+    <label class="form-label" for="employerCostCommitment">
       Employer cost commitments
     </label>
     <div *ngIf="editable" class="float-end">
@@ -12,6 +12,6 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <input id="costCommitEmployer" type="text" class="form-control" formControlName="costCommitEmployer">
+    <input id="employerCostCommitment" type="text" class="form-control" formControlName="employerCostCommitment">
   </div>
 </form>
