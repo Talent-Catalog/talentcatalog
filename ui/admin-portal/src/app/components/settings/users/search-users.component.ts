@@ -106,7 +106,6 @@ export class SearchUsersComponent implements OnInit {
     this.userService.searchPaged(request).subscribe(results => {
       this.results = results;
       this.loading = false;
-      console.log(results.content)
     });
   }
 

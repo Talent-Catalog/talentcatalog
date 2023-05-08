@@ -97,6 +97,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "approver_id")
     private User approver;
 
+//    Reason for using the TC
     private String purpose;
 
     //Note use of Set rather than List as strongly recommended for Many to Many
