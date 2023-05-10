@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="experience">
+    <label class="form-label" for="employmentExperience">
       Employer-required work experience
     </label>
     <div *ngIf="editable" class="float-end">
@@ -12,6 +12,6 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ngx-wig id="experience" [formControlName]="'experience'"></ngx-wig>
+    <ngx-wig id="employmentExperience" [formControlName]="'employmentExperience'"></ngx-wig>
   </div>
 </form>
