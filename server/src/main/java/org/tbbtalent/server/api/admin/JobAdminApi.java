@@ -79,13 +79,6 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
-    @GetMapping("{id}/intake")
-    public Map<String, Object> getIntakeData(@PathVariable("id") long id) {
-        SalesforceJobOpp job = jobService.getJob(id);
-        DtoBuilder builder = intakeDataBuilderSelector.selectBuilder();
-        return builder.build(job);
-    }
-
     @PutMapping("{id}/publish")
     public @NotNull Map<String, Object> publishJob(@PathVariable("id") long id)
         throws NoSuchObjectException {
@@ -115,12 +108,6 @@ public class JobAdminApi implements
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateJob(id, request);
         return jobDto().build(job);
-    }
-
-    @PutMapping("{id}/intake")
-    public void updateIntakeData(
-        @PathVariable("id") long id, @RequestBody JobIntakeData data) {
-        jobService.updateIntakeData(id, data);
     }
 
     @PutMapping("{id}/jdlink")
@@ -196,7 +183,6 @@ public class JobAdminApi implements
             .add("suggestedSearches", savedSearchDto())
             .add("updatedBy", userDto())
             .add("updatedDate")
-            .add("salaryRange")
             ;
     }
 

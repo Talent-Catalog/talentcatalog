@@ -43,6 +43,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.exception.UnauthorisedActionException;
+import org.tbbtalent.server.model.db.JobOppIntake;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
@@ -339,52 +340,6 @@ public class JobServiceImpl implements JobService {
         job.setAuditFields(loggedInUser);
 
         return salesforceJobOppRepository.save(job);
-    }
-
-    @Override
-    public void updateIntakeData(long id, JobIntakeData data) throws NoSuchObjectException {
-        SalesforceJobOpp job = getJob(id);
-
-        populateIntakeData(job, data);
-
-        salesforceJobOppRepository.save(job);
-    }
-
-    private void populateIntakeData(SalesforceJobOpp job, JobIntakeData data) {
-        final String salaryRange = data.getSalaryRange();
-        if (salaryRange != null) {
-            job.setSalaryRange(salaryRange);
-        }
-        if (data.getRecruitmentProcess() != null) {
-            job.setRecruitmentProcess(data.getRecruitmentProcess());
-        }
-        if (data.getEmployerCostCommitment() != null) {
-            job.setEmployerCostCommitment(data.getEmployerCostCommitment());
-        }
-        if (data.getLocation() != null) {
-            job.setLocation(data.getLocation());
-        }
-        if (data.getLocationDetails() != null) {
-            job.setLocationDetails(data.getLocationDetails());
-        }
-        if (data.getBenefits() != null) {
-            job.setBenefits(data.getBenefits());
-        }
-        if (data.getLanguageRequirements() != null) {
-            job.setLanguageRequirements(data.getLanguageRequirements());
-        }
-        if (data.getEducationRequirements() != null) {
-            job.setEducationRequirements(data.getEducationRequirements());
-        }
-        if (data.getSkillRequirements() != null) {
-            job.setSkillRequirements(data.getSkillRequirements());
-        }
-        if (data.getEmploymentExperience() != null) {
-            job.setEmploymentExperience(data.getEmploymentExperience());
-        }
-        if (data.getOccupationCode() != null) {
-            job.setOccupationCode(data.getOccupationCode());
-        }
     }
 
     @NonNull

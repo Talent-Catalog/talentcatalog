@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,21 +16,44 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.Map;
 import javax.validation.constraints.NotNull;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.JobOppIntake;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.request.job.JobIntakeData;
+import org.tbbtalent.server.service.db.JobOppIntakeService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
- * Utility for selecting the right DTO job intake builder.
+ * TODO JC Doc
  *
  * @author John Cameron
  */
-public class JobIntakeDataBuilderSelector {
+@RestController()
+@RequestMapping("/api/admin/joi")
+public class JobOppIntakeAdminApi {
+    private final JobOppIntakeService jobOppIntakeService;
 
-    public JobIntakeDataBuilderSelector() {
+    public JobOppIntakeAdminApi(JobOppIntakeService jobOppIntakeService) {
+        this.jobOppIntakeService = jobOppIntakeService;
     }
-
-    public @NotNull DtoBuilder selectBuilder() {
-        return joiDto();
+    
+    @GetMapping("{id}")
+    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
+        JobOppIntake joi = jobOppIntakeService.get(id);
+        return joiDto().build(joi);
+    }
+    
+    @PutMapping("{id}/intake")
+    public void update(@PathVariable("id") long id, @RequestBody JobIntakeData data) {
+        jobOppIntakeService.update(id, data);
     }
 
     private DtoBuilder joiDto() {
@@ -71,4 +94,3 @@ public class JobIntakeDataBuilderSelector {
             ;
     }
 }
-

@@ -116,15 +116,6 @@ public interface JobService {
     Page<SalesforceJobOpp> searchJobs(SearchJobRequest request);
 
     /**
-     * Updates the intake data associated with the given job.
-     * @param id ID of job
-     * @param data Partially populated JobIntakeData record. Null data
-     *             fields are ignored. Only non-null fields are updated.
-     * @throws NoSuchObjectException if no job is found with that id
-     */
-    void updateIntakeData(long id, JobIntakeData data) throws NoSuchObjectException;
-
-    /**
      * Updates the job with the given id with data contained in the given request.
       * @param id Id of job to be updated
      * @param request Requested updated data

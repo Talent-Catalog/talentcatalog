@@ -224,20 +224,10 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
         inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
 
-    /**
-     * JOB INTAKE FIELDS
-     */
-    private String salaryRange;
-    private String recruitmentProcess;
-    private String employerCostCommitment;
-    private String location;
-    private String locationDetails;
-    private String benefits;
-    private String languageRequirements;
-    private String educationRequirements;
-    private String skillRequirements;
-    private String employmentExperience;
-    private String occupationCode;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_opp_intake_id")
+    private JobOppIntake jobOppIntake;
+    
 
     public void addStarringUser(User user) {
         starringUsers.add(user);
