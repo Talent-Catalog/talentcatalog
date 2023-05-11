@@ -16,26 +16,15 @@
 
 package org.tbbtalent.server.model.db;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.annotation.Nullable;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * This is a copy of an Employer Job Opportunity on Salesforce
@@ -99,9 +88,16 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private User contactUser;
 
     /**
-     * Name of country where job is located
+     * FROM SALESFORCE: Name of country where job is located
      */
     private String country;
+
+    /**
+     * References country object on database (set using the country name above that comes from SF)
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country countryId;
 
     /**
      * todo: this is no longer a field in the JOI, remove field. We only use a JD file upload.

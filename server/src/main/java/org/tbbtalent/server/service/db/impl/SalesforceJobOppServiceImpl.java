@@ -16,9 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -26,14 +23,21 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.configuration.SalesforceConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.sf.Opportunity;
+import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.util.SalesforceHelper;
+
+import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
@@ -41,12 +45,14 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceService salesforceService;
     private final SalesforceConfig salesforceConfig;
+    private final CountryRepository countryRepository;
 
     public SalesforceJobOppServiceImpl(SalesforceJobOppRepository salesforceJobOppRepository,
-        SalesforceService salesforceService, SalesforceConfig salesforceConfig) {
+        SalesforceService salesforceService, SalesforceConfig salesforceConfig, CountryRepository countryRepository) {
         this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.salesforceService = salesforceService;
         this.salesforceConfig = salesforceConfig;
+        this.countryRepository = countryRepository;
     }
 
     @Nullable
@@ -171,5 +177,14 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         }
         salesforceJobOpp.setStage(stage);
         salesforceJobOpp.setLastUpdate(OffsetDateTime.now());
+        // Match a country object with the country name from Salesforce. We need the country ID for the JOI.
+        // todo how to throw message without breaking... try catch loop?
+        Country country = this.countryRepository.findByNameIgnoreCase(op.getAccountCountry__c());
+        if (country != null ){
+            salesforceJobOpp.setCountryId(country);
+        } else {
+            throw new NoSuchObjectException("There is no country with the name " + op.getAccountCountry__c() + ". "
+                    + "Please make sure the country name on Salesforce is correct.");
+        }
     }
 }
