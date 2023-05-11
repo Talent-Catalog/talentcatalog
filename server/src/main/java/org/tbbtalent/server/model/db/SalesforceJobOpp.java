@@ -88,19 +88,20 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private User contactUser;
 
     /**
+     * todo Remove this field when we moved across to using countryObject everywhere
      * FROM SALESFORCE: Name of country where job is located
      */
     private String country;
 
     /**
+     * todo: Once above country field removed, rename countryObject to country
      * References country object on database (set using the country name above that comes from SF)
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "country_id")
-    private Country countryId;
+    @JoinColumn(name = "country_object_id")
+    private Country countryObject;
 
     /**
-     * todo: this is no longer a field in the JOI, remove field. We only use a JD file upload.
      * Description given to job in job intake.
      */
     private String description;
