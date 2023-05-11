@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
 import {FormBuilder} from "@angular/forms";
-import {JobService} from "../../../../services/job.service";
+import {JobOppIntakeService} from "../../../../services/job-opp-intake.service";
 
 @Component({
   selector: 'app-occupation-code',
@@ -9,7 +9,7 @@ import {JobService} from "../../../../services/job.service";
   styleUrls: ['./occupation-code.component.scss']
 })
 export class OccupationCodeComponent extends JobIntakeComponentBase implements OnInit {
-  constructor(fb: FormBuilder, jobService: JobService) {
+  constructor(fb: FormBuilder, jobService: JobOppIntakeService) {
     super(fb, jobService);
   }
 

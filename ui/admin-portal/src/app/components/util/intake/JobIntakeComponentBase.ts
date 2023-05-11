@@ -17,8 +17,9 @@
 import {Directive, Input, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
-import {Job, JobIntakeData} from "../../../model/job";
-import {JobService} from "../../../services/job.service";
+import {Job} from "../../../model/job";
+import {JobOppIntake} from "../../../model/job-opp-intake";
+import {JobOppIntakeService} from "../../../services/job-opp-intake.service";
 
 /**
  * Base class for all job intake components.
@@ -33,7 +34,7 @@ export abstract class JobIntakeComponentBase extends AutoSaveComponentBase imple
    * This is the existing candidate data (if any) which is used to
    * initialize the form data.
    */
-  @Input() jobIntakeData: JobIntakeData;
+  @Input() jobIntakeData: JobOppIntake;
 
   /**
    * Index into a array member of data if that is what is being updated.
@@ -45,10 +46,10 @@ export abstract class JobIntakeComponentBase extends AutoSaveComponentBase imple
   /**
    * Inject in a FormBuilder to create the form and an IntakeService to perform the saves.
    * @param fb FormBuilder
-   * @param jobService JobService which saves the intake data
+   * @param jobOppIntakeService JobOppIntakeService which saves the intake data
    */
-  protected constructor(protected fb: FormBuilder, jobService: JobService) {
-    super(jobService);
+  protected constructor(protected fb: FormBuilder, jobOppIntakeService: JobOppIntakeService) {
+    super(jobOppIntakeService);
   }
 
   /**

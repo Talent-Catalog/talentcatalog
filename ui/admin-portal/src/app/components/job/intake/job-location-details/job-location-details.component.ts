@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
-import {JobService} from "../../../../services/job.service";
+import {JobOppIntakeService} from "../../../../services/job-opp-intake.service";
 import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
 
 @Component({
@@ -10,7 +10,7 @@ import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBas
 })
 export class JobLocationDetailsComponent extends JobIntakeComponentBase implements OnInit {
 
-  constructor(fb: FormBuilder, jobService: JobService) {
+  constructor(fb: FormBuilder, jobService: JobOppIntakeService) {
     super(fb, jobService);
   }
 

@@ -17,10 +17,11 @@
 import {Directive, Input, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {User} from '../../../model/user';
-import {Job, JobIntakeData} from "../../../model/job";
-import {JobService} from "../../../services/job.service";
+import {Job} from "../../../model/job";
 import {AuthService} from "../../../services/auth.service";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {JobOppIntakeService} from "../../../services/job-opp-intake.service";
+import {JobOppIntake} from "../../../model/job-opp-intake";
 
 /**
  * Base class for all job intake tab components.
@@ -44,7 +45,7 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
    * This is the existing job intake data (if any) which is used to
    * initialize the form data.
    */
-  jobIntakeData: JobIntakeData;
+  jobIntakeData: JobOppIntake;
 
   /**
    * Error which should be displayed to user if not null.
@@ -69,14 +70,9 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
    */
   loggedInUser: User;
 
-  /**
-   * Access to all accordions on the page, which we can then toggle open/close on.
-   */
-  @ViewChildren(NgbAccordion) accs: QueryList<NgbAccordion>;
-
   public constructor(
     protected authService: AuthService,
-    protected jobService: JobService,
+    protected jobOppIntakeService: JobOppIntakeService,
   ) {
     this.loggedInUser = this.authService.getLoggedInUser();
   }
@@ -99,7 +95,7 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
     this.error = null;
     this.loading = true;
     forkJoin({
-      'intakeData':  this.jobService.getIntakeData(this.job.id),
+      'intakeData':  this.jobOppIntakeService.get(this.job.id),
     }).subscribe(results => {
       this.loading = false;
       // todo add hardcoded data to test with
