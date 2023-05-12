@@ -86,7 +86,6 @@ import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
-import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.DocPublisherService;
 import org.tbbtalent.server.service.db.ExportColumnsService;
@@ -95,6 +94,7 @@ import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.TaskAssignmentService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -121,7 +121,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final SalesforceJobOppService salesforceJobOppService;
     private final TaskAssignmentService taskAssignmentService;
     private final UserRepository userRepository;
-    private final AuthService authService;
+    private final UserService userService;
 
     private static final Logger log = LoggerFactory.getLogger(SavedListServiceImpl.class);
     private static final String PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME = "CandidateNumber";
@@ -139,8 +139,7 @@ public class SavedListServiceImpl implements SavedListService {
         SalesforceService salesforceService,
         SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
         UserRepository userRepository,
-        AuthService authService
-    ) {
+        UserService userService) {
         this.candidateRepository = candidateRepository;
         this.candidateSavedListRepository = candidateSavedListRepository;
         this.candidateService = candidateService;
@@ -153,7 +152,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.salesforceJobOppService = salesforceJobOppService;
         this.taskAssignmentService = taskAssignmentService;
         this.userRepository = userRepository;
-        this.authService = authService;
+        this.userService = userService;
     }
 
     @Override
@@ -267,7 +266,7 @@ public class SavedListServiceImpl implements SavedListService {
         Set<TaskImpl> listTasks = savedList.getTasks();
 
         if (!listTasks.isEmpty()) {
-            final User loggedInUser = authService.getLoggedInUser().orElse(null);
+            final User loggedInUser = userService.getLoggedInUser();
 
             Set<TaskImpl> activeCandidateTasks = findActiveCandidateTasks(candidate);
 
@@ -307,7 +306,7 @@ public class SavedListServiceImpl implements SavedListService {
         Set<TaskImpl> listTasks = savedList.getTasks();
 
         if (!listTasks.isEmpty()) {
-            final User loggedInUser = authService.getLoggedInUser().orElse(null);
+            final User loggedInUser = userService.getLoggedInUser();
 
             final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
 
@@ -482,7 +481,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Transactional
     public SavedList createSavedList(UpdateSavedListInfoRequest request)
             throws EntityExistsException {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
         return createSavedList(loggedInUser, request);
     }
 
@@ -576,10 +575,10 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public List<SavedList> search(long candidateId, SearchSavedListRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
 
         //todo This should be loading shared lists not searches!!! But seems to work anyway!
-        //I think the problem was that the above code should have been using userService to get loggged in user.
+        //I think the problem was that the above code should have been using userService to get logged in user.
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(loggedInUser.getId());
         GetSavedListsQuery getSavedListsQuery =
@@ -597,7 +596,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public List<SavedList> listSavedLists(SearchSavedListRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
                         loggedInUser.getId());
@@ -614,7 +613,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public Page<SavedList> searchSavedLists(SearchSavedListRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
                         loggedInUser.getId());
@@ -642,7 +641,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request)
             throws NoSuchObjectException, EntityExistsException {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(savedListId, request.getName(), loggedInUser);
         }
@@ -883,7 +882,7 @@ public class SavedListServiceImpl implements SavedListService {
         props.put("listId", savedList.getId());
         props.put("listName", savedList.getName());
         props.put("timeCreated", LocalDate.now().toString());
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
         if (user != null) {
             props.put("createdByName", user.getDisplayName());
             props.put("createdByEmail", user.getEmail());
@@ -1017,7 +1016,7 @@ public class SavedListServiceImpl implements SavedListService {
      * @return Saved entity
      */
     public SavedList saveIt(SavedList savedList) {
-        savedList.setAuditFields(authService.getLoggedInUser().orElse(null));
+        savedList.setAuditFields(userService.getLoggedInUser());
         return savedListRepository.save(savedList);
     }
 }
