@@ -233,11 +233,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
             savedSearches = new ArrayList<>(watches);
         } else {
-            User userWithSharedSearches = loggedInUser == null ? null :
-                userRepository.findByIdLoadSharedSearches(
-                    loggedInUser.getId());
             savedSearches = savedSearchRepository.findAll(
-                SavedSearchSpecification.buildSearchQuery(request, userWithSharedSearches));
+                SavedSearchSpecification.buildSearchQuery(request, loggedInUser));
         }
         log.info("Found " + savedSearches.size() + " savedSearches in search");
 
@@ -266,12 +263,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     new ArrayList<>(watches), request.getPageRequest(),
                     watches.size());
         } else {
-            User userWithSharedSearches = loggedInUser == null ? null :
-                    userRepository.findByIdLoadSharedSearches(
-                            loggedInUser.getId());
             savedSearches = savedSearchRepository.findAll(
-                    SavedSearchSpecification.buildSearchQuery(
-                            request, userWithSharedSearches), request.getPageRequest());
+                    SavedSearchSpecification.buildSearchQuery(request, loggedInUser),
+                request.getPageRequest());
         }
         log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
 
