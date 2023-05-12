@@ -165,8 +165,11 @@ import {
   ViewUploadTaskComponent
 } from './components/profile/view/tab/tasks/task/upload/view-upload-task.component';
 import {
-  CandidateJobsComponent
-} from './components/profile/view/tab/jobs/candidate-jobs/candidate-jobs.component';
+  CandidateOppsComponent
+} from './components/profile/view/tab/opps/candidate-opps/candidate-opps.component';
+import {
+  CandidateOppComponent
+} from './components/profile/view/tab/opps/opp/candidate-opp/candidate-opp.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -225,7 +228,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ViewSimpleTaskComponent,
     ViewQuestionTaskComponent,
     ViewUploadTaskComponent,
-    CandidateJobsComponent
+    CandidateOppsComponent,
+    CandidateOppComponent
   ],
   imports: [
     BrowserModule,
