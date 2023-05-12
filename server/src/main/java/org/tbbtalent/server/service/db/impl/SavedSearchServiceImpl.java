@@ -114,7 +114,6 @@ import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.request.search.UpdateWatchingRequest;
-import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
@@ -153,7 +152,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final SurveyTypeRepository surveyTypeRepository;
     private final EducationMajorRepository educationMajorRepository;
     private final EducationLevelRepository educationLevelRepository;
-    private final AuthService authService;
 
     /**
      * These are the default candidate statuses to included in searches when no statuses are
@@ -193,8 +191,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         OccupationRepository occupationRepository,
         SurveyTypeRepository surveyTypeRepository,
         EducationMajorRepository educationMajorRepository,
-        EducationLevelRepository educationLevelRepository,
-        AuthService authService) {
+        EducationLevelRepository educationLevelRepository) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateReviewStatusRepository = candidateReviewStatusRepository;
@@ -218,12 +215,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.surveyTypeRepository = surveyTypeRepository;
         this.educationMajorRepository = educationMajorRepository;
         this.educationLevelRepository = educationLevelRepository;
-        this.authService = authService;
     }
 
     @Override
     public List<SavedSearch> search(SearchSavedSearchRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
 
         List<SavedSearch> savedSearches;
         //If requesting watches
@@ -254,7 +250,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public Page<SavedSearch> searchPaged(SearchSavedSearchRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
 
         Page<SavedSearch> savedSearches;
         //If requesting watches
@@ -364,7 +360,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates;
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
         if (user == null) {
             candidates = doSearchCandidates(request);
         } else {
@@ -402,7 +398,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      */
     @Override
     public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
         SavedList selectionList = null;
         if (user != null) {
             selectionList = getSelectionList(savedSearchId, user.getId());
@@ -496,8 +492,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             CreateFromDefaultSavedSearchRequest request)
             throws NoSuchObjectException {
 
-        final User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
 
         String name;
         //Get name either from the specified saved list, or the specified name.
@@ -555,7 +553,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public SavedSearch createSavedSearch(UpdateSavedSearchRequest request)
             throws EntityExistsException {
         SavedSearch savedSearch = convertToSavedSearch(request);
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
             savedSearch.setAuditFields(loggedInUser);
@@ -593,8 +591,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request)
             throws EntityExistsException {
-        final User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
 
         if(request.getSearchCandidateRequest() == null){
             SavedSearch savedSearch = savedSearchRepository.findById(id)
@@ -632,7 +632,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public boolean deleteSavedSearch(long id)  {
         SavedSearch savedSearch = savedSearchRepository.findByIdLoadAudit(id).orElse(null);
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
 
         if (savedSearch != null && loggedInUser != null) {
 
@@ -760,8 +760,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public @NotNull SavedSearch getDefaultSavedSearch()
             throws NoSuchObjectException {
         //Check that we have a logged in user.
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
 
         SavedSearch savedSearch =
                 savedSearchRepository.findDefaultSavedSearch(loggedInUser.getId())
@@ -834,8 +836,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public @NotNull SavedList getSelectionListForLoggedInUser(long id)
         throws InvalidSessionException {
 
-        final User loggedInUser = authService.getLoggedInUser()
-            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
 
         return getSelectionList(id, loggedInUser.getId());
     }
@@ -851,7 +855,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             SavedList savedList = savedListRepository
                     .findSelectionList(id, loggedInUser.getId())
@@ -891,7 +895,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SearchCandidateRequest request, @Nullable Collection<Candidate> excludedCandidates) {
         //There may be no logged in user if the search is called by the
         //overnight Watcher process.
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
 
         //This list is initialized with the main saved search id, but can be
         //added to by addQuery below when the search is built on other
@@ -934,7 +938,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
      */
 
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
 
         //Create a simple query string builder from the given string
         SimpleQueryStringBuilder simpleQueryStringBuilder =
@@ -1121,7 +1125,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
         //add id to list as do not want circular references
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
@@ -1185,7 +1189,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Check for selection list to set the selected attribute on returned
             // candidates.
             SavedList selectionList = null;
-            User user = authService.getLoggedInUser().orElse(null);
+            User user = userService.getLoggedInUser();
             if (user != null) {
                 selectionList = getSelectionList(savedSearchId, user.getId());
             }
@@ -1333,7 +1337,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) throws CountryRestrictionException{
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(request.getId());
         searchCandidateRequest.setSimpleQueryString(request.getSimpleQueryString());
@@ -1435,7 +1439,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            User user = authService.getLoggedInUser().orElse(null);
+            User user = userService.getLoggedInUser();
 
             //This is an elastic search request
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(request,
