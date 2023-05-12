@@ -114,7 +114,9 @@ export class CandidateService {
   }
 
   getProfile(): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/profile`).pipe(
+    return this.http.get<Candidate>(`${this.apiUrl}/profile`)
+    // todo Mock test data
+    .pipe(
         map(candidate => {
           const opp: CandidateOpportunity = {
             closingCommentsForCandidate: "Needs better english - otherwise a good candidate",
