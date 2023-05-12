@@ -577,12 +577,7 @@ public class SavedListServiceImpl implements SavedListService {
     public List<SavedList> search(long candidateId, SearchSavedListRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
 
-        //todo This should be loading shared lists not searches!!! But seems to work anyway!
-        //I think the problem was that the above code should have been using userService to get logged in user.
-        User userWithSharedSearches = loggedInUser == null ? null :
-                userRepository.findByIdLoadSharedSearches(loggedInUser.getId());
-        GetSavedListsQuery getSavedListsQuery =
-                new GetSavedListsQuery(request, userWithSharedSearches);
+        GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
 
         GetCandidateSavedListsQuery getCandidateSavedListsQuery =
                 new GetCandidateSavedListsQuery(candidateId);
@@ -597,11 +592,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public List<SavedList> listSavedLists(SearchSavedListRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
-        User userWithSharedSearches = loggedInUser == null ? null :
-                userRepository.findByIdLoadSharedSearches(
-                        loggedInUser.getId());
-        GetSavedListsQuery getSavedListsQuery =
-                new GetSavedListsQuery(request, userWithSharedSearches);
+        GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
 
         //The request is not required to provide paging or sorting info and
         //we ignore any such info if present because we don't pass a PageRequest
@@ -614,11 +605,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public Page<SavedList> searchSavedLists(SearchSavedListRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
-        User userWithSharedSearches = loggedInUser == null ? null :
-                userRepository.findByIdLoadSharedSearches(
-                        loggedInUser.getId());
-        GetSavedListsQuery getSavedListsQuery =
-                new GetSavedListsQuery(request, userWithSharedSearches);
+        GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
 
         //The incoming request will have paging info but may have no sorting.
         //If not, default the sort to ascending by name.
