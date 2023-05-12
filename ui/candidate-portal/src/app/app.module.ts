@@ -32,16 +32,36 @@ import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translat
 import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
-import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
-import {RegistrationContactComponent} from './components/register/contact/registration-contact.component';
-import {RegistrationPersonalComponent} from './components/register/personal/registration-personal.component';
-import {RegistrationCandidateOccupationComponent} from './components/register/candidate-occupation/registration-candidate-occupation.component';
-import {RegistrationWorkExperienceComponent} from './components/register/work-experience/registration-work-experience.component';
-import {RegistrationEducationComponent} from './components/register/education/registration-education.component';
-import {CandidateEducationFormComponent} from './components/common/candidate-education-form/candidate-education-form.component';
-import {RegistrationLanguageComponent} from './components/register/language/registration-language.component';
-import {RegistrationCertificationsComponent} from './components/register/certifications/registration-certifications.component';
-import {RegistrationAdditionalInfoComponent} from './components/register/additional-info/registration-additional-info.component';
+import {
+  RegistrationLandingComponent
+} from './components/register/landing/registration-landing.component';
+import {
+  RegistrationContactComponent
+} from './components/register/contact/registration-contact.component';
+import {
+  RegistrationPersonalComponent
+} from './components/register/personal/registration-personal.component';
+import {
+  RegistrationCandidateOccupationComponent
+} from './components/register/candidate-occupation/registration-candidate-occupation.component';
+import {
+  RegistrationWorkExperienceComponent
+} from './components/register/work-experience/registration-work-experience.component';
+import {
+  RegistrationEducationComponent
+} from './components/register/education/registration-education.component';
+import {
+  CandidateEducationFormComponent
+} from './components/common/candidate-education-form/candidate-education-form.component';
+import {
+  RegistrationLanguageComponent
+} from './components/register/language/registration-language.component';
+import {
+  RegistrationCertificationsComponent
+} from './components/register/certifications/registration-certifications.component';
+import {
+  RegistrationAdditionalInfoComponent
+} from './components/register/additional-info/registration-additional-info.component';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {LanguageInterceptor} from './services/language.interceptor';
@@ -49,22 +69,44 @@ import {LoginComponent} from './components/account/login/login.component';
 import {HomeComponent} from './components/home/home.component';
 import {ErrorInterceptor} from './services/error.interceptor';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
-import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
+import {
+  ChangePasswordComponent
+} from './components/account/change-password/change-password.component';
 import {HeaderComponent} from './components/header/header.component';
 import {RegisterComponent} from './components/register/register.component';
-import {RegistrationFooterComponent} from './components/register/registration-footer/registration-footer.component';
-import {CandidateJobExperienceFormComponent} from './components/common/candidate-job-experience-form/candidate-job-experience-form.component';
-import {CandidateJobExperienceCardComponent} from './components/common/candidate-job-experience-card/candidate-job-experience-card.component';
+import {
+  RegistrationFooterComponent
+} from './components/register/registration-footer/registration-footer.component';
+import {
+  CandidateJobExperienceFormComponent
+} from './components/common/candidate-job-experience-form/candidate-job-experience-form.component';
+import {
+  CandidateJobExperienceCardComponent
+} from './components/common/candidate-job-experience-card/candidate-job-experience-card.component';
 import {ErrorComponent} from './components/common/error/error.component';
 import {LoadingComponent} from './components/common/loading/loading.component';
-import {CandidateProfileComponent} from './components/profile/view/tab/profile/candidate-profile.component';
-import {FormControlErrorComponent} from './components/common/form-control-error/form-control-error.component';
-import {CandidateCertificationCardComponent} from './components/common/candidate-certification-card/candidate-certification-card.component';
+import {
+  CandidateProfileComponent
+} from './components/profile/view/tab/profile/candidate-profile.component';
+import {
+  FormControlErrorComponent
+} from './components/common/form-control-error/form-control-error.component';
+import {
+  CandidateCertificationCardComponent
+} from './components/common/candidate-certification-card/candidate-certification-card.component';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
-import {CandidateOccupationCardComponent} from './components/common/candidate-occupation-card/candidate-occupation-card.component';
-import {CandidateEducationCardComponent} from './components/common/candidate-education-card/candidate-education-card.component';
-import {CandidateLanguageCardComponent} from './components/common/candidate-language-card/candidate-language-card.component';
-import {CandidateAttachmentsComponent} from './components/common/candidate-attachments/candidate-attachments.component';
+import {
+  CandidateOccupationCardComponent
+} from './components/common/candidate-occupation-card/candidate-occupation-card.component';
+import {
+  CandidateEducationCardComponent
+} from './components/common/candidate-education-card/candidate-education-card.component';
+import {
+  CandidateLanguageCardComponent
+} from './components/common/candidate-language-card/candidate-language-card.component';
+import {
+  CandidateAttachmentsComponent
+} from './components/common/candidate-attachments/candidate-attachments.component';
 import {FileUploadComponent} from './components/common/file-upload/file-upload.component';
 import {InputFilterDirective} from './directives/input-filter.directive';
 import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
@@ -87,25 +129,44 @@ import {
   faQuestionCircle,
   faTimes
 } from '@fortawesome/free-solid-svg-icons';
-import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
-import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
+import {
+  DeleteOccupationComponent
+} from './components/register/candidate-occupation/delete/delete-occupation.component';
+import {
+  CandidateCertificationFormComponent
+} from './components/common/candidate-certification-form/candidate-certification-form.component';
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
 import {RedirectGuard} from './services/redirect.guard';
 import {LanguageLoader} from "./services/language.loader";
 import {faSpinner} from "@fortawesome/free-solid-svg-icons/faSpinner";
-import {RegistrationUploadFileComponent} from './components/register/upload-file/registration-upload-file.component';
+import {
+  RegistrationUploadFileComponent
+} from './components/register/upload-file/registration-upload-file.component';
 import {DatePickerComponent} from './components/common/date-picker/date-picker.component';
 import {CustomDatepickerI18n} from "./util/custom-date-picker";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {ViewCandidateComponent} from './components/profile/view/view-candidate.component';
-import {CandidateTasksComponent} from './components/profile/view/tab/tasks/candidate-tasks.component';
-import {CandidateTaskComponent} from './components/profile/view/tab/tasks/task/candidate-task.component';
+import {
+  CandidateTasksComponent
+} from './components/profile/view/tab/tasks/candidate-tasks.component';
+import {
+  CandidateTaskComponent
+} from './components/profile/view/tab/tasks/task/candidate-task.component';
 import {DatePipe} from "@angular/common";
 import {ExtendDatePipe} from "./util/date-adapter/extend-date-pipe";
-import {ViewSimpleTaskComponent} from './components/profile/view/tab/tasks/task/simple/view-simple-task.component';
-import {ViewQuestionTaskComponent} from './components/profile/view/tab/tasks/task/question/view-question-task.component';
-import {ViewUploadTaskComponent} from './components/profile/view/tab/tasks/task/upload/view-upload-task.component';
+import {
+  ViewSimpleTaskComponent
+} from './components/profile/view/tab/tasks/task/simple/view-simple-task.component';
+import {
+  ViewQuestionTaskComponent
+} from './components/profile/view/tab/tasks/task/question/view-question-task.component';
+import {
+  ViewUploadTaskComponent
+} from './components/profile/view/tab/tasks/task/upload/view-upload-task.component';
+import {
+  CandidateJobsComponent
+} from './components/profile/view/tab/jobs/candidate-jobs/candidate-jobs.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -163,7 +224,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ExtendDatePipe,
     ViewSimpleTaskComponent,
     ViewQuestionTaskComponent,
-    ViewUploadTaskComponent
+    ViewUploadTaskComponent,
+    CandidateJobsComponent
   ],
   imports: [
     BrowserModule,
