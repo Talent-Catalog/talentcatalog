@@ -170,6 +170,8 @@ export interface CandidateSource extends Auditable {
 }
 
 export interface Opportunity {
+  closingComments?: string;
+
   name: string;
 }
 

@@ -17,13 +17,15 @@ import {Opportunity} from "./base";
 
 export interface CandidateOpportunity extends Opportunity {
 
+  closingCommentsForCandidate?: string;
+  employerFeedback?: string;
+
   jobId: number;
 
   jobName: string;
-  nextStep: string;
-  nextStepDueDate: Date;
+  nextStep?: string;
+  nextStepDueDate?: Date;
   stage: CandidateOpportunityStage;
-
 }
 
 export enum CandidateOpportunityStage {
