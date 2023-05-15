@@ -58,12 +58,19 @@ public class JobOppIntakeAdminApi {
     @PutMapping("{id}/intake")
     public void update(@PathVariable("id") long jobOppId, @RequestBody JobIntakeData data) {
         // Find the job, then find it's intake id (if exists). If not exist, create.
-        SalesforceJobOpp job;
+        SalesforceJobOpp job = salesforceJobOppService.get(jobOppId); //TODO Note that we only currently have a method getting jobs by SalesforceID. Need to add a new method to get by job id.
         JobOppIntake intake = job.getJobOppIntake();
         if (intake == null) {
             intake = jobOppIntakeService.create(data);
+            
+            //EITHER...
             job.setJobOppIntake(intake);
             salesforceJobOppService.save(job);
+            
+            //OR - probably better. We have an example of this kind of thing in 
+            salesforceJobOppService.assignIntake(job, intake);
+            
+            
         } else {
             jobOppIntakeService.update(intake.getId(), data);
         }
