@@ -13,16 +13,6 @@
  * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-alter table salesforce_job_opp drop column recruitment_process;
-alter table salesforce_job_opp drop column employer_cost_commitment;
-alter table salesforce_job_opp drop column location;
-alter table salesforce_job_opp drop column location_details;
-alter table salesforce_job_opp drop column benefits;
-alter table salesforce_job_opp drop column language_requirements;
-alter table salesforce_job_opp drop column employment_experience;
-alter table salesforce_job_opp drop column education_requirements;
-alter table salesforce_job_opp drop column skill_requirements;
-alter table salesforce_job_opp drop column occupation_code;
 
 create table job_opp_intake
 (
