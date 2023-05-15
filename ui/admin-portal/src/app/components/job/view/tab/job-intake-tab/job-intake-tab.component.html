@@ -57,16 +57,19 @@
 
     <ngb-panel id="position-details" title="Position Details: {{job.name}}">
       <ng-template ngbPanelContent>
-        <app-job-title
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-title>
-        <app-job-description
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-description>
+        <div class="row mb-3">
+          <div class="col">
+            <label>Job Description: </label>
+            <span *ngIf="job.submissionList?.fileJdLink; else noJd">
+              <a target="_blank" href="{{job.submissionList.fileJdLink}}">
+                {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
+              <div class="form-text">You can update this link under the Job Description tab</div>
+            </span>
+            <ng-template #noJd>
+              <span>Please upload or provide link under Job Description tab</span>
+            </ng-template>
+          </div>
+        </div>
         <app-job-salary
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
@@ -87,6 +90,11 @@
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-job-benefits>
+        <app-job-language
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          [editable]="!loggedInUser.readOnly">
+        </app-job-language>
         <app-job-experience
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
@@ -112,11 +120,6 @@
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-visa-pathways>
-<!--        <app-visa-pathways-employer-->
-<!--          [entity]="job"-->
-<!--          [jobIntakeData]="jobIntakeData"-->
-<!--          [editable]="!loggedInUser.readOnly">-->
-<!--        </app-visa-pathways-employer>-->
         <app-occupation-code
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
@@ -127,11 +130,6 @@
           [jobIntakeData]="jobIntakeData"
           [editable]="!loggedInUser.readOnly">
         </app-min-salary>
-<!--        <app-min-salary-employer-->
-<!--          [entity]="job"-->
-<!--          [jobIntakeData]="jobIntakeData"-->
-<!--          [editable]="!loggedInUser.readOnly">-->
-<!--        </app-min-salary-employer>-->
       </ng-template>
     </ngb-panel>
 

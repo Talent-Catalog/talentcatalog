@@ -104,10 +104,11 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private String country;
 
     /**
+     * todo: this is no longer a field in the JOI, remove field. We only use a JD file upload.
      * Description given to job in job intake.
      */
     private String description;
-
+    
     /**
      * Name of employer - maps to Account name on Salesforce
      */
@@ -225,6 +226,21 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
         joinColumns = @JoinColumn(name = "tc_job_id"),
         inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
+
+    /**
+     * JOB INTAKE FIELDS
+     */
+    private String salaryRange;
+    private String recruitmentProcess;
+    private String employerCostCommitment;
+    private String location;
+    private String locationDetails;
+    private String benefits;
+    private String languageRequirements;
+    private String educationRequirements;
+    private String skillRequirements;
+    private String employmentExperience;
+    private String occupationCode;
 
     public void addStarringUser(User user) {
         starringUsers.add(user);

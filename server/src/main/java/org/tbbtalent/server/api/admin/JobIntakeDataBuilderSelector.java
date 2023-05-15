@@ -35,7 +35,17 @@ public class JobIntakeDataBuilderSelector {
 
     private DtoBuilder jobIntakeDto() {
         return new DtoBuilder()
-                .add("description")
+                .add("salaryRange")
+                .add("recruitmentProcess")
+                .add("employerCostCommitment")
+                .add("location")
+                .add("locationDetails")
+                .add("benefits")
+                .add("languageRequirements")
+                .add("educationRequirements")
+                .add("skillRequirements")
+                .add("employmentExperience")
+                .add("occupationCode")
                 ;
     }
 }

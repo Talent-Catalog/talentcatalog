@@ -3,8 +3,8 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="education">
-      Education or Certification Requirements
+    <label class="form-label" for="educationRequirements">
+      Employer-required education or certifications
     </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
@@ -12,7 +12,7 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ngx-wig id="education" [formControlName]="'education'"
+    <ngx-wig id="educationRequirements" [formControlName]="'educationRequirements'"
     ></ngx-wig>
   </div>
 </form>

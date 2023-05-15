@@ -28,11 +28,334 @@
       Export PDF
     </button>
   </div>
-  <app-visa-assessment
-    [entity]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-    [myRecordIndex]="selectedIndex"
-  >
-  </app-visa-assessment>
+
+  <div class="card">
+    <div class="card-header">
+      Confirmation Details
+    </div>
+    <div class="card-body intake-data">
+      <app-confirm-contact
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-confirm-contact>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Assessing TBB Eligibility
+    </div>
+    <div class="card-body intake-data">
+      <app-left-home-reason
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-left-home-reason>
+      <app-return-home-safe
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-return-home-safe>
+      <app-host-challenges
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-host-challenges>
+    </div>
+    <div class="card-body">
+      <app-int-protection
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaRecord">
+      </app-int-protection>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="card">
+    <div class="card-header">
+      Assessing Canada Visa Eligibility
+    </div>
+    <div class="card-body intake-data">
+      <app-host-entry
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-host-entry>
+      <app-host-challenges
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-host-challenges>
+      <app-work-permit
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-work-permit>
+      <app-work-status
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-work-status>
+    </div>
+    <div class="card-body">
+      <app-visa-eligibility-assessment
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaRecord">
+      </app-visa-eligibility-assessment>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="card">
+    <div class="card-header">
+      Health Assessment
+    </div>
+    <div class="card-body intake-data">
+      <app-health-issues
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-health-issues>
+      <div>
+        <label class="form-label mb-1">Do any dependants have health concerns?</label>
+        <div *ngIf="candidateIntakeData.candidateDependants.length == 0">
+          <p>No dependants entered</p>
+        </div>
+        <ul *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
+          <li *ngIf="dependant?.relation"><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}
+            <span *ngIf="dependant.healthNotes">,</span>{{dependant.healthNotes}}</p></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card-body">
+      <app-health-assessment
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaRecord">
+      </app-health-assessment>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="card">
+    <div class="card-header">
+      Character Assessment
+    </div>
+    <div class="card-body intake-data">
+      <app-crime
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-crime>
+    </div>
+    <div class="card-body">
+      <app-character-assessment
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaRecord">
+      </app-character-assessment>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="card">
+    <div class="card-header">
+      Security Assessment
+    </div>
+    <div class="card-body intake-data">
+      <app-military-service
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-military-service>
+      <app-visa-reject
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-visa-reject>
+      <app-visa-issues
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-visa-issues>
+    </div>
+    <div class="card-body">
+      <app-security-risk
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaRecord">
+      </app-security-risk>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="card">
+    <div class="card-header">
+      Overall Risk Assessment
+    </div>
+    <div class="card-body">
+      <app-risk-assessment
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaRecord">
+      </app-risk-assessment>
+    </div>
+  </div>
+
+  <hr>
 
 </div>
+
+<!-- ACCORDION VERSION OF FORM - TODO show different background colour for the intake data  -->
+<!--<ngb-accordion #visaCanada="ngbAccordion" [destroyOnHide]="false">-->
+
+<!--  <ngb-panel id="visa-ca-confirm" title="Confirmation Details">-->
+<!--    <ng-template ngbPanelContent>-->
+<!--      <app-confirm-contact-->
+<!--        [candidate]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData">-->
+<!--      </app-confirm-contact>-->
+<!--    </ng-template>-->
+<!--  </ngb-panel>-->
+
+<!--  <ngb-panel id="visa-ca-tbb" title="Assessing TBB Eligibility">-->
+<!--    <ng-template ngbPanelContent>-->
+<!--      <app-left-home-reason-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-left-home-reason>-->
+<!--      <app-return-home-safe-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-return-home-safe>-->
+<!--      <app-host-challenges-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-host-challenges>-->
+<!--      <hr>-->
+<!--      <app-int-protection-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [visaCheckRecord]="visaRecord">-->
+<!--      </app-int-protection>-->
+<!--    </ng-template>-->
+<!--  </ngb-panel>-->
+
+<!--  <ngb-panel id="visa-ca-eligibility" title="Assessing Canada Visa Eligibility">-->
+<!--    <ng-template ngbPanelContent>-->
+<!--      <app-host-entry-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-host-entry>-->
+<!--      <app-host-challenges-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-host-challenges>-->
+<!--      <app-work-permit-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-work-permit>-->
+<!--      <app-work-status-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-work-status>-->
+<!--      <hr>-->
+<!--      // Meets Visa Eligibility?-->
+<!--    </ng-template>-->
+<!--  </ngb-panel>-->
+
+<!--  <ngb-panel id="visa-ca-health" title="Health Assessment" class="intake-data">-->
+<!--    <ng-template ngbPanelContent>-->
+<!--      <app-health-issues-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-health-issues>-->
+<!--      <div>-->
+<!--        <label class="form-label mb-1">Do any dependants have health concerns?</label>-->
+<!--        <div *ngIf="candidateIntakeData.candidateDependants.length == 0">-->
+<!--          <p>No dependants entered</p>-->
+<!--        </div>-->
+<!--        <ul *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">-->
+<!--          <li *ngIf="dependant?.relation"><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}-->
+<!--            <span *ngIf="dependant.healthNotes">,</span>{{dependant.healthNotes}}</p></li>-->
+<!--        </ul>-->
+<!--      </div>-->
+<!--      <hr>-->
+<!--      <app-health-assessment-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [visaCheckRecord]="visaRecord">-->
+<!--      </app-health-assessment>-->
+<!--    </ng-template>-->
+<!--  </ngb-panel>-->
+
+<!--  <ngb-panel id="visa-ca-character" title="Character Assessment" class="intake-data">-->
+<!--    <ng-template ngbPanelContent>-->
+<!--      <app-crime-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-crime>-->
+<!--      <hr>-->
+<!--      <app-character-assessment-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [visaCheckRecord]="visaRecord">-->
+<!--      </app-character-assessment>-->
+<!--    </ng-template>-->
+<!--  </ngb-panel>-->
+
+<!--  <ngb-panel id="visa-ca-security" title="Security Assessment" class="intake-data">-->
+<!--    <ng-template ngbPanelContent>-->
+<!--      <app-military-service-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-military-service>-->
+<!--      <app-visa-reject-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-visa-reject>-->
+<!--      <app-visa-issues-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [editable]="false">-->
+<!--      </app-visa-issues>-->
+<!--      <hr>-->
+<!--      <app-security-risk-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [visaCheckRecord]="visaRecord">-->
+<!--      </app-security-risk>-->
+<!--    </ng-template>-->
+<!--  </ngb-panel>-->
+
+<!--  <ngb-panel id="visa-ca-risk" title="Overall Risk Assessment" class="intake-data">-->
+<!--    <ng-template ngbPanelContent>-->
+<!--      <app-risk-assessment-->
+<!--        [entity]="candidate"-->
+<!--        [candidateIntakeData]="candidateIntakeData"-->
+<!--        [visaCheckRecord]="visaRecord">-->
+<!--      </app-risk-assessment>-->
+<!--    </ng-template>-->
+<!--  </ngb-panel>-->
+
+<!--</ngb-accordion>-->

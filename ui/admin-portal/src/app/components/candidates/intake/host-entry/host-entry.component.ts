@@ -53,20 +53,20 @@ export class HostEntryComponent extends IntakeComponentBase implements OnInit {
     const options: EnumOption[] =
       enumKeysToEnumOptions(this.candidateIntakeData?.leftHomeReasons, LeftHomeReason);
     this.form = this.fb.group({
-      birthCountryId: [this.candidateIntakeData?.birthCountry?.id],
-      hostEntryYear: [this.candidateIntakeData?.hostEntryYear],
-      hostEntryYearNotes: [this.candidateIntakeData?.hostEntryYearNotes],
-      asylumYear: [this.candidateIntakeData?.asylumYear],
-      hostEntryLegally: [this.candidateIntakeData?.hostEntryLegally],
-      hostEntryLegallyNotes: [this.candidateIntakeData?.hostEntryLegallyNotes],
-      returnedHome: [this.candidateIntakeData?.returnedHome],
-      returnedHomeReason: [this.candidateIntakeData?.returnedHomeReason],
-      returnedHomeReasonNo: [this.candidateIntakeData?.returnedHomeReasonNo],
-      returnHomeSafe: [this.candidateIntakeData?.returnHomeSafe],
-      leftHomeReasons: [options],
-      leftHomeNotes: [this.candidateIntakeData?.leftHomeNotes],
-      returnHomeFuture: [this.candidateIntakeData?.returnHomeFuture],
-      returnHomeWhen: [this.candidateIntakeData?.returnHomeWhen],
+      birthCountryId: [{value: this.candidateIntakeData?.birthCountry?.id, disabled: !this.editable}],
+      hostEntryYear: [{value: this.candidateIntakeData?.hostEntryYear, disabled: !this.editable}],
+      hostEntryYearNotes: [{value: this.candidateIntakeData?.hostEntryYearNotes, disabled: !this.editable}],
+      asylumYear: [{value: this.candidateIntakeData?.asylumYear, disabled: !this.editable}],
+      hostEntryLegally: [{value: this.candidateIntakeData?.hostEntryLegally, disabled: !this.editable}],
+      hostEntryLegallyNotes: [{value: this.candidateIntakeData?.hostEntryLegallyNotes, disabled: !this.editable}],
+      returnedHome: [{value: this.candidateIntakeData?.returnedHome, disabled: !this.editable}],
+      returnedHomeReason: [{value: this.candidateIntakeData?.returnedHomeReason, disabled: !this.editable}],
+      returnedHomeReasonNo: [{value: this.candidateIntakeData?.returnedHomeReasonNo, disabled: !this.editable}],
+      returnHomeSafe: [{value: this.candidateIntakeData?.returnHomeSafe, disabled: !this.editable}],
+      leftHomeReasons: [{value: options, disabled: !this.editable}],
+      leftHomeNotes: [{value: this.candidateIntakeData?.leftHomeNotes, disabled: !this.editable}],
+      returnHomeFuture: [{value: this.candidateIntakeData?.returnHomeFuture, disabled: !this.editable}],
+      returnHomeWhen: [{value: this.candidateIntakeData?.returnHomeWhen, disabled: !this.editable}],
     });
   }
 

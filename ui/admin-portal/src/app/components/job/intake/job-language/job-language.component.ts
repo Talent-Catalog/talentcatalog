@@ -4,11 +4,11 @@ import {JobService} from "../../../../services/job.service";
 import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
 
 @Component({
-  selector: 'app-cost-commit-employer',
-  templateUrl: './cost-commit-employer.component.html',
-  styleUrls: ['./cost-commit-employer.component.scss']
+  selector: 'app-job-language',
+  templateUrl: './job-language.component.html',
+  styleUrls: ['./job-language.component.scss']
 })
-export class CostCommitEmployerComponent extends JobIntakeComponentBase implements OnInit {
+export class JobLanguageComponent extends JobIntakeComponentBase implements OnInit {
 
   constructor(fb: FormBuilder, jobService: JobService) {
     super(fb, jobService);
@@ -16,7 +16,7 @@ export class CostCommitEmployerComponent extends JobIntakeComponentBase implemen
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      employerCostCommitment: [{value: this.jobIntakeData?.employerCostCommitment, disabled: !this.editable}],
+      languageRequirements: [{value: this.jobIntakeData?.languageRequirements, disabled: !this.editable}],
     });
   }
 

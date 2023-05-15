@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="salary">
+    <label class="form-label" for="salaryRange">
       Salary range (if known)
     </label>
     <div *ngIf="editable" class="float-end">
@@ -12,6 +12,6 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <input id="salary" type="text" class="form-control" formControlName="salary">
+    <input id="salaryRange" type="text" class="form-control" formControlName="salaryRange">
   </div>
 </form>

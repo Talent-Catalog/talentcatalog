@@ -16,7 +16,7 @@ export class JobExperienceComponent extends JobIntakeComponentBase implements On
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      experience: [{value: this.jobIntakeData?.experience, disabled: !this.editable}],
+      employmentExperience: [{value: this.jobIntakeData?.employmentExperience, disabled: !this.editable}],
     });
   }
 

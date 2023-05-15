@@ -351,9 +351,39 @@ public class JobServiceImpl implements JobService {
     }
 
     private void populateIntakeData(SalesforceJobOpp job, JobIntakeData data) {
-        final String description = data.getDescription();
-        if (description != null) {
-            job.setDescription(description);
+        final String salaryRange = data.getSalaryRange();
+        if (salaryRange != null) {
+            job.setSalaryRange(salaryRange);
+        }
+        if (data.getRecruitmentProcess() != null) {
+            job.setRecruitmentProcess(data.getRecruitmentProcess());
+        }
+        if (data.getEmployerCostCommitment() != null) {
+            job.setEmployerCostCommitment(data.getEmployerCostCommitment());
+        }
+        if (data.getLocation() != null) {
+            job.setLocation(data.getLocation());
+        }
+        if (data.getLocationDetails() != null) {
+            job.setLocationDetails(data.getLocationDetails());
+        }
+        if (data.getBenefits() != null) {
+            job.setBenefits(data.getBenefits());
+        }
+        if (data.getLanguageRequirements() != null) {
+            job.setLanguageRequirements(data.getLanguageRequirements());
+        }
+        if (data.getEducationRequirements() != null) {
+            job.setEducationRequirements(data.getEducationRequirements());
+        }
+        if (data.getSkillRequirements() != null) {
+            job.setSkillRequirements(data.getSkillRequirements());
+        }
+        if (data.getEmploymentExperience() != null) {
+            job.setEmploymentExperience(data.getEmploymentExperience());
+        }
+        if (data.getOccupationCode() != null) {
+            job.setOccupationCode(data.getOccupationCode());
         }
     }
 

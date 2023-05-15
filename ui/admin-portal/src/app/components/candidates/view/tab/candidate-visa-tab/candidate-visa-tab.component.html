@@ -23,7 +23,7 @@
     </span>
     <div class="float-end" *ngIf="!loading">
       <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
-        <i class="fas fa-plus"></i>
+        <i class="fas fa-plus"></i> Add Country
       </button>
     </div>
   </div>
@@ -48,7 +48,7 @@
       </div>
     </form>
 
-    <hr/>
+    <hr *ngIf="candidateIntakeData?.candidateVisaChecks.length > 0">
 
     <div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
       <app-visa-check-au *ngSwitchCase="'Australia'"

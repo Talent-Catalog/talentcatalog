@@ -48,7 +48,7 @@ export interface Job extends JobIds {
   accepting: boolean;
   contactEmail: string;
   contactUser: User;
-  // todo Can we make the country associated with a Job a country object in the DTO so that I can use IDs as opposed to names when getting visa pathways
+  // Note: this country field comes from Salesforce, why it is a string and not a country object.
   country: string;
   createdBy: User;
   createdDate: Date;
@@ -70,22 +70,19 @@ export interface Job extends JobIds {
 }
 
 export interface JobIntakeData {
-  costCommitEmployer?: string;
+  employerCostCommitment?: string;
   recruitmentProcess?: string;
-  minSalary?: string;
-  minSalaryEmployer?: YesNo;
+  minSalary?: number;
   occupationCode?: string;
-  salary?: string;
+  salaryRange?: string;
   locationDetails?: string;
   location?: string;
   visaPathways?: VisaPathway[];
-  visaPathwaysEmployer?: YesNo;
   benefits?: string;
-  description?: string;
-  education?: string;
-  experience?: string;
-  skills?: string;
-  title?: string;
+  educationRequirements?: string;
+  languageRequirements?: string;
+  employmentExperience?: string;
+  skillRequirements?: string;
 }
 
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
