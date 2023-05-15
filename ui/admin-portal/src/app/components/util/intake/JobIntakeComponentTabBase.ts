@@ -22,6 +22,7 @@ import {AuthService} from "../../../services/auth.service";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 import {JobOppIntakeService} from "../../../services/job-opp-intake.service";
 import {JobOppIntake} from "../../../model/job-opp-intake";
+import {JobService} from "../../../services/job.service";
 
 /**
  * Base class for all job intake tab components.
@@ -72,7 +73,7 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
 
   public constructor(
     protected authService: AuthService,
-    protected jobOppIntakeService: JobOppIntakeService,
+    protected jobService: JobService,
   ) {
     this.loggedInUser = this.authService.getLoggedInUser();
   }
@@ -95,11 +96,11 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
     this.error = null;
     this.loading = true;
     forkJoin({
-      'intakeData':  this.jobOppIntakeService.get(this.job.id),
+      'job':  this.jobService.get(this.job.id),
     }).subscribe(results => {
       this.loading = false;
       // todo add hardcoded data to test with
-      this.jobIntakeData = results['intakeData'];
+      this.jobIntakeData = results['job'].jobOppIntake;
       this.onDataLoaded(init);
     }, error => {
       this.loading = false;

@@ -183,6 +183,7 @@ public class JobAdminApi implements
             .add("suggestedSearches", savedSearchDto())
             .add("updatedBy", userDto())
             .add("updatedDate")
+            .add("jobOppIntake", joiDto())
             ;
     }
 
@@ -207,6 +208,23 @@ public class JobAdminApi implements
             .add("name")
             .add("abbreviation")
             .add("websiteUrl")
+            ;
+    }
+
+    private DtoBuilder joiDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("salaryRange")
+            .add("recruitmentProcess")
+            .add("employerCostCommitment")
+            .add("location")
+            .add("locationDetails")
+            .add("benefits")
+            .add("languageRequirements")
+            .add("educationRequirements")
+            .add("skillRequirements")
+            .add("employmentExperience")
+            .add("occupationCode")
             ;
     }
 }

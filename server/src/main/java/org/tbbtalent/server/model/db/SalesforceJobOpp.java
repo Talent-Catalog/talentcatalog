@@ -223,8 +223,8 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
         joinColumns = @JoinColumn(name = "tc_job_id"),
         inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
-
-    @OneToOne(fetch = FetchType.LAZY)
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "job_opp_intake_id")
     private JobOppIntake jobOppIntake;
     

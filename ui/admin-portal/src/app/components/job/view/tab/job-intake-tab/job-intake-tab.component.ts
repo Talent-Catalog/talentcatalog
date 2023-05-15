@@ -13,9 +13,9 @@ export class JobIntakeTabComponent extends JobIntakeComponentTabBase {
 
   constructor(
     authService: AuthService,
-    joiService: JobOppIntakeService
+    jobService: JobService
   ) {
-    super(authService, joiService);
+    super(authService, jobService);
   }
 
 

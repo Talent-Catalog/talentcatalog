@@ -46,14 +46,14 @@ public class JobOppIntakeAdminApi {
     }
     
     @GetMapping("{id}")
-    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
-        JobOppIntake joi = jobOppIntakeService.get(id);
+    public @NotNull Map<String, Object> get(@PathVariable("id") long jobOppId) throws NoSuchObjectException {
+        JobOppIntake joi = jobOppIntakeService.get(jobOppId);
         return joiDto().build(joi);
     }
     
     @PutMapping("{id}/intake")
-    public void update(@PathVariable("id") long id, @RequestBody JobIntakeData data) {
-        jobOppIntakeService.update(id, data);
+    public void update(@PathVariable("id") long jobOppId, @RequestBody JobIntakeData data) {
+        jobOppIntakeService.update(jobOppId, data);
     }
 
     private DtoBuilder joiDto() {

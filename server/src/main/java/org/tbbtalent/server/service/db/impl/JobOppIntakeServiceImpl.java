@@ -20,7 +20,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.JobOppIntake;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.repository.db.JobOppIntakeRepository;
+import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.job.JobIntakeData;
 import org.tbbtalent.server.service.db.JobOppIntakeService;
 
@@ -32,9 +34,12 @@ import org.tbbtalent.server.service.db.JobOppIntakeService;
 @Service
 public class JobOppIntakeServiceImpl implements JobOppIntakeService {
     private final JobOppIntakeRepository jobOppIntakeRepository;
+    private final SalesforceJobOppRepository salesforceJobOppRepository;
 
-    public JobOppIntakeServiceImpl(JobOppIntakeRepository jobOppIntakeRepository) {
+    public JobOppIntakeServiceImpl(JobOppIntakeRepository jobOppIntakeRepository,
+        SalesforceJobOppRepository salesforceJobOppRepository) {
         this.jobOppIntakeRepository = jobOppIntakeRepository;
+        this.salesforceJobOppRepository = salesforceJobOppRepository;
     }
 
     @NonNull
@@ -45,8 +50,16 @@ public class JobOppIntakeServiceImpl implements JobOppIntakeService {
     }
 
     @Override
-    public void update(long id, JobIntakeData data) throws NoSuchObjectException {
-        JobOppIntake joi = get(id);
+    public void update(long jobOppId, JobIntakeData data) throws NoSuchObjectException {
+        SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(jobOppId)
+            .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, jobOppId));
+        JobOppIntake joi = jobOpp.getJobOppIntake();
+        // Create the JOI entry if it doesn't exist, and associate it with the Job Opp.
+        if (joi == null) {
+            joi = new JobOppIntake();
+            jobOpp.setJobOppIntake(joi);
+            salesforceJobOppRepository.save(jobOpp);
+        }
 
         populateIntakeData(joi, data);
 

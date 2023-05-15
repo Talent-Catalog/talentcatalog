@@ -36,9 +36,8 @@ import lombok.Setter;
 @Entity
 @Table(name = "job_opp_intake")
 @SequenceGenerator(name = "seq_gen", sequenceName = "job_opp_intake_id_seq", allocationSize = 1)
-public class JobOppIntake extends AbstractAuditableDomainObject<Long> {
+public class JobOppIntake extends AbstractDomainObject<Long> {
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_opp_id")
     private SalesforceJobOpp jobOpp;
     private String salaryRange;
     private String recruitmentProcess;

@@ -21,6 +21,7 @@ import {SavedSearch} from "./saved-search";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
+import {JobOppIntake} from "./job-opp-intake";
 
 export interface JobIds extends HasId {
   sfId: string;
@@ -65,6 +66,7 @@ export interface Job extends JobIds {
   suggestedSearches: SavedSearch[];
   updatedBy: User;
   updatedDate: Date;
+  jobOppIntake: JobOppIntake;
 }
 
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {

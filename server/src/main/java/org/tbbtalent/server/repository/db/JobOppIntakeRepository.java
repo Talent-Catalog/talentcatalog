@@ -16,12 +16,17 @@
 
 package org.tbbtalent.server.repository.db;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.JobOppIntake;
 
 /**
  * See doc for {@link JobOppIntake}
  */
 public interface JobOppIntakeRepository extends JpaRepository<JobOppIntake, Long> {
-
+    @Query(" select joi from JobOppIntake joi "
+        + " where joi.jobOpp.id = :id ")
+    Optional<JobOppIntake> findByJobOppId(@Param("id") Long jobOppId);
 }
