@@ -58,12 +58,10 @@ public class JobOppIntakeServiceImpl implements JobOppIntakeService {
         if (joi == null) {
             joi = new JobOppIntake();
             jobOpp.setJobOppIntake(joi);
-            salesforceJobOppRepository.save(jobOpp);
         }
-
         populateIntakeData(joi, data);
-
-        jobOppIntakeRepository.save(joi);
+        // Due to the cascade merge type, saving the jobOpp will automatically also save the associated joi object.
+        salesforceJobOppRepository.save(jobOpp);
     }
 
     private void populateIntakeData(JobOppIntake joi, JobIntakeData data) {

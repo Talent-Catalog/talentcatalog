@@ -26,7 +26,4 @@ import org.tbbtalent.server.model.db.JobOppIntake;
  * See doc for {@link JobOppIntake}
  */
 public interface JobOppIntakeRepository extends JpaRepository<JobOppIntake, Long> {
-    @Query(" select joi from JobOppIntake joi "
-        + " where joi.jobOpp.id = :id ")
-    Optional<JobOppIntake> findByJobOppId(@Param("id") Long jobOppId);
 }
