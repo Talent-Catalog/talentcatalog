@@ -17,7 +17,6 @@
 create table job_opp_intake
 (
     id                          bigserial not null primary key,
-    job_opp_id                  bigint not null references salesforce_job_opp,
     recruitment_process         text,
     employer_cost_commitment    text,
     location                    text,
