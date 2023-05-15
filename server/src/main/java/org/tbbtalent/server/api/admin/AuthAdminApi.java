@@ -18,6 +18,9 @@ package org.tbbtalent.server.api.admin;
 
 import java.util.Map;
 import javax.security.auth.login.AccountLockedException;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,26 +41,29 @@ import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.qr.EncodedQrImage;
 
+/**
+ * Rest controller that handles endpoints for user login, logout and Multi-Factor Authentication setup. Login
+ * authentication requires a valid username and password; in addition to which Multi-Factor Authentication or a valid
+ * Recaptcha tokens is required.
+ * <p/>
+ * The controller delegates to the UserService for login authentication, logout processing, MFA setup and MFA
+ * verification. And delegates to the CaptchaService for processing and verifying Recaptcha tokens.
+ */
 @RestController()
 @RequestMapping("/api/admin/auth")
+@Slf4j
+@RequiredArgsConstructor
 public class AuthAdminApi {
-    private static final Logger log = LoggerFactory.getLogger(AuthAdminApi.class);
 
     private final UserService userService;
     private final CaptchaService captchaService;
-
-    @Autowired
-    public AuthAdminApi(UserService userService, CaptchaService captchaService) {
-        this.userService = userService;
-        this.captchaService = captchaService;
-    }
 
     @PostMapping("login")
     public Map<String, Object> login(@RequestBody LoginRequest request)
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
             InvalidPasswordFormatException {
 
-        JwtAuthenticationResponse response = this.userService.login(request);
+        JwtAuthenticationResponse response = userService.login(request);
 
         //If we are using mfa don't worry about Captcha stuff
         //It is sometimes not reliable (especially in test from localhost) - and unnecessary with MFA
@@ -81,8 +87,8 @@ public class AuthAdminApi {
     }
 
     @PostMapping("logout")
-    public ResponseEntity logout() {
-        this.userService.logout();
+    public ResponseEntity<Void> logout() {
+        userService.logout();
         return ResponseEntity.ok().build();
     }
 
