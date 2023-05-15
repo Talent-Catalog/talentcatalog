@@ -18,8 +18,14 @@ package org.tbbtalent.server.exception;
 
 public class UserDeactivatedException extends ServiceException {
 
+    private static final String DEFAULT_MESSAGE = "This account has been deactivated";
+
     public UserDeactivatedException() {
-        super("user_deactivated", "This account has been deactivated");
+        this(DEFAULT_MESSAGE);
+    }
+
+    public UserDeactivatedException(String message) {
+        super("user_deactivated", message);
     }
 
 }
