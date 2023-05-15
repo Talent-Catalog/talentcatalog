@@ -94,8 +94,8 @@ public class AuthAdminApi {
      * Time based One Time Password (TOTP).
      * <p/>
      * Generates a new secret key (hence POST rather than GET) and returns a Base64 encoded
-     * QRCode image which can be displayed as described here:
-     * https://www.w3docs.com/snippets/html/how-to-display-base64-images-in-html.html
+     * QRCode image which can be displayed as described
+     * <a href="https://www.w3docs.com/snippets/html/how-to-display-base64-images-in-html.html"> here.</a>
      * @return EncodedQrImage
      */
     @PostMapping("mfa-setup")
