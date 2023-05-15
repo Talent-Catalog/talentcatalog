@@ -2,8 +2,6 @@ import {VisaPathway} from "../services/visa-pathway.service";
 import {Job} from "./job";
 
 export interface JobOppIntake {
-  id: number;
-  jobOpp: Job;
   employerCostCommitment?: string;
   recruitmentProcess?: string;
   minSalary?: number;

@@ -225,7 +225,7 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
     
     @Nullable
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_opp_intake_id")
     private JobOppIntake jobOppIntake;
     

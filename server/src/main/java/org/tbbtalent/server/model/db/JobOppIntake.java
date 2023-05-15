@@ -50,4 +50,5 @@ public class JobOppIntake extends AbstractDomainObject<Long> {
     private String skillRequirements;
     private String employmentExperience;
     private String occupationCode;
+    private String minSalary;
 }

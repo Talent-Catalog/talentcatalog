@@ -29,6 +29,7 @@ import org.tbbtalent.server.model.db.JobOppIntake;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.request.job.JobIntakeData;
 import org.tbbtalent.server.service.db.JobOppIntakeService;
+import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
@@ -40,9 +41,12 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 @RequestMapping("/api/admin/joi")
 public class JobOppIntakeAdminApi {
     private final JobOppIntakeService jobOppIntakeService;
+    private final SalesforceJobOppService salesforceJobOppService;
 
-    public JobOppIntakeAdminApi(JobOppIntakeService jobOppIntakeService) {
+    public JobOppIntakeAdminApi(JobOppIntakeService jobOppIntakeService,
+        SalesforceJobOppService salesforceJobOppService) {
         this.jobOppIntakeService = jobOppIntakeService;
+        this.salesforceJobOppService = salesforceJobOppService;
     }
     
     @GetMapping("{id}")
@@ -53,7 +57,17 @@ public class JobOppIntakeAdminApi {
     
     @PutMapping("{id}/intake")
     public void update(@PathVariable("id") long jobOppId, @RequestBody JobIntakeData data) {
-        jobOppIntakeService.update(jobOppId, data);
+        // Find the job, then find it's intake id (if exists). If not exist, create.
+        SalesforceJobOpp job;
+        JobOppIntake intake = job.getJobOppIntake();
+        if (intake == null) {
+            intake = jobOppIntakeService.create(data);
+            job.setJobOppIntake(intake);
+            salesforceJobOppService.save(job);
+        } else {
+            jobOppIntakeService.update(intake.getId(), data);
+        }
+        
     }
 
     private DtoBuilder joiDto() {
