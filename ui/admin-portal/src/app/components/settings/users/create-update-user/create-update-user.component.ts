@@ -26,8 +26,7 @@ import {EnumOption, enumOptions} from "../../../../util/enum";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
 import {forkJoin} from "rxjs";
-import {Status} from "../../../../model/base";
-import {Observable} from "rxjs/index";
+import {SearchUserRequest, Status} from "../../../../model/base";
 
 @Component({
   selector: 'app-create-update-user',
@@ -55,6 +54,11 @@ export class CreateUpdateUserComponent implements OnInit {
   }
 
   ngOnInit() {
+    const userRequest: SearchUserRequest = {
+      sortFields: ["firstName", "lastName"],
+      sortDirection: "ASC"
+    };
+
     let formControlsConfig = {
       email: [this.user?.email, [Validators.required, Validators.email]],
       username: [this.user?.username, Validators.required],
@@ -83,13 +87,13 @@ export class CreateUpdateUserComponent implements OnInit {
     forkJoin({
       'countries': this.countryService.listCountriesRestricted(),
       'partners': this.partnerService.listPartners(),
-      'approvers': this.userService.listAdminUsers()
+      'approvers': this.userService.search(userRequest)
     }).subscribe(
       results => {
         this.working = false;
         this.countries = results['countries'];
         this.partners = results['partners'];
-        this.approvers = results['approvers'];
+        this.approvers = results['approvers'].map(u => {u.name = u.firstName + " " + u.lastName; return u});
       },
       (error) => {
         this.error = error;

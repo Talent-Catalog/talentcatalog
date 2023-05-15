@@ -58,13 +58,6 @@ public class UserAdminApi {
         return userDto().buildList(users);
     }
 
-    //    Used to populate options for the 'Approver' field of the Add/Update user registration (approvers will always be admin users and this stops candidates being fetched)
-    @GetMapping()
-    public List<Map<String, Object>> getAllAdminUsers() {
-        List<User> users = userService.getAllAdminUsers();
-        return userDto().buildList(users);
-    }
-
     @PostMapping("search-paged")
     public Map<String, Object> searchPaged(@RequestBody SearchUserRequest request) {
         Page<User> users = this.userService.searchPaged(request);

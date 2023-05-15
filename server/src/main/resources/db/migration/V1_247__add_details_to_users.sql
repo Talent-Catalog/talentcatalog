@@ -14,5 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-ALTER TABLE users DROP COLUMN approver;
 ALTER TABLE users ADD COLUMN approver_id bigint;
+ALTER TABLE users ADD COLUMN purpose text;

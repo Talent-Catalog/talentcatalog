@@ -274,7 +274,7 @@ public class UserServiceImpl implements UserService {
         }
         //If we have a new approver, update it.
         if (newApprover != null) {
-            user.setApprover((User) newApprover);
+            user.setApprover(newApprover);
         }
 
         user.setReadOnly(request.getReadOnly());
@@ -703,10 +703,4 @@ public class UserServiceImpl implements UserService {
             emailHelper.sendAlert(mess);
         }
     }
-
-//    Used to populate options for the 'Approver' field of the 'Add' form for new users (approvers will always be admin users and this stops candidates being fetched)
-    public List<User> getAllAdminUsers() {
-        return userRepository.getAllAdminUsers();
-    }
-
 }

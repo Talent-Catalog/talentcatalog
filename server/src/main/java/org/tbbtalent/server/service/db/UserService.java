@@ -73,9 +73,6 @@ public interface UserService {
 
     List<User> search(SearchUserRequest request);
 
-    //    Used to populate options for the 'Approver' field of the 'Add' form for new users (approvers will always be admin users and this stops candidates being fetched)
-    List<User> getAllAdminUsers();
-
     Page<User> searchPaged(SearchUserRequest request);
 
     User getUser(long id);
