@@ -38,7 +38,7 @@ import com.sun.xml.bind.v2.TODO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
-/**
+/** TODO: TRANSFER THESE TO THEIR RESPECTIVE FIELDS
  * @param username created by the user (must be unique)
  * @param firstName actual first name
  * @param lastName actual surname

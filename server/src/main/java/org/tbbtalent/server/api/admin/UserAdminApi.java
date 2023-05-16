@@ -161,7 +161,9 @@ public class UserAdminApi {
                 ;
     }
 
-//    For providing limited details of a user's approver (who is another user with admin access)
+    /**
+     * For providing limited details of a user's approver (who is another user with admin access)
+     */
     private DtoBuilder userDtoApprover() {
         return new DtoBuilder()
                 .add("id")

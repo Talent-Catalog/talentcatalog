@@ -54,13 +54,6 @@ export class CreateUpdateUserComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Populates the 'Approver' dropdown on the add/update user form with eligible admin users
-    const userRequest: SearchUserRequest = {
-      sortFields: ["firstName", "lastName"],
-      sortDirection: "ASC",
-      status: "active",
-    };
-
     let formControlsConfig = {
       email: [this.user?.email, [Validators.required, Validators.email]],
       username: [this.user?.username, Validators.required],
@@ -85,6 +78,13 @@ export class CreateUpdateUserComponent implements OnInit {
 
     this.working = true;
     this.error = null;
+
+    // Populates the 'Approver' dropdown on the add/update user form with eligible admin users
+    const userRequest: SearchUserRequest = {
+      sortFields: ["firstName", "lastName"],
+      sortDirection: "ASC",
+      status: "active",
+    };
 
     forkJoin({
       'countries': this.countryService.listCountriesRestricted(),
