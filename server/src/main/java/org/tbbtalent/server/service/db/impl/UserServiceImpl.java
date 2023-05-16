@@ -314,6 +314,7 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new InvalidRequestException("You don't have permission to create a user.");
         }
+
     }
 
     @Override
@@ -703,4 +704,5 @@ public class UserServiceImpl implements UserService {
             emailHelper.sendAlert(mess);
         }
     }
+
 }

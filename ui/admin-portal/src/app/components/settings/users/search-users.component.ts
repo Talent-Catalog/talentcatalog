@@ -30,7 +30,6 @@ import {AuthService} from '../../../services/auth.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {SearchUserRequest} from "../../../model/base";
-import {Observable} from "rxjs/index";
 
 
 @Component({

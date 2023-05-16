@@ -38,6 +38,21 @@ import com.sun.xml.bind.v2.TODO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
+/**
+ * @param username created by the user (must be unique)
+ * @param firstName actual first name
+ * @param lastName actual surname
+ * @param email currently not used by TC functionality (must be unique)
+ * @param role type of access to the TC (system admin / full admin / source partner admin / semi limited / limited)
+ * @param approver tc user who approved a new admin user's registration, where required — this will be another admin user
+ * @param purpose is related to approver — in instances where approval was required for a new-user registration, it's the reason given for their TC use, e.g., 'Facilitate job searches in Uganda.'
+ * @param partner is the organisation that the user belongs to — has a material effect on functionality and access, so is a class of its own
+ * @param userSourceCountry designations the nation(s) whose candidates the user has access to — e.g. a user in India who only has access to candidates based in India
+ * @param status new users are 'active' by default — rather than delete departing users, we make them 'inactive'
+ * @param readOnly limits functionality, in May '23 this option is somewhat buggy and not advised to be used
+ * @param usingMfa basic security requirement, checked by default
+ */
+
 @Entity
 @Table(name = "users")
 @SequenceGenerator(name = "seq_gen", sequenceName = "users_id_seq", allocationSize = 1)
@@ -92,12 +107,13 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "partner_id")
     private PartnerImpl partner;
 
-//    This is to fetch a user's approver, who is another user with admin access
+    /**
+     * This is to fetch a user's approver if their registration required one — the approver is another admin user
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approver_id")
     private User approver;
 
-//    Reason for using the TC
     private String purpose;
 
     //Note use of Set rather than List as strongly recommended for Many to Many
@@ -135,22 +151,12 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public User() {
     }
 
-    /**
-     * @param username created by the user (must be unique)
-     * @param firstName actual first name
-     * @param lastName actual surname
-     * @param email currently not used by TC functionality (must be unique)
-     * @param role type of access to the TC (system admin / full admin / source partner admin / semi limited / limited)
-     * @param purpose reason given for the new user's TC access in their approval process — set as nullable because it's only required in certain instances
-     */
-
-    public User(String username, String firstName, String lastName, String email, Role role, @Nullable String purpose) {
+    public User(String username, String firstName, String lastName, String email, Role role) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.role = role;
-        this.purpose = purpose;
         this.status = Status.active;
         this.setCreatedDate(OffsetDateTime.now());
     }

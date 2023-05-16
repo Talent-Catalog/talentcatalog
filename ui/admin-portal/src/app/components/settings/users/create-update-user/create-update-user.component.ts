@@ -54,9 +54,11 @@ export class CreateUpdateUserComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Populates the 'Approver' dropdown on the add/update user form with eligible admin users
     const userRequest: SearchUserRequest = {
       sortFields: ["firstName", "lastName"],
-      sortDirection: "ASC"
+      sortDirection: "ASC",
+      status: "active",
     };
 
     let formControlsConfig = {
