@@ -71,7 +71,6 @@ public interface UserService {
 
     User findByUsernameAndRole(String username, Role role);
 
-
     List<User> search(SearchUserRequest request);
 
     Page<User> searchPaged(SearchUserRequest request);
