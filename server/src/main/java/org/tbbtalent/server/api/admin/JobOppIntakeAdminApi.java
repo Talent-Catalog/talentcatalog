@@ -70,6 +70,13 @@ public class JobOppIntakeAdminApi {
             //OR - probably better. We have an example of this kind of thing in 
             salesforceJobOppService.assignIntake(job, intake);
             
+            //TODO OR - probably best. I don't think we need a separate JobOppIntakeAdminAPI - 
+            // given that there is exactly one intake for each job.
+            //It is useful to have it in its own table - and a separate class - with its own
+            //entity, repository and service. But maybe no need for its own API.
+            //Instead just add a new method to the existing JobAdminAPI: updateIntake(long jobOppId, JobIntakeData data).
+            //It will look a bit like this method - but simpler.
+            
             
         } else {
             jobOppIntakeService.update(intake.getId(), data);
