@@ -17,6 +17,8 @@
 package org.tbbtalent.server.service.db.impl;
 
 import javax.validation.constraints.NotNull;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -34,33 +36,33 @@ import org.tbbtalent.server.service.db.UserService;
  * @author John Cameron
  */
 @Service
+@RequiredArgsConstructor
 public class BrandingServiceImpl implements BrandingService {
     private final PartnerService partnerService;
     private final UserService userService;
 
-    public BrandingServiceImpl(PartnerService partnerService, UserService userService) {
-        this.partnerService = partnerService;
-        this.userService = userService;
-    }
-
+    /**
+     * Returns the branding information for a partner.
+     * </p>
+     * If a user is logged-in then get the partner associated with that user otherwise get the partner associated with
+     * the specified partner abbreviation.
+     * </p>
+     * If no partner is found gets the default source partner.
+     *
+     * @param partnerAbbreviation Optional partner abbreviation
+     * @return branding info
+     */
     @Override
     @NonNull
     public BrandingInfo getBrandingInfo(@Nullable String partnerAbbreviation) {
 
         User user = userService.getLoggedInUser();
 
-        Partner partner;
-        if (user != null) {
-            //Logged in - set partner associated with user
-            partner = user.getPartner();
-        } else {
-            //Not logged in - try and determine partner
-            //Look up any partnerAbbreviation
-            partner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
-        }
+        Partner partner = user != null
+                ? user.getPartner()
+                : partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
 
         if (partner == null) {
-            //Used default partner if none found so far
             partner = partnerService.getDefaultSourcePartner();
         }
 
@@ -68,13 +70,17 @@ public class BrandingServiceImpl implements BrandingService {
     }
 
     private @NotNull BrandingInfo extractBrandingInfoFromPartner(@NonNull Partner partner) {
-        BrandingInfo info = new BrandingInfo();
-        info.setLogo(partner.getLogo());
-        if (partner instanceof SourcePartner) {
-            info.setLandingPage(((SourcePartner)partner).getRegistrationLandingPage());
+        String landingPage = null;
+
+        if (partner instanceof SourcePartner sourcePartner) {
+            landingPage = sourcePartner.getRegistrationLandingPage();
         }
-        info.setPartnerName(partner.getName());
-        info.setWebsiteUrl(partner.getWebsiteUrl());
-        return info;
+
+        return BrandingInfo.builder()
+                .landingPage(landingPage)
+                .logo(partner.getLogo())
+                .partnerName(partner.getName())
+                .websiteUrl(partner.getWebsiteUrl())
+                .build();
     }
 }
