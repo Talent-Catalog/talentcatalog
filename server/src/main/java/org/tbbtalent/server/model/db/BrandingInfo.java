@@ -16,9 +16,7 @@
 
 package org.tbbtalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.lang.Nullable;
 
 /**
@@ -29,6 +27,7 @@ import org.springframework.lang.Nullable;
 @Getter
 @Setter
 @ToString
+@Builder
 public class BrandingInfo {
 
     /**
