@@ -167,6 +167,7 @@ public class JobAdminApi implements
             .add("createdBy", userDto())
             .add("createdDate")
             .add("employer")
+            .add("hiringCommitment")
             .add("exclusionList", savedListBuilderSelector.selectBuilder())
             .add("jobSummary")
             .add("name")

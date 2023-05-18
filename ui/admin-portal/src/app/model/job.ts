@@ -39,10 +39,10 @@ export interface Job extends JobIds {
   website: string;
   // todo get field from SF Account to display in JOI
   employerDescription: string;
-  // todo get field from SF Job Opp to display in JOI
-  employerHiringCommitment: number;
   // todo get field from SF Job Opp to display in JOI - not currently in SF, do we add?
   employerPreviousHire: string;
+
+  hiringCommitment: string;
   accepting: boolean;
   contactEmail: string;
   contactUser: User;

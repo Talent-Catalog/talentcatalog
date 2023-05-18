@@ -228,7 +228,11 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_opp_intake_id")
     private JobOppIntake jobOppIntake;
-    
+
+    /**
+     * Salesforce field: hiring commitment of job opportunity
+     */
+    private String hiringCommitment;
 
     public void addStarringUser(User user) {
         starringUsers.add(user);
