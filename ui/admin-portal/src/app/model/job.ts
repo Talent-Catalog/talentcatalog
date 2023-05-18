@@ -34,7 +34,6 @@ export interface Job extends JobIds {
    * - Employer Description
    * - Employer Hiring commitment
    * - Have they hired from abroad before (not on SF yet)
-   * Should these fields related to the employer sit in own table, an employer table?
    */
   // todo get field from SF Account to display in JOI
   website: string;

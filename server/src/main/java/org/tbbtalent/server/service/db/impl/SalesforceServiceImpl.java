@@ -16,28 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.tbbtalent.server.util.SalesforceHelper.extractIdFromSfUrl;
-
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -60,12 +40,7 @@ import org.tbbtalent.server.configuration.SalesforceRecordTypeConfig;
 import org.tbbtalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateOpportunityStage;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.JobOpportunityStage;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
@@ -76,6 +51,21 @@ import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.tbbtalent.server.util.SalesforceHelper.extractIdFromSfUrl;
 
 /**
  * Standard implementation of Salesforce service
@@ -123,13 +113,16 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final Map<Class<?>, String> classSfPathMap = new HashMap<>();
     private final Map<Class<?>, String> classSfCompositePathMap = new HashMap<>();
 
+    /**
+     * If you are adding a new field to get from SF (in strings below), make sure you add the field to {@link Opportunity}.
+      */
     private final String contactRetrievalFields =
         "Id,AccountId," + candidateNumberSFFieldName;
     private final String candidateOpportunityRetrievalFields =
         "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName,IsClosed,Candidate_TC_id__c,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
-        "Id,RecordTypeId,Name,AccountId,OwnerId,AccountCountry__c,AccountName__c,StageName,IsClosed";
+        "Id,RecordTypeId,Name,AccountId,OwnerId,Hiring_Commitment__c,AccountCountry__c,AccountName__c,StageName,IsClosed";
 
     private final EmailHelper emailHelper;
 
