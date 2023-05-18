@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
 import {FormBuilder} from "@angular/forms";
 import {VisaPathway, VisaPathwayService} from "../../../../services/visa-pathway.service";
-import {JobOppIntakeService} from "../../../../services/job-opp-intake.service";
+import {JobService} from "../../../../services/job.service";
 
 @Component({
   selector: 'app-visa-pathways',
@@ -19,7 +19,7 @@ export class VisaPathwaysComponent extends JobIntakeComponentBase implements OnI
   visaPathwayOptions: VisaPathway[];
 
   constructor(fb: FormBuilder,
-              jobService: JobOppIntakeService,
+              jobService: JobService,
               private visaPathwayService: VisaPathwayService) {
     super(fb, jobService);
   }

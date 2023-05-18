@@ -19,7 +19,7 @@ import {FormBuilder} from '@angular/forms';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {Job} from "../../../model/job";
 import {JobOppIntake} from "../../../model/job-opp-intake";
-import {JobOppIntakeService} from "../../../services/job-opp-intake.service";
+import {JobService} from "../../../services/job.service";
 
 /**
  * Base class for all job intake components.
@@ -46,10 +46,10 @@ export abstract class JobIntakeComponentBase extends AutoSaveComponentBase imple
   /**
    * Inject in a FormBuilder to create the form and an IntakeService to perform the saves.
    * @param fb FormBuilder
-   * @param jobOppIntakeService JobOppIntakeService which saves the intake data
+   * @param jobService JobService which saves the intake data
    */
-  protected constructor(protected fb: FormBuilder, jobOppIntakeService: JobOppIntakeService) {
-    super(jobOppIntakeService);
+  protected constructor(protected fb: FormBuilder, jobService: JobService) {
+    super(jobService);
   }
 
   /**

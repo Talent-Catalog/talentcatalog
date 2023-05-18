@@ -14,13 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, Input, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {Directive, Input, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {User} from '../../../model/user';
 import {Job} from "../../../model/job";
 import {AuthService} from "../../../services/auth.service";
-import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
-import {JobOppIntakeService} from "../../../services/job-opp-intake.service";
 import {JobOppIntake} from "../../../model/job-opp-intake";
 import {JobService} from "../../../services/job.service";
 

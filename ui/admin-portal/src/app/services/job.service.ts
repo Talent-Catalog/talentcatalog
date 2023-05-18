@@ -44,6 +44,10 @@ export class JobService {
     return this.http.put<Job>(`${this.apiUrl}/${id}`, request);
   }
 
+  updateIntakeData(id: number, formData: Object): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/intake`, formData);
+  }
+
   updateJobLink(id: number, docType: JobDocType, updateLinkRequest: UpdateLinkRequest): Observable<Job> {
     return this.http.put<Job>(`${this.apiUrl}/${id}/${docType}link`, updateLinkRequest);
   }

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
 import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
-import {JobOppIntakeService} from "../../../../services/job-opp-intake.service";
+import {JobService} from "../../../../services/job.service";
 
 @Component({
   selector: 'app-job-benefits',
@@ -10,8 +10,8 @@ import {JobOppIntakeService} from "../../../../services/job-opp-intake.service";
 })
 export class JobBenefitsComponent extends JobIntakeComponentBase implements OnInit {
 
-  constructor(fb: FormBuilder, joiService: JobOppIntakeService) {
-    super(fb, joiService);
+  constructor(fb: FormBuilder, jobService: JobService) {
+    super(fb, jobService);
   }
 
   ngOnInit(): void {

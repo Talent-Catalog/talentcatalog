@@ -38,6 +38,14 @@ public interface JobOppIntakeService {
     JobOppIntake get(long id) throws NoSuchObjectException;
 
     /**
+     * Creates the intake data.
+     * @param data Partially populated JobIntakeData record. Null data
+     *             fields are ignored. Only non-null fields are added to the new entity.
+     * @throws NoSuchObjectException if no job is found with that id
+     */
+    JobOppIntake create(JobIntakeData data) throws NoSuchObjectException;
+
+    /**
      * Updates the intake data.
      * @param id ID of job opp intake
      * @param data Partially populated JobIntakeData record. Null data
