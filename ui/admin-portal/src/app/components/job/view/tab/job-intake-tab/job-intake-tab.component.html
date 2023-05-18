@@ -28,7 +28,13 @@
           </div>
           <div class="col">
             <label>Hiring commitment: </label>
-            <span>{{job.hiringCommitment}}</span>
+            <div *ngIf="job.hiringCommitment != null; then show else hide"></div>
+            <ng-template #show>
+              <span>{{job.hiringCommitment}}</span>
+            </ng-template>
+            <ng-template #hide>
+              <span> - </span>
+            </ng-template>
           </div>
           <div class="col">
             <label>Have they hired from abroad before? </label>
