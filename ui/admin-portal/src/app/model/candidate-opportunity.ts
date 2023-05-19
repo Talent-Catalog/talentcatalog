@@ -14,17 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {Opportunity} from "./base";
+import {ShortJob} from "./job";
 
 export interface CandidateOpportunity extends Opportunity {
 
   closingCommentsForCandidate?: string;
   employerFeedback?: string;
 
-  jobId: number;
-
-  jobName: string;
-  nextStep?: string;
-  nextStepDueDate?: Date;
+  job: ShortJob;
   stage: CandidateOpportunityStage;
 }
 

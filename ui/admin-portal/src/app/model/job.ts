@@ -22,13 +22,17 @@ import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 import {VisaPathway} from "../services/visa-pathway.service";
-import {YesNo} from "./candidate";
 
-export interface JobIds extends HasId {
-  sfId: string;
+export interface OpportunityIds extends HasId {
+  sfId?: string;
 }
 
-export interface Job extends JobIds {
+export interface ShortJob {
+  id: number,
+  name: string;
+}
+
+export interface Job extends OpportunityIds {
   /**
    * We need to get fields:
    * - Website
@@ -38,13 +42,13 @@ export interface Job extends JobIds {
    * Should these fields related to the employer sit in own table, an employer table?
    */
   // todo get field from SF Account to display in JOI
-  website: string;
+  website?: string;
   // todo get field from SF Account to display in JOI
-  employerDescription: string;
+  employerDescription?: string;
   // todo get field from SF Job Opp to display in JOI
-  employerHiringCommitment: number;
+  employerHiringCommitment?: number;
   // todo get field from SF Job Opp to display in JOI - not currently in SF, do we add?
-  employerPreviousHire: string;
+  employerPreviousHire?: string;
   accepting: boolean;
   contactEmail: string;
   contactUser: User;

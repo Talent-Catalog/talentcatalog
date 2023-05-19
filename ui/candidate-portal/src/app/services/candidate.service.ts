@@ -125,6 +125,7 @@ export class CandidateService {
             name: 'Mock Candidate Opp name',
             nextStep: 'Tell employer he is dreaming',
             nextStepDueDate: new Date('2023-11-9'),
+            lastModifiedDate: new Date('2023-01-01'),
             stage: CandidateOpportunityStage.prospect
           };
           candidate.candidateOpportunities = [opp];

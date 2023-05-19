@@ -118,7 +118,7 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {JobIds} from "../../../model/job";
+import {OpportunityIds} from "../../../model/job";
 
 interface CachedTargetList {
   sourceID: number;
@@ -1399,7 +1399,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.updating = true;
 
     if (selectedCandidatesOnly) {
-      const jobIds: JobIds = this.candidateSource.sfJobOpp;
+      const jobIds: OpportunityIds = this.candidateSource.sfJobOpp;
       if (jobIds) {
         const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
         this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, jobIds.sfId, info)

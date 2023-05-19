@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2022 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,11 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export interface Opportunity {
-  closingComments?: string;
+package org.tbbtalent.server.service.db;
 
-  lastModifiedDate?: Date;
-
-  name: string;
+public interface CandidateOpportunityService {
 }
-

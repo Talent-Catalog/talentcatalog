@@ -231,6 +231,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateAttachment> candidateAttachments;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private List<CandidateOpportunity> candidateOpportunities;
+
     //old data only links to candidate needs to be searchable
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "migration_education_major_id")
@@ -1104,6 +1107,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateOccupations(List<CandidateOccupation> candidateOccupations) {
         this.candidateOccupations = candidateOccupations;
+    }
+
+    public List<CandidateOpportunity> getCandidateOpportunities() {
+        return candidateOpportunities;
+    }
+
+    public void setCandidateOpportunities(
+        List<CandidateOpportunity> candidateOpportunities) {
+        this.candidateOpportunities = candidateOpportunities;
     }
 
     public Set<CandidateProperty> getCandidateProperties() {

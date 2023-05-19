@@ -61,8 +61,10 @@ export class CandidateSourceCandidateService {
   private mockCandidateOpps(results: SearchResults<Candidate>): SearchResults<Candidate> {
     results.content.forEach(x => {
       const opp: CandidateOpportunity = {
-        jobId: 123,
-        jobName: 'Mock Job',
+        job: {
+          id: 123,
+          name: 'Mock job'
+        },
         name: 'Mock Candidate Opp name',
         nextStep: 'Tell employer he is dreaming',
         nextStepDueDate: new Date('2023-11-9'),
