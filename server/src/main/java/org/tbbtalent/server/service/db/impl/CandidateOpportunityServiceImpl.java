@@ -89,7 +89,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     }
     
     /**
-     * Copies a Salesforce opportunity record to a SalesforceJobOpp
+     * Copies a Salesforce opportunity record to a CandidateOpportunity
      * @param op Salesforce opportunity retrieved from Salesforce
      * @param candidateOpportunity Cached job opp on our DB
      */

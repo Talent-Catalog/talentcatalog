@@ -186,12 +186,10 @@ public class SystemAdminApi {
         this.googleDriveConfig = googleDriveConfig;
         countryForGeneralCountry = getExtraCountryMappings();
     }
-
     @GetMapping("load_candidate_ops")
-    public String loadCandidateOpportunities() {
+    public void loadCandidateOpportunities() {
         SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppByUrl("https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/0063l00000lvnkIAAQ/view");
         candidateOpportunityService.loadCandidateOpportunities(jobOpp);
-        return "started";
     }
 
     @GetMapping("sf-sync-open-jobs")
