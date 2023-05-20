@@ -24,14 +24,20 @@ create table candidate_opportunity
     job_opp_id                     bigint references salesforce_job_opp,
     stage                          text,
 
---     The following are potentially common with job opportunity
+--     The following are common with job opportunity
     closing_comments               text,
     closed                         boolean default false not null,
     last_modified_date             timestamptz,
     name                           text,
     next_step                      text,
     next_step_due_date             timestamptz,
-    sfId                           text,
-    stage_order                    int
+    sf_id                          text,
+    stage_order                    int,
+
+    created_by                     bigint references users,
+    created_date                   timestamptz,
+    updated_by                     bigint references users,
+    updated_date                   timestamptz
+
 
 );
