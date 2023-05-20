@@ -223,7 +223,7 @@ public interface CandidateService {
      * (which it normally will be in your controllers processing HTTP requests),
      * JPA will perform another database access to populate the candidate
      * occupations.
-     * (See https://www.baeldung.com/jpa-hibernate-persistence-context)
+     * (See <a href="https://www.baeldung.com/jpa-hibernate-persistence-context">...</a>)
      * <p/>
      * Note that our DTO builder class {@link DtoBuilder} will also trigger
      * loading of the requested attributes from the database.
@@ -412,7 +412,7 @@ public interface CandidateService {
             throws NoSuchObjectException, SalesforceException, WebClientException;
 
     /**
-     * Creates or updates Contact records on Salesforce for the given candidates and, if sfJoblink
+     * Creates or updates Contact records on Salesforce for the given candidates and, if sfJobOpp
      * is not null, indicating that these candidates are associated with a job opportunity,
      * this will also create/update the associated candidate opportunities associated with that
      * job.
