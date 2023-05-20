@@ -88,11 +88,23 @@ public interface SalesforceService {
      *
      * @param condition Effectively the logical (predicate) part of a SOQL WHERE clause.
      * @return List of Salesforce Candidate Opportunity records
-     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
      * @throws WebClientException       if there is a problem connecting to Salesforce
      */
     @NonNull
     List<Opportunity> findCandidateOpportunities(String condition) throws WebClientException;
+
+    /**
+     * Searches Salesforce for all Candidate Opportunity records associated with the given 
+     * Salesforce job ids.
+     * 
+     * @param jobOpportunityIds One or more Salesforce job ids
+     * @return List of Salesforce Candidate Opportunity records
+     * @throws SalesforceException If there is a problem reported by Salesforce
+     */
+    @NonNull
+    List<Opportunity> findCandidateOpportunitiesByJobOpps(String... jobOpportunityIds)
+        throws SalesforceException;
+    
     /**
      * Searches Salesforce for all Contact records matching the given condition.
      *
@@ -149,7 +161,7 @@ public interface SalesforceService {
      * record with the given type and the given id.
      * <p/>
      * Note that fields can traverse relationships - eg Account.Name
-     * See https://developer.salesforce.com/docs/atlas.en-us.226.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_understanding.htm
+     * See <a href="https://developer.salesforce.com/docs/atlas.en-us.226.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_understanding.htm">...</a>
      * <p/>
      * Note that the object needs to match the returned Json. See above doc.
      * @param objectType Salesforce object. For example 'Contact',

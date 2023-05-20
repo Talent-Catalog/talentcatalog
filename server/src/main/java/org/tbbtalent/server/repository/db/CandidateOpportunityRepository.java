@@ -16,11 +16,18 @@
 
 package org.tbbtalent.server.repository.db;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.CandidateOpportunity;
 
 public interface CandidateOpportunityRepository extends JpaRepository<CandidateOpportunity, Long>,
     JpaSpecificationExecutor<CandidateOpportunity> {
 
+    @Query(" select op from CandidateOpportunity op "
+        + " where op.sfId = :sfId ")
+    Optional<CandidateOpportunity> findBySfId(@Param("sfId") String sfId);
+    
 }

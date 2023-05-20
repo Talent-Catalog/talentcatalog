@@ -64,6 +64,7 @@ import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationType;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
@@ -74,6 +75,7 @@ import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.SavedSearchRepository;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.DataSharingService;
@@ -105,6 +107,7 @@ public class SystemAdminApi {
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateService candidateService;
     private final CountryService countryService;
     private final FileSystemService fileSystemService;
@@ -152,7 +155,7 @@ public class SystemAdminApi {
         CandidateAttachmentRepository candidateAttachmentRepository,
         CandidateNoteRepository candidateNoteRepository,
         CandidateRepository candidateRepository,
-        CandidateService candidateService,
+        CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
         CountryService countryService,
         FileSystemService fileSystemService,
         JobService jobService, LanguageService languageService,
@@ -167,6 +170,7 @@ public class SystemAdminApi {
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateOpportunityService = candidateOpportunityService;
         this.candidateService = candidateService;
         this.countryService = countryService;
         this.fileSystemService = fileSystemService;
@@ -183,8 +187,15 @@ public class SystemAdminApi {
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
+    @GetMapping("load_candidate_ops")
+    public String loadCandidateOpportunities() {
+        SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppByUrl("https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/0063l00000lvnkIAAQ/view");
+        candidateOpportunityService.loadCandidateOpportunities(jobOpp);
+        return "started";
+    }
+
     @GetMapping("sf-sync-open-jobs")
-    public String SfSyncOpenJobs() {
+    public String sfSyncOpenJobs() {
         jobService.updateOpenJobs();
         return "started";
     }

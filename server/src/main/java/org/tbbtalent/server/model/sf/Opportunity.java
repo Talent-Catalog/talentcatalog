@@ -35,10 +35,10 @@ import lombok.ToString;
  * <p/>
  * The (crappy) way around it is to make all the fields public and capitalized. Then the JSON
  * will map to the fields.
- *
+ * <p/>
  * NOTE: You can request fields using their names starting with lower case, but they are always
  * returned in the response with their standard upper case names.
- *
+ * <p/>
  * NOTE: The getters (added here automatically by Lombok) mean that utilities that process this
  * object as a normal bean, will see a normal (lower case) "name" attribute on the bean because
  * that is what they expect to be returned by a getName method.
@@ -57,6 +57,7 @@ public class Opportunity extends SalesforceObjectBase {
     public String Candidate_TC_id__c;
     public boolean IsClosed;
     public String OwnerId;
+    public String Parent_Opportunity__c;
     public String RecordTypeId;
     public String StageName;
     public String TBBCandidateExternalId__c;

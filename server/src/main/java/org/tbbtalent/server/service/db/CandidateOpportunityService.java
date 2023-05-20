@@ -16,5 +16,16 @@
 
 package org.tbbtalent.server.service.db;
 
+import org.tbbtalent.server.exception.SalesforceException;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
+
 public interface CandidateOpportunityService {
+
+    /**
+     * Creates or updates CandidateOpportunities associated with the given jobs from Salesforce.
+     * @param jobOpps Jobs whose associated CandidateOpportunities should be updated from Salesforce
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    void loadCandidateOpportunities(SalesforceJobOpp... jobOpps) throws SalesforceException;
+    
 }
