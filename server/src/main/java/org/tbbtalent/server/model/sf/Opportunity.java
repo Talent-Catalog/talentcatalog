@@ -55,7 +55,11 @@ public class Opportunity extends SalesforceObjectBase {
     public String AccountCountry__c;
     public String AccountName__c;
     public String Candidate_TC_id__c;
+    public String Closing_Comments__c;
+    public String Employer_Feedback__c;
     public boolean IsClosed;
+    public String NextStep;
+    public String Next_Step_Due_Date__c;
     public String OwnerId;
     public String Parent_Opportunity__c;
     public String RecordTypeId;

@@ -30,7 +30,7 @@ create table candidate_opportunity
     last_modified_date             timestamptz,
     name                           text,
     next_step                      text,
-    next_step_due_date             timestamptz,
+    next_step_due_date             date,
     sf_id                          text,
     stage_order                    int,
 

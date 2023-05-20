@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
@@ -24,12 +26,14 @@ import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.SalesforceException;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateOpportunityRepository;
 import org.tbbtalent.server.service.db.CandidateOpportunityService;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
 
@@ -37,13 +41,15 @@ import org.tbbtalent.server.service.db.SalesforceService;
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
     private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private final CandidateOpportunityRepository candidateOpportunityRepository;
+    private final CandidateService candidateService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
 
     public CandidateOpportunityServiceImpl(
         CandidateOpportunityRepository candidateOpportunityRepository,
-        SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService) {
+        CandidateService candidateService, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService) {
         this.candidateOpportunityRepository = candidateOpportunityRepository;
+        this.candidateService = candidateService;
         this.salesforceJobOppService = salesforceJobOppService;
         this.salesforceService = salesforceService;
     }
@@ -98,16 +104,35 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         if (jobOpp == null) {
             log.error("Could not find job opp: " + jobOppSfid + " parent of " + op.getName());
         }
-        
         candidateOpportunity.setJobOpp(jobOpp);
         
+        //Look up candidate from id
+        String candidateNumber = op.Candidate_TC_id__c;
+        Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
+        if (candidate == null) {
+            log.error("Could not find candidate number: " + candidateNumber + " in candidate op " + op.getName());
+        }
+        candidateOpportunity.setCandidate(candidate);
+        
+        candidateOpportunity.setEmployerFeedback(op.getEmployer_Feedback__c());
         candidateOpportunity.setName(op.getName());
+        candidateOpportunity.setNextStep(op.getNextStep());
+
+        final String nextStepDueDate = op.getNext_Step_Due_Date__c();
+        if (nextStepDueDate != null) {
+            try {
+                candidateOpportunity.setNextStepDueDate(
+                    LocalDate.parse(nextStepDueDate));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + op.getName());
+            }
+        }
         candidateOpportunity.setSfId(op.getId());
         CandidateOpportunityStage stage;
         try {
             stage = CandidateOpportunityStage.textToEnum(op.getStageName());
         } catch (IllegalArgumentException e) {
-            log.error("Error decoding stage in load: " + op.getStageName(), e);
+            log.error("Error decoding stage in load: " + op.getStageName() + " in candidate op " + op.getName());
             stage = CandidateOpportunityStage.prospect;
         }
         candidateOpportunity.setStage(stage);

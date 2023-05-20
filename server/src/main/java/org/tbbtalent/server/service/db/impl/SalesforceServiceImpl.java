@@ -126,11 +126,16 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     private final String contactRetrievalFields =
         "Id,AccountId," + candidateNumberSFFieldName;
+    
+    private final String commonOpportunityFields = 
+        "Id,Name,AccountId,Closing_Comments__c,NextStep,Next_Step_Due_Date__c,StageName,IsClosed,AccountCountry__c";  
     private final String candidateOpportunityRetrievalFields =
-        "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName,IsClosed,Candidate_TC_id__c,"
+        commonOpportunityFields +
+        ",Employer_Feedback__c,Parent_Opportunity__c,Candidate_TC_id__c,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
-        "Id,RecordTypeId,Name,AccountId,OwnerId,AccountCountry__c,AccountName__c,StageName,IsClosed";
+        commonOpportunityFields +
+        ",RecordTypeId,OwnerId,AccountName__c";
 
     private final EmailHelper emailHelper;
 

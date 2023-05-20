@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import javax.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -61,7 +62,7 @@ public class AbstractOpportunity extends AbstractAuditableDomainObject<Long> {
      * Due date of next step
      */
     @Nullable
-    private OffsetDateTime nextStepDueDate;
+    private LocalDate nextStepDueDate;
 
     /**
      * ID of corresponding opportunity on Salesforce.
