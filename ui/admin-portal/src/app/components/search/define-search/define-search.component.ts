@@ -324,6 +324,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
 
+    // Converts empty string to null for Referrer input - fixes bug whereby search included "" criterion
+    if (request.regoReferrerParam === "") {
+      request.regoReferrerParam = null;
+    }
+
     //Note that just changing searchRequest triggers the display of the results
     //See the html of this component, for which <app-show-candidates takes
     //searchRequest as an input.
