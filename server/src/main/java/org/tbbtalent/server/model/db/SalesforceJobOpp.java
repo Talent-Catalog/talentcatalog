@@ -16,15 +16,26 @@
 
 package org.tbbtalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.annotation.Nullable;
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.Nullable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * This is a copy of an Employer Job Opportunity on Salesforce
@@ -232,7 +243,19 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     /**
      * Salesforce field: hiring commitment of job opportunity
      */
-    private String hiringCommitment;
+    private Long hiringCommitment;
+    
+    /**
+     * Salesforce field: the website of the employer
+     * (On SF exists on Account, but copied to Opportunity and fetched with Opportunity object)
+     */
+    private String employerWebsite;
+    
+    /**                        
+     * Salesforce field: if the employer has hired internationally before 
+     * (On SF exists on Account, but copied to Opportunity and fetched on Opportunity object) 
+     */
+    private boolean employerHasHiredInternational;
 
     public void addStarringUser(User user) {
         starringUsers.add(user);

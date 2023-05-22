@@ -16,6 +16,9 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -34,10 +37,6 @@ import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.util.SalesforceHelper;
-
-import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.List;
 
 @Service
 public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
@@ -174,11 +173,10 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setOwnerId(op.getOwnerId());
         salesforceJobOpp.setClosed(op.isIsClosed());
         // Salesforce returns a decimal number (e.g. 6.0) even if 6 is entered. Remove the trailing 0 using regex.
-        String hiringCommitment = null;
-        if (op.getHiring_Commitment__c() != null) {
-            hiringCommitment = op.getHiring_Commitment__c().split("[.]")[0];
-        }
-        salesforceJobOpp.setHiringCommitment(hiringCommitment);
+        // todo leave as number field
+        salesforceJobOpp.setHiringCommitment(op.getHiring_Commitment__c());
+        salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite__c());
+        salesforceJobOpp.setEmployerHasHiredInternational(op.isAccountHasHiredInternationally__c());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());

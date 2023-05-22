@@ -60,7 +60,9 @@ public class Opportunity extends SalesforceObjectBase {
     public String RecordTypeId;
     public String StageName;
     public String TBBCandidateExternalId__c;
-    public String Hiring_Commitment__c;
+    public Long Hiring_Commitment__c;
+    public String AccountWebsite__c;
+    public boolean AccountHasHiredInternationally__c;
 
     @Override
     String getSfObjectName() {
