@@ -174,7 +174,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setClosed(op.isIsClosed());
         salesforceJobOpp.setHiringCommitment(op.getHiring_Commitment__c());
         salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite__c());
-        salesforceJobOpp.setEmployerHiredInternationally(op.isAccountHasHiredInternationally__c());
+        salesforceJobOpp.setEmployerHiredInternationally(op.getAccountHasHiredInternationally__c());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());
