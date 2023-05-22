@@ -20,7 +20,6 @@ import {ShortJob} from "./job";
 export interface CandidateOpportunity extends Opportunity {
 
   closingCommentsForCandidate?: string;
-  employerFeedback?: string;
   jobOpp: ShortJob;
   stage: CandidateOpportunityStage;
 }
