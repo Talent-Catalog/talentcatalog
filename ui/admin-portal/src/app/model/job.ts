@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {OpportunityIds, PagedSearchRequest} from "./base";
+import {HasId, OpportunityIds, PagedSearchRequest} from "./base";
 import {SavedList} from "./saved-list";
 import {User} from "./user";
 import {Partner} from "./partner";
@@ -21,6 +21,7 @@ import {SavedSearch} from "./saved-search";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
+import {JobOppIntake} from "./job-opp-intake";
 import {VisaPathway} from "../services/visa-pathway.service";
 
 export interface ShortJob {
@@ -29,22 +30,9 @@ export interface ShortJob {
 }
 
 export interface Job extends OpportunityIds {
-  /**
-   * We need to get fields:
-   * - Website
-   * - Employer Description
-   * - Employer Hiring commitment
-   * - Have they hired from abroad before (not on SF yet)
-   * Should these fields related to the employer sit in own table, an employer table?
-   */
-  // todo get field from SF Account to display in JOI
-  website?: string;
-  // todo get field from SF Account to display in JOI
-  employerDescription?: string;
-  // todo get field from SF Job Opp to display in JOI
-  employerHiringCommitment?: number;
-  // todo get field from SF Job Opp to display in JOI - not currently in SF, do we add?
-  employerPreviousHire?: string;
+  employerWebsite: string;
+  employerHiredInternationally: boolean;
+  hiringCommitment: string;
   accepting: boolean;
   contactEmail: string;
   contactUser: User;

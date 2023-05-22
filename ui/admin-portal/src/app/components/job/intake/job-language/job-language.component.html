@@ -4,7 +4,7 @@
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="languageRequirements">
-      Employer-required language proficiency for role
+      Employer-required language proficiency for role <span class="form-text">(please indicate if there is flexibility in these requirements)</span>
     </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status

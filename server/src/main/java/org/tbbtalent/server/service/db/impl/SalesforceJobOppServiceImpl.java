@@ -27,12 +27,15 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.configuration.SalesforceConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.sf.Opportunity;
+import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.util.SalesforceHelper;
 
 @Service
@@ -41,12 +44,18 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceService salesforceService;
     private final SalesforceConfig salesforceConfig;
+    private final CountryRepository countryRepository;
+    
+    private final EmailHelper emailHelper;
 
     public SalesforceJobOppServiceImpl(SalesforceJobOppRepository salesforceJobOppRepository,
-        SalesforceService salesforceService, SalesforceConfig salesforceConfig) {
+        SalesforceService salesforceService, SalesforceConfig salesforceConfig, CountryRepository countryRepository,
+        EmailHelper emailHelper) {
         this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.salesforceService = salesforceService;
         this.salesforceConfig = salesforceConfig;
+        this.countryRepository = countryRepository;
+        this.emailHelper = emailHelper;
     }
 
     @Nullable
@@ -157,11 +166,15 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private void copyOpportunityToJobOpp(@NonNull Opportunity op, SalesforceJobOpp salesforceJobOpp) {
         //Update DB with data from op
         salesforceJobOpp.setName(op.getName());
-        salesforceJobOpp.setCountry(op.getAccountCountry__c());
+        final String sfCountryName = op.getAccountCountry__c();
+        salesforceJobOpp.setCountry(sfCountryName);
         salesforceJobOpp.setEmployer(op.getAccountName__c());
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
         salesforceJobOpp.setClosed(op.isIsClosed());
+        salesforceJobOpp.setHiringCommitment(op.getHiring_Commitment__c());
+        salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite__c());
+        salesforceJobOpp.setEmployerHiredInternationally(op.getAccountHasHiredInternationally__c());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());
@@ -171,5 +184,14 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         }
         salesforceJobOpp.setStage(stage);
         salesforceJobOpp.setLastUpdate(OffsetDateTime.now());
+
+        //Post processing
+        
+        // Match a country object with the country name from Salesforce.
+        Country country = this.countryRepository.findByNameIgnoreCase(sfCountryName);
+        salesforceJobOpp.setCountryObject(country);
+        if (country == null ){
+             emailHelper.sendAlert("Salesforce country " + sfCountryName + "not found in database.");
+        } 
     }
 }
