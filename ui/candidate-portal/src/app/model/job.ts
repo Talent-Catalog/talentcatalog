@@ -14,20 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export interface HasId {
-  id?: number;
-}
-
-export interface OpportunityIds extends HasId {
-  sfId?: string;
-}
-
-export interface Opportunity extends OpportunityIds {
-  closingComments?: string;
-  lastModifiedDate?: Date;
+export interface ShortJob {
+  id: number,
   name: string;
-  nextStep?: string;
-  nextStepDueDate?: Date;
-
 }
 

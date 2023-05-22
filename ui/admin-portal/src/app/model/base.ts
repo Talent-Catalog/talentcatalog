@@ -17,7 +17,6 @@
 import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
-import {OpportunityIds} from "./job";
 import {PartnerType} from "./partner";
 
 export interface HasName {
@@ -167,6 +166,10 @@ export interface CandidateSource extends Auditable {
   sfJobOpp?: OpportunityIds;
   users?: User[];
   watcherUserIds?: number[];
+}
+
+export interface OpportunityIds extends HasId {
+  sfId?: string;
 }
 
 export interface Opportunity extends OpportunityIds {

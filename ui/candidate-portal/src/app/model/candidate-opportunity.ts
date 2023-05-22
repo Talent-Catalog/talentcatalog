@@ -15,17 +15,13 @@
  */
 
 import {Opportunity} from "./base";
+import {ShortJob} from "./job";
 
 export interface CandidateOpportunity extends Opportunity {
 
   closingCommentsForCandidate?: string;
   employerFeedback?: string;
-
-  jobId: number;
-
-  jobName: string;
-  nextStep?: string;
-  nextStepDueDate?: Date;
+  jobOpp: ShortJob;
   stage: CandidateOpportunityStage;
 }
 

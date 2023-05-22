@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {HasId, PagedSearchRequest} from "./base";
+import {OpportunityIds, PagedSearchRequest} from "./base";
 import {SavedList} from "./saved-list";
 import {User} from "./user";
 import {Partner} from "./partner";
@@ -22,10 +22,6 @@ import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 import {VisaPathway} from "../services/visa-pathway.service";
-
-export interface OpportunityIds extends HasId {
-  sfId?: string;
-}
 
 export interface ShortJob {
   id: number,

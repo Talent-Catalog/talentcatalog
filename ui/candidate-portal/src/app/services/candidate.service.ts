@@ -21,7 +21,6 @@ import {Observable} from 'rxjs';
 import {Candidate} from '../model/candidate';
 import {map} from 'rxjs/operators';
 import {LocalStorageService} from "angular-2-local-storage";
-import {CandidateOpportunity, CandidateOpportunityStage} from "../model/candidate-opportunity";
 
 export interface UpdateCandidateAdditionalInfo extends UpdateCandidateSurvey {
   additionalInfo?: string,
@@ -115,24 +114,6 @@ export class CandidateService {
 
   getProfile(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/profile`)
-    // todo Mock test data
-    .pipe(
-        map(candidate => {
-          const opp: CandidateOpportunity = {
-            closingCommentsForCandidate: "Needs better english - otherwise a good candidate",
-            jobId: 123,
-            jobName: 'Mock Job',
-            name: 'Mock Candidate Opp name',
-            nextStep: 'Tell employer he is dreaming',
-            nextStepDueDate: new Date('2023-11-9'),
-            lastModifiedDate: new Date('2023-01-01'),
-            stage: CandidateOpportunityStage.prospect
-          };
-          candidate.candidateOpportunities = [opp];
-
-          return candidate;
-        })
-    )
   }
 
   getCandidateNumber() {
