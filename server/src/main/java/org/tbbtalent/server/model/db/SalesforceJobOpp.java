@@ -254,8 +254,9 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     /**                        
      * Salesforce field: if the employer has hired internationally before 
      * (On SF exists on Account, but copied to Opportunity and fetched on Opportunity object) 
-     */
-    private boolean employerHasHiredInternational;
+     */ 
+    @Nullable
+    private boolean employerHasHiredInternationally;
 
     public void addStarringUser(User user) {
         starringUsers.add(user);

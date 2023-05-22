@@ -176,7 +176,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         // todo leave as number field
         salesforceJobOpp.setHiringCommitment(op.getHiring_Commitment__c());
         salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite__c());
-        salesforceJobOpp.setEmployerHasHiredInternational(op.isAccountHasHiredInternationally__c());
+        salesforceJobOpp.setEmployerHasHiredInternationally(op.isAccountHasHiredInternationally__c());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());
