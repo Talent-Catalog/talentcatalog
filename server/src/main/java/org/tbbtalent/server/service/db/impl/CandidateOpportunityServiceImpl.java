@@ -56,24 +56,24 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
     @Async
     @Override
-    public void loadCandidateOpportunities(SalesforceJobOpp... jobOpps) throws SalesforceException {
+    public void loadCandidateOpportunities(String... jobOppIds) throws SalesforceException {
 
         log.info("Updating candidate opportunities from Salesforce");
-        
-        List<String> jobOppIds = Arrays.stream(jobOpps).map(SalesforceJobOpp::getSfId).toList();
-        
-        List<Opportunity> ops = salesforceService.findCandidateOpportunitiesByJobOpps(jobOppIds.toArray(new String[0]));
+
+        //Remove duplicates
+        final String[] ids = Arrays.stream(jobOppIds).distinct().toArray(String[]::new);
+        List<Opportunity> ops = salesforceService.findCandidateOpportunitiesByJobOpps(ids);
 
         log.info("Loaded " + ops.size() + " candidate opportunities from Salesforce");
         int count = 0;
         int loads = 0;
         for (Opportunity op : ops) {
             String id = op.getId();
-            
+
             //Fetch DB with id
             CandidateOpportunity candidateOpportunity = candidateOpportunityRepository.findBySfId(id)
                 .orElse(null);
-            
+
             if (candidateOpportunity == null) {
                 candidateOpportunity = new CandidateOpportunity();
             }
@@ -87,7 +87,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
         log.info("Loaded " + loads + " candidate opportunities from Salesforce");
     }
-    
+
     /**
      * Copies a Salesforce opportunity record to a CandidateOpportunity
      * @param op Salesforce opportunity retrieved from Salesforce
@@ -95,9 +95,9 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
      */
     private void copyOpportunityToCandidateOpportunity(
         @NonNull Opportunity op, @NonNull CandidateOpportunity candidateOpportunity) {
-        
+
         //Update DB with data from op
-        
+
         //Look up job opp from parent
         String jobOppSfid = op.getParent_Opportunity__c();
         SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppById(jobOppSfid);
@@ -105,7 +105,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             log.error("Could not find job opp: " + jobOppSfid + " parent of " + op.getName());
         }
         candidateOpportunity.setJobOpp(jobOpp);
-        
+
         //Look up candidate from id
         String candidateNumber = op.Candidate_TC_id__c;
         Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
@@ -113,7 +113,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             log.error("Could not find candidate number: " + candidateNumber + " in candidate op " + op.getName());
         }
         candidateOpportunity.setCandidate(candidate);
-        
+
         candidateOpportunity.setEmployerFeedback(op.getEmployer_Feedback__c());
         candidateOpportunity.setName(op.getName());
         candidateOpportunity.setNextStep(op.getNextStep());
@@ -137,5 +137,5 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
         candidateOpportunity.setStage(stage);
     }
-    
+
 }

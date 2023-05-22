@@ -64,7 +64,6 @@ import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationType;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.NoteType;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
@@ -188,8 +187,16 @@ public class SystemAdminApi {
     }
     @GetMapping("load_candidate_ops")
     public void loadCandidateOpportunities() {
-        SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppByUrl("https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/0063l00000lvnkIAAQ/view");
-        candidateOpportunityService.loadCandidateOpportunities(jobOpp);
+        //Get all job opps known to TC
+        List<SavedList> listsWithJobs = savedListService.findListsAssociatedWithJobs();
+
+        //Extract their distinct ids
+        String[] jobIds = listsWithJobs.stream()
+            .filter(sl -> sl.getSfJobOpp() != null)
+            .map(sl -> sl.getSfJobOpp().getSfId())
+            .distinct()
+            .toArray(String[]::new);
+        candidateOpportunityService.loadCandidateOpportunities(jobIds);
     }
 
     @GetMapping("sf-sync-open-jobs")
