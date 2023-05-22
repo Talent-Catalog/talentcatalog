@@ -2,15 +2,14 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {Job, JobDocType, JobIntakeData, SearchJobRequest, UpdateJobRequest} from "../model/job";
+import {Job, JobDocType, SearchJobRequest, UpdateJobRequest} from "../model/job";
 import {SearchResults} from "../model/search-results";
 import {UpdateLinkRequest} from "../components/util/input/input-link/input-link.component";
-import {IntakeService} from "../components/util/intake/IntakeService";
 
 @Injectable({
   providedIn: 'root'
 })
-export class JobService implements IntakeService {
+export class JobService {
 
   private apiUrl: string = environment.apiUrl + '/job';
 
@@ -43,10 +42,6 @@ export class JobService implements IntakeService {
 
   update(id: number, request: UpdateJobRequest): Observable<Job> {
     return this.http.put<Job>(`${this.apiUrl}/${id}`, request);
-  }
-
-  getIntakeData(id: number): Observable<JobIntakeData> {
-    return this.http.get<JobIntakeData>(`${this.apiUrl}/${id}/intake`);
   }
 
   updateIntakeData(id: number, formData: Object): Observable<void> {

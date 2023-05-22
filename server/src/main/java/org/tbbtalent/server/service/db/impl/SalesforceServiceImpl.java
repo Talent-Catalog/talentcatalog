@@ -123,13 +123,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final Map<Class<?>, String> classSfPathMap = new HashMap<>();
     private final Map<Class<?>, String> classSfCompositePathMap = new HashMap<>();
 
+    /**
+     * If you are adding a new field to get from SF (in strings below), make sure you add the field to {@link Opportunity}.
+      */
     private final String contactRetrievalFields =
         "Id,AccountId," + candidateNumberSFFieldName;
     private final String candidateOpportunityRetrievalFields =
         "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName,IsClosed,Candidate_TC_id__c,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
-        "Id,RecordTypeId,Name,AccountId,OwnerId,AccountCountry__c,AccountName__c,StageName,IsClosed";
+        "Id,RecordTypeId,Name,AccountId,OwnerId,Hiring_Commitment__c,AccountCountry__c,AccountName__c," 
+            + "StageName,IsClosed,AccountWebsite__c,AccountHasHiredInternationally__c";
 
     private final EmailHelper emailHelper;
 

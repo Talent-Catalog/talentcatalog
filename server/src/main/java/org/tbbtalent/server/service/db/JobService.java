@@ -16,8 +16,6 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.IOException;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +29,9 @@ import org.tbbtalent.server.request.job.JobIntakeData;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Service for managing {@link SalesforceJobOpp}
@@ -117,6 +118,8 @@ public interface JobService {
 
     /**
      * Updates the intake data associated with the given job.
+     * If there is no intake data associated with the job it will create the Job Opp Intake and associate it with the job.
+     * Or if the Job Opp Intake already exists it will update the existing record.
      * @param id ID of job
      * @param data Partially populated JobIntakeData record. Null data
      *             fields are ignored. Only non-null fields are updated.

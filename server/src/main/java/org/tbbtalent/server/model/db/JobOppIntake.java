@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,30 +14,28 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.job;
+package org.tbbtalent.server.model.db;
 
-import javax.annotation.Nullable;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
- * Has fields for all candidate intake fields.
- * <p/>
- * An instance of this class is received from the browser on each update.
- * Each update will come from a single intake component - comprising one or
- * a small number of fields. Just values for those fields will be populated
- * in the class. All other fields will be null.
- * <p/>
- * Null fields are ignored - non null fields update the database.
+ * TODO JC Doc
  *
  * @author John Cameron
  */
 @Getter
 @Setter
-@ToString
-public class JobIntakeData {
-    @Nullable Long jobOppIntakeId;
+@Entity
+@Table(name = "job_opp_intake")
+@SequenceGenerator(name = "seq_gen", sequenceName = "job_opp_intake_id_seq", allocationSize = 1)
+public class JobOppIntake extends AbstractDomainObject<Long> {
+    @OneToOne(mappedBy = "jobOppIntake")
+    private SalesforceJobOpp jobOpp;
     private String salaryRange;
     private String recruitmentProcess;
     private String employerCostCommitment;
