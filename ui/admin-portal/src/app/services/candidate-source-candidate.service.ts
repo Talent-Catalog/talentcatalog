@@ -23,7 +23,6 @@ import {Candidate} from "../model/candidate";
 import {CandidateSource, PagedSearchRequest, SearchCandidateSourcesRequest} from "../model/base";
 import {isSavedSearch} from "../model/saved-search";
 import {map} from "rxjs/operators";
-import {CandidateOpportunity, CandidateOpportunityStage} from "../model/candidate-opportunity";
 
 @Injectable({providedIn: 'root'})
 export class CandidateSourceCandidateService {
@@ -59,19 +58,19 @@ export class CandidateSourceCandidateService {
 
   // todo Mock test data
   private mockCandidateOpps(results: SearchResults<Candidate>): SearchResults<Candidate> {
-    results.content.forEach(x => {
-      const opp: CandidateOpportunity = {
-        job: {
-          id: 123,
-          name: 'Mock job'
-        },
-        name: 'Mock Candidate Opp name',
-        nextStep: 'Tell employer he is dreaming',
-        nextStepDueDate: new Date('2023-11-9'),
-        stage: CandidateOpportunityStage.prospect
-      };
-      return x.candidateOpportunities = [opp];
-    })
+    // results.content.forEach(x => {
+    //   const opp: CandidateOpportunity = {
+    //     job: {
+    //       id: 123,
+    //       name: 'Mock job'
+    //     },
+    //     name: 'Mock Candidate Opp name',
+    //     nextStep: 'Tell employer he is dreaming',
+    //     nextStepDueDate: new Date('2023-11-9'),
+    //     stage: CandidateOpportunityStage.prospect
+    //   };
+    //   return x.candidateOpportunities = [opp];
+    // })
     return results;
   }
 

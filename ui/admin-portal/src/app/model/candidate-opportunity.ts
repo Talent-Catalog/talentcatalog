@@ -21,7 +21,7 @@ export interface CandidateOpportunity extends Opportunity {
   closingCommentsForCandidate?: string;
   employerFeedback?: string;
 
-  job: ShortJob;
+  jobOpp: ShortJob;
   stage: CandidateOpportunityStage;
 }
 
