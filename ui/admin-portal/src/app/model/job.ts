@@ -28,16 +28,8 @@ export interface JobIds extends HasId {
 }
 
 export interface Job extends JobIds {
-  /**
-   * We need to get fields:
-   * - Website
-   * - Have they hired from abroad before (not on SF yet)
-   */
-  // todo get field from SF Account to display in JOI
   employerWebsite: string;
-  // todo get field from SF Job Opp to display in JOI - not currently in SF, do we add?
-  employerHiredInternational: boolean;
-
+  employerHiredInternationally: boolean;
   hiringCommitment: string;
   accepting: boolean;
   contactEmail: string;

@@ -172,11 +172,9 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
         salesforceJobOpp.setClosed(op.isIsClosed());
-        // Salesforce returns a decimal number (e.g. 6.0) even if 6 is entered. Remove the trailing 0 using regex.
-        // todo leave as number field
         salesforceJobOpp.setHiringCommitment(op.getHiring_Commitment__c());
         salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite__c());
-        salesforceJobOpp.setEmployerHasHiredInternationally(op.isAccountHasHiredInternationally__c());
+        salesforceJobOpp.setEmployerHiredInternationally(op.isAccountHasHiredInternationally__c());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());

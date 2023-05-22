@@ -242,6 +242,7 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
 
     /**
      * Salesforce field: hiring commitment of job opportunity
+     * As of 22/5/23 this may change to a text field, stored in database as text but currently a number from SF.
      */
     private Long hiringCommitment;
     
@@ -254,9 +255,8 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     /**                        
      * Salesforce field: if the employer has hired internationally before 
      * (On SF exists on Account, but copied to Opportunity and fetched on Opportunity object) 
-     */ 
-    @Nullable
-    private boolean employerHasHiredInternationally;
+     */
+    private boolean employerHiredInternationally;
 
     public void addStarringUser(User user) {
         starringUsers.add(user);

@@ -24,27 +24,15 @@
           </div>
           <div class="col">
             <label>Company website: </label>
-            <span><a [href]="job.website" target="_blank">{{job.website}}</a></span>
+            <span><a [href]="job.employerWebsite" target="_blank">{{job.employerWebsite}}</a></span>
           </div>
           <div class="col">
             <label>Hiring commitment: </label>
-            <div *ngIf="job.hiringCommitment != null; then show else hide"></div>
-            <ng-template #show>
-              <span>{{job.hiringCommitment}}</span>
-            </ng-template>
-            <ng-template #hide>
-              <span> - </span>
-            </ng-template>
+            <span>{{job.hiringCommitment != null ? job.hiringCommitment : '-' }}</span>
           </div>
           <div class="col">
             <label>Have they hired from abroad before? </label>
-            <span>{{job.employerPreviousHire}}</span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <label>Brief description of {{job.employer}}: </label>
-            <p>{{job.employerDescription}}</p>
+            <span>{{job.employerHiredInternationally ? 'Yes' : 'No'}}</span>
           </div>
         </div>
         <hr>
