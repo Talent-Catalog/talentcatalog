@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {HasId, OpportunityIds, PagedSearchRequest} from "./base";
+import {OpportunityIds, PagedSearchRequest} from "./base";
 import {SavedList} from "./saved-list";
 import {User} from "./user";
 import {Partner} from "./partner";
@@ -22,7 +22,6 @@ import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
-import {VisaPathway} from "../services/visa-pathway.service";
 
 export interface ShortJob {
   id: number,
@@ -55,24 +54,9 @@ export interface Job extends OpportunityIds {
   suggestedSearches: SavedSearch[];
   updatedBy: User;
   updatedDate: Date;
-}
+  jobOppIntake: JobOppIntake;
 
-export interface JobIntakeData {
-  employerCostCommitment?: string;
-  recruitmentProcess?: string;
-  minSalary?: number;
-  occupationCode?: string;
-  salaryRange?: string;
-  locationDetails?: string;
-  location?: string;
-  visaPathways?: VisaPathway[];
-  benefits?: string;
-  educationRequirements?: string;
-  languageRequirements?: string;
-  employmentExperience?: string;
-  skillRequirements?: string;
 }
-
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
   return getExternalHref(router, location, ['job', job.id]);
 }
