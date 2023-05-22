@@ -50,4 +50,5 @@ public class JobIntakeData {
     private String employmentExperience;
     private String occupationCode;
     private String minSalary;
+    private String visaPathways;
 }

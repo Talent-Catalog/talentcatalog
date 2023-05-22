@@ -17,9 +17,6 @@
 package org.tbbtalent.server.model.db;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -51,4 +48,5 @@ public class JobOppIntake extends AbstractDomainObject<Long> {
     private String employmentExperience;
     private String occupationCode;
     private String minSalary;
+    private String visaPathways;
 }

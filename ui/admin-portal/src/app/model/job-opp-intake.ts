@@ -1,6 +1,3 @@
-import {VisaPathway} from "../services/visa-pathway.service";
-import {Job} from "./job";
-
 export interface JobOppIntake {
   employerCostCommitment?: string;
   recruitmentProcess?: string;
@@ -9,7 +6,7 @@ export interface JobOppIntake {
   salaryRange?: string;
   locationDetails?: string;
   location?: string;
-  visaPathways?: VisaPathway[];
+  visaPathways?: string;
   benefits?: string;
   educationRequirements?: string;
   languageRequirements?: string;

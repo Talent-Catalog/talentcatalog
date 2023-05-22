@@ -234,6 +234,7 @@ public class JobAdminApi implements
             .add("employmentExperience")
             .add("occupationCode")
             .add("minSalary")
+            .add("visaPathways")
             ;
     }
 }

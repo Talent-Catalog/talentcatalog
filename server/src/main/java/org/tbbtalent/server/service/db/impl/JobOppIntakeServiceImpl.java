@@ -100,6 +100,9 @@ public class JobOppIntakeServiceImpl implements JobOppIntakeService {
         if (data.getMinSalary() != null) {
             joi.setMinSalary(data.getMinSalary());
         }
+        if (data.getVisaPathways() != null) {
+            joi.setVisaPathways(data.getVisaPathways());
+        }
     }
 
 }
