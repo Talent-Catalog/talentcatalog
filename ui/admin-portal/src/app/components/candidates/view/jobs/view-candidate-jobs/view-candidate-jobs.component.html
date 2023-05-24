@@ -9,19 +9,49 @@
 
   <div class="card-body">
     <div *ngIf="candidate?.candidateOpportunities?.length <= 0">
-      <p class="text-center text-muted small mb-0">No ongoing tasks</p>
+      <p class="text-center text-muted small mb-0">No jobs</p>
     </div>
-    <div *ngFor="let opp of candidate?.candidateOpportunities; let i = index;">
-      <div class="set-height d-flex justify-content-between">
-        <div class="custom-flex-75">
-          <p class="mb-0">
-            {{opp.jobOpp.name}} {{opp.name}}
-            {{opp.nextStep}} {{opp.nextStepDueDate}}
-<!--            todo etc other opp fields-->
-          </p>
-        </div>
-      </div>
-      <hr>
+
+<!--    todo - Job stage-->
+
+    <div class="table-wrapper">
+      <table class="table table-hover">
+        <!--          Header-->
+        <thead class="table-light">
+        <tr>
+          <th>
+            Job
+          </th>
+          <th>
+            Stage
+          </th>
+          <th>
+            Next step
+          </th>
+          <th>
+            Next step due date
+          </th>
+        </tr>
+        </thead>
+
+        <tbody>
+          <!-- Jobs candidate has gone for -->
+          <tr *ngFor="let opp of candidate?.candidateOpportunities; let i = index;">
+            <td>
+              <a [routerLink]="['/job',opp.jobOpp.id]">{{opp.jobOpp.name}}</a>
+            </td>
+            <td>
+              {{opp.stage}}
+            </td>
+            <td>
+              {{opp.nextStep}}
+            </td>
+            <td>
+              {{opp.nextStepDueDate}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
