@@ -55,7 +55,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     private String lastName;
 
     /**
-     * email - currently not used by TC functionality but must be unique so can be a useful identifier
+     * email - user's email, has to be unique
      */
     private String email;
 
