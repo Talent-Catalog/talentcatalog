@@ -31,15 +31,16 @@
       </ng-container>
 
       <!-- Candidate Opportunities (Jobs) -->
-      <ng-container ngbNavItem="Opps">
-        <a ngbNavLink>{{ 'PROFILE.TAB.OPPS' | translate }}</a>
-        <ng-template ngbNavContent>
-          <app-candidate-opps
-            [candidate]="candidate"
-            (refresh)="getCandidate()">
-          </app-candidate-opps>
-        </ng-template>
-      </ng-container>
+<!--  todo    Activate this new jobs tab-->
+<!--      <ng-container ngbNavItem="Opps">-->
+<!--        <a ngbNavLink>{{ 'PROFILE.TAB.OPPS' | translate }}</a>-->
+<!--        <ng-template ngbNavContent>-->
+<!--          <app-candidate-opps-->
+<!--            [candidate]="candidate"-->
+<!--            (refresh)="getCandidate()">-->
+<!--          </app-candidate-opps>-->
+<!--        </ng-template>-->
+<!--      </ng-container>-->
     </nav>
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
   </ng-container>
