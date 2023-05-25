@@ -62,32 +62,48 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         //Remove duplicates
         final String[] ids = Arrays.stream(jobOppIds).distinct().toArray(String[]::new);
-        //TODO JC Need to chop this up. Too many for one request.
-        //org.springframework.core.io.buffer.DataBufferLimitException: Exceeded limit on max bytes to buffer : 262144
-        List<Opportunity> ops = salesforceService.findCandidateOpportunitiesByJobOpps(ids);
 
-        log.info("Loaded " + ops.size() + " candidate opportunities from Salesforce");
-        int count = 0;
-        int loads = 0;
-        for (Opportunity op : ops) {
-            String id = op.getId();
-
-            //Fetch DB with id
-            CandidateOpportunity candidateOpportunity = candidateOpportunityRepository.findBySfId(id)
-                .orElse(null);
-
-            if (candidateOpportunity == null) {
-                candidateOpportunity = new CandidateOpportunity();
+        log.info(ids.length + " jobs to process");
+        
+        final int maxJobsAtATime = 10;
+        
+        int startJobIndex = 0;
+        
+        while (startJobIndex < ids.length) {
+            int endJobIndex = startJobIndex + maxJobsAtATime;
+            if (endJobIndex > ids.length) {
+                endJobIndex = ids.length;
             }
-            copyOpportunityToCandidateOpportunity(op, candidateOpportunity);
-            candidateOpportunityRepository.save(candidateOpportunity);
-            loads++;
-            count++;
-            if (count%100 == 0) {
-                log.info("Processed " + count + " candidate opportunities from Salesforce");
+            log.info("Processing jobs from " + startJobIndex + " to " + (endJobIndex - 1) );
+
+            String[] idsChunk = Arrays.copyOfRange(ids, startJobIndex, endJobIndex);
+            List<Opportunity> ops = salesforceService.findCandidateOpportunitiesByJobOpps(idsChunk);
+
+            log.info("Loaded " + ops.size() + " candidate opportunities from Salesforce");
+            int count = 0;
+            int loads = 0;
+            for (Opportunity op : ops) {
+                String id = op.getId();
+
+                //Fetch DB with id
+                CandidateOpportunity candidateOpportunity = candidateOpportunityRepository.findBySfId(id)
+                    .orElse(null);
+
+                if (candidateOpportunity == null) {
+                    candidateOpportunity = new CandidateOpportunity();
+                }
+                copyOpportunityToCandidateOpportunity(op, candidateOpportunity);
+                candidateOpportunityRepository.save(candidateOpportunity);
+                loads++;
+                count++;
+                if (count%100 == 0) {
+                    log.info("Processed " + count + " candidate opportunities from Salesforce");
+                }
             }
+            log.info("Loaded " + loads + " candidate opportunities from Salesforce");
+            
+            startJobIndex = endJobIndex;
         }
-        log.info("Loaded " + loads + " candidate opportunities from Salesforce");
     }
 
     /**
