@@ -166,15 +166,15 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private void copyOpportunityToJobOpp(@NonNull Opportunity op, SalesforceJobOpp salesforceJobOpp) {
         //Update DB with data from op
         salesforceJobOpp.setName(op.getName());
-        final String sfCountryName = op.getAccountCountry__c();
+        final String sfCountryName = op.getAccountCountry();
         salesforceJobOpp.setCountry(sfCountryName);
-        salesforceJobOpp.setEmployer(op.getAccountName__c());
+        salesforceJobOpp.setEmployer(op.getAccountName());
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
-        salesforceJobOpp.setClosed(op.isIsClosed());
-        salesforceJobOpp.setHiringCommitment(op.getHiring_Commitment__c());
-        salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite__c());
-        salesforceJobOpp.setEmployerHiredInternationally(op.getAccountHasHiredInternationally__c());
+        salesforceJobOpp.setClosed(op.isClosed());
+        salesforceJobOpp.setHiringCommitment(op.getHiringCommitment());
+        salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite());
+        salesforceJobOpp.setEmployerHiredInternationally(op.getAccountHasHiredInternationally());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());

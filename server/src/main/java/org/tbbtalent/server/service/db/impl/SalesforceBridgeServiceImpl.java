@@ -59,7 +59,7 @@ public class SalesforceBridgeServiceImpl implements SalesforceBridgeService {
         SavedList list = savedListService.createSavedList(req);
 
         for (Opportunity opp : opps) {
-            String candidateNumber = opp.getCandidate_TC_id__c();
+            String candidateNumber = opp.getCandidateId();
             Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
             if (candidate == null) {
                 log.error("Candidate number " + candidateNumber +

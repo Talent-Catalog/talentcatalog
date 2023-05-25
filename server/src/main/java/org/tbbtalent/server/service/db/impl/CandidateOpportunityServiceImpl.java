@@ -99,7 +99,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         //Update DB with data from op
 
         //Look up job opp from parent
-        String jobOppSfid = op.getParent_Opportunity__c();
+        String jobOppSfid = op.getParentOpportunityId();
         SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppById(jobOppSfid);
         if (jobOpp == null) {
             log.error("Could not find job opp: " + jobOppSfid + " parent of " + op.getName());
@@ -107,18 +107,18 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         candidateOpportunity.setJobOpp(jobOpp);
 
         //Look up candidate from id
-        String candidateNumber = op.Candidate_TC_id__c;
+        String candidateNumber = op.getCandidateId();
         Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
         if (candidate == null) {
             log.error("Could not find candidate number: " + candidateNumber + " in candidate op " + op.getName());
         }
         candidateOpportunity.setCandidate(candidate);
 
-        candidateOpportunity.setEmployerFeedback(op.getEmployer_Feedback__c());
+        candidateOpportunity.setEmployerFeedback(op.getEmployerFeedback());
         candidateOpportunity.setName(op.getName());
         candidateOpportunity.setNextStep(op.getNextStep());
 
-        final String nextStepDueDate = op.getNext_Step_Due_Date__c();
+        final String nextStepDueDate = op.getNextStepDueDate();
         if (nextStepDueDate != null) {
             try {
                 candidateOpportunity.setNextStepDueDate(
