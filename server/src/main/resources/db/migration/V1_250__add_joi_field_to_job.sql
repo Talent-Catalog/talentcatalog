@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,18 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.exception;
-
-public class UserDeactivatedException extends ServiceException {
-
-    private static final String DEFAULT_MESSAGE = "This account has been deactivated";
-
-    public UserDeactivatedException() {
-        this(DEFAULT_MESSAGE);
-    }
-
-    public UserDeactivatedException(String message) {
-        super("user_deactivated", message);
-    }
-
-}
+alter table salesforce_job_opp add column job_opp_intake_id bigint references job_opp_intake;

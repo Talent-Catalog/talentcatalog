@@ -17,7 +17,8 @@
 import {Directive, Input, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
-import {Job, JobIntakeData} from "../../../model/job";
+import {Job} from "../../../model/job";
+import {JobOppIntake} from "../../../model/job-opp-intake";
 import {JobService} from "../../../services/job.service";
 
 /**
@@ -33,7 +34,7 @@ export abstract class JobIntakeComponentBase extends AutoSaveComponentBase imple
    * This is the existing candidate data (if any) which is used to
    * initialize the form data.
    */
-  @Input() jobIntakeData: JobIntakeData;
+  @Input() jobIntakeData: JobOppIntake;
 
   /**
    * Index into a array member of data if that is what is being updated.

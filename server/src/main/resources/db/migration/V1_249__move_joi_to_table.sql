@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,18 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.exception;
-
-public class UserDeactivatedException extends ServiceException {
-
-    private static final String DEFAULT_MESSAGE = "This account has been deactivated";
-
-    public UserDeactivatedException() {
-        this(DEFAULT_MESSAGE);
-    }
-
-    public UserDeactivatedException(String message) {
-        super("user_deactivated", message);
-    }
-
-}
+create table job_opp_intake
+(
+    id                          bigserial not null primary key,
+    recruitment_process         text,
+    employer_cost_commitment    text,
+    location                    text,
+    location_details            text,
+    salary_range                text,
+    benefits                    text,
+    language_requirements       text,
+    employment_experience       text,
+    education_requirements      text,
+    skill_requirements          text,
+    occupation_code             text,
+    min_salary                  text
+);

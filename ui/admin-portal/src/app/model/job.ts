@@ -21,30 +21,16 @@ import {SavedSearch} from "./saved-search";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
-import {VisaPathway} from "../services/visa-pathway.service";
-import {YesNo} from "./candidate";
+import {JobOppIntake} from "./job-opp-intake";
 
 export interface JobIds extends HasId {
   sfId: string;
 }
 
 export interface Job extends JobIds {
-  /**
-   * We need to get fields:
-   * - Website
-   * - Employer Description
-   * - Employer Hiring commitment
-   * - Have they hired from abroad before (not on SF yet)
-   * Should these fields related to the employer sit in own table, an employer table?
-   */
-  // todo get field from SF Account to display in JOI
-  website: string;
-  // todo get field from SF Account to display in JOI
-  employerDescription: string;
-  // todo get field from SF Job Opp to display in JOI
-  employerHiringCommitment: number;
-  // todo get field from SF Job Opp to display in JOI - not currently in SF, do we add?
-  employerPreviousHire: string;
+  employerWebsite: string;
+  employerHiredInternationally: boolean;
+  hiringCommitment: string;
   accepting: boolean;
   contactEmail: string;
   contactUser: User;
@@ -67,22 +53,7 @@ export interface Job extends JobIds {
   suggestedSearches: SavedSearch[];
   updatedBy: User;
   updatedDate: Date;
-}
-
-export interface JobIntakeData {
-  employerCostCommitment?: string;
-  recruitmentProcess?: string;
-  minSalary?: number;
-  occupationCode?: string;
-  salaryRange?: string;
-  locationDetails?: string;
-  location?: string;
-  visaPathways?: VisaPathway[];
-  benefits?: string;
-  educationRequirements?: string;
-  languageRequirements?: string;
-  employmentExperience?: string;
-  skillRequirements?: string;
+  jobOppIntake: JobOppIntake;
 }
 
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {

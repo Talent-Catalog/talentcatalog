@@ -38,11 +38,6 @@ export class ViewJobFromUrlComponent implements OnInit {
     this.error = null;
     this.jobService.get(id).subscribe(
       job => {
-        // todo ADDED hardcoded data to job object for JOI testing
-        job.website = "www.iress.com.au"
-        job.employerDescription = "A global team of 2,250+ people building software that helps the financial services industry perform at its best."
-        job.employerHiringCommitment = 20
-        job.employerPreviousHire = "Yes";
         this.setJob(job);
         this.loading = false;
       },
