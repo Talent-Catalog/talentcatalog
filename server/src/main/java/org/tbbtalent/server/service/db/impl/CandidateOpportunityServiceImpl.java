@@ -66,7 +66,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         log.info(ids.length + " jobs to process");
         
         final int maxJobsAtATime = 10;
-        
+
         int startJobIndex = 0;
         
         while (startJobIndex < ids.length) {
@@ -80,27 +80,17 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             List<Opportunity> ops = salesforceService.findCandidateOpportunitiesByJobOpps(idsChunk);
 
             log.info("Loaded " + ops.size() + " candidate opportunities from Salesforce");
-            int count = 0;
-            int loads = 0;
             for (Opportunity op : ops) {
                 String id = op.getId();
-
                 //Fetch DB with id
                 CandidateOpportunity candidateOpportunity = candidateOpportunityRepository.findBySfId(id)
                     .orElse(null);
-
                 if (candidateOpportunity == null) {
                     candidateOpportunity = new CandidateOpportunity();
                 }
                 copyOpportunityToCandidateOpportunity(op, candidateOpportunity);
                 candidateOpportunityRepository.save(candidateOpportunity);
-                loads++;
-                count++;
-                if (count%100 == 0) {
-                    log.info("Processed " + count + " candidate opportunities from Salesforce");
-                }
             }
-            log.info("Loaded " + loads + " candidate opportunities from Salesforce");
             
             startJobIndex = endJobIndex;
         }
