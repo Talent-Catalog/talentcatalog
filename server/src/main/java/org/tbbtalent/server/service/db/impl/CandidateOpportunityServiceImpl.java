@@ -62,6 +62,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         //Remove duplicates
         final String[] ids = Arrays.stream(jobOppIds).distinct().toArray(String[]::new);
+        //TODO JC Need to chop this up. Too many for one request.
+        //org.springframework.core.io.buffer.DataBufferLimitException: Exceeded limit on max bytes to buffer : 262144
         List<Opportunity> ops = salesforceService.findCandidateOpportunitiesByJobOpps(ids);
 
         log.info("Loaded " + ops.size() + " candidate opportunities from Salesforce");
