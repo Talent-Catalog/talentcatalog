@@ -33,7 +33,25 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import com.sun.xml.bind.v2.TODO;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.Nullable;
+
+/** TODO: TRANSFER THESE TO THEIR RESPECTIVE FIELDS
+ * @param username created by the user (must be unique)
+ * @param firstName actual first name
+ * @param lastName actual surname
+ * @param email currently not used by TC functionality (must be unique)
+ * @param role type of access to the TC (system admin / full admin / source partner admin / semi limited / limited)
+ * @param approver tc user who approved a new admin user's registration, where required — this will be another admin user
+ * @param purpose is related to approver — in instances where approval was required for a new-user registration, it's the reason given for their TC use, e.g., 'Facilitate job searches in Uganda.'
+ * @param partner is the organisation that the user belongs to — has a material effect on functionality and access, so is a class of its own
+ * @param userSourceCountry designations the nation(s) whose candidates the user has access to — e.g. a user in India who only has access to candidates based in India
+ * @param status new users are 'active' by default — rather than delete departing users, we make them 'inactive'
+ * @param readOnly limits functionality, in May '23 this option is somewhat buggy and not advised to be used
+ * @param usingMfa basic security requirement, checked by default
+ */
 
 @Entity
 @Table(name = "users")
@@ -88,6 +106,15 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "partner_id")
     private PartnerImpl partner;
+
+    /**
+     * This is to fetch a user's approver if their registration required one — the approver is another admin user
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approver_id")
+    private User approver;
+
+    private String purpose;
 
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
@@ -175,6 +202,10 @@ public class User extends AbstractAuditableDomainObject<Long> {
     }
 
     public boolean getReadOnly() { return readOnly; }
+
+    public String getPurpose() { return purpose; }
+
+    public void setPurpose(String purpose) { this.purpose = purpose; }
 
     public void setReadOnly(boolean readOnly) { this.readOnly = readOnly; }
 
@@ -314,6 +345,14 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setPartner(PartnerImpl partner) {
         this.partner = partner;
+    }
+
+    public User getApprover() {
+        return approver;
+    }
+
+    public void setApprover(User approver) {
+        this.approver = approver;
     }
 
     @Transient
