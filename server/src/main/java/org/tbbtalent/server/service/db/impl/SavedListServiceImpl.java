@@ -670,6 +670,11 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public List<SavedList> findListsAssociatedWithJobs() {
+        return this.savedListRepository.findListsWithJobs();
+    }
+
+    @Override
     public void updateDisplayedFieldPaths(
             long savedListId, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2022 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,20 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export interface HasId {
-  id?: number;
+package org.tbbtalent.server.service.db;
+
+import org.tbbtalent.server.exception.SalesforceException;
+
+public interface CandidateOpportunityService {
+
+    /**
+     * Creates or updates CandidateOpportunities associated with given jobs from Salesforce.
+     * @param jobOpportunityIds IDs of Jobs whose associated CandidateOpportunities should be
+     *                          updated from Salesforce
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    void loadCandidateOpportunities(String... jobOpportunityIds) throws SalesforceException;
+
 }
-
-export interface OpportunityIds extends HasId {
-  sfId?: string;
-}
-
-export interface Opportunity extends OpportunityIds {
-  closingComments?: string;
-  lastModifiedDate?: Date;
-  name: string;
-  nextStep?: string;
-  nextStepDueDate?: Date;
-
-}
-

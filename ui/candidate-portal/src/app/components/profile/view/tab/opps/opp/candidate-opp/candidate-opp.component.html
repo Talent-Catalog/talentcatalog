@@ -1,9 +1,10 @@
 <div class="d-sm-flex justify-content-between">
   <div>
     <div class="mb-4">
-      <h4>{{selectedOpp?.jobName}}</h4>
+<!--      todo Improve display of selected candidate job-->
+      <h4>{{selectedOpp?.jobOpp.name}}</h4>
       {{selectedOpp?.closingCommentsForCandidate}}
-      {{selectedOpp?.stage}}
+      {{selectedOpp?.stage}} {{selectedOpp?.lastModifiedDate}}
     </div>
   </div>
 

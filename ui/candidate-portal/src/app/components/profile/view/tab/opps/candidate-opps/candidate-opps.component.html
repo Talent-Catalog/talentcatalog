@@ -31,7 +31,8 @@
           <tbody>
           <tr *ngFor="let opp of opps" (click)="selectOpp(opp)">
             <td>
-              <div class="link underline">{{opp.jobName}}</div>
+<!--              todo Fill this job display out a bit more. Including closing comments-->
+              <div class="link underline">{{opp.jobOpp.name}}</div>
             </td>
           </tr>
 
