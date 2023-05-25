@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -128,12 +129,16 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
       */
     private final String contactRetrievalFields =
         "Id,AccountId," + candidateNumberSFFieldName;
+
+    private final String commonOpportunityFields =
+        "Id,Name,AccountId,Closing_Comments__c,NextStep,Next_Step_Due_Date__c,StageName,IsClosed,AccountCountry__c";
     private final String candidateOpportunityRetrievalFields =
-        "Id,Name,AccountId,AccountCountry__c,Parent_Opportunity__c,StageName,IsClosed,Candidate_TC_id__c,"
+        commonOpportunityFields +
+        ",Employer_Feedback__c,Parent_Opportunity__c,Candidate_TC_id__c,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
-        "Id,RecordTypeId,Name,AccountId,OwnerId,Hiring_Commitment__c,AccountCountry__c,AccountName__c," 
-            + "StageName,IsClosed,AccountWebsite__c,AccountHasHiredInternationally__c";
+        commonOpportunityFields +
+        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,AccountWebsite__c,AccountHasHiredInternationally__c";
 
     private final EmailHelper emailHelper;
 
@@ -187,7 +192,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             Map<String, Candidate> oppIdCandidateMap = buildCandidateOppsMap(candidates, id);
 
             //Now find the candidate opp ids we actually have for candidate opportunities for this job.
-            List<Opportunity> candidateOpps = findCandidateOpportunitiesByJobOpp(id);
+            List<Opportunity> candidateOpps = findCandidateOpportunitiesByJobOpps(id);
             for (Opportunity candidateOpp : candidateOpps) {
                 Candidate candidate = oppIdCandidateMap.get(
                     candidateOpp.getTBBCandidateExternalId__c());
@@ -362,7 +367,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             buildCandidateOppsMap(candidates, jobOpportunity.getSfId());
 
         //Now find the ids we actually have for candidate opportunities for this job.
-        List<Opportunity> opps = findCandidateOpportunitiesByJobOpp(jobOpportunity.getSfId());
+        List<Opportunity> opps = findCandidateOpportunitiesByJobOpps(jobOpportunity.getSfId());
 
         //Remove these from map, leaving just those that need to be created
         for (Opportunity opp : opps) {
@@ -504,22 +509,30 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return findOpportunity(id, jobOpportunityRetrievalFields);
     }
 
-    private List<Opportunity> findCandidateOpportunitiesByJobOpp(String jobOpportunityId)
+    @NonNull
+    @Override
+    public List<Opportunity> findCandidateOpportunitiesByJobOpps(String... jobOpportunityIds)
         throws SalesforceException {
-        String query =
-            "SELECT " + candidateOpportunityRetrievalFields +
-                " FROM Opportunity WHERE Parent_Opportunity__c='" +
-                jobOpportunityId + "'";
+        List<Opportunity> opps = new ArrayList<>();
 
-        ClientResponse response = executeQuery(query);
+        if (jobOpportunityIds.length > 0) {
 
-        OpportunityQueryResult result =
-            response.bodyToMono(OpportunityQueryResult.class).block();
+            String idsConcatenated = Arrays.stream(jobOpportunityIds)
+                .map(s -> "'" + s + "'")
+                .collect(Collectors.joining(","));
+            String query =
+                "SELECT " + candidateOpportunityRetrievalFields +
+                    " FROM Opportunity WHERE Parent_Opportunity__c IN (" + idsConcatenated + ")";
 
-        //Retrieve the contact from the response
-        List<Opportunity> opps = null;
-        if (result != null) {
-            opps = result.records;
+            ClientResponse response = executeQuery(query);
+
+            OpportunityQueryResult result =
+                response.bodyToMono(OpportunityQueryResult.class).block();
+
+            //Retrieve the contact from the response
+            if (result != null) {
+                opps = result.records;
+            }
         }
 
         return opps;

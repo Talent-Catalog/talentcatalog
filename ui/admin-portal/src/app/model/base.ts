@@ -17,7 +17,6 @@
 import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
-import {JobIds} from "./job";
 import {PartnerType} from "./partner";
 
 export interface HasName {
@@ -132,7 +131,7 @@ export const defaultReviewStatusFilter: string[] = [
 ];
 
 export interface HasId {
-  id: number;
+  id?: number;
 }
 
 export function indexOfHasId(id: number, hasIds: HasId[]): number {
@@ -164,13 +163,22 @@ export interface CandidateSource extends Auditable {
   exportColumns?: ExportColumn[];
   fixed: boolean;
   global: boolean;
-  sfJobOpp?: JobIds;
+  sfJobOpp?: OpportunityIds;
   users?: User[];
   watcherUserIds?: number[];
 }
 
-export interface Opportunity {
+export interface OpportunityIds extends HasId {
+  sfId?: string;
+}
+
+export interface Opportunity extends OpportunityIds {
+  closingComments?: string;
+  lastModifiedDate?: Date;
   name: string;
+  nextStep?: string;
+  nextStepDueDate?: Date;
+
 }
 
 export interface HasJobRelatedLinks {

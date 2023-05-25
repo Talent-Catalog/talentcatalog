@@ -371,6 +371,13 @@ public interface SavedListService {
         throws  NoSuchObjectException;
 
     /**
+     * Returns all (undeleted) SavedLists which are associated with a job.
+     * @return SavedLists - may be empty.
+     */
+    @NonNull
+    List<SavedList> findListsAssociatedWithJobs();
+
+    /**
      * Updates the tbb short name used for redirecting to external links (google sheet).
      * @param shortName Request containing the updated short name and the saved list id which it belongs to.
      * @throws NoSuchObjectException  if there is no saved list with this id

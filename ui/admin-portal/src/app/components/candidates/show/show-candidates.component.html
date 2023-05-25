@@ -391,6 +391,11 @@
                 'text-danger': field.getValue(candidate) === 'Overdue',
                 'text-success' : field.getValue(candidate) == 'Completed',
                 'text-alert' : field.getValue(candidate) == 'Abandoned'}">
+<!--                  todo Have switch on display of arrays vs non arrays.
+Non arrays or single value arrays, just display value
+
+arrays with more than one value display in drop down
+-->
                   {{field.getValue(candidate)}}
                 </span>
               </td>
