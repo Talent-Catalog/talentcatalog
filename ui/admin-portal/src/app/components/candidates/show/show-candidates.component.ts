@@ -1402,7 +1402,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       const jobIds: OpportunityIds = this.candidateSource.sfJobOpp;
       if (jobIds) {
         const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
-        this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, jobIds.sfId, info)
+        this.candidateService.createUpdateOppsFromCandidates(candidateIds, jobIds.sfId, info)
         .subscribe(result => {
             //Refresh to display any changed stages
             this.doSearch(true);
@@ -1412,7 +1412,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         );
       }
     } else {
-      this.candidateService.createUpdateSalesforceFromList(this.candidateSource, info)
+      this.candidateService.createUpdateOppsFromCandidateList(this.candidateSource, info)
       .subscribe(result => {
           //Refresh to display any changed salesforce stages
           this.doSearch(true);
