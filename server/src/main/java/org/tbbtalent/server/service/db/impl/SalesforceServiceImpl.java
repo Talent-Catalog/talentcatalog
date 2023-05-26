@@ -138,7 +138,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
         commonOpportunityFields +
-        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,AccountWebsite__c,AccountHasHiredInternationally__c";
+        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,Account.Description,AccountWebsite__c,AccountHasHiredInternationally__c";
 
     private final EmailHelper emailHelper;
 

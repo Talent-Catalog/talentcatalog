@@ -60,6 +60,9 @@ public class Opportunity extends SalesforceObjectBase {
     @JsonSetter("AccountName__c")
     private String accountName;
 
+    @JsonSetter("Account.Description")
+    private String accountDescription;
+
     @JsonSetter("Candidate_TC_id__c")
     private String candidateId;
 
