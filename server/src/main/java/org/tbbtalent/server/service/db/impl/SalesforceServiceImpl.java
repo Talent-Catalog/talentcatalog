@@ -469,6 +469,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return contacts;
     }
 
+    public String generateCandidateOppName(
+        @NonNull Candidate candidate, @NonNull SalesforceJobOpp jobOpp) {
+        return candidate.getUser().getFirstName()  +
+            "(" + candidate.getCandidateNumber() + ")-" + jobOpp.getName();
+    }
+
     static class ContactQueryResult extends QueryResult {
 
         public List<Contact> records;
@@ -1433,8 +1439,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
 
             if (create) {
-                setName(user.getFirstName() +
-                    "(" + candidateNumber + ")-" + jobOpportunity.getName());
+                setName(generateCandidateOppName(candidate, jobOpportunity));
 
                 setAccountId(jobOpportunity.getAccountId());
                 setCandidateContactId(candidate.getSfId());

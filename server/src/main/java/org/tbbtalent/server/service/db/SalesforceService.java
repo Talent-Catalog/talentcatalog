@@ -94,9 +94,9 @@ public interface SalesforceService {
     List<Opportunity> findCandidateOpportunities(String condition) throws WebClientException;
 
     /**
-     * Searches Salesforce for all Candidate Opportunity records associated with the given 
+     * Searches Salesforce for all Candidate Opportunity records associated with the given
      * Salesforce job ids.
-     * 
+     *
      * @param jobOpportunityIds One or more Salesforce job ids
      * @return List of Salesforce Candidate Opportunity records
      * @throws SalesforceException If there is a problem reported by Salesforce
@@ -104,7 +104,7 @@ public interface SalesforceService {
     @NonNull
     List<Opportunity> findCandidateOpportunitiesByJobOpps(String... jobOpportunityIds)
         throws SalesforceException;
-    
+
     /**
      * Searches Salesforce for all Contact records matching the given condition.
      *
@@ -178,6 +178,14 @@ public interface SalesforceService {
     <T> T findRecordFieldsFromId(
             String objectType, String id, String fields, Class<T> cl)
             throws GeneralSecurityException, WebClientException;
+
+    /**
+     * Generates a standard candidate opportunity name from the given candidate and job opportunity.
+     * @param candidate Candidate who is going for the job
+     * @param jobOpp Job opportunity
+     * @return Generated candidate opportunity name
+     */
+    String generateCandidateOppName(@NonNull Candidate candidate, @NonNull SalesforceJobOpp jobOpp);
 
     /**
      * Creates or updates the Salesforce Contact record corresponding to the

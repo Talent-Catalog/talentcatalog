@@ -27,6 +27,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
@@ -78,7 +79,7 @@ public class CandidateOpportunity extends AbstractOpportunity {
      * Override standard setStage to automatically also update stageOrder
      * @param stage New job opportunity stage
      */
-    public void setStage(CandidateOpportunityStage stage) {
+    public void setStage(@NonNull CandidateOpportunityStage stage) {
         this.stage = stage;
         setStageOrder(stage.ordinal());
     }

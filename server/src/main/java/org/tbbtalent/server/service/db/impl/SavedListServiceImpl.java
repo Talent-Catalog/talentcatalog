@@ -86,7 +86,7 @@ import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
-import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.DocPublisherService;
 import org.tbbtalent.server.service.db.ExportColumnsService;
 import org.tbbtalent.server.service.db.FileSystemService;
@@ -111,7 +111,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final static String REGISTERED_NAME_SUFFIX = "*";
     private final CandidateRepository candidateRepository;
     private final CandidateSavedListRepository candidateSavedListRepository;
-    private final CandidateService candidateService;
+    private final CandidateOpportunityService candidateOpportunityService;
     private final ExportColumnsService exportColumnsService;
     private final SavedListRepository savedListRepository;
     private final DocPublisherService docPublisherService;
@@ -130,8 +130,7 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
         CandidateSavedListRepository candidateSavedListRepository,
-        CandidateService candidateService,
-        ExportColumnsService exportColumnsService,
+        CandidateOpportunityService candidateOpportunityService, ExportColumnsService exportColumnsService,
         SavedListRepository savedListRepository,
         DocPublisherService docPublisherService,
         FileSystemService fileSystemService,
@@ -142,7 +141,7 @@ public class SavedListServiceImpl implements SavedListService {
         UserService userService) {
         this.candidateRepository = candidateRepository;
         this.candidateSavedListRepository = candidateSavedListRepository;
-        this.candidateService = candidateService;
+        this.candidateOpportunityService = candidateOpportunityService;
         this.exportColumnsService = exportColumnsService;
         this.savedListRepository = savedListRepository;
         this.docPublisherService = docPublisherService;
@@ -490,7 +489,7 @@ public class SavedListServiceImpl implements SavedListService {
         throws NoSuchObjectException, SalesforceException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
         SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
-        candidateService.createUpdateSalesforce(
+        candidateOpportunityService.createUpdateSalesforce(
             savedList.getCandidates(), sfJobOpp, request.getSalesforceOppParams());
     }
 

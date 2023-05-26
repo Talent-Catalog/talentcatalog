@@ -59,6 +59,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesReque
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.security.CandidateTokenProvider;
+import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
@@ -71,6 +72,7 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
+    private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
     private final CandidateBuilderSelector builderSelector;
     private final SavedListService savedListService;
@@ -80,12 +82,13 @@ public class CandidateAdminApi {
 
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
-        CandidateSavedListService candidateSavedListService,
+        CandidateOpportunityService candidateOpportunityService, CandidateSavedListService candidateSavedListService,
         SavedListService savedListService,
         SavedSearchService savedSearchService,
         UserService userService,
         CandidateTokenProvider candidateTokenProvider) {
         this.candidateService = candidateService;
+        this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
         builderSelector = new CandidateBuilderSelector(userService);
         intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector();
@@ -295,7 +298,7 @@ public class CandidateAdminApi {
     @PutMapping("update-opps")
     public void createUpdateOppsFromCandidates(@RequestBody UpdateCandidateOppsRequest request)
             throws WebClientException {
-        candidateService.createUpdateSalesforce(request);
+        candidateOpportunityService.createUpdateSalesforce(request);
     }
 
     @PutMapping(value = "update-opps-by-list")
