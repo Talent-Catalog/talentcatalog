@@ -119,6 +119,7 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
+import {getCandidateOpportunityStageName} from "../../../model/candidate-opportunity";
 
 interface CachedTargetList {
   sourceID: number;
@@ -1765,7 +1766,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     let stage = null;
     const opp = candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
     if (opp) {
-      stage = opp.stage;
+      stage = getCandidateOpportunityStageName(opp.stage);
     }
     return stage;
   }
