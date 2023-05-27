@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {getCandidateOpportunityStageName} from "../../../../../model/candidate-opportunity";
+import {truncate} from "../../../../../util/string"
 
 @Component({
   selector: 'app-view-candidate-jobs',
@@ -22,12 +23,8 @@ export class ViewCandidateJobsComponent implements OnInit {
    return getCandidateOpportunityStageName;
   }
 
-  truncate(str: string, num: number) {
-    if (str && str.length > num) {
-      return str.slice(0, num) + "...";
-    } else {
-      return str;
-    }
+  get truncate() {
+   return truncate;
   }
 
 }
