@@ -106,19 +106,6 @@ public interface SavedListService {
         throws NoSuchObjectException;
 
     /**
-     * If the given list is associated with a Salesforce job opportunity, the given candidates
-     * are populated with their candidate opportunity stages associated with that job opportunity.
-     * <p/>
-     * Does nothing if the list is not associated with a job opportunity.
-     * @param candidates Candidates to check
-     * @param savedListId ID of list
-     * @throws NoSuchObjectException if there is no saved list with this id
-     * @throws SalesforceException if there are issues contacting Salesforce
-     */
-    void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
-        throws NoSuchObjectException, SalesforceException;
-
-    /**
      * Associates the given task with the given list. Also assigns that task to all candidates
      * currently in the list.
      * <p/>

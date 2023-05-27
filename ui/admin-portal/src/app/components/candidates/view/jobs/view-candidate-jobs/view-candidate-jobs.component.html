@@ -20,7 +20,7 @@
             Stage
           </th>
           <th>
-            Next step
+            Next step (hover to show all)
           </th>
           <th>
             Next step due date
@@ -35,10 +35,10 @@
               <a [routerLink]="['/job',opp.jobOpp.id]">{{opp.jobOpp.name}}</a>
             </td>
             <td>
-              {{opp.stage}}
+              {{getCandidateOpportunityStageName(opp.stage)}}
             </td>
-            <td>
-              {{opp.nextStep}}
+            <td [title]="opp.nextStep ? opp.nextStep : ''">
+              {{truncate(opp.nextStep, 32)}}
             </td>
             <td>
               {{opp.nextStepDueDate}}

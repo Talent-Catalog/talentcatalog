@@ -67,26 +67,7 @@ export class CandidateService implements IntakeService {
   }
 
   getByNumber(number: string): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/number/${number}`)
-    // todo Mock test data
-    // .pipe(
-    //   map(candidate => {
-    //     const opp: CandidateOpportunity = {
-    //       job: {
-    //         id: 123,
-    //         name: 'Mock job'
-    //       },
-    //       name: 'Mock Candidate Opp name',
-    //       nextStep: 'Tell employer he is dreaming',
-    //       nextStepDueDate: new Date('2023-11-9'),
-    //       stage: CandidateOpportunityStage.prospect
-    //     };
-    //     candidate.candidateOpportunities = [opp];
-    //
-    //     return candidate;
-    //   })
-    // );
-
+    return this.http.get<Candidate>(`${this.apiUrl}/number/${number}`);
   }
 
   get(id: number): Observable<Candidate> {
@@ -158,22 +139,22 @@ export class CandidateService implements IntakeService {
       `${this.apiUrl}/${candidateId}/create-folder`, null);
   }
 
-  createUpdateSalesforce(candidateId: number): Observable<Candidate> {
+  createUpdateLiveCandidate(candidateId: number): Observable<Candidate> {
     return this.http.put<Candidate>(
-      `${this.apiUrl}/${candidateId}/update-sf`, null);
+      `${this.apiUrl}/${candidateId}/update-live`, null);
   }
 
-  createUpdateSalesforceFromList(source: CandidateSource,
-                                 salesforceOppParams: SalesforceOppParams): Observable<void> {
+  createUpdateOppsFromCandidateList(source: CandidateSource,
+                                    salesforceOppParams: SalesforceOppParams): Observable<void> {
 
     const request: UpdateCandidateListOppsRequest = {
       savedListId: source.id,
       salesforceOppParams: salesforceOppParams
     }
-    return this.http.put<void>(`${this.apiUrl}/update-sf-by-list`, request);
+    return this.http.put<void>(`${this.apiUrl}/update-opps-by-list`, request);
   }
 
-  createUpdateSalesforceFromCandidates(
+  createUpdateOppsFromCandidates(
     candidateIds: number[], sfJobOpp: string, salesforceOppParams: SalesforceOppParams): Observable<void> {
 
     const request: UpdateCandidateOppsRequest = {
@@ -182,7 +163,7 @@ export class CandidateService implements IntakeService {
       salesforceOppParams: salesforceOppParams
     }
 
-    return this.http.put<void>(`${this.apiUrl}/update-sf`, request);
+    return this.http.put<void>(`${this.apiUrl}/update-opps`, request);
   }
 
   /**

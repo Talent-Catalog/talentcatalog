@@ -14,13 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -89,7 +83,7 @@ export class ViewCandidateSpecialLinksComponent implements OnInit, OnChanges {
   createUpdateSalesforce() {
     this.error = null;
     this.loading = true;
-    this.candidateService.createUpdateSalesforce(this.candidate.id).subscribe(
+    this.candidateService.createUpdateLiveCandidate(this.candidate.id).subscribe(
       candidate => {
         this.candidate = candidate;
         this.loading = false;

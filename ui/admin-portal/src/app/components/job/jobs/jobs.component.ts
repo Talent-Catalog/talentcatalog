@@ -10,6 +10,7 @@ import {enumOptions} from "../../../util/enum";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SearchJobsBy} from "../../../model/base";
 import {indexOfHasId} from "../../../model/saved-search";
+import {truncate} from 'src/app/util/string';
 
 @Component({
   selector: 'app-jobs',
@@ -227,12 +228,8 @@ export class JobsComponent implements OnInit {
     this.jobSelection.emit(job);
   }
 
-  truncate(str: string, num: number) {
-    if (str && str.length > num) {
-      return str.slice(0, num) + "...";
-    } else {
-      return str;
-    }
+  get truncate() {
+    return truncate;
   }
 
   fullUserName(contactUser: User) {

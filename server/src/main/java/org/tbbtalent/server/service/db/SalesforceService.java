@@ -45,16 +45,6 @@ import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest
 public interface SalesforceService {
 
     /**
-     * Updates the given candidates with their candidate opportunity stages associated with the
-     * given Salesforce job opportunity.
-     * @param candidates Candidates to check
-     * @param sfId Salesforce id (not url) of job opportunity
-     * @throws SalesforceException if there are issues contacting Salesforce
-     */
-    void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfId)
-        throws SalesforceException;
-
-    /**
      * Fetches opportunities from Salesforce with Job opportunity fields populated.
      * <p/>
      * The opportunities fetched are those with the specified ids plus recently changed open
@@ -94,9 +84,9 @@ public interface SalesforceService {
     List<Opportunity> findCandidateOpportunities(String condition) throws WebClientException;
 
     /**
-     * Searches Salesforce for all Candidate Opportunity records associated with the given 
+     * Searches Salesforce for all Candidate Opportunity records associated with the given
      * Salesforce job ids.
-     * 
+     *
      * @param jobOpportunityIds One or more Salesforce job ids
      * @return List of Salesforce Candidate Opportunity records
      * @throws SalesforceException If there is a problem reported by Salesforce
@@ -104,7 +94,7 @@ public interface SalesforceService {
     @NonNull
     List<Opportunity> findCandidateOpportunitiesByJobOpps(String... jobOpportunityIds)
         throws SalesforceException;
-    
+
     /**
      * Searches Salesforce for all Contact records matching the given condition.
      *
@@ -178,6 +168,14 @@ public interface SalesforceService {
     <T> T findRecordFieldsFromId(
             String objectType, String id, String fields, Class<T> cl)
             throws GeneralSecurityException, WebClientException;
+
+    /**
+     * Generates a standard candidate opportunity name from the given candidate and job opportunity.
+     * @param candidate Candidate who is going for the job
+     * @param jobOpp Job opportunity
+     * @return Generated candidate opportunity name
+     */
+    String generateCandidateOppName(@NonNull Candidate candidate, @NonNull SalesforceJobOpp jobOpp);
 
     /**
      * Creates or updates the Salesforce Contact record corresponding to the

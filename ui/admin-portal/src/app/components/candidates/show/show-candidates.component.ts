@@ -119,6 +119,7 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
+import {getCandidateOpportunityStageName} from "../../../model/candidate-opportunity";
 
 interface CachedTargetList {
   sourceID: number;
@@ -1402,7 +1403,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       const jobIds: OpportunityIds = this.candidateSource.sfJobOpp;
       if (jobIds) {
         const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
-        this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, jobIds.sfId, info)
+        this.candidateService.createUpdateOppsFromCandidates(candidateIds, jobIds.sfId, info)
         .subscribe(result => {
             //Refresh to display any changed stages
             this.doSearch(true);
@@ -1412,7 +1413,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         );
       }
     } else {
-      this.candidateService.createUpdateSalesforceFromList(this.candidateSource, info)
+      this.candidateService.createUpdateOppsFromCandidateList(this.candidateSource, info)
       .subscribe(result => {
           //Refresh to display any changed salesforce stages
           this.doSearch(true);
@@ -1754,5 +1755,32 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   canAssignTasks() {
     return this.authService.canAssignTask();
+  }
+
+
+  /**
+   * Get candidate stage in opportunity matching current job
+    * @param candidate Candidate who opportunities we need to search
+   */
+  getStage(candidate: Candidate): string {
+    let stage = null;
+    const opp = candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+    if (opp) {
+      stage = getCandidateOpportunityStageName(opp.stage);
+    }
+    return stage;
+  }
+
+  /**
+   * Get candidate Sales opportunity link to opportunity matching current job
+   * @param candidate Candidate who opportunities we need to search
+   */
+  getSfOpportunityLink(candidate: Candidate): string {
+    let link = null;
+    const opp = candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+    if (opp) {
+      link = this.salesforceService.sfOppToLink(opp.sfId);
+    }
+    return link;
   }
 }

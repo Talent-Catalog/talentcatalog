@@ -29,5 +29,9 @@ public interface CandidateOpportunityRepository extends JpaRepository<CandidateO
     @Query(" select op from CandidateOpportunity op "
         + " where op.sfId = :sfId ")
     Optional<CandidateOpportunity> findBySfId(@Param("sfId") String sfId);
-    
+
+    @Query(" select op from CandidateOpportunity op "
+        + " where op.candidate.id = :candidateId and op.jobOpp.id = :jobOppId")
+    CandidateOpportunity findByCandidateIdAndJobId(
+        @Param("candidateId") Long candidateId, @Param("jobOppId") Long jobOppId);
 }

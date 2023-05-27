@@ -554,7 +554,7 @@ public class SystemAdminApi {
         log.info("Updating " + contacts.size() + " candidates");
         int count = 0;
         for (Contact contact : contacts) {
-            final String candidateNumber = contact.getTBBid__c().toString();
+            final String candidateNumber = contact.getTbbId().toString();
             Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
             if (candidate == null) {
                 log.warn("No candidate found for TBBid " + candidateNumber
@@ -581,7 +581,7 @@ public class SystemAdminApi {
         int count = 0;
         for (Contact contact : contacts) {
 
-            final Long sfTbbId = contact.getTBBid__c();
+            final Long sfTbbId = contact.getTbbId();
             if (sfTbbId == null) {
                 log.warn("Contact is not a TBB candidate: " + contact.getUrl());
             } else {

@@ -1462,7 +1462,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
             //Now fetch those candidates from the normal database
             //They will come back in random order
-            List<Candidate> unsorted = candidateRepository.findByIds(candidateIds);
+            List<Candidate> unsorted = candidateService.findByIds(candidateIds);
             //Put the results in a map indexed by the id
             Map<Long, Candidate> mapById = new HashMap<>();
             for (Candidate candidate : unsorted) {

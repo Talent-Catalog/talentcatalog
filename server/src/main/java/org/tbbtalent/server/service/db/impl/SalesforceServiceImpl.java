@@ -138,7 +138,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
         commonOpportunityFields +
-        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,AccountWebsite__c,AccountHasHiredInternationally__c";
+        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,Account.Description,AccountWebsite__c,AccountHasHiredInternationally__c";
 
     private final EmailHelper emailHelper;
 
@@ -182,26 +182,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 .defaultHeader("Accept", "application/json");
 
         webClient = builder.build();
-    }
-
-    @Override
-    public void addCandidateOpportunityStages(Iterable<Candidate> candidates, String id)
-        throws SalesforceException {
-
-        if (id != null) {
-            Map<String, Candidate> oppIdCandidateMap = buildCandidateOppsMap(candidates, id);
-
-            //Now find the candidate opp ids we actually have for candidate opportunities for this job.
-            List<Opportunity> candidateOpps = findCandidateOpportunitiesByJobOpps(id);
-            for (Opportunity candidateOpp : candidateOpps) {
-                Candidate candidate = oppIdCandidateMap.get(
-                    candidateOpp.getTBBCandidateExternalId__c());
-                if (candidate != null) {
-                    candidate.setStage(candidateOpp.getStageName());
-                    candidate.setSfOpportunityLink(candidateOpp.getUrl());
-                }
-            }
-        }
     }
 
     private Map<String, Candidate> buildCandidateOppsMap(Iterable<Candidate> candidates,
@@ -371,7 +351,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Remove these from map, leaving just those that need to be created
         for (Opportunity opp : opps) {
-            idCandidateMap.remove(opp.getTBBCandidateExternalId__c());
+            idCandidateMap.remove(opp.getCandidateExternalId());
         }
 
         //Extract these candidates from the map.
@@ -467,6 +447,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
 
         return contacts;
+    }
+
+    public String generateCandidateOppName(
+        @NonNull Candidate candidate, @NonNull SalesforceJobOpp jobOpp) {
+        return candidate.getUser().getFirstName()  +
+            "(" + candidate.getCandidateNumber() + ")-" + jobOpp.getName();
     }
 
     static class ContactQueryResult extends QueryResult {
@@ -1433,8 +1419,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
 
             if (create) {
-                setName(user.getFirstName() +
-                    "(" + candidateNumber + ")-" + jobOpportunity.getName());
+                setName(generateCandidateOppName(candidate, jobOpportunity));
 
                 setAccountId(jobOpportunity.getAccountId());
                 setCandidateContactId(candidate.getSfId());
