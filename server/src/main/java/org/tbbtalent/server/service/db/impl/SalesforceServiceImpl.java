@@ -138,7 +138,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
         commonOpportunityFields +
-        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,AccountWebsite__c,AccountHasHiredInternationally__c";
+        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,Account.Description,AccountWebsite__c,AccountHasHiredInternationally__c";
 
     private final EmailHelper emailHelper;
 
@@ -195,7 +195,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             List<Opportunity> candidateOpps = findCandidateOpportunitiesByJobOpps(id);
             for (Opportunity candidateOpp : candidateOpps) {
                 Candidate candidate = oppIdCandidateMap.get(
-                    candidateOpp.getTBBCandidateExternalId__c());
+                    candidateOpp.getCandidateExternalId());
                 if (candidate != null) {
                     candidate.setStage(candidateOpp.getStageName());
                     candidate.setSfOpportunityLink(candidateOpp.getUrl());
@@ -371,7 +371,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Remove these from map, leaving just those that need to be created
         for (Opportunity opp : opps) {
-            idCandidateMap.remove(opp.getTBBCandidateExternalId__c());
+            idCandidateMap.remove(opp.getCandidateExternalId());
         }
 
         //Extract these candidates from the map.

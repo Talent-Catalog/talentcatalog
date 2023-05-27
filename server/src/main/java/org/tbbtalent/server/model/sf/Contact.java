@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.sf;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.tbbtalent.server.model.db.Candidate;
 
 import lombok.Getter;
@@ -36,14 +37,18 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Contact extends SalesforceObjectBase {
-    public String AccountId;
-    public Long TBBid__c;
+
+    @JsonSetter("AccountId")
+    private String accountId;
+
+    @JsonSetter("TBBid__c")
+    private Long tbbId;
 
     public Contact() {
     }
 
     public Contact(Candidate candidate) {
-        TBBid__c = Long.valueOf(candidate.getCandidateNumber());
+        tbbId = Long.valueOf(candidate.getCandidateNumber());
     }
 
     @Override
