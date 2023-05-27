@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.sf;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -26,18 +27,15 @@ import lombok.ToString;
  * This is created from incoming JSON in the body of the response to a HTTP GET request for
  * opportunity details.
  * The problem with Salesforce fields is that they all start with upper case - so "Name" rather
- * that "name". This doesn't map well to Java bean objects where field values by convention start
+ * than "name". This doesn't map well to Java bean objects where field values by convention start
  * with lower case.
  * <p/>
  * If you just code this as a standard Java Bean with private fields accessed by standard
  * getter and setters, the Salesforce JSON won't map to corresponding fields in the Java object
  * because "Name" does not map to "name".
  * <p/>
- * The (crappy) way around it is to make all the fields public and capitalized. Then the JSON
- * will map to the fields.
- * <p/>
- * NOTE: You can request fields using their names starting with lower case, but they are always
- * returned in the response with their standard upper case names.
+ * Therefore, the Java properties are each annotated with the @JsonSetter annotation which provides
+ * a convenient mapping from the SalesForce field names to standard Java field names.
  * <p/>
  * NOTE: The getters (added here automatically by Lombok) mean that utilities that process this
  * object as a normal bean, will see a normal (lower case) "name" attribute on the bean because
@@ -50,24 +48,62 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 public class Opportunity extends SalesforceObjectBase {
-    public String Name;
-    public String AccountId;
-    public String AccountCountry__c;
-    public String AccountName__c;
-    public String Candidate_TC_id__c;
-    public String Closing_Comments__c;
-    public String Employer_Feedback__c;
-    public boolean IsClosed;
-    public String NextStep;
-    public String Next_Step_Due_Date__c;
-    public String OwnerId;
-    public String Parent_Opportunity__c;
-    public String RecordTypeId;
-    public String StageName;
-    public String TBBCandidateExternalId__c;
-    public Long Hiring_Commitment__c;
-    public String AccountWebsite__c;
-    public String AccountHasHiredInternationally__c;
+    @JsonSetter("Name")
+    private String name;
+
+    @JsonSetter("AccountId")
+    private String accountId;
+
+    @JsonSetter("AccountCountry__c")
+    private String accountCountry;
+
+    @JsonSetter("AccountName__c")
+    private String accountName;
+
+    @JsonSetter("Account.Description")
+    private String accountDescription;
+
+    @JsonSetter("Candidate_TC_id__c")
+    private String candidateId;
+
+    @JsonSetter("Closing_Comments__c")
+    private String closingComments;
+
+    @JsonSetter("Employer_Feedback__c")
+    private String employerFeedback;
+
+    @JsonSetter("IsClosed")
+    private boolean isClosed;
+
+    @JsonSetter("NextStep")
+    private String nextStep;
+
+    @JsonSetter("Next_Step_Due_Date__c")
+    private String nextStepDueDate;
+
+    @JsonSetter("OwnerId")
+    private String ownerId;
+
+    @JsonSetter("Parent_Opportunity__c")
+    private String parentOpportunityId;
+
+    @JsonSetter("RecordTypeId")
+    private String recordTypeId;
+
+    @JsonSetter("StageName")
+    private String stageName;
+
+    @JsonSetter("TBBCandidateExternalId__c")
+    private String candidateExternalId;
+
+    @JsonSetter("Hiring_Commitment__c")
+    private Long hiringCommitment;
+
+    @JsonSetter("AccountWebsite__c")
+    private String accountWebsite;
+
+    @JsonSetter("AccountHasHiredInternationally__c")
+    private String accountHasHiredInternationally;
 
     @Override
     String getSfObjectName() {
