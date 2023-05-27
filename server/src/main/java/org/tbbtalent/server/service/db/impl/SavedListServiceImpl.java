@@ -688,18 +688,6 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
-        throws NoSuchObjectException, SalesforceException {
-        SavedList savedList = get(savedListId);
-
-        //There will only be candidate opportunities if list has a job opp
-        final SalesforceJobOpp jobOpp = savedList.getSfJobOpp();
-        if (jobOpp != null) {
-            salesforceService.addCandidateOpportunityStages(candidates, jobOpp.getSfId());
-        }
-    }
-
-    @Override
     public void associateTaskWithList(User user, TaskImpl task, SavedList list) {
 
         final Set<TaskImpl> listTasks = list.getTasks();

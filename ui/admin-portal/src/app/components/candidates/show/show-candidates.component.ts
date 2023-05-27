@@ -1755,4 +1755,31 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   canAssignTasks() {
     return this.authService.canAssignTask();
   }
+
+
+  /**
+   * Get candidate stage in opportunity matching current job
+    * @param candidate Candidate who opportunities we need to search
+   */
+  getStage(candidate: Candidate): string {
+    let stage = null;
+    const opp = candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+    if (opp) {
+      stage = opp.stage;
+    }
+    return stage;
+  }
+
+  /**
+   * Get candidate Sales opportunity link to opportunity matching current job
+   * @param candidate Candidate who opportunities we need to search
+   */
+  getSfOpportunityLink(candidate: Candidate): string {
+    let link = null;
+    const opp = candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+    if (opp) {
+      link = this.salesforceService.sfOppToLink(opp.sfId);
+    }
+    return link;
+  }
 }

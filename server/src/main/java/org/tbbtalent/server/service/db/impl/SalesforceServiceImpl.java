@@ -184,26 +184,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         webClient = builder.build();
     }
 
-    @Override
-    public void addCandidateOpportunityStages(Iterable<Candidate> candidates, String id)
-        throws SalesforceException {
-
-        if (id != null) {
-            Map<String, Candidate> oppIdCandidateMap = buildCandidateOppsMap(candidates, id);
-
-            //Now find the candidate opp ids we actually have for candidate opportunities for this job.
-            List<Opportunity> candidateOpps = findCandidateOpportunitiesByJobOpps(id);
-            for (Opportunity candidateOpp : candidateOpps) {
-                Candidate candidate = oppIdCandidateMap.get(
-                    candidateOpp.getCandidateExternalId());
-                if (candidate != null) {
-                    candidate.setStage(candidateOpp.getStageName());
-                    candidate.setSfOpportunityLink(candidateOpp.getUrl());
-                }
-            }
-        }
-    }
-
     private Map<String, Candidate> buildCandidateOppsMap(Iterable<Candidate> candidates,
         String jobOpportunityId) {
         Map<String, Candidate> idCandidateMap = new HashMap<>();

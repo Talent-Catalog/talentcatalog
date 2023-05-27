@@ -45,16 +45,6 @@ import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest
 public interface SalesforceService {
 
     /**
-     * Updates the given candidates with their candidate opportunity stages associated with the
-     * given Salesforce job opportunity.
-     * @param candidates Candidates to check
-     * @param sfId Salesforce id (not url) of job opportunity
-     * @throws SalesforceException if there are issues contacting Salesforce
-     */
-    void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfId)
-        throws SalesforceException;
-
-    /**
      * Fetches opportunities from Salesforce with Job opportunity fields populated.
      * <p/>
      * The opportunities fetched are those with the specified ids plus recently changed open

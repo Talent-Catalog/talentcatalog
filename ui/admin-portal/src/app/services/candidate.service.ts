@@ -67,26 +67,7 @@ export class CandidateService implements IntakeService {
   }
 
   getByNumber(number: string): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/number/${number}`)
-    // todo Mock test data
-    // .pipe(
-    //   map(candidate => {
-    //     const opp: CandidateOpportunity = {
-    //       job: {
-    //         id: 123,
-    //         name: 'Mock job'
-    //       },
-    //       name: 'Mock Candidate Opp name',
-    //       nextStep: 'Tell employer he is dreaming',
-    //       nextStepDueDate: new Date('2023-11-9'),
-    //       stage: CandidateOpportunityStage.prospect
-    //     };
-    //     candidate.candidateOpportunities = [opp];
-    //
-    //     return candidate;
-    //   })
-    // );
-
+    return this.http.get<Candidate>(`${this.apiUrl}/number/${number}`);
   }
 
   get(id: number): Observable<Candidate> {

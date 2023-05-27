@@ -65,8 +65,7 @@ public class CandidateBuilderSelector {
             "regoUtmContent",
             "regoUtmMedium",
             "regoUtmSource",
-            "regoUtmTerm",
-            "stage"
+            "regoUtmTerm"
         ));
 
     private final Set<String> candidateSemiLimitedExtraProperties =
@@ -166,8 +165,6 @@ public class CandidateBuilderSelector {
             .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
             .add("candidateProperties", candidatePropertyDto())
             .add("shareableNotes")
-            .add("stage")
-            .add("sfOpportunityLink")
 
             ;
     }
@@ -194,6 +191,7 @@ public class CandidateBuilderSelector {
     private DtoBuilder candidateOpportunityDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("sfId")
             .add("closingComments")
             .add("closingCommentsForCandidate")
             .add("employerFeedback")
