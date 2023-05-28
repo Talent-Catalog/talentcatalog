@@ -1,0 +1,57 @@
+<div class="container">
+
+  <app-error [error]="error"></app-error>
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading && selectedOpp">
+    <app-candidate-opp
+        [selectedOpp]="selectedOpp"
+        [candidate]="candidate"
+        (back)="unSelectOpp()">
+    </app-candidate-opp>
+  </ng-container>
+
+  <ng-container *ngIf="!loading && !selectedOpp">
+    <div>
+      <div class="d-flex justify-content-between align-items-baseline mb-4">
+        <div>
+          <h3>{{ 'CANDIDATE-OPPS.HEADER' | translate }}</h3>
+          <p class="text-muted">{{ 'CANDIDATE-OPPS.NOTE' | translate }}</p>
+        </div>
+      </div>
+      <div class="table-responsive-sm">
+        <table class="table table-hover bg-white">
+          <thead class="table-light">
+          <tr>
+            <th>{{ 'CANDIDATE-OPPS.TABLE.NAME' | translate }}</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let opp of opps" (click)="selectOpp(opp)">
+            <td>
+<!--              todo Fill this job display out a bit more. Including closing comments-->
+              <div class="link underline">{{opp.jobOpp.name}}</div>
+            </td>
+          </tr>
+
+          <!-- loading -->
+          <tr *ngIf="loading">
+            <td colspan="42">
+              <i class="fas fa-spinner fa-spin"></i> {{ 'LOADING' | translate }}
+            </td>
+          </tr>
+
+          <!-- no results -->
+          <tr *ngIf="!loading && !opps?.length">
+            <td colspan="42" class="text-center">
+              <span class="text-muted">({{ 'CANDIDATE-OPPS.TABLE.NONE' | translate }})</span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+</div>

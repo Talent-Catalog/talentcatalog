@@ -374,9 +374,9 @@
                 </app-tasks-monitor>
               </td>
               <td *ngIf="isShowStage()">
-                <a *ngIf="candidate.stage" [href]="candidate.sfOpportunityLink" target="_blank"
+                <a *ngIf="getStage(candidate)" [href]="getSfOpportunityLink(candidate)" target="_blank"
                 title="Stage that this candidate is at - linking to their SF candidate opportunity">
-                  {{candidate.stage}}
+                  {{getStage(candidate)}}
                 </a>
               </td>
               <td>
@@ -391,6 +391,11 @@
                 'text-danger': field.getValue(candidate) === 'Overdue',
                 'text-success' : field.getValue(candidate) == 'Completed',
                 'text-alert' : field.getValue(candidate) == 'Abandoned'}">
+<!--                  todo Have switch on display of arrays vs non arrays.
+Non arrays or single value arrays, just display value
+
+arrays with more than one value display in drop down
+-->
                   {{field.getValue(candidate)}}
                 </span>
               </td>

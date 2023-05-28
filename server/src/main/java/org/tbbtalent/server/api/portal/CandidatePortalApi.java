@@ -16,23 +16,30 @@
 
 package org.tbbtalent.server.api.portal;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.web.bind.annotation.*;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.TaskDtoHelper;
-import org.tbbtalent.server.request.candidate.*;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.TaskAssignmentService;
-import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.InvalidSessionException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.TaskDtoHelper;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.TaskAssignmentService;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/portal/candidate")
@@ -434,6 +441,29 @@ public class CandidatePortalApi {
                 .add("surveyComment")
                 .add("linkedInLink")
                 .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
+                .add("candidateOpportunities", candidateOpportunityDto())
                 ;
     }
+
+
+    private DtoBuilder candidateOpportunityDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("closingCommentsForCandidate")
+            .add("jobOpp", jobDto())
+            .add("lastModifiedDate")
+            .add("name")
+            .add("nextStep")
+            .add("nextStepDueDate")
+            .add("stage")
+            ;
+    }
+
+    private DtoBuilder jobDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
+    }
+
 }

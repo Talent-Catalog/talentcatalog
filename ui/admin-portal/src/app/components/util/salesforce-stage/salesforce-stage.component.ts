@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
-import {CandidateOpportunityStage, SalesforceOppParams} from "../../../model/candidate";
+import {SalesforceOppParams} from "../../../model/candidate";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 
 export interface SalesforceStageInfo {
   stageName?: string;

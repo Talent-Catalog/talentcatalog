@@ -24,7 +24,7 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 
 /**
- * Candidate's Salesforce opportunity parameters
+ * Opportunity parameters - common to candidate opportunities and job opportunities
  * <p/>
  * These can be set by a user on the admin portal - from Angular
  *
@@ -36,19 +36,20 @@ import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 public class SalesforceOppParams {
 
   /**
+   * todo This is candidate opp specific
    * Must match the name of a Salesforce Candidate Opportunity stage
    */
   @Nullable
   private CandidateOpportunityStage stage;
 
   /**
-   * Any text which will update a Salesforce Candidate Opportunity next step
+   * Any text which will update a Salesforce Opportunity next step
    */
   @Nullable
   private String nextStep;
 
   /**
-   * Any text which will update a Salesforce Candidate Opportunity next step due date
+   * Any text which will update a Salesforce Opportunity next step due date
    */
   @Nullable
   private LocalDate nextStepDueDate;
@@ -60,6 +61,7 @@ public class SalesforceOppParams {
   private String closingComments;
 
   /**
+   * todo This is candidate opp specific
    * Employer feedback on a candidate
    */
   @Nullable

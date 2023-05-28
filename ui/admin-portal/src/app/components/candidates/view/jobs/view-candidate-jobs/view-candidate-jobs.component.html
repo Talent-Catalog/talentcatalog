@@ -1,0 +1,51 @@
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<div class="card" *ngIf="!loading">
+
+  <div class="card-body">
+    <div class="table-wrapper">
+      <table class="table table-hover">
+        <!--          Header-->
+        <thead class="table-light">
+        <tr>
+          <th>
+            Job
+          </th>
+          <th>
+            Stage
+          </th>
+          <th>
+            Next step (hover to show all)
+          </th>
+          <th>
+            Next step due date
+          </th>
+        </tr>
+        </thead>
+
+        <tbody>
+          <!-- Jobs candidate has gone for -->
+          <tr *ngFor="let opp of candidate?.candidateOpportunities; let i = index;">
+            <td>
+              <a [routerLink]="['/job',opp.jobOpp.id]">{{opp.jobOpp.name}}</a>
+            </td>
+            <td>
+              {{getCandidateOpportunityStageName(opp.stage)}}
+            </td>
+            <td [title]="opp.nextStep ? opp.nextStep : ''">
+              {{truncate(opp.nextStep, 32)}}
+            </td>
+            <td>
+              {{opp.nextStepDueDate}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -28,6 +28,7 @@ import {LanguageLevel} from './language-level';
 import {HasId} from "./base";
 import {CandidateAttachment} from "./candidate-attachment";
 import {TaskAssignment} from "./task-assignment";
+import {CandidateOpportunity} from "./candidate-opportunity";
 
 export interface Candidate extends HasId {
   id: number;
@@ -86,10 +87,9 @@ export interface Candidate extends HasId {
   numberDependants: number;
   langAssessmentScore: string;
   candidateExams: CandidateExam[];
-  sfOpportunityLink: string;
-  stage: string;
   candidateAttachments?: CandidateAttachment[];
   taskAssignments?: TaskAssignment[];
+  candidateOpportunities: CandidateOpportunity[];
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
 }
@@ -342,48 +342,6 @@ export enum AvailImmediateReason {
   CurrentWork = "Current Work",
   Studies = "Studies",
   Other = "Other"
-}
-
-/**
- * Note that the string values of this enum MUST match the actual stage names for candidate
- * opportunities on Salesforce.
- * <p/>
- * See https://docs.google.com/document/d/1B6DmpYaONV_yNmyAqL76cu0TUQcpNgKtOmKELCkpRoc/edit#heading=h.qx7je1tuwoqv
- */
-export enum CandidateOpportunityStage {
-  prospect = "0. Prospect",
-  miniIntake = "1. Mini intake",
-  fullIntake = "2. Full intake",
-  visaEligibility = "3. Visa eligibility",
-  cvPreparation = "4. CV preparation",
-  cvReview = "5. CV review",
-  oneWayPreparation = "6. 1 way preparation (Optional depending on employer)",
-  oneWayReview = "7. 1 way review (Optional depending on employer)",
-  testPreparation = "8. Test preparation  (Optional depending on employer)",
-  testing = "9. Testing (Optional depending on employer)",
-  twoWayPreparation = "10. 2 way interview preparation",
-  twoWayReview = "11. 2 way interview review",
-  offer = "12. Offer (employer is preparing written offer)",
-  acceptance = "13. Acceptance (informed decision making as candidate considers offer(s))",
-  provincialVisaPreparation = "14. Provincial visa preparation (Canada only)",
-  provincialVisaProcessing = "15. Provincial visa processing (Canada only)",
-  visaPreparation = "16. Visa preparation",
-  visaProcessing = "17. Visa processing",
-  relocating = "18. Relocating",
-  relocated = "19. Relocated (candidate has arrived at employer's location)",
-  settled = "20. Settled (candidate indicates no further need for support)",
-  durableSolution = "21. Durable solution (permanent residence, normal citizen rights)",
-  noJobOffer = "No job offer",
-  noVisa = "No visa",
-  notFitForRole = "Not fit for role",
-  notEligibleForTC = "Not eligible for TC",
-  notEligibleForVisa = "Not eligible for visa",
-  noInterview = "No interview",
-  candidateLeavesDestination = "Candidate leaves destination",
-  candidateRejectsOffer = "Candidate rejects offer",
-  candidateUnreachable = "Candidate unreachable",
-  candidateWithdraws = "Candidate withdraws"
-
 }
 
 export enum CandidateStatus {

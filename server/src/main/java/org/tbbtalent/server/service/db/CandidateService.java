@@ -42,7 +42,6 @@ import org.tbbtalent.server.model.db.CandidateSubfolderType;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -54,14 +53,12 @@ import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.request.candidate.ResolveTaskAssignmentsRequest;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateMediaRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
@@ -145,6 +142,10 @@ public interface CandidateService {
 
     Candidate updateCandidateRegistration(long id, UpdateCandidateRegistrationRequest request);
 
+    Candidate updateCandidateSalesforceLink(Candidate candidate, String sfLink);
+
+    Candidate updateCandidateStatus(Candidate candidate, UpdateCandidateStatusInfo info);
+
     void updateCandidateStatus(UpdateCandidateStatusRequest request);
 
     void updateCandidateStatus(SavedList savedList, UpdateCandidateStatusInfo info);
@@ -223,7 +224,7 @@ public interface CandidateService {
      * (which it normally will be in your controllers processing HTTP requests),
      * JPA will perform another database access to populate the candidate
      * occupations.
-     * (See https://www.baeldung.com/jpa-hibernate-persistence-context)
+     * (See <a href="https://www.baeldung.com/jpa-hibernate-persistence-context">...</a>)
      * <p/>
      * Note that our DTO builder class {@link DtoBuilder} will also trigger
      * loading of the requested attributes from the database.
@@ -247,6 +248,14 @@ public interface CandidateService {
      */
     @Nullable
     Candidate findByCandidateNumber(String candidateNumber);
+
+    /**
+     * Return candidates by their ids
+     * @param ids The ids to be looked up. If an id does not correspond to any candidate,
+     *            it is ignored and no candidate is returned.
+     * @return Candidates with ids matching the given ids.
+     */
+    List<Candidate> findByIds(@NonNull Collection<Long> ids);
 
     /**
      * Restricted access to the candidate with the given candidate number.
@@ -410,40 +419,6 @@ public interface CandidateService {
      */
     Candidate createUpdateSalesforce(long id)
             throws NoSuchObjectException, SalesforceException, WebClientException;
-
-    /**
-     * Creates or updates Contact records on Salesforce for the given candidates and, if sfJoblink
-     * is not null, indicating that these candidates are associated with a job opportunity,
-     * this will also create/update the associated candidate opportunities associated with that
-     * job.
-     *
-     * @param candidates Candidates to update
-     * @param sfJobOpp If not null the candidate opportunities are created/updated
-     * @param salesforceOppParams Used to create/update candidate opportunities
-     * @throws SalesforceException If there are errors relating to keys
-     * and digital signing.
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     */
-    void createUpdateSalesforce(Collection<Candidate> candidates,
-        @Nullable SalesforceJobOpp sfJobOpp, @Nullable SalesforceOppParams salesforceOppParams)
-        throws SalesforceException, WebClientException;
-
-    /**
-     * Creates/updates Salesforce records corresponding to the given candidates.
-     * <p/>
-     * This could involve creating or updating contact records and/or
-     * creating or updating opportunity records.
-     * <p/>
-     * Salesforce links may be created and stored in candidate records.
-     *
-     * @param request Identifies candidates as well as optional Salesforce fields to set on
-     *                candidate opportunities
-     * @throws SalesforceException If there are errors relating to keys
-     * and digital signing.
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     */
-    void createUpdateSalesforce(UpdateCandidateOppsRequest request)
-        throws SalesforceException, WebClientException;
 
     /**
      * Updates the intake data associated with the given candidate.

@@ -231,6 +231,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateAttachment> candidateAttachments;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private List<CandidateOpportunity> candidateOpportunities;
+
     //old data only links to candidate needs to be searchable
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "migration_education_major_id")
@@ -336,23 +339,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      */
     @Transient
     private boolean selected = false;
-
-    /**
-     * Url link to a Candidate opportunity for this candidate.
-     * Retrieved from Salesforce when candidate is displayed as a member of a Saved List associated
-     * with a job opportunity. This is the candidate's opportunity associated with that job.
-     */
-    @Transient
-    @Nullable
-    private String sfOpportunityLink;
-
-    /**
-     * Candidate opportunity stage. Retrieved from Salesforce when candidate is displayed as
-     * a member of a Saved List associated with a job opportunity.
-     */
-    @Transient
-    @Nullable
-    private String stage;
 
     /*
               Intake Fields
@@ -1104,6 +1090,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateOccupations(List<CandidateOccupation> candidateOccupations) {
         this.candidateOccupations = candidateOccupations;
+    }
+
+    public List<CandidateOpportunity> getCandidateOpportunities() {
+        return candidateOpportunities;
+    }
+
+    public void setCandidateOpportunities(
+        List<CandidateOpportunity> candidateOpportunities) {
+        this.candidateOpportunities = candidateOpportunities;
     }
 
     public Set<CandidateProperty> getCandidateProperties() {
@@ -2029,24 +2024,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setShareableDoc(@Nullable CandidateAttachment shareableDoc) {
         this.shareableDoc = shareableDoc;
-    }
-
-    @Nullable
-    public String getSfOpportunityLink() {
-        return sfOpportunityLink;
-    }
-
-    public void setSfOpportunityLink(@Nullable String sfOpportunityLink) {
-        this.sfOpportunityLink = sfOpportunityLink;
-    }
-
-    @Nullable
-    public String getStage() {
-        return stage;
-    }
-
-    public void setStage(@Nullable String stage) {
-        this.stage = stage;
     }
 
     @Nullable

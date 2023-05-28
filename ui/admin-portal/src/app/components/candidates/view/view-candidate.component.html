@@ -225,6 +225,16 @@
             </ng-template>
           </ng-container>
 
+          <!-- JOBS -->
+          <ng-container ngbNavItem="Jobs">
+            <a ngbNavLink>Jobs</a>
+            <ng-template ngbNavContent>
+              <app-candidate-jobs-tab
+                [candidate]="candidate">
+              </app-candidate-jobs-tab>
+            </ng-template>
+          </ng-container>
+
         </nav>
         <div [ngbNavOutlet]="nav" class="mt-2"></div>
       </div>

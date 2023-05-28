@@ -76,7 +76,14 @@ export class CandidateFieldInfo {
     for (const field of fields) {
       if (val == null) {
         break;
-        // If we are sorting by level not alphabetical, break at object and then use levelGetNameFormatter.
+      } else if (val instanceof Array) {
+          if (val.length === 0) {
+            val = null;
+            break;
+          } else {
+            val = val[0];
+          }
+      // If we are sorting by level not alphabetical, break at object and then use levelGetNameFormatter.
       } else if (field === 'level') {
         break
       }
