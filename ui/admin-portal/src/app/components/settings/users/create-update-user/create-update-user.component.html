@@ -105,7 +105,7 @@
           bindLabel="firstName"
           bindValue="id"
           [formControlName]="'approverId'">
-          <!-- Enables viewing and searching potential approvers (admin users) by full name -->
+          <!-- MODEL concatenate two properties for display in form - Enables viewing and searching potential approvers (admin users) by full name -->
           <ng-template ng-label-tmp let-item="item">
             {{item.firstName}} {{item.lastName}}
           </ng-template>
