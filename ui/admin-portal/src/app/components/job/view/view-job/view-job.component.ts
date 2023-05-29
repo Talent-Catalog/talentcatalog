@@ -32,6 +32,9 @@ import {
   CandidateSourceCandidateService
 } from "../../../../services/candidate-source-candidate.service";
 
+/**
+ * Display details of a job object passed in as an @Input.
+ */
 @Component({
   selector: 'app-view-job',
   templateUrl: './view-job.component.html',
