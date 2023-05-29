@@ -3,6 +3,19 @@ import {JobService} from "../../../../services/job.service";
 import {ActivatedRoute} from "@angular/router";
 import {Job} from "../../../../model/job";
 
+/*
+   MODEL: Landing component for viewing an object from its url, fetching the object, then
+   delegating to another component for the actual display of the object.
+ */
+/**
+ * This is the landing page for urls referencing a job.
+ * </p>
+ * It is referred to in AppRoutingModule (app-routing.module.ts)
+ * <p/>
+ * It checks the url, extracting the job id and attempts to load the job from the server,
+ * displaying an error if none found, otherwise it uses the ViewJobComponent to display the job
+ * details.
+ */
 @Component({
   selector: 'app-view-job-from-url',
   templateUrl: './view-job-from-url.component.html',
