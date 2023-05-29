@@ -286,7 +286,7 @@ public class CandidateSpecification {
             }
 
             // REFERRER
-            if (request.getRegoReferrerParam() != null) {
+            if (request.getRegoReferrerParam() != null && request.getRegoReferrerParam().trim().length() != 0) {
                 conjunction.getExpressions().add(
                         builder.equal(candidate.get("regoReferrerParam"), request.getRegoReferrerParam())
                 );
