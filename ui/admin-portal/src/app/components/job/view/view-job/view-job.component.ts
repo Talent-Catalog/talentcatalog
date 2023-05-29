@@ -24,6 +24,7 @@ import {
   JobPrepItem,
   JobPrepJD,
   JobPrepJobSummary,
+  JobPrepJOI,
   JobPrepSuggestedCandidates,
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
@@ -59,7 +60,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   jobPrepItems: JobPrepItem[] = [
     this.jobPrepJobSummary,
     this.jobPrepJD,
-    //todo temporary comment out: new JobPrepJOI(),
+    new JobPrepJOI(),
     new JobPrepSuggestedSearches(),
     this.jobPrepSuggestedCandidates,
     new JobPrepDueDate(),
