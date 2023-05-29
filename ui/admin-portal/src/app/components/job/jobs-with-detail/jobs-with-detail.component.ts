@@ -6,7 +6,12 @@ import {isStarredByMe, SearchJobsBy} from "../../../model/base";
 import {JobService} from "../../../services/job.service";
 import {AuthService} from "../../../services/auth.service";
 
-
+/**
+ * Displays the jobs returned by the given type of search, together with extra details
+ * related to the selected job.
+ * <p/>
+ * The actual display of the jobs is delegated to the JobsComponent.
+ */
 @Component({
   selector: 'app-jobs-with-detail',
   templateUrl: './jobs-with-detail.component.html',
