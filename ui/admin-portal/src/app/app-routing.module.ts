@@ -38,6 +38,9 @@ import {
 import {
   JobsWithDetailComponent
 } from "./components/job/jobs-with-detail/jobs-with-detail.component";
+import {
+  ViewCandidateOppFromUrlComponent
+} from "./components/candidate-opp/view/view-candidate-opp-from-url/view-candidate-opp-from-url.component";
 
 const routes: Routes = [
   {
@@ -94,6 +97,16 @@ const routes: Routes = [
             path: ':id',
             component: ViewJobFromUrlComponent,
             data: {title: 'TC Job'}
+          },
+        ]
+      },
+      {
+        path: 'opp',
+        children: [
+          {
+            path: ':id',
+            component: ViewCandidateOppFromUrlComponent,
+            data: {title: 'TC Opp'}
           },
         ]
       },

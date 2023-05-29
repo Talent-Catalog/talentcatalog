@@ -687,6 +687,18 @@ import {
 import {
   ViewCandidateJobsComponent
 } from './components/candidates/view/jobs/view-candidate-jobs/view-candidate-jobs.component';
+import {
+  ViewCandidateOppFromUrlComponent
+} from './components/candidate-opp/view/view-candidate-opp-from-url/view-candidate-opp-from-url.component';
+import {
+  ViewCandidateOppComponent
+} from './components/candidate-opp/view/view-candidate-opp/view-candidate-opp.component';
+import {
+  CandidateOppNotesComponent
+} from './components/candidate-opp/view/candidate-opp-notes/candidate-opp-notes.component';
+import {
+  CandidateOppProgressComponent
+} from './components/candidate-opp/view/candidate-opp-progress/candidate-opp-progress.component';
 
 @NgModule({
   declarations: [
@@ -960,7 +972,11 @@ import {
     JobLanguageComponent,
     VisaEligibilityAssessmentComponent,
     CandidateJobsTabComponent,
-    ViewCandidateJobsComponent
+    ViewCandidateJobsComponent,
+    ViewCandidateOppFromUrlComponent,
+    ViewCandidateOppComponent,
+    CandidateOppNotesComponent,
+    CandidateOppProgressComponent
   ],
   imports: [
     BrowserModule,
