@@ -367,4 +367,24 @@ export class AuthService {
     }
     return defaultSourcePartner;
   }
+
+  /**
+   * True is a user is logged in and they are solely responsible for certain candidate opportunities.
+   * <p/>
+   * This will be source partners.
+   */
+  ownsOpps() {
+    //Source partners own candidate opportunities for the candidates they manage
+    let result: boolean = false;
+
+    const loggedInUser = this.getLoggedInUser();
+    if (loggedInUser) {
+      let partnerType = this.getPartnerType();
+      if (partnerType != null) {
+        result = this.isDefaultSourcePartner() || partnerType == PartnerType.SourcePartner;
+      }
+    }
+
+    return result;
+  }
 }

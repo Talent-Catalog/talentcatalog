@@ -699,6 +699,12 @@ import {
 import {
   CandidateOppProgressComponent
 } from './components/candidate-opp/view/candidate-opp-progress/candidate-opp-progress.component';
+import {
+  CandidateOppsComponent
+} from './components/candidate-opp/candidate-opps/candidate-opps.component';
+import {
+  CandidateOppsWithDetailComponent
+} from './components/candidate-opp/candidate-opps-with-detail/candidate-opps-with-detail.component';
 
 @NgModule({
   declarations: [
@@ -976,7 +982,9 @@ import {
     ViewCandidateOppFromUrlComponent,
     ViewCandidateOppComponent,
     CandidateOppNotesComponent,
-    CandidateOppProgressComponent
+    CandidateOppProgressComponent,
+    CandidateOppsComponent,
+    CandidateOppsWithDetailComponent
   ],
   imports: [
     BrowserModule,

@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {Opportunity} from "./base";
+import {Opportunity, PagedSearchRequest} from "./base";
 import {ShortJob} from "./job";
 
 export interface CandidateOpportunity extends Opportunity {
@@ -89,4 +89,14 @@ export function getCandidateOpportunityStageName(enumStageNameKey: string): stri
   }
   return s;
 }
+
+
+export class SearchCandidateOpportunityRequest extends PagedSearchRequest {
+  keyword?: string;
+  ownedByMe?: boolean;
+  ownedByMyPartner?: boolean;
+  sfOppClosed?: boolean;
+  stages?: string[];
+}
+
 

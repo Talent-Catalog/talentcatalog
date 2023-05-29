@@ -130,4 +130,8 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   isExperimental() {
     return false;
   }
+
+  ownsOpps(): boolean {
+    return this.authService.ownsOpps();
+  }
 }

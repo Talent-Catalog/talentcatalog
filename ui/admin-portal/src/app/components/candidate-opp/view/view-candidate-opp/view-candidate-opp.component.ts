@@ -13,6 +13,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 })
 export class ViewCandidateOppComponent implements OnInit {
   @Input() opp: CandidateOpportunity;
+  @Input() showBreadcrumb: boolean = true;
 
   activeTabId: string;
 

@@ -17,7 +17,11 @@ import {Injectable} from "@angular/core";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable, of} from "rxjs";
-import {CandidateOpportunity} from "../model/candidate-opportunity";
+import {
+  CandidateOpportunity,
+  SearchCandidateOpportunityRequest
+} from "../model/candidate-opportunity";
+import {SearchResults} from "../model/search-results";
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +46,19 @@ export class CandidateOpportunityService {
     nextStep: "Come on get this guy hired",
     employerFeedback: "English is not great"
   }
+
+  private mockOpps: CandidateOpportunity[] = [this.mockOpp];
+  private mockSearchResults: SearchResults<CandidateOpportunity> = {
+    number: 1,
+    size: 1,
+    totalElements: 1,
+    totalPages: 1,
+    first: true,
+    last: true,
+    content: this.mockOpps
+  }
+
+
   private apiUrl: string = environment.apiUrl + '/opp';
 
   constructor(private http: HttpClient) { }
@@ -56,4 +73,13 @@ export class CandidateOpportunityService {
     return observable;
   }
 
+  searchPaged(request: SearchCandidateOpportunityRequest): Observable<SearchResults<CandidateOpportunity>> {
+    let observable;
+    if (this.mocking) {
+      observable = of(this.mockSearchResults);
+    } else {
+      observable = this.http.post<SearchResults<CandidateOpportunity>>(`${this.apiUrl}/search-paged`, request);
+    }
+    return observable;
+  }
 }

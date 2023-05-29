@@ -276,6 +276,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     DatePipe
 
   ],
+  exports: [
+    CandidateOppsComponent
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
