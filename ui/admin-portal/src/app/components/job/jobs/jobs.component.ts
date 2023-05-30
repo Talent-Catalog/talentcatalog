@@ -51,7 +51,6 @@ export class JobsComponent implements OnInit {
   sortField = 'createdDate';
   sortDirection = 'DESC';
   currentJob: Job;
-  private currentIndex = 0;
   myJobsOnlyTip = "Only show jobs that were created by me";
 
   constructor(
@@ -157,9 +156,9 @@ export class JobsComponent implements OnInit {
           //Select previously selected item if still present in results
           const id: number = this.localStorageService.get(this.savedStateKey());
           if (id) {
-            this.currentIndex = indexOfHasId(id, this.results.content);
-            if (this.currentIndex >= 0) {
-              this.selectCurrent(this.results.content[this.currentIndex]);
+            let currentIndex = indexOfHasId(id, this.results.content);
+            if (currentIndex >= 0) {
+              this.selectCurrent(this.results.content[currentIndex]);
             } else {
               this.selectCurrent(this.results.content[0]);
             }
@@ -222,8 +221,6 @@ export class JobsComponent implements OnInit {
 
     const id: number = job.id;
     this.localStorageService.set(this.savedStateKey(), id);
-
-    this.currentIndex = indexOfHasId(id, this.results.content);
 
     this.jobSelection.emit(job);
   }
