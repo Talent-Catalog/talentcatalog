@@ -143,7 +143,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     this.localStorageService.set(this.savedStateKey()+this.sortDirectionSuffix, this.sortDirection);
 
     let req = new SearchOpportunityRequest();
-    // req.keyword = this.keyword;
+    req.keyword = this.keyword;
     req.pageNumber = this.pageNumber - 1;
     req.pageSize = this.pageSize;
 

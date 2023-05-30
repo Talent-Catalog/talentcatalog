@@ -20,7 +20,6 @@ import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -31,7 +30,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
@@ -58,8 +56,7 @@ public class CandidateOpportunitySpecification {
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                 conjunction.getExpressions().add(
                         builder.or(
-                                builder.like(builder.lower(opp.get("name")), likeMatchTerm),
-                                builder.like(builder.lower(opp.get("country")), likeMatchTerm)
+                                builder.like(builder.lower(opp.get("name")), likeMatchTerm)
                         ));
             }
 
@@ -75,34 +72,34 @@ public class CandidateOpportunitySpecification {
             }
 
             //TODO JC Different logic for owned. Source partner needs to be managing candidate
-            Predicate ors = builder.disjunction();
-
-            //If owned by this user (ie by logged in user)
-            if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
-                if (loggedInUser != null) {
-                    ors.getExpressions().add(
-                        builder.equal(opp.get("createdBy"), loggedInUser.getId())
-                    );
-                }
-            }
-
-            //If owned by this user's partner
-            if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
-                if (loggedInUser != null) {
-                    Partner loggedInUserPartner = loggedInUser.getPartner();
-                    if (loggedInUserPartner != null) {
-                        Join<Object, Object> owner = opp.join("createdBy");
-                        Join<Object, Object> partner = owner.join("partner");
-                        ors.getExpressions().add(
-                            builder.equal(partner.get("id"), loggedInUserPartner.getId())
-                        );
-                    }
-                }
-            }
-
-            if (ors.getExpressions().size() != 0) {
-                conjunction.getExpressions().add(ors);
-            }
+//            Predicate ors = builder.disjunction();
+//
+//            //If owned by this user (ie by logged in user)
+//            if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
+//                if (loggedInUser != null) {
+//                    ors.getExpressions().add(
+//                        builder.equal(opp.get("createdBy"), loggedInUser.getId())
+//                    );
+//                }
+//            }
+//
+//            //If owned by this user's partner
+//            if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+//                if (loggedInUser != null) {
+//                    Partner loggedInUserPartner = loggedInUser.getPartner();
+//                    if (loggedInUserPartner != null) {
+//                        Join<Object, Object> owner = opp.join("createdBy");
+//                        Join<Object, Object> partner = owner.join("partner");
+//                        ors.getExpressions().add(
+//                            builder.equal(partner.get("id"), loggedInUserPartner.getId())
+//                        );
+//                    }
+//                }
+//            }
+//
+//            if (ors.getExpressions().size() != 0) {
+//                conjunction.getExpressions().add(ors);
+//            }
 
             return conjunction;
         };
