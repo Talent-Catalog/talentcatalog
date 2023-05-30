@@ -71,6 +71,10 @@ public class CandidateOpportunitySpecification {
                 conjunction.getExpressions().add(builder.equal(opp.get("closed"), request.getSfOppClosed()));
             }
 
+            //TODO JC Need live checkbox as well as My Opps- defaults to true (ie Closed = false)
+
+            //TODO Also - display candidate name when not Candidate Jobs tab.
+
             //TODO JC Different logic for owned. Source partner needs to be managing candidate
 //            Predicate ors = builder.disjunction();
 //
