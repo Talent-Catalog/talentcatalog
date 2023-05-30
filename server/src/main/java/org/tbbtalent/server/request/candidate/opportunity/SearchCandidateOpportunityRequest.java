@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,43 +14,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.job;
+package org.tbbtalent.server.request.candidate.opportunity;
 
 import java.util.List;
 import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tbbtalent.server.model.db.JobOpportunityStage;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.request.opportunity.SearchOpportunityRequest;
 
 @Getter
 @Setter
 @ToString
-public class SearchJobRequest extends SearchOpportunityRequest {
+public class SearchCandidateOpportunityRequest extends SearchOpportunityRequest {
 
     /**
-     * If specified, match job opportunities which are currently accepting candidates
+     * If specified, match candidate opportunities if they match any of the stages
      */
     @Nullable
-    private Boolean accepting;
-
-    /**
-     * If specified, match job opportunities based on whether the job has been published.
-     */
-    @Nullable
-    private Boolean published;
-
-    /**
-     * If specified, match job opportunities if they match any of the stages
-     */
-    @Nullable
-    private List<JobOpportunityStage> stages;
-
-    /**
-     * If specified, match job opportunities based on whether they have been starred by me
-     */
-    @Nullable
-    private Boolean starred;
+    private List<CandidateOpportunityStage> stages;
 
 }

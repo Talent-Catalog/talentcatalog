@@ -18,14 +18,18 @@ package org.tbbtalent.server.service.db;
 
 import java.util.Collection;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
 public interface CandidateOpportunityService {
 
@@ -76,10 +80,28 @@ public interface CandidateOpportunityService {
     CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp);
 
     /**
+     * Get the CandidateOpportunity with the given id.
+     * @param id Id of opportunity to get
+     * @return CandidateOpportunity
+     * @throws NoSuchObjectException if there is no opportunity with this id.
+     */
+    @NonNull
+    CandidateOpportunity getCandidateOpportunity(long id) throws NoSuchObjectException;
+
+    /**
      * Creates or updates CandidateOpportunities associated with given jobs from Salesforce.
      * @param jobOpportunityIds IDs of Jobs whose associated CandidateOpportunities should be
      *                          updated from Salesforce
      * @throws SalesforceException if there are issues contacting Salesforce
      */
     void loadCandidateOpportunities(String... jobOpportunityIds) throws SalesforceException;
+
+
+    /**
+     * Get candidate opportunities from a paged search request
+     * @param request - Paged Search Request
+     * @return Page of candidate opportunities
+     */
+    Page<CandidateOpportunity> searchCandidateOpportunities(SearchCandidateOpportunityRequest request);
+
 }

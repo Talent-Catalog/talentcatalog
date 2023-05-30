@@ -90,7 +90,6 @@ export function getCandidateOpportunityStageName(enumStageNameKey: string): stri
   return s;
 }
 
-
 /**
  * Base class for both Job opportunity and candidate opportunity requests
  */

@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
@@ -38,16 +39,20 @@ import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateOpportunityRepository;
+import org.tbbtalent.server.repository.db.CandidateOpportunitySpecification;
 import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.UserService;
 
 @Service
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
@@ -56,14 +61,18 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final CandidateService candidateService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
+    private final UserService userService;
+
 
     public CandidateOpportunityServiceImpl(
         CandidateOpportunityRepository candidateOpportunityRepository,
-        CandidateService candidateService, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService) {
+        CandidateService candidateService, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
+        UserService userService) {
         this.candidateOpportunityRepository = candidateOpportunityRepository;
         this.candidateService = candidateService;
         this.salesforceJobOppService = salesforceJobOppService;
         this.salesforceService = salesforceService;
+        this.userService = userService;
     }
 
     @Override
@@ -153,6 +162,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     @Override
     public CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp) {
         return candidateOpportunityRepository.findByCandidateIdAndJobId(candidate.getId(), jobOpp.getId());
+    }
+
+    @NonNull
+    @Override
+    public CandidateOpportunity getCandidateOpportunity(long id) throws NoSuchObjectException {
+        return candidateOpportunityRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(CandidateOpportunity.class, id));
     }
 
     @Async
@@ -280,6 +296,17 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                candidateService.updateCandidateStatus(candidate, info);
             }
         }
+    }
+
+    @Override
+    public Page<CandidateOpportunity> searchCandidateOpportunities(
+        SearchCandidateOpportunityRequest request) {
+        User loggedInUser = userService.getLoggedInUser();
+        Page<CandidateOpportunity> opps = candidateOpportunityRepository.findAll(
+            CandidateOpportunitySpecification.buildSearchQuery(request, loggedInUser),
+            request.getPageRequest());
+
+        return opps;
     }
 
 }
