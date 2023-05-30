@@ -8,7 +8,7 @@
 
   <div class="searches">
     <form [formGroup]="searchForm" (ngSubmit)="search()">
-        <div *ngIf="searchBy === SearchJobsBy.mine" class="mt-2 mb-3">
+        <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
           <label class="form-label" [title]="myJobsOnlyTip" for="myJobsOnlyTip">My jobs only</label>
           <input [title]="myJobsOnlyTip" type="checkbox" [formControlName]="'myJobsOnly'" id="myJobsOnlyTip">
         </div>

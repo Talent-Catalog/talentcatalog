@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {SearchJobsBy} from "../../../model/base";
+import {SearchOppsBy} from "../../../model/base";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 
@@ -9,7 +9,7 @@ import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
   styleUrls: ['./candidate-opps-with-detail.component.scss']
 })
 export class CandidateOppsWithDetailComponent extends MainSidePanelBase implements OnInit {
-  @Input() searchBy: SearchJobsBy;
+  @Input() searchBy: SearchOppsBy;
 
   //todo Use this to implement the Job tab of a candidate
   @Input() candidateOpps: CandidateOpportunity[];

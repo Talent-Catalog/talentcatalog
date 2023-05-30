@@ -8,7 +8,7 @@ import {JobService} from "../../../services/job.service";
 import {SearchResults} from "../../../model/search-results";
 import {enumOptions} from "../../../util/enum";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {SearchJobsBy} from "../../../model/base";
+import {SearchOppsBy} from "../../../model/base";
 import {indexOfHasId} from "../../../model/saved-search";
 import {truncate} from 'src/app/util/string';
 
@@ -18,7 +18,7 @@ import {truncate} from 'src/app/util/string';
   styleUrls: ['./jobs.component.scss']
 })
 export class JobsComponent implements OnInit {
-  @Input() searchBy: SearchJobsBy;
+  @Input() searchBy: SearchOppsBy;
   @Output() jobSelection = new EventEmitter();
 
   /*
@@ -97,8 +97,8 @@ export class JobsComponent implements OnInit {
     return this.searchForm ? this.searchForm.value.myJobsOnly : false;
   }
 
-  get SearchJobsBy() {
-    return SearchJobsBy;
+  get SearchOppsBy() {
+    return SearchOppsBy;
   }
 
   private get selectedStages(): string[] {
@@ -124,7 +124,7 @@ export class JobsComponent implements OnInit {
     req.stages = this.selectedStages;
 
     switch (this.searchBy) {
-      case SearchJobsBy.live:
+      case SearchOppsBy.live:
 
         //Don't want to see closed jobs
         req.sfOppClosed = false;
@@ -133,7 +133,7 @@ export class JobsComponent implements OnInit {
         req.accepting = true;
         break;
 
-      case SearchJobsBy.mine:
+      case SearchOppsBy.mine:
         if (this.myJobsOnly) {
           req.ownedByMe = true;
         } else {
@@ -141,7 +141,7 @@ export class JobsComponent implements OnInit {
         }
         break;
 
-      case SearchJobsBy.starredByMe:
+      case SearchOppsBy.starredByMe:
         req.starred = true;
         break;
     }
@@ -200,7 +200,7 @@ export class JobsComponent implements OnInit {
     // the search by (corresponding to the specific displayed tab)
     let key = this.savedStateKeyPrefix
       + "Jobs"
-      + SearchJobsBy[this.searchBy];
+      + SearchOppsBy[this.searchBy];
 
     return key
   }

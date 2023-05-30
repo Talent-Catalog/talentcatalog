@@ -40,7 +40,7 @@ export class CandidateOpportunityService {
     //Internally enums are stored by their keys. Override typing error. This is how Json maps
     //to Typescript enums
     // todo: I think this going to cause problems with getCandidateOpportunityStageName not always working
-    //Maybe it needs to be smarter and be able to check wether it is being passed a string or an enum - or also looks for StringValues
+    //Maybe it needs to be smarter and be able to check whether it is being passed a string or an enum - or also looks for StringValues
     // @ts-ignore
     stage: "prospect",
     nextStep: "Come on get this guy hired",

@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../model/job";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Router} from "@angular/router";
-import {isStarredByMe, SearchJobsBy} from "../../../model/base";
+import {isStarredByMe, SearchOppsBy} from "../../../model/base";
 import {JobService} from "../../../services/job.service";
 import {AuthService} from "../../../services/auth.service";
 
@@ -22,7 +22,7 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   error: any;
   loading: boolean;
 
-  @Input() searchBy: SearchJobsBy;
+  @Input() searchBy: SearchOppsBy;
 
   constructor(
     private router: Router,

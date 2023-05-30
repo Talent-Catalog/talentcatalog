@@ -10,7 +10,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {truncate} from 'src/app/util/string';
-import {indexOfHasId, SearchJobsBy} from "../../../model/base";
+import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {
   CandidateOpportunity,
   getCandidateOpportunityStageName,
@@ -28,7 +28,7 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
   styleUrls: ['./candidate-opps.component.scss']
 })
 export class CandidateOppsComponent implements OnInit, OnChanges {
-  @Input() searchBy: SearchJobsBy;
+  @Input() searchBy: SearchOppsBy;
   @Input() candidateOpps: CandidateOpportunity[];
 
   @Output() oppSelection = new EventEmitter();
@@ -116,8 +116,8 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     return this.searchForm ? this.searchForm.value.myOppsOnly : false;
   }
 
-  get SearchJobsBy() {
-    return SearchJobsBy;
+  get SearchOppsBy() {
+    return SearchOppsBy;
   }
 
   private savedStateKey(): string {
@@ -129,7 +129,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     // the search by (corresponding to the specific displayed tab)
     let key = this.savedStateKeyPrefix
       + "Opps"
-      + SearchJobsBy[this.searchBy];
+      + SearchOppsBy[this.searchBy];
 
     return key
   }
@@ -151,13 +151,13 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     req.sortDirection = this.sortDirection;
 
     switch (this.searchBy) {
-      case SearchJobsBy.live:
+      case SearchOppsBy.live:
 
         //Don't want to see closed jobs
         req.sfOppClosed = false;
         break;
 
-      case SearchJobsBy.mine:
+      case SearchOppsBy.mine:
         if (this.myOppsOnly) {
           req.ownedByMe = true;
         } else {

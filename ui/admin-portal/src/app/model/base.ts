@@ -99,7 +99,10 @@ export enum SearchBy {
   registeredJob
 }
 
-export enum SearchJobsBy {
+/**
+ * Different kinds of searches for both Job Opportunities and Candidate Opportunities
+ */
+export enum SearchOppsBy {
   all,
   mine,
   starredByMe,
