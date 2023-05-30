@@ -91,7 +91,10 @@ export function getCandidateOpportunityStageName(enumStageNameKey: string): stri
 }
 
 
-export class SearchCandidateOpportunityRequest extends PagedSearchRequest {
+/**
+ * Base class for both Job opportunity and candidate opportunity requests
+ */
+export class SearchOpportunityRequest extends PagedSearchRequest {
   keyword?: string;
   ownedByMe?: boolean;
   ownedByMyPartner?: boolean;

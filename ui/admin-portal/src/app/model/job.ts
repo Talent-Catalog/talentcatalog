@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {OpportunityIds, PagedSearchRequest} from "./base";
+import {OpportunityIds} from "./base";
 import {SavedList} from "./saved-list";
 import {User} from "./user";
 import {Partner} from "./partner";
@@ -22,6 +22,7 @@ import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
+import {SearchOpportunityRequest} from "./candidate-opportunity";
 
 export interface ShortJob {
   id: number,
@@ -96,14 +97,12 @@ export enum JobOpportunityStage {
   tooLong = "Too long"
 }
 
-export class SearchJobRequest extends PagedSearchRequest {
+/**
+ * Adds extra job opportunity specific fields to standard SearchOpportunityRequest
+ */
+export class SearchJobRequest extends SearchOpportunityRequest {
   accepting?: boolean;
-  keyword?: string;
-  ownedByMe?: boolean;
-  ownedByMyPartner?: boolean;
   published?: boolean;
-  sfOppClosed?: boolean;
-  stages?: string[];
   starred?: boolean;
 }
 

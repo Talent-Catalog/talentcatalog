@@ -14,7 +14,7 @@ import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {
   CandidateOpportunity,
   getCandidateOpportunityStageName,
-  SearchCandidateOpportunityRequest
+  SearchOpportunityRequest
 } from "../../../model/candidate-opportunity";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -142,7 +142,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     this.localStorageService.set(this.savedStateKey()+this.sortFieldSuffix, this.sortField);
     this.localStorageService.set(this.savedStateKey()+this.sortDirectionSuffix, this.sortDirection);
 
-    let req = new SearchCandidateOpportunityRequest();
+    let req = new SearchOpportunityRequest();
     // req.keyword = this.keyword;
     req.pageNumber = this.pageNumber - 1;
     req.pageSize = this.pageSize;

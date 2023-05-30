@@ -17,10 +17,7 @@ import {Injectable} from "@angular/core";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable, of} from "rxjs";
-import {
-  CandidateOpportunity,
-  SearchCandidateOpportunityRequest
-} from "../model/candidate-opportunity";
+import {CandidateOpportunity, SearchOpportunityRequest} from "../model/candidate-opportunity";
 import {SearchResults} from "../model/search-results";
 
 @Injectable({
@@ -73,7 +70,7 @@ export class CandidateOpportunityService {
     return observable;
   }
 
-  searchPaged(request: SearchCandidateOpportunityRequest): Observable<SearchResults<CandidateOpportunity>> {
+  searchPaged(request: SearchOpportunityRequest): Observable<SearchResults<CandidateOpportunity>> {
     let observable;
     if (this.mocking) {
       observable = of(this.mockSearchResults);
