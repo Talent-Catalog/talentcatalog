@@ -5,6 +5,20 @@
   {{error}}
 </div>
 
+<div class="searches" *ngIf="searchBy">
+  <form [formGroup]="searchForm" (ngSubmit)="search()">
+    <div *ngIf="searchBy === SearchJobsBy.mine" class="mt-2 mb-3">
+      <label class="form-label" [title]="myOppsOnlyTip" for="myOppsOnlyTip">My opps only</label>
+      <input [title]="myOppsOnlyTip" type="checkbox" [formControlName]="'myOppsOnly'" id="myOppsOnlyTip">
+    </div>
+
+    <div class="mb-3">
+      <input #searchFilter type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
+             id="keyword">
+    </div>
+  </form>
+</div>
+
 <div class="card" *ngIf="!loading">
 
   <div class="card-body">
@@ -13,23 +27,28 @@
         <!--          Header-->
         <thead class="table-light">
         <tr>
-          <th>
+          <th (click)="toggleSort('jobOpp.name')">
+            <app-sorted-by [column]="'jobOpp.name'" [sortColumn]="sortField" [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
             Job
           </th>
-          <th>
+          <th (click)="toggleSort('stage')">
+            <app-sorted-by [column]="'stage'" [sortColumn]="sortField" [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
             Stage
           </th>
           <th>
             Next step (hover to show all)
           </th>
-          <th>
+          <th (click)="toggleSort('nextStepDueDate')">
+            <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
             Next step due date
           </th>
         </tr>
         </thead>
 
         <tbody>
-          <!-- Opportunities that candidate has gone for -->
           <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
               [ngClass]="{'current': currentOpp?.id == opp.id}">
             <td>
@@ -47,6 +66,31 @@
           </tr>
         </tbody>
       </table>
+
+
+      <div class="text-muted mb-2 align-middle" *ngIf="searchBy">
+
+        <ngb-pagination
+          [boundaryLinks]="true"
+          [pageSize]="pageSize"
+          [collectionSize]="results?.totalElements"
+          [(page)]="pageNumber"
+          [maxSize]="5"
+          [ellipses]="true"
+          [rotate]="true"
+          (pageChange)="search()">
+        </ngb-pagination>
+
+        Found {{results?.totalElements}} in total
+      </div>
+
+      <!-- loading -->
+      <div *ngIf="loading">
+        <div>
+          <i class="fas fa-spinner fa-spin"></i> Loading...
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

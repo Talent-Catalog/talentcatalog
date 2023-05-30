@@ -1,20 +1,26 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ViewChild
 } from '@angular/core';
 import {truncate} from 'src/app/util/string';
-import {SearchJobsBy} from "../../../model/base";
+import {indexOfHasId, SearchJobsBy} from "../../../model/base";
 import {
   CandidateOpportunity,
   getCandidateOpportunityStageName,
   SearchCandidateOpportunityRequest
 } from "../../../model/candidate-opportunity";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
+import {LocalStorageService} from "angular-2-local-storage";
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {SearchResults} from "../../../model/search-results";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -33,14 +39,46 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
   loading: boolean;
   error;
+  myOppsOnlyTip = "Only show opps that I am the contact for";
   pageNumber: number;
   pageSize: number;
 
+  results: SearchResults<CandidateOpportunity>;
+
+  //Get reference to the search input filter element (see #searchFilter in html) so we can reset focus
+  @ViewChild("searchFilter")
+  searchFilter: ElementRef;
+
+  searchForm: FormGroup;
+
+  //Default sort opps in ascending order of nextDueDate
+  sortField = 'nextStepDueDate';
+  sortDirection = 'ASC';
+
+
+  private filterKeySuffix: string = 'Filter';
+  private savedStateKeyPrefix: string = 'BrowseKey';
+  private sortDirectionSuffix: string = 'SortDir';
+  private sortFieldSuffix: string = 'Sort';
+
   constructor(
+    private fb: FormBuilder,
+    private localStorageService: LocalStorageService,
     private oppService: CandidateOpportunityService
   ) { }
 
   ngOnInit(): void {
+
+    //Pick up previous sort
+    const previousSortDirection: string = this.localStorageService.get(this.savedStateKey() + this.sortDirectionSuffix);
+    if (previousSortDirection) {
+      this.sortDirection = previousSortDirection;
+    }
+    const previousSortField: string = this.localStorageService.get(this.savedStateKey() + this.sortFieldSuffix);
+    if (previousSortField) {
+      this.sortField = previousSortField;
+    }
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -56,22 +94,61 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     this.pageNumber = 1;
     this.pageSize = 30;
 
+    //Pick up any previous keyword filter
+    const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
+
+    this.searchForm = this.fb.group({
+      keyword: [filter],
+      myOppsOnly: [false],
+      selectedStages: [[]]
+    });
+
+    this.subscribeToFilterChanges();
+
     this.search();
   }
 
-  private get myJobsOnly(): boolean {
-    //todo
-    return true;
+  private get keyword(): string {
+    return this.searchForm ? this.searchForm.value.keyword : "";
   }
 
-  private search() {
+  private get myOppsOnly(): boolean {
+    return this.searchForm ? this.searchForm.value.myOppsOnly : false;
+  }
+
+  get SearchJobsBy() {
+    return SearchJobsBy;
+  }
+
+  private savedStateKey(): string {
+    //This key is constructed from the combination of inputs which are associated with each tab
+    // in home.component.html
+    //This key is used to store the last state associated with each tab.
+
+    //The standard key is "BrowseKey" + "Opps" +
+    // the search by (corresponding to the specific displayed tab)
+    let key = this.savedStateKeyPrefix
+      + "Opps"
+      + SearchJobsBy[this.searchBy];
+
+    return key
+  }
+
+  search() {
+    //Remember keyword filter
+    this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
+
+    //Remember sort
+    this.localStorageService.set(this.savedStateKey()+this.sortFieldSuffix, this.sortField);
+    this.localStorageService.set(this.savedStateKey()+this.sortDirectionSuffix, this.sortDirection);
+
     let req = new SearchCandidateOpportunityRequest();
     // req.keyword = this.keyword;
     req.pageNumber = this.pageNumber - 1;
     req.pageSize = this.pageSize;
 
-    // req.sortFields = [this.sortField];
-    // req.sortDirection = this.sortDirection;
+    req.sortFields = [this.sortField];
+    req.sortDirection = this.sortDirection;
 
     switch (this.searchBy) {
       case SearchJobsBy.live:
@@ -81,7 +158,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
         break;
 
       case SearchJobsBy.mine:
-        if (this.myJobsOnly) {
+        if (this.myOppsOnly) {
           req.ownedByMe = true;
         } else {
           req.ownedByMyPartner = true;
@@ -93,27 +170,28 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     this.loading = true;
 
     this.oppService.searchPaged(req).subscribe(results => {
+        this.results = results;
+
         this.opps = results.content;
 
-        // if (results.content.length > 0) {
-        //   //Select previously selected item if still present in results
-        //   const id: number = this.localStorageService.get(this.savedStateKey());
-        //   if (id) {
-        //     this.currentIndex = indexOfHasId(id, this.results.content);
-        //     if (this.currentIndex >= 0) {
-        //       this.selectCurrent(this.results.content[this.currentIndex]);
-        //     } else {
-        //       this.selectCurrent(this.results.content[0]);
-        //     }
-        //   } else {
-        //     //Select the first search if no previous
-        //     this.selectCurrent(this.results.content[0]);
-        //   }
-        // }
+        if (this.opps.length > 0) {
+          //Select previously selected item if still present in results
+          const id: number = this.localStorageService.get(this.savedStateKey());
+          if (id) {
+            let currentIndex = indexOfHasId(id, this.opps);
+            if (currentIndex >= 0) {
+              this.selectCurrent(this.opps[currentIndex]);
+            } else {
+              this.selectCurrent(this.opps[0]);
+            }
+          } else {
+            //Select the first search if no previous
+            this.selectCurrent(this.results.content[0]);
+          }
+        }
 
         //Following the search filter loses focus, so focus back on it again
-        /* MODEL: Setting component focus*/
-        // setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
+        setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
 
         this.loading = false;
       },
@@ -132,10 +210,35 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     return truncate;
   }
 
+  private subscribeToFilterChanges() {
+    this.searchForm.valueChanges
+    .pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    )
+    .subscribe(() => {
+      this.search();
+    });
+  }
+
+  toggleSort(column: string) {
+    if (this.sortField === column) {
+      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortField = column;
+      this.sortDirection = 'ASC';
+    }
+
+    if (this.searchBy) {
+      this.search();
+    }
+  }
+
   selectCurrent(opp: CandidateOpportunity) {
     this.currentOpp = opp;
 
     const id: number = opp.id;
+    this.localStorageService.set(this.savedStateKey(), id);
 
     this.oppSelection.emit(opp);
 
