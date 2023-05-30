@@ -115,6 +115,8 @@ public class User extends AbstractAuditableDomainObject<Long> {
     //See https://stackoverflow.com/questions/70394739/behavior-of-hibernate-get-vs-load-with-discriminator
     /**
      * partner is the org that the user belongs to — affects functionality and access, is a class of its own
+     * <p/>
+     * For candidate users, partner is the source partner that the candidate is assigned to.
      */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "partner_id")
