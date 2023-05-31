@@ -20,16 +20,21 @@ import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.tbbtalent.server.model.db.PartnerJobRelation;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
@@ -75,35 +80,64 @@ public class CandidateOpportunitySpecification {
 
             //TODO Also - display candidate name when not Candidate Jobs tab.
 
-            //TODO JC Different logic for owned. Source partner needs to be managing candidate
-//            Predicate ors = builder.disjunction();
-//
-//            //If owned by this user (ie by logged in user)
-//            if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
-//                if (loggedInUser != null) {
-//                    ors.getExpressions().add(
-//                        builder.equal(opp.get("createdBy"), loggedInUser.getId())
-//                    );
-//                }
-//            }
-//
-//            //If owned by this user's partner
-//            if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
-//                if (loggedInUser != null) {
-//                    Partner loggedInUserPartner = loggedInUser.getPartner();
-//                    if (loggedInUserPartner != null) {
-//                        Join<Object, Object> owner = opp.join("createdBy");
-//                        Join<Object, Object> partner = owner.join("partner");
-//                        ors.getExpressions().add(
-//                            builder.equal(partner.get("id"), loggedInUserPartner.getId())
-//                        );
-//                    }
-//                }
-//            }
-//
-//            if (ors.getExpressions().size() != 0) {
-//                conjunction.getExpressions().add(ors);
-//            }
+            Predicate ors = builder.disjunction();
+
+            //If managed by this user (ie by logged in user)
+            if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
+                //This is the where clause we are constructing
+                        /*
+                           where jobOpp in
+                           (select job from PartnerJobRelation
+                               where partner.id = partnerId and contact.id = userId)
+                         */
+                //In other words where the candidate opportunity's associated job
+                //is one of the jobs that the logged in user has been nominated by their
+                //partner to be the contact for.
+                if (loggedInUser != null) {
+                    Partner loggedInUserPartner = loggedInUser.getPartner();
+                    if (loggedInUserPartner != null) {
+                        Long partnerId = loggedInUserPartner.getId();
+                        Long userId = loggedInUser.getId();
+
+                        //Create the Select subquery - giving all the jobs the user is contact for
+                        Subquery<SalesforceJobOpp> sq = query.subquery(SalesforceJobOpp.class);
+                        Root<PartnerJobRelation> pjr = sq.from(PartnerJobRelation.class);
+                        sq.select(pjr.get("job")).where(
+                            builder.and(
+                                builder.equal(pjr.get("partner").get("id"), partnerId),
+                                builder.equal(pjr.get("contact").get("id"), userId)
+                            )
+                        );
+
+                        //Check that the opp's job appears in the jobs return by the above subquery.
+                        Join<Object, Object> jobOpp = opp.join("jobOpp");
+                        ors.getExpressions().add(
+                            builder.in(jobOpp).value(sq)
+                        );
+                    }
+                }
+            }
+
+            //If managed by this user's partner
+            if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+                //Just check that the candidate associated with the opportunity is managed
+                //by the logged in user's partner.
+                if (loggedInUser != null) {
+                    Partner loggedInUserPartner = loggedInUser.getPartner();
+                    if (loggedInUserPartner != null) {
+                        Join<Object, Object> candidate = opp.join("candidate");
+                        Join<Object, Object> user = candidate.join("user");
+                        Join<Object, Object> partner = user.join("partner");
+                        ors.getExpressions().add(
+                            builder.equal(partner.get("id"), loggedInUserPartner.getId())
+                        );
+                    }
+                }
+            }
+
+            if (ors.getExpressions().size() != 0) {
+                conjunction.getExpressions().add(ors);
+            }
 
             return conjunction;
         };
