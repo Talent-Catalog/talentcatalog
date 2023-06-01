@@ -73,7 +73,7 @@ public class Opportunity extends SalesforceObjectBase {
     private String employerFeedback;
 
     @JsonSetter("IsClosed")
-    private boolean isClosed;
+    private boolean closed;
 
     @JsonSetter("NextStep")
     private String nextStep;

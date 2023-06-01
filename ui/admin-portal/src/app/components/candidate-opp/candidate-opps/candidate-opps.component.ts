@@ -50,6 +50,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   searchFilter: ElementRef;
 
   searchForm: FormGroup;
+  showClosedTip = "Show opps that have been closed";
 
   //Default sort opps in ascending order of nextDueDate
   sortField = 'nextStepDueDate';
@@ -100,6 +101,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     this.searchForm = this.fb.group({
       keyword: [filter],
       myOppsOnly: [false],
+      closedOpps: [false],
       selectedStages: [[]]
     });
 
@@ -110,6 +112,10 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
   private get keyword(): string {
     return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  private get closedOpps(): boolean {
+    return this.searchForm ? this.searchForm.value.closedOpps : false;
   }
 
   private get myOppsOnly(): boolean {
@@ -163,6 +169,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
         } else {
           req.ownedByMyPartner = true;
         }
+        req.sfOppClosed = this.closedOpps;
         break;
     }
 

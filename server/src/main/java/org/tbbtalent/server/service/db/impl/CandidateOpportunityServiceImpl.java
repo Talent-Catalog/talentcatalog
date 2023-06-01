@@ -239,6 +239,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
         candidateOpportunity.setCandidate(candidate);
 
+        candidateOpportunity.setClosed(op.isClosed());
         candidateOpportunity.setEmployerFeedback(op.getEmployerFeedback());
         candidateOpportunity.setName(op.getName());
         candidateOpportunity.setNextStep(op.getNextStep());

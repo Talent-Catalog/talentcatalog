@@ -36,6 +36,11 @@ import org.springframework.lang.Nullable;
 public class AbstractOpportunity extends AbstractAuditableDomainObject<Long> {
 
     /**
+     * True if opportunity is closed
+     */
+    private boolean closed;
+
+    /**
      * Closing comments on opportunity.
      * Normally null until opportunity has been closed.
      */

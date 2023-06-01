@@ -60,6 +60,7 @@ public class CandidateOpportunityAdminApi implements
         return new DtoBuilder()
             .add("id")
             .add("sfId")
+            .add("closed")
             .add("closingComments")
             .add("closingCommentsForCandidate")
             .add("employerFeedback")

@@ -176,6 +176,7 @@ export interface OpportunityIds extends HasId {
 }
 
 export interface Opportunity extends OpportunityIds {
+  closed: boolean;
   closingComments?: string;
   lastModifiedDate?: Date;
   name: string;

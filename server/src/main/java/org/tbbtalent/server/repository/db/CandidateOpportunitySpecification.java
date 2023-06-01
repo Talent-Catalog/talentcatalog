@@ -80,6 +80,8 @@ public class CandidateOpportunitySpecification {
 
             //TODO Also - display candidate name when not Candidate Jobs tab.
 
+            //OWNERSHIP
+            // Owner by me or Owned by my partner
             Predicate ors = builder.disjunction();
 
             //If managed by this user (ie by logged in user)

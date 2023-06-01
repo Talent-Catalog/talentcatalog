@@ -8,8 +8,14 @@
 <div class="searches" *ngIf="searchBy">
   <form [formGroup]="searchForm" (ngSubmit)="search()">
     <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
-      <label class="form-label" [title]="myOppsOnlyTip" for="myOppsOnlyTip">My opps only</label>
-      <input [title]="myOppsOnlyTip" type="checkbox" [formControlName]="'myOppsOnly'" id="myOppsOnlyTip">
+      <div>
+        <label class="form-label" [title]="myOppsOnlyTip" for="myOppsOnly">My opps only</label>
+        <input [title]="myOppsOnlyTip" type="checkbox" [formControlName]="'myOppsOnly'" id="myOppsOnly">
+      </div>
+      <div>
+        <label class="form-label" [title]="showClosedTip" for="closedOpps">Show closed opps</label>
+        <input [title]="showClosedTip" type="checkbox" [formControlName]="'closedOpps'" id="closedOpps">
+      </div>
     </div>
 
     <div class="mb-3">
