@@ -30,6 +30,10 @@ import {CandidateAttachment} from "./candidate-attachment";
 import {TaskAssignment} from "./task-assignment";
 import {CandidateOpportunity} from "./candidate-opportunity";
 
+export interface ShortCandidate {
+  candidateNumber: string;
+}
+
 export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;

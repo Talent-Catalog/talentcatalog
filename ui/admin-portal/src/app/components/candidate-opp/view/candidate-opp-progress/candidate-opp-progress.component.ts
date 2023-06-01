@@ -11,6 +11,7 @@ import {
 })
 export class CandidateOppProgressComponent implements OnInit {
   @Input() opp: CandidateOpportunity;
+  editable: boolean;
 
   constructor() { }
 
@@ -21,4 +22,7 @@ export class CandidateOppProgressComponent implements OnInit {
     return getCandidateOpportunityStageName
   }
 
+  editOppProgress() {
+    //todo editOppProgress
+  }
 }

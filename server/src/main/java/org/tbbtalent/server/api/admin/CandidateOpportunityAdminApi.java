@@ -60,6 +60,7 @@ public class CandidateOpportunityAdminApi implements
         return new DtoBuilder()
             .add("id")
             .add("sfId")
+            .add("candidate", shortCandidateDto())
             .add("closed")
             .add("closingComments")
             .add("closingCommentsForCandidate")
@@ -72,6 +73,14 @@ public class CandidateOpportunityAdminApi implements
             .add("stage")
             ;
     }
+
+
+    private DtoBuilder shortCandidateDto() {
+        return new DtoBuilder()
+            .add("candidateNumber")
+            ;
+    }
+
     private DtoBuilder jobDto() {
         return new DtoBuilder()
             .add("id")

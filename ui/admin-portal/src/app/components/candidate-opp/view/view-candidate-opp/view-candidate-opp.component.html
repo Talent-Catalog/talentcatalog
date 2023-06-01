@@ -17,6 +17,12 @@
       <span class="small text-muted">
 <!--        todo This doesn't show abbreviated stage when opp.stage is a real enum and not the key - which json seems to map to -->
         ({{opp.id}}) {{getCandidateOpportunityStageName(opp.stage)}}
+        <a [routerLink]="['/job',opp.jobOpp.id]">
+          <i class="fas fa-hands-helping" title="Job"></i>
+        </a>
+        <a [routerLink]="['/candidate',opp.candidate.candidateNumber]">
+          <i class="fas fa-user" title="Candidate"></i>
+        </a>
       </span>
     </h1>
   </div>

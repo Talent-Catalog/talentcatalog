@@ -192,6 +192,7 @@ public class CandidateBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("sfId")
+            .add("candidate", shortCandidateDto())
             .add("closingComments")
             .add("closingCommentsForCandidate")
             .add("employerFeedback")
@@ -202,6 +203,12 @@ public class CandidateBuilderSelector {
             .add("nextStepDueDate")
             .add("stage")
                 ;
+    }
+
+    private DtoBuilder shortCandidateDto() {
+        return new DtoBuilder()
+            .add("candidateNumber")
+            ;
     }
 
     private DtoBuilder jobDto() {
