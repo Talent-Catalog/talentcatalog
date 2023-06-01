@@ -2,9 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {
   CandidateOpportunity,
   getCandidateOpportunityStageName
-} from "../../../../model/candidate-opportunity";
-import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "angular-2-local-storage";
+} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -15,15 +13,7 @@ export class ViewCandidateOppComponent implements OnInit {
   @Input() opp: CandidateOpportunity;
   @Input() showBreadcrumb: boolean = true;
 
-  activeTabId: string;
-
-  error: any;
-  loading: boolean;
-  private lastTabKey: string = 'OppLastTab';
-
-  constructor(
-    private localStorageService: LocalStorageService,
-  ) { }
+  constructor() { }
 
   ngOnInit(): void {
   }
@@ -32,13 +22,13 @@ export class ViewCandidateOppComponent implements OnInit {
     return getCandidateOpportunityStageName
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  get editable(): boolean {
+    //todo Needs logic as who can update an opp.
+    return true;
   }
 
-  private setActiveTabId(id: string) {
-    this.activeTabId = id;
-    this.localStorageService.set(this.lastTabKey, id);
+  editOppProgress() {
+    //todo editOppProgress
   }
 
 }

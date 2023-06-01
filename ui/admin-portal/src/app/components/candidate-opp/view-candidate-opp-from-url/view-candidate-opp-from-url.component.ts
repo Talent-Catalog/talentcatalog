@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {CandidateOpportunity} from "../../../../model/candidate-opportunity";
+import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {ActivatedRoute} from "@angular/router";
-import {CandidateOpportunityService} from "../../../../services/candidate-opportunity.service";
+import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 
 @Component({
   selector: 'app-view-candidate-opp-from-url',

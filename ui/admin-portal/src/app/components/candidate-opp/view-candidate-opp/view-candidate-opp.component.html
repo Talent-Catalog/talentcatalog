@@ -1,0 +1,62 @@
+<div *ngIf="opp">
+
+  <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
+    <ol class="breadcrumb align-items-center">
+      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
+      <li *ngIf="opp.name" class="breadcrumb-item active" aria-current="page">Opp / {{opp.name}}</li>
+    </ol>
+
+  </nav>
+
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>{{opp.name}}
+      <span class="small text-muted">
+<!--        todo This doesn't show abbreviated stage when opp.stage is a real enum and not the key - which json seems to map to -->
+        ({{opp.id}}) {{getCandidateOpportunityStageName(opp.stage)}}
+        <a [routerLink]="['/job',opp.jobOpp.id]">
+          <i class="fas fa-hands-helping" title="Job"></i>
+        </a>
+        <a [routerLink]="['/candidate',opp.candidate.candidateNumber]">
+          <i class="fas fa-user" title="Candidate"></i>
+        </a>
+      </span>
+    </h1>
+  </div>
+  <div class="card">
+
+    <div class="card-header">
+      Candidate Job Opportunity
+      <div class="float-end" *ngIf="editable">
+        <button class="btn btn-sm btn-outline-secondary" title="Update progress" (click)="editOppProgress()">
+          <i class="fas fa-edit"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="row">
+
+        <div class="mb-3 col-sm-12 col-md-4">
+          <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>Stage</label>
+          <div class="form-control-plaintext">
+            {{getCandidateOpportunityStageName(opp.stage)}}
+          </div>
+        </div>
+
+        <div class="mb-3 col-sm-12 col-md-4">
+          <label class="col-form-label"><i class="fa-solid fa-circle-arrow-right"></i>Next Step</label>
+          <div class="form-control-plaintext">
+            {{opp.nextStep}}
+          </div>
+        </div>
+
+        <div class="mb-3 col-sm-12 col-md-4">
+          <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Next Step Due Date</label>
+          <div class="form-control-plaintext">
+            {{opp.nextStepDueDate}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -689,16 +689,10 @@ import {
 } from './components/candidates/view/jobs/view-candidate-jobs/view-candidate-jobs.component';
 import {
   ViewCandidateOppFromUrlComponent
-} from './components/candidate-opp/view/view-candidate-opp-from-url/view-candidate-opp-from-url.component';
+} from './components/candidate-opp/view-candidate-opp-from-url/view-candidate-opp-from-url.component';
 import {
   ViewCandidateOppComponent
-} from './components/candidate-opp/view/view-candidate-opp/view-candidate-opp.component';
-import {
-  CandidateOppNotesComponent
-} from './components/candidate-opp/view/candidate-opp-notes/candidate-opp-notes.component';
-import {
-  CandidateOppProgressComponent
-} from './components/candidate-opp/view/candidate-opp-progress/candidate-opp-progress.component';
+} from './components/candidate-opp/view-candidate-opp/view-candidate-opp.component';
 import {
   CandidateOppsComponent
 } from './components/candidate-opp/candidate-opps/candidate-opps.component';
@@ -981,8 +975,6 @@ import {
     ViewCandidateJobsComponent,
     ViewCandidateOppFromUrlComponent,
     ViewCandidateOppComponent,
-    CandidateOppNotesComponent,
-    CandidateOppProgressComponent,
     CandidateOppsComponent,
     CandidateOppsWithDetailComponent
   ],

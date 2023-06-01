@@ -40,7 +40,7 @@ import {
 } from "./components/job/jobs-with-detail/jobs-with-detail.component";
 import {
   ViewCandidateOppFromUrlComponent
-} from "./components/candidate-opp/view/view-candidate-opp-from-url/view-candidate-opp-from-url.component";
+} from "./components/candidate-opp/view-candidate-opp-from-url/view-candidate-opp-from-url.component";
 
 const routes: Routes = [
   {
