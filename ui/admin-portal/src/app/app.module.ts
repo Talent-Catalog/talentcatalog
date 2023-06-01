@@ -509,8 +509,8 @@ import {
   CreateCandidateLanguageComponent
 } from './components/candidates/view/language/create/create-candidate-language.component';
 import {
-  SalesforceStageComponent
-} from './components/util/salesforce-stage/salesforce-stage.component';
+  EditCandidateOppComponent
+} from './components/candidate-opp/edit-candidate-opp/edit-candidate-opp.component';
 import {
   IeltsScoreValidationComponent
 } from './components/util/ielts-score-validation/ielts-score-validation.component';
@@ -897,7 +897,7 @@ import {
     CandidateStatusSelectorComponent,
     FinalAgreementComponent,
     CreateCandidateLanguageComponent,
-    SalesforceStageComponent,
+    EditCandidateOppComponent,
     IeltsScoreValidationComponent,
     FileSelectorComponent,
     NewJobComponent,

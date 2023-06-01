@@ -110,7 +110,9 @@ import {
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
-import {SalesforceStageComponent} from "../../util/salesforce-stage/salesforce-stage.component";
+import {
+  EditCandidateOppComponent
+} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {
@@ -1386,7 +1388,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       //If we do not have a job opportunity, there will be no candidate opp info.
       this.doCreateUpdateSalesforceOnList2(null, selectedCandidatesOnly);
     } else {
-      const applyToWholeListQuery = this.modalService.open(SalesforceStageComponent, {size: 'lg'});
+      const applyToWholeListQuery = this.modalService.open(EditCandidateOppComponent, {size: 'lg'});
       applyToWholeListQuery.result
       .then((info: SalesforceOppParams) => {
         this.doCreateUpdateSalesforceOnList2(info, selectedCandidatesOnly);

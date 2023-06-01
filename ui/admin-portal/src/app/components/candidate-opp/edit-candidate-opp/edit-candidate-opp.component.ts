@@ -11,11 +11,11 @@ export interface SalesforceStageInfo {
 }
 
 @Component({
-  selector: 'app-salesforce-stage',
-  templateUrl: './salesforce-stage.component.html',
-  styleUrls: ['./salesforce-stage.component.scss']
+  selector: 'app-edit-candidate-opp',
+  templateUrl: './edit-candidate-opp.component.html',
+  styleUrls: ['./edit-candidate-opp.component.scss']
 })
-export class SalesforceStageComponent implements OnInit {
+export class EditCandidateOppComponent implements OnInit {
 
   salesforceStageForm: FormGroup;
   candidateOpportunityStageOptions: EnumOption[] = enumOptions(CandidateOpportunityStage);
