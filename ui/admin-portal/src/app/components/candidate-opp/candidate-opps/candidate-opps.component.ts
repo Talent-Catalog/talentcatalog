@@ -50,7 +50,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   searchFilter: ElementRef;
 
   searchForm: FormGroup;
-  showClosedTip = "Show opps that have been closed";
+  showClosedOppsTip = "Show opps that have been closed";
 
   //Default sort opps in ascending order of nextDueDate
   sortField = 'nextStepDueDate';
@@ -58,7 +58,9 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
 
   private filterKeySuffix: string = 'Filter';
+  private myOppsOnlySuffix: string = 'MyOppsOnly';
   private savedStateKeyPrefix: string = 'BrowseKey';
+  private showClosedOppsSuffix: string = 'ShowClosedOpps';
   private sortDirectionSuffix: string = 'SortDir';
   private sortFieldSuffix: string = 'Sort';
 
@@ -98,10 +100,14 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     //Pick up any previous keyword filter
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
 
+    //Pick up previous options
+    const previousMyOppsOnly: string = this.localStorageService.get(this.savedStateKey() + this.myOppsOnlySuffix);
+    const previousShowClosedOpps: string = this.localStorageService.get(this.savedStateKey() + this.showClosedOppsSuffix);
+
     this.searchForm = this.fb.group({
       keyword: [filter],
-      myOppsOnly: [false],
-      closedOpps: [false],
+      myOppsOnly: [previousMyOppsOnly ? previousMyOppsOnly : false],
+      showClosedOpps: [previousShowClosedOpps ? previousShowClosedOpps : false],
       selectedStages: [[]]
     });
 
@@ -114,8 +120,8 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     return this.searchForm ? this.searchForm.value.keyword : "";
   }
 
-  private get closedOpps(): boolean {
-    return this.searchForm ? this.searchForm.value.closedOpps : false;
+  private get showClosedOpps(): boolean {
+    return this.searchForm ? this.searchForm.value.showClosedOpps : false;
   }
 
   private get myOppsOnly(): boolean {
@@ -148,6 +154,10 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     this.localStorageService.set(this.savedStateKey()+this.sortFieldSuffix, this.sortField);
     this.localStorageService.set(this.savedStateKey()+this.sortDirectionSuffix, this.sortDirection);
 
+    //Remember options
+    this.localStorageService.set(this.savedStateKey()+this.myOppsOnlySuffix, this.myOppsOnly);
+    this.localStorageService.set(this.savedStateKey()+this.showClosedOppsSuffix, this.showClosedOpps);
+
     let req = new SearchOpportunityRequest();
     req.keyword = this.keyword;
     req.pageNumber = this.pageNumber - 1;
@@ -169,7 +179,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
         } else {
           req.ownedByMyPartner = true;
         }
-        req.sfOppClosed = this.closedOpps;
+        req.sfOppClosed = this.showClosedOpps;
         break;
     }
 
