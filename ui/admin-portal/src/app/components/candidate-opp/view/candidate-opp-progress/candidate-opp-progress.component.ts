@@ -11,11 +11,15 @@ import {
 })
 export class CandidateOppProgressComponent implements OnInit {
   @Input() opp: CandidateOpportunity;
-  editable: boolean;
 
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  get editable(): boolean {
+    //todo Needs logic as who can update an opp.
+    return true;
   }
 
   get getCandidateOpportunityStageName() {
