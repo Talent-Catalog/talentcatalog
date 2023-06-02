@@ -16,13 +16,38 @@
 
 package org.tbbtalent.server.request.candidate.opportunity;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.Nullable;
 
+/**
+ * Opportunity parameters - common to candidate opportunities and job opportunities
+ *
+ * @author John Cameron
+ */
 @Getter
 @Setter
 @ToString
-public class UpdateCandidateOpportunityRequest {
-    //TODO JC Support updating of candidate opportunities
+public class OpportunityParams {
+
+    /**
+     * Any text which will update a Salesforce Opportunity next step
+     */
+    @Nullable
+    private String nextStep;
+
+    /**
+     * Any text which will update a Salesforce Opportunity next step due date
+     */
+    @Nullable
+    private LocalDate nextStepDueDate;
+
+    /**
+     * Comments explaining why the opportunity was closed
+     */
+    @Nullable
+    private String closingComments;
+
 }

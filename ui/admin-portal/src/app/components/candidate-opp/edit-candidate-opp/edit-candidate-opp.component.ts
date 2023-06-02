@@ -1,14 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
-import {SalesforceOppParams} from "../../../model/candidate";
+import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunityStage} from "../../../model/candidate-opportunity";
-
-export interface SalesforceStageInfo {
-  stageName?: string;
-  nextStep?: string;
-}
 
 @Component({
   selector: 'app-edit-candidate-opp',
@@ -45,7 +40,7 @@ export class EditCandidateOppComponent implements OnInit {
   }
 
   onSave() {
-    const info: SalesforceOppParams = {
+    const info: CandidateOpportunityParams = {
       stage: this.stage,
       nextStep: this.nextStep,
       nextStepDueDate: this.nextStepDueDate,

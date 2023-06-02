@@ -361,7 +361,7 @@ export enum CandidateStatus {
   withdrawn = "withdrawn (inactive)"
 }
 
-export interface SalesforceOppParams {
+export interface CandidateOpportunityParams {
   stage?: string;
   nextStep?: string;
   nextStepDueDate?: string;
@@ -372,12 +372,12 @@ export interface SalesforceOppParams {
 export interface UpdateCandidateOppsRequest {
   candidateIds: number[];
   sfJobOppId: string;
-  salesforceOppParams?: SalesforceOppParams;
+  candidateOppParams?: CandidateOpportunityParams;
 }
 
 export interface UpdateCandidateListOppsRequest {
   savedListId: number;
-  salesforceOppParams?: SalesforceOppParams;
+  candidateOppParams?: CandidateOpportunityParams;
 }
 
 export interface UpdateCandidateShareableNotesRequest {

@@ -28,7 +28,7 @@ import {
 
 import {
   Candidate,
-  SalesforceOppParams,
+  CandidateOpportunityParams,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
@@ -1390,14 +1390,14 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       const applyToWholeListQuery = this.modalService.open(EditCandidateOppComponent, {size: 'lg'});
       applyToWholeListQuery.result
-      .then((info: SalesforceOppParams) => {
+      .then((info: CandidateOpportunityParams) => {
         this.doCreateUpdateSalesforceOnList2(info, selectedCandidatesOnly);
       })
       .catch(() => { });
     }
 }
 
-  private doCreateUpdateSalesforceOnList2(info: SalesforceOppParams, selectedCandidatesOnly: boolean) {
+  private doCreateUpdateSalesforceOnList2(info: CandidateOpportunityParams, selectedCandidatesOnly: boolean) {
     this.error = null;
     this.updating = true;
 

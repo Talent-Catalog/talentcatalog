@@ -22,19 +22,22 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.CandidateOpportunity;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
-import org.tbbtalent.server.request.candidate.opportunity.UpdateCandidateOpportunityRequest;
 import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/admin/opp")
 public class CandidateOpportunityAdminApi implements
-    ITableApi<SearchCandidateOpportunityRequest, UpdateCandidateOpportunityRequest, UpdateCandidateOpportunityRequest> {
+    ITableApi<SearchCandidateOpportunityRequest, CandidateOpportunityParams, CandidateOpportunityParams> {
 
     private final CandidateOpportunityService candidateOpportunityService;
     public CandidateOpportunityAdminApi(CandidateOpportunityService candidateOpportunityService) {
@@ -54,6 +57,14 @@ public class CandidateOpportunityAdminApi implements
         Page<CandidateOpportunity> opps = candidateOpportunityService.searchCandidateOpportunities(request);
         final Map<String, Object> objectMap = candidateOpportunityDto().buildPage(opps);
         return objectMap;
+    }
+
+    @Override
+    @PutMapping("{id}")
+    public @NotNull Map<String, Object> update(long id, CandidateOpportunityParams request)
+        throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+        CandidateOpportunity opp = candidateOpportunityService.updateCandidateOpportunity(id, request);
+        return candidateOpportunityDto().build(opp);
     }
 
     private DtoBuilder candidateOpportunityDto() {

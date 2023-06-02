@@ -19,6 +19,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {CandidateOpportunity, SearchOpportunityRequest} from "../model/candidate-opportunity";
 import {SearchResults} from "../model/search-results";
+import {CandidateOpportunityParams} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -76,6 +77,16 @@ export class CandidateOpportunityService {
       observable = of(this.mockSearchResults);
     } else {
       observable = this.http.post<SearchResults<CandidateOpportunity>>(`${this.apiUrl}/search-paged`, request);
+    }
+    return observable;
+  }
+
+  updateCandidateOpportunity(id: number, info: CandidateOpportunityParams): Observable <CandidateOpportunity> {
+    let observable;
+    if (this.mocking) {
+      observable = of(this.mockOpp);
+    } else {
+      observable = this.http.put<CandidateOpportunity>(`${this.apiUrl}/${id}`, info);
     }
     return observable;
   }

@@ -72,7 +72,7 @@ import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
 import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
@@ -277,7 +277,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void createOrUpdateCandidateOpportunities(
-        List<Candidate> candidates, SalesforceOppParams salesforceOppParams,
+        List<Candidate> candidates, CandidateOpportunityParams candidateOppParams,
         SalesforceJobOpp jobOpportunity)
         throws WebClientException, SalesforceException {
 
@@ -304,13 +304,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             LocalDate nextStepDueDate = null;
             String closingComments = null;
             String employerFeedback = null;
-            if (salesforceOppParams != null) {
-                final CandidateOpportunityStage stage = salesforceOppParams.getStage();
+            if (candidateOppParams != null) {
+                final CandidateOpportunityStage stage = candidateOppParams.getStage();
                 stageName = stage == null ? null : stage.getSalesforceStageName();
-                nextStep = salesforceOppParams.getNextStep();
-                nextStepDueDate = salesforceOppParams.getNextStepDueDate();
-                closingComments = salesforceOppParams.getClosingComments();
-                employerFeedback = salesforceOppParams.getEmployerFeedback();
+                nextStep = candidateOppParams.getNextStep();
+                nextStepDueDate = candidateOppParams.getNextStepDueDate();
+                closingComments = candidateOppParams.getClosingComments();
+                employerFeedback = candidateOppParams.getEmployerFeedback();
             }
 
             //Always need to specify a stage name when creating a new opp

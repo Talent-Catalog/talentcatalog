@@ -490,7 +490,7 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = get(request.getSavedListId());
         SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
         candidateOpportunityService.createUpdateSalesforce(
-            savedList.getCandidates(), sfJobOpp, request.getSalesforceOppParams());
+            savedList.getCandidates(), sfJobOpp, request.getCandidateOppParams());
     }
 
     @Override

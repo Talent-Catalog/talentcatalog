@@ -30,7 +30,7 @@ import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 
 /**
@@ -210,7 +210,7 @@ public interface SalesforceService {
      * external id TBBCandidateExternalId__c
      *
      * @param candidates Candidates
-     * @param salesforceOppParams Optional Salesforce fields to set on all given candidates'
+     * @param candidateOppParams Optional Salesforce fields to set on all given candidates'
      *                            opportunities
      * @param jobOpp Employer job opportunity on Salesforce
      * @throws WebClientException if there is a problem connecting to Salesforce
@@ -218,7 +218,7 @@ public interface SalesforceService {
      * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
      */
     void createOrUpdateCandidateOpportunities(List<Candidate> candidates,
-        @Nullable SalesforceOppParams salesforceOppParams, SalesforceJobOpp jobOpp)
+        @Nullable CandidateOpportunityParams candidateOppParams, SalesforceJobOpp jobOpp)
             throws WebClientException, SalesforceException;
 
     /**

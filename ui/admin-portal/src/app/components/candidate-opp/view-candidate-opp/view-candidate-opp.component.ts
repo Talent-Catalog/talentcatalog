@@ -3,6 +3,10 @@ import {
   CandidateOpportunity,
   getCandidateOpportunityStageName
 } from "../../../model/candidate-opportunity";
+import {EditCandidateOppComponent} from "../edit-candidate-opp/edit-candidate-opp.component";
+import {CandidateOpportunityParams} from "../../../model/candidate";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -13,7 +17,13 @@ export class ViewCandidateOppComponent implements OnInit {
   @Input() opp: CandidateOpportunity;
   @Input() showBreadcrumb: boolean = true;
 
-  constructor() { }
+  error: string;
+  updating: boolean;
+
+  constructor(
+    private candidateOpportunityService: CandidateOpportunityService,
+    private modalService: NgbModal,
+  ) { }
 
   ngOnInit(): void {
   }
@@ -28,7 +38,20 @@ export class ViewCandidateOppComponent implements OnInit {
   }
 
   editOppProgress() {
-    //todo editOppProgress
+    const editQuery = this.modalService.open(EditCandidateOppComponent, {size: 'lg'});
+    editQuery.result
+    .then((info: CandidateOpportunityParams) => {this.doUpdate(info);})
+    .catch(() => { });
   }
 
+  private doUpdate(info: CandidateOpportunityParams) {
+    this.candidateOpportunityService.updateCandidateOpportunity(this.opp.id, info)
+    .subscribe(result => {
+        //todo  Need to emit an opp changed which will refresh the display
+        this.updating = false;
+      },
+      err => {this.error = err; this.updating = false; }
+    );
+
+  }
 }

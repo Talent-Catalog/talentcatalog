@@ -27,8 +27,8 @@ import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
 public interface CandidateOpportunityService {
@@ -41,7 +41,7 @@ public interface CandidateOpportunityService {
      * @param jobOpp Job associated with candidate opportunities
      */
     void createOrUpdateCandidateOpportunities(
-        List<Candidate> candidates, SalesforceOppParams oppParams, SalesforceJobOpp jobOpp);
+        List<Candidate> candidates, CandidateOpportunityParams oppParams, SalesforceJobOpp jobOpp);
 
     /**
      * Creates or updates Contact records on Salesforce for the given candidates and, if sfJobOpp
@@ -51,13 +51,13 @@ public interface CandidateOpportunityService {
      *
      * @param candidates Candidates to update
      * @param sfJobOpp If not null the candidate opportunities are created/updated
-     * @param salesforceOppParams Used to create/update candidate opportunities
+     * @param candidateOppParams Used to create/update candidate opportunities
      * @throws SalesforceException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     void createUpdateSalesforce(Collection<Candidate> candidates,
-        @Nullable SalesforceJobOpp sfJobOpp, @Nullable SalesforceOppParams salesforceOppParams)
+        @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
         throws SalesforceException, WebClientException;
 
     /**
@@ -104,4 +104,13 @@ public interface CandidateOpportunityService {
      */
     Page<CandidateOpportunity> searchCandidateOpportunities(SearchCandidateOpportunityRequest request);
 
+    /**
+     * Updates the CandidateOpportunity with the given id with the data contained in the request
+     * @param id Id of opportunity to get
+     * @param request Candidate opportunity data
+     * @return CandidateOpportunity
+     * @throws NoSuchObjectException if there is no opportunity with this id.
+     */
+    CandidateOpportunity updateCandidateOpportunity(long id, CandidateOpportunityParams request)
+        throws NoSuchObjectException;
 }
