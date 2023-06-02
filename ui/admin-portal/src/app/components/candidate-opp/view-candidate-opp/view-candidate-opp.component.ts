@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   CandidateOpportunity,
   getCandidateOpportunityStageName
@@ -16,6 +16,7 @@ import {CandidateOpportunityService} from "../../../services/candidate-opportuni
 export class ViewCandidateOppComponent implements OnInit {
   @Input() opp: CandidateOpportunity;
   @Input() showBreadcrumb: boolean = true;
+  @Output() candidateOppUpdated = new EventEmitter<CandidateOpportunity>();
 
   error: string;
   updating: boolean;
@@ -46,8 +47,9 @@ export class ViewCandidateOppComponent implements OnInit {
 
   private doUpdate(info: CandidateOpportunityParams) {
     this.candidateOpportunityService.updateCandidateOpportunity(this.opp.id, info)
-    .subscribe(result => {
-        //todo  Need to emit an opp changed which will refresh the display
+    .subscribe(opp => {
+        //Emit an opp updated which will refresh the display
+        this.candidateOppUpdated.emit(opp);
         this.updating = false;
       },
       err => {this.error = err; this.updating = false; }

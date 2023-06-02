@@ -28,6 +28,10 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
   styleUrls: ['./candidate-opps.component.scss']
 })
 export class CandidateOppsComponent implements OnInit, OnChanges {
+  /**
+   * Only one of these inputs should be selected - one does a search, the other just takes
+   * an array of opps.
+   */
   @Input() searchBy: SearchOppsBy;
   @Input() candidateOpps: CandidateOpportunity[];
 
