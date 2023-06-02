@@ -12,6 +12,9 @@ import {CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 })
 export class EditCandidateOppComponent implements OnInit {
 
+  //todo Allow for optional supply of CandidateOpportunity which can be used to prefill
+  //form fields with existing values
+
   salesforceStageForm: FormGroup;
   candidateOpportunityStageOptions: EnumOption[] = enumOptions(CandidateOpportunityStage);
 
