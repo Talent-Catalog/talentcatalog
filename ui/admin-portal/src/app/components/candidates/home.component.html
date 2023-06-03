@@ -48,15 +48,16 @@
     </ng-template>
   </ng-container>
 
-  <ng-container *ngIf="ownsOpps()" ngbNavItem="MyOpps">
-    <a ngbNavLink title="Opps created by my partner organization">{{loggedInPartner.abbreviation}} Opps</a>
-    <ng-template ngbNavContent>
-      <app-candidate-opps-with-detail
-        [searchBy]="SearchOppsBy.mine"
-      >
-      </app-candidate-opps-with-detail>
-    </ng-template>
-  </ng-container>
+<!--  Todo Temporarily disable so we can get these changes into staging without showing this new tab.-->
+<!--  <ng-container *ngIf="ownsOpps()" ngbNavItem="MyOpps">-->
+<!--    <a ngbNavLink title="Opps created by my partner organization">{{loggedInPartner.abbreviation}} Opps</a>-->
+<!--    <ng-template ngbNavContent>-->
+<!--      <app-candidate-opps-with-detail-->
+<!--        [searchBy]="SearchOppsBy.mine"-->
+<!--      >-->
+<!--      </app-candidate-opps-with-detail>-->
+<!--    </ng-template>-->
+<!--  </ng-container>-->
 
   <ng-container ngbNavItem="MySearches">
     <a ngbNavLink title="Searches that I created">My Searches</a>
