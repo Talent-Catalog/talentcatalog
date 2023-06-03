@@ -57,6 +57,22 @@
             {{opp.nextStepDueDate}}
           </div>
         </div>
+        <hr/>
+        <div>
+          <label class="form-label" for="closingComments">
+            Closing comments:
+          </label>
+          <div class="col-12" id="closingComments" [innerHtml]="opp.closingComments">
+          </div>
+        </div>
+        <hr/>
+        <div>
+          <label class="form-label" for="employerFeedback">
+            Employer feedback:
+          </label>
+          <div class="col-12" id="employerFeedback" [innerHtml]="opp.employerFeedback">
+          </div>
+        </div>
       </div>
     </div>
   </div>

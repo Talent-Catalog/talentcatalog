@@ -28,14 +28,12 @@
 
     <div class="mb-3">
       <label class="form-label" for="closingComments">Closing comments</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                id="closingComments" [formControlName]="'closingComments'"></textarea>
+      <ngx-wig id="closingComments" formControlName="closingComments"></ngx-wig>
     </div>
 
     <div class="mb-3">
       <label class="form-label" for="employerFeedback">Employer feedback</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                id="employerFeedback" [formControlName]="'employerFeedback'"></textarea>
+      <ngx-wig id="employerFeedback" formControlName="employerFeedback"></ngx-wig>
     </div>
   </form>
 </div>
