@@ -10,7 +10,6 @@ import {enumOptions} from "../../../util/enum";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SearchOppsBy} from "../../../model/base";
 import {indexOfHasId} from "../../../model/saved-search";
-import {truncate} from 'src/app/util/string';
 
 @Component({
   selector: 'app-jobs',
@@ -223,10 +222,6 @@ export class JobsComponent implements OnInit {
     this.localStorageService.set(this.savedStateKey(), id);
 
     this.jobSelection.emit(job);
-  }
-
-  get truncate() {
-    return truncate;
   }
 
   fullUserName(contactUser: User) {

@@ -9,7 +9,6 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {truncate} from 'src/app/util/string';
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {
   CandidateOpportunity,
@@ -225,10 +224,6 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
   get getCandidateOpportunityStageName() {
     return getCandidateOpportunityStageName;
-  }
-
-  get truncate() {
-    return truncate;
   }
 
   private subscribeToFilterChanges() {
