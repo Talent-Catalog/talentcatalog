@@ -40,6 +40,8 @@ export class ViewCandidateOppComponent implements OnInit {
 
   editOppProgress() {
     const editQuery = this.modalService.open(EditCandidateOppComponent, {size: 'lg'});
+    editQuery.componentInstance.opp = this.opp;
+
     editQuery.result
     .then((info: CandidateOpportunityParams) => {this.doUpdate(info);})
     .catch(() => { });

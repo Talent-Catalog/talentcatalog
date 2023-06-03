@@ -3,7 +3,10 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateOpportunityStage} from "../../../model/candidate-opportunity";
+import {
+  CandidateOpportunity,
+  CandidateOpportunityStage
+} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-edit-candidate-opp',
@@ -12,8 +15,9 @@ import {CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 })
 export class EditCandidateOppComponent implements OnInit {
 
-  //todo Allow for optional supply of CandidateOpportunity which can be used to prefill
+  //Allow for optional supply of CandidateOpportunity which can be used to prefill
   //form fields with existing values
+  opp: CandidateOpportunity;
 
   salesforceStageForm: FormGroup;
   candidateOpportunityStageOptions: EnumOption[] = enumOptions(CandidateOpportunityStage);
@@ -24,11 +28,11 @@ export class EditCandidateOppComponent implements OnInit {
 
   ngOnInit(): void {
     this.salesforceStageForm = this.fb.group({
-      stage: [null],
-      nextStep: [null],
-      nextStepDueDate: [null],
-      closingComments: [null],
-      employerFeedback: [null]
+      stage: [this.opp ? this.opp.stage : null],
+      nextStep: [this.opp ? this.opp.nextStep : null],
+      nextStepDueDate: [this.opp ? this.opp.nextStepDueDate : null],
+      closingComments: [this.opp ? this.opp.closingComments : null],
+      employerFeedback: [this.opp ? this.opp.employerFeedback : null]
     });
   }
 
