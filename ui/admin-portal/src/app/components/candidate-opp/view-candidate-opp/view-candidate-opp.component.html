@@ -11,8 +11,6 @@
   <div class="d-flex justify-content-between align-items-center">
     <h1>{{opp.name}}
       <span class="small text-muted">
-<!--        todo This doesn't show abbreviated stage when opp.stage is a real enum and not the key - which json seems to map to -->
-        ({{opp.id}}) {{getCandidateOpportunityStageName(opp.stage)}}
         <a [routerLink]="['/job',opp.jobOpp.id]">
           <i class="fas fa-hands-helping" title="Job"></i>
         </a>
@@ -25,7 +23,7 @@
   <div class="card">
 
     <div class="card-header">
-      Candidate Job Opportunity
+      Candidate Job Opportunity ({{opp.id}})
       <div class="float-end" *ngIf="editable">
         <button class="btn btn-sm btn-outline-secondary" title="Update progress" (click)="editOppProgress()">
           <i class="fas fa-edit"></i>
