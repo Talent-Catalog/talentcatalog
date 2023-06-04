@@ -124,10 +124,30 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private List<Long> educationMajorIds;
     private String regoReferrerParam;
     private List<ReviewStatus> reviewStatusFilter;
-    private boolean includeNew;
+
+    //TODO JC I don't think is used - possible Zombie code
     private Boolean includeUploadedFiles;
     private LocalDate fromDate;
     private List<SearchJoinRequest> searchJoinRequests;
+
+    /**
+     * If specified, requests display of candidates who have any candidate opportunities
+     * (anyOpps = true) or who have no candidate opportunities (anyOpps = false)
+     */
+    private Boolean anyOpps;
+
+    /**
+     * If specified, requests display of candidates who have any closed candidate opportunities
+     * (closedOpps = true) or who have any open candidate opportunities (closedOpps = false)
+     */
+    private Boolean closedOpps;
+
+    /**
+     * If specified, requests display of candidates who have any candidate opportunities whose stage
+     * is relocated or greater (relocatedOpps = true) or who have any candidate opportunities
+     * whose stage is less than relocated (relocatedOpps = false)
+     */
+    private Boolean relocatedOpps;
 
     public SearchCandidateRequest() {
         super(Sort.Direction.DESC, new String[]{"id"});

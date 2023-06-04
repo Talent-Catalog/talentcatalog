@@ -41,7 +41,7 @@
           <th *ngIf="showJobOppName" (click)="toggleSort('jobOpp.name')">
             <app-sorted-by column="jobOpp.name" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
-            Job Opportunity
+            Candidate Job Opportunity
           </th>
           <th (click)="toggleSort('stage')">
             <app-sorted-by [column]="'stage'" [sortColumn]="sortField" [sortDirection]="sortDirection"
@@ -73,7 +73,7 @@
               </a>
             </td>
             <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
-              <a [routerLink]="['/job',opp.jobOpp.id]">
+              <a [routerLink]="['/opp',opp.id]">
                {{opp.jobOpp.name | truncate: 25}}
               </a>
             </td>

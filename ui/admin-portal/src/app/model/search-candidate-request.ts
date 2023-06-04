@@ -59,4 +59,7 @@ export interface SearchCandidateRequest {
   includeDraftAndDeleted?: boolean;
   searchJoins?: SavedSearchJoin[];
   exclusionListId?: number;
+  anyOpps?: boolean;
+  closedOpps?: boolean;
+  relocatedOpps?: boolean;
 }
