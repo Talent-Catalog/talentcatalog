@@ -33,10 +33,15 @@
         <!--          Header-->
         <thead class="table-light">
         <tr>
-          <th (click)="toggleSort('name')">
+          <th *ngIf="!showJobOppName" (click)="toggleSort('name')">
             <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             Candidate Opportunity
+          </th>
+          <th *ngIf="showJobOppName" (click)="toggleSort('jobOpp.name')">
+            <app-sorted-by column="jobOpp.name" [sortColumn]="sortField" [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
+            Job Opportunity
           </th>
           <th (click)="toggleSort('stage')">
             <app-sorted-by [column]="'stage'" [sortColumn]="sortField" [sortDirection]="sortDirection"
@@ -57,8 +62,20 @@
         <tbody>
           <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
               [ngClass]="{'current': currentOpp?.id == opp.id}">
-            <td [title]="opp.name">
+
+            <td *ngIf="!showJobOppName" [title]="opp.name">
               {{opp.name | truncate: 25}}
+              <a [routerLink]="['/job',opp.jobOpp.id]">
+                <i class="fas fa-hands-helping" title="Job"></i>
+              </a>
+              <a [routerLink]="['/candidate',opp.candidate.candidateNumber]">
+                <i class="fas fa-user" title="Candidate"></i>
+              </a>
+            </td>
+            <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
+              <a [routerLink]="['/job',opp.jobOpp.id]">
+               {{opp.jobOpp.name | truncate: 25}}
+              </a>
             </td>
             <td>
               {{getCandidateOpportunityStageName(opp.stage)}}

@@ -34,6 +34,13 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   @Input() searchBy: SearchOppsBy;
   @Input() candidateOpps: CandidateOpportunity[];
 
+  /**
+   * Display the name of the job opportunity rather than the name of the candidate opportunity.
+   * <p/>
+   * This is useful when you are displaying the Jobs that a candidate has gone for.
+   */
+  @Input() showJobOppName: boolean = false;
+
   @Output() oppSelection = new EventEmitter();
 
   opps: CandidateOpportunity[];
