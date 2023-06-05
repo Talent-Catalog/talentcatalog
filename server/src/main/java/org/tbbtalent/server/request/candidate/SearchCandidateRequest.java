@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.Sort;
+import org.tbbtalent.server.model.db.CandidateFilterByOpps;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.ReviewStatus;
@@ -131,23 +132,17 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private List<SearchJoinRequest> searchJoinRequests;
 
     /**
-     * If specified, requests display of candidates who have any candidate opportunities
-     * (anyOpps = true) or who have no candidate opportunities (anyOpps = false)
+     * If specified, requests display of candidates whose candidate opportunities (if any) match
+     * the filter.
+     * <p/>
+     * This filter maps on to the following Boolean SavedSearch params:
+     * <ul>
+     *     <li>anyOpps</li>
+     *     <li>closedOpps</li>
+     *     <li>relocatedOpps</li>
+     * </ul>
      */
-    private Boolean anyOpps;
-
-    /**
-     * If specified, requests display of candidates who have any closed candidate opportunities
-     * (closedOpps = true) or who have any open candidate opportunities (closedOpps = false)
-     */
-    private Boolean closedOpps;
-
-    /**
-     * If specified, requests display of candidates who have any candidate opportunities whose stage
-     * is relocated or greater (relocatedOpps = true) or who have any candidate opportunities
-     * whose stage is less than relocated (relocatedOpps = false)
-     */
-    private Boolean relocatedOpps;
+    private CandidateFilterByOpps candidateFilterByOpps;
 
     public SearchCandidateRequest() {
         super(Sort.Direction.DESC, new String[]{"id"});

@@ -361,6 +361,22 @@ export enum CandidateStatus {
   withdrawn = "withdrawn (inactive)"
 }
 
+export enum CandidateFilterByOpps {
+  someOpps = "Some opps",
+
+  noOpps = "No opps",
+
+  openOpps = "Some open opps",
+
+  closedOpps = "Some closed opps",
+
+  preRelocationOpps = "Some opps which are not yet at relocated stage - ie 'live' opps",
+
+  postRelocationOpps = "Some opps at the relocated or later stage"
+
+}
+
+//todo Add candidateClosingComments
 export interface CandidateOpportunityParams {
   stage?: string;
   nextStep?: string;

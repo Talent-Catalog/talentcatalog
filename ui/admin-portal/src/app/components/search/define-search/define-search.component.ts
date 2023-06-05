@@ -25,7 +25,7 @@ import {
   ViewChild
 } from '@angular/core';
 
-import {Candidate, CandidateStatus, Gender} from '../../../model/candidate';
+import {Candidate, CandidateFilterByOpps, CandidateStatus, Gender} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
@@ -128,7 +128,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
   genderOptions: EnumOption[] = enumOptions(Gender);
-
+  candidateFilterByOppsOptions: EnumOption[] = enumOptions(CandidateFilterByOpps);
   selectedCandidate: Candidate;
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
@@ -197,6 +197,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       regoReferrerParam: [null],
       statusesDisplay: [[]],
       surveyTypes: [[]],
+      candidateFilterByOpps: [null],
       exclusionListId: [null],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
