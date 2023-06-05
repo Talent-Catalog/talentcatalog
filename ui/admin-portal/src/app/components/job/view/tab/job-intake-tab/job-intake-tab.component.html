@@ -17,8 +17,8 @@
     <!-- GENERAL INFORMATION -->
     <ngb-panel id="employer-details" title="Employer Details: {{job.employer}}">
       <ng-template ngbPanelContent>
-        <div class="row mb-3">
-          <div class="col-2">
+        <div class="row cols-3 mb-2">
+          <div class="col">
             <label>Destination: </label>
             <span>{{job.country}}</span>
           </div>
@@ -30,6 +30,8 @@
             <label>Opportunity Score: </label>
             <span>{{job.opportunityScore}}</span>
           </div>
+        </div>
+        <div class="row cols-3 mb-2">
           <div class="col">
             <label>Hiring commitment: </label>
             <span>{{job.hiringCommitment != null ? job.hiringCommitment : '-' }}</span>
@@ -37,6 +39,13 @@
           <div class="col">
             <label>Have they hired from abroad before? </label>
             <span>{{job.employerHiredInternationally}}</span>
+          </div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label>Employer description:</label>
+            <span>//todo add description</span>
           </div>
         </div>
         <hr>
