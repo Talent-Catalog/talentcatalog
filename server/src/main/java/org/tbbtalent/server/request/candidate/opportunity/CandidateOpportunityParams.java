@@ -41,6 +41,13 @@ public class CandidateOpportunityParams extends OpportunityParams {
   private CandidateOpportunityStage stage;
 
   /**
+   * Comments explaining why the opportunity was closed intended to be
+   * shared with candidate
+   */
+  @Nullable
+  private String closingCommentsForCandidate;
+
+  /**
    * Employer feedback on a candidate
    */
   @Nullable

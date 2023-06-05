@@ -382,6 +382,7 @@ export interface CandidateOpportunityParams {
   nextStep?: string;
   nextStepDueDate?: string;
   closingComments?: string;
+  closingCommentsForCandidate?: string;
   employerFeedback?: string;
 }
 

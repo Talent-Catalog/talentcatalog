@@ -327,6 +327,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         opp.setNextStep(oppParams.getNextStep());
         opp.setNextStepDueDate(oppParams.getNextStepDueDate());
         opp.setClosingComments(oppParams.getClosingComments());
+        opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
         opp.setEmployerFeedback(oppParams.getEmployerFeedback());
         return candidateOpportunityRepository.save(opp);
     }

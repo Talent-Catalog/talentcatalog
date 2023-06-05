@@ -327,6 +327,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             if (nextStepDueDate != null) {
                 opportunityRequest.setNextStepDueDate(nextStepDueDate);
             }
+            //todo Add closingCommentsForCandidates
             if (closingComments != null) {
                 opportunityRequest.setClosingComments(closingComments);
             }

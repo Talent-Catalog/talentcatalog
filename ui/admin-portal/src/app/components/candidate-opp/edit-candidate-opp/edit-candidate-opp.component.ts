@@ -32,11 +32,13 @@ export class EditCandidateOppComponent implements OnInit {
       nextStep: [this.opp ? this.opp.nextStep : null],
       nextStepDueDate: [this.opp ? this.opp.nextStepDueDate : null],
       closingComments: [this.opp ? this.opp.closingComments : null],
+      closingCommentsForCandidate: [this.opp ? this.opp.closingCommentsForCandidate : null],
       employerFeedback: [this.opp ? this.opp.employerFeedback : null]
     });
   }
 
   get closingComments(): string { return this.salesforceStageForm.value?.closingComments; }
+  get closingCommentsForCandidate(): string { return this.salesforceStageForm.value?.closingCommentsForCandidate; }
   get employerFeedback(): string { return this.salesforceStageForm.value?.employerFeedback; }
   get nextStep(): string { return this.salesforceStageForm.value?.nextStep; }
   get nextStepDueDate(): string { return this.salesforceStageForm.value?.nextStepDueDate; }
@@ -52,6 +54,7 @@ export class EditCandidateOppComponent implements OnInit {
       nextStep: this.nextStep,
       nextStepDueDate: this.nextStepDueDate,
       closingComments: this.closingComments,
+      closingCommentsForCandidate: this.closingCommentsForCandidate,
       employerFeedback: this.employerFeedback
     }
     this.activeModal.close(info)
