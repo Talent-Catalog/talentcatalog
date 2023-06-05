@@ -84,6 +84,9 @@ public class Opportunity extends SalesforceObjectBase {
     @JsonSetter("OwnerId")
     private String ownerId;
 
+    @JsonSetter("Opportunity_Score__c")
+    private String opportunityScore;
+
     @JsonSetter("Parent_Opportunity__c")
     private String parentOpportunityId;
 

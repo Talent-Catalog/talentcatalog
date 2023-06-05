@@ -27,6 +27,10 @@
             <span><a [href]="job.employerWebsite" target="_blank">{{job.employerWebsite}}</a></span>
           </div>
           <div class="col">
+            <label>Opportunity Score: </label>
+            <span>{{job.opportunityScore}}</span>
+          </div>
+          <div class="col">
             <label>Hiring commitment: </label>
             <span>{{job.hiringCommitment != null ? job.hiringCommitment : '-' }}</span>
           </div>

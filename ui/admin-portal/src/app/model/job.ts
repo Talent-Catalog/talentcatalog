@@ -33,6 +33,7 @@ export interface Job extends OpportunityIds {
   employerWebsite: string;
   employerHiredInternationally: boolean;
   hiringCommitment: string;
+  opportunityScore: string;
   accepting: boolean;
   contactEmail: string;
   contactUser: User;
