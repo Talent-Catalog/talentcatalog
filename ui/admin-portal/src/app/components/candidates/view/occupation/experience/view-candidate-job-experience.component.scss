@@ -19,6 +19,13 @@
 }
 
 p {
-  white-space: pre-wrap;
+  &.html{
+    white-space: normal;
+    line-height: normal;
+  }
+
+  &.text{
+    white-space: pre-wrap;
+  }
 }
 

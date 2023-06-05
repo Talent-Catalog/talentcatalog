@@ -51,4 +51,9 @@ export class CandidateJobExperienceCardComponent implements OnInit {
     return this.countries?.find(c => c.id === country.id)?.name;
   }
 
+  isHtml(text) {
+    // Very simple test for HTML tags - isn't not foolproof but probably good enough
+    return /<\/?[a-z][\s\S]*>/i.test(text);
+  }
+
 }

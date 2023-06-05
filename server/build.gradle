@@ -112,6 +112,7 @@ dependencies {
     implementation('org.thymeleaf.extras:thymeleaf-extras-java8time')
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
     implementation('net.sf.jtidy:jtidy:r938')
+    implementation('org.jsoup:jsoup:1.15.4')
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')
     runtimeOnly('mysql:mysql-connector-java')

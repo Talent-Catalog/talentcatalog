@@ -349,3 +349,6 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Exclude binary files
+server/bin/

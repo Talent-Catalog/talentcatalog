@@ -36,6 +36,7 @@
     "karma-jasmine": "^5.1.0",
     "ng-recaptcha": "^9.0.0",
     "ngx-translate-phraseapp": "^0.4.2",
+    "ngx-wig": "^13.2.6",
     "postcss": "^8.4.16",
     "rxjs": "^6.6.3",
     "tslib": "^2.4.0",

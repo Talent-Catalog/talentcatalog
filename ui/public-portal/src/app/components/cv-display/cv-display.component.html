@@ -34,9 +34,8 @@
             <h5>{{experience.role}} - <span class="font-italic">{{experience.companyName}}, {{experience.country.name}}</span></h5>
             <h6 class="fw-bold">{{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}</h6>
 
-            <p class="ms-3">
-              {{experience.description}}
-            </p>
+
+            <p class="ms-3" [ngClass]="isHtml(experience?.description)?'html':'text'" [innerHtml]="experience.description">
           </div>
         </div>
 
