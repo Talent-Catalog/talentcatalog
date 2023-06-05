@@ -173,6 +173,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
         salesforceJobOpp.setClosed(op.isClosed());
+        salesforceJobOpp.setWon(op.isWon());
         salesforceJobOpp.setHiringCommitment(op.getHiringCommitment());
         salesforceJobOpp.setOpportunityScore(op.getOpportunityScore());
         salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite());

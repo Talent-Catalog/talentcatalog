@@ -73,6 +73,11 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private boolean closed;
 
     /**
+     * True if opportunity is won
+     */
+    private boolean won;
+
+    /**
      * Email to use for enquiries about this job.
      * <p/>
      * Should default to email of {@link #contactUser} - but can be different

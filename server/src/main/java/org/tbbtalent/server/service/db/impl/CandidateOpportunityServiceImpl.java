@@ -16,14 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -34,12 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateOpportunity;
-import org.tbbtalent.server.model.db.CandidateOpportunityStage;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateOpportunityRepository;
@@ -48,11 +35,16 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
-import org.tbbtalent.server.service.db.CandidateOpportunityService;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.SalesforceJobOppService;
-import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.UserService;
+import org.tbbtalent.server.service.db.*;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
@@ -232,6 +224,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         candidateOpportunity.setCandidate(candidate);
 
         candidateOpportunity.setClosed(op.isClosed());
+        candidateOpportunity.setWon(op.isWon());
         candidateOpportunity.setEmployerFeedback(op.getEmployerFeedback());
         candidateOpportunity.setName(op.getName());
         candidateOpportunity.setNextStep(op.getNextStep());

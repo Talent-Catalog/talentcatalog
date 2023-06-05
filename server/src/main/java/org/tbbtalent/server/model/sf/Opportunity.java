@@ -75,6 +75,9 @@ public class Opportunity extends SalesforceObjectBase {
     @JsonSetter("IsClosed")
     private boolean closed;
 
+    @JsonSetter("IsWon")
+    private boolean won;
+
     @JsonSetter("NextStep")
     private String nextStep;
 
