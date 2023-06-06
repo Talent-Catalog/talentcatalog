@@ -27,6 +27,7 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +53,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.ExportColumn;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
@@ -77,6 +79,7 @@ import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
 import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
 import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.link.UpdateShortNameRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
@@ -173,6 +176,19 @@ public class SavedListServiceImpl implements SavedListService {
         candidate.getCandidateSavedLists().add(csl);
 
         assignListTasksToCandidate(destinationList, candidate);
+
+        //todo test
+        //If a job list, create/update candidate opp
+        final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
+        if (jobOpp != null) {
+
+            ////TODO JC Maybe params can be null - then will not touch existing opps
+            //want stage to be defaulted to prospect.
+            CandidateOpportunityParams params = new CandidateOpportunityParams();
+            params.setStage(CandidateOpportunityStage.prospect);
+            candidateOpportunityService.createOrUpdateCandidateOpportunities(
+                Collections.singletonList(candidate), params, jobOpp);
+        }
     }
 
     @Override
