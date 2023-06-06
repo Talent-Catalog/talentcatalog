@@ -209,7 +209,7 @@
                  [resultTemplate]="rt"
                  [inputFormatter]="renderCandidateRow"
                  [editable]="false"
-                 (selectItem)="selectSearchResult($event, input)"
+                 (selectItem)="selectCandidateToAdd($event, input)"
                  placeholder="Add (name or #)..."/>
           <ng-template #rt let-r="result" let-t="term">
             <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>

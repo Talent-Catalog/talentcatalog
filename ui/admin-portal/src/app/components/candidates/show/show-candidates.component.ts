@@ -1347,7 +1347,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  selectSearchResult ($event, input) {
+  selectCandidateToAdd ($event, input) {
     $event.preventDefault();
     input.value = '';
     const candidate: Candidate = $event.item;
