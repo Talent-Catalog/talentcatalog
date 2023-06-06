@@ -441,8 +441,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
        * version stored on the server. But with a saved list we do.
        */
 
-      //If we are being driven by a manually modifiable search request, submit
-      //that search.
+      //If we are being driven by a manually modifiable search request (eg someone has changed the
+      //search parameters and clicked on the Apply button) submit that search.
       if (this.searchRequest) {
 
         this.updatedSearch()
