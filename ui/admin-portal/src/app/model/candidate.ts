@@ -370,7 +370,7 @@ export enum CandidateFilterByOpps {
 
   closedOpps = "Some closed opps",
 
-  preRelocationOpps = "Some opps which are not yet at relocated stage - ie 'live' opps",
+  preRelocationOpps = "Some opps not yet at relocated stage - ie 'live' opps",
 
   postRelocationOpps = "Some opps at the relocated or later stage"
 
