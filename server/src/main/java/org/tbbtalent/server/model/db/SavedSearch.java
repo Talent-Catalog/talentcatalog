@@ -504,6 +504,30 @@ public class SavedSearch extends AbstractCandidateSource {
         this.minEducationLevelName = minEducationLevelName;
     }
 
+    public Boolean getAnyOpps() {
+        return anyOpps;
+    }
+
+    public void setAnyOpps(Boolean anyOpps) {
+        this.anyOpps = anyOpps;
+    }
+
+    public Boolean getClosedOpps() {
+        return closedOpps;
+    }
+
+    public void setClosedOpps(Boolean closedOpps) {
+        this.closedOpps = closedOpps;
+    }
+
+    public Boolean getRelocatedOpps() {
+        return relocatedOpps;
+    }
+
+    public void setRelocatedOpps(Boolean relocatedOpps) {
+        this.relocatedOpps = relocatedOpps;
+    }
+
     public String getType() {
         return type;
     }

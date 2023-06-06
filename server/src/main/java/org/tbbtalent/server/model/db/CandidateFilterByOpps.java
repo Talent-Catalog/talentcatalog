@@ -16,8 +16,18 @@
 
 package org.tbbtalent.server.model.db;
 
+import org.springframework.lang.Nullable;
+
 /**
- * Filter used in candidate searches based on each candidate's opportunities
+ * Filter used in candidate searches based on each candidate's opportunities.
+ * <p/>
+ * For display convenience this enum is used and sent to the front end to display to users
+ * selecting the type of filter they want.
+ * However, on the server side these filters are most simply implemented as a number of Boolean
+ * filters anyOpps, closesOpps and relocatedOpps - which is what is stored with the SavedSearches.
+ * <p/>
+ * This enum provides the code for mapping between enum values and combinations of the boolean
+ * values.
  *
  * @author John Cameron
  */
@@ -54,6 +64,11 @@ public enum CandidateFilterByOpps {
      */
     postRelocationOpps(null, null, true);
 
+    /**
+     * Set of Boolean values corresponding to enum values.
+     * <p/>
+     * Underscores to avoid clash between closedOpps enum name and Boolean variable name.
+     */
     private final Boolean anyOpps_;
     private final Boolean closedOpps_;
     private final Boolean relocatedOpps_;
@@ -73,6 +88,31 @@ public enum CandidateFilterByOpps {
         this.anyOpps_ = anyOpps;
         this.closedOpps_ = closedOpps;
         this.relocatedOpps_ = relocatedOpps;
+    }
+
+    /**
+     * Maps the given Boolean opps filters on to a CandidateFilterByOpps enum value, or null
+     * if all filters are null.
+     * @param anyOpps See SavedSearch.anyOpps
+     * @param closedOpps_ See SavedSearch.closedOpps (added underscore to avoid clash with enum name)
+     * @param relocatedOpps See SavedSearch.relocatedOpps
+     * @return Enum value corresponding to the given Boolean values, or null if all values are null.
+     */
+    @Nullable
+    public static CandidateFilterByOpps mapToEnum(
+        Boolean anyOpps, Boolean closedOpps_, Boolean relocatedOpps) {
+
+        CandidateFilterByOpps val;
+        if (anyOpps != null) {
+            val = anyOpps ? someOpps : noOpps;
+        } else if (closedOpps_ != null) {
+            val = closedOpps_ ? closedOpps : openOpps;
+        } else if (relocatedOpps != null) {
+            val = relocatedOpps ? postRelocationOpps : preRelocationOpps;
+        } else {
+            val = null;
+        }
+        return val;
     }
 
     public Boolean getAnyOpps() {
