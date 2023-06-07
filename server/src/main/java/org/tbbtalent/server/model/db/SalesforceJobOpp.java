@@ -257,6 +257,11 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      */
     private String opportunityScore;
 
+    /**
+     * Salesforce field: description of employer from account
+     */
+    private String employerDescription;
+
     public void addStarringUser(User user) {
         starringUsers.add(user);
     }
