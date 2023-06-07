@@ -406,6 +406,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return findContacts(candidateNumberSFFieldName + " > 0");
     }
 
+    @Override
+    public @Nullable Opportunity findCandidateOpportunity(String candidateNumber, String jobSfId) {
+        final String externalId = makeExternalId(candidateNumber, jobSfId);
+        final List<Opportunity> opportunities = findCandidateOpportunities(
+            candidateOpportunitySFFieldName + "='" + externalId + "'");
+        if (opportunities.size() > 1) {
+            log.error("Multiple SF candidate opportunities for externalId " + externalId);
+        }
+        return opportunities.size() == 0 ? null : opportunities.get(0);
+    }
+
     @NonNull
     @Override
     public List<Opportunity> findCandidateOpportunities(String condition)

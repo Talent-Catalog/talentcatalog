@@ -74,6 +74,15 @@ public interface SalesforceService {
     List<Contact> findCandidateContacts() throws WebClientException;
 
     /**
+     * Searches Salesforce for a candidate opportunity associated with the given candidate and job.
+     * @param candidateNumber Candidate number
+     * @param jobSfId SFId of job
+     * @return Opportunity if one found, otherwise null.
+     */
+    @Nullable
+    Opportunity findCandidateOpportunity(String candidateNumber, String jobSfId);
+
+    /**
      * Searches Salesforce for all Candidate Opportunity records matching the given condition.
      *
      * @param condition Effectively the logical (predicate) part of a SOQL WHERE clause.
