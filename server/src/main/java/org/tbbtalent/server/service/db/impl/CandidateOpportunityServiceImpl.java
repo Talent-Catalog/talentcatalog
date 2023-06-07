@@ -90,10 +90,23 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 opp.setCandidate(candidate);
                 opp.setName(salesforceService.generateCandidateOppName(candidate, jobOpp));
                 opp.setStage(CandidateOpportunityStage.prospect);
+                String sfId = fetchSalesforceId(candidate, jobOpp);
+                if (sfId == null) {
+                    log.error("Could not find SF candidate opp for candidate "
+                        + candidate.getCandidateNumber() + " job " + jobOpp.getId());
+                }
+                opp.setSfId(sfId);
             }
 
             updateCandidateOpportunity(opp, oppParams);
         }
+    }
+
+    private String fetchSalesforceId(Candidate candidate, SalesforceJobOpp jobOpp) {
+
+        Opportunity opp = salesforceService.findCandidateOpportunity(
+            candidate.getCandidateNumber(), jobOpp.getSfId());
+        return opp == null ? null : opp.getId();
     }
 
     @Override
@@ -138,10 +151,12 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 sfJobOpp = salesforceJobOppService.updateJob(sfJobOpp);
             }
 
-            //Create/update opportunities on local database as well as on Salesforce
-            createOrUpdateCandidateOpportunities(
-                orderedCandidates, candidateOppParams, sfJobOpp);
+            //Create/update opportunities on Salesforce first
             salesforceService.createOrUpdateCandidateOpportunities(
+                orderedCandidates, candidateOppParams, sfJobOpp);
+            //Then update opps on local DB. SF opps already created, which will allow us to
+            //add sfId to created opps on the local db.
+            createOrUpdateCandidateOpportunities(
                 orderedCandidates, candidateOppParams, sfJobOpp);
 
             //Detect any auto candidate status changes based on stage changes
