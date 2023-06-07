@@ -121,7 +121,10 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {getCandidateOpportunityStageName} from "../../../model/candidate-opportunity";
+import {
+  CandidateOpportunity,
+  getCandidateOpportunityStageName
+} from "../../../model/candidate-opportunity";
 
 interface CachedTargetList {
   sourceID: number;
@@ -1766,23 +1769,23 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
    */
   getStage(candidate: Candidate): string {
     let stage = null;
-    const opp = candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+    const opp = this.getCandidateOppForThisJob(candidate);
     if (opp) {
       stage = getCandidateOpportunityStageName(opp.stage);
     }
     return stage;
   }
 
+  getCandidateOpportunityLink(candidate: Candidate): any[] {
+    const opp = this.getCandidateOppForThisJob(candidate);
+    return opp ? ['/opp', opp.id] : null;
+  }
+
   /**
-   * Get candidate Sales opportunity link to opportunity matching current job
+   * Get candidate opportunity matching current job
    * @param candidate Candidate who opportunities we need to search
    */
-  getSfOpportunityLink(candidate: Candidate): string {
-    let link = null;
-    const opp = candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
-    if (opp) {
-      link = this.salesforceService.sfOppToLink(opp.sfId);
-    }
-    return link;
+  getCandidateOppForThisJob(candidate: Candidate): CandidateOpportunity {
+    return candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
   }
 }
