@@ -37,11 +37,14 @@ public interface CandidateOpportunityService {
      * Creates or updates CandidateOpportunities associated with the given candidates going for
      * the given job, using the given opportunity data.
      * @param candidates Candidates whose opportunities are going to be created or updated
-     * @param oppParams Opportunity data common to all opportunities
+     * @param oppParams Opportunity data common to all opportunities. Can be null in which case
+     *                  no changes are made to existing opps, but new opps will be created
+     *                  if needed with the stage defaulting to "prospect".
      * @param jobOpp Job associated with candidate opportunities
      */
     void createOrUpdateCandidateOpportunities(
-        List<Candidate> candidates, CandidateOpportunityParams oppParams, SalesforceJobOpp jobOpp);
+        List<Candidate> candidates, @Nullable CandidateOpportunityParams oppParams,
+        SalesforceJobOpp jobOpp);
 
     /**
      * Creates or updates Contact records on Salesforce for the given candidates and, if sfJobOpp

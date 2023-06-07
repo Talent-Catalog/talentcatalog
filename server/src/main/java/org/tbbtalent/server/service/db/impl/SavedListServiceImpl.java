@@ -53,7 +53,6 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.ExportColumn;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
@@ -79,7 +78,6 @@ import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
 import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
 import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
-import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.link.UpdateShortNameRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
@@ -177,17 +175,13 @@ public class SavedListServiceImpl implements SavedListService {
 
         assignListTasksToCandidate(destinationList, candidate);
 
-        //todo test
-        //If a job list, create/update candidate opp
+        //If a job list, automatically create a candidate opp if needed
         final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
         if (jobOpp != null) {
-
-            ////TODO JC Maybe params can be null - then will not touch existing opps
-            //want stage to be defaulted to prospect.
-            CandidateOpportunityParams params = new CandidateOpportunityParams();
-            params.setStage(CandidateOpportunityStage.prospect);
+            //With no params specified will not change any existing opp associated with this job,
+            //but will create a new opp if needed, with stage defaulting to "prospect"
             candidateOpportunityService.createOrUpdateCandidateOpportunities(
-                Collections.singletonList(candidate), params, jobOpp);
+                Collections.singletonList(candidate), null, jobOpp);
         }
     }
 

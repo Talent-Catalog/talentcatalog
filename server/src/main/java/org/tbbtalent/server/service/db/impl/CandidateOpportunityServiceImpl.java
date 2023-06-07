@@ -77,7 +77,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
     @Override
     public void createOrUpdateCandidateOpportunities(
-        List<Candidate> candidates, CandidateOpportunityParams oppParams, SalesforceJobOpp jobOpp) {
+        List<Candidate> candidates, @Nullable CandidateOpportunityParams oppParams,
+        SalesforceJobOpp jobOpp) {
 
         for (Candidate candidate : candidates) {
             //Find candidate opp, if any
@@ -88,6 +89,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 opp.setJobOpp(jobOpp);
                 opp.setCandidate(candidate);
                 opp.setName(salesforceService.generateCandidateOppName(candidate, jobOpp));
+                opp.setStage(CandidateOpportunityStage.prospect);
             }
 
             updateCandidateOpportunity(opp, oppParams);
@@ -315,20 +317,18 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private CandidateOpportunity updateCandidateOpportunity(
         CandidateOpportunity opp, @Nullable CandidateOpportunityParams oppParams) {
 
-        if (oppParams == null) {
-            return opp;
-        }
+        if (oppParams != null) {
+            final CandidateOpportunityStage stage = oppParams.getStage();
+            if (stage != null) {
+                opp.setStage(stage);
+            }
 
-        final CandidateOpportunityStage stage = oppParams.getStage();
-        if (stage != null) {
-            opp.setStage(stage);
+            opp.setNextStep(oppParams.getNextStep());
+            opp.setNextStepDueDate(oppParams.getNextStepDueDate());
+            opp.setClosingComments(oppParams.getClosingComments());
+            opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
+            opp.setEmployerFeedback(oppParams.getEmployerFeedback());
         }
-
-        opp.setNextStep(oppParams.getNextStep());
-        opp.setNextStepDueDate(oppParams.getNextStepDueDate());
-        opp.setClosingComments(oppParams.getClosingComments());
-        opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
-        opp.setEmployerFeedback(oppParams.getEmployerFeedback());
         return candidateOpportunityRepository.save(opp);
     }
 }
