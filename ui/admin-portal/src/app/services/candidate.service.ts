@@ -183,7 +183,15 @@ export class CandidateService implements IntakeService {
 
   // As we are just returning the token as a string (not an object) we have to set the response type to text.
   // See explained here: https://angular.io/guide/http#requesting-non-json-data
-  generateToken(cn: string) {
-    return this.http.get(`${this.apiUrl}/token/${cn}`, {responseType: 'text'});
+  generateToken(cn: string, restrictCandidateOccupations: boolean, candidateOccupationIds: number[]) {
+    return this.http.get(`${this.apiUrl}/token/${cn}`,
+      {
+        params:
+        {
+          restrictCandidateOccupations: restrictCandidateOccupations,
+          candidateOccupationIds: candidateOccupationIds
+        },
+        responseType: 'text'
+      });
   }
 }

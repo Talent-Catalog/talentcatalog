@@ -43,6 +43,7 @@ import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
+import {TailoredCvComponent} from 'src/app/components/candidates/view/tailored-cv.component';
 
 @Component({
   selector: 'app-view-candidate',
@@ -218,8 +219,15 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   publicCvUrl() {
-    //todo use document.location.origin - see url.ts
-    return 'https://tctalent.org/public-portal/cv/' + this.token;
+    const isDevSetup = document.location.port == '4201';
+    let origin = document.location.hostname;
+    let path = '/public-portal/cv/';
+    let protocol = document.location.protocol;
+    if (isDevSetup) {
+      origin = `${document.location.hostname}:4202`;
+      path = '/cv/'
+    }
+    return `${protocol}//${origin}${path}${this.token}`;
   }
 
   private setActiveTabId(id: string) {
@@ -337,7 +345,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   generateToken() {
-    this.candidateService.generateToken(this.candidate?.candidateNumber).subscribe(
+    this.candidateService.generateToken(this.candidate?.candidateNumber, false, []).subscribe(
       (result) => {
         this.token = result;
       },
@@ -353,5 +361,15 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
 
   canViewPrivateInfo() {
     return this.authService.canViewPrivateCandidateInfo(this.candidate);
+  }
+  createTailoredCv() {
+    const createTailoredCvModal = this.modalService.open(TailoredCvComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    createTailoredCvModal.componentInstance.candidateId = this.candidate?.id;
+    createTailoredCvModal.componentInstance.candidateNumber = this.candidate?.candidateNumber;
+
   }
 }

@@ -699,6 +699,7 @@ import {
 import {
   CandidateOppsWithDetailComponent
 } from './components/candidate-opp/candidate-opps-with-detail/candidate-opps-with-detail.component';
+import { TailoredCvComponent } from './components/candidates/view/tailored-cv.component';
 
 @NgModule({
   declarations: [
@@ -976,7 +977,8 @@ import {
     ViewCandidateOppFromUrlComponent,
     ViewCandidateOppComponent,
     CandidateOppsComponent,
-    CandidateOppsWithDetailComponent
+    CandidateOppsWithDetailComponent,
+    TailoredCvComponent
   ],
   imports: [
     BrowserModule,
