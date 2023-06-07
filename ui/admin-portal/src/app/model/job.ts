@@ -34,6 +34,7 @@ export interface Job extends OpportunityIds {
   employerHiredInternationally: boolean;
   hiringCommitment: string;
   opportunityScore: string;
+  employerDescription: string;
   accepting: boolean;
   contactEmail: string;
   contactUser: User;
@@ -57,8 +58,8 @@ export interface Job extends OpportunityIds {
   updatedBy: User;
   updatedDate: Date;
   jobOppIntake: JobOppIntake;
-
 }
+
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
   return getExternalHref(router, location, ['job', job.id]);
 }

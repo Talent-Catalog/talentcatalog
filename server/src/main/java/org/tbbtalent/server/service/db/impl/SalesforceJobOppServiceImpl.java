@@ -178,6 +178,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setOpportunityScore(op.getOpportunityScore());
         salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite());
         salesforceJobOpp.setEmployerHiredInternationally(op.getAccountHasHiredInternationally());
+        salesforceJobOpp.setEmployerDescription(op.getAccountDescription());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());
