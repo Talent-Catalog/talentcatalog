@@ -281,9 +281,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         SalesforceJobOpp jobOpportunity)
         throws WebClientException, SalesforceException {
 
+        log.info("Looking for opps for " + candidates.size() +" candidates");
+
         //Find out which candidates already have opportunities (so just need to be updated)
         //and which need opportunities to be created.
         List<Candidate> candidatesWithNoOpp = selectCandidatesWithNoOpp(candidates, jobOpportunity);
+
+        log.info("Need to create opps for " + candidatesWithNoOpp.size() +" candidates");
 
         String recordType = getCandidateOpportunityRecordType(jobOpportunity);
 
@@ -291,6 +295,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         List<CandidateOpportunityRecordComposite> opportunityRequests = new ArrayList<>();
         for (Candidate candidate : candidates) {
             boolean create = candidatesWithNoOpp.contains(candidate);
+
+            log.info( (create ? "Create" : "Update") + " opp for " + candidate.getCandidateNumber());
 
             //Build candidate opportunity request (create or update as needed)
             CandidateOpportunityRecordComposite opportunityRequest =
@@ -348,6 +354,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Now find the ids we actually have for candidate opportunities for this job.
         List<Opportunity> opps = findCandidateOpportunitiesByJobOpps(jobOpportunity.getSfId());
+
+        log.info("Found " + opps.size() + " candidate opps on SF for job " + jobOpportunity.getId());
 
         //Remove these from map, leaving just those that need to be created
         for (Opportunity opp : opps) {
