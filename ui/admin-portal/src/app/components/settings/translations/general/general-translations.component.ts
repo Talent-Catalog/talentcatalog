@@ -21,6 +21,32 @@ import {AuthService} from "../../../../services/auth.service";
 import {LanguageService} from "../../../../services/language.service";
 import {SystemLanguage} from "../../../../model/language";
 
+/**
+ * This admin settings component is used to configure translations for the candidate portal code.
+ * <p/>
+ * Candidate portal code supports multiple languages which the user can select.
+ * In the actual code, wherever text is to be displayed its is done like this:
+ * <pre>
+ *       {{ 'TASKS.HEADER' | translate }}
+ * </pre>
+ * instead of actual text like "This is your tasks header".
+ * <p/>
+ * The "key" - TASKS.HEADER in the example above - is processed to be replaced by different text
+ * based on the language that the user has selected.
+ * <p/>
+ * This component defines those keys - but not the values - which will always be null in the
+ * ALL_FIELDS structure below.
+ * <p/>
+ * The actual values are retrieved from Amazon's S3 store (there is one store for test and another
+ * for production - so feel free to play around in your dev environment).
+ * This Settings component allows a TC admin user to view the key values for different languages
+ * and also to change the values.
+ * <p/>
+ * In the code, if there is no value assigned to a key, the text of the key itself is displayed.
+ * The English translation is special. If there is no value assigned to a key for a particular
+ * language, but there is a value assigned for the English language, then the English text is
+ * displayed (better than just displaying the cryptic key).
+ */
 @Component({
   selector: 'app-general-translations',
   templateUrl: './general-translations.component.html',
