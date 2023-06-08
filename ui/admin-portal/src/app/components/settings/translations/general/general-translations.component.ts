@@ -34,7 +34,7 @@ import {SystemLanguage} from "../../../../model/language";
  * The "key" - TASKS.HEADER in the example above - is processed to be replaced by different text
  * based on the language that the user has selected.
  * <p/>
- * This component defines those keys - but not the values - which will always be null in the
+ * This component defines those keys - but not the values, which will always be null - in the
  * ALL_FIELDS structure below.
  * <p/>
  * The actual values are retrieved from Amazon's S3 store (there is one store for test and another
