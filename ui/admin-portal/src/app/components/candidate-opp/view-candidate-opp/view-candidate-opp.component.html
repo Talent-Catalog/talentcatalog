@@ -14,7 +14,7 @@
         <a [routerLink]="['/opp',opp.id]">
           <i class="fas fa-expand" title="Open"></i>
         </a>
-        <a [routerLink]="['/candidate',opp.candidate.candidateNumber]">
+        <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
           <i class="fas fa-user" title="Candidate"></i>
         </a>
         <a [routerLink]="['/job',opp.jobOpp.id]">
