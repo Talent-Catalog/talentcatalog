@@ -76,12 +76,8 @@ public class CandidateOpportunitySpecification {
                 conjunction.getExpressions().add(builder.equal(opp.get("closed"), request.getSfOppClosed()));
             }
 
-            //TODO JC Need live checkbox as well as My Opps- defaults to true (ie Closed = false)
-
-            //TODO Also - display candidate name when not Candidate Jobs tab.
-
             //OWNERSHIP
-            // Owner by me or Owned by my partner
+            // Owned by me or Owned by my partner
             Predicate ors = builder.disjunction();
 
             //If managed by this user (ie by logged in user)
@@ -98,23 +94,35 @@ public class CandidateOpportunitySpecification {
                 if (loggedInUser != null) {
                     Partner loggedInUserPartner = loggedInUser.getPartner();
                     if (loggedInUserPartner != null) {
+
+                        //Get the opp's jobOpp
+                        Join<Object, Object> jobOpp = opp.join("jobOpp");
+
+                        //Get the partner associated with the opp's candidate
+                        Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
+
                         Long partnerId = loggedInUserPartner.getId();
                         Long userId = loggedInUser.getId();
 
                         //Create the Select subquery - giving all the jobs the user is contact for
-                        Subquery<SalesforceJobOpp> sq = query.subquery(SalesforceJobOpp.class);
-                        Root<PartnerJobRelation> pjr = sq.from(PartnerJobRelation.class);
-                        sq.select(pjr.get("job")).where(
+                        Subquery<SalesforceJobOpp> usersJobs = query.subquery(SalesforceJobOpp.class);
+                        Root<PartnerJobRelation> pjr = usersJobs.from(PartnerJobRelation.class);
+                        usersJobs.select(pjr.get("job")).where(
                             builder.and(
                                 builder.equal(pjr.get("partner").get("id"), partnerId),
                                 builder.equal(pjr.get("contact").get("id"), userId)
                             )
                         );
 
-                        //Check that the opp's job appears in the jobs return by the above subquery.
-                        Join<Object, Object> jobOpp = opp.join("jobOpp");
                         ors.getExpressions().add(
-                            builder.in(jobOpp).value(sq)
+                            builder.and(
+                                //User's partner must be the partner associated with the opp's candidate
+                                builder.equal(partner.get("id"), loggedInUserPartner.getId()),
+                                
+                                //and this job must be one of the jobs that this user is the contact 
+                                //for. 
+                                builder.in(jobOpp).value(usersJobs)
+                            )
                         );
                     }
                 }
@@ -127,9 +135,7 @@ public class CandidateOpportunitySpecification {
                 if (loggedInUser != null) {
                     Partner loggedInUserPartner = loggedInUser.getPartner();
                     if (loggedInUserPartner != null) {
-                        Join<Object, Object> candidate = opp.join("candidate");
-                        Join<Object, Object> user = candidate.join("user");
-                        Join<Object, Object> partner = user.join("partner");
+                        Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
                         ors.getExpressions().add(
                             builder.equal(partner.get("id"), loggedInUserPartner.getId())
                         );
@@ -143,6 +149,18 @@ public class CandidateOpportunitySpecification {
 
             return conjunction;
         };
+    }
+
+    /**
+     * Walk down the joins from the opp to find the partner associated with the opp's candidate
+     * @param opp Candidate opportunity
+     * @return Associated partner
+     */
+    private static Join<Object, Object> getOppCandidatePartnerJoin(Root<CandidateOpportunity> opp) {
+        Join<Object, Object> candidate = opp.join("candidate");
+        Join<Object, Object> user = candidate.join("user");
+        Join<Object, Object> partner = user.join("partner");
+        return partner;
     }
 
     private static List<Order> getOrdering(PagedSearchRequest request,
