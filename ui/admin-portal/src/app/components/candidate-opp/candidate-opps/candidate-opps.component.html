@@ -65,11 +65,11 @@
 
             <td *ngIf="!showJobOppName" [title]="opp.name">
               {{opp.name | truncate: 25}}
-              <a [routerLink]="['/job',opp.jobOpp.id]">
-                <i class="fas fa-hands-helping" title="Job"></i>
-              </a>
               <a [routerLink]="['/candidate',opp.candidate.candidateNumber]">
                 <i class="fas fa-user" title="Candidate"></i>
+              </a>
+              <a [routerLink]="['/job',opp.jobOpp.id]">
+                <i class="fa-solid fa-plane-departure" title="Job"></i>
               </a>
             </td>
             <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
