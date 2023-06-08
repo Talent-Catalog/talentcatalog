@@ -189,7 +189,11 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
         } else {
           req.ownedByMyPartner = true;
         }
-        req.sfOppClosed = this.showClosedOpps;
+        if (!this.showClosedOpps) {
+          //Don't show closed opps - otherwise(ie this.showClosedOpps is checked) leave
+          // req.sfOppClosed undefined and both open and closed opps will be returned.
+          req.sfOppClosed = false;
+        }
         break;
     }
 
