@@ -16,12 +16,13 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
+
+import javax.persistence.MappedSuperclass;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 /**
  * Base class for both Job Opportunity and Candidate Opportunity objects.
@@ -39,6 +40,11 @@ public class AbstractOpportunity extends AbstractAuditableDomainObject<Long> {
      * True if opportunity is closed
      */
     private boolean closed;
+
+    /**
+     * True if opportunity is won
+     */
+    private boolean won;
 
     /**
      * Closing comments on opportunity.
