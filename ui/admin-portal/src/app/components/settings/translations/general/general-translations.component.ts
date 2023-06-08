@@ -674,7 +674,9 @@ const ALL_FIELDS = {
     "HEADER": null,
     "NOTE": null,
     "TABLE": {
+      "COMMENTS": null,
       "NAME": null,
+      "STAGE": null,
       "NONE": null,
     },
     "OPP" : {
