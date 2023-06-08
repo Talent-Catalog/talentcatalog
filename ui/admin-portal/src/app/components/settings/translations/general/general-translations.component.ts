@@ -390,7 +390,8 @@ const ALL_FIELDS = {
     "PROFILE": {
       "TAB": {
         "PROFILE": null,
-        "TASKS": null
+        "TASKS": null,
+        "OPPS": null
       },
       "CONTACT": {
         "TITLE": null,
@@ -641,6 +642,17 @@ const ALL_FIELDS = {
       "VIEWHELP": null,
       "RETURN": null,
       "SUBMIT": null,
+    },
+  },
+  "CANDIDATE-OPPS": {
+    "HEADER": null,
+    "NOTE": null,
+    "TABLE": {
+      "NAME": null,
+      "NONE": null,
+    },
+    "OPP" : {
+      "RETURN": null,
     },
   }
 }
