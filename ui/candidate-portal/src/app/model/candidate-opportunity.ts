@@ -56,7 +56,7 @@ export enum CandidateOpportunityStage {
   candidateLeavesDestination = "Closed. Candidate leaves destination",
   candidateRejectsOffer = "Closed. Candidate rejects offer",
   candidateUnreachable = "Closed. Candidate unreachable",
-  candidateWithdraws = "Closed. Candidate withdraws"
-
+  candidateWithdraws = "Closed. Candidate withdraws",
+  jobOfferRetractedByEmployer = "Closed. Job offer retracted by employer"
 }
 
