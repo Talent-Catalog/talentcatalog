@@ -16,8 +16,29 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.tbbtalent.server.util.SalesforceHelper.extractIdFromSfUrl;
+
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -40,7 +61,12 @@ import org.tbbtalent.server.configuration.SalesforceRecordTypeConfig;
 import org.tbbtalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
@@ -51,21 +77,6 @@ import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import reactor.core.publisher.Mono;
-
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.tbbtalent.server.util.SalesforceHelper.extractIdFromSfUrl;
 
 /**
  * Standard implementation of Salesforce service
@@ -124,7 +135,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 "Account.Description, IsWon";
     private final String candidateOpportunityRetrievalFields =
         commonOpportunityFields +
-        ",Employer_Feedback__c,Parent_Opportunity__c,Candidate_TC_id__c,"
+        ",Employer_Feedback__c,Closing_Comments_For_Candidate__c,Parent_Opportunity__c,Candidate_TC_id__c,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
         commonOpportunityFields +
@@ -299,6 +310,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             String nextStep = null;
             LocalDate nextStepDueDate = null;
             String closingComments = null;
+            String closingCommentsForCandidate = null;
             String employerFeedback = null;
             if (candidateOppParams != null) {
                 final CandidateOpportunityStage stage = candidateOppParams.getStage();
@@ -306,6 +318,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 nextStep = candidateOppParams.getNextStep();
                 nextStepDueDate = candidateOppParams.getNextStepDueDate();
                 closingComments = candidateOppParams.getClosingComments();
+                closingCommentsForCandidate = candidateOppParams.getClosingCommentsForCandidate();
                 employerFeedback = candidateOppParams.getEmployerFeedback();
             }
 
@@ -323,9 +336,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             if (nextStepDueDate != null) {
                 opportunityRequest.setNextStepDueDate(nextStepDueDate);
             }
-            //todo Add closingCommentsForCandidates
             if (closingComments != null) {
                 opportunityRequest.setClosingComments(closingComments);
+            }
+            if (closingCommentsForCandidate != null) {
+                opportunityRequest.setClosingCommentsForCandidate(closingCommentsForCandidate);
             }
             if (employerFeedback != null) {
                 opportunityRequest.setEmployerFeedback(employerFeedback);
@@ -1486,6 +1501,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public void setClosingComments(String comments) {
             put("Closing_Comments__c", comments);
+        }
+        
+        public void setClosingCommentsForCandidate(String commentsForCandidate) {
+            put("Closing_Comments_For_Candidate__c", commentsForCandidate);
         }
 
         /**

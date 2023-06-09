@@ -16,6 +16,15 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -26,7 +35,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOpportunity;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateOpportunityRepository;
@@ -35,16 +49,11 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
-import org.tbbtalent.server.service.db.*;
-
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import org.tbbtalent.server.service.db.CandidateOpportunityService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.SalesforceJobOppService;
+import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.UserService;
 
 @Service
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
@@ -67,31 +76,44 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         this.userService = userService;
     }
 
-    @Override
-    public void createOrUpdateCandidateOpportunities(
+    /**
+     * Creates or updates CandidateOpportunities associated with the given candidates going for
+     * the given job, using the given opportunity data.
+     * @param candidates Candidates whose opportunities are going to be created or updated
+     * @param oppParams Opportunity data common to all opportunities. Can be null in which case
+     *                  no changes are made to existing opps, but new opps will be created
+     *                  if needed with the stage defaulting to "prospect".
+     * @param jobOpp Job associated with candidate opportunities
+     */
+    private void createOrUpdateCandidateOpportunities(
         List<Candidate> candidates, @Nullable CandidateOpportunityParams oppParams,
         SalesforceJobOpp jobOpp) {
 
         for (Candidate candidate : candidates) {
-            //Find candidate opp, if any
-            CandidateOpportunity opp = findOpp(candidate, jobOpp);
-            boolean create = opp == null;
-            if (create) {
-                opp = new CandidateOpportunity();
-                opp.setJobOpp(jobOpp);
-                opp.setCandidate(candidate);
-                opp.setName(salesforceService.generateCandidateOppName(candidate, jobOpp));
-                opp.setStage(CandidateOpportunityStage.prospect);
-                String sfId = fetchSalesforceId(candidate, jobOpp);
-                if (sfId == null) {
-                    log.error("Could not find SF candidate opp for candidate "
-                        + candidate.getCandidateNumber() + " job " + jobOpp.getId());
-                }
-                opp.setSfId(sfId);
-            }
-
-            updateCandidateOpportunity(opp, oppParams);
+            createOrUpdateCandidateOpportunity(candidate, oppParams, jobOpp);
         }
+    }
+
+    private CandidateOpportunity createOrUpdateCandidateOpportunity(
+        Candidate candidate, @Nullable CandidateOpportunityParams oppParams,
+        SalesforceJobOpp jobOpp) {
+        CandidateOpportunity opp = findOpp(candidate, jobOpp);
+        boolean create = opp == null;
+        if (create) {
+            opp = new CandidateOpportunity();
+            opp.setJobOpp(jobOpp);
+            opp.setCandidate(candidate);
+            opp.setName(salesforceService.generateCandidateOppName(candidate, jobOpp));
+            opp.setStage(CandidateOpportunityStage.prospect);
+            String sfId = fetchSalesforceId(candidate, jobOpp);
+            if (sfId == null) {
+                log.error("Could not find SF candidate opp for candidate "
+                    + candidate.getCandidateNumber() + " job " + jobOpp.getId());
+            }
+            opp.setSfId(sfId);
+        }
+        
+        return updateCandidateOpportunity(opp, oppParams);
     }
 
     private String fetchSalesforceId(Candidate candidate, SalesforceJobOpp jobOpp) {
@@ -242,6 +264,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         candidateOpportunity.setClosed(op.isClosed());
         candidateOpportunity.setWon(op.isWon());
+        candidateOpportunity.setClosingCommentsForCandidate(op.getClosingCommentsForCandidate());
         candidateOpportunity.setEmployerFeedback(op.getEmployerFeedback());
         candidateOpportunity.setName(op.getName());
         candidateOpportunity.setNextStep(op.getNextStep());
@@ -317,7 +340,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         CandidateOpportunityParams request) throws NoSuchObjectException {
 
         CandidateOpportunity opp = getCandidateOpportunity(id);
-        opp = updateCandidateOpportunity(opp, request);
+
+        //Update Salesforce 
+        final SalesforceJobOpp jobOpp = opp.getJobOpp();
+        final Candidate candidate = opp.getCandidate();
+
+        createUpdateSalesforce(Collections.singletonList(candidate), jobOpp, request);
+        opp = createOrUpdateCandidateOpportunity(candidate, request, jobOpp );        
 
         return opp;
     }

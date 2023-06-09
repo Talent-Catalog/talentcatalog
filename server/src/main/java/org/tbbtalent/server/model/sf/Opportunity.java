@@ -76,6 +76,9 @@ public class Opportunity extends SalesforceObjectBase {
     @JsonSetter("Closing_Comments__c")
     private String closingComments;
 
+    @JsonSetter("Closing_Comments_For_Candidate__c")
+    private String closingCommentsForCandidate;
+
     @JsonSetter("Employer_Feedback__c")
     private String employerFeedback;
 

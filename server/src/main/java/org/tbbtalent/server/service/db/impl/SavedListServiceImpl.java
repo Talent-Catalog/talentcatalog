@@ -180,8 +180,8 @@ public class SavedListServiceImpl implements SavedListService {
         if (jobOpp != null) {
             //With no params specified will not change any existing opp associated with this job,
             //but will create a new opp if needed, with stage defaulting to "prospect"
-            candidateOpportunityService.createOrUpdateCandidateOpportunities(
-                Collections.singletonList(candidate), null, jobOpp);
+            candidateOpportunityService.createUpdateSalesforce(
+                Collections.singletonList(candidate), jobOpp, null);
         }
     }
 
@@ -679,6 +679,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    @NonNull
     public List<SavedList> findListsAssociatedWithJobs() {
         return this.savedListRepository.findListsWithJobs();
     }
