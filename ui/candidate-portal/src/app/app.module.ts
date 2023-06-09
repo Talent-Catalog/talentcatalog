@@ -170,6 +170,7 @@ import {
 import {
   CandidateOppComponent
 } from './components/profile/view/tab/opps/opp/candidate-opp/candidate-opp.component';
+import {TruncatePipe} from "./pipes/truncate.pipe";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -229,7 +230,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ViewQuestionTaskComponent,
     ViewUploadTaskComponent,
     CandidateOppsComponent,
-    CandidateOppComponent
+    CandidateOppComponent,
+    TruncatePipe
   ],
   imports: [
     BrowserModule,

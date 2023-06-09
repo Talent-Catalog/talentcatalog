@@ -27,6 +27,7 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -173,6 +174,15 @@ public class SavedListServiceImpl implements SavedListService {
         candidate.getCandidateSavedLists().add(csl);
 
         assignListTasksToCandidate(destinationList, candidate);
+
+        //If a job list, automatically create a candidate opp if needed
+        final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
+        if (jobOpp != null) {
+            //With no params specified will not change any existing opp associated with this job,
+            //but will create a new opp if needed, with stage defaulting to "prospect"
+            candidateOpportunityService.createOrUpdateCandidateOpportunities(
+                Collections.singletonList(candidate), null, jobOpp);
+        }
     }
 
     @Override

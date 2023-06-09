@@ -103,6 +103,25 @@ public class SavedSearch extends AbstractCandidateSource {
     private String regoReferrerParam;
 
     /**
+     * If specified, requests display of candidates who have any candidate opportunities
+     * (anyOpps = true) or who have no candidate opportunities (anyOpps = false)
+     */
+    private Boolean anyOpps;
+
+    /**
+     * If specified, requests display of candidates who have any closed candidate opportunities
+     * (closedOpps = true) or who have any open candidate opportunities (closedOpps = false)
+     */
+    private Boolean closedOpps;
+
+    /**
+     * If specified, requests display of candidates who have any candidate opportunities whose stage
+     * is relocated or greater (relocatedOpps = true) or who have any candidate opportunities
+     * whose stage is less than relocated (relocatedOpps = false)
+     */
+    private Boolean relocatedOpps;
+
+    /**
      * Reviewable searches allow the front end to supply review filters to the search
      * in the form of a List of ReviewStatus's. Using the review filters engages the
      * CandidateReviewItem table to decide which candidates should be excluded from the
@@ -483,6 +502,30 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setMinEducationLevelName(String minEducationLevelName) {
         this.minEducationLevelName = minEducationLevelName;
+    }
+
+    public Boolean getAnyOpps() {
+        return anyOpps;
+    }
+
+    public void setAnyOpps(Boolean anyOpps) {
+        this.anyOpps = anyOpps;
+    }
+
+    public Boolean getClosedOpps() {
+        return closedOpps;
+    }
+
+    public void setClosedOpps(Boolean closedOpps) {
+        this.closedOpps = closedOpps;
+    }
+
+    public Boolean getRelocatedOpps() {
+        return relocatedOpps;
+    }
+
+    public void setRelocatedOpps(Boolean relocatedOpps) {
+        this.relocatedOpps = relocatedOpps;
     }
 
     public String getType() {

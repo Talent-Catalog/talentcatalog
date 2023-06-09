@@ -76,12 +76,14 @@ public class CandidateOpportunity extends AbstractOpportunity {
     CandidateOpportunityStage stage;
 
     /**
-     * Override standard setStage to automatically also update stageOrder
+     * Override standard setStage to automatically also update stageOrder and also closed
      * @param stage New job opportunity stage
      */
     public void setStage(@NonNull CandidateOpportunityStage stage) {
         this.stage = stage;
         setStageOrder(stage.ordinal());
+        setClosed(this.stage.isClosed());
+        setWon(this.stage.isWon());
     }
 
 }

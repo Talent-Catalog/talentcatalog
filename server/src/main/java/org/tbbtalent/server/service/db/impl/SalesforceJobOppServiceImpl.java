@@ -16,9 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -37,6 +34,10 @@ import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.util.SalesforceHelper;
+
+import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
@@ -172,9 +173,12 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
         salesforceJobOpp.setClosed(op.isClosed());
+        salesforceJobOpp.setWon(op.isWon());
         salesforceJobOpp.setHiringCommitment(op.getHiringCommitment());
+        salesforceJobOpp.setOpportunityScore(op.getOpportunityScore());
         salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite());
         salesforceJobOpp.setEmployerHiredInternationally(op.getAccountHasHiredInternationally());
+        salesforceJobOpp.setEmployerDescription(op.getAccountDescription());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());

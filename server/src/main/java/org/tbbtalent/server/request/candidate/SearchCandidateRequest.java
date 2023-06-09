@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.Sort;
+import org.tbbtalent.server.model.db.CandidateFilterByOpps;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.ReviewStatus;
@@ -124,10 +125,24 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private List<Long> educationMajorIds;
     private String regoReferrerParam;
     private List<ReviewStatus> reviewStatusFilter;
-    private boolean includeNew;
+
+    //TODO JC I don't think is used - possible Zombie code
     private Boolean includeUploadedFiles;
     private LocalDate fromDate;
     private List<SearchJoinRequest> searchJoinRequests;
+
+    /**
+     * If specified, requests display of candidates whose candidate opportunities (if any) match
+     * the filter.
+     * <p/>
+     * This filter maps on to the following Boolean SavedSearch params:
+     * <ul>
+     *     <li>anyOpps</li>
+     *     <li>closedOpps</li>
+     *     <li>relocatedOpps</li>
+     * </ul>
+     */
+    private CandidateFilterByOpps candidateFilterByOpps;
 
     public SearchCandidateRequest() {
         super(Sort.Direction.DESC, new String[]{"id"});

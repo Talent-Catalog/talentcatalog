@@ -84,7 +84,7 @@
         </button>
         <button class="btn" *ngIf="candidateSource?.sfJobOpp"
            [routerLink]="['/job',candidateSource.sfJobOpp.id]">
-          <i class="fas fa-hands-helping" title="Associated Job"></i>
+          <i class="fa-solid fa-plane-departure" title="Associated Job"></i>
         </button>
         <button class="btn" *ngIf="salesforceService.joblink(candidateSource)">
           <a target="_blank"
@@ -181,7 +181,7 @@
                 (click)="createUpdateSalesforce()"
                 title="Create or update candidates in Salesforce">
           <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
-          Update <i class="fab fa-salesforce"></i>
+          Update Opps
         </button>
 
         <button class="btn btn-sm btn-secondary" *ngIf="canResolveTasks()" [disabled]="!isSelection()"
@@ -209,7 +209,7 @@
                  [resultTemplate]="rt"
                  [inputFormatter]="renderCandidateRow"
                  [editable]="false"
-                 (selectItem)="selectSearchResult($event, input)"
+                 (selectItem)="selectCandidateToAdd($event, input)"
                  placeholder="Add (name or #)..."/>
           <ng-template #rt let-r="result" let-t="term">
             <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
@@ -299,7 +299,7 @@
               Candidate #
             </th>
             <th *ngIf="isShowStage()">
-              <i class="fab fa-salesforce"></i>
+              Stage
             </th>
             <th>
               <i class="far fa-hand-pointer" title="Select candidates"></i>
@@ -374,8 +374,8 @@
                 </app-tasks-monitor>
               </td>
               <td *ngIf="isShowStage()">
-                <a *ngIf="getStage(candidate)" [href]="getSfOpportunityLink(candidate)" target="_blank"
-                title="Stage that this candidate is at - linking to their SF candidate opportunity">
+                <a *ngIf="getStage(candidate)" [routerLink]="getCandidateOpportunityLink(candidate)"
+                   title="Stage that this candidate is at - linking to their candidate opportunity">
                   {{getStage(candidate)}}
                 </a>
               </td>

@@ -9,7 +9,6 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {truncate} from 'src/app/util/string';
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {
   CandidateOpportunity,
@@ -34,6 +33,13 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
    */
   @Input() searchBy: SearchOppsBy;
   @Input() candidateOpps: CandidateOpportunity[];
+
+  /**
+   * Display the name of the job opportunity rather than the name of the candidate opportunity.
+   * <p/>
+   * This is useful when you are displaying the Jobs that a candidate has gone for.
+   */
+  @Input() showJobOppName: boolean = false;
 
   @Output() oppSelection = new EventEmitter();
 
@@ -183,7 +189,11 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
         } else {
           req.ownedByMyPartner = true;
         }
-        req.sfOppClosed = this.showClosedOpps;
+        if (!this.showClosedOpps) {
+          //Don't show closed opps - otherwise(ie this.showClosedOpps is checked) leave
+          // req.sfOppClosed undefined and both open and closed opps will be returned.
+          req.sfOppClosed = false;
+        }
         break;
     }
 
@@ -225,10 +235,6 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
   get getCandidateOpportunityStageName() {
     return getCandidateOpportunityStageName;
-  }
-
-  get truncate() {
-    return truncate;
   }
 
   private subscribeToFilterChanges() {

@@ -33,10 +33,15 @@
         <!--          Header-->
         <thead class="table-light">
         <tr>
-          <th (click)="toggleSort('jobOpp.name')">
-            <app-sorted-by [column]="'jobOpp.name'" [sortColumn]="sortField" [sortDirection]="sortDirection"
+          <th *ngIf="!showJobOppName" (click)="toggleSort('name')">
+            <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
-            Job
+            Candidate Opportunity
+          </th>
+          <th *ngIf="showJobOppName" (click)="toggleSort('jobOpp.name')">
+            <app-sorted-by column="jobOpp.name" [sortColumn]="sortField" [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
+            Candidate Job Opportunity
           </th>
           <th (click)="toggleSort('stage')">
             <app-sorted-by [column]="'stage'" [sortColumn]="sortField" [sortDirection]="sortDirection"
@@ -44,12 +49,12 @@
             Stage
           </th>
           <th>
-            Next step (hover to show all)
+            Next step
           </th>
           <th (click)="toggleSort('nextStepDueDate')">
             <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
-            Next step due date
+            Due
           </th>
         </tr>
         </thead>
@@ -57,14 +62,26 @@
         <tbody>
           <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
               [ngClass]="{'current': currentOpp?.id == opp.id}">
-            <td>
-              <a [routerLink]="['/job',opp.jobOpp.id]">{{opp.jobOpp.name}}</a>
+
+            <td *ngIf="!showJobOppName" [title]="opp.name">
+              {{opp.name | truncate: 25}}
+              <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+                <i class="fas fa-user" title="Candidate"></i>
+              </a>
+              <a [routerLink]="['/job',opp.jobOpp.id]">
+                <i class="fa-solid fa-plane-departure" title="Job"></i>
+              </a>
+            </td>
+            <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
+              <a [routerLink]="['/opp',opp.id]">
+               {{opp.jobOpp.name | truncate: 25}}
+              </a>
             </td>
             <td>
               {{getCandidateOpportunityStageName(opp.stage)}}
             </td>
             <td [title]="opp.nextStep ? opp.nextStep : ''">
-              {{truncate(opp.nextStep, 32)}}
+              {{opp.nextStep | truncate: 32}}
             </td>
             <td>
               {{opp.nextStepDueDate}}

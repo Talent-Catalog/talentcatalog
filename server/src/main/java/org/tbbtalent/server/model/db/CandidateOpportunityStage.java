@@ -24,58 +24,72 @@ package org.tbbtalent.server.model.db;
  * <p/>
  */
 public enum CandidateOpportunityStage {
-        prospect ("Prospect", false),
-        miniIntake ("Mini intake", false),
-        fullIntake ("Full intake", false),
-        visaEligibility ("Visa eligibility", false),
-        cvPreparation ("CV preparation", false),
-        cvReview ("CV review", false),
-        oneWayPreparation ("1 way preparation", false),
-        oneWayReview ("1 way review", false),
-        testPreparation ("Test preparation", false),
-        testing ("Testing", false),
-        twoWayPreparation ("2 way preparation", false),
-        twoWayReview ("2 way review", false),
-        offer ("Offer", false),
-        acceptance ("Acceptance", false),
-        provincialVisaPreparation ("Provincial visa preparation", true),
-        provincialVisaProcessing ("Provincial visa processing", true),
-        visaPreparation ("Visa preparation", true),
-        visaProcessing ("Visa processing", true),
-        relocating ("Relocating", true),
-        relocated ("Relocated", true),
-        settled ("Settled", true),
-        durableSolution ("Durable solution", true),
-        noJobOffer ("No job offer", false),
-        noVisa ("No visa", false),
-        notFitForRole ("Not fit for role", false),
-        notEligibleForTC ("Not eligible for TC", false),
-        notEligibleForVisa ("Not eligible for visa", false),
-        noInterview ("No interview", false),
-        candidateLeavesDestination ("Candidate leaves destination", true),
-        candidateRejectsOffer ("Candidate rejects offer", false),
-        candidateUnreachable ("Candidate unreachable", false),
-        candidateWithdraws ("Candidate withdraws", false)
+        prospect ("Prospect"),
+        miniIntake ("Mini intake"),
+        fullIntake ("Full intake"),
+        visaEligibility ("Visa eligibility"),
+        cvPreparation ("CV preparation"),
+        cvReview ("CV review"),
+        oneWayPreparation ("1 way preparation"),
+        oneWayReview ("1 way review"),
+        testPreparation ("Test preparation"),
+        testing ("Testing"),
+        twoWayPreparation ("2 way preparation"),
+        twoWayReview ("2 way review"),
+        offer ("Offer"),
+        acceptance ("Acceptance"),
+        provincialVisaPreparation ("Provincial visa preparation", false, true, false),
+        provincialVisaProcessing ("Provincial visa processing", false, true, false),
+        visaPreparation ("Visa preparation", false, true, false),
+        visaProcessing ("Visa processing", false, true, false),
+        relocating ("Relocating", false, true, false),
+        relocated ("Relocated", false, true, false),
+        settled ("Settled", false, true, false),
+        durableSolution ("Durable solution", true, true, true),
+        noJobOffer ("No job offer", true, false, false),
+        noVisa ("No visa", true, false, false),
+        notFitForRole ("Not fit for role", true, false, false),
+        notEligibleForTC ("Not eligible for TC", true, false, false),
+        notEligibleForVisa ("Not eligible for visa", true, false, false),
+        noInterview ("No interview", true, false, false),
+        candidateLeavesDestination ("Candidate leaves destination", true, true, false),
+        candidateRejectsOffer ("Candidate rejects offer", true, false, false),
+        candidateUnreachable ("Candidate unreachable", true, false, false),
+        candidateWithdraws ("Candidate withdraws", true, false, false)
         ;
 
         private final String salesforceStageName;
 
+        private final boolean closed;
         private final boolean employed;
+        private final boolean won;
 
         /**
          * Initializes each enum value
          * @param salesforceStageName Name of stage on Salesforce
+         * @param closed if this is a closed stage                            
          * @param employed True if a candidate in this stage should be considered as employed and
          *                 therefore no longer available for other job opportunities.
+         * @param won if this means the opportunity is won                 
          */
-        CandidateOpportunityStage(String salesforceStageName, boolean employed) {
+        CandidateOpportunityStage(String salesforceStageName, boolean closed, boolean employed, boolean won) {
                 this.salesforceStageName = salesforceStageName;
+                this.closed = closed;
                 this.employed = employed;
+                this.won = won;
         }
+
+        CandidateOpportunityStage(String salesforceStageName) {
+                this(salesforceStageName, false, false, false);
+        }
+
+        public boolean isClosed() { return closed; }
 
         public boolean isEmployed() {
                 return employed;
         }
+
+        public boolean isWon() { return won; }
 
         public String getSalesforceStageName() {
                 return salesforceStageName;

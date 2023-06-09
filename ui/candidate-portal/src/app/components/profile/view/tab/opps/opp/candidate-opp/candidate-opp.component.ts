@@ -1,6 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from "../../../../../../../model/candidate";
-import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
+import {
+  CandidateOpportunity,
+  getCandidateOpportunityStageName
+} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-candidate-opp',
@@ -15,6 +18,10 @@ export class CandidateOppComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  get getCandidateOpportunityStageName() {
+    return getCandidateOpportunityStageName;
   }
 
   goBack() {
