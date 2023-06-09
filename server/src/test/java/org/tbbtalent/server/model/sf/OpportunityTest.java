@@ -52,7 +52,10 @@ class OpportunityTest {
                   "Hiring_Commitment__c": "25",
                   "AccountWebsite__c": "https://www.rolls-roycemotorcars.com",
                   "AccountHasHiredInternationally__c": "Yes",
-                  "Id": "13579"
+                  "Id": "13579",
+                  "Account": {
+                    "Description": "Some account description text"
+                  }
                 }""";
 
         Opportunity opportunity = objectMapper.readValue(opportunityJson, Opportunity.class);
@@ -76,6 +79,7 @@ class OpportunityTest {
         assertThat(opportunity.getAccountWebsite()).isEqualTo("https://www.rolls-roycemotorcars.com");
         assertThat(opportunity.getAccountHasHiredInternationally()).isEqualTo("Yes");
         assertThat(opportunity.getId()).isEqualTo("13579");
+        assertThat(opportunity.getAccount().getDescription()).isEqualTo("Some account description text");
     }
 
 }

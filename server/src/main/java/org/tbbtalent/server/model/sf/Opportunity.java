@@ -48,8 +48,18 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 public class Opportunity extends SalesforceObjectBase {
+
+    @Getter
+    static class Account {
+        @JsonSetter("Description")
+        private String description;
+    }
+
     @JsonSetter("Name")
     private String name;
+
+    @JsonSetter("Account")
+    private Account account;
 
     @JsonSetter("AccountId")
     private String accountId;
@@ -59,9 +69,6 @@ public class Opportunity extends SalesforceObjectBase {
 
     @JsonSetter("AccountName__c")
     private String accountName;
-
-    @JsonSetter("Account.Description")
-    private String accountDescription;
 
     @JsonSetter("Candidate_TC_id__c")
     private String candidateId;
