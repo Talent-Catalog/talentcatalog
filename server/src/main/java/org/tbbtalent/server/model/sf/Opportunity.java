@@ -50,7 +50,7 @@ import lombok.ToString;
 public class Opportunity extends SalesforceObjectBase {
 
     @Getter
-    static class Account {
+    static public class Account {
         @JsonSetter("Description")
         private String description;
     }
