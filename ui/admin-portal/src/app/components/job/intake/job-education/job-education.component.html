@@ -4,7 +4,9 @@
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="educationRequirements">
-      Employer-required education or certifications <span class="form-text">(please indicate if there is flexibility in these requirements)</span>
+      Employer-required education or certifications
+      <span class="form-text">(please indicate if there is flexibility in these requirements)</span>
+      <sup class="text-danger fw-light">* required</sup>
     </label>
     <div class="form-text"></div>
     <div *ngIf="editable" class="float-end">
