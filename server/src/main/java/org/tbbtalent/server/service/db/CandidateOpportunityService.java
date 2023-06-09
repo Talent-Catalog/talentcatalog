@@ -47,12 +47,12 @@ public interface CandidateOpportunityService {
      * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    void createUpdateSalesforce(Collection<Candidate> candidates,
+    void createUpdateCandidateOpportunities(Collection<Candidate> candidates,
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
         throws SalesforceException, WebClientException;
 
     /**
-     * See {@link #createUpdateSalesforce(Collection, SalesforceJobOpp, CandidateOpportunityParams)}
+     * See {@link #createUpdateCandidateOpportunities(Collection, SalesforceJobOpp, CandidateOpportunityParams)}
      * <p/>
      * This method extracts the appropriate data from the given request and then calls the 
      * above method.
@@ -62,7 +62,7 @@ public interface CandidateOpportunityService {
      * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    void createUpdateSalesforce(UpdateCandidateOppsRequest request)
+    void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
         throws SalesforceException, WebClientException;
 
     CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp);

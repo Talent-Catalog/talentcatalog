@@ -180,7 +180,7 @@ public class SavedListServiceImpl implements SavedListService {
         if (jobOpp != null) {
             //With no params specified will not change any existing opp associated with this job,
             //but will create a new opp if needed, with stage defaulting to "prospect"
-            candidateOpportunityService.createUpdateSalesforce(
+            candidateOpportunityService.createUpdateCandidateOpportunities(
                 Collections.singletonList(candidate), jobOpp, null);
         }
     }
@@ -499,7 +499,7 @@ public class SavedListServiceImpl implements SavedListService {
         throws NoSuchObjectException, SalesforceException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
         SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
-        candidateOpportunityService.createUpdateSalesforce(
+        candidateOpportunityService.createUpdateCandidateOpportunities(
             savedList.getCandidates(), sfJobOpp, request.getCandidateOppParams());
     }
 

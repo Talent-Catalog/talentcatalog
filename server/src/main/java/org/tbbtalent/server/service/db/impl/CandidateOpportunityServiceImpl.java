@@ -124,7 +124,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     }
 
     @Override
-    public void createUpdateSalesforce(UpdateCandidateOppsRequest request)
+    public void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
         throws NoSuchObjectException, SalesforceException, WebClientException {
 
         List<Candidate> candidates = candidateService.findByIds(request.getCandidateIds());
@@ -132,10 +132,10 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         final String sfJobOppId = request.getSfJobOppId();
         final SalesforceJobOpp sfJobOpp =
             salesforceJobOppService.getOrCreateJobOppFromId(sfJobOppId);
-        createUpdateSalesforce(candidates, sfJobOpp, request.getCandidateOppParams());
+        createUpdateCandidateOpportunities(candidates, sfJobOpp, request.getCandidateOppParams());
     }
 
-    public void createUpdateSalesforce(Collection<Candidate> candidates,
+    public void createUpdateCandidateOpportunities(Collection<Candidate> candidates,
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
         throws SalesforceException, WebClientException {
 
@@ -345,7 +345,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         final SalesforceJobOpp jobOpp = opp.getJobOpp();
         final Candidate candidate = opp.getCandidate();
 
-        createUpdateSalesforce(Collections.singletonList(candidate), jobOpp, request);
+        createUpdateCandidateOpportunities(Collections.singletonList(candidate), jobOpp, request);
         opp = createOrUpdateCandidateOpportunity(candidate, request, jobOpp );        
 
         return opp;

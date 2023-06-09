@@ -298,7 +298,7 @@ public class CandidateAdminApi {
     @PutMapping("update-opps")
     public void createUpdateOppsFromCandidates(@RequestBody UpdateCandidateOppsRequest request)
             throws WebClientException {
-        candidateOpportunityService.createUpdateSalesforce(request);
+        candidateOpportunityService.createUpdateCandidateOpportunities(request);
     }
 
     @PutMapping(value = "update-opps-by-list")
