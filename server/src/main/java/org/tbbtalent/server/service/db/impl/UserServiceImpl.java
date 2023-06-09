@@ -250,31 +250,20 @@ public class UserServiceImpl implements UserService {
             user.setPartner((PartnerImpl) newSourcePartner);
         }
 
-        //Possibly update the user's approver
+//      Possibly update the user's approver
+//      Compare the requested approverID and the user's current approverID and if they're different, make the change - if the creatingUser is a systemadmin
         User currentApprover = user.getApprover();
         Long currentApproverId = currentApprover == null ? null : currentApprover.getId();
-        User newApprover = null;
-        Long approverId = request.getApproverId();
-        if (approverId != null) {
-            //Approver specified - is it a new one?
-            if (!approverId.equals(currentApproverId)) {
+        Long newApproverId = request.getApproverId();
+        if (newApproverId != null) {
+            if (!newApproverId.equals(currentApproverId)) {
                 if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
-                    //Only system admins can change approver
                     throw new InvalidRequestException("You don't have permission to assign an approver.");
                 } else {
-                    //Changing approver
-                    newApprover = getUser(approverId);
+                    User newApprover = getUser(newApproverId);
+                    user.setApprover(newApprover);
                 }
             }
-        } else {
-            //If user does not already have an approver, assign one
-            if (currentApprover == null) {
-                newApprover = creatingUser.getApprover();
-            }
-        }
-        //If we have a new approver, update it.
-        if (newApprover != null) {
-            user.setApprover(newApprover);
         }
 
         user.setReadOnly(request.getReadOnly());
