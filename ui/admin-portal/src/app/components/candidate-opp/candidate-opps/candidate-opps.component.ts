@@ -62,9 +62,9 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   searchForm: FormGroup;
   showClosedOppsTip = "Show opps that have been closed";
 
-  //Default sort opps in ascending order of nextDueDate
+  //Default sort opps in descending order of nextDueDate
   sortField = 'nextStepDueDate';
-  sortDirection = 'ASC';
+  sortDirection = 'DESC';
 
 
   private filterKeySuffix: string = 'Filter';
@@ -248,12 +248,20 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     });
   }
 
-  toggleSort(column: string) {
+  /**
+   * Call when column title is clicked. If the column is the currently selected column,
+   * the sort toggles between ASC and DESC.
+   * If the column is not the currently selected column, the sort is set to the given
+   * default.
+   * @param column Name of column which was clicked
+   * @param directionDefault Default sort direction for the clicked column
+   */
+  toggleSort(column: string, directionDefault = 'ASC') {
     if (this.sortField === column) {
       this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
     } else {
       this.sortField = column;
-      this.sortDirection = 'ASC';
+      this.sortDirection = directionDefault;
     }
 
     if (this.searchBy) {

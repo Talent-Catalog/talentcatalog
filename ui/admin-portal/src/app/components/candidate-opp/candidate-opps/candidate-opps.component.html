@@ -51,7 +51,7 @@
           <th>
             Next step
           </th>
-          <th (click)="toggleSort('nextStepDueDate')">
+          <th (click)="toggleSort('nextStepDueDate', 'DESC')">
             <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             Due
