@@ -88,6 +88,9 @@ public class Opportunity extends SalesforceObjectBase {
     @JsonSetter("IsWon")
     private boolean won;
 
+    @JsonSetter("LastModifiedDate")
+    private String lastModifiedDate;
+    
     @JsonSetter("NextStep")
     private String nextStep;
 

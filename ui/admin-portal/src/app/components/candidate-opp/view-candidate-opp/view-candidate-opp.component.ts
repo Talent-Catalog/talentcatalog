@@ -48,6 +48,7 @@ export class ViewCandidateOppComponent implements OnInit {
   }
 
   private doUpdate(info: CandidateOpportunityParams) {
+    this.updating = true;
     this.candidateOpportunityService.updateCandidateOpportunity(this.opp.id, info)
     .subscribe(opp => {
         //Emit an opp updated which will refresh the display

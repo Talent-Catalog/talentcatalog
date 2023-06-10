@@ -16,13 +16,11 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.time.LocalDate;
+import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
-
-import javax.persistence.MappedSuperclass;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 
 /**
  * Base class for both Job Opportunity and Candidate Opportunity objects.
@@ -52,11 +50,6 @@ public class AbstractOpportunity extends AbstractAuditableDomainObject<Long> {
      */
     @Nullable
     private String closingComments;
-
-    /**
-     * Last modified date of the corresponding opportunity on Salesforce
-     */
-    private OffsetDateTime lastModifiedDate;
 
     /**
      * Name of opportunity

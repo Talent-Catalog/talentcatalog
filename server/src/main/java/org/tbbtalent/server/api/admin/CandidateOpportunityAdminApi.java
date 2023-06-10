@@ -77,14 +77,25 @@ public class CandidateOpportunityAdminApi implements
             .add("closingCommentsForCandidate")
             .add("employerFeedback")
             .add("jobOpp", jobDto())
-            .add("lastModifiedDate")
             .add("name")
             .add("nextStep")
             .add("nextStepDueDate")
             .add("stage")
+            .add("createdBy", userDto())
+            .add("createdDate")
+            .add("updatedBy", userDto())
+            .add("updatedDate")
             ;
     }
-
+    
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+            .add("username")
+            .add("email")
+            .add("firstName")
+            .add("lastName")
+            ;
+    }
 
     private DtoBuilder shortCandidateDto() {
         return new DtoBuilder()

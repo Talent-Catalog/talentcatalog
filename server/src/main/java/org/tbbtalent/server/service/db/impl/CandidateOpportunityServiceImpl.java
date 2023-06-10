@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.tbbtalent.server.util.SalesforceHelper.parseSalesforceOffsetDateTime;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -97,6 +99,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private CandidateOpportunity createOrUpdateCandidateOpportunity(
         Candidate candidate, @Nullable CandidateOpportunityParams oppParams,
         SalesforceJobOpp jobOpp) {
+        User loggedInUser = userService.getLoggedInUser();
+
         CandidateOpportunity opp = findOpp(candidate, jobOpp);
         boolean create = opp == null;
         if (create) {
@@ -112,6 +116,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             }
             opp.setSfId(sfId);
         }
+
+        opp.setAuditFields(loggedInUser);
         
         return updateCandidateOpportunity(opp, oppParams);
     }
@@ -159,7 +165,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         //If we have a Salesforce job opportunity, we can also update associated candidate opps.
         if (sfJobOpp != null) {
             //If the sfJobOpp is not very recent, reload it
-            final OffsetDateTime lastUpdate = sfJobOpp.getLastUpdate();
+            final OffsetDateTime lastUpdate = sfJobOpp.getUpdatedDate();
             if (lastUpdate == null ||
                 Duration.between(lastUpdate, OffsetDateTime.now()).toMinutes() >= 3) {
                 sfJobOpp = salesforceJobOppService.updateJob(sfJobOpp);
@@ -276,6 +282,15 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     LocalDate.parse(nextStepDueDate));
             } catch (DateTimeParseException ex) {
                 log.error("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + op.getName());
+            }
+        }
+
+        final String lastModifiedDate = op.getLastModifiedDate();
+        if (lastModifiedDate != null) {
+            try {
+                candidateOpportunity.setUpdatedDate(parseSalesforceOffsetDateTime(lastModifiedDate));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding lastModifiedDate from SF: " + lastModifiedDate + " in candidate op " + op.getName());
             }
         }
         candidateOpportunity.setSfId(op.getId());

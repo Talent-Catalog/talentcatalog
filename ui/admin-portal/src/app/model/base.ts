@@ -175,14 +175,12 @@ export interface OpportunityIds extends HasId {
   sfId?: string;
 }
 
-export interface Opportunity extends OpportunityIds {
+export interface Opportunity extends Auditable, OpportunityIds {
   closed: boolean;
   closingComments?: string;
-  lastModifiedDate?: Date;
   name: string;
   nextStep?: string;
   nextStepDueDate?: Date;
-
 }
 
 export interface HasJobRelatedLinks {

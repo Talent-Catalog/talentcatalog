@@ -2,7 +2,9 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Inject,
   Input,
+  LOCALE_ID,
   OnChanges,
   OnInit,
   Output,
@@ -20,6 +22,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {formatDate} from "@angular/common";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -77,7 +80,8 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   constructor(
     private fb: FormBuilder,
     private localStorageService: LocalStorageService,
-    private oppService: CandidateOpportunityService
+    private oppService: CandidateOpportunityService,
+    @Inject(LOCALE_ID) private locale: string
   ) { }
 
   ngOnInit(): void {
@@ -277,5 +281,11 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
     this.oppSelection.emit(opp);
 
+  }
+
+  getNextStepHoverString(opp: CandidateOpportunity) {
+    const date = opp == null ? null : opp.updatedDate;
+    const dateStr = date == null ? "???" : formatDate(date, "yyyy-MM-dd", this.locale);
+    return dateStr + ': ' + (opp.nextStep ? opp.nextStep : '');
   }
 }

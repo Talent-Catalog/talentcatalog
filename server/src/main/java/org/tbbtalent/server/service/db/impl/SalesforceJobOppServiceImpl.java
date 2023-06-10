@@ -16,7 +16,9 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.time.OffsetDateTime;
+import static org.tbbtalent.server.util.SalesforceHelper.parseSalesforceOffsetDateTime;
+
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.List;
 import org.slf4j.Logger;
@@ -183,7 +185,16 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             stage = JobOpportunityStage.prospect;
         }
         salesforceJobOpp.setStage(stage);
-        salesforceJobOpp.setLastUpdate(OffsetDateTime.now());
+
+        final String lastModifiedDate = op.getLastModifiedDate();
+        if (lastModifiedDate != null) {
+            try {
+                //Parse special non-standard Salesforce offset date time format 
+                salesforceJobOpp.setUpdatedDate(parseSalesforceOffsetDateTime(lastModifiedDate));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding lastModifiedDate: " + lastModifiedDate + " in job op " + op.getName());
+            }
+        }
 
         //Post processing
         

@@ -1,0 +1,12 @@
+
+.selected {
+  background-color: lightgray;
+}
+
+.name::before {
+  content: ' by ';
+}
+
+.date::before {
+  content: ' on ';
+}

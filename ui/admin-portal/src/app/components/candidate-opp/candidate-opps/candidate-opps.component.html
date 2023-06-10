@@ -48,7 +48,9 @@
                            *ngIf="searchBy"></app-sorted-by>
             Stage
           </th>
-          <th>
+          <th (click)="toggleSort('updatedDate', 'DESC')">
+            <app-sorted-by column="updatedDate" [sortColumn]="sortField" [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
             Next step
           </th>
           <th (click)="toggleSort('nextStepDueDate', 'DESC')">
@@ -80,8 +82,8 @@
             <td>
               {{getCandidateOpportunityStageName(opp.stage)}}
             </td>
-            <td [title]="opp.nextStep ? opp.nextStep : ''">
-              {{opp.nextStep | truncate: 32}}
+            <td [title]="getNextStepHoverString(opp)">
+              {{opp.nextStep | truncate: 38}}
             </td>
             <td>
               {{opp.nextStepDueDate}}
