@@ -23,6 +23,8 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {formatDate} from "@angular/common";
+import {SalesforceService} from "../../../services/salesforce.service";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -79,8 +81,11 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
   constructor(
     private fb: FormBuilder,
+    private authService: AuthService,
+
     private localStorageService: LocalStorageService,
     private oppService: CandidateOpportunityService,
+    private salesforceService: SalesforceService,
     @Inject(LOCALE_ID) private locale: string
   ) { }
 
@@ -237,8 +242,16 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
   }
 
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
+
   get getCandidateOpportunityStageName() {
     return getCandidateOpportunityStageName;
+  }
+
+  getOppSfLink(sfId: string): string {
+    return this.salesforceService.sfOppToLink(sfId);
   }
 
   private subscribeToFilterChanges() {

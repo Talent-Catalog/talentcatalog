@@ -7,6 +7,8 @@ import {EditCandidateOppComponent} from "../edit-candidate-opp/edit-candidate-op
 import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
+import {SalesforceService} from "../../../services/salesforce.service";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -22,8 +24,11 @@ export class ViewCandidateOppComponent implements OnInit {
   updating: boolean;
 
   constructor(
+    private authService: AuthService,
     private candidateOpportunityService: CandidateOpportunityService,
     private modalService: NgbModal,
+    private salesforceService: SalesforceService,
+
   ) { }
 
   ngOnInit(): void {
@@ -58,5 +63,13 @@ export class ViewCandidateOppComponent implements OnInit {
       err => {this.error = err; this.updating = false; }
     );
 
+  }
+
+  getOppSfLink(sfId: string): string {
+    return this.salesforceService.sfOppToLink(sfId);
+  }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
   }
 }

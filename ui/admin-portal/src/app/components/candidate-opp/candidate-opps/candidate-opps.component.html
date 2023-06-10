@@ -67,6 +67,9 @@
 
             <td *ngIf="!showJobOppName" [title]="opp.name">
               {{opp.name | truncate: 25}}
+              <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
+                <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+              </a>
               <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
                 <i class="fas fa-user" title="Candidate"></i>
               </a>

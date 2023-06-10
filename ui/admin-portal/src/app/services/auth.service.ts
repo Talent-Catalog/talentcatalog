@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {JwtResponse} from "../model/jwt-response";
-import {throwError} from "rxjs";
+import {Observable, throwError} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
@@ -24,7 +24,6 @@ import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Role, User} from "../model/user";
 import {LoginRequest} from "../model/base";
-import {Observable} from "rxjs/index";
 import {EncodedQrImage} from "../util/qr";
 import {Candidate} from "../model/candidate";
 import {PartnerType} from "../model/partner";
@@ -216,6 +215,12 @@ export class AuthService {
     return this.commonSeniorPartnerAuth();
   }
 
+  /**
+   * Can they see and click on links to take them to Salesforce
+   */
+  canAccessSalesforce(): boolean {
+    return this.isDefaultSourcePartner();
+  }
 
   /**
    * True if the currently logged in user is permitted to update salesforce.

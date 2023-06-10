@@ -1788,4 +1788,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   getCandidateOppForThisJob(candidate: Candidate): CandidateOpportunity {
     return candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
   }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
 }

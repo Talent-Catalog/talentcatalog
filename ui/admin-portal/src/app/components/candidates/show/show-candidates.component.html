@@ -86,7 +86,7 @@
            [routerLink]="['/job',candidateSource.sfJobOpp.id]">
           <i class="fa-solid fa-plane-departure" title="Associated Job"></i>
         </button>
-        <button class="btn" *ngIf="salesforceService.joblink(candidateSource)">
+        <button class="btn" *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()">
           <a target="_blank"
              [href]="salesforceService.joblink(candidateSource)">
             <i class="fab fa-salesforce" title="Associated Job Opportunity on Salesforce"></i>
@@ -350,7 +350,7 @@
                 <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
                   <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
                 </a>
-                <a *ngIf="candidate.sflink" [href]="candidate.sflink" target="_blank">
+                <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
                   <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
                 </a>
                 <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
