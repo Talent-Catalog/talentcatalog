@@ -199,6 +199,10 @@
               <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
                      id="keyword" autofocus>
             </div>
+            <div *ngIf="isShowStage()">
+              <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed opps</label>
+              <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps">
+            </div>
           </form>
         </div>
 

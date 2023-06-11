@@ -161,6 +161,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   importing: boolean;
   importingFeedback: boolean;
   publishing: boolean;
+  showClosedOppsTip = "Display candidates who were not successful";
   updating: boolean;
   updatingStatuses: boolean;
   updatingTasks: boolean;
@@ -236,7 +237,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
     if (isSavedList(this.candidateSource)) {
       this.searchForm = this.fb.group({
-        keyword: ['']
+        keyword: [''],
+        showClosedOpps: []
       });
       this.subscribeToFilterChanges();
 
@@ -267,6 +269,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   get keyword(): string {
     return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  get showClosedOpps(): boolean {
+    return this.searchForm ? this.searchForm.value.showClosedOpps : null;
   }
 
   get ReviewStatus() {
@@ -472,6 +478,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           request = new SavedListGetRequest();
         }
         request.keyword = this.keyword;
+        request.showClosedOpps = this.showClosedOpps;
         request.pageNumber = this.pageNumber - 1;
         request.pageSize = this.pageSize;
         request.sortFields = [this.sortField];
@@ -484,8 +491,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.candidateSource, request).subscribe(
           results => {
 
-            //todo Should allow modification of results to be displayed. For example, a job list will filter
-            //candidate opportunities matching the job.
             this.results = results;
             this.cacheResults();
 
