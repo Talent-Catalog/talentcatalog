@@ -131,7 +131,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         "Id,AccountId," + candidateNumberSFFieldName;
 
     private final String commonOpportunityFields =
-        "Id,Name,AccountId,Closing_Comments__c,LastModifiedDate,NextStep,Next_Step_Due_Date__c,StageName,IsClosed,AccountCountry__c," +
+        "Id,Name,AccountId,Closing_Comments__c,CreatedDate,LastModifiedDate,NextStep,Next_Step_Due_Date__c,StageName,IsClosed,AccountCountry__c," +
                 "Account.Description, IsWon";
     private final String candidateOpportunityRetrievalFields =
         commonOpportunityFields +

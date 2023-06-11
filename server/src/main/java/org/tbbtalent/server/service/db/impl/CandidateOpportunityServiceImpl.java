@@ -285,6 +285,15 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             }
         }
 
+        final String createdDate = op.getCreatedDate();
+        if (createdDate != null) {
+            try {
+                candidateOpportunity.setCreatedDate(parseSalesforceOffsetDateTime(createdDate));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding createdDate from SF: " + createdDate + " in candidate op " + op.getName());
+            }
+        }
+
         final String lastModifiedDate = op.getLastModifiedDate();
         if (lastModifiedDate != null) {
             try {

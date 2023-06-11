@@ -186,6 +186,15 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         }
         salesforceJobOpp.setStage(stage);
 
+        final String createdDate = op.getCreatedDate();
+        if (createdDate != null) {
+            try {
+                salesforceJobOpp.setCreatedDate(parseSalesforceOffsetDateTime(createdDate));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding createdDate from SF: " + createdDate + " in job op " + op.getName());
+            }
+        }
+
         final String lastModifiedDate = op.getLastModifiedDate();
         if (lastModifiedDate != null) {
             try {
