@@ -24,9 +24,16 @@ import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
 import {SearchOpportunityRequest} from "./candidate-opportunity";
 
+export interface ShortSavedList {
+  id: number;
+  name: string;
+}
+
 export interface ShortJob {
   id: number,
   name: string;
+  country?: string;
+  submissionList?: ShortSavedList;
 }
 
 export interface Job extends OpportunityIds {

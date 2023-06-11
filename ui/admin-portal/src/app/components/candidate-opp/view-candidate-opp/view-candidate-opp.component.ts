@@ -9,6 +9,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthService} from "../../../services/auth.service";
+import {ShortSavedList} from "../../../model/job";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -71,5 +72,9 @@ export class ViewCandidateOppComponent implements OnInit {
 
   canAccessSalesforce(): boolean {
     return this.authService.canAccessSalesforce();
+  }
+
+  displaySavedList(list: ShortSavedList) {
+    return list ? list.name + "(" + list.id + ")" : "";
   }
 }

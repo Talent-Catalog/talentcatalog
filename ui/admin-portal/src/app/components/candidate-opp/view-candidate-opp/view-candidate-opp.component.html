@@ -63,6 +63,23 @@
         </div>
 
         <div class="mb-3 col-sm-12 col-md-4">
+          <label class="col-form-label"><i class="fas fa-globe"></i>Country</label>
+          <div class="form-control-plaintext">
+            {{opp.jobOpp.country}}
+          </div>
+        </div>
+
+        <div class="mb-3 col-sm-12 col-md-8">
+          <label title="Potential candidates should be added to this list" class="col-form-label">
+            <i class="fas fa-list"></i>Submission List</label>
+
+          <div *ngIf="opp.jobOpp.submissionList" class="form-control-plaintext">
+            <span><a [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+              {{displaySavedList(opp.jobOpp.submissionList)}}</a></span>
+          </div>
+        </div>
+
+        <div class="mb-3 col-sm-12 col-md-4">
           <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Created</label>
           <div class="form-control-plaintext">
             <app-created-by [object]="opp"></app-created-by>
