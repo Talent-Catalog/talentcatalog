@@ -848,8 +848,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return isStarredByMe(this.candidateSource?.users, this.authService);
   }
 
-  isShowStage(): boolean {
+  isJobList(): boolean {
     return isSavedList(this.candidateSource) && this.candidateSource.sfJobOpp != null;
+  }
+
+  isShowStage(): boolean {
+    return this.isJobList();
   }
 
   isEditable(): boolean {
@@ -1796,5 +1800,31 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   canAccessSalesforce(): boolean {
     return this.authService.canAccessSalesforce();
+  }
+
+  closeOpportunity(candidate: Candidate) {
+    const job = this.candidateSource.sfJobOpp;
+    if (job) {
+      const editOpp = this.modalService.open(EditCandidateOppComponent, {size: 'lg'});
+      editOpp.componentInstance.closing = true;
+      editOpp.result
+      .then((info: CandidateOpportunityParams) => {
+        this.doUpdateOpp(candidate, job, info)
+      })
+      .catch(() => { });
+    }
+  }
+
+  private doUpdateOpp(candidate: Candidate, job: OpportunityIds, info: CandidateOpportunityParams) {
+    this.updating = true;
+    this.error = null;
+    this.candidateService.createUpdateOppsFromCandidates([candidate.id], job.sfId, info)
+    .subscribe(result => {
+        //Refresh to display any changed stages
+        this.doSearch(true);
+        this.updating = false;
+      },
+      err => {this.error = err; this.updating = false; }
+    );
   }
 }

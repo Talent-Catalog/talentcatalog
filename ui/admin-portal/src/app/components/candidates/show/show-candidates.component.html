@@ -199,7 +199,7 @@
               <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
                      id="keyword" autofocus>
             </div>
-            <div *ngIf="isShowStage()">
+            <div *ngIf="isJobList()">
               <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed opps</label>
               <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps">
             </div>
@@ -295,6 +295,7 @@
 <!--          Header-->
           <thead class="table-light">
           <tr>
+            <th></th>
             <th *ngIf="isReviewable()">
               <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
             </th>
@@ -313,7 +314,6 @@
                              [sortDirection]="sortDirection"></app-sorted-by>
               {{field.displayName}}
             </th>
-            <th></th>
           </tr>
           </thead>
 
@@ -336,6 +336,23 @@
             <!-- MODEL: Highlighting current table record. See also scss file. -->
             <tr *ngFor="let candidate of results?.content" (click)="selectCandidate(candidate)"
                 [ngClass]="{'current': currentCandidate?.id == candidate.id, 'selected': candidate.selected}">
+              <td>
+                <div ngbDropdown placement="bottom-left" (click)="$event.stopPropagation();" container="body">
+                  <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
+                    <i class="fas fa-ellipsis-h"></i>
+                  </button>
+                  <ul ngbDropdownMenu>
+                    <li *ngIf="isReviewable()" ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
+                    <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>
+                    <li class="dropdown-divider"></li>
+                    <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
+                      in new tab</a></li>
+                    <li class="dropdown-divider"></li>
+                    <li *ngIf="!isJobList() && isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Remove from list</li>
+                    <li *ngIf="isJobList()" ngbDropdownItem (click)="closeOpportunity(candidate)">Close opportunity for this job</li>
+                  </ul>
+                </div>
+              </td>
               <td *ngIf="isReviewable()">
                 <div [ngSwitch]="getReviewStatus(candidate)" title="Review status. Click to change."
                      (click)="review(candidate)">
@@ -402,22 +419,6 @@ arrays with more than one value display in drop down
 -->
                   {{field.getValue(candidate)}}
                 </span>
-              </td>
-              <td>
-                <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
-                  <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
-                    <i class="fas fa-ellipsis-h"></i>
-                  </button>
-                  <ul ngbDropdownMenu>
-                    <li *ngIf="isReviewable()" ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
-                    <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>
-                    <li class="dropdown-divider"></li>
-                    <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
-                      in new tab</a></li>
-                    <li class="dropdown-divider"></li>
-                    <li *ngIf="isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Remove from list</li>
-                  </ul>
-                </div>
               </td>
             </tr>
 

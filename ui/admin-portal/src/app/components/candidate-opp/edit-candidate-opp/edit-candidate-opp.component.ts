@@ -22,6 +22,8 @@ export class EditCandidateOppComponent implements OnInit {
   salesforceStageForm: FormGroup;
   candidateOpportunityStageOptions: EnumOption[] = enumOptions(CandidateOpportunityStage);
 
+  closing = false;
+
   constructor(
     private activeModal: NgbActiveModal,
     private fb: FormBuilder) { }
@@ -35,6 +37,11 @@ export class EditCandidateOppComponent implements OnInit {
       closingCommentsForCandidate: [this.opp ? this.opp.closingCommentsForCandidate : null],
       employerFeedback: [this.opp ? this.opp.employerFeedback : null]
     });
+
+    if (this.closing) {
+      this.candidateOpportunityStageOptions = this.candidateOpportunityStageOptions
+         .filter(en=>en.stringValue.startsWith('Closed') )
+    }
   }
 
   get closingComments(): string { return this.salesforceStageForm.value?.closingComments; }
