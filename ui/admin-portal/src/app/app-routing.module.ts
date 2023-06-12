@@ -85,13 +85,7 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full',
             component: NewJobComponent,
-            data: {title: 'TC New Job', prepare: false}
-          },
-          {
-            path: 'prepare',
-            pathMatch: 'full',
-            component: NewJobComponent,
-            data: {title: 'TC New Job', prepare: true}
+            data: {title: 'TC New Job'}
           },
           {
             path: ':id',
