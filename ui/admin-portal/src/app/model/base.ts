@@ -43,7 +43,8 @@ export enum Progress {
 export enum PublishedDocColumnType {
   DisplayOnly,
   EmployerCandidateNotes,
-  EmployerCandidateDecision
+  EmployerCandidateDecision,
+  YesNoDropdown
 }
 
 /**
