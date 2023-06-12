@@ -27,6 +27,7 @@ import {LoginRequest} from "../model/base";
 import {EncodedQrImage} from "../util/qr";
 import {Candidate} from "../model/candidate";
 import {PartnerType} from "../model/partner";
+import {Job} from "../model/job";
 
 @Injectable({
   providedIn: 'root'
@@ -391,5 +392,27 @@ export class AuthService {
     }
 
     return result;
+  }
+
+  /**
+   * Returns true if the currently logged-in user can change the stage of the given job
+   * @param job Job
+   */
+  canChangeJobStage(job: Job): boolean {
+    let result: boolean = false;
+
+    //Current logic is that only the contact user for the job can change the stage.
+    //If there is no contact user, then anyone one working for the default source partner can change
+    //the stage.
+    const loggedInUser = this.getLoggedInUser();
+    if (loggedInUser) {
+      const contactUser = job.contactUser;
+      if (contactUser == null) {
+        result = this.isDefaultSourcePartner()
+      } else {
+        result = contactUser.id === loggedInUser.id;
+      }
+    }
+    return result
   }
 }

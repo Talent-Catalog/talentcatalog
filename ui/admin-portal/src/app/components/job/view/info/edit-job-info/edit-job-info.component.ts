@@ -26,6 +26,7 @@ import {SearchPartnerRequest, SearchUserRequest} from "../../../../../model/base
 import {UserService} from "../../../../../services/user.service";
 import {User} from "../../../../../model/user";
 import {EnumOption, enumOptions} from "../../../../../util/enum";
+import {AuthService} from "../../../../../services/auth.service";
 
 @Component({
   selector: 'app-edit-job-info',
@@ -51,6 +52,7 @@ export class EditJobInfoComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
+              private authService: AuthService,
               private jobService: JobService,
               private partnerService: PartnerService,
               private userService: UserService
@@ -128,7 +130,6 @@ export class EditJobInfoComponent implements OnInit {
   }
 
   canChangeJobStage() {
-    //todo Logic - only contactUser?
-    return true;
+    return this.authService.canChangeJobStage(this.job);
   }
 }
