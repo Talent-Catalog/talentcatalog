@@ -49,7 +49,7 @@ export enum CandidateOpportunityStage {
   relocating = "18. Relocating",
   relocated = "19. Relocated (candidate has arrived at employer's location)",
   settled = "20. Settled (candidate indicates no further need for support)",
-  durableSolution = "21. Durable solution (permanent residence, normal citizen rights)",
+  durableSolution = "21 Closed (won). Durable solution (permanent residence, normal citizen rights)",
   noJobOffer = "Closed. No job offer",
   noVisa = "Closed. No visa",
   notFitForRole = "Closed. Not fit for role",
