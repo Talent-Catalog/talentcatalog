@@ -46,23 +46,29 @@
   <div class="card">
     <div class="card-header">
       Assessing TBB Eligibility
+      <button type="button" class="btn btn-sm btn-secondary float-end" (click)="tbb.toggle()"
+              [attr.aria-expanded]="!tbbEligibilityHide" aria-controls="collapseExample">
+        <i [ngClass]="tbbEligibilityHide ? 'fa-eye':'fa-eye-slash'" class="fa-solid me-1" ></i> See data
+      </button>
     </div>
-    <div class="card-body intake-data">
-      <app-left-home-reason
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-left-home-reason>
-      <app-return-home-safe
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-return-home-safe>
-      <app-host-challenges
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-host-challenges>
+    <div #tbb="ngbCollapse" [(ngbCollapse)]="tbbEligibilityHide">
+      <div class="card-body intake-data">
+        <app-left-home-reason
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-left-home-reason>
+        <app-return-home-safe
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-return-home-safe>
+        <app-host-challenges
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-host-challenges>
+      </div>
     </div>
     <div class="card-body">
       <app-int-protection
@@ -78,28 +84,34 @@
   <div class="card">
     <div class="card-header">
       Assessing Canada Visa Eligibility
+      <button type="button" class="btn btn-sm btn-secondary float-end" (click)="ca.toggle()"
+              [attr.aria-expanded]="!caEligibilityHide" aria-controls="collapseExample">
+        <i [ngClass]="caEligibilityHide ? 'fa-eye':'fa-eye-slash'" class="fa-solid me-1" ></i> See data
+      </button>
     </div>
-    <div class="card-body intake-data">
-      <app-host-entry
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-host-entry>
-      <app-host-challenges
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-host-challenges>
-      <app-work-permit
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-work-permit>
-      <app-work-status
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-work-status>
+    <div #ca="ngbCollapse" [(ngbCollapse)]="caEligibilityHide">
+      <div class="card-body intake-data">
+        <app-host-entry
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-host-entry>
+        <app-host-challenges
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-host-challenges>
+        <app-work-permit
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-work-permit>
+        <app-work-status
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-work-status>
+      </div>
     </div>
     <div class="card-body">
       <app-visa-eligibility-assessment
@@ -115,22 +127,28 @@
   <div class="card">
     <div class="card-header">
       Health Assessment
+      <button type="button" class="btn btn-sm btn-secondary float-end" (click)="health.toggle()"
+              [attr.aria-expanded]="!healthAssessHide" aria-controls="collapseExample">
+        <i [ngClass]="healthAssessHide ? 'fa-eye':'fa-eye-slash'" class="fa-solid me-1" ></i> See data
+      </button>
     </div>
-    <div class="card-body intake-data">
-      <app-health-issues
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-health-issues>
-      <div>
-        <label class="form-label mb-1">Do any dependants have health concerns?</label>
-        <div *ngIf="candidateIntakeData.candidateDependants.length == 0">
-          <p>No dependants entered</p>
+    <div #health="ngbCollapse" [(ngbCollapse)]="healthAssessHide">
+      <div class="card-body intake-data">
+        <app-health-issues
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-health-issues>
+        <div>
+          <label class="form-label mb-1">Do any dependants have health concerns?</label>
+          <div *ngIf="candidateIntakeData.candidateDependants.length == 0">
+            <p>No dependants entered</p>
+          </div>
+          <ul *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
+            <li *ngIf="dependant?.relation"><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}
+              <span *ngIf="dependant.healthNotes">,</span>{{dependant.healthNotes}}</p></li>
+          </ul>
         </div>
-        <ul *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
-          <li *ngIf="dependant?.relation"><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}
-            <span *ngIf="dependant.healthNotes">,</span>{{dependant.healthNotes}}</p></li>
-        </ul>
       </div>
     </div>
     <div class="card-body">
@@ -147,13 +165,19 @@
   <div class="card">
     <div class="card-header">
       Character Assessment
+      <button type="button" class="btn btn-sm btn-secondary float-end" (click)="character.toggle()"
+              [attr.aria-expanded]="!characterAssessHide" aria-controls="collapseExample">
+        <i [ngClass]="characterAssessHide ? 'fa-eye':'fa-eye-slash'" class="fa-solid me-1" ></i> See data
+      </button>
     </div>
-    <div class="card-body intake-data">
-      <app-crime
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-crime>
+    <div #character="ngbCollapse" [(ngbCollapse)]="characterAssessHide">
+      <div class="card-body intake-data">
+        <app-crime
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-crime>
+      </div>
     </div>
     <div class="card-body">
       <app-character-assessment
@@ -169,23 +193,29 @@
   <div class="card">
     <div class="card-header">
       Security Assessment
+      <button type="button" class="btn btn-sm btn-secondary float-end" (click)="security.toggle()"
+              [attr.aria-expanded]="!securityAssessHide" aria-controls="collapseExample">
+        <i [ngClass]="securityAssessHide ? 'fa-eye':'fa-eye-slash'" class="fa-solid me-1" ></i> See data
+      </button>
     </div>
-    <div class="card-body intake-data">
-      <app-military-service
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-military-service>
-      <app-visa-reject
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-visa-reject>
-      <app-visa-issues
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-visa-issues>
+    <div #security="ngbCollapse" [(ngbCollapse)]="securityAssessHide">
+      <div class="card-body intake-data">
+        <app-military-service
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-military-service>
+        <app-visa-reject
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-visa-reject>
+        <app-visa-issues
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-visa-issues>
+      </div>
     </div>
     <div class="card-body">
       <app-security-risk

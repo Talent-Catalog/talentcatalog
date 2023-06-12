@@ -29,6 +29,12 @@ export class VisaCheckCaComponent extends IntakeComponentTabBase {
   @Input() visaRecord: CandidateVisa;
   form: FormGroup;
 
+  public tbbEligibilityHide = true;
+  public caEligibilityHide = true;
+  public healthAssessHide = true;
+  public characterAssessHide = true;
+  public securityAssessHide = true;
+
   private get myRecord(): CandidateVisa {
     return this.candidateIntakeData.candidateVisaChecks ?
       this.candidateIntakeData.candidateVisaChecks[this.selectedIndex]
