@@ -22,7 +22,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -65,7 +64,7 @@ public class CandidateOpportunity extends AbstractOpportunity {
     /**
      * Associated job opportunity
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_opp_id")
     SalesforceJobOpp jobOpp;
 
