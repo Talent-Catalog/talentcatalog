@@ -1,8 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {
-  CandidateOpportunity,
-  getCandidateOpportunityStageName
-} from "../../../model/candidate-opportunity";
+import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {EditCandidateOppComponent} from "../edit-candidate-opp/edit-candidate-opp.component";
 import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -10,6 +7,7 @@ import {CandidateOpportunityService} from "../../../services/candidate-opportuni
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthService} from "../../../services/auth.service";
 import {ShortSavedList} from "../../../model/job";
+import {getOpportunityStageName} from "../../../model/opportunity";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -36,7 +34,7 @@ export class ViewCandidateOppComponent implements OnInit {
   }
 
   get getCandidateOpportunityStageName() {
-    return getCandidateOpportunityStageName
+    return getOpportunityStageName
   }
 
   get editable(): boolean {

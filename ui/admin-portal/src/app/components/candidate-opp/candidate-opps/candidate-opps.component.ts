@@ -12,11 +12,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
-import {
-  CandidateOpportunity,
-  getCandidateOpportunityStageName,
-  SearchOpportunityRequest
-} from "../../../model/candidate-opportunity";
+import {CandidateOpportunity, SearchOpportunityRequest} from "../../../model/candidate-opportunity";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -25,6 +21,7 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {formatDate} from "@angular/common";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthService} from "../../../services/auth.service";
+import {getOpportunityStageName} from "../../../model/opportunity";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -247,7 +244,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   }
 
   get getCandidateOpportunityStageName() {
-    return getCandidateOpportunityStageName;
+    return getOpportunityStageName;
   }
 
   getOppSfLink(sfId: string): string {

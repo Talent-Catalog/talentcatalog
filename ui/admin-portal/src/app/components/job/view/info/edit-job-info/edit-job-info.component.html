@@ -35,6 +35,12 @@
 
     <form [formGroup]="jobForm">
 
+      <div *ngIf="canChangeJobStage()" class="mb-3">
+        <label class="form-label" for="stage">Job Opportunity Stage</label>
+        <ng-select id="stage" formControlName="stage" [items]="jobOpportunityStageOptions"
+                   placeholder="Select" bindLabel="stringValue" bindValue="key" ></ng-select>
+      </div>
+
       <!-- SUBMISSION DUE DATE -->
       <div class="mb-3">
         <label class="form-label" for="submissionDueDate">Submission Due Date</label>
