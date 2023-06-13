@@ -401,16 +401,19 @@ export class AuthService {
   canChangeJobStage(job: Job): boolean {
     let result: boolean = false;
 
-    //Current logic is that only the contact user for the job can change the stage.
-    //If there is no contact user, then anyone one working for the default source partner can change
-    //the stage.
+    //Current logic is that only a system admin or the contact user, defaulting to the creating user
+    //of the job, can change the stage.
     const loggedInUser = this.getLoggedInUser();
     if (loggedInUser) {
-      const contactUser = job.contactUser;
-      if (contactUser == null) {
-        result = this.isDefaultSourcePartner()
+      if (this.isSystemAdminOnly()) {
+        result = true;
       } else {
-        result = contactUser.id === loggedInUser.id;
+        const contactUser = job.contactUser;
+        const createUser = job.createdBy;
+        const owner = contactUser != null ? contactUser : createUser;
+        if (owner != null) {
+          result = owner.id === loggedInUser.id;
+        }
       }
     }
     return result
