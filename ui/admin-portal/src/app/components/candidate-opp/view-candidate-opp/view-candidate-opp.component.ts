@@ -38,8 +38,7 @@ export class ViewCandidateOppComponent implements OnInit {
   }
 
   get editable(): boolean {
-    //todo Needs logic as who can update an opp.
-    return true;
+    return this.authService.canEditCandidateOpp(this.opp);
   }
 
   editOppProgress() {

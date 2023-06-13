@@ -25,9 +25,10 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {Role, User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {EncodedQrImage} from "../util/qr";
-import {Candidate} from "../model/candidate";
+import {Candidate, ShortCandidate} from "../model/candidate";
 import {PartnerType} from "../model/partner";
-import {Job} from "../model/job";
+import {Job, ShortJob} from "../model/job";
+import {CandidateOpportunity} from "../model/candidate-opportunity";
 
 @Injectable({
   providedIn: 'root'
@@ -147,6 +148,14 @@ export class AuthService {
     return result;
   }
 
+  isCandidateOurs(candidate: ShortCandidate): boolean {
+    return true; //todo
+  }
+
+  isJobOurs(job: ShortJob): boolean {
+    return true; //todo
+  }
+
   /**
    * True if the currently logged in user is permitted to see the given candidate's private
    * and potentially sensitive information - such as intake data
@@ -179,6 +188,11 @@ export class AuthService {
     return visible;
   }
 
+  /**
+   * True if currently logged-in user works for the default source partner or a SourcePartner or
+   * RecruiterPartner.
+   * @private
+   */
   private commonSeniorPartnerAuth(): boolean {
     let ok = false;
     const loggedInUser = this.getLoggedInUser()
@@ -417,5 +431,13 @@ export class AuthService {
       }
     }
     return result
+  }
+
+  /**
+   * True if the currently logged-in user can edit the given candidate opp.
+   * @param opp Candidate opportunity
+   */
+  canEditCandidateOpp(opp: CandidateOpportunity) {
+    return this.isAdminOrGreater() && this.isCandidateOurs(opp.candidate) && this.isJobOurs(opp.jobOpp)
   }
 }
