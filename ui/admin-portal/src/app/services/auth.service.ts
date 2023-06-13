@@ -438,6 +438,7 @@ export class AuthService {
    * @param opp Candidate opportunity
    */
   canEditCandidateOpp(opp: CandidateOpportunity) {
-    return this.isAdminOrGreater() && this.isCandidateOurs(opp.candidate) && this.isJobOurs(opp.jobOpp)
+    return this.isAdminOrGreater() &&
+      (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
   }
 }
