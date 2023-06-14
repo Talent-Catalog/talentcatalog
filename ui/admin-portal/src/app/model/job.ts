@@ -14,9 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {OpportunityIds} from "./base";
-import {SavedList} from "./saved-list";
+import {SavedList, ShortSavedList} from "./saved-list";
 import {User} from "./user";
-import {Partner} from "./partner";
+import {ShortPartner} from "./partner";
 import {SavedSearch} from "./saved-search";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
@@ -24,16 +24,12 @@ import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
 import {SearchOpportunityRequest} from "./candidate-opportunity";
 
-export interface ShortSavedList {
-  id: number;
-  name: string;
-}
-
 export interface ShortJob {
   id: number,
   name: string;
   country?: string;
   submissionList?: ShortSavedList;
+  recruiterPartner?: ShortPartner;
 }
 
 export interface Job extends OpportunityIds {
@@ -55,7 +51,7 @@ export interface Job extends OpportunityIds {
   name: string;
   publishedBy: User;
   publishedDate: Date;
-  recruiterPartner: Partner;
+  recruiterPartner: ShortPartner;
   stage: JobOpportunityStage;
   starringUsers: User[];
   submissionDueDate: Date;

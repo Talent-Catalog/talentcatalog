@@ -6,8 +6,8 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthService} from "../../../services/auth.service";
-import {ShortSavedList} from "../../../model/job";
 import {getOpportunityStageName} from "../../../model/opportunity";
+import {ShortSavedList} from "../../../model/saved-list";
 
 @Component({
   selector: 'app-view-candidate-opp',

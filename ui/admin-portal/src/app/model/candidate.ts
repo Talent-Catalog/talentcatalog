@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {User} from './user';
+import {ShortUser, User} from './user';
 import {Country} from './country';
 import {CandidateReviewStatusItem} from './candidate-review-status-item';
 import {EducationMajor} from './education-major';
@@ -32,6 +32,7 @@ import {CandidateOpportunity} from "./candidate-opportunity";
 
 export interface ShortCandidate {
   candidateNumber: string;
+  user: ShortUser;
 }
 
 export interface Candidate extends HasId {
