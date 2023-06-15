@@ -38,7 +38,6 @@ export interface Job extends OpportunityIds {
   hiringCommitment: string;
   opportunityScore: string;
   employerDescription: string;
-  accepting: boolean;
   contactEmail: string;
   contactUser: User;
   // Note: this country field comes from Salesforce, why it is a string and not a country object.
