@@ -11,13 +11,17 @@
   <div class="d-flex justify-content-between align-items-center">
     <h1>{{opp.name}}
       <span class="small text-muted">
-<!--        todo This doesn't show abbreviated stage when opp.stage is a real enum and not the key - which json seems to map to -->
-        ({{opp.id}}) {{getCandidateOpportunityStageName(opp.stage)}}
-        <a [routerLink]="['/job',opp.jobOpp.id]">
-          <i class="fas fa-hands-helping" title="Job"></i>
+        <a [routerLink]="['/opp',opp.id]">
+          <i class="fas fa-expand" title="Open"></i>
         </a>
-        <a [routerLink]="['/candidate',opp.candidate.candidateNumber]">
+        <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
+          <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+        </a>
+        <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
           <i class="fas fa-user" title="Candidate"></i>
+        </a>
+        <a [routerLink]="['/job',opp.jobOpp.id]">
+          <i class="fa-solid fa-plane-departure" title="Job"></i>
         </a>
       </span>
     </h1>
@@ -25,8 +29,9 @@
   <div class="card">
 
     <div class="card-header">
-      Candidate Job Opportunity
+      Candidate Job Opportunity ({{opp.id}})
       <div class="float-end" *ngIf="editable">
+        <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
         <button class="btn btn-sm btn-outline-secondary" title="Update progress" (click)="editOppProgress()">
           <i class="fas fa-edit"></i>
         </button>
@@ -51,9 +56,64 @@
         </div>
 
         <div class="mb-3 col-sm-12 col-md-4">
-          <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Next Step Due Date</label>
+          <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Next Step Due</label>
           <div class="form-control-plaintext">
             {{opp.nextStepDueDate}}
+          </div>
+        </div>
+
+        <div class="mb-3 col-sm-12 col-md-4">
+          <label class="col-form-label"><i class="fas fa-globe"></i>Country</label>
+          <div class="form-control-plaintext">
+            {{opp.jobOpp.country}}
+          </div>
+        </div>
+
+        <div class="mb-3 col-sm-12 col-md-8">
+          <label title="Potential candidates should be added to this list" class="col-form-label">
+            <i class="fas fa-list"></i>Submission List</label>
+
+          <div *ngIf="opp.jobOpp.submissionList" class="form-control-plaintext">
+            <span><a [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+              {{displaySavedList(opp.jobOpp.submissionList)}}</a></span>
+          </div>
+        </div>
+
+        <div class="mb-3 col-sm-12 col-md-4">
+          <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Created</label>
+          <div class="form-control-plaintext">
+            <app-created-by [object]="opp"></app-created-by>
+          </div>
+        </div>
+
+        <div class="mb-3 col-sm-12 col-md-4">
+          <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Last updated</label>
+          <div class="form-control-plaintext">
+            <app-updated-by [object]="opp"></app-updated-by>
+          </div>
+        </div>
+        <hr/>
+        <div>
+          <label class="form-label" for="closingComments">
+            Closing comments:
+          </label>
+          <div class="col-12" id="closingComments" [innerHtml]="opp.closingComments">
+          </div>
+        </div>
+        <hr/>
+        <div>
+          <label class="form-label" for="closingCommentsForCandidate">
+            Closing comments for candidate:
+          </label>
+          <div class="col-12" id="closingCommentsForCandidate" [innerHtml]="opp.closingCommentsForCandidate">
+          </div>
+        </div>
+        <hr/>
+        <div>
+          <label class="form-label" for="employerFeedback">
+            Employer feedback:
+          </label>
+          <div class="col-12" id="employerFeedback" [innerHtml]="opp.employerFeedback">
           </div>
         </div>
       </div>

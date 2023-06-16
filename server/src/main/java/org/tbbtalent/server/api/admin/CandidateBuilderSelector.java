@@ -181,6 +181,15 @@ public class CandidateBuilderSelector {
                 ;
     }
 
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+            .add("username")
+            .add("email")
+            .add("firstName")
+            .add("lastName")
+            ;
+    }
+
     private DtoBuilder countryDto() {
         return new DtoBuilder()
                 .add("id")
@@ -197,12 +206,16 @@ public class CandidateBuilderSelector {
             .add("closingCommentsForCandidate")
             .add("employerFeedback")
             .add("jobOpp", jobDto())
-            .add("lastModifiedDate")
             .add("name")
             .add("nextStep")
             .add("nextStepDueDate")
             .add("stage")
-                ;
+            .add("createdBy", userDto())
+            .add("createdDate")
+            .add("updatedBy", userDto())
+            .add("updatedDate")
+
+            ;
     }
 
     private DtoBuilder shortCandidateDto() {

@@ -128,7 +128,7 @@ public interface CandidateService {
 
     Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request);
 
-    Page<Candidate> getSavedListCandidates(long id, SavedListGetRequest request);
+    Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request);
 
     Candidate getCandidate(long id) throws NoSuchObjectException;
 
@@ -306,7 +306,7 @@ public interface CandidateService {
     void setCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type,
         @Nullable String link);
 
-    void exportToCsv(long savedListId, SavedListGetRequest request, PrintWriter writer)
+    void exportToCsv(SavedList savedList, SavedListGetRequest request, PrintWriter writer)
             throws ExportFailedException;
 
     List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);

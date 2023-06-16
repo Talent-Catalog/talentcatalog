@@ -9,7 +9,7 @@
 
   </div>
 
-  <div class="col-sm-{{sidePanelColWidth}} admin-panel">
+  <div class="col-sm-{{sidePanelColWidth}} admin-panel detail-panel">
     <div class="w-100">
       <div *ngIf="canToggleSizes()" class="float-end">
         <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
@@ -18,7 +18,7 @@
 
       <div *ngIf="selectedJob">
         <strong>{{selectedJob.name + ' (' + selectedJob.id + ')'}}</strong>
-        <button class="btn" (click)="doOpenJob()"><i class="fas fa-expand" title="Open"></i></button>
+        <button class="btn" (click)="doOpenJob()"><i class="fa-solid fa-plane-departure" title="Job"></i></button>
         <button class="btn" (click)="doToggleStarred()">
           <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
           <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>

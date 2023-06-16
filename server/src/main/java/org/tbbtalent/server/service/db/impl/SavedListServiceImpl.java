@@ -16,24 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.springframework.data.jpa.domain.Specification.where;
-
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,53 +35,30 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateSavedList;
-import org.tbbtalent.server.model.db.ExportColumn;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
-import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
-import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
-import org.tbbtalent.server.repository.db.GetSavedListsQuery;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
-import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
-import org.tbbtalent.server.request.candidate.PublishListRequest;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
-import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
-import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
-import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.link.UpdateShortNameRequest;
-import org.tbbtalent.server.request.list.ContentUpdateType;
-import org.tbbtalent.server.request.list.IHasSetOfCandidates;
-import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.request.list.*;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
-import org.tbbtalent.server.service.db.CandidateOpportunityService;
-import org.tbbtalent.server.service.db.DocPublisherService;
-import org.tbbtalent.server.service.db.ExportColumnsService;
-import org.tbbtalent.server.service.db.FileSystemService;
-import org.tbbtalent.server.service.db.SalesforceJobOppService;
-import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.TaskAssignmentService;
-import org.tbbtalent.server.service.db.UserService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Saved List service
@@ -173,6 +134,15 @@ public class SavedListServiceImpl implements SavedListService {
         candidate.getCandidateSavedLists().add(csl);
 
         assignListTasksToCandidate(destinationList, candidate);
+
+        //If a job list, automatically create a candidate opp if needed
+        final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
+        if (jobOpp != null) {
+            //With no params specified will not change any existing opp associated with this job,
+            //but will create a new opp if needed, with stage defaulting to "prospect"
+            candidateOpportunityService.createUpdateCandidateOpportunities(
+                Collections.singletonList(candidate), jobOpp, null);
+        }
     }
 
     @Override
@@ -489,7 +459,7 @@ public class SavedListServiceImpl implements SavedListService {
         throws NoSuchObjectException, SalesforceException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
         SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
-        candidateOpportunityService.createUpdateSalesforce(
+        candidateOpportunityService.createUpdateCandidateOpportunities(
             savedList.getCandidates(), sfJobOpp, request.getCandidateOppParams());
     }
 
@@ -669,6 +639,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    @NonNull
     public List<SavedList> findListsAssociatedWithJobs() {
         return this.savedListRepository.findListsWithJobs();
     }
@@ -876,6 +847,9 @@ public class SavedListServiceImpl implements SavedListService {
             columnSetUpMap.put(columnCount, columnSetUp);
             if (def.getType().equals(PublishedDocColumnType.EmployerCandidateDecision)) {
                 columnSetUp.setDropDowns(EmployerCandidateDecision.getDisplayTextValues());
+            } else if (def.getType().equals(PublishedDocColumnType.YesNoDropdown)) {
+                List<String> values = Arrays.asList("", "Yes", "No");
+                columnSetUp.setDropDowns(values);
             }
 
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {

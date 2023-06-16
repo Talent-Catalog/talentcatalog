@@ -18,13 +18,15 @@ import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
-import {Job} from "../../../../../model/job";
+import {Job, JobOpportunityStage, UpdateJobRequest} from "../../../../../model/job";
 import {forkJoin} from "rxjs";
 import {PartnerService} from "../../../../../services/partner.service";
 import {Partner, PartnerType} from "../../../../../model/partner";
 import {SearchPartnerRequest, SearchUserRequest} from "../../../../../model/base";
 import {UserService} from "../../../../../services/user.service";
 import {User} from "../../../../../model/user";
+import {EnumOption, enumOptions} from "../../../../../util/enum";
+import {AuthService} from "../../../../../services/auth.service";
 
 @Component({
   selector: 'app-edit-job-info',
@@ -34,6 +36,10 @@ import {User} from "../../../../../model/user";
 export class EditJobInfoComponent implements OnInit {
 
   jobId: number;
+
+  job: Job;
+
+  jobOpportunityStageOptions: EnumOption[] = enumOptions(JobOpportunityStage);
 
   jobForm: FormGroup;
 
@@ -46,6 +52,7 @@ export class EditJobInfoComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
+              private authService: AuthService,
               private jobService: JobService,
               private partnerService: PartnerService,
               private userService: UserService
@@ -67,30 +74,43 @@ export class EditJobInfoComponent implements OnInit {
       this.loading = false;
       this.recruiters = results['partners'];
       this.users = results['users'].map(u => {u.name = u.firstName + " " + u.lastName; return u});
-      let job: Job = results['job'];
-      this.createForm(job);
+      this.job = results['job'];
+      this.createForm();
     }, error => {
       this.loading = false;
       this.error = error;
     });
   }
 
-  private createForm(job: Job) {
+  private createForm() {
     this.jobForm = this.fb.group({
-      submissionDueDate: [job.submissionDueDate],
-      contactEmail: [job.contactEmail],
-      contactUser: [job.contactUser],
-      recruiterPartner: [job.recruiterPartner]
+      stage: [this.job.stage],
+      submissionDueDate: [this.job.submissionDueDate],
+      contactEmail: [this.job.contactEmail],
+      contactUser: [this.job.contactUser],
+      recruiterPartner: [this.job.recruiterPartner]
       //  todo other fields
     });
+  }
+
+  get stage(): string {
+    return this.jobForm?.value.stage;
+  }
+
+  get submissionDueDate(): Date {
+    return this.jobForm?.value.submissionDueDate;
   }
 
   onSave() {
     this.error = null;
     this.saving = true;
     //todo need to add contactEmail, recruiter  etc
+    const request: UpdateJobRequest = {
+      stage: this.stage,
+      submissionDueDate: this.submissionDueDate
+    }
 
-    this.jobService.update(this.jobId, this.jobForm.value).subscribe(
+    this.jobService.update(this.jobId, request).subscribe(
       (job) => {
         this.closeModal(job);
         this.saving = false;
@@ -107,5 +127,9 @@ export class EditJobInfoComponent implements OnInit {
 
   dismiss() {
     this.activeModal.dismiss(false);
+  }
+
+  canChangeJobStage() {
+    return this.authService.canChangeJobStage(this.job);
   }
 }

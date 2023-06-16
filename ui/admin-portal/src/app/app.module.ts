@@ -699,7 +699,9 @@ import {
 import {
   CandidateOppsWithDetailComponent
 } from './components/candidate-opp/candidate-opps-with-detail/candidate-opps-with-detail.component';
-import { TailoredCvComponent } from './components/candidates/view/tailored-cv.component';
+import {TruncatePipe} from "./pipes/truncate.pipe";
+import {CreatedByComponent} from './components/util/user/created-by/created-by.component';
+import {TailoredCvComponent} from './components/candidates/view/tailored-cv.component';
 
 @NgModule({
   declarations: [
@@ -978,6 +980,8 @@ import { TailoredCvComponent } from './components/candidates/view/tailored-cv.co
     ViewCandidateOppComponent,
     CandidateOppsComponent,
     CandidateOppsWithDetailComponent,
+    TruncatePipe,
+    CreatedByComponent,
     TailoredCvComponent
   ],
   imports: [

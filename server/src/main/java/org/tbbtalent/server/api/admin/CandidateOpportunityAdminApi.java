@@ -76,15 +76,26 @@ public class CandidateOpportunityAdminApi implements
             .add("closingComments")
             .add("closingCommentsForCandidate")
             .add("employerFeedback")
-            .add("jobOpp", jobDto())
-            .add("lastModifiedDate")
+            .add("jobOpp", shortJobDto())
             .add("name")
             .add("nextStep")
             .add("nextStepDueDate")
             .add("stage")
+            .add("createdBy", shortUserDto())
+            .add("createdDate")
+            .add("updatedBy", shortUserDto())
+            .add("updatedDate")
             ;
     }
-
+    
+    private DtoBuilder shortUserDto() {
+        return new DtoBuilder()
+            .add("username")
+            .add("email")
+            .add("firstName")
+            .add("lastName")
+            ;
+    }
 
     private DtoBuilder shortCandidateDto() {
         return new DtoBuilder()
@@ -92,7 +103,16 @@ public class CandidateOpportunityAdminApi implements
             ;
     }
 
-    private DtoBuilder jobDto() {
+    private DtoBuilder shortJobDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("country")
+            .add("submissionList", shortSavedListDto())
+            ;
+    }
+
+    private DtoBuilder shortSavedListDto() {
         return new DtoBuilder()
             .add("id")
             .add("name")

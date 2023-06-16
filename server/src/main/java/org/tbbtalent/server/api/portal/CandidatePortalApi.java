@@ -452,11 +452,14 @@ public class CandidatePortalApi {
             .add("closed")
             .add("closingCommentsForCandidate")
             .add("jobOpp", jobDto())
-            .add("lastModifiedDate")
             .add("name")
             .add("nextStep")
             .add("nextStepDueDate")
             .add("stage")
+            .add("createdBy", userDto())
+            .add("createdDate")
+            .add("updatedBy", userDto())
+            .add("updatedDate")
             ;
     }
 

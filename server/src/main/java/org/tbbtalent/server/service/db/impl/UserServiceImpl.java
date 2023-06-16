@@ -268,7 +268,7 @@ public class UserServiceImpl implements UserService {
             }
         } else {
             //If user does not already have an approver, assign one
-            if (currentApprover == null) {
+            if (currentApprover == null && creatingUser != null) {
                 newApprover = creatingUser.getApprover();
             }
         }

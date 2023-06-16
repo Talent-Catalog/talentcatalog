@@ -24,15 +24,24 @@ import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
 import {SearchOpportunityRequest} from "./candidate-opportunity";
 
+export interface ShortSavedList {
+  id: number;
+  name: string;
+}
+
 export interface ShortJob {
   id: number,
   name: string;
+  country?: string;
+  submissionList?: ShortSavedList;
 }
 
 export interface Job extends OpportunityIds {
   employerWebsite: string;
   employerHiredInternationally: boolean;
   hiringCommitment: string;
+  opportunityScore: string;
+  employerDescription: string;
   accepting: boolean;
   contactEmail: string;
   contactUser: User;
@@ -56,8 +65,8 @@ export interface Job extends OpportunityIds {
   updatedBy: User;
   updatedDate: Date;
   jobOppIntake: JobOppIntake;
-
 }
+
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
   return getExternalHref(router, location, ['job', job.id]);
 }
@@ -71,30 +80,30 @@ export type JobDocType = "jd" | "joi";
  * See https://docs.google.com/document/d/1B6DmpYaONV_yNmyAqL76cu0TUQcpNgKtOmKELCkpRoc/edit#heading=h.qx7je1tuwoqv
  */
 export enum JobOpportunityStage {
-  prospect = "Prospect",
-  briefing = "Briefing",
-  pitching = "Pitching",
-  identifyingRoles = "Identifying roles",
-  candidateSearch = "Candidate search",
-  visaEligibility = "Visa eligibility",
-  cvPreparation = "CV preparation",
-  cvReview = "CV review",
-  recruitmentProcess = "Recruitment process",
-  jobOffer = "Job offer",
-  visaPreparation = "Visa preparation",
-  postHireEngagement = "Post hire engagement",
-  hiringCompleted = "Hiring completed",
-  ineligibleEmployer = "Ineligible employer",
-  ineligibleOccupation = "Ineligible occupation",
-  ineligibleRegion = "Ineligible region",
-  noInterest = "No interest",
-  noJobOffer = "No job offer",
-  noPrPathway = "No PR pathway",
-  noSuitableCandidates = "No suitable candidates",
-  noVisa = "No visa",
-  tooExpensive = "Too expensive",
-  tooHighWage = "Too high wage",
-  tooLong = "Too long"
+  prospect = "0. Prospect",
+  briefing = "1. Briefing",
+  pitching = "2. Pitching",
+  identifyingRoles = "3. Identifying roles",
+  candidateSearch = "4. Candidate search",
+  visaEligibility = "5. Visa eligibility",
+  cvPreparation = "6. CV preparation",
+  cvReview = "7. CV review",
+  recruitmentProcess = "8. Recruitment process",
+  jobOffer = "9. Job offer",
+  visaPreparation = "10. Visa preparation",
+  postHireEngagement = "11. Post hire engagement",
+  hiringCompleted = "12 Closed won. Hiring completed",
+  ineligibleEmployer = "Closed. Ineligible employer",
+  ineligibleOccupation = "Closed. Ineligible occupation",
+  ineligibleRegion = "Closed. Ineligible region",
+  noInterest = "Closed. No interest",
+  noJobOffer = "Closed. No job offer",
+  noPrPathway = "Closed. No PR pathway",
+  noSuitableCandidates = "Closed. No suitable candidates",
+  noVisa = "Closed. No visa",
+  tooExpensive = "Closed. Too expensive",
+  tooHighWage = "Closed. Too high wage",
+  tooLong = "Closed. Too long"
 }
 
 /**
@@ -108,6 +117,7 @@ export class SearchJobRequest extends SearchOpportunityRequest {
 
 export interface UpdateJobRequest {
   sfJoblink?: string;
+  stage?: string;
   submissionDueDate?: Date;
 }
 

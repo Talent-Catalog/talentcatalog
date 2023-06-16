@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
 
 @Getter
 @Setter
@@ -32,6 +33,9 @@ public class UpdateJobRequest {
      */
     @Nullable
     private String sfJoblink;
+
+    @Nullable
+    private JobOpportunityStage stage;
 
     @Nullable
     private LocalDate submissionDueDate;

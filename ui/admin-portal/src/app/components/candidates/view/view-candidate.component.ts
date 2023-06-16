@@ -362,6 +362,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   canViewPrivateInfo() {
     return this.authService.canViewPrivateCandidateInfo(this.candidate);
   }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
+
   createTailoredCv() {
     const createTailoredCvModal = this.modalService.open(TailoredCvComponent, {
       centered: true,

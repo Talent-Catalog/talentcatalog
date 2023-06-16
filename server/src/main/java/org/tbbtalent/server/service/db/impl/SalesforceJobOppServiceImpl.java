@@ -16,7 +16,9 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.time.OffsetDateTime;
+import static org.tbbtalent.server.util.SalesforceHelper.parseSalesforceOffsetDateTime;
+
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.List;
 import org.slf4j.Logger;
@@ -24,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.configuration.SalesforceConfig;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Country;
@@ -43,17 +44,15 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceService salesforceService;
-    private final SalesforceConfig salesforceConfig;
     private final CountryRepository countryRepository;
     
     private final EmailHelper emailHelper;
 
     public SalesforceJobOppServiceImpl(SalesforceJobOppRepository salesforceJobOppRepository,
-        SalesforceService salesforceService, SalesforceConfig salesforceConfig, CountryRepository countryRepository,
+        SalesforceService salesforceService, CountryRepository countryRepository,
         EmailHelper emailHelper) {
         this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.salesforceService = salesforceService;
-        this.salesforceConfig = salesforceConfig;
         this.countryRepository = countryRepository;
         this.emailHelper = emailHelper;
     }
@@ -172,9 +171,12 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
         salesforceJobOpp.setClosed(op.isClosed());
+        salesforceJobOpp.setWon(op.isWon());
         salesforceJobOpp.setHiringCommitment(op.getHiringCommitment());
+        salesforceJobOpp.setOpportunityScore(op.getOpportunityScore());
         salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite());
         salesforceJobOpp.setEmployerHiredInternationally(op.getAccountHasHiredInternationally());
+        salesforceJobOpp.setEmployerDescription(op.getAccount() == null ? null : op.getAccount().getDescription());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());
@@ -183,7 +185,25 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             stage = JobOpportunityStage.prospect;
         }
         salesforceJobOpp.setStage(stage);
-        salesforceJobOpp.setLastUpdate(OffsetDateTime.now());
+
+        final String createdDate = op.getCreatedDate();
+        if (createdDate != null) {
+            try {
+                salesforceJobOpp.setCreatedDate(parseSalesforceOffsetDateTime(createdDate));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding createdDate from SF: " + createdDate + " in job op " + op.getName());
+            }
+        }
+
+        final String lastModifiedDate = op.getLastModifiedDate();
+        if (lastModifiedDate != null) {
+            try {
+                //Parse special non-standard Salesforce offset date time format 
+                salesforceJobOpp.setUpdatedDate(parseSalesforceOffsetDateTime(lastModifiedDate));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding lastModifiedDate: " + lastModifiedDate + " in job op " + op.getName());
+            }
+        }
 
         //Post processing
         

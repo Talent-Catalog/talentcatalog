@@ -228,6 +228,8 @@ export class SearchSavedListRequest extends SearchCandidateSourcesRequest {
 }
 
 export class SavedListGetRequest extends PagedSearchRequest {
+  keyword?: string;
+  showClosedOpps?: boolean;
 }
 
 export interface UpdateSharingRequest {

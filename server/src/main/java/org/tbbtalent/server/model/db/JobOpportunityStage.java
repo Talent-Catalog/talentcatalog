@@ -37,33 +37,45 @@ public enum JobOpportunityStage {
         jobOffer ("Job offer"),
         visaPreparation ("Visa preparation"),
         postHireEngagement ("Post hire engagement"),
-        hiringCompleted ("Hiring completed"),
-        ineligibleEmployer ("Ineligible employer"),
-        ineligibleOccupation ("Ineligible occupation"),
-        ineligibleRegion ("Ineligible region"),
-        noInterest ("No interest"),
-        noJobOffer ("No job offer"),
-        noPrPathway ("No PR pathway"),
-        noSuitableCandidates ("No suitable candidates"),
-        noVisa ("No visa"),
-        tooExpensive ("Too expensive"),
-        tooHighWage ("Too high wage"),
-        tooLong ("Too long");
+        hiringCompleted ("Hiring completed", true, true),
+        ineligibleEmployer ("Ineligible employer", true, false),
+        ineligibleOccupation ("Ineligible occupation", true, false),
+        ineligibleRegion ("Ineligible region", true, false),
+        noInterest ("No interest", true, false),
+        noJobOffer ("No job offer", true, false),
+        noPrPathway ("No PR pathway", true, false),
+        noSuitableCandidates ("No suitable candidates", true, false),
+        noVisa ("No visa", true, false),
+        tooExpensive ("Too expensive", true, false),
+        tooHighWage ("Too high wage", true, false),
+        tooLong ("Too long", true, false);
 
-        public final String label;
+        public final String salesforceStageName;
+        private final boolean closed;
+        private final boolean won;
 
-        JobOpportunityStage(String label) {
-                this.label = label;
+
+        JobOpportunityStage(String salesforceStageName, boolean closed, boolean won) {
+                this.salesforceStageName = salesforceStageName;
+                this.closed = closed;
+                this.won = won;
+        }
+
+        JobOpportunityStage(String salesforceStageName) {
+                this(salesforceStageName, false, false);
         }
 
         @Override
         public String toString() {
-                return label;
+                return salesforceStageName;
         }
+
+        public boolean isClosed() { return closed; }
+        public boolean isWon() { return won; }
 
         public static JobOpportunityStage textToEnum(String label) {
                 for (JobOpportunityStage stage : JobOpportunityStage.values()) {
-                        if (stage.label.equals(label)) {
+                        if (stage.salesforceStageName.equals(label)) {
                                 return stage;
                         }
                 }

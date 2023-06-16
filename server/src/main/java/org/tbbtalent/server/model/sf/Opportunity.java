@@ -48,8 +48,18 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 public class Opportunity extends SalesforceObjectBase {
+
+    @Getter
+    static public class Account {
+        @JsonSetter("Description")
+        private String description;
+    }
+
     @JsonSetter("Name")
     private String name;
+
+    @JsonSetter("Account")
+    private Account account;
 
     @JsonSetter("AccountId")
     private String accountId;
@@ -60,14 +70,14 @@ public class Opportunity extends SalesforceObjectBase {
     @JsonSetter("AccountName__c")
     private String accountName;
 
-    @JsonSetter("Account.Description")
-    private String accountDescription;
-
     @JsonSetter("Candidate_TC_id__c")
     private String candidateId;
 
     @JsonSetter("Closing_Comments__c")
     private String closingComments;
+
+    @JsonSetter("Closing_Comments_For_Candidate__c")
+    private String closingCommentsForCandidate;
 
     @JsonSetter("Employer_Feedback__c")
     private String employerFeedback;
@@ -75,6 +85,15 @@ public class Opportunity extends SalesforceObjectBase {
     @JsonSetter("IsClosed")
     private boolean closed;
 
+    @JsonSetter("IsWon")
+    private boolean won;
+
+    @JsonSetter("CreatedDate")
+    private String createdDate;
+
+    @JsonSetter("LastModifiedDate")
+    private String lastModifiedDate;
+    
     @JsonSetter("NextStep")
     private String nextStep;
 
@@ -83,6 +102,9 @@ public class Opportunity extends SalesforceObjectBase {
 
     @JsonSetter("OwnerId")
     private String ownerId;
+
+    @JsonSetter("Opportunity_Score__c")
+    private String opportunityScore;
 
     @JsonSetter("Parent_Opportunity__c")
     private String parentOpportunityId;

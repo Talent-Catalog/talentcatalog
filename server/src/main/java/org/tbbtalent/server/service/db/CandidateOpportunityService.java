@@ -17,7 +17,6 @@
 package org.tbbtalent.server.service.db;
 
 import java.util.Collection;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -32,49 +31,38 @@ import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityPa
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
 public interface CandidateOpportunityService {
-
-    /**
-     * Creates or updates CandidateOpportunities associated with the given candidates going for
-     * the given job, using the given opportunity data.
-     * @param candidates Candidates whose opportunities are going to be created or updated
-     * @param oppParams Opportunity data common to all opportunities
-     * @param jobOpp Job associated with candidate opportunities
-     */
-    void createOrUpdateCandidateOpportunities(
-        List<Candidate> candidates, CandidateOpportunityParams oppParams, SalesforceJobOpp jobOpp);
-
+    
     /**
      * Creates or updates Contact records on Salesforce for the given candidates and, if sfJobOpp
      * is not null, indicating that these candidates are associated with a job opportunity,
      * this will also create/update the associated candidate opportunities associated with that
-     * job.
+     * job on both Salesforce and on the local database.
      *
      * @param candidates Candidates to update
-     * @param sfJobOpp If not null the candidate opportunities are created/updated
-     * @param candidateOppParams Used to create/update candidate opportunities
-     * @throws SalesforceException If there are errors relating to keys
-     * and digital signing.
+     * @param sfJobOpp If not null candidate opportunities are created/updated
+     * @param candidateOppParams Used to create/update candidate opportunities. 
+     *                           Can be null in which case no changes are made to existing opps, 
+     *                           but new opps will be created if needed with the stage defaulting 
+     *                           to "prospect".
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    void createUpdateSalesforce(Collection<Candidate> candidates,
+    void createUpdateCandidateOpportunities(Collection<Candidate> candidates,
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
         throws SalesforceException, WebClientException;
 
     /**
-     * Creates/updates Salesforce records corresponding to the given candidates.
+     * See {@link #createUpdateCandidateOpportunities(Collection, SalesforceJobOpp, CandidateOpportunityParams)}
      * <p/>
-     * This could involve creating or updating contact records and/or
-     * creating or updating opportunity records.
-     * <p/>
-     * Salesforce links may be created and stored in candidate records.
+     * This method extracts the appropriate data from the given request and then calls the 
+     * above method.
      *
      * @param request Identifies candidates as well as optional Salesforce fields to set on
      *                candidate opportunities
-     * @throws SalesforceException If there are errors relating to keys
-     * and digital signing.
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    void createUpdateSalesforce(UpdateCandidateOppsRequest request)
+    void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
         throws SalesforceException, WebClientException;
 
     CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp);

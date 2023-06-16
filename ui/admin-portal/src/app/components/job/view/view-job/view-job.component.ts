@@ -204,4 +204,8 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   currentPrepItemIsSummary(): boolean {
     return this.currentPrepItem instanceof JobPrepJobSummary;
   }
+
+  canAccessSalesforce() {
+    return this.authService.canAccessSalesforce();
+  }
 }
