@@ -84,7 +84,7 @@
         </button>
         <button class="btn" *ngIf="candidateSource?.sfJobOpp"
            [routerLink]="['/job',candidateSource.sfJobOpp.id]">
-          <i class="fa-solid fa-plane-departure" title="Associated Job"></i>
+          <i class="fa-solid fa-briefcase" title="Associated Job"></i>
         </button>
         <button class="btn" *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()">
           <a target="_blank"
