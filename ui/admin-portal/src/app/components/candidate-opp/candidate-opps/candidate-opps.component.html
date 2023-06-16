@@ -14,11 +14,11 @@
       </div>
       <div>
         <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</label>
-        <input [title]="showClosedOppsTip" type="checkbox" [formControlName]="'showClosedOpps'" id="showClosedOpps">
+        <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox" [formControlName]="'showClosedOpps'" id="showClosedOpps">
       </div>
       <div>
         <label class="form-label" [title]="showInactiveOppsTip" for="showInactiveOpps">Show inactive cases</label>
-        <input [title]="showInactiveOppsTip" type="checkbox" formControlName="showInactiveOpps" id="showInactiveOpps">
+        <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox" formControlName="showInactiveOpps" id="showInactiveOpps">
       </div>
     </div>
 
@@ -26,6 +26,21 @@
       <input #searchFilter type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
              id="keyword">
     </div>
+
+    <div class="mb-3">
+      <label class="form-label">Stage</label>
+      <ng-select
+        id="stage"
+        [items]="stages"
+        [multiple]="true"
+        [closeOnSelect]="true"
+        [searchable]="false"
+        bindLabel="stringValue"
+        bindValue="key"
+        [formControlName]="'selectedStages'">
+      </ng-select>
+    </div>
+
   </form>
 </div>
 

@@ -12,7 +12,11 @@ import {
   ViewChild
 } from '@angular/core';
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
-import {CandidateOpportunity, SearchOpportunityRequest} from "../../../model/candidate-opportunity";
+import {
+  CandidateOpportunity,
+  CandidateOpportunityStage,
+  SearchOpportunityRequest
+} from "../../../model/candidate-opportunity";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -22,6 +26,7 @@ import {formatDate} from "@angular/common";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthService} from "../../../services/auth.service";
 import {getOpportunityStageName} from "../../../model/opportunity";
+import {enumOptions} from "../../../util/enum";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -68,6 +73,9 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   //Default sort opps in descending order of nextDueDate
   sortField = 'nextStepDueDate';
   sortDirection = 'DESC';
+
+  stages = enumOptions(CandidateOpportunityStage);
+
 
 
   private filterKeySuffix: string = 'Filter';
@@ -156,6 +164,10 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     return SearchOppsBy;
   }
 
+  get selectedStages(): string[] {
+    return this.searchForm ? this.searchForm.value.selectedStages : "";
+  }
+
   private savedStateKey(): string {
     //This key is constructed from the combination of inputs which are associated with each tab
     // in home.component.html
@@ -190,6 +202,8 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
     req.sortFields = [this.sortField];
     req.sortDirection = this.sortDirection;
+
+    req.stages = this.selectedStages;
 
     switch (this.searchBy) {
       case SearchOppsBy.live:

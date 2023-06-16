@@ -69,12 +69,17 @@ public class CandidateOpportunitySpecification {
             final Boolean showActiveStages = request.getActiveStages();
             final Boolean showClosed = request.getSfOppClosed();
 
+            boolean isStageFilterActive = false;
+
             // STAGE
             List<CandidateOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
                 conjunction.getExpressions().add(builder.isTrue(opp.get("stage").in(stages)));
-            } else {
-                //ACTIVE STAGES
+                isStageFilterActive = true;
+            }
+
+            //ACTIVE STAGES (ignored if doing stage filtering)
+            if (!isStageFilterActive) {
                 //Note that we only check "active stages" if explicit stages have not been requested.
                 if (showActiveStages != null) {
                     //Only apply filter when we just want to display active stages
@@ -96,8 +101,8 @@ public class CandidateOpportunitySpecification {
                 }
             }
 
-            //CLOSED
-            if (showClosed != null) {
+            //CLOSED (ignored if we are doing stage filtering)
+            if (!isStageFilterActive && showClosed != null) {
                 //Only apply filter if we want to exclude closed opps.
                 //Otherwise the filter when true will only show closed opps - which we don't want.
                 if (!showClosed) {
