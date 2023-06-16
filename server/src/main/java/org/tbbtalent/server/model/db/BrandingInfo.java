@@ -27,7 +27,6 @@ import org.springframework.lang.Nullable;
 @Getter
 @Setter
 @ToString
-@Builder
 public class BrandingInfo {
 
     /**

@@ -18,12 +18,14 @@ package org.tbbtalent.server.api.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.service.db.BrandingService;
+import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.util.Map;
 
 /**
  * Access to branding information for the admin portal.
@@ -41,9 +43,18 @@ public class BrandingAdminApi {
      * @return branding information
      */
     @GetMapping()
-    public ResponseEntity<BrandingInfo> getBrandingInfo() {
+    public Map<String, Object> getBrandingInfo() {
+
         BrandingInfo info = brandingService.getBrandingInfo(null);
-        return ResponseEntity.ok(info);
+        return brandingInfoDto().build(info);
+    }
+
+    DtoBuilder brandingInfoDto() {
+        return new DtoBuilder()
+                .add("logo")
+                .add("partnerName")
+                .add("websiteUrl")
+                ;
     }
 
 }
