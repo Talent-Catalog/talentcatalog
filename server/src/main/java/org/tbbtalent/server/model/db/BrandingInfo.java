@@ -16,7 +16,9 @@
 
 package org.tbbtalent.server.model.db;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.lang.Nullable;
 
 /**
