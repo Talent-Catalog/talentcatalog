@@ -30,12 +30,6 @@ import org.tbbtalent.server.request.opportunity.SearchOpportunityRequest;
 public class SearchJobRequest extends SearchOpportunityRequest {
 
     /**
-     * If specified, match job opportunities which are currently accepting candidates
-     */
-    @Nullable
-    private Boolean accepting;
-
-    /**
      * If specified, match job opportunities based on whether the job has been published.
      */
     @Nullable

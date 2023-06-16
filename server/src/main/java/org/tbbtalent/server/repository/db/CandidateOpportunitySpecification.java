@@ -65,15 +65,44 @@ public class CandidateOpportunitySpecification {
                         ));
             }
 
+
+            final Boolean showActiveStages = request.getActiveStages();
+            final Boolean showClosed = request.getSfOppClosed();
+
             // STAGE
             List<CandidateOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
                 conjunction.getExpressions().add(builder.isTrue(opp.get("stage").in(stages)));
+            } else {
+                //ACTIVE STAGES
+                //Note that we only check "active stages" if explicit stages have not been requested.
+                if (showActiveStages != null) {
+                    //Only apply filter when we just want to display active stages
+                    //Otherwise, if false, it will ONLY display inactive stages which we don't want
+                    if (showActiveStages) {
+                        final Predicate activePredicate = builder.between(opp.get("stageOrder"),
+                            CandidateOpportunityStage.prospect.ordinal(),
+                            CandidateOpportunityStage.relocating.ordinal());
+                        if (showClosed != null && showClosed) {
+                            //When active stages are requested as well as closed, we need both.
+                            //ie We need to show opps which are active OR closed
+                            conjunction.getExpressions().add(
+                                builder.or(activePredicate,
+                                builder.equal(opp.get("closed"), true)));
+                        } else {
+                            conjunction.getExpressions().add(activePredicate);
+                        }
+                    }
+                }
             }
 
             //CLOSED
-            if (request.getSfOppClosed() != null) {
-                conjunction.getExpressions().add(builder.equal(opp.get("closed"), request.getSfOppClosed()));
+            if (showClosed != null) {
+                //Only apply filter if we want to exclude closed opps.
+                //Otherwise the filter when true will only show closed opps - which we don't want.
+                if (!showClosed) {
+                    conjunction.getExpressions().add(builder.equal(opp.get("closed"), false));
+                }
             }
 
             //OWNERSHIP
@@ -118,9 +147,9 @@ public class CandidateOpportunitySpecification {
                             builder.and(
                                 //User's partner must be the partner associated with the opp's candidate
                                 builder.equal(partner.get("id"), loggedInUserPartner.getId()),
-                                
-                                //and this job must be one of the jobs that this user is the contact 
-                                //for. 
+
+                                //and this job must be one of the jobs that this user is the contact
+                                //for.
                                 builder.in(jobOpp).value(usersJobs)
                             )
                         );

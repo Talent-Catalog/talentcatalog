@@ -9,12 +9,16 @@
   <form [formGroup]="searchForm" (ngSubmit)="search()">
     <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
       <div>
-        <label class="form-label" [title]="myOppsOnlyTip" for="myOppsOnly">My opps only</label>
-        <input [title]="myOppsOnlyTip" type="checkbox" [formControlName]="'myOppsOnly'" id="myOppsOnly">
+        <label class="form-label" [title]="myOppsOnlyTip" for="myOppsOnly">My cases only</label>
+        <input [title]="myOppsOnlyTip" type="checkbox" formControlName="myOppsOnly" id="myOppsOnly">
       </div>
       <div>
-        <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed opps</label>
+        <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</label>
         <input [title]="showClosedOppsTip" type="checkbox" [formControlName]="'showClosedOpps'" id="showClosedOpps">
+      </div>
+      <div>
+        <label class="form-label" [title]="showInactiveOppsTip" for="showInactiveOpps">Show inactive cases</label>
+        <input [title]="showInactiveOppsTip" type="checkbox" formControlName="showInactiveOpps" id="showInactiveOpps">
       </div>
     </div>
 

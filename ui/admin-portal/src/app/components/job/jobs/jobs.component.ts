@@ -135,7 +135,7 @@ export class JobsComponent implements OnInit {
         //job's stage is between candidate search and prior to job offer/acceptance.
         //This request is ignored if certain stages have been requested (because that will clash
         //with checking the above range of stages)
-        req.accepting = true;
+        req.activeStages = true;
         break;
 
       case SearchOppsBy.mine:
