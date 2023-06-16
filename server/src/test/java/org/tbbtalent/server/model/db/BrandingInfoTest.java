@@ -36,12 +36,11 @@ class BrandingInfoTest {
 
     @BeforeEach
     void setUp() {
-        brandingInfo = BrandingInfo.builder()
-                .landingPage(LANDING_PAGE)
-                .logo(LOGO)
-                .partnerName(PARTNER_NAME)
-                .websiteUrl(WEBSITE_URL)
-                .build();
+        brandingInfo = new BrandingInfo();
+        brandingInfo.setLandingPage(LANDING_PAGE);
+        brandingInfo.setLogo(LOGO);
+        brandingInfo.setPartnerName(PARTNER_NAME);
+        brandingInfo.setWebsiteUrl(WEBSITE_URL);
     }
 
     @Test

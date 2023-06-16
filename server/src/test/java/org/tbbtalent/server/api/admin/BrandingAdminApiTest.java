@@ -45,17 +45,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class BrandingAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/branding";
-    private static final String LANDING_PAGE = "https://www.talentbeyondboundaries.org/talentcatalog";
     private static final String LOGO = "https://images.squarespace-cdn.com/content/v1/my-logo";
     private static final String PARTNER_NAME = "Talent Beyond Boundaries";
     private static final String WEBSITE_URL = "https://www.talentbeyondboundaries.org";
 
-    private static final BrandingInfo brandingInfo = BrandingInfo.builder()
-            .landingPage(LANDING_PAGE)
-            .logo(LOGO)
-            .partnerName(PARTNER_NAME)
-            .websiteUrl(WEBSITE_URL)
-            .build();
+    private static final BrandingInfo brandingInfo = new BrandingInfo();
+
+    static {
+        brandingInfo.setLogo(LOGO);
+        brandingInfo.setPartnerName(PARTNER_NAME);
+        brandingInfo.setWebsiteUrl(WEBSITE_URL);
+    }
 
     @Autowired BrandingAdminApi brandingAdminApi;
     @Autowired MockMvc mockMvc;
@@ -78,7 +78,6 @@ class BrandingAdminApiTest extends ApiTestBase {
 
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.landingPage", containsString(LANDING_PAGE)))
                 .andExpect(jsonPath("$.logo", containsString(LOGO)))
                 .andExpect(jsonPath("$.partnerName", containsString(PARTNER_NAME)))
                 .andExpect(jsonPath("$.websiteUrl", containsString(WEBSITE_URL)));
