@@ -263,7 +263,6 @@ public class JobServiceImpl implements JobService {
                 job.getSfId(), JobOpportunityStage.candidateSearch, nextStep, submissionDueDate);
         }
 
-        job.setAccepting(true);
         job.setPublishedBy(loggedInUser);
         job.setPublishedDate(OffsetDateTime.now());
 

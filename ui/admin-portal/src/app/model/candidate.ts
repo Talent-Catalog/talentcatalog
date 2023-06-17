@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {User} from './user';
+import {ShortUser, User} from './user';
 import {Country} from './country';
 import {CandidateReviewStatusItem} from './candidate-review-status-item';
 import {EducationMajor} from './education-major';
@@ -32,6 +32,7 @@ import {CandidateOpportunity} from "./candidate-opportunity";
 
 export interface ShortCandidate {
   candidateNumber: string;
+  user: ShortUser;
 }
 
 export interface Candidate extends HasId {
@@ -362,21 +363,20 @@ export enum CandidateStatus {
 }
 
 export enum CandidateFilterByOpps {
-  someOpps = "Some opps",
+  someOpps = "Some cases",
 
-  noOpps = "No opps",
+  noOpps = "No cases",
 
-  openOpps = "Some open opps",
+  openOpps = "Some open cases",
 
-  closedOpps = "Some closed opps",
+  closedOpps = "Some closed cases",
 
-  preRelocationOpps = "Some opps not yet at relocated stage - ie 'live' opps",
+  preRelocationOpps = "Some cases not yet at relocated stage - ie 'live' cases",
 
-  postRelocationOpps = "Some opps at the relocated or later stage"
+  postRelocationOpps = "Some cases at the relocated or later stage"
 
 }
 
-//todo Add candidateClosingComments
 export interface CandidateOpportunityParams {
   stage?: string;
   nextStep?: string;

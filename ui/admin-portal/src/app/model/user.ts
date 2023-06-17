@@ -15,7 +15,7 @@
  */
 
 import {Country} from "./country";
-import {Partner} from "./partner";
+import {Partner, ShortPartner} from "./partner";
 
 export class User {
   id: number;
@@ -39,6 +39,14 @@ export class User {
 
   //Can be populated after upload
   name: string;
+}
+
+export interface ShortUser {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  partner: ShortPartner;
 }
 
 export interface UpdateUserRequest {

@@ -128,8 +128,14 @@ export class JobsComponent implements OnInit {
         //Don't want to see closed jobs
         req.sfOppClosed = false;
 
-        //Only want jobs which are accepting candidates
-        req.accepting = true;
+        //Jobs must have been published
+        req.published = true;
+
+        //Only want jobs which are accepting candidates. This is equivalent to checking that the
+        //job's stage is between candidate search and prior to job offer/acceptance.
+        //This request is ignored if certain stages have been requested (because that will clash
+        //with checking the above range of stages)
+        req.activeStages = true;
         break;
 
       case SearchOppsBy.mine:

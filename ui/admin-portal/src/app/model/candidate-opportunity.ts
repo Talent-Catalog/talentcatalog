@@ -67,6 +67,7 @@ export enum CandidateOpportunityStage {
  * Base class for both Job opportunity and candidate opportunity requests
  */
 export class SearchOpportunityRequest extends PagedSearchRequest {
+  activeStages?: boolean;
   keyword?: string;
   ownedByMe?: boolean;
   ownedByMyPartner?: boolean;

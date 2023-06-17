@@ -66,13 +66,7 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     @Column(name = "sf_job_opp_id")
     private String sfId;
 
-    /**
-     * True if the job is currently accepting processing by other than its creator.
-     * Setting it false will make the job hidden on the TC front end to all but the creator.
-     * The first time accepting is set true for a job effectively "publishes" the job so that
-     * others can see it and process it.
-     */
-    private boolean accepting;
+    //TODO JC accepting DB field is no longer used and can be removed
 
     /**
      * Salesforce id of account (ie employer) associated with opportunity

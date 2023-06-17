@@ -149,11 +149,30 @@ export class AuthService {
   }
 
   isCandidateOurs(candidate: ShortCandidate): boolean {
-    return true; //todo
+    let ours = false;
+    const loggedInUser = this.getLoggedInUser()
+    //Must be logged in
+    if (loggedInUser) {
+      ours = candidate.user?.partner?.id === loggedInUser.partner.id;
+    }
+    return ours;
   }
 
   isJobOurs(job: ShortJob): boolean {
-    return true; //todo
+
+    //For now all jobs belong to just the default partner.
+    return this.isDefaultDestinationPartner();
+
+    //todo Eventually when we have proper recruiter partner support, the code will look like this:
+    /*
+      let ours = false;
+      const loggedInUser = this.getLoggedInUser()
+      //Must be logged in
+      if (loggedInUser) {
+        ours = job.recruiterPartner?.id === loggedInUser.partner.id;
+      }
+      return ours;
+    */
   }
 
   /**
@@ -377,6 +396,14 @@ export class AuthService {
   }
 
   /**
+   * True if a user is logged in and they are associated with the default destination partner.
+   */
+  isDefaultDestinationPartner(): boolean {
+    //Currently default source and destination partners are the same.
+    return this.isDefaultSourcePartner();
+  }
+
+  /**
    * True if a user is logged in and they are associated with the default source partner.
    */
   isDefaultSourcePartner(): boolean {
@@ -415,18 +442,21 @@ export class AuthService {
   canChangeJobStage(job: Job): boolean {
     let result: boolean = false;
 
-    //Current logic is that only a system admin or the contact user, defaulting to the creating user
-    //of the job, can change the stage.
-    const loggedInUser = this.getLoggedInUser();
-    if (loggedInUser) {
-      if (this.isSystemAdminOnly()) {
-        result = true;
-      } else {
-        const contactUser = job.contactUser;
-        const createUser = job.createdBy;
-        const owner = contactUser != null ? contactUser : createUser;
-        if (owner != null) {
-          result = owner.id === loggedInUser.id;
+    //Can only change stage of jobs that have been published
+    if (job.publishedBy != null) {
+      //Current logic is that only a system admin or the contact user, defaulting to the creating user
+      //of the job, can change the stage.
+      const loggedInUser = this.getLoggedInUser();
+      if (loggedInUser) {
+        if (this.isSystemAdminOnly()) {
+          result = true;
+        } else {
+          const contactUser = job.contactUser;
+          const createUser = job.createdBy;
+          const owner = contactUser != null ? contactUser : createUser;
+          if (owner != null) {
+            result = owner.id === loggedInUser.id;
+          }
         }
       }
     }
@@ -438,7 +468,7 @@ export class AuthService {
    * @param opp Candidate opportunity
    */
   canEditCandidateOpp(opp: CandidateOpportunity) {
-    return this.isAdminOrGreater() &&
+    return this.isSourcePartnerAdminOrGreater() &&
       (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
   }
 }
