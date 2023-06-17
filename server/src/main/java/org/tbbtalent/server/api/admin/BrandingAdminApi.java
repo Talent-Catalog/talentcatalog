@@ -38,10 +38,6 @@ public class BrandingAdminApi {
 
     private final BrandingService brandingService;
 
-    /**
-     * Retrieve the branding information for the admin portal.
-     * @return branding information
-     */
     @GetMapping()
     public Map<String, Object> getBrandingInfo() {
 
