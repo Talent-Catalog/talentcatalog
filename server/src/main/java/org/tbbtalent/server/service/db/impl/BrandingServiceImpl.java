@@ -75,7 +75,7 @@ public class BrandingServiceImpl implements BrandingService {
         BrandingInfo info = new BrandingInfo();
         info.setLogo(partner.getLogo());
         if (partner instanceof SourcePartner sourcePartner) {
-            info.setLandingPage((sourcePartner).getRegistrationLandingPage());
+            info.setLandingPage(sourcePartner.getRegistrationLandingPage());
         }
         info.setPartnerName(partner.getName());
         info.setWebsiteUrl(partner.getWebsiteUrl());
