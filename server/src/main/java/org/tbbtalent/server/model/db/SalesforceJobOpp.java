@@ -58,7 +58,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "salesforce_job_opp")
 @SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
-public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
+public class SalesforceJobOpp extends AbstractOpportunity {
 
     /**
      * ID of copied Salesforce job opportunity is also used as id of this copy.
