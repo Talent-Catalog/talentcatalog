@@ -77,16 +77,6 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private Set<CandidateOpportunity> candidateOpportunities = new HashSet<>();
 
     /**
-     * True if opportunity is closed
-     */
-    private boolean closed;
-
-    /**
-     * True if opportunity is won
-     */
-    private boolean won;
-
-    /**
      * Email to use for enquiries about this job.
      * <p/>
      * Should default to email of {@link #contactUser} - but can be different
@@ -175,16 +165,6 @@ public class SalesforceJobOpp extends AbstractOpportunity {
      */
     @Enumerated(EnumType.STRING)
     private JobOpportunityStage stage;
-
-    /**
-     * Stage of job opportunity expressed as number - 0 being first stage.
-     * <p/>
-     * Used for sorting by stage.
-     * <p/>
-     * This is effectively a computed field, computed by calling the ordinal() method of the
-     * {@link #stage} enum.
-     */
-    private int stageOrder;
 
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
