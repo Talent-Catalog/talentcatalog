@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -59,12 +58,6 @@ import lombok.Setter;
 @Table(name = "salesforce_job_opp")
 @SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
 public class SalesforceJobOpp extends AbstractOpportunity {
-
-    /**
-     * ID of copied Salesforce job opportunity is also used as id of this copy.
-     */
-    @Column(name = "sf_job_opp_id")
-    private String sfId;
 
     //TODO JC accepting DB field is no longer used and can be removed
 
