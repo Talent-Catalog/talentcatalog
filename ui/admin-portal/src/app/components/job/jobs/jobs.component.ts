@@ -50,7 +50,7 @@ export class JobsComponent implements OnInit {
   sortField = 'createdDate';
   sortDirection = 'DESC';
   currentJob: Job;
-  myJobsOnlyTip = "Only show jobs that were created by me";
+  myOppsOnlyTip = "Only show jobs that were created by me";
 
   constructor(
     private authService: AuthService,
@@ -77,7 +77,7 @@ export class JobsComponent implements OnInit {
 
     this.searchForm = this.fb.group({
       keyword: [filter],
-      myJobsOnly: [false],
+      myOppsOnly: [false],
       selectedStages: [[]]
     });
     this.pageNumber = 1;
@@ -92,8 +92,8 @@ export class JobsComponent implements OnInit {
     return this.searchForm ? this.searchForm.value.keyword : "";
   }
 
-  private get myJobsOnly(): boolean {
-    return this.searchForm ? this.searchForm.value.myJobsOnly : false;
+  private get myOppsOnly(): boolean {
+    return this.searchForm ? this.searchForm.value.myOppsOnly : false;
   }
 
   get SearchOppsBy() {
@@ -139,7 +139,7 @@ export class JobsComponent implements OnInit {
         break;
 
       case SearchOppsBy.mine:
-        if (this.myJobsOnly) {
+        if (this.myOppsOnly) {
           req.ownedByMe = true;
         } else {
           req.ownedByMyPartner = true;
