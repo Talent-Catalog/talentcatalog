@@ -49,7 +49,7 @@
   </ng-container>
 
   <ng-container *ngIf="ownsOpps()" ngbNavItem="MyOpps">
-    <a ngbNavLink title="Opps created by my partner organization">{{loggedInPartner.abbreviation}} Opps</a>
+    <a ngbNavLink title="Candidate job opportunity cases managed by my partner organization">{{loggedInPartner.abbreviation}} Cases</a>
     <ng-template ngbNavContent>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mine"

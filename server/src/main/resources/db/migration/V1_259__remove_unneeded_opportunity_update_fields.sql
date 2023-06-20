@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,29 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.job;
-
-import java.time.LocalDate;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.JobOpportunityStage;
-
-@Getter
-@Setter
-@ToString
-public class UpdateJobRequest {
-
-    /**
-     * Url link to Salesforce EmployerJob opportunity
-     */
-    @Nullable
-    private String sfJoblink;
-
-    @Nullable
-    private JobOpportunityStage stage;
-
-    @Nullable
-    private LocalDate submissionDueDate;
-}
+alter table candidate_opportunity drop column last_modified_date;
+alter table salesforce_job_opp drop column last_update;

@@ -94,6 +94,14 @@ public class JobSpecification {
             List<JobOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
                 conjunction.getExpressions().add(builder.isTrue(job.get("stage").in(stages)));
+            } else {
+                //ACTIVE STAGES
+                //Note that we only check "active stages" if explicit stages have not been requested.
+                if (request.getActiveStages() != null) {
+                    conjunction.getExpressions().add(builder.between(job.get("stageOrder"),
+                        JobOpportunityStage.candidateSearch.ordinal(),
+                        JobOpportunityStage.jobOffer.ordinal()));
+                }
             }
 
             //CLOSED
@@ -110,12 +118,6 @@ public class JobSpecification {
                     published = builder.isNull(job.get("publishedBy"));
                 }
                 conjunction.getExpressions().add(published);
-            }
-
-            //ACCEPTING
-            if (request.getAccepting() != null) {
-                conjunction.getExpressions().add(builder.equal(job.get("accepting"),
-                    request.getAccepting()));
             }
 
             // (starred OR owned)

@@ -109,6 +109,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             opp.setCandidate(candidate);
             opp.setName(salesforceService.generateCandidateOppName(candidate, jobOpp));
             opp.setStage(CandidateOpportunityStage.prospect);
+            opp.setNextStep("Contact candidate and do intake");
+            opp.setNextStepDueDate(LocalDate.now().plusWeeks(2));
             String sfId = fetchSalesforceId(candidate, jobOpp);
             if (sfId == null) {
                 log.error("Could not find SF candidate opp for candidate "
@@ -118,7 +120,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
 
         opp.setAuditFields(loggedInUser);
-        
+
         return updateCandidateOpportunity(opp, oppParams);
     }
 
@@ -365,12 +367,12 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         CandidateOpportunity opp = getCandidateOpportunity(id);
 
-        //Update Salesforce 
+        //Update Salesforce
         final SalesforceJobOpp jobOpp = opp.getJobOpp();
         final Candidate candidate = opp.getCandidate();
 
         createUpdateCandidateOpportunities(Collections.singletonList(candidate), jobOpp, request);
-        opp = createOrUpdateCandidateOpportunity(candidate, request, jobOpp );        
+        opp = createOrUpdateCandidateOpportunity(candidate, request, jobOpp );
 
         return opp;
     }

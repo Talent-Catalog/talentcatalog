@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.IOException;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,9 +31,6 @@ import org.tbbtalent.server.request.job.JobIntakeData;
 import org.tbbtalent.server.request.job.SearchJobRequest;
 import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.request.link.UpdateLinkRequest;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Service for managing {@link SalesforceJobOpp}
@@ -82,7 +81,14 @@ public interface JobService {
     JobInfoForSlackPost extractJobInfoForSlack(long id, String tcJobLink) throws NoSuchObjectException;
 
     /**
-     * Marks job as published by the current user
+     * Marks job as published by the current user.
+     * <p/>
+     * <ul>
+     *     <li>The job will become visible to everyone else.</li>
+     *     <li>The job's stage will be updated to candidateSearch, if it is currently prior to
+     *     that stage</li>
+     *     <li>Any non empty submissionList will be copied to the suggestedList</li>
+     * </ul>
      *
      * @param id ID of job
      * @return Updated job

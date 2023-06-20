@@ -31,6 +31,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -65,18 +66,15 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     @Column(name = "sf_job_opp_id")
     private String sfId;
 
-    /**
-     * True if the job is currently accepting processing by other than its creator.
-     * Setting it false will make the job hidden on the TC front end to all but the creator.
-     * The first time accepting is set true for a job effectively "publishes" the job so that
-     * others can see it and process it.
-     */
-    private boolean accepting;
+    //TODO JC accepting DB field is no longer used and can be removed
 
     /**
      * Salesforce id of account (ie employer) associated with opportunity
      */
     private String accountId;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "jobOpp", cascade = CascadeType.MERGE)
+    private Set<CandidateOpportunity> candidateOpportunities = new HashSet<>();
 
     /**
      * True if opportunity is closed
@@ -121,7 +119,7 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      * Description given to job in job intake.
      */
     private String description;
-    
+
     /**
      * Name of employer - maps to Account name on Salesforce
      */
@@ -234,7 +232,7 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
         joinColumns = @JoinColumn(name = "tc_job_id"),
         inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
-    
+
     @Nullable
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_opp_intake_id")
@@ -245,16 +243,16 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      * As of 22/5/23 this may change to a text field, stored in database as text but currently a number from SF.
      */
     private Long hiringCommitment;
-    
+
     /**
      * Salesforce field: the website of the employer
      * (On SF exists on Account, but copied to Opportunity and fetched with Opportunity object)
      */
     private String employerWebsite;
-    
-    /**                        
-     * Salesforce field: if the employer has hired internationally before 
-     * (On SF exists on Account, but copied to Opportunity and fetched on Opportunity object) 
+
+    /**
+     * Salesforce field: if the employer has hired internationally before
+     * (On SF exists on Account, but copied to Opportunity and fetched on Opportunity object)
      */
     private String employerHiredInternationally;
 
