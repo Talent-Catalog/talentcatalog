@@ -24,6 +24,10 @@ import {JobOppIntake} from "./job-opp-intake";
 import {SearchOpportunityRequest} from "./candidate-opportunity";
 import {Opportunity} from "./opportunity";
 
+export function isJob(opp: Opportunity): opp is Job {
+  return opp ? 'submissionList' in opp : false;
+}
+
 export interface ShortJob {
   id: number,
   name: string;

@@ -18,6 +18,10 @@ import {ShortJob} from "./job";
 import {ShortCandidate} from "./candidate";
 import {Opportunity} from "./opportunity";
 
+export function isCandidateOpportunity(opp: Opportunity): opp is CandidateOpportunity {
+  return opp ? 'jobOpp' in opp : false;
+}
+
 export interface CandidateOpportunity extends Opportunity {
 
   closingCommentsForCandidate?: string;
