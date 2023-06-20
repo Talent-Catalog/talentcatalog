@@ -16,7 +16,7 @@
 
 import {Component, Input} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../../util/intake/IntakeComponentTabBase';
-import {CandidateVisa} from '../../../../../../model/candidate';
+import {CandidateIntakeData, CandidateVisa} from '../../../../../../model/candidate';
 import {FormGroup} from '@angular/forms';
 
 @Component({
@@ -26,7 +26,8 @@ import {FormGroup} from '@angular/forms';
 })
 export class VisaCheckCaComponent extends IntakeComponentTabBase {
   @Input() selectedIndex: number;
-  @Input() visaRecord: CandidateVisa;
+  @Input() candidateIntakeData: CandidateIntakeData;
+  visaRecord: CandidateVisa;
   form: FormGroup;
 
   public tbbEligibilityHide = true;
@@ -34,6 +35,12 @@ export class VisaCheckCaComponent extends IntakeComponentTabBase {
   public healthAssessHide = true;
   public characterAssessHide = true;
   public securityAssessHide = true;
+
+  onDataLoaded(init: boolean) {
+    if (init) {
+      this.visaRecord = this.candidateIntakeData?.candidateVisaChecks?.find(v => v.country.id == 6216);
+    }
+  }
 
   private get myRecord(): CandidateVisa {
     return this.candidateIntakeData.candidateVisaChecks ?

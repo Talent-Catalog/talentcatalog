@@ -53,30 +53,22 @@
     <div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
       <app-visa-check-au *ngSwitchCase="'Australia'"
                          [candidate]="candidate"
-                         [candidateIntakeData]="candidateIntakeData"
-                         [visaRecord]="getVisaCheck('Australia')"
-      >
+                         [candidateIntakeData]="candidateIntakeData">
       </app-visa-check-au>
 
       <app-visa-check-ca *ngSwitchCase="'Canada'"
                          [candidate]="candidate"
-                         [visaRecord]="getVisaCheck('Canada')"
-                         [selectedIndex]="selectedIndex"
-      >
+                         [candidateIntakeData]="candidateIntakeData">
       </app-visa-check-ca>
 
       <app-visa-check-nz *ngSwitchCase="'New Zealand'"
                          [candidate]="candidate"
-                         [visaRecord]="getVisaCheck('New Zealand')"
-                         [selectedIndex]="selectedIndex"
-      >
+                         [candidateIntakeData]="candidateIntakeData">
       </app-visa-check-nz>
 
       <app-visa-check-uk *ngSwitchCase="'United Kingdom'"
                          [candidate]="candidate"
-                         [visaRecord]="getVisaCheck('United Kingdom')"
-                         [selectedIndex]="selectedIndex"
-      >
+                         [candidateIntakeData]="candidateIntakeData">
       </app-visa-check-uk>
 
       <div *ngSwitchDefault>

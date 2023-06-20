@@ -36,7 +36,9 @@ import {
   CreateCandidateVisaJobRequest
 } from "../../../../../../services/candidate-visa-job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {CreateVisaJobAssessementComponent} from "../../../../visa/visa-job-assessments/modal/create-visa-job-assessement.component";
+import {
+  CreateVisaJobAssessementComponent
+} from "../../../../visa/visa-job-assessments/modal/create-visa-job-assessement.component";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
 import {Country} from "../../../../../../model/country";
 
@@ -49,7 +51,7 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
 
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  @Input() visaRecord: CandidateVisa;
+  visaRecord: CandidateVisa;
   loading: boolean;
   form: FormGroup;
   @Input() nationalities: Country[];
@@ -74,15 +76,9 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
 
   onDataLoaded(init: boolean) {
     if (init) {
-      if (this.visaRecord) {
-        this.currentYear = new Date().getFullYear().toString();
-        this.birthYear = this.candidate?.dob?.toString().slice(0, 4);
-
-        //If we have some visa checks, select the first one
-        if (this.visaRecord?.candidateVisaJobChecks?.length > 0) {
-          this.jobIndex = 0;
-        }
-      }
+      this.visaRecord = this.candidateIntakeData?.candidateVisaChecks?.find(v => v.country.id == 6191);
+      this.currentYear = new Date().getFullYear().toString();
+      this.birthYear = this.candidate?.dob?.toString().slice(0, 4);
 
       this.form = this.fb.group({
         jobIndex: [this.jobIndex]
