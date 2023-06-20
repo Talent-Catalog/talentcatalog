@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {CandidateOpportunityStage} from "./candidate-opportunity";
+import {Auditable, HasId} from "./base";
 
 /**
  * Given the key of an Opportunity Stage enum (job or candidate), return the string value
@@ -42,4 +43,17 @@ export function getOpportunityStageName(enumStageNameKey: string): string {
     }
   }
   return s;
+}
+
+export interface OpportunityIds extends HasId {
+  sfId?: string;
+}
+
+export interface Opportunity extends Auditable, OpportunityIds {
+  closed: boolean;
+  closingComments?: string;
+  name: string;
+  nextStep?: string;
+  nextStepDueDate?: Date;
+  won: boolean;
 }

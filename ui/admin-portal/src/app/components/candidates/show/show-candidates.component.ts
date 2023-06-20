@@ -64,7 +64,6 @@ import {
   indexOfHasId,
   isMine,
   isStarredByMe,
-  OpportunityIds,
   ReviewStatus,
   Status
 } from '../../../model/base';
@@ -122,7 +121,7 @@ import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tas
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
-import {getOpportunityStageName} from "../../../model/opportunity";
+import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
 
 interface CachedTargetList {
   sourceID: number;

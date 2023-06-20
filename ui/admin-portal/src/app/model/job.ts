@@ -13,7 +13,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {OpportunityIds} from "./base";
 import {SavedList, ShortSavedList} from "./saved-list";
 import {User} from "./user";
 import {ShortPartner} from "./partner";
@@ -23,6 +22,7 @@ import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
 import {SearchOpportunityRequest} from "./candidate-opportunity";
+import {Opportunity} from "./opportunity";
 
 export interface ShortJob {
   id: number,
@@ -32,7 +32,7 @@ export interface ShortJob {
   recruiterPartner?: ShortPartner;
 }
 
-export interface Job extends OpportunityIds {
+export interface Job extends Opportunity {
   employerWebsite: string;
   employerHiredInternationally: boolean;
   hiringCommitment: string;
@@ -42,12 +42,9 @@ export interface Job extends OpportunityIds {
   contactUser: User;
   // Note: this country field comes from Salesforce, why it is a string and not a country object.
   country: string;
-  createdBy: User;
-  createdDate: Date;
   employer: string;
   exclusionList: SavedList;
   jobSummary: string;
-  name: string;
   publishedBy: User;
   publishedDate: Date;
   recruiterPartner: ShortPartner;
@@ -57,8 +54,6 @@ export interface Job extends OpportunityIds {
   submissionList: SavedList;
   suggestedList: SavedList;
   suggestedSearches: SavedSearch[];
-  updatedBy: User;
-  updatedDate: Date;
   jobOppIntake: JobOppIntake;
 }
 
