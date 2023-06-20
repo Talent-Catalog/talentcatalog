@@ -41,6 +41,7 @@ import {
 } from "../../../../visa/visa-job-assessments/modal/create-visa-job-assessement.component";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
 import {Country} from "../../../../../../model/country";
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-visa-check-au',
@@ -70,13 +71,15 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
               authService: AuthService,
               private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private localStorageService: LocalStorageService) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 
   onDataLoaded(init: boolean) {
     if (init) {
       this.visaRecord = this.candidateIntakeData?.candidateVisaChecks?.find(v => v.country.id == 6191);
+      this.setSelectedVisaCheckIndex(this.candidateIntakeData?.candidateVisaChecks?.indexOf(this.visaRecord));
       this.currentYear = new Date().getFullYear().toString();
       this.birthYear = this.candidate?.dob?.toString().slice(0, 4);
 
@@ -164,5 +167,9 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
 
   get ieltsScoreType(): string {
     return getIeltsScoreTypeString(this.candidate);
+  }
+
+  private setSelectedVisaCheckIndex(index: number) {
+    this.localStorageService.set('VisaCheckIndex', index);
   }
 }
