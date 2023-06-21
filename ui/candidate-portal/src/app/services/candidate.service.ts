@@ -112,8 +112,8 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/status`);
   }
 
-  getProfile() {
-    return this.http.get<Candidate>(`${this.apiUrl}/profile`);
+  getProfile(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/profile`)
   }
 
   getCandidateNumber() {

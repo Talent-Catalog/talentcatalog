@@ -48,7 +48,7 @@ export class CandidateSourceCandidateService {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
     return this.http.post<SearchResults<Candidate>>(
-      `${apiUrl}/${source.id}/search-paged`, request);
+      `${apiUrl}/${source.id}/search-paged`, request)
   }
 
   export(source: CandidateSource, request: PagedSearchRequest) {

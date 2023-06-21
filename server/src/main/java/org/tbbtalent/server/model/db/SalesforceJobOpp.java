@@ -31,6 +31,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -65,23 +66,25 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     @Column(name = "sf_job_opp_id")
     private String sfId;
 
-    /**
-     * True if the job is currently accepting processing by other than its creator.
-     * Setting it false will make the job hidden on the TC front end to all but the creator.
-     * The first time accepting is set true for a job effectively "publishes" the job so that
-     * others can see it and process it.
-     */
-    private boolean accepting;
+    //TODO JC accepting DB field is no longer used and can be removed
 
     /**
      * Salesforce id of account (ie employer) associated with opportunity
      */
     private String accountId;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "jobOpp", cascade = CascadeType.MERGE)
+    private Set<CandidateOpportunity> candidateOpportunities = new HashSet<>();
+
     /**
      * True if opportunity is closed
      */
     private boolean closed;
+
+    /**
+     * True if opportunity is won
+     */
+    private boolean won;
 
     /**
      * Email to use for enquiries about this job.
@@ -99,16 +102,24 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private User contactUser;
 
     /**
-     * Name of country where job is located
+     * todo Remove this field when we moved across to using countryObject everywhere
+     * FROM SALESFORCE: Name of country where job is located
      */
     private String country;
 
     /**
-     * todo: this is no longer a field in the JOI, remove field. We only use a JD file upload.
+     * todo: Once above country field removed, rename countryObject to country
+     * References country object on database (set using the country name above that comes from SF)
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_object_id")
+    private Country countryObject;
+
+    /**
      * Description given to job in job intake.
      */
     private String description;
-    
+
     /**
      * Name of employer - maps to Account name on Salesforce
      */
@@ -129,11 +140,6 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      * Summary describing job
      */
     private String jobSummary;
-
-    /**
-     * Last time that this was updated from Salesforce (which holds the master copy)
-     */
-    private OffsetDateTime lastUpdate;
 
     /**
      * Name of opportunity - maps to Opportunity name on Salesforce
@@ -227,20 +233,38 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
         inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
 
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_opp_intake_id")
+    private JobOppIntake jobOppIntake;
+
     /**
-     * JOB INTAKE FIELDS
+     * Salesforce field: hiring commitment of job opportunity
+     * As of 22/5/23 this may change to a text field, stored in database as text but currently a number from SF.
      */
-    private String salaryRange;
-    private String recruitmentProcess;
-    private String employerCostCommitment;
-    private String location;
-    private String locationDetails;
-    private String benefits;
-    private String languageRequirements;
-    private String educationRequirements;
-    private String skillRequirements;
-    private String employmentExperience;
-    private String occupationCode;
+    private Long hiringCommitment;
+
+    /**
+     * Salesforce field: the website of the employer
+     * (On SF exists on Account, but copied to Opportunity and fetched with Opportunity object)
+     */
+    private String employerWebsite;
+
+    /**
+     * Salesforce field: if the employer has hired internationally before
+     * (On SF exists on Account, but copied to Opportunity and fetched on Opportunity object)
+     */
+    private String employerHiredInternationally;
+
+    /**
+     * Salesforce field: opportunity score of employer job opportunity
+     */
+    private String opportunityScore;
+
+    /**
+     * Salesforce field: description of employer from account
+     */
+    private String employerDescription;
 
     public void addStarringUser(User user) {
         starringUsers.add(user);

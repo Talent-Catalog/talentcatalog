@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.repository.db;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -55,4 +56,7 @@ public interface SavedListRepository extends JpaRepository<SavedList, Long>, Jpa
     @Query(" select distinct s from SavedList s "
             + " where lower(s.tbbShortName) = lower(:tbbShortName)")
     Optional<SavedList> findByShortNameIgnoreCase(@Param("tbbShortName") String tbbShortName);
+
+    @Query(" select s from SavedList s where s.sfJobOpp is not null and s.status != 'deleted'")
+    List<SavedList> findListsWithJobs();
 }

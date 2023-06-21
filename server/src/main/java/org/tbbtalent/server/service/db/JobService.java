@@ -81,7 +81,14 @@ public interface JobService {
     JobInfoForSlackPost extractJobInfoForSlack(long id, String tcJobLink) throws NoSuchObjectException;
 
     /**
-     * Marks job as published by the current user
+     * Marks job as published by the current user.
+     * <p/>
+     * <ul>
+     *     <li>The job will become visible to everyone else.</li>
+     *     <li>The job's stage will be updated to candidateSearch, if it is currently prior to
+     *     that stage</li>
+     *     <li>Any non empty submissionList will be copied to the suggestedList</li>
+     * </ul>
      *
      * @param id ID of job
      * @return Updated job
@@ -117,6 +124,8 @@ public interface JobService {
 
     /**
      * Updates the intake data associated with the given job.
+     * If there is no intake data associated with the job it will create the Job Opp Intake and associate it with the job.
+     * Or if the Job Opp Intake already exists it will update the existing record.
      * @param id ID of job
      * @param data Partially populated JobIntakeData record. Null data
      *             fields are ignored. Only non-null fields are updated.

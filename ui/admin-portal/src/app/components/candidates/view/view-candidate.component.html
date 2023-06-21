@@ -49,7 +49,7 @@
           <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
             <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
           </a>
-          <a *ngIf="candidate.sflink" [href]="candidate.sflink" target="_blank">
+          <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
             <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
           </a>
           <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
@@ -222,6 +222,16 @@
                 [candidate]="candidate"
                 [editable]="isEditable()">
               </app-candidate-task-tab>
+            </ng-template>
+          </ng-container>
+
+          <!-- JOBS -->
+          <ng-container ngbNavItem="Jobs">
+            <a ngbNavLink>Jobs</a>
+            <ng-template ngbNavContent>
+              <app-candidate-jobs-tab
+                [candidate]="candidate">
+              </app-candidate-jobs-tab>
             </ng-template>
           </ng-container>
 

@@ -286,4 +286,9 @@ constructor(
   isCountryViewable(): boolean {
     return this.authService.canViewCandidateCountry();
   }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
+
 }

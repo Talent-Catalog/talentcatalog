@@ -75,7 +75,7 @@
           </div>
         </td>
         <td>{{partner.name}}
-          <a *ngIf="partner.sflink" [href]="partner.sflink" target="_blank">
+          <a *ngIf="partner.sflink && canAccessSalesforce()" [href]="partner.sflink" target="_blank">
             <i class="fab fa-salesforce" title="Show partner account in Salesforce"></i>
           </a>
         </td>

@@ -5,6 +5,7 @@
   <div class="mb-3">
     <label class="form-label" for="employerCostCommitment">
       Employer cost commitments
+      <sup class="text-danger fw-light">* required</sup>
     </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
@@ -12,6 +13,6 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <input id="employerCostCommitment" type="text" class="form-control" formControlName="employerCostCommitment">
+    <ngx-wig id="employerCostCommitment" [formControlName]="'employerCostCommitment'"></ngx-wig>
   </div>
 </form>

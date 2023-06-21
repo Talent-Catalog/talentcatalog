@@ -24,6 +24,7 @@ import {EducationLevel} from "./education-level";
 import {User} from "./user";
 import {SurveyType} from "./survey-type";
 import {toDateOnly} from "../util/date";
+import {CandidateOpportunity} from "./candidate-opportunity";
 
 export interface Candidate {
   id: number;
@@ -57,6 +58,8 @@ export interface Candidate {
   surveyComment: string;
   status: CandidateStatus;
   taskAssignments: TaskAssignment[];
+  candidateOpportunities: CandidateOpportunity[];
+
 }
 
 export interface TaskAssignment {

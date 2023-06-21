@@ -27,6 +27,7 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -86,7 +87,7 @@ import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
-import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.DocPublisherService;
 import org.tbbtalent.server.service.db.ExportColumnsService;
 import org.tbbtalent.server.service.db.FileSystemService;
@@ -111,7 +112,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final static String REGISTERED_NAME_SUFFIX = "*";
     private final CandidateRepository candidateRepository;
     private final CandidateSavedListRepository candidateSavedListRepository;
-    private final CandidateService candidateService;
+    private final CandidateOpportunityService candidateOpportunityService;
     private final ExportColumnsService exportColumnsService;
     private final SavedListRepository savedListRepository;
     private final DocPublisherService docPublisherService;
@@ -130,8 +131,7 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
         CandidateSavedListRepository candidateSavedListRepository,
-        CandidateService candidateService,
-        ExportColumnsService exportColumnsService,
+        CandidateOpportunityService candidateOpportunityService, ExportColumnsService exportColumnsService,
         SavedListRepository savedListRepository,
         DocPublisherService docPublisherService,
         FileSystemService fileSystemService,
@@ -142,7 +142,7 @@ public class SavedListServiceImpl implements SavedListService {
         UserService userService) {
         this.candidateRepository = candidateRepository;
         this.candidateSavedListRepository = candidateSavedListRepository;
-        this.candidateService = candidateService;
+        this.candidateOpportunityService = candidateOpportunityService;
         this.exportColumnsService = exportColumnsService;
         this.savedListRepository = savedListRepository;
         this.docPublisherService = docPublisherService;
@@ -167,13 +167,24 @@ public class SavedListServiceImpl implements SavedListService {
             csl.setContextNote(contextNote);
         }
 
-        //Add candidate to the collection of candidates in this list
-        destinationList.getCandidateSavedLists().add(csl);
-        //Also update other side of many-to-many relationship, adding this
-        //list to the candidate's collection of lists that they belong to.
-        candidate.getCandidateSavedLists().add(csl);
+        if (!destinationList.getCandidateSavedLists().contains(csl)) {
+            //Add candidate to the collection of candidates in this list
+            destinationList.getCandidateSavedLists().add(csl);
+            //Also update other side of many-to-many relationship, adding this
+            //list to the candidate's collection of lists that they belong to.
+            candidate.getCandidateSavedLists().add(csl);
 
-        assignListTasksToCandidate(destinationList, candidate);
+            assignListTasksToCandidate(destinationList, candidate);
+
+            //If a job list, automatically create a candidate opp if needed
+            final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
+            if (jobOpp != null) {
+                //With no params specified will not change any existing opp associated with this job,
+                //but will create a new opp if needed, with stage defaulting to "prospect"
+                candidateOpportunityService.createUpdateCandidateOpportunities(
+                    Collections.singletonList(candidate), jobOpp, null);
+            }
+        }
     }
 
     @Override
@@ -490,8 +501,8 @@ public class SavedListServiceImpl implements SavedListService {
         throws NoSuchObjectException, SalesforceException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
         SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
-        candidateService.createUpdateSalesforce(
-            savedList.getCandidates(), sfJobOpp, request.getSalesforceOppParams());
+        candidateOpportunityService.createUpdateCandidateOpportunities(
+            savedList.getCandidates(), sfJobOpp, request.getCandidateOppParams());
     }
 
     @Override
@@ -670,6 +681,12 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    @NonNull
+    public List<SavedList> findListsAssociatedWithJobs() {
+        return this.savedListRepository.findListsWithJobs();
+    }
+
+    @Override
     public void updateDisplayedFieldPaths(
             long savedListId, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException {
@@ -681,18 +698,6 @@ public class SavedListServiceImpl implements SavedListService {
             savedList.setDisplayedFieldsShort(request.getDisplayedFieldsShort());
         }
         saveIt(savedList);
-    }
-
-    @Override
-    public void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
-        throws NoSuchObjectException, SalesforceException {
-        SavedList savedList = get(savedListId);
-
-        //There will only be candidate opportunities if list has a job opp
-        final SalesforceJobOpp jobOpp = savedList.getSfJobOpp();
-        if (jobOpp != null) {
-            salesforceService.addCandidateOpportunityStages(candidates, jobOpp.getSfId());
-        }
     }
 
     @Override
@@ -884,6 +889,9 @@ public class SavedListServiceImpl implements SavedListService {
             columnSetUpMap.put(columnCount, columnSetUp);
             if (def.getType().equals(PublishedDocColumnType.EmployerCandidateDecision)) {
                 columnSetUp.setDropDowns(EmployerCandidateDecision.getDisplayTextValues());
+            } else if (def.getType().equals(PublishedDocColumnType.YesNoDropdown)) {
+                List<String> values = Arrays.asList("", "Yes", "No");
+                columnSetUp.setDropDowns(values);
             }
 
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {

@@ -55,6 +55,7 @@ public class CandidateBuilderSelector {
             "updatedDate",
             "contextNote",
             "user",
+            "candidateOpportunities",
             "candidateReviewStatusItems",
             "country",
             "nationality",
@@ -64,8 +65,7 @@ public class CandidateBuilderSelector {
             "regoUtmContent",
             "regoUtmMedium",
             "regoUtmSource",
-            "regoUtmTerm",
-            "stage"
+            "regoUtmTerm"
         ));
 
     private final Set<String> candidateSemiLimitedExtraProperties =
@@ -154,6 +154,7 @@ public class CandidateBuilderSelector {
             .add("surveyType", surveyTypeDto())
             .add("country", countryDto())
             .add("nationality", countryDto())
+            .add("candidateOpportunities", candidateOpportunityDto())
             .add("user", userDto(userPropertyFilter))
             .add("candidateReviewStatusItems", reviewDto())
 
@@ -164,8 +165,6 @@ public class CandidateBuilderSelector {
             .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
             .add("candidateProperties", candidatePropertyDto())
             .add("shareableNotes")
-            .add("stage")
-            .add("sfOpportunityLink")
 
             ;
     }
@@ -182,11 +181,54 @@ public class CandidateBuilderSelector {
                 ;
     }
 
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+            .add("username")
+            .add("email")
+            .add("firstName")
+            .add("lastName")
+            ;
+    }
+
     private DtoBuilder countryDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
                 ;
+    }
+
+    private DtoBuilder candidateOpportunityDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("sfId")
+            .add("candidate", shortCandidateDto())
+            .add("closingComments")
+            .add("closingCommentsForCandidate")
+            .add("employerFeedback")
+            .add("jobOpp", jobDto())
+            .add("name")
+            .add("nextStep")
+            .add("nextStepDueDate")
+            .add("stage")
+            .add("createdBy", userDto())
+            .add("createdDate")
+            .add("updatedBy", userDto())
+            .add("updatedDate")
+
+            ;
+    }
+
+    private DtoBuilder shortCandidateDto() {
+        return new DtoBuilder()
+            .add("candidateNumber")
+            ;
+    }
+
+    private DtoBuilder jobDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
     }
 
     private DtoBuilder partnerDto() {

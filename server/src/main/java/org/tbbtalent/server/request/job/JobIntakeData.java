@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.request.job;
 
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -36,7 +37,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class JobIntakeData {
-
+    @Nullable Long jobOppIntakeId;
     private String salaryRange;
     private String recruitmentProcess;
     private String employerCostCommitment;
@@ -48,4 +49,6 @@ public class JobIntakeData {
     private String skillRequirements;
     private String employmentExperience;
     private String occupationCode;
+    private String minSalary;
+    private String visaPathways;
 }

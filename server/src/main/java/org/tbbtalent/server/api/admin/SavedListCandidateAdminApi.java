@@ -152,12 +152,12 @@ public class SavedListCandidateAdminApi implements
     @Override
     public @NotNull Map<String, Object> searchPaged(
             long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
+        SavedList savedList = savedListService.get(savedListId);
+
         Page<Candidate> candidates = this.candidateService
-                .getSavedListCandidates(savedListId, request);
+                .getSavedListCandidates(savedList, request);
 
         savedListService.setCandidateContext(savedListId, candidates);
-
-        savedListService.addOpportunityStages(savedListId, candidates);
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder();
         return builder.buildPage(candidates);
@@ -198,9 +198,12 @@ public class SavedListCandidateAdminApi implements
             @PathVariable("id") long savedListId,
             @Valid  @RequestBody SavedListGetRequest request,
             HttpServletResponse response) throws IOException, ExportFailedException {
+
+        SavedList savedList = savedListService.get(savedListId);
+        
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
         response.setContentType("text/csv; charset=utf-8");
-        candidateService.exportToCsv(savedListId, request, response.getWriter());
+        candidateService.exportToCsv(savedList, request, response.getWriter());
     }
 
     @PutMapping(value = "{id}/create-folders")

@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col-sm-{{mainPanelColWidth}}">
+
+    <app-candidate-opps
+      [searchBy]="searchBy"
+      (oppSelection)="onOppSelected($event)"
+    >
+    </app-candidate-opps>
+
+  </div>
+
+  <div class="col-sm-{{sidePanelColWidth}} detail-panel">
+    <div class="w-100">
+      <div *ngIf="canToggleSizes()" class="float-end">
+        <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+          class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
+      </div>
+
+      <div *ngIf="selectedOpp">
+        <div class="alert alert-danger" *ngIf="error">
+          {{error}}
+        </div>
+
+        <app-view-candidate-opp
+          [opp]="selectedOpp"
+          [showBreadcrumb]="false"
+          (candidateOppUpdated)="onCandidateOppUpdated($event)"
+        >
+        </app-view-candidate-opp>
+      </div>
+    </div>
+  </div>
+</div>

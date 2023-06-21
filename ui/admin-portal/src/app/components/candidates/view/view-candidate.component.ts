@@ -354,4 +354,9 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   canViewPrivateInfo() {
     return this.authService.canViewPrivateCandidateInfo(this.candidate);
   }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
+
 }

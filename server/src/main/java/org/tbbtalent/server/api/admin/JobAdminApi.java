@@ -47,13 +47,11 @@ public class JobAdminApi implements
     ITableApi<SearchJobRequest, UpdateJobRequest, UpdateJobRequest> {
 
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
-    private final JobIntakeDataBuilderSelector intakeDataBuilderSelector;
 
     private final JobService jobService;
 
     public JobAdminApi(JobService jobService) {
         this.jobService = jobService;
-        this.intakeDataBuilderSelector = new JobIntakeDataBuilderSelector();
     }
 
     @Override
@@ -79,11 +77,10 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
-    @GetMapping("{id}/intake")
-    public Map<String, Object> getIntakeData(@PathVariable("id") long id) {
-        SalesforceJobOpp job = jobService.getJob(id);
-        DtoBuilder builder = intakeDataBuilderSelector.selectBuilder();
-        return builder.build(job);
+    @PutMapping("{id}/intake")
+    public void updateIntakeData(
+            @PathVariable("id") long id, @RequestBody JobIntakeData data) {
+        jobService.updateIntakeData(id, data);
     }
 
     @PutMapping("{id}/publish")
@@ -115,12 +112,6 @@ public class JobAdminApi implements
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateJob(id, request);
         return jobDto().build(job);
-    }
-
-    @PutMapping("{id}/intake")
-    public void updateIntakeData(
-        @PathVariable("id") long id, @RequestBody JobIntakeData data) {
-        jobService.updateIntakeData(id, data);
     }
 
     @PutMapping("{id}/jdlink")
@@ -175,28 +166,33 @@ public class JobAdminApi implements
         return new DtoBuilder()
             .add("id")
             .add("sfId")
-            .add("accepting")
             .add("contactEmail")
-            .add("contactUser", userDto())
+            .add("contactUser", shortUserDto())
             .add("country")
-            .add("createdBy", userDto())
+            .add("createdBy", shortUserDto())
             .add("createdDate")
             .add("employer")
+            .add("hiringCommitment")
+            .add("employerWebsite")
+            .add("employerHiredInternationally")
+            .add("hiringCommitment")
+            .add("opportunityScore")
+            .add("employerDescription")
             .add("exclusionList", savedListBuilderSelector.selectBuilder())
             .add("jobSummary")
             .add("name")
-            .add("publishedBy", userDto())
+            .add("publishedBy", shortUserDto())
             .add("publishedDate")
-            .add("recruiterPartner", partnerDto())
+            .add("recruiterPartner", shortPartnerDto())
             .add("stage")
-            .add("starringUsers", userDto())
+            .add("starringUsers", shortUserDto())
             .add("submissionDueDate")
             .add("submissionList", savedListBuilderSelector.selectBuilder())
             .add("suggestedList", savedListBuilderSelector.selectBuilder())
             .add("suggestedSearches", savedSearchDto())
-            .add("updatedBy", userDto())
+            .add("updatedBy", shortUserDto())
             .add("updatedDate")
-            .add("salaryRange")
+            .add("jobOppIntake", joiDto())
             ;
     }
 
@@ -207,7 +203,7 @@ public class JobAdminApi implements
             ;
     }
 
-    private DtoBuilder userDto() {
+    private DtoBuilder shortUserDto() {
         return new DtoBuilder()
             .add("id")
             .add("firstName")
@@ -216,11 +212,31 @@ public class JobAdminApi implements
             ;
     }
 
-    private DtoBuilder partnerDto() {
+    private DtoBuilder shortPartnerDto() {
         return new DtoBuilder()
+            .add("id")
             .add("name")
             .add("abbreviation")
             .add("websiteUrl")
+            ;
+    }
+
+    private DtoBuilder joiDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("salaryRange")
+            .add("recruitmentProcess")
+            .add("employerCostCommitment")
+            .add("location")
+            .add("locationDetails")
+            .add("benefits")
+            .add("languageRequirements")
+            .add("educationRequirements")
+            .add("skillRequirements")
+            .add("employmentExperience")
+            .add("occupationCode")
+            .add("minSalary")
+            .add("visaPathways")
             ;
     }
 }

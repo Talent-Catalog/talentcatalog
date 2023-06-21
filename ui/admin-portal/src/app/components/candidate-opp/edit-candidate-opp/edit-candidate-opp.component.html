@@ -1,6 +1,6 @@
 <div class="modal-header">
 
-  <h4 class="modal-title">Update Salesforce</h4>
+  <h4 class="modal-title">Update Candidate Opportunities</h4>
 
   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
 
@@ -16,7 +16,7 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label" for="nextStep">Next step - please start with date: eg 9Nov21 next step goes here</label>
+      <label class="form-label" for="nextStep">Next step - please start with date: eg 9Nov21-...</label>
       <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
     </div>
 
@@ -28,14 +28,17 @@
 
     <div class="mb-3">
       <label class="form-label" for="closingComments">Closing comments</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                id="closingComments" [formControlName]="'closingComments'"></textarea>
+      <ngx-wig id="closingComments" formControlName="closingComments"></ngx-wig>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="closingComments">Closing comments for candidate</label>
+      <ngx-wig id="closingCommentsForCandidate" formControlName="closingCommentsForCandidate"></ngx-wig>
     </div>
 
     <div class="mb-3">
       <label class="form-label" for="employerFeedback">Employer feedback</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                id="employerFeedback" [formControlName]="'employerFeedback'"></textarea>
+      <ngx-wig id="employerFeedback" formControlName="employerFeedback"></ngx-wig>
     </div>
   </form>
 </div>

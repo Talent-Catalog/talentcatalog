@@ -69,6 +69,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateFilterByOpps;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.EducationLevel;
@@ -1327,36 +1328,48 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMinEducationLevel(request.getMinEducationLevel());
             savedSearch.setEducationMajorIds(
                     getListAsString(request.getEducationMajorIds()));
+
+            //Save Boolean filters corresponding to enum name
+            final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
+            if (candidateFilterByOpps == null) {
+                savedSearch.setAnyOpps(null);
+                savedSearch.setClosedOpps(null);
+                savedSearch.setRelocatedOpps(null);
+            } else {
+                savedSearch.setAnyOpps(candidateFilterByOpps.getAnyOpps());
+                savedSearch.setClosedOpps(candidateFilterByOpps.getClosedOpps());
+                savedSearch.setRelocatedOpps(candidateFilterByOpps.getRelocatedOpps());
+            }
         }
     }
 
-    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) throws CountryRestrictionException{
+    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch search) throws CountryRestrictionException{
         User user = userService.getLoggedInUser();
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
-        searchCandidateRequest.setSavedSearchId(request.getId());
-        searchCandidateRequest.setSimpleQueryString(request.getSimpleQueryString());
-        searchCandidateRequest.setKeyword(request.getKeyword());
-        searchCandidateRequest.setStatuses(getStatusListFromString(request.getStatuses()));
-        searchCandidateRequest.setGender(request.getGender());
-        searchCandidateRequest.setOccupationIds(getIdsFromString(request.getOccupationIds()));
-        searchCandidateRequest.setMinYrs(request.getMinYrs());
-        searchCandidateRequest.setMaxYrs(request.getMaxYrs());
-        searchCandidateRequest.setRegoReferrerParam(request.getRegoReferrerParam());
-        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
-        searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
-        searchCandidateRequest.setPartnerIds(getIdsFromString(request.getPartnerIds()));
-        searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
-        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(request.getSurveyTypeIds()));
-        searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
-        searchCandidateRequest.setCountrySearchType(request.getCountrySearchType());
+        searchCandidateRequest.setSavedSearchId(search.getId());
+        searchCandidateRequest.setSimpleQueryString(search.getSimpleQueryString());
+        searchCandidateRequest.setKeyword(search.getKeyword());
+        searchCandidateRequest.setStatuses(getStatusListFromString(search.getStatuses()));
+        searchCandidateRequest.setGender(search.getGender());
+        searchCandidateRequest.setOccupationIds(getIdsFromString(search.getOccupationIds()));
+        searchCandidateRequest.setMinYrs(search.getMinYrs());
+        searchCandidateRequest.setMaxYrs(search.getMaxYrs());
+        searchCandidateRequest.setRegoReferrerParam(search.getRegoReferrerParam());
+        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(search.getVerifiedOccupationIds()));
+        searchCandidateRequest.setVerifiedOccupationSearchType(search.getVerifiedOccupationSearchType());
+        searchCandidateRequest.setPartnerIds(getIdsFromString(search.getPartnerIds()));
+        searchCandidateRequest.setNationalityIds(getIdsFromString(search.getNationalityIds()));
+        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
+        searchCandidateRequest.setNationalitySearchType(search.getNationalitySearchType());
+        searchCandidateRequest.setCountrySearchType(search.getCountrySearchType());
 
         // Check if the saved search countries match the source countries of the user
-        List<Long> requestCountries = getIdsFromString(request.getCountryIds());
+        List<Long> requestCountries = getIdsFromString(search.getCountryIds());
 
         // if a user has source country restrictions AND IF the request has countries selected
         if(user != null
                 && user.getSourceCountries().size() > 0
-                && request.getCountryIds() != null) {
+                && search.getCountryIds() != null) {
             List<Long> sourceCountries = user.getSourceCountries().stream()
                     .map(Country::getId)
                     .collect(Collectors.toList());
@@ -1370,24 +1383,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
         searchCandidateRequest.setCountryIds(requestCountries);
 
-        searchCandidateRequest.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
-        searchCandidateRequest.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
+        searchCandidateRequest.setEnglishMinSpokenLevel(search.getEnglishMinSpokenLevel());
+        searchCandidateRequest.setEnglishMinWrittenLevel(search.getEnglishMinWrittenLevel());
         searchCandidateRequest.setExclusionListId(
-            request.getExclusionList() != null ? request.getExclusionList().getId() : null);
+            search.getExclusionList() != null ? search.getExclusionList().getId() : null);
         searchCandidateRequest.setOtherLanguageId(
-            request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
-        searchCandidateRequest.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
-        searchCandidateRequest.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
-        searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
-        searchCandidateRequest.setLastModifiedTo(request.getLastModifiedTo());
+            search.getOtherLanguage() != null ? search.getOtherLanguage().getId() : null);
+        searchCandidateRequest.setOtherMinSpokenLevel(search.getOtherMinSpokenLevel());
+        searchCandidateRequest.setOtherMinWrittenLevel(search.getOtherMinWrittenLevel());
+        searchCandidateRequest.setLastModifiedFrom(search.getLastModifiedFrom());
+        searchCandidateRequest.setLastModifiedTo(search.getLastModifiedTo());
 //        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
 //        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
-        searchCandidateRequest.setMinAge(request.getMinAge());
-        searchCandidateRequest.setMaxAge(request.getMaxAge());
-        searchCandidateRequest.setMinEducationLevel(request.getMinEducationLevel());
-        searchCandidateRequest.setEducationMajorIds(getIdsFromString(request.getEducationMajorIds()));
+        searchCandidateRequest.setMinAge(search.getMinAge());
+        searchCandidateRequest.setMaxAge(search.getMaxAge());
+        searchCandidateRequest.setMinEducationLevel(search.getMinEducationLevel());
+        searchCandidateRequest.setEducationMajorIds(getIdsFromString(search.getEducationMajorIds()));
+
+        CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(
+            search.getAnyOpps(), search.getClosedOpps(), search.getRelocatedOpps());
+        searchCandidateRequest.setCandidateFilterByOpps(candidateFilterByOpps);
+
         List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
-        for (SearchJoin searchJoin : request.getSearchJoins()) {
+        for (SearchJoin searchJoin : search.getSearchJoins()) {
             searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getChildSavedSearch().getName(), searchJoin.getSearchType()));
         }
         searchCandidateRequest.setSearchJoinRequests(searchJoinRequests);
@@ -1462,7 +1480,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
             //Now fetch those candidates from the normal database
             //They will come back in random order
-            List<Candidate> unsorted = candidateRepository.findByIds(candidateIds);
+            List<Candidate> unsorted = candidateService.findByIds(candidateIds);
             //Put the results in a map indexed by the id
             Map<Long, Candidate> mapById = new HashMap<>();
             for (Candidate candidate : unsorted) {
