@@ -26,10 +26,22 @@
       </span>
     </h1>
   </div>
+
+  <div>
+    Candidate Opportunity Case Number {{opp.id}}
+  </div>
+  <hr/>
+
+
+  <app-opportunity-stage-next-step
+    [opp]="opp"
+  >
+  </app-opportunity-stage-next-step>
+
   <div class="card">
 
     <div class="card-header">
-      Candidate Job Opportunity ({{opp.id}})
+      Case details
       <div class="float-end" *ngIf="editable">
         <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
         <button class="btn btn-sm btn-outline-secondary" title="Update progress" (click)="editOppProgress()">
@@ -42,28 +54,7 @@
       <div class="row">
 
         <div class="mb-3 col-sm-12 col-md-4">
-          <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>Stage</label>
-          <div class="form-control-plaintext">
-            {{getCandidateOpportunityStageName(opp)}}
-          </div>
-        </div>
-
-        <div class="mb-3 col-sm-12 col-md-4">
-          <label class="col-form-label"><i class="fa-solid fa-circle-arrow-right"></i>Next Step</label>
-          <div class="form-control-plaintext">
-            {{opp.nextStep}}
-          </div>
-        </div>
-
-        <div class="mb-3 col-sm-12 col-md-4">
-          <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Next Step Due</label>
-          <div class="form-control-plaintext">
-            {{opp.nextStepDueDate}}
-          </div>
-        </div>
-
-        <div class="mb-3 col-sm-12 col-md-4">
-          <label class="col-form-label"><i class="fas fa-globe"></i>Country</label>
+          <label class="col-form-label"><i class="fas fa-globe"></i>Destination Country</label>
           <div class="form-control-plaintext">
             {{opp.jobOpp.country}}
           </div>
