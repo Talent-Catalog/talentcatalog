@@ -56,6 +56,12 @@ export function getOpportunityStageName(opp: Opportunity): string {
   return s;
 }
 
+export interface OpportunityProgressParams {
+  stage?: string;
+  nextStep?: string;
+  nextStepDueDate?: string;
+}
+
 export interface OpportunityIds extends HasId {
   sfId?: string;
 }

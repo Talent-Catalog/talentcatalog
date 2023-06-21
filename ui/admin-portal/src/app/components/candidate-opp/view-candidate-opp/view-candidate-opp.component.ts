@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CandidateOpportunity} from "../../../model/candidate-opportunity";
+import {CandidateOpportunity, isCandidateOpportunity} from "../../../model/candidate-opportunity";
 import {EditCandidateOppComponent} from "../edit-candidate-opp/edit-candidate-opp.component";
 import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthService} from "../../../services/auth.service";
-import {getOpportunityStageName} from "../../../model/opportunity";
+import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
 import {ShortSavedList} from "../../../model/saved-list";
 
 @Component({
@@ -45,6 +45,9 @@ export class ViewCandidateOppComponent implements OnInit {
     const editQuery = this.modalService.open(EditCandidateOppComponent, {size: 'lg'});
     editQuery.componentInstance.opp = this.opp;
 
+    //Progress parameters (stage, nextStep) are set separately in this component
+    editQuery.componentInstance.showProgressParams = false;
+
     editQuery.result
     .then((info: CandidateOpportunityParams) => {this.doUpdate(info);})
     .catch(() => { });
@@ -73,5 +76,11 @@ export class ViewCandidateOppComponent implements OnInit {
 
   displaySavedList(list: ShortSavedList) {
     return list ? list.name + "(" + list.id + ")" : "";
+  }
+
+  onOppProgressUpdated(opp: Opportunity) {
+    if (isCandidateOpportunity(opp)) {
+      this.candidateOppUpdated.emit(opp);
+    }
   }
 }

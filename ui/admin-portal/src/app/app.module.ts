@@ -704,6 +704,7 @@ import {CreatedByComponent} from './components/util/user/created-by/created-by.c
 import {
   OpportunityStageNextStepComponent
 } from './components/util/opportunity-stage-next-step/opportunity-stage-next-step.component';
+import {EditOppComponent} from './components/opportunity/edit-opp/edit-opp.component';
 
 @NgModule({
   declarations: [
@@ -984,7 +985,8 @@ import {
     CandidateOppsWithDetailComponent,
     TruncatePipe,
     CreatedByComponent,
-    OpportunityStageNextStepComponent
+    OpportunityStageNextStepComponent,
+    EditOppComponent
   ],
   imports: [
     BrowserModule,

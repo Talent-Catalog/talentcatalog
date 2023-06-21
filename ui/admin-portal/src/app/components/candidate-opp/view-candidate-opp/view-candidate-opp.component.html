@@ -35,6 +35,7 @@
 
   <app-opportunity-stage-next-step
     [opp]="opp"
+    (oppProgressUpdated)="onOppProgressUpdated($event)"
   >
   </app-opportunity-stage-next-step>
 

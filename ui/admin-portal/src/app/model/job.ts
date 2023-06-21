@@ -22,7 +22,7 @@ import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
 import {SearchOpportunityRequest} from "./candidate-opportunity";
-import {Opportunity} from "./opportunity";
+import {Opportunity, OpportunityProgressParams} from "./opportunity";
 
 export function isJob(opp: Opportunity): opp is Job {
   return opp ? 'submissionList' in opp : false;
@@ -108,9 +108,8 @@ export class SearchJobRequest extends SearchOpportunityRequest {
   starred?: boolean;
 }
 
-export interface UpdateJobRequest {
+export interface UpdateJobRequest extends OpportunityProgressParams {
   sfJoblink?: string;
-  stage?: string;
   submissionDueDate?: Date;
 }
 

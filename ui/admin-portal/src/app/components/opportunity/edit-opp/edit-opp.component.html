@@ -1,6 +1,6 @@
 <div class="modal-header">
 
-  <h4 class="modal-title">Update Candidate Opportunity</h4>
+  <h4 class="modal-title">Update Opportunity Progress</h4>
 
   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
 
@@ -9,36 +9,21 @@
 <div class="modal-body">
   <form [formGroup]="salesforceStageForm">
 
-    <div *ngIf="showProgressParams" class="mb-3">
+    <div class="mb-3">
       <label class="form-label" for="stage">Candidate Opportunity Stage - order is just a guide, most stages are optional.</label>
       <ng-select id="stage" [formControlName]="'stage'" [items]="candidateOpportunityStageOptions"
                  placeholder="Select" bindLabel="stringValue" bindValue="key" ></ng-select>
     </div>
 
-    <div *ngIf="showProgressParams" class="mb-3">
+    <div class="mb-3">
       <label class="form-label" for="nextStep">Next step - please start with date: eg 9Nov21-...</label>
       <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
     </div>
 
-    <div *ngIf="showProgressParams" class="mb-3">
+    <div class="mb-3">
       <label class="form-label" for="nextStepDueDate">Next step due date</label>
       <app-date-picker id="nextStepDueDate" [control]="salesforceStageForm.controls.nextStepDueDate"
                        [allowFuture]="true"></app-date-picker>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label" for="closingComments">Closing comments</label>
-      <ngx-wig id="closingComments" formControlName="closingComments"></ngx-wig>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label" for="closingComments">Closing comments for candidate</label>
-      <ngx-wig id="closingCommentsForCandidate" formControlName="closingCommentsForCandidate"></ngx-wig>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label" for="employerFeedback">Employer feedback</label>
-      <ngx-wig id="employerFeedback" formControlName="employerFeedback"></ngx-wig>
     </div>
   </form>
 </div>
