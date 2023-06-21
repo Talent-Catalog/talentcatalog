@@ -36,6 +36,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
+
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -966,6 +968,37 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 addElasticRangeFilter(boolQueryBuilder,
                     "minEnglishWrittenLevel",
                     minWrittenLevel, null);
+        }
+
+        //Other languages
+        Long otherLanguageId = request.getOtherLanguageId();
+        if (otherLanguageId != null) {
+            Optional<Language> otherLanguage = languageRepository.findById(request.getOtherLanguageId());
+            if (otherLanguage.isPresent()) {
+
+                BoolQueryBuilder nestedQueryBuilder = QueryBuilders.boolQuery().must(
+                        QueryBuilders.termQuery("otherLanguages.name.keyword", otherLanguage.get().getName()));
+
+                Integer minOtherSpokenLevel = request.getOtherMinSpokenLevel();
+                if (minOtherSpokenLevel != null) {
+                    nestedQueryBuilder =
+                            addElasticRangeFilter(nestedQueryBuilder,
+                                    "otherLanguages.minSpokenLevel",
+                                    minOtherSpokenLevel, null);
+                }
+
+                Integer minOtherWrittenLevel = request.getOtherMinWrittenLevel();
+                if (minOtherWrittenLevel != null) {
+                    nestedQueryBuilder =
+                            addElasticRangeFilter(nestedQueryBuilder,
+                                    "otherLanguages.minWrittenLevel",
+                                    minOtherWrittenLevel, null);
+                }
+
+                boolQueryBuilder = boolQueryBuilder.filter(
+                        QueryBuilders.nestedQuery("otherLanguages", nestedQueryBuilder, ScoreMode.Avg));
+            }
+
         }
 
         //Exclude given candidates
