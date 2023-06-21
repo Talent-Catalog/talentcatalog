@@ -701,6 +701,9 @@ import {
 } from './components/candidate-opp/candidate-opps-with-detail/candidate-opps-with-detail.component';
 import {TruncatePipe} from "./pipes/truncate.pipe";
 import {CreatedByComponent} from './components/util/user/created-by/created-by.component';
+import {
+  OpportunityStageNextStepComponent
+} from './components/util/opportunity-stage-next-step/opportunity-stage-next-step.component';
 
 @NgModule({
   declarations: [
@@ -980,7 +983,8 @@ import {CreatedByComponent} from './components/util/user/created-by/created-by.c
     CandidateOppsComponent,
     CandidateOppsWithDetailComponent,
     TruncatePipe,
-    CreatedByComponent
+    CreatedByComponent,
+    OpportunityStageNextStepComponent
   ],
   imports: [
     BrowserModule,
