@@ -13,21 +13,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {CandidateOpportunityStage} from "./candidate-opportunity";
+import {CandidateOpportunityStage, isCandidateOpportunity} from "./candidate-opportunity";
 import {Auditable, HasId} from "./base";
+import {isJob, JobOpportunityStage} from "./job";
 
 /**
- * Given the key of an Opportunity Stage enum (job or candidate), return the string value
- * abbreviated for easy display by stripping out any numeric prefix or parenthesized suffix.
- * <p/>
- * Just returns the input enumStageNameKey if it does not match any enum key name.
- * @param enumStageNameKey Key name of CandidateOpportunityStag
+ * Given an opportunity (job or candidate), return the string value of the opportunity's stage's
+ * name abbreviated for easy display by stripping out any numeric prefix or parenthesized suffix.
+ * For example for CandidateOpportunityStage.oneWayReview, strip
+ * "7. 1 way review (Optional depending on employer)" down to just "1 way review".
+ * @param opp Opportunity
+ * @return The string value of the stage (rather than the key). For example,
+ *         "CV preparation" instead of "cvPreparation".
  */
-export function getOpportunityStageName(enumStageNameKey: string): string {
-  let s = CandidateOpportunityStage[enumStageNameKey];
-  if (!s) {
-    s = enumStageNameKey;
-  } else {
+export function getOpportunityStageName(opp: Opportunity): string {
+  let s: string = null;
+
+  //Pick up the string value associated with the opportunity's stage.
+  //Need to select the appropriate stage enum - depending on whether opp is a candidate or job
+  //opportunity.
+  if (isCandidateOpportunity(opp)) {
+    s = CandidateOpportunityStage[opp.stage];
+  }
+  if (isJob(opp)) {
+    s = JobOpportunityStage[opp.stage];
+  }
+  if (s) {
     //Strip off extra stuff
 
     //Strip off any prefix - eg '17. '

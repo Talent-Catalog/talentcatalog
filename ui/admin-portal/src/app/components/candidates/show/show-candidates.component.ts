@@ -1777,7 +1777,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     let stage = null;
     const opp = this.getCandidateOppForThisJob(candidate);
     if (opp) {
-      stage = getOpportunityStageName(opp.stage);
+      stage = getOpportunityStageName(opp);
     }
     return stage;
   }
