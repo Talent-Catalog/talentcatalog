@@ -7,7 +7,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
-import {isJob} from "../../../model/job";
+import {isJob, JobOpportunityStage} from "../../../model/job";
 
 @Component({
   selector: 'app-edit-opp',
@@ -19,7 +19,7 @@ export class EditOppComponent implements OnInit {
   opp: Opportunity;
 
   salesforceStageForm: FormGroup;
-  candidateOpportunityStageOptions: EnumOption[] = enumOptions(CandidateOpportunityStage);
+  opportunityStageOptions: EnumOption[] = [];
 
   closing = false;
 
@@ -31,6 +31,12 @@ export class EditOppComponent implements OnInit {
     let stage = null;
     if (isCandidateOpportunity(this.opp) || isJob(this.opp)) {
       stage = this.opp.stage;
+      if (isCandidateOpportunity(this.opp)) {
+        this.opportunityStageOptions = enumOptions(CandidateOpportunityStage);
+      }
+      if (isJob(this.opp)) {
+        this.opportunityStageOptions = enumOptions(JobOpportunityStage);
+      }
     }
 
     this.salesforceStageForm = this.fb.group({
@@ -40,7 +46,7 @@ export class EditOppComponent implements OnInit {
     });
 
     if (this.closing) {
-      this.candidateOpportunityStageOptions = this.candidateOpportunityStageOptions
+      this.opportunityStageOptions = this.opportunityStageOptions
       .filter(en=>en.stringValue.startsWith('Closed') )
     }
   }
