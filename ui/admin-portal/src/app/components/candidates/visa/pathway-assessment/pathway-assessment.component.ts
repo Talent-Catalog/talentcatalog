@@ -23,7 +23,7 @@ export class PathwayAssessmentComponent extends IntakeComponentBase implements O
     this.form = this.fb.group({
       visaId: [this.visaCheckRecord?.id],
       visaCountryId: [this.visaCheckRecord?.country?.id],
-      visaPathwayAssessment: [this.visaCheckRecord?.visaPathwayAssessment],
+      visaPathwayAssessment: [this.visaCheckRecord?.pathwayAssessment],
     });
   }
 

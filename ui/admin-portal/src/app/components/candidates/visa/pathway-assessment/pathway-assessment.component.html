@@ -8,14 +8,14 @@
     e.g. if visa country == Canada the label is Meets EMPP Eligibility?
      However if we use this field for other countries, we could show a different label that's relevant to their pathways?
      Not sure if this is bad practise -->
-    <label class="form-label" for="visaCharacterAssessment">Meets pathway eligibility? (eg. EMPP for Canada)</label>
+    <label class="form-label" for="visaPathwayAssessment">Meets pathway eligibility? (eg. EMPP for Canada)</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="visaCharacterAssessment" [formControlName]="'visaCountryPathwayAssessment'" (clear)="setNoResponse('visaCountryPathwayAssessment')"
+    <ng-select id="visaPathwayAssessment" [formControlName]="'visaPathwayAssessment'" (clear)="setNoResponse('visaPathwayAssessment')"
                [items]="assessmentOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
