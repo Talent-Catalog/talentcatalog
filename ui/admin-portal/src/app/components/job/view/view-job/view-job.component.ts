@@ -1,13 +1,5 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import {getJobExternalHref, Job} from "../../../../model/job";
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {getJobExternalHref, isJob, Job} from "../../../../model/job";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
@@ -29,9 +21,8 @@ import {
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {
-  CandidateSourceCandidateService
-} from "../../../../services/candidate-source-candidate.service";
+import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
+import {Opportunity} from "../../../../model/opportunity";
 
 /**
  * Display details of a job object passed in as an @Input.
@@ -148,6 +139,12 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   onJobUpdated(job: Job) {
     this.jobUpdated.emit(job);
+  }
+
+  onOppProgressUpdated(opp: Opportunity) {
+    if (isJob(opp)) {
+      this.onJobUpdated(opp)
+    }
   }
 
   getSalesforceJobLink(sfId: string): string {

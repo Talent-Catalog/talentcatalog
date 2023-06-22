@@ -29,6 +29,7 @@ import {HasId} from "./base";
 import {CandidateAttachment} from "./candidate-attachment";
 import {TaskAssignment} from "./task-assignment";
 import {CandidateOpportunity} from "./candidate-opportunity";
+import {OpportunityProgressParams} from "./opportunity";
 
 export interface ShortCandidate {
   candidateNumber: string;
@@ -304,6 +305,8 @@ export interface CandidateVisa {
   updatedBy?: User;
   updatedDate?: number;
   visaEligibilityAssessment?: YesNo;
+  pathwayAssessment?: YesNo;
+  pathwayAssessmentNotes?: string;
   candidateVisaJobChecks?: CandidateVisaJobCheck[];
 
 }
@@ -377,10 +380,7 @@ export enum CandidateFilterByOpps {
 
 }
 
-export interface CandidateOpportunityParams {
-  stage?: string;
-  nextStep?: string;
-  nextStepDueDate?: string;
+export interface CandidateOpportunityParams extends OpportunityProgressParams {
   closingComments?: string;
   closingCommentsForCandidate?: string;
   employerFeedback?: string;

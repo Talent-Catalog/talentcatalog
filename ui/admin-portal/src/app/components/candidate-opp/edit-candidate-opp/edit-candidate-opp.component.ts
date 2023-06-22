@@ -3,10 +3,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  CandidateOpportunity,
-  CandidateOpportunityStage
-} from "../../../model/candidate-opportunity";
+import {CandidateOpportunity, CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-edit-candidate-opp',
@@ -18,6 +15,15 @@ export class EditCandidateOppComponent implements OnInit {
   //Allow for optional supply of CandidateOpportunity which can be used to prefill
   //form fields with existing values
   opp: CandidateOpportunity;
+
+  /**
+   * Determines whether progress params - stage, nextStep and nextStepDue - are captured by the
+   * component.
+   * <p/>
+   * Sometimes those params are captured by the separate special purpose
+   * OpportunityStageNextStepComponent - in which case, this can be set false.
+   */
+  showProgressParams = true;
 
   salesforceStageForm: FormGroup;
   candidateOpportunityStageOptions: EnumOption[] = enumOptions(CandidateOpportunityStage);

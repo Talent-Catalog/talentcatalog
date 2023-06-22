@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+/*
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,10 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.intake-data {
-  background-color: #f2f2f2;
-}
-
-hr {
-  margin: 2rem 0;
-}
+alter table salesforce_job_opp add column closing_comments text;
+alter table salesforce_job_opp add column next_step text;
+alter table salesforce_job_opp add column next_step_due_date date;
+alter table salesforce_job_opp rename column sf_job_opp_id to sf_id;

@@ -16,7 +16,7 @@
 
 import {Component, Input} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../../util/intake/IntakeComponentTabBase";
-import {CandidateVisa} from "../../../../../../model/candidate";
+import {CandidateIntakeData, CandidateVisa} from "../../../../../../model/candidate";
 
 @Component({
   selector: 'app-visa-check-uk',
@@ -25,6 +25,7 @@ import {CandidateVisa} from "../../../../../../model/candidate";
 })
 export class VisaCheckUkComponent extends IntakeComponentTabBase {
   @Input() selectedIndex: number;
-  @Input() visaRecord: CandidateVisa;
+  @Input() candidateIntakeData: CandidateIntakeData;
+  visaRecord: CandidateVisa;
 }
 
