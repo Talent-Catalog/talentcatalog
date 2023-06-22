@@ -92,7 +92,11 @@
       <ngb-panel id="visa-ca-eligibility" title="Assessing Canada Visa Eligibility">
         <ng-template ngbPanelContent>
           <div>
-            // Meets Visa Eligibility?
+            <app-pathway-assessment
+              [entity]="candidate"
+              [candidateIntakeData]="candidateIntakeData"
+              [visaCheckRecord]="visaRecord">
+            </app-pathway-assessment>
           </div>
           <hr>
           <div class="card card-body intake-data">

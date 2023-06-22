@@ -80,6 +80,9 @@ public class CandidateVisaCheck extends CandidateVisaCheckBase {
         if (data.getVisaValidTravelDocsNotes() != null) {
             setValidTravelDocsNotes(data.getVisaValidTravelDocsNotes());
         }
+        if (data.getVisaPathwayAssessment() != null) {
+            setPathwayAssessment(data.getVisaPathwayAssessment());
+        }
     }
     
 }
