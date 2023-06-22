@@ -475,6 +475,10 @@ import {
 } from './components/candidate-opp/candidate-opps-with-detail/candidate-opps-with-detail.component';
 import {TruncatePipe} from "./pipes/truncate.pipe";
 import {CreatedByComponent} from './components/util/user/created-by/created-by.component';
+import {
+  OpportunityStageNextStepComponent
+} from './components/util/opportunity-stage-next-step/opportunity-stage-next-step.component';
+import {EditOppComponent} from './components/opportunity/edit-opp/edit-opp.component';
 import {PathwayAssessmentComponent} from './components/candidates/visa/pathway-assessment/pathway-assessment.component';
 
 @NgModule({
@@ -756,6 +760,8 @@ import {PathwayAssessmentComponent} from './components/candidates/visa/pathway-a
     CandidateOppsWithDetailComponent,
     TruncatePipe,
     CreatedByComponent,
+    OpportunityStageNextStepComponent,
+    EditOppComponent,
     PathwayAssessmentComponent
   ],
   imports: [

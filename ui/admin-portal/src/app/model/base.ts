@@ -18,6 +18,7 @@ import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
 import {PartnerType} from "./partner";
+import {OpportunityIds} from "./opportunity";
 
 export interface HasName {
   name?: string;
@@ -154,9 +155,9 @@ export function findHasId(id: number, hasIds: HasId[]): HasId {
 
 export interface Auditable extends HasId {
   createdBy?: User;
-  createdDate?: number;
+  createdDate?: Date;
   updatedBy?: User
-  updatedDate?: number;
+  updatedDate?: Date;
 }
 
 export interface CandidateSource extends Auditable {
@@ -172,17 +173,6 @@ export interface CandidateSource extends Auditable {
   watcherUserIds?: number[];
 }
 
-export interface OpportunityIds extends HasId {
-  sfId?: string;
-}
-
-export interface Opportunity extends Auditable, OpportunityIds {
-  closed: boolean;
-  closingComments?: string;
-  name: string;
-  nextStep?: string;
-  nextStepDueDate?: Date;
-}
 
 export interface HasJobRelatedLinks {
   sfJoblink: string;

@@ -16,17 +16,19 @@
 
 package org.tbbtalent.server.request.job;
 
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
+import org.tbbtalent.server.request.candidate.opportunity.OpportunityParams;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @ToString
-public class UpdateJobRequest {
+public class UpdateJobRequest extends OpportunityParams {
 
     /**
      * Url link to Salesforce EmployerJob opportunity
