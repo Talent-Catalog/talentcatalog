@@ -24,7 +24,21 @@ export class PathwayAssessmentComponent extends IntakeComponentBase implements O
       visaId: [this.visaCheckRecord?.id],
       visaCountryId: [this.visaCheckRecord?.country?.id],
       visaPathwayAssessment: [this.visaCheckRecord?.pathwayAssessment],
+      visaPathwayAssessmentNotes: [this.visaCheckRecord?.pathwayAssessmentNotes],
     });
+  }
+
+  get hasNotes(): boolean {
+    let found: boolean = false;
+    if (this.form.value.visaPathwayAssessment) {
+      if (this.form.value.visaPathwayAssessment === 'Yes') {
+        found = true
+      }
+      if (this.form.value.visaPathwayAssessment === 'No') {
+        found = true
+      }
+    }
+    return found;
   }
 
 }

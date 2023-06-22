@@ -227,6 +227,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("validTravelDocsNotes")
                 .add("assessmentNotes")
                 .add("pathwayAssessment")
+                .add("pathwayAssessmentNotes")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

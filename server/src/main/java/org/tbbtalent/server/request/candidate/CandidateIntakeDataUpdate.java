@@ -192,6 +192,7 @@ public class CandidateIntakeDataUpdate {
     private String visaValidTravelDocsNotes;
     private String visaCreatedById;
     private YesNo visaPathwayAssessment;
+    private String visaPathwayAssessmentNotes;
 
     //Corresponds to CandidateVisaJobCheck fields
     private Long visaJobId;
