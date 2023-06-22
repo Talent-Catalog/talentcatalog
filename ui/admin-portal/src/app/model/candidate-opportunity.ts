@@ -13,9 +13,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {Opportunity, PagedSearchRequest} from "./base";
+import {PagedSearchRequest} from "./base";
 import {ShortJob} from "./job";
 import {ShortCandidate} from "./candidate";
+import {Opportunity} from "./opportunity";
+
+export function isCandidateOpportunity(opp: Opportunity): opp is CandidateOpportunity {
+  return opp ? 'jobOpp' in opp : false;
+}
 
 export interface CandidateOpportunity extends Opportunity {
 

@@ -90,23 +90,51 @@ public class JobSpecification {
                         ));
             }
 
+            //TODO CandidateOpportunitySpecification and JobSpecification are both opportunity
+            //specifications and duplicate a lot of code which should be refactored out.
+
+            final Boolean showActiveStages = request.getActiveStages();
+            final Boolean showClosed = request.getSfOppClosed();
+
+            boolean isStageFilterActive = false;
+
             // STAGE
             List<JobOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
                 conjunction.getExpressions().add(builder.isTrue(job.get("stage").in(stages)));
-            } else {
-                //ACTIVE STAGES
+                isStageFilterActive = true;
+            }
+
+            //ACTIVE STAGES (ignored if doing stage filtering)
+            if (!isStageFilterActive) {
                 //Note that we only check "active stages" if explicit stages have not been requested.
-                if (request.getActiveStages() != null) {
-                    conjunction.getExpressions().add(builder.between(job.get("stageOrder"),
-                        JobOpportunityStage.candidateSearch.ordinal(),
-                        JobOpportunityStage.jobOffer.ordinal()));
+                if (showActiveStages != null) {
+                    //Only apply filter when we just want to display active stages
+                    //Otherwise, if false, it will ONLY display inactive stages which we don't want
+                    if (showActiveStages) {
+                        final Predicate activePredicate = builder.between(job.get("stageOrder"),
+                            JobOpportunityStage.candidateSearch.ordinal(),
+                            JobOpportunityStage.jobOffer.ordinal());
+                        if (showClosed != null && showClosed) {
+                            //When active stages are requested as well as closed, we need both.
+                            //ie We need to show jobs which are active OR closed
+                            conjunction.getExpressions().add(
+                                builder.or(activePredicate,
+                                    builder.equal(job.get("closed"), true)));
+                        } else {
+                            conjunction.getExpressions().add(activePredicate);
+                        }
+                    }
                 }
             }
 
-            //CLOSED
-            if (request.getSfOppClosed() != null) {
-                conjunction.getExpressions().add(builder.equal(job.get("closed"), request.getSfOppClosed()));
+            //CLOSED (ignored if we are doing stage filtering)
+            if (!isStageFilterActive && showClosed != null) {
+                //Only apply filter if we want to exclude closed opps.
+                //Otherwise the filter when true will only show closed opps - which we don't want.
+                if (!showClosed) {
+                    conjunction.getExpressions().add(builder.equal(job.get("closed"), false));
+                }
             }
 
             //PUBLISHED

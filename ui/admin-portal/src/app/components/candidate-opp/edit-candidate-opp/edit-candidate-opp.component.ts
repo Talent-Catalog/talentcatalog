@@ -19,6 +19,15 @@ export class EditCandidateOppComponent implements OnInit {
   //form fields with existing values
   opp: CandidateOpportunity;
 
+  /**
+   * Determines whether progress params - stage, nextStep and nextStepDue - are captured by the
+   * component.
+   * <p/>
+   * Sometimes those params are captured by the separate special purpose
+   * OpportunityStageNextStepComponent - in which case, this can be set false.
+   */
+  showProgressParams = true;
+
   salesforceStageForm: FormGroup;
   candidateOpportunityStageOptions: EnumOption[] = enumOptions(CandidateOpportunityStage);
 

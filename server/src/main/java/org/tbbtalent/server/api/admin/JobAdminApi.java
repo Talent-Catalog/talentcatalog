@@ -181,6 +181,8 @@ public class JobAdminApi implements
             .add("exclusionList", savedListBuilderSelector.selectBuilder())
             .add("jobSummary")
             .add("name")
+            .add("nextStep")
+            .add("nextStepDueDate")
             .add("publishedBy", shortUserDto())
             .add("publishedDate")
             .add("recruiterPartner", shortPartnerDto())

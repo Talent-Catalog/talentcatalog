@@ -375,14 +375,26 @@ public class JobServiceImpl implements JobService {
         if (stage != null) {
             job.setStage(stage);
 
-            //TODO JC Temporarily push this up to SF - eventually ALL changes will push to SF
-            salesforceService.updateEmployerOpportunityStage(job.getSfId(), stage, null, null);
-
+            //todo Add Zeynep's new logic
             //Do automation logic
             if (stage.isClosed()) {
                 closeUnclosedCandidateOppsForJob(job, stage);
             }
         }
+
+        final String nextStep = request.getNextStep();
+        if (nextStep != null) {
+            job.setNextStep(nextStep);
+        }
+
+        final LocalDate nextStepDueDate = request.getNextStepDueDate();
+        if (nextStepDueDate != null) {
+            job.setNextStepDueDate(nextStepDueDate);
+        }
+
+        salesforceService.updateEmployerOpportunityStage(
+            job.getSfId(), stage, nextStep, nextStepDueDate);
+
         job.setSubmissionDueDate(request.getSubmissionDueDate());
         job.setAuditFields(loggedInUser);
         return salesforceJobOppRepository.save(job);

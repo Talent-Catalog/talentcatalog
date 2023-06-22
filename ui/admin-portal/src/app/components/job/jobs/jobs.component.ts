@@ -20,19 +20,20 @@ export class JobsComponent implements OnInit {
   @Input() searchBy: SearchOppsBy;
   @Output() jobSelection = new EventEmitter();
 
-  /*
-     MODEL: Modal set component focus from code
-   */
-  //Get reference to the search input filter element (see #searchFilter in html)
-  @ViewChild("searchFilter")
-  searchFilter: ElementRef;
+  loading: boolean;
+  error: string;
+  myOppsOnlyTip = "Only show jobs that were created by me";
 
   pageNumber: number;
   pageSize: number;
+  results: SearchResults<Job>;
   private loggedInUser: User;
 
   private filterKeySuffix: string = 'Filter';
+  private myOppsOnlySuffix: string = 'MyOppsOnly';
   private savedStateKeyPrefix: string = 'BrowseKey';
+  private showClosedOppsSuffix: string = 'ShowClosedOpps';
+  private showInactiveOppsSuffix: string = 'ShowInactiveOpps';
   private sortDirectionSuffix: string = 'SortDir';
   private sortFieldSuffix: string = 'Sort';
 
@@ -40,17 +41,22 @@ export class JobsComponent implements OnInit {
     'candidateSearch', 'visaEligibility', 'cvPreparation', 'cvReview', 'recruitmentProcess',
   'jobOffer', 'visaPreparation'];
 
+  /*
+     MODEL: Modal set component focus from code
+   */
+  //Get reference to the search input filter element (see #searchFilter in html)
+  @ViewChild("searchFilter")
+  searchFilter: ElementRef;
+
   searchForm: FormGroup;
-  loading: boolean;
-  error: string;
-  results: SearchResults<Job>;
+  showClosedOppsTip = "Show jobs that have been closed";
+  showInactiveOppsTip = "Show jobs that are no longer active";
   stages = enumOptions(JobOpportunityStage);
 
   //Default sort jobs with most recent job first - ie descending order of created date
   sortField = 'createdDate';
   sortDirection = 'DESC';
   currentJob: Job;
-  myJobsOnlyTip = "Only show jobs that were created by me";
 
   constructor(
     private authService: AuthService,
@@ -61,6 +67,8 @@ export class JobsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loggedInUser = this.authService.getLoggedInUser();
+    this.pageNumber = 1;
+    this.pageSize = 30;
 
     //Pick up any previous keyword filter
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
@@ -75,15 +83,21 @@ export class JobsComponent implements OnInit {
       this.sortField = previousSortField;
     }
 
+    //Pick up previous options
+    const previousMyOppsOnly: string = this.localStorageService.get(this.savedStateKey() + this.myOppsOnlySuffix);
+    const previousShowClosedOpps: string = this.localStorageService.get(this.savedStateKey() + this.showClosedOppsSuffix);
+    const previousShowInactiveOpps: string = this.localStorageService.get(this.savedStateKey() + this.showInactiveOppsSuffix);
+
     this.searchForm = this.fb.group({
       keyword: [filter],
-      myJobsOnly: [false],
+      myOppsOnly: [previousMyOppsOnly ? previousMyOppsOnly : false],
+      showClosedOpps: [previousShowClosedOpps ? previousShowClosedOpps : false],
+      showInactiveOpps: [previousShowInactiveOpps ? previousShowInactiveOpps : false],
       selectedStages: [[]]
     });
-    this.pageNumber = 1;
-    this.pageSize = 30;
 
     this.subscribeToFilterChanges();
+
     this.search();
 
   }
@@ -92,16 +106,38 @@ export class JobsComponent implements OnInit {
     return this.searchForm ? this.searchForm.value.keyword : "";
   }
 
-  private get myJobsOnly(): boolean {
-    return this.searchForm ? this.searchForm.value.myJobsOnly : false;
+  private get showClosedOpps(): boolean {
+    return this.searchForm ? this.searchForm.value.showClosedOpps : false;
+  }
+
+  private get showInactiveOpps(): boolean {
+    return this.searchForm ? this.searchForm.value.showInactiveOpps : false;
+  }
+
+  private get myOppsOnly(): boolean {
+    return this.searchForm ? this.searchForm.value.myOppsOnly : false;
   }
 
   get SearchOppsBy() {
     return SearchOppsBy;
   }
 
-  private get selectedStages(): string[] {
+  get selectedStages(): string[] {
     return this.searchForm ? this.searchForm.value.selectedStages : "";
+  }
+
+  private savedStateKey(): string {
+    //This key is constructed from the combination of inputs which are associated with each tab
+    // in home.component.html
+    //This key is used to store the last state associated with each tab.
+
+    //The standard key is "BrowseKey" + "Jobs" +
+    // the search by (corresponding to the specific displayed tab)
+    let key = this.savedStateKeyPrefix
+      + "Jobs"
+      + SearchOppsBy[this.searchBy];
+
+    return key
   }
 
   search() {
@@ -111,6 +147,11 @@ export class JobsComponent implements OnInit {
     //Remember sort
     this.localStorageService.set(this.savedStateKey()+this.sortFieldSuffix, this.sortField);
     this.localStorageService.set(this.savedStateKey()+this.sortDirectionSuffix, this.sortDirection);
+
+    //Remember options
+    this.localStorageService.set(this.savedStateKey()+this.myOppsOnlySuffix, this.myOppsOnly);
+    this.localStorageService.set(this.savedStateKey()+this.showClosedOppsSuffix, this.showClosedOpps);
+    this.localStorageService.set(this.savedStateKey()+this.showInactiveOppsSuffix, this.showInactiveOpps);
 
     let req = new SearchJobRequest();
     req.keyword = this.keyword;
@@ -139,10 +180,23 @@ export class JobsComponent implements OnInit {
         break;
 
       case SearchOppsBy.mine:
-        if (this.myJobsOnly) {
+        if (this.myOppsOnly) {
           req.ownedByMe = true;
         } else {
           req.ownedByMyPartner = true;
+        }
+
+        //Default - filters out closed opps and only includes active stages
+        req.sfOppClosed = false;
+        req.activeStages = true;
+
+        if (this.showInactiveOpps) {
+          //Turn off the active stages filter
+          req.activeStages = false;
+        }
+
+        if (this.showClosedOpps) {
+          req.sfOppClosed = true;
         }
         break;
 
@@ -194,20 +248,6 @@ export class JobsComponent implements OnInit {
     .subscribe(() => {
       this.search();
     });
-  }
-
-  private savedStateKey(): string {
-    //This key is constructed from the combination of inputs which are associated with each tab
-    // in home.component.html
-    //This key is used to store the last state associated with each tab.
-
-    //The standard key is "BrowseKey" + "Jobs" +
-    // the search by (corresponding to the specific displayed tab)
-    let key = this.savedStateKeyPrefix
-      + "Jobs"
-      + SearchOppsBy[this.searchBy];
-
-    return key
   }
 
   toggleSort(column: string) {

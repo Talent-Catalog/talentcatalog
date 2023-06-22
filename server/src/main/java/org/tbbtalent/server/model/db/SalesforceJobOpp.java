@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -58,13 +57,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "salesforce_job_opp")
 @SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
-public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
-
-    /**
-     * ID of copied Salesforce job opportunity is also used as id of this copy.
-     */
-    @Column(name = "sf_job_opp_id")
-    private String sfId;
+public class SalesforceJobOpp extends AbstractOpportunity {
 
     //TODO JC accepting DB field is no longer used and can be removed
 
@@ -75,16 +68,6 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "jobOpp", cascade = CascadeType.MERGE)
     private Set<CandidateOpportunity> candidateOpportunities = new HashSet<>();
-
-    /**
-     * True if opportunity is closed
-     */
-    private boolean closed;
-
-    /**
-     * True if opportunity is won
-     */
-    private boolean won;
 
     /**
      * Email to use for enquiries about this job.
@@ -175,16 +158,6 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      */
     @Enumerated(EnumType.STRING)
     private JobOpportunityStage stage;
-
-    /**
-     * Stage of job opportunity expressed as number - 0 being first stage.
-     * <p/>
-     * Used for sorting by stage.
-     * <p/>
-     * This is effectively a computed field, computed by calling the ordinal() method of the
-     * {@link #stage} enum.
-     */
-    private int stageOrder;
 
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:

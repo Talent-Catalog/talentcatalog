@@ -22,11 +22,12 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
+import org.tbbtalent.server.request.candidate.opportunity.OpportunityParams;
 
 @Getter
 @Setter
 @ToString
-public class UpdateJobRequest {
+public class UpdateJobRequest extends OpportunityParams {
 
     /**
      * Url link to Salesforce EmployerJob opportunity

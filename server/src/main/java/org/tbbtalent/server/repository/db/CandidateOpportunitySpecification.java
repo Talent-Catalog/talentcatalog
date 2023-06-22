@@ -65,6 +65,8 @@ public class CandidateOpportunitySpecification {
                         ));
             }
 
+            //TODO CandidateOpportunitySpecification and JobSpecification are both opportunity
+            //specifications and duplicate a lot of code which should be refactored out.
 
             final Boolean showActiveStages = request.getActiveStages();
             final Boolean showClosed = request.getSfOppClosed();
