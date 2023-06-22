@@ -3,10 +3,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  CandidateOpportunity,
-  CandidateOpportunityStage
-} from "../../../model/candidate-opportunity";
+import {CandidateOpportunity, CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-edit-candidate-opp',

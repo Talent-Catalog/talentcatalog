@@ -14,13 +14,19 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<!-- EXISTING RECORDS -->
-<div class="card visa-intake">
-  <div class="card-header">
-    Visa checks
-    <span *ngIf="loading">
-          <i class="fas fa-spinner fa-spin"></i>
-    </span>
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<div *ngIf="!loading" id="VisaIntakes">
+  <div class="d-flex justify-content-between mb-2 ms-2">
+    <div class="d-flex flex-column">
+      <h5>Visa Eligibility Checks</h5>
+    </div>
+
     <div class="float-end" *ngIf="!loading">
       <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
         <i class="fas fa-plus"></i> Add Country
@@ -28,63 +34,56 @@
     </div>
   </div>
 
-  <div class="card-body" *ngIf="!loading">
-    <div *ngIf="error">
-      {{error}}
-    </div>
+  <hr/>
+
+  <div *ngIf="candidateIntakeData?.candidateVisaChecks.length == 0">
+    <p class="small text-muted text-center fw-light">No visa checks added - add a country to begin</p>
+  </div>
+</div>
+
+<div class="row" *ngIf="!loading">
+  <div class="mx-auto col-10 col-md-8 col-lg-6">
     <form [formGroup]="form">
       <div *ngFor="let visaCheck of candidateIntakeData?.candidateVisaChecks; let i = index;">
-        <div class="mb-3 align-items-center">
-          <input type="radio" [value]="i"
-                 name="visaCountry" formControlName="visaCountry"
-                 (change)="changeVisaCountry($event)">
-          {{visaCheck?.country?.name}}
-          <button class="float-end btn" (click)="deleteRecord(i)">
-            <span class="align-top">
-              <i class="fas fa-trash"></i>
-            </span>
-          </button>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" [value]="i" name="visaCountry" [id]="'radio'+i"
+                 [formControlName]="'visaCountry'" (change)="changeVisaCountry($event)">
+          <label class="form-check-label fw-light" [for]="'radio'+i">{{visaCheck?.country?.name}}</label>
+          <a class="link-secondary float-end" (click)="deleteRecord(i)"><i class="fas fa-trash"></i></a>
         </div>
       </div>
     </form>
-
-    <hr *ngIf="candidateIntakeData?.candidateVisaChecks.length > 0">
-
-    <div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
-      <app-visa-check-au *ngSwitchCase="'Australia'"
-                         [candidate]="candidate"
-                         [candidateIntakeData]="candidateIntakeData"
-                         [visaRecord]="getVisaCheck('Australia')"
-      >
-      </app-visa-check-au>
-
-      <app-visa-check-ca *ngSwitchCase="'Canada'"
-                         [candidate]="candidate"
-                         [visaRecord]="getVisaCheck('Canada')"
-                         [selectedIndex]="selectedIndex"
-      >
-      </app-visa-check-ca>
-
-      <app-visa-check-nz *ngSwitchCase="'New Zealand'"
-                         [candidate]="candidate"
-                         [visaRecord]="getVisaCheck('New Zealand')"
-                         [selectedIndex]="selectedIndex"
-      >
-      </app-visa-check-nz>
-
-      <app-visa-check-uk *ngSwitchCase="'United Kingdom'"
-                         [candidate]="candidate"
-                         [visaRecord]="getVisaCheck('United Kingdom')"
-                         [selectedIndex]="selectedIndex"
-      >
-      </app-visa-check-uk>
-
-      <div *ngSwitchDefault>
-        //todo error!
-        {{selectedCountry}}
-      </div>
-    </div>
-
   </div>
 </div>
+
+
+<hr *ngIf="candidateIntakeData?.candidateVisaChecks.length > 0">
+
+<div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
+  <app-visa-check-au *ngSwitchCase="'Australia'"
+                     [candidate]="candidate"
+                     [candidateIntakeData]="candidateIntakeData">
+  </app-visa-check-au>
+
+  <app-visa-check-ca *ngSwitchCase="'Canada'"
+                     [candidate]="candidate"
+                     [candidateIntakeData]="candidateIntakeData">
+  </app-visa-check-ca>
+
+  <app-visa-check-nz *ngSwitchCase="'New Zealand'"
+                     [candidate]="candidate"
+                     [candidateIntakeData]="candidateIntakeData">
+  </app-visa-check-nz>
+
+  <app-visa-check-uk *ngSwitchCase="'United Kingdom'"
+                     [candidate]="candidate"
+                     [candidateIntakeData]="candidateIntakeData">
+  </app-visa-check-uk>
+
+  <div *ngSwitchDefault>
+    //todo error!
+    {{selectedCountry}}
+  </div>
+</div>
+
 

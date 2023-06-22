@@ -1,10 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {isCandidateOpportunity} from "../../../model/candidate-opportunity";
-import {
-  getOpportunityStageName,
-  Opportunity,
-  OpportunityProgressParams
-} from "../../../model/opportunity";
+import {getOpportunityStageName, Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
 import {AuthService} from "../../../services/auth.service";
 import {isJob} from "../../../model/job";
 import {EditOppComponent} from "../../opportunity/edit-opp/edit-opp.component";

@@ -1,8 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {
-  CandidateOpportunityStage,
-  isCandidateOpportunity
-} from "../../../model/candidate-opportunity";
+import {CandidateOpportunityStage, isCandidateOpportunity} from "../../../model/candidate-opportunity";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";

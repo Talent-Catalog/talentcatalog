@@ -305,6 +305,8 @@ export interface CandidateVisa {
   updatedBy?: User;
   updatedDate?: number;
   visaEligibilityAssessment?: YesNo;
+  pathwayAssessment?: YesNo;
+  pathwayAssessmentNotes?: string;
   candidateVisaJobChecks?: CandidateVisaJobCheck[];
 
 }

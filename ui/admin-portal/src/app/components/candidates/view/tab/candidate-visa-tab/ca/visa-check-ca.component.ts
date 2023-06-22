@@ -16,8 +16,16 @@
 
 import {Component, Input} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../../util/intake/IntakeComponentTabBase';
-import {CandidateVisa} from '../../../../../../model/candidate';
+import {CandidateIntakeData, CandidateVisa} from '../../../../../../model/candidate';
 import {FormGroup} from '@angular/forms';
+import {CandidateService} from "../../../../../../services/candidate.service";
+import {CountryService} from "../../../../../../services/country.service";
+import {EducationLevelService} from "../../../../../../services/education-level.service";
+import {OccupationService} from "../../../../../../services/occupation.service";
+import {LanguageLevelService} from "../../../../../../services/language-level.service";
+import {CandidateNoteService} from "../../../../../../services/candidate-note.service";
+import {AuthService} from "../../../../../../services/auth.service";
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-visa-check-ca',
@@ -26,12 +34,41 @@ import {FormGroup} from '@angular/forms';
 })
 export class VisaCheckCaComponent extends IntakeComponentTabBase {
   @Input() selectedIndex: number;
-  @Input() visaRecord: CandidateVisa;
+  @Input() candidateIntakeData: CandidateIntakeData;
+  visaRecord: CandidateVisa;
   form: FormGroup;
+
+  public tbbEligibilityHide = true;
+  public caEligibilityHide = true;
+  public healthAssessHide = true;
+  public characterAssessHide = true;
+  public securityAssessHide = true;
+
+  constructor(candidateService: CandidateService,
+              countryService: CountryService,
+              educationLevelService: EducationLevelService,
+              occupationService: OccupationService,
+              languageLevelService: LanguageLevelService,
+              noteService: CandidateNoteService,
+              authService: AuthService,
+              private localStorageService: LocalStorageService) {
+    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
+  }
+
+  onDataLoaded(init: boolean) {
+    if (init) {
+      this.visaRecord = this.candidateIntakeData?.candidateVisaChecks?.find(v => v.country.id == 6216);
+      this.setSelectedVisaCheckIndex(this.candidateIntakeData?.candidateVisaChecks?.indexOf(this.visaRecord));
+    }
+  }
 
   private get myRecord(): CandidateVisa {
     return this.candidateIntakeData.candidateVisaChecks ?
       this.candidateIntakeData.candidateVisaChecks[this.selectedIndex]
       : null;
+  }
+
+  private setSelectedVisaCheckIndex(index: number) {
+    this.localStorageService.set('VisaCheckIndex', index);
   }
 }

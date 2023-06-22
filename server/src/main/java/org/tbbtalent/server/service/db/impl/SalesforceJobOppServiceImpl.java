@@ -16,12 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.tbbtalent.server.util.SalesforceHelper.parseSalesforceOffsetDateTime;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.Collection;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -39,6 +33,13 @@ import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.util.SalesforceHelper;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Collection;
+import java.util.List;
+
+import static org.tbbtalent.server.util.SalesforceHelper.parseSalesforceOffsetDateTime;
 
 @Service
 public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
