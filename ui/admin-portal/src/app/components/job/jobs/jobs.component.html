@@ -74,7 +74,7 @@
 
       <!--        Job records    -->
       <tr *ngFor="let job of results?.content" (click)="selectCurrent(job)"
-          [ngClass]="{'current': currentJob?.id == job.id}">
+          [ngClass]="{'current': currentOpp?.id == job.id}">
         <td title="{{job.country}}">
           {{job.name| truncate: 36}}
           <a [routerLink]="['/job',job.id]">
