@@ -40,6 +40,7 @@ export abstract class FilteredOppsComponent<T extends Opportunity> implements On
 
   loading: boolean;
   error;
+  myOppsOnlyLabel: "My opps only";
   myOppsOnlyTip = "Only show cases that I am the contact for";
   pageNumber: number;
   pageSize: number;
@@ -51,7 +52,9 @@ export abstract class FilteredOppsComponent<T extends Opportunity> implements On
   searchFilter: ElementRef;
 
   searchForm: FormGroup;
+  showClosedOppsLabel = "Show closed opps";
   showClosedOppsTip = "Show cases that have been closed";
+  showInactiveOppsLabel = "Show inactive opps";
   showInactiveOppsTip = "Show cases that are no longer active - for example if they have already relocated";
 
   //Default sort opps in descending order of nextDueDate
