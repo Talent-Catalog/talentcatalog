@@ -38,9 +38,6 @@
           <button (click)="visaCanada.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>
       </div>
-
-
-
     </div>
   </div>
 
@@ -208,8 +205,18 @@
         </ng-template>
       </ngb-panel>
 
+      <ngb-panel id="visa-jobs" title="Job Specific Assessment">
+        <ng-template ngbPanelContent>
+          <app-candidate-visa-job
+            [
+          >
+          </app-candidate-visa-job>
+        </ng-template>
+      </ngb-panel>
+
     </ngb-accordion>
   </div>
+
 </div>
 
 <!-- ALTERNATIVE FORM LAYOUT WITH HIDE/SHOW BUTTONS (NOT ACCORDION) -->
