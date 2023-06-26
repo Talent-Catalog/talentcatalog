@@ -23,7 +23,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -83,6 +86,27 @@ public class CandidateTokenProvider implements InitializingBean {
     }
 
     /**
+     * Generates a JWT token string encoding a candidate number. The token will expire after the
+     * given number of days.
+     * @param claims A candidate number, occupations to include
+     * @param expiryTimeInDays Token expiry in days from now
+     * @return Candidate token string
+     */
+    public String generateCvToken(CvClaims claims, long expiryTimeInDays) {
+
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expiryTimeInDays * 24 * 60 * 60 * 1000);
+
+        return Jwts.builder()
+                .setSubject(claims.candidateNumber())
+                .claim("RestrictCandidateOccupations", String.valueOf(claims.restrictCandidateOccupations()))
+                .claim("CandidateOccupations", claims.candidateOccupationIds())
+                .setIssuedAt(new Date())
+                .setExpiration(expiryDate)
+                .signWith(jwtSecret, SignatureAlgorithm.HS256)
+                .compact();
+    }
+    /**
      * Retrieves the candidate number from the token, otherwise throws exceptions if the token
      * is not valid or has expired.
      * @param token Candidate token string
@@ -98,6 +122,37 @@ public class CandidateTokenProvider implements InitializingBean {
 
         return claims.getSubject();
     }
+
+    /**
+     * Retrieves the candidate number and a list of candidate occupations from the token, otherwise throws
+     * exceptions if the token is not valid or has expired.
+     * @param token Candidate token string
+     * @return CvClaims
+     * @throws JwtException if there are any problems with the token.
+     */
+    public CvClaims getCvClaimsFromToken(String token) throws JwtException {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(jwtSecret)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        boolean restrictCandidateOccupations = "true".equals(claims.get("RestrictCandidateOccupations", String.class));
+        ArrayList ids = claims.get("CandidateOccupations", ArrayList.class);
+
+        return new CvClaims(claims.getSubject(), restrictCandidateOccupations, toList(ids));
+    }
+
+    private List<Long> toList(ArrayList ids) {
+        ArrayList<Long> longs = new ArrayList<>();
+        if( ids != null) {
+            for (Object id : ids) {
+                longs.add(((Number) id).longValue());
+            }
+        }
+        return longs;
+    }
+
 
     void setJwtSecretBase64(String jwtSecretBase64) {
         this.jwtSecretBase64 = jwtSecretBase64;

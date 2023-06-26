@@ -55,6 +55,8 @@ dependencies {
     // module jdk.compiler does not export com.sun.tools.javac.processing to unnamed module @0x3dd0aa6
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
