@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -32,9 +34,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.security.*;
 import org.tbbtalent.server.service.db.*;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +50,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -57,6 +59,8 @@ import static org.tbbtalent.server.api.admin.AdminApiTestUtil.getCandidate;
 import static org.tbbtalent.server.api.admin.AdminApiTestUtil.listOfCandidates;
 
 /**
+ * Unit tests for Candidate Admin Api endpoints.
+ *
  * @author sadatmalik
  */
 @WebMvcTest(CandidateAdminApi.class)
@@ -83,9 +87,9 @@ class CandidateAdminApiTest extends ApiTestBase {
     private static final String EXPORT_CSV_PATH = "/export/csv";
     private static final String DOWNLOAD_CV_PDF_BY_ID_PATH = "/{id}/cv.pdf";
     private static final String CREATE_CANDIDATE_FOLDER_BY_ID_PATH = "/{id}/create-folder";
-    private static final String UPDATE_SALESFORCE_BY_ID_PATH = "/{id}/update-sf";
-    private static final String UPDATE_SALESFORCE_PATH = "/update-sf";
-    private static final String UPDATE_SALESFORCE_BY_LIST_PATH = "/update-sf-by-list";
+    private static final String UPDATE_LIVE_CANDIDATE_BY_ID_PATH = "/{id}/update-live";
+    private static final String UPDATE_OPPS_FROM_CANDIDATE_PATH = "/update-opps";
+    private static final String UPDATE_OPPS_FROM_CANDIDATE_LIST_PATH = "/update-opps-by-list";
     private static final String UPDATE_INTAKE_DATA_BY_ID_PATH = "/{id}/intake";
     private static final String RESOLVE_TASKS_PATH = "/resolve-tasks";
     private static final String GENERATE_TOKEN_PATH = "/token/{cn}";
@@ -100,6 +104,7 @@ class CandidateAdminApiTest extends ApiTestBase {
     private final Candidate candidate = getCandidate();
 
     @MockBean CandidateService candidateService;
+    @MockBean CandidateOpportunityService candidateOpportunityService;
     @MockBean CandidateSavedListService candidateSavedListService;
     @MockBean SavedListService savedListService;
     @MockBean SavedSearchService savedSearchService;
@@ -248,6 +253,309 @@ class CandidateAdminApiTest extends ApiTestBase {
         verify(candidateService).updateCandidateLinks(anyLong(), any(UpdateCandidateLinksRequest.class));
     }
 
+    @Test
+    @DisplayName("update status succeeds")
+    void updateStatusSucceeds() throws Exception {
+        UpdateCandidateStatusRequest request = new UpdateCandidateStatusRequest();
+
+        updateCandidate(UPDATE_STATUS_PATH, objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateCandidateStatus(any(UpdateCandidateStatusRequest.class));
+    }
+
+    @Test
+    @DisplayName("update contact details by id succeeds")
+    void updateContactDetailsByIdSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateRequest request = new UpdateCandidateRequest();
+
+        given(candidateService
+                .updateCandidate(anyLong(), any(UpdateCandidateRequest.class)))
+                .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+                UPDATE_CONTACT_DETAILS_BY_ID_PATH.replace("{id}", Long.toString(id)),
+                objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateCandidate(anyLong(), any(UpdateCandidateRequest.class));
+    }
+
+    @Test
+    @DisplayName("update additional info by id succeeds")
+    void updateAdditionalInfoByIdSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateAdditionalInfoRequest request = new UpdateCandidateAdditionalInfoRequest();
+
+        given(candidateService
+                .updateCandidateAdditionalInfo(anyLong(), any(UpdateCandidateAdditionalInfoRequest.class)))
+                .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+                UPDATE_ADDITIONAL_INFO_BY_ID_PATH.replace("{id}", Long.toString(id)),
+                objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateCandidateAdditionalInfo(
+                anyLong(), any(UpdateCandidateAdditionalInfoRequest.class));
+    }
+
+    @Test
+    @DisplayName("update shareable notes by id succeeds")
+    void updateShareableNotesByIdSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateShareableNotesRequest request = new UpdateCandidateShareableNotesRequest();
+
+        given(candidateService
+                .updateShareableNotes(anyLong(), any(UpdateCandidateShareableNotesRequest.class)))
+                .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+                UPDATE_SHAREABLE_NOTES_BY_ID_PATH.replace("{id}", Long.toString(id)),
+                objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateShareableNotes(anyLong(), any(UpdateCandidateShareableNotesRequest.class));
+    }
+
+    @Test
+    @DisplayName("update shareable docs by id succeeds")
+    void updateShareableDocsByIdSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateShareableDocsRequest request = new UpdateCandidateShareableDocsRequest();
+
+        given(candidateSavedListService
+                .updateShareableDocs(anyLong(), any(UpdateCandidateShareableDocsRequest.class)))
+                .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+                UPDATE_SHAREABLE_DOCS_BY_ID_PATH.replace("{id}", Long.toString(id)),
+                objectMapper.writeValueAsString(request));
+
+        verify(candidateSavedListService).updateShareableDocs(
+                anyLong(), any(UpdateCandidateShareableDocsRequest.class));
+    }
+
+    @Test
+    @DisplayName("update survey by id succeeds")
+    void updateSurveyByIdSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateSurveyRequest request = new UpdateCandidateSurveyRequest();
+
+        given(candidateService
+                .updateCandidateSurvey(anyLong(), any(UpdateCandidateSurveyRequest.class)))
+                .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+                UPDATE_SURVEY_BY_ID_PATH.replace("{id}", Long.toString(id)),
+                objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateCandidateSurvey(anyLong(), any(UpdateCandidateSurveyRequest.class));
+    }
+
+    @Test
+    @DisplayName("update media by id succeeds")
+    void updateMediaByIdSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateMediaRequest request = new UpdateCandidateMediaRequest();
+
+        given(candidateService
+                .updateCandidateMedia(anyLong(), any(UpdateCandidateMediaRequest.class)))
+                .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+                UPDATE_MEDIA_BY_ID_PATH.replace("{id}", Long.toString(id)),
+                objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateCandidateMedia(anyLong(), any(UpdateCandidateMediaRequest.class));
+    }
+
+    @Test
+    @DisplayName("update registration by id succeeds")
+    void updateRegistrationByIdSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateRegistrationRequest request = new UpdateCandidateRegistrationRequest();
+
+        given(candidateService
+                .updateCandidateRegistration(anyLong(), any(UpdateCandidateRegistrationRequest.class)))
+                .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+                UPDATE_REGISTRATION_BY_ID_PATH.replace("{id}", Long.toString(id)),
+                objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateCandidateRegistration(anyLong(), any(UpdateCandidateRegistrationRequest.class));
+    }
+
+    @Test
+    @DisplayName("delete by id returns true")
+    void deleteByIdReturnsTrue() throws Exception {
+        long id = 99L;
+
+        given(candidateService
+                .deleteCandidate(anyLong()))
+                .willReturn(true);
+
+        mockMvc.perform(delete(BASE_PATH + "/" + id)
+                        .header("Authorization", "Bearer " + "jwt-token"))
+
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", is(true)));
+
+        verify(candidateService).deleteCandidate(anyLong());
+    }
+
+    @Test
+    @DisplayName("delete by id returns false")
+    void deleteByIdReturnsFalse() throws Exception {
+        long id = 99L;
+
+        given(candidateService
+                .deleteCandidate(anyLong()))
+                .willReturn(false);
+
+        mockMvc.perform(delete(BASE_PATH + "/" + id)
+                        .header("Authorization", "Bearer " + "jwt-token"))
+
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", is(false)));
+
+        verify(candidateService).deleteCandidate(anyLong());
+    }
+
+    @Test
+    @DisplayName("export csv succeeds")
+    void exportCsvSucceeds() throws Exception {
+        SearchCandidateRequest request = new SearchCandidateRequest();
+
+        postApiRequest(EXPORT_CSV_PATH, objectMapper.writeValueAsString(request));
+
+        verify(savedSearchService).exportToCsv(any(SearchCandidateRequest.class), any(PrintWriter.class));
+    }
+
+    @Test
+    @DisplayName("download candidate cv pdf succeeds")
+    void downloadCandidateCvPdfSucceeds() throws Exception {
+        long id = 99L;
+        DownloadCvRequest request = new DownloadCvRequest();
+        request.setCandidateId(id);
+        request.setShowName(true);
+        request.setShowContact(true);
+
+        Resource report = new ByteArrayResource("report".getBytes());
+
+        given(candidateService
+                .getCandidate(anyLong()))
+                .willReturn(candidate);
+
+        given(candidateService
+                .generateCv(any(Candidate.class), anyBoolean(), anyBoolean()))
+                .willReturn(report);
+
+        postApiRequest(
+                DOWNLOAD_CV_PDF_BY_ID_PATH.replace("{id}", Long.toString(id)),
+                objectMapper.writeValueAsString(request));
+
+        verify(candidateService).getCandidate(anyLong());
+        verify(candidateService).generateCv(any(Candidate.class), anyBoolean(), anyBoolean());
+    }
+
+    @Test
+    @DisplayName("create candidate folder by id succeeds")
+    void createCandidateFolderByIdSucceeds() throws Exception {
+        long id = 99L;
+
+        given(candidateService
+                .createCandidateFolder(anyLong()))
+                .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+                CREATE_CANDIDATE_FOLDER_BY_ID_PATH.replace("{id}", Long.toString(id)), "");
+
+        verify(candidateService).createCandidateFolder(anyLong());
+    }
+
+    @Test
+    @DisplayName("create update live candidate by id succeeds")
+    void createUpdateLiveCandidateByIdSucceeds() throws Exception {
+        long id = 99L;
+
+        given(candidateService
+                .createUpdateSalesforce(id))
+                .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+                UPDATE_LIVE_CANDIDATE_BY_ID_PATH.replace("{id}", Long.toString(id)), "");
+
+        verify(candidateService).createUpdateSalesforce(id);
+    }
+
+    @Test
+    @DisplayName("create update opps from candidate succeeds")
+    void createUpdateOppsFromCandidateSucceeds() throws Exception {
+        UpdateCandidateOppsRequest request = new UpdateCandidateOppsRequest();
+
+        updateCandidate(UPDATE_OPPS_FROM_CANDIDATE_PATH, objectMapper.writeValueAsString(request));
+
+        verify(candidateOpportunityService).createUpdateCandidateOpportunities(any(UpdateCandidateOppsRequest.class));
+    }
+
+    @Test
+    @DisplayName("create update opps from candidate list succeeds")
+    void createUpdateOppsFromCandidateListSucceeds() throws Exception {
+        UpdateCandidateListOppsRequest request = new UpdateCandidateListOppsRequest();
+        request.setSavedListId(786L);
+        request.setCandidateOppParams(new CandidateOpportunityParams());
+
+        updateCandidate(UPDATE_OPPS_FROM_CANDIDATE_LIST_PATH, objectMapper.writeValueAsString(request));
+
+        verify(savedListService).createUpdateSalesforce(any(UpdateCandidateListOppsRequest.class));
+    }
+
+    @Test
+    @DisplayName("update intake data by id succeeds")
+    void updateIntakeDataByIdSucceeds() throws Exception {
+        long id = 99L;
+        CandidateIntakeDataUpdate request = new CandidateIntakeDataUpdate();
+
+        updateCandidate(
+                UPDATE_INTAKE_DATA_BY_ID_PATH.replace("{id}", Long.toString(id)),
+                objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateIntakeData(anyLong(), any(CandidateIntakeDataUpdate.class));
+    }
+
+    @Test
+    @DisplayName("resolve outstanding tasks succeeds")
+    void resolveOutstandingTasksSucceeds() throws Exception {
+        ResolveTaskAssignmentsRequest request = new ResolveTaskAssignmentsRequest();
+
+        updateCandidate(RESOLVE_TASKS_PATH, objectMapper.writeValueAsString(request));
+
+        verify(candidateService).resolveOutstandingTaskAssignments(any(ResolveTaskAssignmentsRequest.class));
+    }
+
+    @Test
+    @DisplayName("generate token succeeds")
+    void generateTokenSucceeds() throws Exception {
+        String cn = "99";
+        long expiryTimeDays = 365L;
+        String token = "token";
+
+        given(candidateTokenProvider.generateToken(cn, expiryTimeDays))
+                .willReturn(token);
+
+        mockMvc.perform(get(BASE_PATH + GENERATE_TOKEN_PATH.replace("{cn}", cn))
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", is(token)));
+
+        verify(candidateTokenProvider).generateToken(cn, expiryTimeDays);
+    }
+
     private void postSearchRequestAndVerifyResponse(String path, String body) throws Exception {
         mockMvc.perform(post(BASE_PATH + path)
                         .header("Authorization", "Bearer " + "jwt-token")
@@ -264,6 +572,16 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.hasNext", is(false)))
                 .andExpect(jsonPath("$.hasPrevious", is(false)))
                 .andExpect(jsonPath("$.content", notNullValue()));
+    }
+
+    private void postApiRequest(String path, String body) throws Exception {
+        mockMvc.perform(post(BASE_PATH + path)
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     private void getCandidateAndVerifyResponse(String path) throws Exception {
@@ -303,6 +621,16 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.candidateDestinations", hasSize(2)))
                 .andExpect(jsonPath("$.candidateDestinations[0].country.name", is("Canada")))
                 .andExpect(jsonPath("$.candidateDestinations[1].country.name", is("UK")));
+    }
+
+    private void updateCandidate(String path, String body) throws Exception {
+        mockMvc.perform(put(BASE_PATH + path)
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     private void updateCandidateAndVerifyResponse(String path, String body) throws Exception {
