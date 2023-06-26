@@ -183,17 +183,6 @@ public class JobServiceImpl implements JobService {
                         s, CandidateOpportunityStage.notFitForRole);
                 });
 
-        //Candidates who have had an offer and are at the acceptance stage before job is closed
-        //with noInterest or noSuitableCandidates are closed with candidateRejectsOffer
-        addClosingLogic(JobOpportunityStage.noInterest,
-            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
-        addClosingLogic(JobOpportunityStage.noSuitableCandidates,
-            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
-        addClosingLogic(JobOpportunityStage.noJobOffer,
-            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
-        addClosingLogic(JobOpportunityStage.noVisa,
-            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
-
         //Override cases after twoWayReview to close with noJobOffer
         addClosingLogic(JobOpportunityStage.noInterest,
             CandidateOpportunityStage.twoWayReview, CandidateOpportunityStage.noJobOffer);
@@ -211,6 +200,17 @@ public class JobServiceImpl implements JobService {
             CandidateOpportunityStage.twoWayReview, CandidateOpportunityStage.noJobOffer);
         addClosingLogic(JobOpportunityStage.noVisa,
             CandidateOpportunityStage.offer, CandidateOpportunityStage.noJobOffer);
+
+        //Candidates who have had an offer and are at the acceptance stage before job is closed
+        //for any reason  are closed with candidateRejectsOffer (because they didn't accept it).
+        addClosingLogic(JobOpportunityStage.noInterest,
+            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
+        addClosingLogic(JobOpportunityStage.noSuitableCandidates,
+            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
+        addClosingLogic(JobOpportunityStage.noJobOffer,
+            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
+        addClosingLogic(JobOpportunityStage.noVisa,
+            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
 
         //Candidates in later stages when job is closed with noVisa are set to noVisa
         addClosingLogic(JobOpportunityStage.noVisa,
