@@ -38,10 +38,18 @@ export abstract class FilteredOppsComponent<T extends Opportunity> implements On
 
   currentOpp: T;
 
+  /*
+   * These are default values which will normally be overridden in subclasses
+   */
+  myOppsOnlyLabel = "My opps only";
+  myOppsOnlyTip = "Only show opps that I am the contact for";
+  showClosedOppsLabel = "Show closed opps";
+  showClosedOppsTip = "Show opps that have been closed";
+  showInactiveOppsLabel = "Show inactive opps";
+  showInactiveOppsTip = "Show opps that are no longer active - for example if they have already relocated";
+
   loading: boolean;
   error;
-  myOppsOnlyLabel: "My opps only";
-  myOppsOnlyTip = "Only show cases that I am the contact for";
   pageNumber: number;
   pageSize: number;
 
@@ -52,10 +60,6 @@ export abstract class FilteredOppsComponent<T extends Opportunity> implements On
   searchFilter: ElementRef;
 
   searchForm: FormGroup;
-  showClosedOppsLabel = "Show closed opps";
-  showClosedOppsTip = "Show cases that have been closed";
-  showInactiveOppsLabel = "Show inactive opps";
-  showInactiveOppsTip = "Show cases that are no longer active - for example if they have already relocated";
 
   //Default sort opps in descending order of nextDueDate
   sortField = 'nextStepDueDate';

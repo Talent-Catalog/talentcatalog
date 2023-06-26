@@ -17,6 +17,14 @@ import {SearchOpportunityRequest} from "../../../model/candidate-opportunity";
 })
 export class JobsComponent extends FilteredOppsComponent<Job> {
 
+  //Override text to replace "opps" text with "jobs"
+  myOppsOnlyLabel = "My jobs only";
+  myOppsOnlyTip = "Only show jobs that I manage";
+  showClosedOppsLabel = "Show closed jobs";
+  showClosedOppsTip = "Show jobs that have been closed";
+  showInactiveOppsLabel = "Show inactive jobs";
+  showInactiveOppsTip = "Show jobs that are not currently accepting new candidates";
+
   constructor(
     fb: FormBuilder,
     authService: AuthService,

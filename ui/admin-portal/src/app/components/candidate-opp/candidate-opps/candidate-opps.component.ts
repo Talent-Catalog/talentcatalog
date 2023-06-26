@@ -14,8 +14,8 @@ import {FilteredOppsComponent} from "../../opportunity/filtered-opps/filtered-op
 
 @Component({
   selector: 'app-candidate-opps',
-  templateUrl: '../../opportunity/filtered-opps/filtered-opps.component.html',
-  styleUrls: ['../../opportunity/filtered-opps/filtered-opps.component.scss']
+  templateUrl: './candidate-opps.component.html',
+  styleUrls: ['./candidate-opps.component.scss']
 })
 export class CandidateOppsComponent extends FilteredOppsComponent<CandidateOpportunity> {
   /**
@@ -30,6 +30,15 @@ export class CandidateOppsComponent extends FilteredOppsComponent<CandidateOppor
    * This is useful when you are displaying the Jobs that a candidate has gone for.
    */
   @Input() showJobOppName: boolean = false;
+
+  //Override text to replace "opps" text with "cases"
+  myOppsOnlyLabel = "My cases only";
+  myOppsOnlyTip = "Only show cases that I am the contact for";
+  showClosedOppsLabel = "Show closed cases";
+  showClosedOppsTip = "Show cases that have been closed";
+  showInactiveOppsLabel = "Show inactive cases";
+  showInactiveOppsTip = "Show cases that are no longer active - " +
+    "for example if the candidate has already relocated";
 
   constructor(
     fb: FormBuilder,

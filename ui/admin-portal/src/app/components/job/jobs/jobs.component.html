@@ -4,122 +4,131 @@
 <div class="alert alert-danger" *ngIf="error">
   {{error}}
 </div>
-<div *ngIf="!loading && !error">
 
-  <div class="searches">
-    <form [formGroup]="searchForm" (ngSubmit)="search()">
-        <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
-          <div>
-            <label class="form-label" [title]="myOppsOnlyTip" for="myOppsOnly">My jobs only</label>
-            <input [title]="myOppsOnlyTip" type="checkbox" formControlName="myOppsOnly" id="myOppsOnly">
-          </div>
-          <div>
-            <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed jobs</label>
-            <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox" [formControlName]="'showClosedOpps'" id="showClosedOpps">
-          </div>
-          <div>
-            <label class="form-label" [title]="showInactiveOppsTip" for="showInactiveOpps">Show inactive jobs</label>
-            <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox" formControlName="showInactiveOpps" id="showInactiveOpps">
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <input #searchFilter type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
-                 id="keyword">
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Stage</label>
-          <ng-select
-            id="stage"
-            [items]="stages"
-            [multiple]="true"
-            [closeOnSelect]="true"
-            [searchable]="false"
-            bindLabel="stringValue"
-            bindValue="key"
-            [formControlName]="'selectedStages'">
-          </ng-select>
-        </div>
-    </form>
-  </div>
-
-  <div class="table-wrapper">
-    <table class="table table-hover">
-
-      <!--          Header-->
-      <thead class="table-light">
-      <tr>
-        <th (click)="toggleSort('name')">
-          <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          Name
-        </th>
-        <th (click)="toggleSort('stageOrder')">
-          <app-sorted-by [column]="'stageOrder'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          Stage
-        </th>
-
-        <th (click)="toggleSort('createdDate')">
-          <app-sorted-by [column]="'createdDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          Created
-        </th>
-        <th (click)="toggleSort('submissionDueDate')">
-          <app-sorted-by [column]="'submissionDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          Due
-        </th>
-      </tr>
-      </thead>
-
-      <tbody>
-
-      <!--        Job records    -->
-      <tr *ngFor="let job of results?.content" (click)="selectCurrent(job)"
-          [ngClass]="{'current': currentOpp?.id == job.id}">
-        <td title="{{job.country}}">
-          {{job.name| truncate: 36}}
-          <a [routerLink]="['/job',job.id]">
-            <i class="fa-solid fa-briefcase" title="Job"></i>
-          </a>
-        </td>
-        <td title="Contact {{fullUserName(job.contactUser)}}">
-          {{job.stage | truncate: 13}}
-        </td>
-        <td>
-          {{job.createdDate | date}}
-        </td>
-        <td>
-            {{job.submissionDueDate}}
-        </td>
-      </tr>
-
-      </tbody>
-
-    </table>
-
-    <div class="text-muted mb-2 align-middle">
-
-      <ngb-pagination
-        [boundaryLinks]="true"
-        [pageSize]="pageSize"
-        [collectionSize]="results?.totalElements"
-        [(page)]="pageNumber"
-        [maxSize]="5"
-        [ellipses]="true"
-        [rotate]="true"
-        (pageChange)="search()">
-      </ngb-pagination>
-
-      Found {{results?.totalElements}} in total
-    </div>
-
-    <!-- loading -->
-    <div *ngIf="loading">
+<div class="searches" *ngIf="searchBy">
+  <form [formGroup]="searchForm" (ngSubmit)="search()">
+    <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
       <div>
-        <i class="fas fa-spinner fa-spin"></i> Loading...
+        <label class="form-label" [title]="myOppsOnlyTip"
+               for="myOppsOnly">{{myOppsOnlyLabel}}</label>
+        <input [title]="myOppsOnlyTip" type="checkbox" formControlName="myOppsOnly" id="myOppsOnly">
+      </div>
+      <div>
+        <label class="form-label" [title]="showClosedOppsTip"
+               for="showClosedOpps">{{showClosedOppsLabel}}</label>
+        <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox"
+               formControlName="showClosedOpps" id="showClosedOpps">
+      </div>
+      <div>
+        <label class="form-label" [title]="showInactiveOppsTip"
+               for="showInactiveOpps">{{showInactiveOppsLabel}}</label>
+        <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox"
+               formControlName="showInactiveOpps" id="showInactiveOpps">
       </div>
     </div>
 
+    <div class="mb-3">
+      <input #searchFilter type="text" class="form-control" placeholder="Search..."
+             aria-label="Search" formControlName="keyword"
+             id="keyword">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Stage</label>
+      <ng-select
+        id="stage"
+        [items]="stages"
+        [multiple]="true"
+        [closeOnSelect]="true"
+        [searchable]="false"
+        bindLabel="stringValue"
+        bindValue="key"
+        formControlName="selectedStages">
+      </ng-select>
+    </div>
+  </form>
+</div>
+
+<div class="card" *ngIf="!loading">
+  <div class="card-body">
+    <div class="table-wrapper">
+      <table class="table table-hover">
+        <!--          Header-->
+        <thead class="table-light">
+        <tr>
+          <th (click)="toggleSort('name')">
+            <app-sorted-by [column]="'name'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"></app-sorted-by>
+            Name
+          </th>
+          <th (click)="toggleSort('stageOrder')">
+            <app-sorted-by [column]="'stageOrder'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"></app-sorted-by>
+            Stage
+          </th>
+
+          <th (click)="toggleSort('createdDate')">
+            <app-sorted-by [column]="'createdDate'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"></app-sorted-by>
+            Created
+          </th>
+          <th (click)="toggleSort('submissionDueDate')">
+            <app-sorted-by [column]="'submissionDueDate'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"></app-sorted-by>
+            Due
+          </th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <!--        Opp records    -->
+        <tr *ngFor="let opp of results?.content" (click)="selectCurrent(opp)"
+            [ngClass]="{'current': currentOpp?.id == opp.id}">
+          <td title="{{opp.country}}">
+            {{opp.name| truncate: 36}}
+            <a [routerLink]="['/job',opp.id]">
+              <i class="fa-solid fa-briefcase" title="Job"></i>
+            </a>
+          </td>
+          <td title="Contact {{fullUserName(opp.contactUser)}}">
+            {{opp.stage | truncate: 13}}
+          </td>
+          <td>
+            {{opp.createdDate | date}}
+          </td>
+          <td>
+            {{opp.submissionDueDate}}
+          </td>
+        </tr>
+
+        </tbody>
+
+      </table>
+
+      <div class="text-muted mb-2 align-middle">
+
+        <ngb-pagination
+          [boundaryLinks]="true"
+          [pageSize]="pageSize"
+          [collectionSize]="results?.totalElements"
+          [(page)]="pageNumber"
+          [maxSize]="5"
+          [ellipses]="true"
+          [rotate]="true"
+          (pageChange)="search()">
+        </ngb-pagination>
+
+        Found {{results?.totalElements}} in total
+      </div>
+
+      <!-- loading -->
+      <div *ngIf="loading">
+        <div>
+          <i class="fas fa-spinner fa-spin"></i> Loading...
+        </div>
+      </div>
+
+    </div>
   </div>
-
-
 </div>
