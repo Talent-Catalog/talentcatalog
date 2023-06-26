@@ -37,21 +37,21 @@
 
       <!-- LANGUAGE TYPE -->
       <div class="mb-3">
-        <label for="languageId">Language:</label>
+        <label class="form-label" for="languageId">Language:</label>
         <ng-select id="languageId" name="languageId" [formControlName]="'languageId'" [items]="languages"
                    [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- SPOKEN LEVEL -->
       <div class="mb-3">
-        <label for="spokenLevelId">Speaking:</label>
+        <label class="form-label" for="spokenLevelId">Speaking:</label>
         <ng-select id="spokenLevelId" name="spokenLevelId" [formControlName]="'spokenLevelId'" [items]="languageLevels"
                    [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- SPOKEN LEVEL -->
       <div class="mb-3">
-        <label for="writtenLevelId">Reading and Writing:</label>
+        <label class="form-label" for="writtenLevelId">Reading and Writing:</label>
         <ng-select id="writtenLevelId" name="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels"
                    [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>

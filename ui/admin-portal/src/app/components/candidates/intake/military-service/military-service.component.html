@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="militaryService">Have you ever completed military service?</label>
+    <label class="form-label" for="militaryService">Have you ever completed military service?</label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -36,13 +36,13 @@
       <!-- START DATE -->
       <div class="d-flex flex-row">
         <div class="mb-3 flex-fill me-2">
-          <label class="small" for="startDate">Start Date *</label>
+          <label class="small form-label" for="startDate">Start Date *</label>
           <app-month-picker id="startDate" [control]="form.get('militaryStart')"></app-month-picker>
         </div>
 
         <!-- END DATE -->
         <div class="mb-3 flex-fill ms-2">
-          <label class="small" for="endDate">End Date</label>
+          <label class="small form-label" for="endDate">End Date</label>
           <app-month-picker id="endDate" [control]="form.get('militaryEnd')"></app-month-picker>
         </div>
       </div>
@@ -51,14 +51,14 @@
   </div>
   <div *ngIf="serviceSelected">
     <div class="mb-3">
-      <label for="militaryNotes">Notes (e.g. is the candidate exempted from service, paid it off etc).</label>
+      <label class="form-label" for="militaryNotes">Notes (e.g. is the candidate exempted from service, paid it off etc).</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="militaryNotes" [formControlName]="'militaryNotes'"
                 placeholder="" ></textarea>
     </div>
   </div>
   <div class="mb-3">
-    <label for="militaryWanted">
+    <label class="form-label" for="militaryWanted">
       Are you now wanted for military backup?
     </label>
     <ng-select id="militaryWanted" [formControlName]="'militaryWanted'" (clear)="setNoResponse('militaryWanted')"

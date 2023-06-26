@@ -8,7 +8,7 @@ import {JobService} from "../../../services/job.service";
 import {SearchResults} from "../../../model/search-results";
 import {enumOptions} from "../../../util/enum";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {SearchJobsBy} from "../../../model/base";
+import {SearchOppsBy} from "../../../model/base";
 import {indexOfHasId} from "../../../model/saved-search";
 
 @Component({
@@ -17,7 +17,7 @@ import {indexOfHasId} from "../../../model/saved-search";
   styleUrls: ['./jobs.component.scss']
 })
 export class JobsComponent implements OnInit {
-  @Input() searchBy: SearchJobsBy;
+  @Input() searchBy: SearchOppsBy;
   @Output() jobSelection = new EventEmitter();
 
   /*
@@ -50,7 +50,6 @@ export class JobsComponent implements OnInit {
   sortField = 'createdDate';
   sortDirection = 'DESC';
   currentJob: Job;
-  private currentIndex = 0;
   myJobsOnlyTip = "Only show jobs that were created by me";
 
   constructor(
@@ -97,8 +96,8 @@ export class JobsComponent implements OnInit {
     return this.searchForm ? this.searchForm.value.myJobsOnly : false;
   }
 
-  get SearchJobsBy() {
-    return SearchJobsBy;
+  get SearchOppsBy() {
+    return SearchOppsBy;
   }
 
   private get selectedStages(): string[] {
@@ -124,7 +123,7 @@ export class JobsComponent implements OnInit {
     req.stages = this.selectedStages;
 
     switch (this.searchBy) {
-      case SearchJobsBy.live:
+      case SearchOppsBy.live:
 
         //Don't want to see closed jobs
         req.sfOppClosed = false;
@@ -133,7 +132,7 @@ export class JobsComponent implements OnInit {
         req.accepting = true;
         break;
 
-      case SearchJobsBy.mine:
+      case SearchOppsBy.mine:
         if (this.myJobsOnly) {
           req.ownedByMe = true;
         } else {
@@ -141,7 +140,7 @@ export class JobsComponent implements OnInit {
         }
         break;
 
-      case SearchJobsBy.starredByMe:
+      case SearchOppsBy.starredByMe:
         req.starred = true;
         break;
     }
@@ -156,9 +155,9 @@ export class JobsComponent implements OnInit {
           //Select previously selected item if still present in results
           const id: number = this.localStorageService.get(this.savedStateKey());
           if (id) {
-            this.currentIndex = indexOfHasId(id, this.results.content);
-            if (this.currentIndex >= 0) {
-              this.selectCurrent(this.results.content[this.currentIndex]);
+            let currentIndex = indexOfHasId(id, this.results.content);
+            if (currentIndex >= 0) {
+              this.selectCurrent(this.results.content[currentIndex]);
             } else {
               this.selectCurrent(this.results.content[0]);
             }
@@ -200,7 +199,7 @@ export class JobsComponent implements OnInit {
     // the search by (corresponding to the specific displayed tab)
     let key = this.savedStateKeyPrefix
       + "Jobs"
-      + SearchJobsBy[this.searchBy];
+      + SearchOppsBy[this.searchBy];
 
     return key
   }
@@ -222,17 +221,7 @@ export class JobsComponent implements OnInit {
     const id: number = job.id;
     this.localStorageService.set(this.savedStateKey(), id);
 
-    this.currentIndex = indexOfHasId(id, this.results.content);
-
     this.jobSelection.emit(job);
-  }
-
-  truncate(str: string, num: number) {
-    if (str && str.length > num) {
-      return str.slice(0, num) + "...";
-    } else {
-      return str;
-    }
   }
 
   fullUserName(contactUser: User) {

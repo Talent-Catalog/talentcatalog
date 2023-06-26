@@ -20,7 +20,7 @@
 <form [formGroup]="form">
 
   <div class="mb-3">
-    <label [for]="'destinationInterest'+myRecordIndex">
+    <label class="form-label" [for]="'destinationInterest'+myRecordIndex">
       Are you interested in {{country.name}}?
     </label>
     <div class="float-end">
@@ -36,14 +36,14 @@
 
   <div  *ngIf="interest === 'Yes' || interest === 'Unsure'">
     <div class="mb-3">
-      <label [for]="'destinationFamily'+myRecordIndex">Do you have family in {{country.name}} and if so what is the closest relative?</label>
+      <label class="form-label" [for]="'destinationFamily'+myRecordIndex">Do you have family in {{country.name}} and if so what is the closest relative?</label>
       <ng-select [id]="'destinationFamily'+myRecordIndex" [formControlName]="'destinationFamily'" (clear)="setNoResponse('destinationFamily')"
                  [items]="destFamilyOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
     <div  *ngIf="showLocation()">
       <div class="mb-3">
-        <label [for]="'destinationLocation'+myRecordIndex">Where are they located in {{country.name}}?</label>
+        <label class="form-label" [for]="'destinationLocation'+myRecordIndex">Where are they located in {{country.name}}?</label>
         <input type="text"
                class="form-control"
                [id]="'destinationLocation'+myRecordIndex"
@@ -51,7 +51,7 @@
       </div>
     </div>
     <div class="mb-3">
-      <label [for]="'destinationNotes'+myRecordIndex">Notes</label>
+      <label class="form-label" [for]="'destinationNotes'+myRecordIndex">Notes</label>
       <textarea type="text"
                 class="md-textarea-auto form-control"
                 rows="3"

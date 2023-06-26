@@ -30,11 +30,11 @@
 
   <form [formGroup]="occupationForm">
     <div class="mb-3">
-      <label for="name">Name</label>
+      <label class="form-label" for="name">Name</label>
       <input type="text" class="form-control" id="name" formControlName="name">
     </div>
     <div class="mb-3">
-      <label for="status">Status</label>
+      <label class="form-label" for="status">Status</label>
       <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
         <ng-option value="active">Active</ng-option>
         <ng-option value="inactive">Inactive</ng-option>

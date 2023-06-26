@@ -126,6 +126,8 @@ export class CandidateFieldService {
         this.residenceStatusFormatter, null),
       new CandidateFieldInfo("Dependants", "numberDependants", null,
         null, null),
+      new CandidateFieldInfo("NextStep", "candidateOpportunities.nextStep", null,
+      null, null),
       // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
       // new CandidateFieldInfo("Tasks Status", "taskAssignments", null,
       //   this.getOverallTasksStatus, null),

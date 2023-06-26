@@ -88,14 +88,17 @@ public class RootRouteAdminApi {
         //Check for partner tctalent.org subdomains url can redirect to a plain url with p= query
         //eg crs.tctalent.org --> tctalent.org?p=crs
         //NOTE: We don't do this anymore - but keeping code in for now. Can be removed eventually
-        String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
-        if (redirectUrl != null) {
-            storeQueryInfo(request, partnerParam, referrerParam, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
-            if (queryString != null) {
-                redirectUrl += "&" + queryString;
+        if (host != null) {
+            String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
+            if (redirectUrl != null) {
+                storeQueryInfo(request, partnerParam, referrerParam, utmSource, utmMedium,
+                    utmCampaign, utmTerm, utmContent);
+                if (queryString != null) {
+                    redirectUrl += "&" + queryString;
+                }
+                log.info("Redirecting to: " + redirectUrl);
+                return new ModelAndView("redirect:" + redirectUrl);
             }
-            log.info("Redirecting to: " + redirectUrl);
-            return new ModelAndView("redirect:" + redirectUrl);
         }
 
         //Store query information
@@ -119,7 +122,10 @@ public class RootRouteAdminApi {
         }
 
         if (partnerParam != null) {
-            String infoMess = "RootRouting: Host " + host;
+            String infoMess = "RootRouting";
+            if (host != null) {
+                infoMess += ": Host " + host;
+            }
             infoMess += ", Partner specified 'p=" + partnerParam + "'";
             log.info(infoMess);
             log.info("Routing to landing page: " + routingUrl);

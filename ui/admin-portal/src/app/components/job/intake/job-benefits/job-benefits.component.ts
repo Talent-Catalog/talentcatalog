@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
-import {JobService} from "../../../../services/job.service";
 import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
+import {JobService} from "../../../../services/job.service";
 
 @Component({
   selector: 'app-job-benefits',

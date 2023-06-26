@@ -25,7 +25,7 @@
         <i class="fas fa-spinner fa-spin"></i>
     </span>
     <div class="float-end" *ngIf="editable">
-      <button class="btn btn-outline-secondary me-2"
+      <button *ngIf="canAccessSalesforce()" class="btn btn-outline-secondary me-2"
               (click)="createUpdateSalesforce()">
         <i class="fab fa-salesforce"></i> Create/update Salesforce
       </button>
@@ -64,7 +64,7 @@
     </div>
 
     <div class="col-sm-12">
-      <span *ngIf="candidate.sflink">Candidate on Salesforce:
+      <span *ngIf="candidate.sflink && canAccessSalesforce()">Candidate on Salesforce:
         <a [href]="candidate.sflink" target="_blank">
           <i class="fab fa-salesforce"></i>
         </a>

@@ -30,12 +30,45 @@ public class JobIntakeDataBuilderSelector {
     }
 
     public @NotNull DtoBuilder selectBuilder() {
-        return jobIntakeDto();
+        return joiDto();
     }
 
-    private DtoBuilder jobIntakeDto() {
+    private DtoBuilder joiDto() {
         return new DtoBuilder()
-                .add("description")
-                ;
+            .add("id")
+            .add("jobOpp", jobOppDto())
+            .add("salaryRange")
+            .add("recruitmentProcess")
+            .add("employerCostCommitment")
+            .add("location")
+            .add("locationDetails")
+            .add("benefits")
+            .add("languageRequirements")
+            .add("educationRequirements")
+            .add("skillRequirements")
+            .add("employmentExperience")
+            .add("occupationCode")
+            ;
+    }
+
+    private DtoBuilder jobOppDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("sfId")
+            .add("accepting")
+            .add("contactEmail")
+            .add("countryObject", countryDto())
+            .add("createdDate")
+            .add("employer")
+            .add("name")
+            ;
+    }
+
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
     }
 }
+

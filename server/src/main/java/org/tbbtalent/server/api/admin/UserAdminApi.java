@@ -119,6 +119,8 @@ public class UserAdminApi {
                 .add("lastName")
                 .add("email")
                 .add("role")
+                .add("approver", userDtoApprover())
+                .add("purpose")
                 .add("sourceCountries", countryDto())
                 .add("readOnly")
                 .add("status")
@@ -156,6 +158,17 @@ public class UserAdminApi {
                 .add("lastLogin")
                 .add("usingMfa")
                 .add("mfaConfigured")
+                ;
+    }
+
+    /**
+     * For providing limited details of a user's approver (who is another user with admin access)
+     */
+    private DtoBuilder userDtoApprover() {
+        return new DtoBuilder()
+                .add("id")
+                .add("firstName")
+                .add("lastName")
                 ;
     }
 

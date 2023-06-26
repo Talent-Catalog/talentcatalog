@@ -22,9 +22,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 
 /**
- * Request to update the Salesforce opportunity parameters of one or more candidates.
+ * Request to update the candidate opportunity parameters of one or more candidates.
  */
 @Getter
 @Setter
@@ -46,6 +47,6 @@ public class UpdateCandidateOppsRequest {
    * New opportunity params
    */
   @Nullable
-  private SalesforceOppParams salesforceOppParams;
+  private CandidateOpportunityParams candidateOppParams;
 
 }

@@ -33,12 +33,12 @@
     <ng-container *ngIf="type === 'link'">
 
       <div class="mb-3">
-        <label for="name">Attachment Name</label>
+        <label class="form-label" for="name">Attachment Name</label>
         <input class="form-control" id="name" [formControlName]="'name'" type="text">
       </div>
 
       <div class="mb-3">
-        <label for="location">Attachment URL</label>
+        <label class="form-label" for="location">Attachment URL</label>
         <div>
           <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
         </div>
@@ -58,7 +58,7 @@
       </div>
 
       <div class="mb-3">
-          <label for="cv">Is this file a CV?</label>
+          <label class="form-label" for="cv">Is this file a CV?</label>
           <input id="cv" [formControlName]="'cv'" [value]="'cv'" type="checkbox">
           <div class="form-text">If it is a CV its text will be checked in keyword searches.</div>
       </div>

@@ -24,4 +24,6 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 @Setter
 public class SavedListGetRequest extends PagedSearchRequest {
     private String keyword;
+    
+    private Boolean showClosedOpps;
 }

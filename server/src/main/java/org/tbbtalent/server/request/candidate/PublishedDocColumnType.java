@@ -39,5 +39,10 @@ public enum PublishedDocColumnType {
   /**
    * Employers should enter their candidate hiring decision into the column.
    */
-  EmployerCandidateDecision
+  EmployerCandidateDecision,
+
+  /**
+   * A universal use Yes/No dropdown column for data input. Could be input from employers or team members.
+   */
+  YesNoDropdown
 }

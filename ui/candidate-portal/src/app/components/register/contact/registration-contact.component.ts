@@ -165,11 +165,8 @@ export class RegistrationContactComponent implements OnInit {
   }
 
   private getParamsAndRegister(token: string) {
-    this.route.queryParamMap.subscribe(
-      (params) => {
-        this.registerWithToken(token, params);
-      }
-    );
+    const params = this.route.snapshot.queryParamMap;
+    this.registerWithToken(token, params);
   }
 
   private registerWithToken(token: string, params: ParamMap) {

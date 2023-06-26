@@ -17,19 +17,19 @@
 <form class="card" [formGroup]="form">
 
   <div class="mb-3">
-    <label for="name">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.NAME' | translate }} <sup>*</sup></label>
+    <label class="form-label" for="name">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.NAME' | translate }} <sup>*</sup></label>
     <input type="text" class="form-control" id="name" placeholder="" [formControlName]="'name'">
     <app-form-control-error [control]="form.controls.name"></app-form-control-error>
   </div>
 
   <div class="mb-3">
-    <label for="institution">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.INSTITUTION' | translate }} <sup>*</sup></label>
+    <label class="form-label" for="institution">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.INSTITUTION' | translate }} <sup>*</sup></label>
     <input type="text" class="form-control" id="institution" placeholder="" [formControlName]="'institution'">
     <app-form-control-error [control]="form.controls.institution"></app-form-control-error>
   </div>
 
   <div class="mb-3">
-    <label for="dateCompleted">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.DATECOMPLETED' | translate }} <sup>*</sup></label>
+    <label class="form-label" for="dateCompleted">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.DATECOMPLETED' | translate }} <sup>*</sup></label>
     <app-date-picker id="dateCompleted" [control]="form.controls.dateCompleted"></app-date-picker>
     <app-form-control-error [control]="form.controls.dateCompleted"></app-form-control-error>
     <p class="small mt-2 mb-0">

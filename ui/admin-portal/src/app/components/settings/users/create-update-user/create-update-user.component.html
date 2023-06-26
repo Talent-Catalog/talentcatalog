@@ -35,29 +35,29 @@
 
     <form [formGroup]="userForm">
       <div class="mb-3">
-        <label for="email">Email *</label>
+        <label class="form-label" for="email">Email *</label>
         <input type="text" class="form-control" id="email" formControlName="email">
       </div>
       <div class="mb-3">
-        <label for="username">Username *</label>
+        <label class="form-label" for="username">Username *</label>
         <input type="text" class="form-control" id="username" formControlName="username">
       </div>
       <div class="mb-3" *ngIf="create">
-        <label for="password">Password *</label>
+        <label class="form-label" for="password">Password *</label>
         <input type="text" class="form-control" id="password" formControlName="password">
       </div>
       <div class="mb-3">
-        <label for="firstName">First Name *</label>
+        <label class="form-label" for="firstName">First Name *</label>
         <input type="text" class="form-control" id="firstName" formControlName="firstName">
       </div>
       <div class="mb-3">
-        <label for="lastName">Last Name *</label>
+        <label class="form-label" for="lastName">Last Name *</label>
         <input type="text" class="form-control" id="lastName" formControlName="lastName">
       </div>
 
       <!-- Partner  -->
       <div class="mb-3" *ngIf="canAssignPartner()">
-        <label>Partner *</label>
+        <label class="form-label">Partner *</label>
         <ng-select
           id="partner"
           [items]="partners"
@@ -72,7 +72,7 @@
       </div>
 
       <div class="mb-3" *ngIf="!create">
-        <label for="status">Status</label>
+        <label class="form-label" for="status">Status</label>
         <ng-select id="status" [formControlName]="'status'" placeholder="Select">
           <ng-option value="active">Active</ng-option>
           <ng-option value="inactive">Inactive</ng-option>
@@ -80,7 +80,7 @@
       </div>
 
       <div class="mb-3">
-        <label for="role">Role *</label>
+        <label class="form-label" for="role">Role *</label>
         <ng-select
           id="role"
           [items]="roleOptions"
@@ -92,9 +92,40 @@
         </ng-select>
       </div>
 
+      <!-- Approver if required — will be a TC admin user -->
+      <div class="mb-3">
+        <label class="form-label">Approver</label>
+        <ng-select
+          id="approver"
+          [items]="approvers"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="true"
+          placeholder="Select or type..."
+          bindLabel="firstName"
+          bindValue="id"
+          [formControlName]="'approverId'">
+          <!-- MODEL concatenate two properties for display in form - Enables viewing and searching potential approvers (admin users) by full name -->
+          <ng-template ng-label-tmp let-item="item">
+            {{item.firstName}} {{item.lastName}}
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+            {{item.firstName}} {{item.lastName}}
+          </ng-template>
+        </ng-select>
+        <p class="text-muted">If required, who approved this registration?</p>
+      </div>
+
+      <!-- If approval was required for this user registration, what was the reason given? -->
+      <div class="mb-3">
+        <label class="form-label" for="purpose">Purpose</label>
+        <input type="text" class="form-control" id="purpose" formControlName="purpose">
+        <p class="text-muted">And what is the reason for their TC use?</p>
+      </div>
+
       <!-- SOURCE COUNTRIES  -->
       <div class="mb-3">
-        <label>Source Country</label>
+        <label class="form-label">Source Country</label>
         <ng-select
           id="sourceCountry"
           [items]="countries"
@@ -109,12 +140,12 @@
       </div>
 
       <div class="mb-3">
-        <label for="readOnly">Read Only?</label>
+        <label class="form-label" for="readOnly">Read Only?</label>
         <input type="checkbox" formControlName="readOnly" id="readOnly">
       </div>
 
       <div class="mb-3">
-        <label for="usingMfa">Authentication app?</label>
+        <label class="form-label" for="usingMfa">Authentication app?</label>
         <input type="checkbox" formControlName="usingMfa" id="usingMfa">
       </div>
 

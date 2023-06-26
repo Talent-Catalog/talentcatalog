@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {JwtResponse} from "../model/jwt-response";
-import {throwError} from "rxjs";
+import {Observable, throwError} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
@@ -24,10 +24,10 @@ import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Role, User} from "../model/user";
 import {LoginRequest} from "../model/base";
-import {Observable} from "rxjs/index";
 import {EncodedQrImage} from "../util/qr";
 import {Candidate} from "../model/candidate";
 import {PartnerType} from "../model/partner";
+import {Job} from "../model/job";
 
 @Injectable({
   providedIn: 'root'
@@ -179,6 +179,57 @@ export class AuthService {
     return visible;
   }
 
+  private commonSeniorPartnerAuth(): boolean {
+    let ok = false;
+    const loggedInUser = this.getLoggedInUser()
+    //Must be logged in
+    if (loggedInUser) {
+
+      //Only certain partner types
+      let partnerType = this.getPartnerType();
+      if (partnerType != null) {
+        if (this.isDefaultSourcePartner()) {
+          //Default source partners can
+          ok = true;
+        } else {
+          switch (partnerType) {
+            case PartnerType.SourcePartner:
+            case PartnerType.RecruiterPartner:
+              ok = true;
+          }
+        }
+      }
+    }
+    return ok;
+  }
+  /**
+   * True if the currently logged in user is permitted to manage candidate tasks.
+   */
+  canManageCandidateTasks(): boolean {
+    return this.commonSeniorPartnerAuth();
+  }
+
+  /**
+   * True if the currently logged in user is permitted to publish lists.
+   */
+  canPublishList(): boolean {
+    return this.commonSeniorPartnerAuth();
+  }
+
+  /**
+   * Can they see and click on links to take them to Salesforce
+   */
+  canAccessSalesforce(): boolean {
+    return this.isDefaultSourcePartner();
+  }
+
+  /**
+   * True if the currently logged in user is permitted to update salesforce.
+   */
+  canUpdateSalesforce(): boolean {
+    return this.commonSeniorPartnerAuth();
+  }
+
   isAnAdmin(): boolean {
     let admin: boolean = false;
     switch (this.getLoggedInRole()) {
@@ -321,5 +372,47 @@ export class AuthService {
       defaultSourcePartner = loggedInUser.partner?.defaultSourcePartner;
     }
     return defaultSourcePartner;
+  }
+
+  /**
+   * True is a user is logged in and they are solely responsible for certain candidate opportunities.
+   * <p/>
+   * This will be source partners.
+   */
+  ownsOpps() {
+    //Source partners own candidate opportunities for the candidates they manage
+    let result: boolean = false;
+
+    const loggedInUser = this.getLoggedInUser();
+    if (loggedInUser) {
+      let partnerType = this.getPartnerType();
+      if (partnerType != null) {
+        result = this.isDefaultSourcePartner() || partnerType == PartnerType.SourcePartner;
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Returns true if the currently logged-in user can change the stage of the given job
+   * @param job Job
+   */
+  canChangeJobStage(job: Job): boolean {
+    let result: boolean = false;
+
+    //Current logic is that only the contact user for the job can change the stage.
+    //If there is no contact user, then anyone one working for the default source partner can change
+    //the stage.
+    const loggedInUser = this.getLoggedInUser();
+    if (loggedInUser) {
+      const contactUser = job.contactUser;
+      if (contactUser == null) {
+        result = this.isDefaultSourcePartner()
+      } else {
+        result = contactUser.id === loggedInUser.id;
+      }
+    }
+    return result
   }
 }

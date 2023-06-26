@@ -28,7 +28,7 @@ import {
 
 import {
   Candidate,
-  SalesforceOppParams,
+  CandidateOpportunityParams,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
@@ -64,6 +64,7 @@ import {
   indexOfHasId,
   isMine,
   isStarredByMe,
+  OpportunityIds,
   ReviewStatus,
   Status
 } from '../../../model/base';
@@ -109,7 +110,9 @@ import {
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
-import {SalesforceStageComponent} from "../../util/salesforce-stage/salesforce-stage.component";
+import {
+  EditCandidateOppComponent
+} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {
@@ -118,7 +121,8 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {JobIds} from "../../../model/job";
+import {CandidateOpportunity} from "../../../model/candidate-opportunity";
+import {getOpportunityStageName} from "../../../model/opportunity";
 
 interface CachedTargetList {
   sourceID: number;
@@ -155,6 +159,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   importing: boolean;
   importingFeedback: boolean;
   publishing: boolean;
+  showClosedOppsTip = "Display candidates who were not successful";
   updating: boolean;
   updatingStatuses: boolean;
   updatingTasks: boolean;
@@ -230,7 +235,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
     if (isSavedList(this.candidateSource)) {
       this.searchForm = this.fb.group({
-        keyword: ['']
+        keyword: [''],
+        showClosedOpps: []
       });
       this.subscribeToFilterChanges();
 
@@ -261,6 +267,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   get keyword(): string {
     return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  get showClosedOpps(): boolean {
+    return this.searchForm ? this.searchForm.value.showClosedOpps : null;
   }
 
   get ReviewStatus() {
@@ -438,8 +448,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
        * version stored on the server. But with a saved list we do.
        */
 
-      //If we are being driven by a manually modifiable search request, submit
-      //that search.
+      //If we are being driven by a manually modifiable search request (eg someone has changed the
+      //search parameters and clicked on the Apply button) submit that search.
       if (this.searchRequest) {
 
         this.updatedSearch()
@@ -466,6 +476,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           request = new SavedListGetRequest();
         }
         request.keyword = this.keyword;
+        request.showClosedOpps = this.showClosedOpps;
         request.pageNumber = this.pageNumber - 1;
         request.pageSize = this.pageSize;
         request.sortFields = [this.sortField];
@@ -477,6 +488,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.candidateSourceCandidateService.searchPaged(
           this.candidateSource, request).subscribe(
           results => {
+
             this.results = results;
             this.cacheResults();
 
@@ -784,7 +796,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isSalesforceUpdatable(): boolean {
-    return !isSavedSearch(this.candidateSource);
+    return !isSavedSearch(this.candidateSource) && this.authService.canUpdateSalesforce();
+  }
+
+  canResolveTasks(): boolean {
+    return isSavedList(this.candidateSource) && this.authService.canManageCandidateTasks();
   }
 
   isSavedList(): boolean {
@@ -823,15 +839,19 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isPublishable(): boolean {
-    return isSavedList(this.candidateSource);
+    return isSavedList(this.candidateSource) && this.authService.canPublishList();
   }
 
   isStarred(): boolean {
     return isStarredByMe(this.candidateSource?.users, this.authService);
   }
 
-  isShowStage(): boolean {
+  isJobList(): boolean {
     return isSavedList(this.candidateSource) && this.candidateSource.sfJobOpp != null;
+  }
+
+  isShowStage(): boolean {
+    return this.isJobList();
   }
 
   isEditable(): boolean {
@@ -1337,7 +1357,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  selectSearchResult ($event, input) {
+  selectCandidateToAdd ($event, input) {
     $event.preventDefault();
     input.value = '';
     const candidate: Candidate = $event.item;
@@ -1378,24 +1398,24 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       //If we do not have a job opportunity, there will be no candidate opp info.
       this.doCreateUpdateSalesforceOnList2(null, selectedCandidatesOnly);
     } else {
-      const applyToWholeListQuery = this.modalService.open(SalesforceStageComponent, {size: 'lg'});
+      const applyToWholeListQuery = this.modalService.open(EditCandidateOppComponent, {size: 'lg'});
       applyToWholeListQuery.result
-      .then((info: SalesforceOppParams) => {
+      .then((info: CandidateOpportunityParams) => {
         this.doCreateUpdateSalesforceOnList2(info, selectedCandidatesOnly);
       })
       .catch(() => { });
     }
 }
 
-  private doCreateUpdateSalesforceOnList2(info: SalesforceOppParams, selectedCandidatesOnly: boolean) {
+  private doCreateUpdateSalesforceOnList2(info: CandidateOpportunityParams, selectedCandidatesOnly: boolean) {
     this.error = null;
     this.updating = true;
 
     if (selectedCandidatesOnly) {
-      const jobIds: JobIds = this.candidateSource.sfJobOpp;
+      const jobIds: OpportunityIds = this.candidateSource.sfJobOpp;
       if (jobIds) {
         const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
-        this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, jobIds.sfId, info)
+        this.candidateService.createUpdateOppsFromCandidates(candidateIds, jobIds.sfId, info)
         .subscribe(result => {
             //Refresh to display any changed stages
             this.doSearch(true);
@@ -1405,7 +1425,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         );
       }
     } else {
-      this.candidateService.createUpdateSalesforceFromList(this.candidateSource, info)
+      this.candidateService.createUpdateOppsFromCandidateList(this.candidateSource, info)
       .subscribe(result => {
           //Refresh to display any changed salesforce stages
           this.doSearch(true);
@@ -1747,5 +1767,62 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   canAssignTasks() {
     return this.authService.canAssignTask();
+  }
+
+
+  /**
+   * Get candidate stage in opportunity matching current job
+    * @param candidate Candidate who opportunities we need to search
+   */
+  getStage(candidate: Candidate): string {
+    let stage = null;
+    const opp = this.getCandidateOppForThisJob(candidate);
+    if (opp) {
+      stage = getOpportunityStageName(opp.stage);
+    }
+    return stage;
+  }
+
+  getCandidateOpportunityLink(candidate: Candidate): any[] {
+    const opp = this.getCandidateOppForThisJob(candidate);
+    return opp ? ['/opp', opp.id] : null;
+  }
+
+  /**
+   * Get candidate opportunity matching current job
+   * @param candidate Candidate who opportunities we need to search
+   */
+  getCandidateOppForThisJob(candidate: Candidate): CandidateOpportunity {
+    return candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+  }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
+
+  closeOpportunity(candidate: Candidate) {
+    const job = this.candidateSource.sfJobOpp;
+    if (job) {
+      const editOpp = this.modalService.open(EditCandidateOppComponent, {size: 'lg'});
+      editOpp.componentInstance.closing = true;
+      editOpp.result
+      .then((info: CandidateOpportunityParams) => {
+        this.doUpdateOpp(candidate, job, info)
+      })
+      .catch(() => { });
+    }
+  }
+
+  private doUpdateOpp(candidate: Candidate, job: OpportunityIds, info: CandidateOpportunityParams) {
+    this.updating = true;
+    this.error = null;
+    this.candidateService.createUpdateOppsFromCandidates([candidate.id], job.sfId, info)
+    .subscribe(result => {
+        //Refresh to display any changed stages
+        this.doSearch(true);
+        this.updating = false;
+      },
+      err => {this.error = err; this.updating = false; }
+    );
   }
 }

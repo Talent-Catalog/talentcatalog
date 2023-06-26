@@ -16,24 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.springframework.data.jpa.domain.Specification.where;
-
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,53 +35,30 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateSavedList;
-import org.tbbtalent.server.model.db.ExportColumn;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
-import org.tbbtalent.server.model.db.TaskImpl;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
-import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
-import org.tbbtalent.server.repository.db.GetSavedListsQuery;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
-import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
-import org.tbbtalent.server.request.candidate.PublishListRequest;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnSetUp;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnType;
-import org.tbbtalent.server.request.candidate.PublishedDocImportReport;
-import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
-import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tbbtalent.server.request.link.UpdateShortNameRequest;
-import org.tbbtalent.server.request.list.ContentUpdateType;
-import org.tbbtalent.server.request.list.IHasSetOfCandidates;
-import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.request.list.*;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
-import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.DocPublisherService;
-import org.tbbtalent.server.service.db.ExportColumnsService;
-import org.tbbtalent.server.service.db.FileSystemService;
-import org.tbbtalent.server.service.db.SalesforceJobOppService;
-import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.TaskAssignmentService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Saved List service
@@ -111,7 +72,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final static String REGISTERED_NAME_SUFFIX = "*";
     private final CandidateRepository candidateRepository;
     private final CandidateSavedListRepository candidateSavedListRepository;
-    private final CandidateService candidateService;
+    private final CandidateOpportunityService candidateOpportunityService;
     private final ExportColumnsService exportColumnsService;
     private final SavedListRepository savedListRepository;
     private final DocPublisherService docPublisherService;
@@ -121,7 +82,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final SalesforceJobOppService salesforceJobOppService;
     private final TaskAssignmentService taskAssignmentService;
     private final UserRepository userRepository;
-    private final AuthService authService;
+    private final UserService userService;
 
     private static final Logger log = LoggerFactory.getLogger(SavedListServiceImpl.class);
     private static final String PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME = "CandidateNumber";
@@ -130,8 +91,7 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
         CandidateSavedListRepository candidateSavedListRepository,
-        CandidateService candidateService,
-        ExportColumnsService exportColumnsService,
+        CandidateOpportunityService candidateOpportunityService, ExportColumnsService exportColumnsService,
         SavedListRepository savedListRepository,
         DocPublisherService docPublisherService,
         FileSystemService fileSystemService,
@@ -139,11 +99,10 @@ public class SavedListServiceImpl implements SavedListService {
         SalesforceService salesforceService,
         SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
         UserRepository userRepository,
-        AuthService authService
-    ) {
+        UserService userService) {
         this.candidateRepository = candidateRepository;
         this.candidateSavedListRepository = candidateSavedListRepository;
-        this.candidateService = candidateService;
+        this.candidateOpportunityService = candidateOpportunityService;
         this.exportColumnsService = exportColumnsService;
         this.savedListRepository = savedListRepository;
         this.docPublisherService = docPublisherService;
@@ -153,7 +112,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.salesforceJobOppService = salesforceJobOppService;
         this.taskAssignmentService = taskAssignmentService;
         this.userRepository = userRepository;
-        this.authService = authService;
+        this.userService = userService;
     }
 
     @Override
@@ -175,6 +134,15 @@ public class SavedListServiceImpl implements SavedListService {
         candidate.getCandidateSavedLists().add(csl);
 
         assignListTasksToCandidate(destinationList, candidate);
+
+        //If a job list, automatically create a candidate opp if needed
+        final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
+        if (jobOpp != null) {
+            //With no params specified will not change any existing opp associated with this job,
+            //but will create a new opp if needed, with stage defaulting to "prospect"
+            candidateOpportunityService.createUpdateCandidateOpportunities(
+                Collections.singletonList(candidate), jobOpp, null);
+        }
     }
 
     @Override
@@ -267,7 +235,7 @@ public class SavedListServiceImpl implements SavedListService {
         Set<TaskImpl> listTasks = savedList.getTasks();
 
         if (!listTasks.isEmpty()) {
-            final User loggedInUser = authService.getLoggedInUser().orElse(null);
+            final User loggedInUser = userService.getLoggedInUser();
 
             Set<TaskImpl> activeCandidateTasks = findActiveCandidateTasks(candidate);
 
@@ -307,7 +275,7 @@ public class SavedListServiceImpl implements SavedListService {
         Set<TaskImpl> listTasks = savedList.getTasks();
 
         if (!listTasks.isEmpty()) {
-            final User loggedInUser = authService.getLoggedInUser().orElse(null);
+            final User loggedInUser = userService.getLoggedInUser();
 
             final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
 
@@ -482,7 +450,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Transactional
     public SavedList createSavedList(UpdateSavedListInfoRequest request)
             throws EntityExistsException {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
         return createSavedList(loggedInUser, request);
     }
 
@@ -491,8 +459,8 @@ public class SavedListServiceImpl implements SavedListService {
         throws NoSuchObjectException, SalesforceException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
         SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
-        candidateService.createUpdateSalesforce(
-            savedList.getCandidates(), sfJobOpp, request.getSalesforceOppParams());
+        candidateOpportunityService.createUpdateCandidateOpportunities(
+            savedList.getCandidates(), sfJobOpp, request.getCandidateOppParams());
     }
 
     @Override
@@ -576,14 +544,9 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public List<SavedList> search(long candidateId, SearchSavedListRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
 
-        //todo This should be loading shared lists not searches!!! But seems to work anyway!
-        //I think the problem was that the above code should have been using userService to get loggged in user.
-        User userWithSharedSearches = loggedInUser == null ? null :
-                userRepository.findByIdLoadSharedSearches(loggedInUser.getId());
-        GetSavedListsQuery getSavedListsQuery =
-                new GetSavedListsQuery(request, userWithSharedSearches);
+        GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
 
         GetCandidateSavedListsQuery getCandidateSavedListsQuery =
                 new GetCandidateSavedListsQuery(candidateId);
@@ -597,12 +560,8 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public List<SavedList> listSavedLists(SearchSavedListRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
-        User userWithSharedSearches = loggedInUser == null ? null :
-                userRepository.findByIdLoadSharedSearches(
-                        loggedInUser.getId());
-        GetSavedListsQuery getSavedListsQuery =
-                new GetSavedListsQuery(request, userWithSharedSearches);
+        final User loggedInUser = userService.getLoggedInUser();
+        GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
 
         //The request is not required to provide paging or sorting info and
         //we ignore any such info if present because we don't pass a PageRequest
@@ -614,12 +573,8 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public Page<SavedList> searchSavedLists(SearchSavedListRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
-        User userWithSharedSearches = loggedInUser == null ? null :
-                userRepository.findByIdLoadSharedSearches(
-                        loggedInUser.getId());
-        GetSavedListsQuery getSavedListsQuery =
-                new GetSavedListsQuery(request, userWithSharedSearches);
+        final User loggedInUser = userService.getLoggedInUser();
+        GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
 
         //The incoming request will have paging info but may have no sorting.
         //If not, default the sort to ascending by name.
@@ -642,7 +597,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request)
             throws NoSuchObjectException, EntityExistsException {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(savedListId, request.getName(), loggedInUser);
         }
@@ -684,6 +639,12 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    @NonNull
+    public List<SavedList> findListsAssociatedWithJobs() {
+        return this.savedListRepository.findListsWithJobs();
+    }
+
+    @Override
     public void updateDisplayedFieldPaths(
             long savedListId, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException {
@@ -695,18 +656,6 @@ public class SavedListServiceImpl implements SavedListService {
             savedList.setDisplayedFieldsShort(request.getDisplayedFieldsShort());
         }
         saveIt(savedList);
-    }
-
-    @Override
-    public void addOpportunityStages(long savedListId, Iterable<Candidate> candidates)
-        throws NoSuchObjectException, SalesforceException {
-        SavedList savedList = get(savedListId);
-
-        //There will only be candidate opportunities if list has a job opp
-        final SalesforceJobOpp jobOpp = savedList.getSfJobOpp();
-        if (jobOpp != null) {
-            salesforceService.addCandidateOpportunityStages(candidates, jobOpp.getSfId());
-        }
     }
 
     @Override
@@ -883,7 +832,7 @@ public class SavedListServiceImpl implements SavedListService {
         props.put("listId", savedList.getId());
         props.put("listName", savedList.getName());
         props.put("timeCreated", LocalDate.now().toString());
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
         if (user != null) {
             props.put("createdByName", user.getDisplayName());
             props.put("createdByEmail", user.getEmail());
@@ -898,6 +847,9 @@ public class SavedListServiceImpl implements SavedListService {
             columnSetUpMap.put(columnCount, columnSetUp);
             if (def.getType().equals(PublishedDocColumnType.EmployerCandidateDecision)) {
                 columnSetUp.setDropDowns(EmployerCandidateDecision.getDisplayTextValues());
+            } else if (def.getType().equals(PublishedDocColumnType.YesNoDropdown)) {
+                List<String> values = Arrays.asList("", "Yes", "No");
+                columnSetUp.setDropDowns(values);
             }
 
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {
@@ -1017,7 +969,7 @@ public class SavedListServiceImpl implements SavedListService {
      * @return Saved entity
      */
     public SavedList saveIt(SavedList savedList) {
-        savedList.setAuditFields(authService.getLoggedInUser().orElse(null));
+        savedList.setAuditFields(userService.getLoggedInUser());
         return savedListRepository.save(savedList);
     }
 }

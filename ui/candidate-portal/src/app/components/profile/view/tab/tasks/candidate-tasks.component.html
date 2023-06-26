@@ -27,7 +27,7 @@
       </div>
       <div class="table-responsive-sm">
         <table class="table table-hover bg-white">
-          <thead class="thead-light">
+          <thead class="table-light">
           <tr>
             <th>{{ 'TASKS.TABLE.NAME' | translate }}</th>
             <th class="text-center w-15">{{ 'TASKS.TABLE.REQUIRED' | translate }}</th>
@@ -44,7 +44,7 @@
               <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
               <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
             </td>
-            <td class="font-weight-light date-size text-center" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">{{ta.dueDate | date}}</td>
+            <td class="fw-light date-size text-center" [ngClass]="{'text-danger fw-bolder': isOverdue(ta)}">{{ta.dueDate | date}}</td>
           </tr>
           <!-- loading -->
           <tr *ngIf="loading">
@@ -72,7 +72,7 @@
       </div>
       <div class="table-responsive-sm">
         <table class="table table-hover bg-white">
-          <thead class="thead-light">
+          <thead class="table-light">
           <tr>
             <th>{{ 'TASKS.TABLE.NAME' | translate }}</th>
             <th class="text-center w-15">{{ 'TASKS.TABLE.COMPLETED' | translate }}</th>

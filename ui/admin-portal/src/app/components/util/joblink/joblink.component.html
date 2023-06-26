@@ -23,7 +23,7 @@ MODEL - use of subclassing FormComponentBase to inherit common standard form fun
 <form [formGroup]="form">
 
   <div>
-    <label>Link to Salesforce Job Opportunity</label>
+    <label class="form-label">Link to Salesforce Job Opportunity</label>
     <input type="text" class="form-control" formControlName="sfJoblink">
   </div>
   <div *ngIf="isInvalid(form.controls.sfJoblink)" class="alert alert-danger">

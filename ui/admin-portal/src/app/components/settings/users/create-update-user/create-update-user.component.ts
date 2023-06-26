@@ -26,7 +26,7 @@ import {EnumOption, enumOptions} from "../../../../util/enum";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
 import {forkJoin} from "rxjs";
-import {Status} from "../../../../model/base";
+import {SearchUserRequest, Status} from "../../../../model/base";
 
 @Component({
   selector: 'app-create-update-user',
@@ -43,6 +43,7 @@ export class CreateUpdateUserComponent implements OnInit {
   roleOptions: EnumOption[] = enumOptions(Role);
   countries: Country[];
   partners: Partner[];
+  approvers: User[];
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -59,8 +60,10 @@ export class CreateUpdateUserComponent implements OnInit {
       firstName: [this.user?.firstName, Validators.required],
       lastName: [this.user?.lastName, Validators.required],
       partnerId: [this.user?.partner.id],
-      status: [this.user ? this.user.status : Status.active],
+      status: [this.user? this.user.status : Status.active],
       role: [this.user?.role, Validators.required],
+      approverId: [this.user?.approver?.id],
+      purpose: [this.user?.purpose],
       sourceCountries: [this.user?.sourceCountries],
       readOnly: [this.user ? this.user.readOnly : false],
       usingMfa: [this.user ? this.user.usingMfa : true]
@@ -76,14 +79,23 @@ export class CreateUpdateUserComponent implements OnInit {
     this.working = true;
     this.error = null;
 
+    // Populates the 'Approver' dropdown on the add/update user form with eligible admin users
+    const userRequest: SearchUserRequest = {
+      sortFields: ["firstName", "lastName"],
+      sortDirection: "ASC",
+      status: "active",
+    };
+
     forkJoin({
       'countries': this.countryService.listCountriesRestricted(),
-      'partners': this.partnerService.listPartners()
+      'partners': this.partnerService.listPartners(),
+      'approvers': this.userService.search(userRequest)
     }).subscribe(
       results => {
         this.working = false;
         this.countries = results['countries'];
         this.partners = results['partners'];
+        this.approvers = results['approvers'].map(u => {u.name = u.firstName + " " + u.lastName; return u});
       },
       (error) => {
         this.error = error;
@@ -124,6 +136,8 @@ export class CreateUpdateUserComponent implements OnInit {
       partnerId: this.userForm.value.partnerId,
       readOnly: this.userForm.value.readOnly,
       role: this.userForm.value.role,
+      approverId: this.userForm.value.approverId,
+      purpose: this.userForm.value.purpose,
       sourceCountries: this.userForm.value.sourceCountries,
       status: this.userForm.value.status,
       username: this.userForm.value.username,

@@ -18,8 +18,14 @@ package org.tbbtalent.server.exception;
 
 public class PasswordExpiredException extends ServiceException {
 
+    private static final String DEFAULT_MESSAGE = "Password has expired for this account";
+
     public PasswordExpiredException() {
-        super("password_expired", "Password has expired for this account");
+        this(DEFAULT_MESSAGE);
+    }
+
+    public PasswordExpiredException(String message) {
+        super("password_expired", message);
     }
 
 }

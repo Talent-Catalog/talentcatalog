@@ -33,15 +33,20 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateFilterByOpps;
 import org.tbbtalent.server.model.db.CandidateJobExperience;
 import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateOpportunity;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.CandidateSkill;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationLevel;
@@ -50,7 +55,6 @@ import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.model.db.SearchType;
-import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
@@ -256,28 +260,28 @@ public class CandidateSpecification {
             // This is a temporary hack for the us-afghan parolee push.
             // We want US-afghans out of the searches w/ source countries or not BUT if candidate is US SOURCE COUNTRY then in the searches.
             //if source countries is not null, check that it's not US
-            if (loggedInUser != null && !Collections.isEmpty(loggedInUser.getSourceCountries())) {
-                boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == usaId);
-                if (!us) {
-                    //This is not a US user, so don't show US Afghans
-                  Join<Candidate, SurveyType> surveyType
-                      = candidate.join("surveyType", JoinType.LEFT);
-                  conjunction.getExpressions()
-                      .add(builder.or(
-                          builder.isNull(candidate.get("surveyType")),
-                          builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
-                      ));
-                }
-            } else {
-                // if source countries is null, remove us afghans
-              Join<Candidate, SurveyType> surveyType
-                  = candidate.join("surveyType", JoinType.LEFT);
-                conjunction.getExpressions()
-                    .add(builder.or(
-                        builder.isNull(candidate.get("surveyType")),
-                        builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
-                    ));
-            }
+//            if (loggedInUser != null && !Collections.isEmpty(loggedInUser.getSourceCountries())) {
+//                boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == usaId);
+//                if (!us) {
+//                    //This is not a US user, so don't show US Afghans
+//                  Join<Candidate, SurveyType> surveyType
+//                      = candidate.join("surveyType", JoinType.LEFT);
+//                  conjunction.getExpressions()
+//                      .add(builder.or(
+//                          builder.isNull(candidate.get("surveyType")),
+//                          builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
+//                      ));
+//                }
+//            } else {
+//                // if source countries is null, remove us afghans
+//              Join<Candidate, SurveyType> surveyType
+//                  = candidate.join("surveyType", JoinType.LEFT);
+//                conjunction.getExpressions()
+//                    .add(builder.or(
+//                        builder.isNull(candidate.get("surveyType")),
+//                        builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
+//                    ));
+//            }
 
             // SURVEY TYPE SEARCH
             if (!Collections.isEmpty(request.getSurveyTypeIds())) {
@@ -287,7 +291,7 @@ public class CandidateSpecification {
             }
 
             // REFERRER
-            if (request.getRegoReferrerParam() != null) {
+            if (request.getRegoReferrerParam() != null && request.getRegoReferrerParam().trim().length() != 0) {
                 conjunction.getExpressions().add(
                         builder.equal(candidate.get("regoReferrerParam"), request.getRegoReferrerParam())
                 );
@@ -377,6 +381,67 @@ public class CandidateSpecification {
 
             }
 
+            //CANDIDATE OPPORTUNITIES
+            final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
+            if (candidateFilterByOpps != null) {
+               Boolean anyOpps = candidateFilterByOpps.getAnyOpps();
+               Boolean closedOpps = candidateFilterByOpps.getClosedOpps();
+               Boolean relocatedOpps = candidateFilterByOpps.getRelocatedOpps();
+
+                //This is the where clause we are constructing
+                /*
+                   where 0 <
+                   (select count(*) from candidate_opportunity
+                   where candidate_id = candidate.id)
+
+                   - Plus possible other where clauses - eg "and closed = false"
+                */
+                //This "conjunction predicate" will AND together all the where clauses we add to it.
+                Predicate oppsWhereClauses = builder.conjunction();
+
+                //Create the Select subquery which will return the opportunity count as a Long
+                Subquery<Long> sq = query.subquery(Long.class);
+                Root<CandidateOpportunity> opp = sq.from(CandidateOpportunity.class);
+
+                //This where clause is always there: candidate_id = candidate.id
+                oppsWhereClauses.getExpressions().add(
+                    builder.equal(opp.get("candidate").get("id"), candidate.get("id")));
+
+                boolean countMustBeNonZero = true;
+                if (anyOpps != null) {
+                    //The "AnyOpp" request doesn't add any other clauses.
+                    //It just changes whether we are testing that the count of opportunities should
+                    //or should not equal zero. ie are we looking for candidates with some opp or
+                    //no opps.
+                    countMustBeNonZero = anyOpps;
+                } else {
+                    if (closedOpps != null) {
+                        boolean closedClauseValue = closedOpps;
+                        //Add the where clause "closed = true" or "closed = false"
+                        oppsWhereClauses.getExpressions().add(
+                            builder.equal(opp.get("closed"), closedClauseValue));
+                    }
+                    if (relocatedOpps != null) {
+                        //Add the where clause checking whether the integer value associated with
+                        //opps stage is before (ie less than) the relocated stage or not.
+                        //ie the clause is effectively "stage < relocated" or "stage >= relocated"
+                        int relocatedStageOrder = CandidateOpportunityStage.relocated.ordinal();
+                        Predicate relocatedPredicate = relocatedOpps ?
+                            builder.greaterThanOrEqualTo(opp.get("stageOrder"), relocatedStageOrder) :
+                            builder.lessThan(opp.get("stageOrder"), relocatedStageOrder);
+                        oppsWhereClauses.getExpressions().add(relocatedPredicate);
+                    }
+                }
+
+                //Do the subquery select - ie do the opportunity count, by "and-ing" together all
+                //the where clauses we have added to oppsConjunction
+                sq.select(builder.count(opp)).where(oppsWhereClauses);
+
+                conjunction.getExpressions().add(
+                    //Check for zero or non-zero opportunity count depending on the above logic.
+                    countMustBeNonZero ? builder.greaterThan(sq, 0L) : builder.equal(sq, 0L)
+                );
+            }
 
             return conjunction;
         };

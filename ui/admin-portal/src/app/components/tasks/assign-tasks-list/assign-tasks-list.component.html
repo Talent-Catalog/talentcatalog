@@ -31,7 +31,7 @@
 
         <!-- TASKS -->
         <div class="mb-3">
-          <label for="task">Task to assign</label>
+          <label class="form-label" for="task">Task to assign</label>
           <ng-select id="task" appendTo=".modal-content" [formControlName]="'task'" [items]="allTasks"
                      [groupBy]="'taskType'" [searchFn]="searchTypeOrName" [clearable]="false"
                      placeholder="Select or type to search..." bindLabel="displayName"></ng-select>
@@ -41,12 +41,12 @@
         <div *ngIf="selectedTask">
           <div class="mb-3">
             <div>Description:
-              <span class="font-weight-light">{{selectedTask.description}}</span>
+              <span class="fw-light">{{selectedTask.description}}</span>
             </div>
           </div>
           <div class="mb-3">
             <div>Estimated Due Date:
-              <span class="font-weight-light">{{estimatedDueDate | date}}</span>
+              <span class="fw-light">{{estimatedDueDate | date}}</span>
             </div>
             <small class="text-muted">{{selectedTask?.daysToComplete}} days to complete.</small>
           </div>
@@ -65,7 +65,7 @@
     <div class="container card mt-2 grey-bg" [ngClass]="{'required-task-bg': !t.optional, 'optional-task-bg': t.optional}">
       <div class="row align-items-center">
         <div class="col">
-          <p class="small font-weight-light mb-0"><span *ngIf="!t.optional">*</span>{{t.displayName}}</p>
+          <p class="small fw-light mb-0"><span *ngIf="!t.optional">*</span>{{t.displayName}}</p>
         </div>
         <div class="col-auto">
           <app-tasks-monitor-list

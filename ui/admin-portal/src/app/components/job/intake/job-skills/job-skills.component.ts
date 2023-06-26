@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
-import {JobService} from "../../../../services/job.service";
 import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
+import {JobService} from "../../../../services/job.service";
 
 @Component({
   selector: 'app-job-skills',
@@ -16,7 +16,7 @@ export class JobSkillsComponent extends JobIntakeComponentBase implements OnInit
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      skills: [{value: this.jobIntakeData?.skills, disabled: !this.editable}],
+      skillRequirements: [{value: this.jobIntakeData?.skillRequirements, disabled: !this.editable}],
     });
   }
 

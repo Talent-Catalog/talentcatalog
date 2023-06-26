@@ -64,6 +64,7 @@ import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationType;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
@@ -73,7 +74,10 @@ import org.tbbtalent.server.repository.db.CandidateNoteRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.request.job.SearchJobRequest;
+import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.DataSharingService;
@@ -105,6 +109,7 @@ public class SystemAdminApi {
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateService candidateService;
     private final CountryService countryService;
     private final FileSystemService fileSystemService;
@@ -152,7 +157,7 @@ public class SystemAdminApi {
         CandidateAttachmentRepository candidateAttachmentRepository,
         CandidateNoteRepository candidateNoteRepository,
         CandidateRepository candidateRepository,
-        CandidateService candidateService,
+        CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
         CountryService countryService,
         FileSystemService fileSystemService,
         JobService jobService, LanguageService languageService,
@@ -167,6 +172,7 @@ public class SystemAdminApi {
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateOpportunityService = candidateOpportunityService;
         this.candidateService = candidateService;
         this.countryService = countryService;
         this.fileSystemService = fileSystemService;
@@ -182,9 +188,34 @@ public class SystemAdminApi {
         this.googleDriveConfig = googleDriveConfig;
         countryForGeneralCountry = getExtraCountryMappings();
     }
+    @GetMapping("close_candidate_ops_for_closed_jobs")
+    public void CloseCandidateOpportunitiesForClosedJobs() {
+        SearchJobRequest request = new SearchJobRequest();
+        request.setSfOppClosed(true);
+        final List<SalesforceJobOpp> jobOpps = jobService.searchJobsUnpaged(request);
+        for (SalesforceJobOpp jobOpp : jobOpps) {
+            UpdateJobRequest updateJobRequest = new UpdateJobRequest();
+            updateJobRequest.setStage(jobOpp.getStage());
+            jobService.updateJob(jobOpp.getId(), updateJobRequest);
+        }
+    }
+
+    @GetMapping("load_candidate_ops")
+    public void loadCandidateOpportunities() {
+        //Get all job opps known to TC
+        List<SavedList> listsWithJobs = savedListService.findListsAssociatedWithJobs();
+
+        //Extract their distinct ids
+        String[] jobIds = listsWithJobs.stream()
+            .filter(sl -> sl.getSfJobOpp() != null)
+            .map(sl -> sl.getSfJobOpp().getSfId())
+            .distinct()
+            .toArray(String[]::new);
+        candidateOpportunityService.loadCandidateOpportunities(jobIds);
+    }
 
     @GetMapping("sf-sync-open-jobs")
-    public String SfSyncOpenJobs() {
+    public String sfSyncOpenJobs() {
         jobService.updateOpenJobs();
         return "started";
     }
@@ -538,7 +569,7 @@ public class SystemAdminApi {
         log.info("Updating " + contacts.size() + " candidates");
         int count = 0;
         for (Contact contact : contacts) {
-            final String candidateNumber = contact.getTBBid__c().toString();
+            final String candidateNumber = contact.getTbbId().toString();
             Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
             if (candidate == null) {
                 log.warn("No candidate found for TBBid " + candidateNumber
@@ -565,7 +596,7 @@ public class SystemAdminApi {
         int count = 0;
         for (Contact contact : contacts) {
 
-            final Long sfTbbId = contact.getTBBid__c();
+            final Long sfTbbId = contact.getTbbId();
             if (sfTbbId == null) {
                 log.warn("Contact is not a TBB candidate: " + contact.getUrl());
             } else {

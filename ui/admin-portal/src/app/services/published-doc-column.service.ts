@@ -83,6 +83,10 @@ export class PublishedDocColumnService {
       PublishedDocColumnType.EmployerCandidateNotes, null)
     .width = PublishedDocColumnWidth.Wide;
 
+    this.addColumnWithType("employerInterview", "Employer\nInterview?",
+      PublishedDocColumnType.YesNoDropdown, null)
+      .width = PublishedDocColumnWidth.Narrow
+
     this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
 
     this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"))

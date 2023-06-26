@@ -20,7 +20,7 @@
 
 <!-- WHICH LANGUAGE -->
 <div class="mb-3" *ngIf="!isEnglish(language.languageId)">
-  <label>{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
+  <label class="form-label">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
 
   <ng-select [disabled]="" [(ngModel)]="language.languageId" disabled *ngIf="!preview"
              [items]="languages" [clearable]="false" bindValue="id" bindLabel="name">
@@ -33,7 +33,7 @@
 
 <!-- HOW WELL DO YOU SPEAK -->
 <div class="mb-3">
-  <label translate dir="auto">
+  <label class="form-label" translate dir="auto">
     {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language)} }}
   </label>
 
@@ -48,7 +48,7 @@
 
 <!-- HOW WELL DO YOU READ AND WRITE -->
 <div class="mb-3">
-  <label translate dir="auto" [translateParams]="{languageName: getLanguageName(language)}">
+  <label class="form-label" translate dir="auto" [translateParams]="{languageName: getLanguageName(language)}">
     {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language)} }}
   </label>
 

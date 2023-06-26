@@ -22,7 +22,7 @@
     >Live Jobs</a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
-        [searchBy]="SearchJobsBy.live">
+        [searchBy]="SearchOppsBy.live">
         >
       </app-jobs-with-detail>
     </ng-template>
@@ -32,7 +32,7 @@
     <a ngbNavLink title="Jobs created by my partner organization">{{loggedInPartner.abbreviation}} Jobs</a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
-        [searchBy]="SearchJobsBy.mine">
+        [searchBy]="SearchOppsBy.mine">
         >
       </app-jobs-with-detail>
     </ng-template>
@@ -42,9 +42,19 @@
     <a ngbNavLink title="Starred jobs (eg those I am working with)"><i class="fas fa-star"></i>Jobs</a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
-        [searchBy]="SearchJobsBy.starredByMe">
+        [searchBy]="SearchOppsBy.starredByMe">
         >
       </app-jobs-with-detail>
+    </ng-template>
+  </ng-container>
+
+  <ng-container *ngIf="ownsOpps()" ngbNavItem="MyOpps">
+    <a ngbNavLink title="Opps created by my partner organization">{{loggedInPartner.abbreviation}} Opps</a>
+    <ng-template ngbNavContent>
+      <app-candidate-opps-with-detail
+        [searchBy]="SearchOppsBy.mine"
+      >
+      </app-candidate-opps-with-detail>
     </ng-template>
   </ng-container>
 

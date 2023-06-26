@@ -16,7 +16,7 @@
     <h1>{{job.name}}
       <span class="small text-muted">
         ({{job.id}}) {{job.stage}}
-        <a *ngIf="job.sfId" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
+        <a *ngIf="job.sfId && canAccessSalesforce()" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
           <i class="fab fa-salesforce" title="Show job in Salesforce"></i>
         </a>
         <a *ngIf="job.submissionList?.folderjdlink" [href]="job.submissionList.folderjdlink" target="_blank">
@@ -101,17 +101,15 @@
           </ng-template>
         </ng-container>
 
-<!--        todo remove for now-->
-<!--        &lt;!&ndash; JOB INTAKE &ndash;&gt;-->
-<!--        <ng-container ngbNavItem="Intake">-->
-<!--          <a ngbNavLink>Job Intake (JOI)</a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <app-job-intake-tab-->
-<!--              [job]="job"-->
-<!--            >-->
-<!--            </app-job-intake-tab>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
+        <!-- JOB INTAKE -->
+        <ng-container ngbNavItem="Intake">
+          <a ngbNavLink>Job Intake (JOI)</a>
+          <ng-template ngbNavContent>
+            <app-job-intake-tab
+              [job]="job">
+            </app-job-intake-tab>
+          </ng-template>
+        </ng-container>
 
         <!-- SOURCE CONTACTS -->
         <ng-container ngbNavItem="Source">

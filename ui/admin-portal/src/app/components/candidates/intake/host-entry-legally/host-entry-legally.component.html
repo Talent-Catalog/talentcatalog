@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="hostEntryLegally">
+    <label class="form-label" for="hostEntryLegally">
       Did you enter legally?
     </label>
     <div class="float-end">
@@ -33,7 +33,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="enterLegally === 'No'" class="mb-3">
-    <label for="hostEntryLegallyNotes">Notes</label>
+    <label class="form-label" for="hostEntryLegallyNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="hostEntryLegallyNotes" [formControlName]="'hostEntryLegallyNotes'"
               placeholder="" ></textarea>

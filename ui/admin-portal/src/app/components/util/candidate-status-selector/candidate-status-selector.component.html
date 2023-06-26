@@ -1,18 +1,18 @@
 <form [formGroup]="candidateStatusInfoForm">
 
   <div class="mb-3">
-    <label for="status">Status</label>
+    <label class="form-label" for="status">Status</label>
     <ng-select id="status" [formControlName]="'status'" [items]="candidateStatusOptions" [clearable]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
   <div class="mb-3">
-    <label for="comment">Admin Note</label>
+    <label class="form-label" for="comment">Admin Note</label>
     <ngx-wig id="comment" formControlName="comment"></ngx-wig>
   </div>
 
   <div class="mb-3">
-    <label for="candidateMessage">Please provide a message to the candidate (visible to them)</label>
+    <label class="form-label" for="candidateMessage">Please provide a message to the candidate (visible to them)</label>
     <textarea  class="form-control"  id="candidateMessage" [formControlName]="'candidateMessage'"></textarea>
   </div>
 </form>

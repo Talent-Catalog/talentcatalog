@@ -14,13 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, QueryList, ViewChildren} from '@angular/core';
+import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
-import {Subject} from "rxjs";
-import {NgbAccordion, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  OldIntakeInputComponent
-} from "../../../../util/old-intake-input-modal/old-intake-input.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
@@ -28,6 +25,11 @@ import {OccupationService} from "../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {CandidateNoteService} from "../../../../../services/candidate-note.service";
 import {AuthService} from "../../../../../services/auth.service";
+import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateCitizenshipService,
+  CreateCandidateCitizenshipRequest
+} from "../../../../../services/candidate-citizenship.service";
 
 @Component({
   selector: 'app-candidate-mini-intake-tab',
@@ -35,12 +37,6 @@ import {AuthService} from "../../../../../services/auth.service";
   styleUrls: ['./candidate-mini-intake-tab.component.scss']
 })
 export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
-  toggleAll: Subject<any> = new Subject();
-  activeIds: string[] = ['intake-confirm', 'intake-int-recruit', 'intake-destinations', 'intake-personal-status',
-    'intake-english-assessment', 'intake-registration']
-
-  @ViewChildren(NgbAccordion) accs: QueryList<NgbAccordion>;
-
   clickedOldIntake: boolean;
 
   constructor(candidateService: CandidateService,
@@ -50,21 +46,10 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
               languageLevelService: LanguageLevelService,
               noteService: CandidateNoteService,
               authService: AuthService,
+              private candidateCitizenshipService: CandidateCitizenshipService,
+              private candidateExamService: CandidateExamService,
               private modalService: NgbModal) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
-  }
-
-  togglePanels(openAll: boolean) {
-    this.toggleAll.next(openAll);
-    if (openAll) {
-      this.accs.forEach(acc => {
-        acc.expandAll();
-      })
-    } else {
-      this.accs.forEach(acc => {
-        acc.collapseAll();
-      })
-    }
   }
 
   public inputOldIntakeNote(formName: string, button) {
@@ -86,6 +71,37 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
 
   isPalestinian(): boolean {
     return this.countryService.isPalestine(this.candidate?.nationality)
+  }
+
+  addExamRecord(e: MouseEvent) {
+    e.stopPropagation();
+    this.saving = true;
+    const request: CreateCandidateExamRequest = {};
+    this.candidateExamService.create(this.candidate.id, request).subscribe(
+      (exam) => {
+        this.candidateIntakeData.candidateExams.unshift(exam)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
+  }
+
+  addCitizenshipRecord(e: MouseEvent) {
+    // Stop the button from opening/closing the accordion
+    e.stopPropagation();
+    this.saving = true;
+    const request: CreateCandidateCitizenshipRequest = {};
+    this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
+      (citizenship) => {
+        this.candidateIntakeData.candidateCitizenships.unshift(citizenship)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
   }
 
 }

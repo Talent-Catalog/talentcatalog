@@ -24,6 +24,7 @@ import {
   JobPrepItem,
   JobPrepJD,
   JobPrepJobSummary,
+  JobPrepJOI,
   JobPrepSuggestedCandidates,
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
@@ -32,6 +33,9 @@ import {
   CandidateSourceCandidateService
 } from "../../../../services/candidate-source-candidate.service";
 
+/**
+ * Display details of a job object passed in as an @Input.
+ */
 @Component({
   selector: 'app-view-job',
   templateUrl: './view-job.component.html',
@@ -56,7 +60,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   jobPrepItems: JobPrepItem[] = [
     this.jobPrepJobSummary,
     this.jobPrepJD,
-    //todo temporary comment out: new JobPrepJOI(),
+    new JobPrepJOI(),
     new JobPrepSuggestedSearches(),
     this.jobPrepSuggestedCandidates,
     new JobPrepDueDate(),
@@ -199,5 +203,9 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   currentPrepItemIsSummary(): boolean {
     return this.currentPrepItem instanceof JobPrepJobSummary;
+  }
+
+  canAccessSalesforce() {
+    return this.authService.canAccessSalesforce();
   }
 }

@@ -1,0 +1,19 @@
+<div class="text-muted small">
+
+  <span>Created</span>
+
+  <!-- NAME -->
+  <span class="name" *ngIf="object?.createdBy">
+    {{ (object.createdBy) | user: 'fullName'}}
+  </span>
+
+  <span class="name" *ngIf="!object?.createdBy">
+   unknown
+  </span>
+
+  <!-- DATE -->
+  <span class="date" *ngIf="object?.createdDate">
+    {{ (object.createdDate) | date: 'customDateTime' }}
+  </span>
+
+</div>

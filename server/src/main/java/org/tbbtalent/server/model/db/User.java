@@ -39,23 +39,47 @@ import org.apache.commons.lang3.StringUtils;
 @Table(name = "users")
 @SequenceGenerator(name = "seq_gen", sequenceName = "users_id_seq", allocationSize = 1)
 public class User extends AbstractAuditableDomainObject<Long> {
-
+    /**
+     * username must be unique - at May '23 this is usually set up by admin as first name initial followed by surname
+     */
     private String username;
+
+    /**
+     * firstName is the user's actual first name
+     */
     private String firstName;
+
+    /**
+     * lastName is the user's actual surname
+     */
     private String lastName;
+
+    /**
+     * email - user's email, has to be unique
+     */
     private String email;
 
+    /**
+     * role is the user's level of access to the TC (system admin / full admin / source partner admin / semi limited / limited)
+     */
     @Enumerated(EnumType.STRING)
     private Role role;
 
     /**
      * Use boolean rather than Boolean so that default value is false, not null.
      * Null is not allowed in Db definition
+     * readOnly limits functionality, in May '23 this option is somewhat buggy and not advised to be used
      */
     private boolean readOnly;
 
+    /**
+     * passwordEnc - for security passwords are visible only in encrypted form to all users
+     */
     private String passwordEnc;
 
+    /**
+     * status is 'active' by default — rather than delete departing users, we set them to 'inactive'
+     */
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -71,6 +95,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     private OffsetDateTime passwordUpdatedDate;
 
     /**
+     * usingMfa is a basic security requirement, checked by default
      * Use boolean rather than Boolean so that default value is false, not null.
      * Null is not allowed in Db definition
      */
@@ -78,6 +103,9 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     private String mfaSecret;
 
+    /**
+     * candidate profiles (if a user has one) are linked to a user via 'user_id'
+     */
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
 
@@ -85,10 +113,30 @@ public class User extends AbstractAuditableDomainObject<Long> {
     //loaded in order to know its type because it uses a discriminator column to determine class
     //type.
     //See https://stackoverflow.com/questions/70394739/behavior-of-hibernate-get-vs-load-with-discriminator
+    /**
+     * partner is the org that the user belongs to — affects functionality and access, is a class of its own
+     * <p/>
+     * For candidate users, partner is the source partner that the candidate is assigned to.
+     */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "partner_id")
     private PartnerImpl partner;
 
+    /**
+     * approver denotes the TC user that authorised a user's registration if required
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approver_id")
+    private User approver;
+
+    /**
+     * purpose is related to approver — in instances where approval was required for a new-user registration, it's the reason given for their TC use, e.g., 'Facilitate job searches in Uganda.'
+     */
+    private String purpose;
+
+    /**
+     * userSavedSearch allows users to save the parameters of a candidate search
+     */
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
@@ -103,6 +151,9 @@ public class User extends AbstractAuditableDomainObject<Long> {
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
+    /**
+     * userSavedList allows admin users to save lists of chosen candidates
+     */
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "user_saved_list",
@@ -111,9 +162,15 @@ public class User extends AbstractAuditableDomainObject<Long> {
     )
     private Set<SavedList> sharedLists = new HashSet<>();
 
+    /**
+     * selectedLanguage sets the display language of the TC admin portal — at May '23 only English is available
+     */
     @Transient
     private String selectedLanguage = "en";
 
+    /**
+     * sourceCountries can be used to restrict certain users to viewing candidates in only one or more countries
+     */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_source_country",
@@ -175,6 +232,10 @@ public class User extends AbstractAuditableDomainObject<Long> {
     }
 
     public boolean getReadOnly() { return readOnly; }
+
+    public String getPurpose() { return purpose; }
+
+    public void setPurpose(String purpose) { this.purpose = purpose; }
 
     public void setReadOnly(boolean readOnly) { this.readOnly = readOnly; }
 
@@ -314,6 +375,14 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setPartner(PartnerImpl partner) {
         this.partner = partner;
+    }
+
+    public User getApprover() {
+        return approver;
+    }
+
+    public void setApprover(User approver) {
+        this.approver = approver;
     }
 
     @Transient

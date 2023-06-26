@@ -37,9 +37,9 @@ export class WorkPermitComponent extends IntakeComponentBase implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      workPermit: [this.candidateIntakeData?.workPermit],
-      workPermitDesired: [this.candidateIntakeData?.workPermitDesired],
-      workPermitDesiredNotes: [this.candidateIntakeData?.workPermitDesiredNotes]
+      workPermit: [{value: this.candidateIntakeData?.workPermit, disabled: !this.editable}],
+      workPermitDesired: [{value: this.candidateIntakeData?.workPermitDesired, disabled: !this.editable}],
+      workPermitDesiredNotes: [{value: this.candidateIntakeData?.workPermitDesiredNotes, disabled: !this.editable}]
     });
   }
 

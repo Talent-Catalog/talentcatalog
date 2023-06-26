@@ -14,14 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData} from "../../../../model/candidate";
 import {
-  CandidateCitizenshipService,
-  CreateCandidateCitizenshipRequest
+  CandidateCitizenshipService
 } from "../../../../services/candidate-citizenship.service";
-import {Subject} from "rxjs/index";
-import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 import {Country} from "../../../../model/country";
 
 @Component({
@@ -37,57 +34,13 @@ export class CitizenshipsComponent implements OnInit {
   @Input() editable: boolean;
   open: boolean;
   saving: boolean;
-  activeIds: string;
 
-  @Input() toggleAll: Subject<any>;
-
-  @ViewChild(NgbAccordion) acc: NgbAccordion;
 
   constructor(
     private candidateCitizenshipService: CandidateCitizenshipService
   ) {}
 
   ngOnInit(): void {
-    this.activeIds = 'intake-citizenships';
-    this.open = true;
-    // called when the toggleAll method is called in the parent component
-    this.toggleAll.subscribe(isOpen => {
-      this.open = isOpen;
-      this.setActiveIds();
-    })
-  }
-
-  toggleOpen() {
-    this.open = !this.open
-    this.setActiveIds();
-  }
-
-  setActiveIds(){
-    if (this.open) {
-      this.acc.expandAll();
-      this.activeIds = 'intake-citizenships';
-    } else {
-      this.acc.collapseAll();
-      this.activeIds = '';
-    }
-  }
-
-  addRecord(e: MouseEvent) {
-    // Stop the button from opening/closing the accordion
-    e.stopPropagation();
-    this.saving = true;
-    this.open = true;
-    this.setActiveIds();
-    const request: CreateCandidateCitizenshipRequest = {};
-    this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
-      (citizenship) => {
-        this.candidateIntakeData.candidateCitizenships.unshift(citizenship)
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      });
   }
 
   deleteRecord(i: number) {

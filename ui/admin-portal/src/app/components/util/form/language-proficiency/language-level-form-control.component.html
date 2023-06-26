@@ -28,17 +28,17 @@
 
     <!-- LANGUAGE -->
     <div class="mb-3" [hidden]="languageDisabled">
-      <label>Language</label>
+      <label class="form-label">Language</label>
       <ng-select [formControlName]="'languageId'" [items]="languages" [clearOnBackspace]="false"
                  [clearable]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
 
     <!-- SPOKEN LEVEL -->
     <div class="mb-3">
-      <label>Spoken Level</label>
+      <label class="form-label">Spoken Level</label>
 
       <div class="radio" *ngFor="let level of languageLevels">
-        <label><input type="radio" [formControlName]="'spokenLevel'" [value]="level.level">{{level.name}}</label>
+        <label class="form-label"><input type="radio" [formControlName]="'spokenLevel'" [value]="level.level">{{level.name}}</label>
       </div>
     </div>
 
@@ -48,10 +48,10 @@
 
     <!-- WRITTEN LEVEL -->
     <div class="mb-3">
-      <label>Written Level</label>
+      <label class="form-label">Written Level</label>
 
       <div class="radio" *ngFor="let level of languageLevels">
-        <label><input type="radio" [formControlName]="'writtenLevel'" [value]="level.level">{{level.name}}</label>
+        <label class="form-label"><input type="radio" [formControlName]="'writtenLevel'" [value]="level.level">{{level.name}}</label>
       </div>
     </div>
 

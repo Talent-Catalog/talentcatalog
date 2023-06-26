@@ -4,7 +4,7 @@
 
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="visaSecurityRisk">Meets security requirement? (e.g. military, prior visa cancellation)</label>
+    <label class="form-label" for="visaSecurityRisk">Meets security requirement? (e.g. military, prior visa cancellation)</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -15,7 +15,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="mb-3">
-    <label for="visaSecurityRiskNotes">Notes</label>
+    <label class="form-label" for="visaSecurityRiskNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="visaSecurityRiskNotes" [formControlName]="'visaSecurityRiskNotes'"
               placeholder="" ></textarea>

@@ -3,8 +3,10 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="skills">
-      Specific Skills to Screen For
+    <label class="form-label" for="skillRequirements">
+      Specific skills to screen for
+      <span class="form-text">(please indicate priority, or break down into essential & desired skills)</span>
+      <sup class="text-danger fw-light">* required</sup>
     </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
@@ -12,7 +14,7 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ngx-wig id="skills" [formControlName]="'skills'"
+    <ngx-wig id="skillRequirements" [formControlName]="'skillRequirements'"
     ></ngx-wig>
   </div>
 </form>

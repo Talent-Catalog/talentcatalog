@@ -37,7 +37,7 @@
 
       <!-- FIELD -->
       <div class="mb-3">
-        <label for="occupationId">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="occupationId">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }} <sup>*</sup></label>
         <ng-select id="occupationId" [formControlName]="'occupationId'" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
           <ng-option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</ng-option>
@@ -47,7 +47,7 @@
 
       <!-- YEARS OF EXPERIENCE -->
       <div class="mb-3">
-        <label class="m-0" for="yearsExperience">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}<sup>*</sup></label>
+        <label class="form-label" for="yearsExperience">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}<sup>*</sup></label>
         <p class="text-muted">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
         <input type="number" min="0" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
         <app-form-control-error [control]="form.controls.yearsExperience"></app-form-control-error>

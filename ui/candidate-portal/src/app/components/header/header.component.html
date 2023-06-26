@@ -40,7 +40,7 @@
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <div class="dropdown-header">
-              <h5 class="mb-0 font-weight-bold">{{ 'HEADER.LANG.SELECT' | translate }}</h5>
+              <h5 class="mb-0 fw-bold">{{ 'HEADER.LANG.SELECT' | translate }}</h5>
             </div>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item text-center" *ngFor="let lang of languages" (click)="setLanguage(lang.language)">{{lang.label}}</a>

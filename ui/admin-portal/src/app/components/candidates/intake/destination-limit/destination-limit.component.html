@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="destLimit">
+    <label class="form-label" for="destLimit">
       Are there any destination countries or cities that you would be unwilling to move to?
     </label>
     <div class="float-end">
@@ -33,7 +33,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="destLimit === 'Yes'" class="mb-3">
-    <label for="destLimitNotes">Notes</label>
+    <label class="form-label" for="destLimitNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="destLimitNotes" [formControlName]="'destLimitNotes'"
               placeholder="" ></textarea>

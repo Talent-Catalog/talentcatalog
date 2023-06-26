@@ -33,7 +33,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.CandidateSavedList;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 
 /**
@@ -66,7 +69,7 @@ import org.tbbtalent.server.request.candidate.SavedListGetRequest;
  */
 @RequiredArgsConstructor
 public class GetSavedListCandidatesQuery implements Specification<Candidate> {
-    private final long savedListId;
+    private final SavedList savedList;
     private final SavedListGetRequest request;
 
     @Override
@@ -92,38 +95,71 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
                     (Join<Object, Object>) educationLevelFetch);
             query.orderBy(orders);
         }
-
+        
         //Now construct the actual query
         /*
         select candidate from candidate
         where candidate in
             (select candidate from candidateSavedList
-                where savedList.id = savedListID)
+                where savedList.id = savedListId)
          */
         Subquery<Candidate> sq = query.subquery(Candidate.class);
         Root<CandidateSavedList> csl = sq.from(CandidateSavedList.class);
 
+        Predicate conjunction = cb.conjunction();
+        
+        //Start with the basic candidate in list predicate
+        conjunction.getExpressions().add(
+            cb.equal(csl.get("savedList").get("id"), savedList.getId())
+        );
+
         // KEYWORD SEARCH
-        if (!StringUtils.isBlank(request.getKeyword())){
+        if (!StringUtils.isBlank(request.getKeyword())) {
             String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
             String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-            sq.select(csl.get("candidate")).where(cb.and(
-                    cb.equal(csl.get("savedList").get("id"), savedListId),
-                    cb.or(
-                        cb.like(cb.lower(candidate.get("candidateNumber")), likeMatchTerm),
-                        cb.like(cb.lower(candidate.get("user").get("firstName")), likeMatchTerm),
-                        cb.like(cb.lower(candidate.get("user").get("lastName")), likeMatchTerm),
-                        cb.like(cb.lower(
-                                    cb.concat(
-                                        cb.concat(candidate.get("user").get("firstName"), " "),
-                                        candidate.get("user").get("lastName")
-                                    )), likeMatchTerm)
-                    )
-            ));
-        } else {
-            sq.select(csl.get("candidate")).where(cb.equal(csl.get("savedList").get("id"), savedListId));
+            
+            //Add predicate where the keyword matches any of the various fields
+            conjunction.getExpressions().add(
+                cb.or(
+                    cb.like(cb.lower(candidate.get("candidateNumber")), likeMatchTerm),
+                    cb.like(cb.lower(candidate.get("user").get("firstName")), likeMatchTerm),
+                    cb.like(cb.lower(candidate.get("user").get("lastName")), likeMatchTerm),
+                    cb.like(cb.lower(
+                        cb.concat(
+                            cb.concat(candidate.get("user").get("firstName"), " "),
+                            candidate.get("user").get("lastName")
+                        )), likeMatchTerm)
+                )
+            );
         }
 
+        //If savedList has a job, the default is to only show candidates with an opp for that
+        //job which is not closed. If there is no job associated with the list, there is no extra
+        //filtering.
+        final SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
+        if (sfJobOpp != null) {
+            //List is associated with a job - filter out candidates who don't have an opp
+            //for the job. 
+            Join<Candidate, CandidateOpportunity> opp =
+                candidate.join("candidateOpportunities", JoinType.LEFT);
+            conjunction.getExpressions().add(
+                cb.equal(opp.get("jobOpp").get("id"), sfJobOpp.getId())
+            );
+            if (request.getShowClosedOpps() == null || !request.getShowClosedOpps()) {
+                //ShowClosedOpps is not true - so only select opps that are won or open (ie closed = true)
+                conjunction.getExpressions().add(
+                    cb.or(
+                        cb.equal(opp.get("closed"), false),
+                        cb.equal(opp.get("won"), true)
+                    )
+                );
+            }
+        }
+
+        //Now create subquery
+        sq.select(csl.get("candidate")).where(conjunction);
+
+        //And the candidate must apear in the subquery
         return cb.in(candidate).value(sq);
     }
 }

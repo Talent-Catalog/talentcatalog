@@ -25,7 +25,7 @@
     <div *ngFor="let ta of ongoingTasks; let i = index;">
       <div class="set-height d-flex justify-content-between">
         <div [ngClass]="{'custom-flex-40 pe-3' : editable, 'custom-flex-75' : !editable}">
-          <p class="mb-0" [ngClass]="{'text-danger font-weight-bolder': isOverdue(ta)}">
+          <p class="mb-0" [ngClass]="{'text-danger fw-bolder': isOverdue(ta)}">
             <span *ngIf="!ta.task.optional">*</span> {{ta.task.displayName}}
             <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ms-1"></i>
             <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ms-1"></i>

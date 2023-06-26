@@ -18,7 +18,7 @@ import {Injectable} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
-  SalesforceOppParams,
+  CandidateOpportunityParams,
   UpdateCandidateListOppsRequest,
   UpdateCandidateOppsRequest,
   UpdateCandidateShareableDocsRequest,
@@ -139,31 +139,31 @@ export class CandidateService implements IntakeService {
       `${this.apiUrl}/${candidateId}/create-folder`, null);
   }
 
-  createUpdateSalesforce(candidateId: number): Observable<Candidate> {
+  createUpdateLiveCandidate(candidateId: number): Observable<Candidate> {
     return this.http.put<Candidate>(
-      `${this.apiUrl}/${candidateId}/update-sf`, null);
+      `${this.apiUrl}/${candidateId}/update-live`, null);
   }
 
-  createUpdateSalesforceFromList(source: CandidateSource,
-                                 salesforceOppParams: SalesforceOppParams): Observable<void> {
+  createUpdateOppsFromCandidateList(source: CandidateSource,
+                                    candidateOppParams: CandidateOpportunityParams): Observable<void> {
 
     const request: UpdateCandidateListOppsRequest = {
       savedListId: source.id,
-      salesforceOppParams: salesforceOppParams
+      candidateOppParams: candidateOppParams
     }
-    return this.http.put<void>(`${this.apiUrl}/update-sf-by-list`, request);
+    return this.http.put<void>(`${this.apiUrl}/update-opps-by-list`, request);
   }
 
-  createUpdateSalesforceFromCandidates(
-    candidateIds: number[], sfJobOpp: string, salesforceOppParams: SalesforceOppParams): Observable<void> {
+  createUpdateOppsFromCandidates(
+    candidateIds: number[], sfJobOpp: string, candidateOppParams: CandidateOpportunityParams): Observable<void> {
 
     const request: UpdateCandidateOppsRequest = {
       candidateIds: candidateIds,
       sfJobOppId: sfJobOpp,
-      salesforceOppParams: salesforceOppParams
+      candidateOppParams: candidateOppParams
     }
 
-    return this.http.put<void>(`${this.apiUrl}/update-sf`, request);
+    return this.http.put<void>(`${this.apiUrl}/update-opps`, request);
   }
 
   /**

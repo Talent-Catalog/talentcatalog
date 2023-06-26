@@ -8,8 +8,8 @@
 
   <div class="searches">
     <form [formGroup]="searchForm" (ngSubmit)="search()">
-        <div *ngIf="searchBy === SearchJobsBy.mine" class="mt-2 mb-3">
-          <label [title]="myJobsOnlyTip" for="myJobsOnlyTip">My jobs only</label>
+        <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
+          <label class="form-label" [title]="myJobsOnlyTip" for="myJobsOnlyTip">My jobs only</label>
           <input [title]="myJobsOnlyTip" type="checkbox" [formControlName]="'myJobsOnly'" id="myJobsOnlyTip">
         </div>
 
@@ -19,7 +19,7 @@
         </div>
 
         <div class="mb-3">
-          <label>Stage</label>
+          <label class="form-label">Stage</label>
           <ng-select
             id="stage"
             [items]="stages"
@@ -38,7 +38,7 @@
     <table class="table table-hover">
 
       <!--          Header-->
-      <thead class="thead-light">
+      <thead class="table-light">
       <tr>
         <th (click)="toggleSort('name')">
           <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
@@ -46,7 +46,7 @@
         </th>
         <th (click)="toggleSort('stageOrder')">
           <app-sorted-by [column]="'stageOrder'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          <i class="fab fa-salesforce"></i>
+          Stage
         </th>
 
         <th (click)="toggleSort('createdDate')">
@@ -67,11 +67,11 @@
           [ngClass]="{'current': currentJob?.id == job.id}">
         <td title="{{job.country}}">
           <a [routerLink]="['/job',job.id]">
-            {{truncate(job.name, 36)}}
+            {{job.name| truncate: 36}}
           </a>
         </td>
         <td title="Contact {{fullUserName(job.contactUser)}}">
-          {{truncate(job.stage,13)}}
+          {{job.stage | truncate: 13}}
         </td>
         <td>
           {{job.createdDate | date}}

@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.sf;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,7 +36,8 @@ public abstract class SalesforceObjectBase {
   /**
    * This is the Salesforce Id that every Salesforce record has.
    */
-  public String Id;
+  @JsonSetter("Id")
+  private String id;
 
   /**
    * This is the name of this class of object as referred to in SF urls
@@ -45,8 +47,8 @@ public abstract class SalesforceObjectBase {
 
   public String getUrl() {
     String url = null;
-    if (Id != null) {
-      url = urlRoot + getSfObjectName() + "/" + Id + urlSuffix;
+    if (id != null) {
+      url = urlRoot + getSfObjectName() + "/" + id + urlSuffix;
     }
     return url;
   }

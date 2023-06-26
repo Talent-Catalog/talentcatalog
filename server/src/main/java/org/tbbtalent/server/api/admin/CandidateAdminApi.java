@@ -59,6 +59,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesReque
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.security.CandidateTokenProvider;
+import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
@@ -71,6 +72,7 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
+    private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
     private final CandidateBuilderSelector builderSelector;
     private final SavedListService savedListService;
@@ -80,12 +82,13 @@ public class CandidateAdminApi {
 
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
-        CandidateSavedListService candidateSavedListService,
+        CandidateOpportunityService candidateOpportunityService, CandidateSavedListService candidateSavedListService,
         SavedListService savedListService,
         SavedSearchService savedSearchService,
         UserService userService,
         CandidateTokenProvider candidateTokenProvider) {
         this.candidateService = candidateService;
+        this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
         builderSelector = new CandidateBuilderSelector(userService);
         intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector();
@@ -265,6 +268,11 @@ public class CandidateAdminApi {
     }
 
     /**
+     * "Live" candidates are candidates who have been involved as potential candidates at least one
+     * job.
+     * Their details are pushed up to the Salesforce database so that we can track and report on
+     * them using Salesforce's built-in functionality for that.
+     * <p/>
      * Creates a link to a Contact record on Salesforce for the given candidate.
      * <p/>
      * If no Contact record exists, one is created.
@@ -278,8 +286,8 @@ public class CandidateAdminApi {
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    @PutMapping("{id}/update-sf")
-    public Map<String, Object> createUpdateSalesforce(@PathVariable("id") long id)
+    @PutMapping("{id}/update-live")
+    public Map<String, Object> createUpdateLiveCandidate(@PathVariable("id") long id)
             throws NoSuchObjectException, SalesforceException,
             WebClientException {
         Candidate candidate = candidateService.createUpdateSalesforce(id);
@@ -287,14 +295,14 @@ public class CandidateAdminApi {
         return builder.build(candidate);
     }
 
-    @PutMapping("update-sf")
-    public void createUpdateSalesforce(@RequestBody UpdateCandidateOppsRequest request)
+    @PutMapping("update-opps")
+    public void createUpdateOppsFromCandidates(@RequestBody UpdateCandidateOppsRequest request)
             throws WebClientException {
-        candidateService.createUpdateSalesforce(request);
+        candidateOpportunityService.createUpdateCandidateOpportunities(request);
     }
 
-    @PutMapping(value = "update-sf-by-list")
-    public void createUpdateSalesforce(
+    @PutMapping(value = "update-opps-by-list")
+    public void createUpdateOppsFromCandidateList(
         @Valid @RequestBody UpdateCandidateListOppsRequest request)
         throws NoSuchObjectException, SalesforceException, WebClientException {
 

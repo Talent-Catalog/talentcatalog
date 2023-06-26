@@ -31,7 +31,7 @@
   <form [formGroup]="form">
     <div class="mb-3">
       <div *ngIf="!newList">
-        <label>Existing list</label>
+        <label class="form-label">Existing list</label>
         <ng-select
           id="savedList"
           [items]="lists"
@@ -46,12 +46,12 @@
     </div>
 
     <div class="mb-3">
-      <label for="newList">New list?</label>
+      <label class="form-label" for="newList">New list?</label>
       <input type="checkbox" [formControlName]="'newList'" id="newList">
     </div>
     <div *ngIf="newList">
       <div class="mb-3">
-        <label for="name">Name</label>
+        <label class="form-label" for="name">Name</label>
         <input type="text" class="form-control" [formControlName]="'newListName'" [readOnly]="loading" id="name">
         <div *ngIf="form.errors?.invalidName" class="alert alert-danger" >
           {{form.errors.invalidName}}
@@ -69,12 +69,12 @@
     </div>
 
     <div class="mb-3">
-      <label for="replace">Replace existing list contents?</label>
+      <label class="form-label" for="replace">Replace existing list contents?</label>
       <input type="checkbox" [formControlName]="'replace'" id="replace">
     </div>
 
     <div class="mb-3">
-      <label for="changeStatuses">Change status for all candidates in list?</label>
+      <label class="form-label" for="changeStatuses">Change status for all candidates in list?</label>
       <input type="checkbox" [formControlName]="'changeStatuses'" id="changeStatuses">
     </div>
 

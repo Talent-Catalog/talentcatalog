@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="resettleThird">Have you ever applied for resettlement to a 3rd country?</label>
+    <label class="form-label" for="resettleThird">Have you ever applied for resettlement to a 3rd country?</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -32,7 +32,7 @@
   </div>
   <div *ngIf="resettlementThird === 'Yes'">
     <div class="mb-3">
-      <label for="resettleThirdStatus">
+      <label class="form-label" for="resettleThirdStatus">
         If yes, do you know the status of your application? Do you know how far along you are in the process?
         What is the last piece of correspondence/info you received? </label>
       <textarea type="text" class="md-textarea-auto form-control" rows="3"

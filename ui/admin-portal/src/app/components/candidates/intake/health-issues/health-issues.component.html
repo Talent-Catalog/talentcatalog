@@ -4,7 +4,7 @@
 <form [formGroup]="form">
 
   <div class="mb-3">
-    <label for="healthIssues">
+    <label class="form-label" for="healthIssues">
       Do you have any health or disability issues?
     </label>
     <div *ngIf="editable" class="float-end">
@@ -20,7 +20,7 @@
   </div>
 
   <div *ngIf="hasNotes" class="mb-3">
-    <label for="healthIssuesNotes">Notes</label>
+    <label class="form-label" for="healthIssuesNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="healthIssuesNotes" [formControlName]="'healthIssuesNotes'"
               placeholder=""></textarea>

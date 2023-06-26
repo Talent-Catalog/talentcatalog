@@ -31,7 +31,7 @@
 
       <!-- TASKS -->
       <div class="mb-3">
-        <label for="task">Assign to task:</label>
+        <label class="form-label" for="task">Assign to task:</label>
         <ng-select id="task" [formControlName]="'task'" [items]="allTasks"
                    [groupBy]="'taskType'" [searchFn]="searchTypeOrName" [clearable]="false"
                     placeholder="Select or type to search..." bindLabel="displayName"></ng-select>
@@ -41,12 +41,12 @@
       <div *ngIf="selectedTask">
         <div class="mb-3">
           <div>Description:
-            <span class="font-weight-light">{{selectedTask.description}}</span>
+            <span class="fw-light">{{selectedTask.description}}</span>
           </div>
         </div>
         <div class="mb-3">
           <div>Estimated Due Date:
-            <span class="font-weight-light">{{estimatedDueDate | date}}</span>
+            <span class="fw-light">{{estimatedDueDate | date}}</span>
           </div>
           <small class="text-muted">{{selectedTask?.daysToComplete}} days to complete.</small>
         </div>

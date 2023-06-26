@@ -43,6 +43,10 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.exception.UnauthorisedActionException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOpportunity;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.tbbtalent.server.model.db.JobOppIntake;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
@@ -52,6 +56,7 @@ import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.job.JobInfoForSlackPost;
 import org.tbbtalent.server.request.job.JobIntakeData;
@@ -61,8 +66,10 @@ import org.tbbtalent.server.request.link.UpdateLinkRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.AuthService;
+import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.service.db.JobOppIntakeService;
 import org.tbbtalent.server.service.db.JobService;
 import org.tbbtalent.server.service.db.SalesforceBridgeService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
@@ -81,6 +88,7 @@ public class JobServiceImpl implements JobService {
 
     private final static DateTimeFormatter nextStepDateFormat = DateTimeFormatter.ofPattern("ddMMMyy", Locale.ENGLISH);
     private final AuthService authService;
+    private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
     private final UserService userService;
     private final FileSystemService fileSystemService;
@@ -91,15 +99,18 @@ public class JobServiceImpl implements JobService {
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
+    private final JobOppIntakeService jobOppIntakeService;
 
     private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
     public JobServiceImpl(
-        AuthService authService, CandidateSavedListService candidateSavedListService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
-        SalesforceBridgeService salesforceBridgeService, SalesforceService salesforceService,
-        SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
-        SavedSearchService savedSearchService) {
+            AuthService authService, CandidateOpportunityService candidateOpportunityService,
+        CandidateSavedListService candidateSavedListService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
+            SalesforceBridgeService salesforceBridgeService, SalesforceService salesforceService,
+            SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
+            SavedSearchService savedSearchService, JobOppIntakeService jobOppIntakeService) {
         this.authService = authService;
+        this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
         this.userService = userService;
         this.fileSystemService = fileSystemService;
@@ -110,6 +121,7 @@ public class JobServiceImpl implements JobService {
         this.salesforceJobOppService = salesforceJobOppService;
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
+        this.jobOppIntakeService = jobOppIntakeService;
     }
 
     @Override
@@ -344,16 +356,13 @@ public class JobServiceImpl implements JobService {
     @Override
     public void updateIntakeData(long id, JobIntakeData data) throws NoSuchObjectException {
         SalesforceJobOpp job = getJob(id);
-
-        populateIntakeData(job, data);
-
-        salesforceJobOppRepository.save(job);
-    }
-
-    private void populateIntakeData(SalesforceJobOpp job, JobIntakeData data) {
-        final String description = data.getDescription();
-        if (description != null) {
-            job.setDescription(description);
+         JobOppIntake intake = job.getJobOppIntake();
+        if (intake == null) {
+            intake = jobOppIntakeService.create(data);
+            job.setJobOppIntake(intake);
+            salesforceJobOppRepository.save(job);
+        } else {
+            jobOppIntakeService.update(intake.getId(), data);
         }
     }
 
@@ -363,9 +372,40 @@ public class JobServiceImpl implements JobService {
         throws NoSuchObjectException, SalesforceException {
         User loggedInUser = getLoggedInUser("update job");
         SalesforceJobOpp job = getJob(id);
+        final JobOpportunityStage stage = request.getStage();
+        if (stage != null) {
+            job.setStage(stage);
+
+            //TODO JC Temporarily push this up to SF - eventually ALL changes will push to SF
+            salesforceService.updateEmployerOpportunityStage(job.getSfId(), stage, null, null);
+
+            //Do automation logic
+            if (stage.isClosed()) {
+                closeUnclosedCandidateOppsForJob(job, stage);
+            }
+        }
         job.setSubmissionDueDate(request.getSubmissionDueDate());
         job.setAuditFields(loggedInUser);
         return salesforceJobOppRepository.save(job);
+    }
+
+    private void closeUnclosedCandidateOppsForJob(SalesforceJobOpp job, JobOpportunityStage stage) {
+        Set<CandidateOpportunity> candidateOpportunities = job.getCandidateOpportunities();
+        final Set<Candidate> candidates = candidateOpportunities.stream()
+            //Not interested in opps which are already closed or at an employed stage
+            .filter(co -> !co.isClosed() && !co.getStage().isEmployed())
+            .map(CandidateOpportunity::getCandidate).collect(Collectors.toSet());
+
+        if (candidates.size() > 0) {
+            CandidateOpportunityParams params = new CandidateOpportunityParams();
+            params.setStage(CandidateOpportunityStage.noJobOffer);
+            params.setClosingComments("Job opportunity closed: " + stage.toString());
+
+            candidateOpportunityService.createUpdateCandidateOpportunities(candidates, job, params);
+
+            log.info("Closed opps for candidates going for job  " + job.getId() + ": "
+                + candidates.stream().map(Candidate::getCandidateNumber).collect(Collectors.joining(",")));
+        }
     }
 
     @NonNull

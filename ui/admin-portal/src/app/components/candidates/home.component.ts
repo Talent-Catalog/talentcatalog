@@ -17,7 +17,7 @@
 import {AfterViewChecked, Component, OnInit} from '@angular/core';
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
-import {CandidateSourceType, SearchBy, SearchJobsBy} from "../../model/base"
+import {CandidateSourceType, SearchBy, SearchOppsBy} from "../../model/base"
 import {LocalStorageService} from "angular-2-local-storage";
 import {
   SavedSearchService,
@@ -115,8 +115,8 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     return SearchBy;
   }
 
-  get SearchJobsBy() {
-    return SearchJobsBy;
+  get SearchOppsBy() {
+    return SearchOppsBy;
   }
 
   get SavedSearchType() {
@@ -129,5 +129,9 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   isExperimental() {
     return false;
+  }
+
+  ownsOpps(): boolean {
+    return this.authService.ownsOpps();
   }
 }

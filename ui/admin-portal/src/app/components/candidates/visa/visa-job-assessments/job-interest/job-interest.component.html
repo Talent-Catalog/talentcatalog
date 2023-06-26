@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="visaJobInterest">Candidate genuinely interested in the role and would move to accept offer?</label>
+    <label class="form-label" for="visaJobInterest">Candidate genuinely interested in the role and would move to accept offer?</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -15,7 +15,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="mb-3">
-    <label for="visaJobInterestNotes">Notes</label>
+    <label class="form-label" for="visaJobInterestNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="2"
               id="visaJobInterestNotes" formControlName="visaJobInterestNotes"
               placeholder="" ></textarea>

@@ -16,7 +16,7 @@
 
 <div class="modal-header">
 
-  <h4 class="modal-title">Review Candidate for {{savedSearch.name}}</h4>
+  <h4 class="modal-title">Review Candidate for {{savedSearch?.name}}</h4>
 
   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
 
@@ -36,7 +36,7 @@
     <form [formGroup]="form">
 
       <div class="mb-3">
-        <label for="reviewStatus">Status</label>
+        <label class="form-label" for="reviewStatus">Status</label>
         <ng-select id="reviewStatus" [formControlName]="'reviewStatus'" placeholder="Select">
           <ng-option value="unverified">Unverified</ng-option>
           <ng-option value="verified">Verified</ng-option>
@@ -46,7 +46,7 @@
 
       <!-- COMMENT -->
       <div class="mb-3">
-        <label for="comment">Comment</label>
+        <label class="form-label" for="comment">Comment</label>
         <ngx-wig id="comment" formControlName="comment"></ngx-wig>
       </div>
 

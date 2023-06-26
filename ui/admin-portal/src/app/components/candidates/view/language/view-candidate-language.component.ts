@@ -14,13 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
-import {NgbAccordion, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate, hasIeltsExam} from '../../../../model/candidate';
 import {CandidateLanguage} from '../../../../model/candidate-language';
 import {CandidateLanguageService} from '../../../../services/candidate-language.service';
-import {EditCandidateLanguageComponent} from '../language/edit/edit-candidate-language.component';
-import {Subject} from "rxjs";
+import {EditCandidateLanguageComponent} from './edit/edit-candidate-language.component';
 import {CreateCandidateLanguageComponent} from "./create/create-candidate-language.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 
@@ -40,29 +39,15 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
   loading: boolean;
   error;
 
-  activeIds: string;
-  open: boolean;
-  @Input() toggleAll: Subject<any>;
-
-  @ViewChild(NgbAccordion) acc: NgbAccordion;
-
   constructor(private candidateLanguageService: CandidateLanguageService,
               private modalService: NgbModal ) {
   }
 
   ngOnInit() {
     /*
-      If an accordion in intake set the subscribe to the toggle all buttons in intake candidate component
+      If an accordion in intake set subscribe to the toggle all buttons in intake candidate component
+      called when the toggleAll method is called in the parent component
      */
-    if (this.accordion) {
-      this.activeIds = 'intake-language';
-      this.open = true;
-      // called when the toggleAll method is called in the parent component
-      this.toggleAll.subscribe(isOpen => {
-        this.open = isOpen;
-        this.setActiveIds();
-      })
-    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -137,25 +122,6 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
         }
       })
       .catch(() => { /* Isn't possible */ });
-  }
-
-  /*
-    Methods related to the accordion toggle, and the toggle all parent observable
-   */
-
-  toggleOpen() {
-    this.open = !this.open
-    this.setActiveIds();
-  }
-
-  setActiveIds(){
-    if (this.open) {
-      this.acc.expandAll();
-      this.activeIds = 'intake-language';
-    } else {
-      this.acc.collapseAll();
-      this.activeIds = '';
-    }
   }
 
   hasIelts(candidate: Candidate): boolean {

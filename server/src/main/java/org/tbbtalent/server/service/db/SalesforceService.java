@@ -30,7 +30,7 @@ import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 
 /**
@@ -43,16 +43,6 @@ import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest
  * @author John Cameron
  */
 public interface SalesforceService {
-
-    /**
-     * Updates the given candidates with their candidate opportunity stages associated with the
-     * given Salesforce job opportunity.
-     * @param candidates Candidates to check
-     * @param sfId Salesforce id (not url) of job opportunity
-     * @throws SalesforceException if there are issues contacting Salesforce
-     */
-    void addCandidateOpportunityStages(Iterable<Candidate> candidates, String sfId)
-        throws SalesforceException;
 
     /**
      * Fetches opportunities from Salesforce with Job opportunity fields populated.
@@ -84,15 +74,36 @@ public interface SalesforceService {
     List<Contact> findCandidateContacts() throws WebClientException;
 
     /**
+     * Searches Salesforce for a candidate opportunity associated with the given candidate and job.
+     * @param candidateNumber Candidate number
+     * @param jobSfId SFId of job
+     * @return Opportunity if one found, otherwise null.
+     */
+    @Nullable
+    Opportunity findCandidateOpportunity(String candidateNumber, String jobSfId);
+
+    /**
      * Searches Salesforce for all Candidate Opportunity records matching the given condition.
      *
      * @param condition Effectively the logical (predicate) part of a SOQL WHERE clause.
      * @return List of Salesforce Candidate Opportunity records
-     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
      * @throws WebClientException       if there is a problem connecting to Salesforce
      */
     @NonNull
     List<Opportunity> findCandidateOpportunities(String condition) throws WebClientException;
+
+    /**
+     * Searches Salesforce for all Candidate Opportunity records associated with the given
+     * Salesforce job ids.
+     *
+     * @param jobOpportunityIds One or more Salesforce job ids
+     * @return List of Salesforce Candidate Opportunity records
+     * @throws SalesforceException If there is a problem reported by Salesforce
+     */
+    @NonNull
+    List<Opportunity> findCandidateOpportunitiesByJobOpps(String... jobOpportunityIds)
+        throws SalesforceException;
+
     /**
      * Searches Salesforce for all Contact records matching the given condition.
      *
@@ -149,7 +160,7 @@ public interface SalesforceService {
      * record with the given type and the given id.
      * <p/>
      * Note that fields can traverse relationships - eg Account.Name
-     * See https://developer.salesforce.com/docs/atlas.en-us.226.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_understanding.htm
+     * See <a href="https://developer.salesforce.com/docs/atlas.en-us.226.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_understanding.htm">...</a>
      * <p/>
      * Note that the object needs to match the returned Json. See above doc.
      * @param objectType Salesforce object. For example 'Contact',
@@ -166,6 +177,14 @@ public interface SalesforceService {
     <T> T findRecordFieldsFromId(
             String objectType, String id, String fields, Class<T> cl)
             throws GeneralSecurityException, WebClientException;
+
+    /**
+     * Generates a standard candidate opportunity name from the given candidate and job opportunity.
+     * @param candidate Candidate who is going for the job
+     * @param jobOpp Job opportunity
+     * @return Generated candidate opportunity name
+     */
+    String generateCandidateOppName(@NonNull Candidate candidate, @NonNull SalesforceJobOpp jobOpp);
 
     /**
      * Creates or updates the Salesforce Contact record corresponding to the
@@ -200,7 +219,7 @@ public interface SalesforceService {
      * external id TBBCandidateExternalId__c
      *
      * @param candidates Candidates
-     * @param salesforceOppParams Optional Salesforce fields to set on all given candidates'
+     * @param candidateOppParams Optional Salesforce fields to set on all given candidates'
      *                            opportunities
      * @param jobOpp Employer job opportunity on Salesforce
      * @throws WebClientException if there is a problem connecting to Salesforce
@@ -208,7 +227,7 @@ public interface SalesforceService {
      * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
      */
     void createOrUpdateCandidateOpportunities(List<Candidate> candidates,
-        @Nullable SalesforceOppParams salesforceOppParams, SalesforceJobOpp jobOpp)
+        @Nullable CandidateOpportunityParams candidateOppParams, SalesforceJobOpp jobOpp)
             throws WebClientException, SalesforceException;
 
     /**

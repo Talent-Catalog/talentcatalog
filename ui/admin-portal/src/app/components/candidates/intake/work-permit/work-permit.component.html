@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label for="workPermit">Do you have a valid work permit?</label>
+    <label class="form-label" for="workPermit">Do you have a valid work permit?</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -33,7 +33,7 @@
   </div>
   <div *ngIf="workPermit === 'YesNotDesired' || workPermit === 'No'">
     <div class="mb-3">
-      <label for="workPermitDesired">Are you legally able to obtain a work permit in your desired field?</label>
+      <label class="form-label" for="workPermitDesired">Are you legally able to obtain a work permit in your desired field?</label>
       <ng-select id="workPermitDesired" [formControlName]="'workPermitDesired'" (clear)="setNoResponse('workPermitDesired')"
                  [items]="workPermitDesiredOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key">
@@ -41,7 +41,7 @@
     </div>
     <div *ngIf="workPermitDesired === 'No'">
       <div class="mb-3">
-          <label for="workPermitDesiredNotes">If no, please add any additional notes</label>
+          <label class="form-label" for="workPermitDesiredNotes">If no, please add any additional notes</label>
           <textarea type="text" class="md-textarea-auto form-control" rows="3"
                     id="workPermitDesiredNotes" [formControlName]="'workPermitDesiredNotes'"
                     placeholder=""></textarea>

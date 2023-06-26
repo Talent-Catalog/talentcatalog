@@ -69,6 +69,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateFilterByOpps;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.EducationLevel;
@@ -114,7 +115,6 @@ import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.request.search.UpdateWatchingRequest;
-import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
@@ -153,7 +153,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final SurveyTypeRepository surveyTypeRepository;
     private final EducationMajorRepository educationMajorRepository;
     private final EducationLevelRepository educationLevelRepository;
-    private final AuthService authService;
 
     /**
      * These are the default candidate statuses to included in searches when no statuses are
@@ -193,8 +192,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         OccupationRepository occupationRepository,
         SurveyTypeRepository surveyTypeRepository,
         EducationMajorRepository educationMajorRepository,
-        EducationLevelRepository educationLevelRepository,
-        AuthService authService) {
+        EducationLevelRepository educationLevelRepository) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateReviewStatusRepository = candidateReviewStatusRepository;
@@ -218,12 +216,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.surveyTypeRepository = surveyTypeRepository;
         this.educationMajorRepository = educationMajorRepository;
         this.educationLevelRepository = educationLevelRepository;
-        this.authService = authService;
     }
 
     @Override
     public List<SavedSearch> search(SearchSavedSearchRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
 
         List<SavedSearch> savedSearches;
         //If requesting watches
@@ -237,11 +234,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
             savedSearches = new ArrayList<>(watches);
         } else {
-            User userWithSharedSearches = loggedInUser == null ? null :
-                userRepository.findByIdLoadSharedSearches(
-                    loggedInUser.getId());
             savedSearches = savedSearchRepository.findAll(
-                SavedSearchSpecification.buildSearchQuery(request, userWithSharedSearches));
+                SavedSearchSpecification.buildSearchQuery(request, loggedInUser));
         }
         log.info("Found " + savedSearches.size() + " savedSearches in search");
 
@@ -254,7 +248,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public Page<SavedSearch> searchPaged(SearchSavedSearchRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
 
         Page<SavedSearch> savedSearches;
         //If requesting watches
@@ -270,12 +264,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     new ArrayList<>(watches), request.getPageRequest(),
                     watches.size());
         } else {
-            User userWithSharedSearches = loggedInUser == null ? null :
-                    userRepository.findByIdLoadSharedSearches(
-                            loggedInUser.getId());
             savedSearches = savedSearchRepository.findAll(
-                    SavedSearchSpecification.buildSearchQuery(
-                            request, userWithSharedSearches), request.getPageRequest());
+                    SavedSearchSpecification.buildSearchQuery(request, loggedInUser),
+                request.getPageRequest());
         }
         log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
 
@@ -364,7 +355,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates;
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
         if (user == null) {
             candidates = doSearchCandidates(request);
         } else {
@@ -402,7 +393,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      */
     @Override
     public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
         SavedList selectionList = null;
         if (user != null) {
             selectionList = getSelectionList(savedSearchId, user.getId());
@@ -496,8 +487,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             CreateFromDefaultSavedSearchRequest request)
             throws NoSuchObjectException {
 
-        final User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
 
         String name;
         //Get name either from the specified saved list, or the specified name.
@@ -555,7 +548,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public SavedSearch createSavedSearch(UpdateSavedSearchRequest request)
             throws EntityExistsException {
         SavedSearch savedSearch = convertToSavedSearch(request);
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
             savedSearch.setAuditFields(loggedInUser);
@@ -593,8 +586,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request)
             throws EntityExistsException {
-        final User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
 
         if(request.getSearchCandidateRequest() == null){
             SavedSearch savedSearch = savedSearchRepository.findById(id)
@@ -632,7 +627,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public boolean deleteSavedSearch(long id)  {
         SavedSearch savedSearch = savedSearchRepository.findByIdLoadAudit(id).orElse(null);
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
 
         if (savedSearch != null && loggedInUser != null) {
 
@@ -760,8 +755,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public @NotNull SavedSearch getDefaultSavedSearch()
             throws NoSuchObjectException {
         //Check that we have a logged in user.
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
 
         SavedSearch savedSearch =
                 savedSearchRepository.findDefaultSavedSearch(loggedInUser.getId())
@@ -834,8 +831,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public @NotNull SavedList getSelectionListForLoggedInUser(long id)
         throws InvalidSessionException {
 
-        final User loggedInUser = authService.getLoggedInUser()
-            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
 
         return getSelectionList(id, loggedInUser.getId());
     }
@@ -851,7 +850,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request) {
-        final User loggedInUser = authService.getLoggedInUser().orElse(null);
+        final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             SavedList savedList = savedListRepository
                     .findSelectionList(id, loggedInUser.getId())
@@ -891,7 +890,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SearchCandidateRequest request, @Nullable Collection<Candidate> excludedCandidates) {
         //There may be no logged in user if the search is called by the
         //overnight Watcher process.
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
 
         //This list is initialized with the main saved search id, but can be
         //added to by addQuery below when the search is built on other
@@ -934,7 +933,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
      */
 
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
 
         //Create a simple query string builder from the given string
         SimpleQueryStringBuilder simpleQueryStringBuilder =
@@ -1121,7 +1120,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
-        User user = authService.getLoggedInUser().orElse(null);
+        User user = userService.getLoggedInUser();
         //add id to list as do not want circular references
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
@@ -1185,7 +1184,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Check for selection list to set the selected attribute on returned
             // candidates.
             SavedList selectionList = null;
-            User user = authService.getLoggedInUser().orElse(null);
+            User user = userService.getLoggedInUser();
             if (user != null) {
                 selectionList = getSelectionList(savedSearchId, user.getId());
             }
@@ -1207,7 +1206,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public void notifySearchWatchers() {
         String currentSearch = "";
         try {
-            Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
+            Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNull();
             Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
 
             log.info("Notify watchers: running " + searches.size() + " searches");
@@ -1329,36 +1328,48 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMinEducationLevel(request.getMinEducationLevel());
             savedSearch.setEducationMajorIds(
                     getListAsString(request.getEducationMajorIds()));
+
+            //Save Boolean filters corresponding to enum name
+            final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
+            if (candidateFilterByOpps == null) {
+                savedSearch.setAnyOpps(null);
+                savedSearch.setClosedOpps(null);
+                savedSearch.setRelocatedOpps(null);
+            } else {
+                savedSearch.setAnyOpps(candidateFilterByOpps.getAnyOpps());
+                savedSearch.setClosedOpps(candidateFilterByOpps.getClosedOpps());
+                savedSearch.setRelocatedOpps(candidateFilterByOpps.getRelocatedOpps());
+            }
         }
     }
 
-    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) throws CountryRestrictionException{
-        User user = authService.getLoggedInUser().orElse(null);
+    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch search) throws CountryRestrictionException{
+        User user = userService.getLoggedInUser();
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
-        searchCandidateRequest.setSavedSearchId(request.getId());
-        searchCandidateRequest.setSimpleQueryString(request.getSimpleQueryString());
-        searchCandidateRequest.setKeyword(request.getKeyword());
-        searchCandidateRequest.setStatuses(getStatusListFromString(request.getStatuses()));
-        searchCandidateRequest.setGender(request.getGender());
-        searchCandidateRequest.setOccupationIds(getIdsFromString(request.getOccupationIds()));
-        searchCandidateRequest.setMinYrs(request.getMinYrs());
-        searchCandidateRequest.setMaxYrs(request.getMaxYrs());
-        searchCandidateRequest.setRegoReferrerParam(request.getRegoReferrerParam());
-        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
-        searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
-        searchCandidateRequest.setPartnerIds(getIdsFromString(request.getPartnerIds()));
-        searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
-        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(request.getSurveyTypeIds()));
-        searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
-        searchCandidateRequest.setCountrySearchType(request.getCountrySearchType());
+        searchCandidateRequest.setSavedSearchId(search.getId());
+        searchCandidateRequest.setSimpleQueryString(search.getSimpleQueryString());
+        searchCandidateRequest.setKeyword(search.getKeyword());
+        searchCandidateRequest.setStatuses(getStatusListFromString(search.getStatuses()));
+        searchCandidateRequest.setGender(search.getGender());
+        searchCandidateRequest.setOccupationIds(getIdsFromString(search.getOccupationIds()));
+        searchCandidateRequest.setMinYrs(search.getMinYrs());
+        searchCandidateRequest.setMaxYrs(search.getMaxYrs());
+        searchCandidateRequest.setRegoReferrerParam(search.getRegoReferrerParam());
+        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(search.getVerifiedOccupationIds()));
+        searchCandidateRequest.setVerifiedOccupationSearchType(search.getVerifiedOccupationSearchType());
+        searchCandidateRequest.setPartnerIds(getIdsFromString(search.getPartnerIds()));
+        searchCandidateRequest.setNationalityIds(getIdsFromString(search.getNationalityIds()));
+        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
+        searchCandidateRequest.setNationalitySearchType(search.getNationalitySearchType());
+        searchCandidateRequest.setCountrySearchType(search.getCountrySearchType());
 
         // Check if the saved search countries match the source countries of the user
-        List<Long> requestCountries = getIdsFromString(request.getCountryIds());
+        List<Long> requestCountries = getIdsFromString(search.getCountryIds());
 
         // if a user has source country restrictions AND IF the request has countries selected
         if(user != null
                 && user.getSourceCountries().size() > 0
-                && request.getCountryIds() != null) {
+                && search.getCountryIds() != null) {
             List<Long> sourceCountries = user.getSourceCountries().stream()
                     .map(Country::getId)
                     .collect(Collectors.toList());
@@ -1372,24 +1383,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
         searchCandidateRequest.setCountryIds(requestCountries);
 
-        searchCandidateRequest.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
-        searchCandidateRequest.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
+        searchCandidateRequest.setEnglishMinSpokenLevel(search.getEnglishMinSpokenLevel());
+        searchCandidateRequest.setEnglishMinWrittenLevel(search.getEnglishMinWrittenLevel());
         searchCandidateRequest.setExclusionListId(
-            request.getExclusionList() != null ? request.getExclusionList().getId() : null);
+            search.getExclusionList() != null ? search.getExclusionList().getId() : null);
         searchCandidateRequest.setOtherLanguageId(
-            request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
-        searchCandidateRequest.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
-        searchCandidateRequest.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
-        searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
-        searchCandidateRequest.setLastModifiedTo(request.getLastModifiedTo());
+            search.getOtherLanguage() != null ? search.getOtherLanguage().getId() : null);
+        searchCandidateRequest.setOtherMinSpokenLevel(search.getOtherMinSpokenLevel());
+        searchCandidateRequest.setOtherMinWrittenLevel(search.getOtherMinWrittenLevel());
+        searchCandidateRequest.setLastModifiedFrom(search.getLastModifiedFrom());
+        searchCandidateRequest.setLastModifiedTo(search.getLastModifiedTo());
 //        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
 //        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
-        searchCandidateRequest.setMinAge(request.getMinAge());
-        searchCandidateRequest.setMaxAge(request.getMaxAge());
-        searchCandidateRequest.setMinEducationLevel(request.getMinEducationLevel());
-        searchCandidateRequest.setEducationMajorIds(getIdsFromString(request.getEducationMajorIds()));
+        searchCandidateRequest.setMinAge(search.getMinAge());
+        searchCandidateRequest.setMaxAge(search.getMaxAge());
+        searchCandidateRequest.setMinEducationLevel(search.getMinEducationLevel());
+        searchCandidateRequest.setEducationMajorIds(getIdsFromString(search.getEducationMajorIds()));
+
+        CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(
+            search.getAnyOpps(), search.getClosedOpps(), search.getRelocatedOpps());
+        searchCandidateRequest.setCandidateFilterByOpps(candidateFilterByOpps);
+
         List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
-        for (SearchJoin searchJoin : request.getSearchJoins()) {
+        for (SearchJoin searchJoin : search.getSearchJoins()) {
             searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getChildSavedSearch().getName(), searchJoin.getSearchType()));
         }
         searchCandidateRequest.setSearchJoinRequests(searchJoinRequests);
@@ -1435,7 +1451,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            User user = authService.getLoggedInUser().orElse(null);
+            User user = userService.getLoggedInUser();
 
             //This is an elastic search request
             BoolQueryBuilder boolQueryBuilder = computeElasticQuery(request,
@@ -1464,7 +1480,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
             //Now fetch those candidates from the normal database
             //They will come back in random order
-            List<Candidate> unsorted = candidateRepository.findByIds(candidateIds);
+            List<Candidate> unsorted = candidateService.findByIds(candidateIds);
             //Put the results in a map indexed by the id
             Map<Long, Candidate> mapById = new HashMap<>();
             for (Candidate candidate : unsorted) {
