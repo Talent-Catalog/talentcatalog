@@ -170,6 +170,7 @@ import {
 import {
   CandidateOppComponent
 } from './components/profile/view/tab/opps/opp/candidate-opp/candidate-opp.component';
+import { NgxWigModule } from 'ngx-wig';
 import {TruncatePipe} from "./pipes/truncate.pipe";
 
 //This is not used now - but is left here to show how the standard translation loading works.
@@ -264,7 +265,8 @@ export function HttpLoaderFactory(http: HttpClient) {
       }
     }),
     FontAwesomeModule,
-    NgSelectModule
+    NgSelectModule,
+    NgxWigModule
   ],
   providers: [
     {provide: RedirectGuard},
