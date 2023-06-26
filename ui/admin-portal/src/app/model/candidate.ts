@@ -312,6 +312,7 @@ export interface CandidateVisa {
 }
 
 export interface CandidateVisaJobCheck {
+  jobOppId: number;
   id?: number;
   name?: string;
   sfJobLink?: string;

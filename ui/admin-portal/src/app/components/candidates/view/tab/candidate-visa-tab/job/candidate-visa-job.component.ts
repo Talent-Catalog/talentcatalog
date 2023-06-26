@@ -29,8 +29,11 @@ export class CandidateVisaJobComponent implements OnInit {
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaRecord: CandidateVisa;
   loading: boolean;
+  error: string;
   form: FormGroup;
   selectedIndex: number;
+  selectedJobCheck: CandidateVisaJobCheck;
+  jobIndex: number;
 
   constructor(private candidateVisaCheckService: CandidateVisaCheckService,
               private candidateVisaJobService: CandidateVisaJobService,
@@ -59,27 +62,28 @@ export class CandidateVisaJobComponent implements OnInit {
     return this.candidate.candidateOpportunities.map(co => co.jobOpp);
   }
 
-  // addRecord() {
-  //   const modal = this.modalService.open(CreateVisaJobAssessementComponent);
-  //
-  //   modal.result
-  //   .then((request: CreateCandidateVisaJobRequest) => {
-  //     if (request) {
-  //       this.createRecord(request)
-  //     }
-  //   })
-  //   .catch(() => {
-  //     //User cancelled selection
-  //   });
-  // }
+  addJob() {
+    const modal = this.modalService.open(HasNameSelectorComponent);
+    modal.componentInstance.hasNames = this.filteredJobs;
+    modal.componentInstance.label = "Candidate's Job Opportunities";
 
-  createVisaJobCheck(jobId: number) {
+    modal.result
+    .then((selection: ShortJob) => {
+      if (selection) {
+        this.createVisaJobCheck(selection);
+      }
+    })
+    .catch(() => {
+      //User cancelled selection
+    });
+  }
+
+  createVisaJobCheck(job: ShortJob) {
     this.loading = true;
     let request: CreateCandidateVisaJobRequest = {
-      jobId: jobId,
+      jobId: job.id,
     }
-    this.candidateVisaJobService.create(this.visaRecord.id, request)
-    .subscribe(
+    this.candidateVisaJobService.create(this.visaRecord.id, request).subscribe(
       (jobCheck) => {
         this.visaRecord?.candidateVisaJobChecks?.push(jobCheck);
         this.form.controls['jobIndex'].patchValue(this.visaRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
@@ -131,76 +135,5 @@ export class CandidateVisaJobComponent implements OnInit {
     }
     //this.jobCheckAu.changeCheck(this.selectedJobCheck);
   }
-
-  addJob() {
-    const modal = this.modalService.open(HasNameSelectorComponent);
-    modal.componentInstance.hasNames = this.filteredJobs;
-    modal.componentInstance.label = "Candidate's Job Opportunities";
-
-    modal.result
-    .then((selection: ShortJob) => {
-      if (selection) {
-        this.createVisaJobCheck(selection);
-      }
-    })
-    .catch(() => {
-      //User cancelled selection
-    });
-  }
-  //
-  // createRecord(job: ShortJob) {
-  //   this.loading = true;
-  //   const request: CreateCandidateVisaJobRequest = {
-  //     name: job.name,
-  //     jobId: job.id
-  //   };
-  //   this.candidateVisaJobService.create(this.candidate.id, request).subscribe(
-  //     (visaCheck) => {
-  //       this.candidateIntakeData.candidateVisaChecks.push(visaCheck);
-  //       this.form.controls['visaCountry'].patchValue(this.candidateIntakeData.candidateVisaChecks.lastIndexOf(visaCheck));
-  //       this.changeVisaCountry(null)
-  //       this.loading = false;
-  //     },
-  //     (error) => {
-  //       this.error = error;
-  //       this.loading = false;
-  //     });
-  //
-  // }
-  //
-  // deleteJob(i: number) {
-  //   const confirmationModal = this.modalService.open(ConfirmationComponent);
-  //   const visaCheck: CandidateVisa = this.candidateIntakeData.candidateVisaChecks[i];
-  //
-  //   confirmationModal.componentInstance.message =
-  //     "Are you sure you want to delete the visa check for " + visaCheck.country.name;
-  //   confirmationModal.result
-  //   .then((result) => {
-  //     if (result === true) {
-  //       this.doDelete(i, visaCheck);
-  //     }
-  //   })
-  //   .catch(() => {});
-  // }
-  //
-  // private doDelete(i: number, visaCheck: CandidateVisa) {
-  //   // this.loading = true;
-  //   // this.candidateVisaCheckService.delete(visaCheck.id).subscribe(
-  //   //   (done) => {
-  //   //     this.loading = false;
-  //   //     this.candidateIntakeData.candidateVisaChecks.splice(i, 1);
-  //   //     this.changeVisaCountry(null);
-  //   //   },
-  //   //   (error) => {
-  //   //     this.error = error;
-  //   //     this.loading = false;
-  //   //   });
-  // }
-  //
-  // changeJob(event: Event) {
-  //   //   this.selectedIndex = this.form.controls.visaCountry.value;
-  //   //   this.selectedCountry = this.candidateIntakeData
-  //   //     .candidateVisaChecks[this.selectedIndex]?.country?.name;
-  // }
 
 }

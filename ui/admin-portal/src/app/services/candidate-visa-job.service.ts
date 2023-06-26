@@ -7,10 +7,11 @@ import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {CandidateVisaJobCheck} from '../model/candidate';
+// todo this was originally built for the Visa AU request, don't want to completely redo as don't want to mess up the current AU visa job checks.
+// Should eventually just need the job id for the request, and be able to remove name and sf job link.
 
 export interface CreateCandidateVisaJobRequest {
-  name: string;
-  sfJobLink: string;
+  jobId?: number;
 }
 
 @Injectable({providedIn: 'root'})
