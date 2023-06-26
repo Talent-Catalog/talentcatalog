@@ -112,7 +112,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         // Save the candidateOccupation
         candidateOccupation = candidateOccupationRepository.save(candidateOccupation);
 
-        candidate.setAuditFields(candidate.getUser());
+        candidate.setAuditFields(user);
         candidateService.save(candidate, true);
 
         return candidateOccupation;
@@ -145,7 +145,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
         candidateOccupationRepository.delete(candidateOccupation);
 
-        candidate.setAuditFields(candidate.getUser());
+        candidate.setAuditFields(user);
         candidateService.save(candidate, true);
     }
 
@@ -175,6 +175,9 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request) {
+        /* Obtain logged in user for audit fields */
+        User user = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         Candidate candidate = authService.getLoggedInCandidate();
         if (candidate == null) {
             throw new InvalidSessionException("Not logged in");
@@ -241,7 +244,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             }
         }
 
-        candidate.setAuditFields(candidate.getUser());
+        candidate.setAuditFields(user);
         candidateService.save(candidate, true);
 
         return candidateOccupations;

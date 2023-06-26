@@ -80,7 +80,6 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
             if (candidate == null) {
                 throw new InvalidSessionException("Not logged in");
             }
-            candidate.setAuditFields(candidate.getUser());
         }
 
         // Load the country from the database - throw an exception if not found
@@ -104,6 +103,11 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
         // Save the candidateOccupation
         final CandidateJobExperience jobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
+
+        // Update candidate audit fields
+        User user = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        candidate.setAuditFields(user);
 
         //Save the candidate
         candidateService.save(candidate, true);
@@ -156,7 +160,14 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         // Save the candidate experience
         candidateJobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
 
-        candidateService.save(candidateJobExperience.getCandidate(), true);
+        // Set candidate + update audit fields
+        Candidate candidate;
+        User user = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        candidate = candidateJobExperience.getCandidate();
+        candidate.setAuditFields(user);
+
+        candidateService.save(candidate, true);
 
         return candidateJobExperience;
     }
@@ -189,7 +200,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
         candidateJobExperienceRepository.delete(candidateJobExperience);
 
-        candidate.setAuditFields(candidate.getUser());
+        candidate.setAuditFields(user);
         candidateService.save(candidate, true);
     }
 

@@ -1223,6 +1223,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    /**
+     * This method refers to the 'highest level of education' question, whose answer can only be set from the candidate portal
+    **/
     @Override
     public Candidate updateEducation(UpdateCandidateEducationRequest request) {
         Candidate candidate = getLoggedInCandidate()
@@ -1240,6 +1243,9 @@ public class CandidateServiceImpl implements CandidateService {
         return save(candidate, true);
     }
 
+    /**
+     * This method only manages changes to the candidate portal's Survey section - not the admin portal equivalent
+     */
     @Override
     public Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request) {
         Candidate candidate = getLoggedInCandidate()
@@ -1258,6 +1264,9 @@ public class CandidateServiceImpl implements CandidateService {
         return save(candidate, true);
     }
 
+    /**
+     * This method only manages changes to the candidate portal's Additional Info section - not the admin portal equivalent
+     */
     @Override
     public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = getLoggedInCandidate()
