@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {JwtResponse} from "../model/jwt-response";
-import {throwError} from "rxjs";
+import {Observable, throwError} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
@@ -24,10 +24,11 @@ import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Role, User} from "../model/user";
 import {LoginRequest} from "../model/base";
-import {Observable} from "rxjs/index";
 import {EncodedQrImage} from "../util/qr";
-import {Candidate} from "../model/candidate";
+import {Candidate, ShortCandidate} from "../model/candidate";
 import {PartnerType} from "../model/partner";
+import {Job, ShortJob} from "../model/job";
+import {CandidateOpportunity} from "../model/candidate-opportunity";
 
 @Injectable({
   providedIn: 'root'
@@ -147,6 +148,33 @@ export class AuthService {
     return result;
   }
 
+  isCandidateOurs(candidate: ShortCandidate): boolean {
+    let ours = false;
+    const loggedInUser = this.getLoggedInUser()
+    //Must be logged in
+    if (loggedInUser) {
+      ours = candidate.user?.partner?.id === loggedInUser.partner.id;
+    }
+    return ours;
+  }
+
+  isJobOurs(job: ShortJob): boolean {
+
+    //For now all jobs belong to just the default partner.
+    return this.isDefaultDestinationPartner();
+
+    //todo Eventually when we have proper recruiter partner support, the code will look like this:
+    /*
+      let ours = false;
+      const loggedInUser = this.getLoggedInUser()
+      //Must be logged in
+      if (loggedInUser) {
+        ours = job.recruiterPartner?.id === loggedInUser.partner.id;
+      }
+      return ours;
+    */
+  }
+
   /**
    * True if the currently logged in user is permitted to see the given candidate's private
    * and potentially sensitive information - such as intake data
@@ -179,6 +207,11 @@ export class AuthService {
     return visible;
   }
 
+  /**
+   * True if currently logged-in user works for the default source partner or a SourcePartner or
+   * RecruiterPartner.
+   * @private
+   */
   private commonSeniorPartnerAuth(): boolean {
     let ok = false;
     const loggedInUser = this.getLoggedInUser()
@@ -216,6 +249,12 @@ export class AuthService {
     return this.commonSeniorPartnerAuth();
   }
 
+  /**
+   * Can they see and click on links to take them to Salesforce
+   */
+  canAccessSalesforce(): boolean {
+    return this.isDefaultSourcePartner();
+  }
 
   /**
    * True if the currently logged in user is permitted to update salesforce.
@@ -357,6 +396,14 @@ export class AuthService {
   }
 
   /**
+   * True if a user is logged in and they are associated with the default destination partner.
+   */
+  isDefaultDestinationPartner(): boolean {
+    //Currently default source and destination partners are the same.
+    return this.isDefaultSourcePartner();
+  }
+
+  /**
    * True if a user is logged in and they are associated with the default source partner.
    */
   isDefaultSourcePartner(): boolean {
@@ -386,5 +433,42 @@ export class AuthService {
     }
 
     return result;
+  }
+
+  /**
+   * Returns true if the currently logged-in user can change the stage of the given job
+   * @param job Job
+   */
+  canChangeJobStage(job: Job): boolean {
+    let result: boolean = false;
+
+    //Can only change stage of jobs that have been published
+    if (job.publishedBy != null) {
+      //Current logic is that only a system admin or the contact user, defaulting to the creating user
+      //of the job, can change the stage.
+      const loggedInUser = this.getLoggedInUser();
+      if (loggedInUser) {
+        if (this.isSystemAdminOnly()) {
+          result = true;
+        } else {
+          const contactUser = job.contactUser;
+          const createUser = job.createdBy;
+          const owner = contactUser != null ? contactUser : createUser;
+          if (owner != null) {
+            result = owner.id === loggedInUser.id;
+          }
+        }
+      }
+    }
+    return result
+  }
+
+  /**
+   * True if the currently logged-in user can edit the given candidate opp.
+   * @param opp Candidate opportunity
+   */
+  canEditCandidateOpp(opp: CandidateOpportunity) {
+    return this.isSourcePartnerAdminOrGreater() &&
+      (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
   }
 }

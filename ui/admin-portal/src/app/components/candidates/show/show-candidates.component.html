@@ -84,9 +84,9 @@
         </button>
         <button class="btn" *ngIf="candidateSource?.sfJobOpp"
            [routerLink]="['/job',candidateSource.sfJobOpp.id]">
-          <i class="fas fa-hands-helping" title="Associated Job"></i>
+          <i class="fa-solid fa-briefcase" title="Associated Job"></i>
         </button>
-        <button class="btn" *ngIf="salesforceService.joblink(candidateSource)">
+        <button class="btn" *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()">
           <a target="_blank"
              [href]="salesforceService.joblink(candidateSource)">
             <i class="fab fa-salesforce" title="Associated Job Opportunity on Salesforce"></i>
@@ -181,7 +181,7 @@
                 (click)="createUpdateSalesforce()"
                 title="Create or update candidates in Salesforce">
           <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
-          Update <i class="fab fa-salesforce"></i>
+          Update Case(s)
         </button>
 
         <button class="btn btn-sm btn-secondary" *ngIf="canResolveTasks()" [disabled]="!isSelection()"
@@ -199,6 +199,10 @@
               <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
                      id="keyword" autofocus>
             </div>
+            <div *ngIf="isJobList()">
+              <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed opps</label>
+              <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps">
+            </div>
           </form>
         </div>
 
@@ -209,7 +213,7 @@
                  [resultTemplate]="rt"
                  [inputFormatter]="renderCandidateRow"
                  [editable]="false"
-                 (selectItem)="selectSearchResult($event, input)"
+                 (selectItem)="selectCandidateToAdd($event, input)"
                  placeholder="Add (name or #)..."/>
           <ng-template #rt let-r="result" let-t="term">
             <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
@@ -291,6 +295,7 @@
 <!--          Header-->
           <thead class="table-light">
           <tr>
+            <th></th>
             <th *ngIf="isReviewable()">
               <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
             </th>
@@ -299,7 +304,7 @@
               Candidate #
             </th>
             <th *ngIf="isShowStage()">
-              <i class="fab fa-salesforce"></i>
+              Stage
             </th>
             <th>
               <i class="far fa-hand-pointer" title="Select candidates"></i>
@@ -309,7 +314,6 @@
                              [sortDirection]="sortDirection"></app-sorted-by>
               {{field.displayName}}
             </th>
-            <th></th>
           </tr>
           </thead>
 
@@ -332,6 +336,23 @@
             <!-- MODEL: Highlighting current table record. See also scss file. -->
             <tr *ngFor="let candidate of results?.content" (click)="selectCandidate(candidate)"
                 [ngClass]="{'current': currentCandidate?.id == candidate.id, 'selected': candidate.selected}">
+              <td>
+                <div ngbDropdown placement="bottom-left" (click)="$event.stopPropagation();" container="body">
+                  <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
+                    <i class="fas fa-ellipsis-h"></i>
+                  </button>
+                  <ul ngbDropdownMenu>
+                    <li *ngIf="isReviewable()" ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
+                    <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>
+                    <li class="dropdown-divider"></li>
+                    <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
+                      in new tab</a></li>
+                    <li class="dropdown-divider"></li>
+                    <li *ngIf="!isJobList() && isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Remove from list</li>
+                    <li *ngIf="isJobList()" ngbDropdownItem (click)="closeOpportunity(candidate)">Close opportunity for this job</li>
+                  </ul>
+                </div>
+              </td>
               <td *ngIf="isReviewable()">
                 <div [ngSwitch]="getReviewStatus(candidate)" title="Review status. Click to change."
                      (click)="review(candidate)">
@@ -350,7 +371,7 @@
                 <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
                   <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
                 </a>
-                <a *ngIf="candidate.sflink" [href]="candidate.sflink" target="_blank">
+                <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
                   <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
                 </a>
                 <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
@@ -374,8 +395,8 @@
                 </app-tasks-monitor>
               </td>
               <td *ngIf="isShowStage()">
-                <a *ngIf="getStage(candidate)" [href]="getSfOpportunityLink(candidate)" target="_blank"
-                title="Stage that this candidate is at - linking to their SF candidate opportunity">
+                <a *ngIf="getStage(candidate)" [routerLink]="getCandidateOpportunityLink(candidate)"
+                   title="Stage that this candidate is at - linking to their candidate opportunity">
                   {{getStage(candidate)}}
                 </a>
               </td>
@@ -398,22 +419,6 @@ arrays with more than one value display in drop down
 -->
                   {{field.getValue(candidate)}}
                 </span>
-              </td>
-              <td>
-                <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
-                  <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
-                    <i class="fas fa-ellipsis-h"></i>
-                  </button>
-                  <ul ngbDropdownMenu>
-                    <li *ngIf="isReviewable()" ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
-                    <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>
-                    <li class="dropdown-divider"></li>
-                    <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
-                      in new tab</a></li>
-                    <li class="dropdown-divider"></li>
-                    <li *ngIf="isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Remove from list</li>
-                  </ul>
-                </div>
               </td>
             </tr>
 

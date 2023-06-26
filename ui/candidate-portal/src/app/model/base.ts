@@ -22,9 +22,13 @@ export interface OpportunityIds extends HasId {
   sfId?: string;
 }
 
-export interface Opportunity extends OpportunityIds {
+export interface Auditable extends HasId {
+  createdDate?: number;
+  updatedDate?: number;
+}
+
+export interface Opportunity extends Auditable, OpportunityIds {
   closingComments?: string;
-  lastModifiedDate?: Date;
   name: string;
   nextStep?: string;
   nextStepDueDate?: Date;

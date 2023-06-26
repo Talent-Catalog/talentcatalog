@@ -390,9 +390,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Page<Candidate> getSavedListCandidates(long savedListId, SavedListGetRequest request) {
+    public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
+        
         Page<Candidate> candidatesPage = candidateRepository.findAll(
-                new GetSavedListCandidatesQuery(savedListId, request), request.getPageRequestWithoutSort());
+                new GetSavedListCandidatesQuery(savedList, request), request.getPageRequestWithoutSort());
         log.info("Found " + candidatesPage.getTotalElements() + " candidates in list");
         return candidatesPage;
     }
@@ -1842,7 +1843,7 @@ public class CandidateServiceImpl implements CandidateService {
     // List export
     @Override
     public void exportToCsv(
-            long savedListId, SavedListGetRequest request, PrintWriter writer)
+            SavedList savedList, SavedListGetRequest request, PrintWriter writer)
             throws ExportFailedException {
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
             csvWriter.writeNext(getExportTitles());
@@ -1851,9 +1852,9 @@ public class CandidateServiceImpl implements CandidateService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
-                Page<Candidate> result = getSavedListCandidates(savedListId, request);
+                Page<Candidate> result = getSavedListCandidates(savedList, request);
                 for (Candidate candidate : result.getContent()) {
-                    candidate.setContextSavedListId(savedListId);
+                    candidate.setContextSavedListId(savedList.getId());
                     csvWriter.writeNext(getExportCandidateStrings(candidate));
                 }
 

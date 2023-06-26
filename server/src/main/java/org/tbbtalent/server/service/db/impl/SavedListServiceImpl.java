@@ -27,6 +27,7 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -166,13 +167,24 @@ public class SavedListServiceImpl implements SavedListService {
             csl.setContextNote(contextNote);
         }
 
-        //Add candidate to the collection of candidates in this list
-        destinationList.getCandidateSavedLists().add(csl);
-        //Also update other side of many-to-many relationship, adding this
-        //list to the candidate's collection of lists that they belong to.
-        candidate.getCandidateSavedLists().add(csl);
+        if (!destinationList.getCandidateSavedLists().contains(csl)) {
+            //Add candidate to the collection of candidates in this list
+            destinationList.getCandidateSavedLists().add(csl);
+            //Also update other side of many-to-many relationship, adding this
+            //list to the candidate's collection of lists that they belong to.
+            candidate.getCandidateSavedLists().add(csl);
 
-        assignListTasksToCandidate(destinationList, candidate);
+            assignListTasksToCandidate(destinationList, candidate);
+
+            //If a job list, automatically create a candidate opp if needed
+            final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
+            if (jobOpp != null) {
+                //With no params specified will not change any existing opp associated with this job,
+                //but will create a new opp if needed, with stage defaulting to "prospect"
+                candidateOpportunityService.createUpdateCandidateOpportunities(
+                    Collections.singletonList(candidate), jobOpp, null);
+            }
+        }
     }
 
     @Override
@@ -489,7 +501,7 @@ public class SavedListServiceImpl implements SavedListService {
         throws NoSuchObjectException, SalesforceException, WebClientException {
         SavedList savedList = get(request.getSavedListId());
         SalesforceJobOpp sfJobOpp = savedList.getSfJobOpp();
-        candidateOpportunityService.createUpdateSalesforce(
+        candidateOpportunityService.createUpdateCandidateOpportunities(
             savedList.getCandidates(), sfJobOpp, request.getCandidateOppParams());
     }
 
@@ -669,6 +681,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    @NonNull
     public List<SavedList> findListsAssociatedWithJobs() {
         return this.savedListRepository.findListsWithJobs();
     }
@@ -876,6 +889,9 @@ public class SavedListServiceImpl implements SavedListService {
             columnSetUpMap.put(columnCount, columnSetUp);
             if (def.getType().equals(PublishedDocColumnType.EmployerCandidateDecision)) {
                 columnSetUp.setDropDowns(EmployerCandidateDecision.getDisplayTextValues());
+            } else if (def.getType().equals(PublishedDocColumnType.YesNoDropdown)) {
+                List<String> values = Arrays.asList("", "Yes", "No");
+                columnSetUp.setDropDowns(values);
             }
 
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {

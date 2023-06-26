@@ -292,4 +292,9 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
       }
     }
   }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
+
 }

@@ -13,51 +13,54 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {OpportunityIds} from "./base";
-import {SavedList} from "./saved-list";
+import {SavedList, ShortSavedList} from "./saved-list";
 import {User} from "./user";
-import {Partner} from "./partner";
+import {ShortPartner} from "./partner";
 import {SavedSearch} from "./saved-search";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
 import {SearchOpportunityRequest} from "./candidate-opportunity";
+import {Opportunity, OpportunityProgressParams} from "./opportunity";
+
+export function isJob(opp: Opportunity): opp is Job {
+  return opp ? 'submissionList' in opp : false;
+}
 
 export interface ShortJob {
   id: number,
   name: string;
+  country?: string;
+  submissionList?: ShortSavedList;
+  recruiterPartner?: ShortPartner;
 }
 
-export interface Job extends OpportunityIds {
+export interface Job extends Opportunity {
   employerWebsite: string;
   employerHiredInternationally: boolean;
   hiringCommitment: string;
-  accepting: boolean;
+  opportunityScore: string;
+  employerDescription: string;
   contactEmail: string;
   contactUser: User;
   // Note: this country field comes from Salesforce, why it is a string and not a country object.
   country: string;
-  createdBy: User;
-  createdDate: Date;
   employer: string;
   exclusionList: SavedList;
   jobSummary: string;
-  name: string;
   publishedBy: User;
   publishedDate: Date;
-  recruiterPartner: Partner;
+  recruiterPartner: ShortPartner;
   stage: JobOpportunityStage;
   starringUsers: User[];
   submissionDueDate: Date;
   submissionList: SavedList;
   suggestedList: SavedList;
   suggestedSearches: SavedSearch[];
-  updatedBy: User;
-  updatedDate: Date;
   jobOppIntake: JobOppIntake;
-
 }
+
 export function getJobExternalHref(router: Router, location: Location, job: Job): string {
   return getExternalHref(router, location, ['job', job.id]);
 }
@@ -71,42 +74,41 @@ export type JobDocType = "jd" | "joi";
  * See https://docs.google.com/document/d/1B6DmpYaONV_yNmyAqL76cu0TUQcpNgKtOmKELCkpRoc/edit#heading=h.qx7je1tuwoqv
  */
 export enum JobOpportunityStage {
-  prospect = "Prospect",
-  briefing = "Briefing",
-  pitching = "Pitching",
-  identifyingRoles = "Identifying roles",
-  candidateSearch = "Candidate search",
-  visaEligibility = "Visa eligibility",
-  cvPreparation = "CV preparation",
-  cvReview = "CV review",
-  recruitmentProcess = "Recruitment process",
-  jobOffer = "Job offer",
-  visaPreparation = "Visa preparation",
-  postHireEngagement = "Post hire engagement",
-  hiringCompleted = "Hiring completed",
-  ineligibleEmployer = "Ineligible employer",
-  ineligibleOccupation = "Ineligible occupation",
-  ineligibleRegion = "Ineligible region",
-  noInterest = "No interest",
-  noJobOffer = "No job offer",
-  noPrPathway = "No PR pathway",
-  noSuitableCandidates = "No suitable candidates",
-  noVisa = "No visa",
-  tooExpensive = "Too expensive",
-  tooHighWage = "Too high wage",
-  tooLong = "Too long"
+  prospect = "0. Prospect",
+  briefing = "1. Briefing",
+  pitching = "2. Pitching",
+  identifyingRoles = "3. Identifying roles",
+  candidateSearch = "4. Candidate search",
+  visaEligibility = "5. Visa eligibility",
+  cvPreparation = "6. CV preparation",
+  cvReview = "7. CV review",
+  recruitmentProcess = "8. Recruitment process",
+  jobOffer = "9. Job offer",
+  visaPreparation = "10. Visa preparation",
+  postHireEngagement = "11. Post hire engagement",
+  hiringCompleted = "12 Closed won. Hiring completed",
+  ineligibleEmployer = "Closed. Ineligible employer",
+  ineligibleOccupation = "Closed. Ineligible occupation",
+  ineligibleRegion = "Closed. Ineligible region",
+  noInterest = "Closed. No interest",
+  noJobOffer = "Closed. No job offer",
+  noPrPathway = "Closed. No PR pathway",
+  noSuitableCandidates = "Closed. No suitable candidates",
+  noVisa = "Closed. No visa",
+  tooExpensive = "Closed. Too expensive",
+  tooHighWage = "Closed. Too high wage",
+  tooLong = "Closed. Too long"
 }
 
 /**
  * Adds extra job opportunity specific fields to standard SearchOpportunityRequest
  */
 export class SearchJobRequest extends SearchOpportunityRequest {
-  accepting?: boolean;
   published?: boolean;
   starred?: boolean;
 }
 
-export interface UpdateJobRequest {
+export interface UpdateJobRequest extends OpportunityProgressParams {
   sfJoblink?: string;
   submissionDueDate?: Date;
 }

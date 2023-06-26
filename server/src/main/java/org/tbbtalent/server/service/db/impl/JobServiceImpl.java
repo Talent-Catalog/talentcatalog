@@ -30,6 +30,7 @@ import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.job.JobInfoForSlackPost;
 import org.tbbtalent.server.request.job.JobIntakeData;
@@ -65,6 +66,7 @@ public class JobServiceImpl implements JobService {
 
     private final static DateTimeFormatter nextStepDateFormat = DateTimeFormatter.ofPattern("ddMMMyy", Locale.ENGLISH);
     private final AuthService authService;
+    private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
     private final UserService userService;
     private final FileSystemService fileSystemService;
@@ -80,11 +82,13 @@ public class JobServiceImpl implements JobService {
     private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
     public JobServiceImpl(
-            AuthService authService, CandidateSavedListService candidateSavedListService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
+            AuthService authService, CandidateOpportunityService candidateOpportunityService,
+        CandidateSavedListService candidateSavedListService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
             SalesforceBridgeService salesforceBridgeService, SalesforceService salesforceService,
             SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
             SavedSearchService savedSearchService, JobOppIntakeService jobOppIntakeService) {
         this.authService = authService;
+        this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
         this.userService = userService;
         this.fileSystemService = fileSystemService;
@@ -237,7 +241,6 @@ public class JobServiceImpl implements JobService {
                 job.getSfId(), JobOpportunityStage.candidateSearch, nextStep, submissionDueDate);
         }
 
-        job.setAccepting(true);
         job.setPublishedBy(loggedInUser);
         job.setPublishedDate(OffsetDateTime.now());
 
@@ -346,9 +349,52 @@ public class JobServiceImpl implements JobService {
         throws NoSuchObjectException, SalesforceException {
         User loggedInUser = getLoggedInUser("update job");
         SalesforceJobOpp job = getJob(id);
+        final JobOpportunityStage stage = request.getStage();
+        if (stage != null) {
+            job.setStage(stage);
+
+            //todo Add Zeynep's new logic
+            //Do automation logic
+            if (stage.isClosed()) {
+                closeUnclosedCandidateOppsForJob(job, stage);
+            }
+        }
+
+        final String nextStep = request.getNextStep();
+        if (nextStep != null) {
+            job.setNextStep(nextStep);
+        }
+
+        final LocalDate nextStepDueDate = request.getNextStepDueDate();
+        if (nextStepDueDate != null) {
+            job.setNextStepDueDate(nextStepDueDate);
+        }
+
+        salesforceService.updateEmployerOpportunityStage(
+            job.getSfId(), stage, nextStep, nextStepDueDate);
+
         job.setSubmissionDueDate(request.getSubmissionDueDate());
         job.setAuditFields(loggedInUser);
         return salesforceJobOppRepository.save(job);
+    }
+
+    private void closeUnclosedCandidateOppsForJob(SalesforceJobOpp job, JobOpportunityStage stage) {
+        Set<CandidateOpportunity> candidateOpportunities = job.getCandidateOpportunities();
+        final Set<Candidate> candidates = candidateOpportunities.stream()
+            //Not interested in opps which are already closed or at an employed stage
+            .filter(co -> !co.isClosed() && !co.getStage().isEmployed())
+            .map(CandidateOpportunity::getCandidate).collect(Collectors.toSet());
+
+        if (candidates.size() > 0) {
+            CandidateOpportunityParams params = new CandidateOpportunityParams();
+            params.setStage(CandidateOpportunityStage.noJobOffer);
+            params.setClosingComments("Job opportunity closed: " + stage.toString());
+
+            candidateOpportunityService.createUpdateCandidateOpportunities(candidates, job, params);
+
+            log.info("Closed opps for candidates going for job  " + job.getId() + ": "
+                + candidates.stream().map(Candidate::getCandidateNumber).collect(Collectors.joining(",")));
+        }
     }
 
     @NonNull

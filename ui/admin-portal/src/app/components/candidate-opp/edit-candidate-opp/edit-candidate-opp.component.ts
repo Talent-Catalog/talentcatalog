@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateOpportunityStage} from "../../../model/candidate-opportunity";
+import {CandidateOpportunity, CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-edit-candidate-opp',
@@ -12,11 +12,23 @@ import {CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 })
 export class EditCandidateOppComponent implements OnInit {
 
-  //todo Allow for optional supply of CandidateOpportunity which can be used to prefill
+  //Allow for optional supply of CandidateOpportunity which can be used to prefill
   //form fields with existing values
+  opp: CandidateOpportunity;
+
+  /**
+   * Determines whether progress params - stage, nextStep and nextStepDue - are captured by the
+   * component.
+   * <p/>
+   * Sometimes those params are captured by the separate special purpose
+   * OpportunityStageNextStepComponent - in which case, this can be set false.
+   */
+  showProgressParams = true;
 
   salesforceStageForm: FormGroup;
   candidateOpportunityStageOptions: EnumOption[] = enumOptions(CandidateOpportunityStage);
+
+  closing = false;
 
   constructor(
     private activeModal: NgbActiveModal,
@@ -24,15 +36,22 @@ export class EditCandidateOppComponent implements OnInit {
 
   ngOnInit(): void {
     this.salesforceStageForm = this.fb.group({
-      stage: [null],
-      nextStep: [null],
-      nextStepDueDate: [null],
-      closingComments: [null],
-      employerFeedback: [null]
+      stage: [this.opp ? this.opp.stage : null],
+      nextStep: [this.opp ? this.opp.nextStep : null],
+      nextStepDueDate: [this.opp ? this.opp.nextStepDueDate : null],
+      closingComments: [this.opp ? this.opp.closingComments : null],
+      closingCommentsForCandidate: [this.opp ? this.opp.closingCommentsForCandidate : null],
+      employerFeedback: [this.opp ? this.opp.employerFeedback : null]
     });
+
+    if (this.closing) {
+      this.candidateOpportunityStageOptions = this.candidateOpportunityStageOptions
+         .filter(en=>en.stringValue.startsWith('Closed') )
+    }
   }
 
   get closingComments(): string { return this.salesforceStageForm.value?.closingComments; }
+  get closingCommentsForCandidate(): string { return this.salesforceStageForm.value?.closingCommentsForCandidate; }
   get employerFeedback(): string { return this.salesforceStageForm.value?.employerFeedback; }
   get nextStep(): string { return this.salesforceStageForm.value?.nextStep; }
   get nextStepDueDate(): string { return this.salesforceStageForm.value?.nextStepDueDate; }
@@ -48,6 +67,7 @@ export class EditCandidateOppComponent implements OnInit {
       nextStep: this.nextStep,
       nextStepDueDate: this.nextStepDueDate,
       closingComments: this.closingComments,
+      closingCommentsForCandidate: this.closingCommentsForCandidate,
       employerFeedback: this.employerFeedback
     }
     this.activeModal.close(info)

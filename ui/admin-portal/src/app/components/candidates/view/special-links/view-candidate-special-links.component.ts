@@ -19,6 +19,7 @@ import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditCandidateSpecialLinksComponent} from "./edit/edit-candidate-special-links.component";
+import {AuthService} from "../../../../services/auth.service";
 
 @Component({
   selector: 'app-view-candidate-special-links',
@@ -31,7 +32,9 @@ export class ViewCandidateSpecialLinksComponent implements OnInit, OnChanges {
   loading: boolean;
   error;
 
-  constructor(private candidateService: CandidateService,
+  constructor(
+    private authService: AuthService,
+    private candidateService: CandidateService,
               private modalService: NgbModal) { }
 
   ngOnInit() {
@@ -93,4 +96,9 @@ export class ViewCandidateSpecialLinksComponent implements OnInit, OnChanges {
         this.loading = false;
       });
   }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
+
 }

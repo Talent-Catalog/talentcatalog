@@ -33,6 +33,12 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 public class SearchOpportunityRequest extends PagedSearchRequest {
 
     /**
+     * If specified, match opportunities in active stages
+     */
+    @Nullable
+    private Boolean activeStages;
+
+    /**
      * If specified, match opportunities whose names are like this keyword
      */
     @Nullable

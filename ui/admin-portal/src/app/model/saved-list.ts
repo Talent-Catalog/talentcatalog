@@ -54,6 +54,11 @@ export interface SavedList extends CandidateSource {
   tasks?: Task[];
 }
 
+export interface ShortSavedList {
+  id: number;
+  name: string;
+}
+
 export function externalDocLink(savedList: SavedList): string {
   return savedList?.tbbShortName ? environment.publishUrl + "/" + savedList.tbbShortName : null;
 }
@@ -228,6 +233,8 @@ export class SearchSavedListRequest extends SearchCandidateSourcesRequest {
 }
 
 export class SavedListGetRequest extends PagedSearchRequest {
+  keyword?: string;
+  showClosedOpps?: boolean;
 }
 
 export interface UpdateSharingRequest {

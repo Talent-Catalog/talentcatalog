@@ -2,18 +2,19 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Inject,
   Input,
+  LOCALE_ID,
   OnChanges,
   OnInit,
   Output,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {truncate} from 'src/app/util/string';
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {
   CandidateOpportunity,
-  getCandidateOpportunityStageName,
+  CandidateOpportunityStage,
   SearchOpportunityRequest
 } from "../../../model/candidate-opportunity";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
@@ -21,6 +22,11 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {formatDate} from "@angular/common";
+import {SalesforceService} from "../../../services/salesforce.service";
+import {AuthService} from "../../../services/auth.service";
+import {getOpportunityStageName} from "../../../model/opportunity";
+import {enumOptions} from "../../../util/enum";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -35,6 +41,13 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   @Input() searchBy: SearchOppsBy;
   @Input() candidateOpps: CandidateOpportunity[];
 
+  /**
+   * Display the name of the job opportunity rather than the name of the candidate opportunity.
+   * <p/>
+   * This is useful when you are displaying the Jobs that a candidate has gone for.
+   */
+  @Input() showJobOppName: boolean = false;
+
   @Output() oppSelection = new EventEmitter();
 
   opps: CandidateOpportunity[];
@@ -43,7 +56,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
   loading: boolean;
   error;
-  myOppsOnlyTip = "Only show opps that I am the contact for";
+  myOppsOnlyTip = "Only show cases that I am the contact for";
   pageNumber: number;
   pageSize: number;
 
@@ -54,24 +67,33 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   searchFilter: ElementRef;
 
   searchForm: FormGroup;
-  showClosedOppsTip = "Show opps that have been closed";
+  showClosedOppsTip = "Show cases that have been closed";
+  showInactiveOppsTip = "Show cases that are no longer active - for example if they have already relocated";
 
-  //Default sort opps in ascending order of nextDueDate
+  //Default sort opps in descending order of nextDueDate
   sortField = 'nextStepDueDate';
-  sortDirection = 'ASC';
+  sortDirection = 'DESC';
+
+  stages = enumOptions(CandidateOpportunityStage);
+
 
 
   private filterKeySuffix: string = 'Filter';
   private myOppsOnlySuffix: string = 'MyOppsOnly';
   private savedStateKeyPrefix: string = 'BrowseKey';
   private showClosedOppsSuffix: string = 'ShowClosedOpps';
+  private showInactiveOppsSuffix: string = 'ShowInactiveOpps';
   private sortDirectionSuffix: string = 'SortDir';
   private sortFieldSuffix: string = 'Sort';
 
   constructor(
     private fb: FormBuilder,
+    private authService: AuthService,
+
     private localStorageService: LocalStorageService,
-    private oppService: CandidateOpportunityService
+    private oppService: CandidateOpportunityService,
+    private salesforceService: SalesforceService,
+    @Inject(LOCALE_ID) private locale: string
   ) { }
 
   ngOnInit(): void {
@@ -107,11 +129,13 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     //Pick up previous options
     const previousMyOppsOnly: string = this.localStorageService.get(this.savedStateKey() + this.myOppsOnlySuffix);
     const previousShowClosedOpps: string = this.localStorageService.get(this.savedStateKey() + this.showClosedOppsSuffix);
+    const previousShowInactiveOpps: string = this.localStorageService.get(this.savedStateKey() + this.showInactiveOppsSuffix);
 
     this.searchForm = this.fb.group({
       keyword: [filter],
       myOppsOnly: [previousMyOppsOnly ? previousMyOppsOnly : false],
       showClosedOpps: [previousShowClosedOpps ? previousShowClosedOpps : false],
+      showInactiveOpps: [previousShowInactiveOpps ? previousShowInactiveOpps : false],
       selectedStages: [[]]
     });
 
@@ -128,12 +152,20 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     return this.searchForm ? this.searchForm.value.showClosedOpps : false;
   }
 
+  private get showInactiveOpps(): boolean {
+    return this.searchForm ? this.searchForm.value.showInactiveOpps : false;
+  }
+
   private get myOppsOnly(): boolean {
     return this.searchForm ? this.searchForm.value.myOppsOnly : false;
   }
 
   get SearchOppsBy() {
     return SearchOppsBy;
+  }
+
+  get selectedStages(): string[] {
+    return this.searchForm ? this.searchForm.value.selectedStages : "";
   }
 
   private savedStateKey(): string {
@@ -161,6 +193,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     //Remember options
     this.localStorageService.set(this.savedStateKey()+this.myOppsOnlySuffix, this.myOppsOnly);
     this.localStorageService.set(this.savedStateKey()+this.showClosedOppsSuffix, this.showClosedOpps);
+    this.localStorageService.set(this.savedStateKey()+this.showInactiveOppsSuffix, this.showInactiveOpps);
 
     let req = new SearchOpportunityRequest();
     req.keyword = this.keyword;
@@ -169,6 +202,8 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
     req.sortFields = [this.sortField];
     req.sortDirection = this.sortDirection;
+
+    req.stages = this.selectedStages;
 
     switch (this.searchBy) {
       case SearchOppsBy.live:
@@ -183,7 +218,19 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
         } else {
           req.ownedByMyPartner = true;
         }
-        req.sfOppClosed = this.showClosedOpps;
+
+        //Default - filters out closed opps and only includes active stages
+        req.sfOppClosed = false;
+        req.activeStages = true;
+
+        if (this.showInactiveOpps) {
+          //Turn off the active stages filter
+          req.activeStages = false;
+        }
+
+        if (this.showClosedOpps) {
+          req.sfOppClosed = true;
+        }
         break;
     }
 
@@ -223,12 +270,16 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
   }
 
-  get getCandidateOpportunityStageName() {
-    return getCandidateOpportunityStageName;
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
   }
 
-  get truncate() {
-    return truncate;
+  get getCandidateOpportunityStageName() {
+    return getOpportunityStageName;
+  }
+
+  getOppSfLink(sfId: string): string {
+    return this.salesforceService.sfOppToLink(sfId);
   }
 
   private subscribeToFilterChanges() {
@@ -242,12 +293,20 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     });
   }
 
-  toggleSort(column: string) {
+  /**
+   * Call when column title is clicked. If the column is the currently selected column,
+   * the sort toggles between ASC and DESC.
+   * If the column is not the currently selected column, the sort is set to the given
+   * default.
+   * @param column Name of column which was clicked
+   * @param directionDefault Default sort direction for the clicked column
+   */
+  toggleSort(column: string, directionDefault = 'ASC') {
     if (this.sortField === column) {
       this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
     } else {
       this.sortField = column;
-      this.sortDirection = 'ASC';
+      this.sortDirection = directionDefault;
     }
 
     if (this.searchBy) {
@@ -263,5 +322,11 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
 
     this.oppSelection.emit(opp);
 
+  }
+
+  getNextStepHoverString(opp: CandidateOpportunity) {
+    const date = opp == null ? null : opp.updatedDate;
+    const dateStr = date == null ? "???" : formatDate(date, "yyyy-MM-dd", this.locale);
+    return dateStr + ': ' + (opp.nextStep ? opp.nextStep : '');
   }
 }

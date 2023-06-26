@@ -9,8 +9,18 @@
   <div class="searches">
     <form [formGroup]="searchForm" (ngSubmit)="search()">
         <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
-          <label class="form-label" [title]="myJobsOnlyTip" for="myJobsOnlyTip">My jobs only</label>
-          <input [title]="myJobsOnlyTip" type="checkbox" [formControlName]="'myJobsOnly'" id="myJobsOnlyTip">
+          <div>
+            <label class="form-label" [title]="myOppsOnlyTip" for="myOppsOnly">My jobs only</label>
+            <input [title]="myOppsOnlyTip" type="checkbox" formControlName="myOppsOnly" id="myOppsOnly">
+          </div>
+          <div>
+            <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed jobs</label>
+            <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox" [formControlName]="'showClosedOpps'" id="showClosedOpps">
+          </div>
+          <div>
+            <label class="form-label" [title]="showInactiveOppsTip" for="showInactiveOpps">Show inactive jobs</label>
+            <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox" formControlName="showInactiveOpps" id="showInactiveOpps">
+          </div>
         </div>
 
         <div class="mb-3">
@@ -46,7 +56,7 @@
         </th>
         <th (click)="toggleSort('stageOrder')">
           <app-sorted-by [column]="'stageOrder'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
-          <i class="fab fa-salesforce"></i>
+          Stage
         </th>
 
         <th (click)="toggleSort('createdDate')">
@@ -66,12 +76,13 @@
       <tr *ngFor="let job of results?.content" (click)="selectCurrent(job)"
           [ngClass]="{'current': currentJob?.id == job.id}">
         <td title="{{job.country}}">
+          {{job.name| truncate: 36}}
           <a [routerLink]="['/job',job.id]">
-            {{truncate(job.name, 36)}}
+            <i class="fa-solid fa-briefcase" title="Job"></i>
           </a>
         </td>
         <td title="Contact {{fullUserName(job.contactUser)}}">
-          {{truncate(job.stage,13)}}
+          {{job.stage | truncate: 13}}
         </td>
         <td>
           {{job.createdDate | date}}

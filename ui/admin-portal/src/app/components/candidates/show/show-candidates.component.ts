@@ -35,10 +35,7 @@ import {
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {
-  CreateFromDefaultSavedSearchRequest,
-  SavedSearchService
-} from '../../../services/saved-search.service';
+import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
@@ -64,7 +61,6 @@ import {
   indexOfHasId,
   isMine,
   isStarredByMe,
-  OpportunityIds,
   ReviewStatus,
   Status
 } from '../../../model/base';
@@ -89,9 +85,7 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {
-  CandidateSourceCandidateService
-} from '../../../services/candidate-source-candidate.service';
+import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {
   EditCandidateReviewStatusItemComponent
@@ -110,9 +104,7 @@ import {
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
-import {
-  EditCandidateOppComponent
-} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
+import {EditCandidateOppComponent} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {
@@ -121,7 +113,8 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {getCandidateOpportunityStageName} from "../../../model/candidate-opportunity";
+import {CandidateOpportunity} from "../../../model/candidate-opportunity";
+import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
 
 interface CachedTargetList {
   sourceID: number;
@@ -158,6 +151,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   importing: boolean;
   importingFeedback: boolean;
   publishing: boolean;
+  showClosedOppsTip = "Display candidates who were not successful";
   updating: boolean;
   updatingStatuses: boolean;
   updatingTasks: boolean;
@@ -233,7 +227,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
     if (isSavedList(this.candidateSource)) {
       this.searchForm = this.fb.group({
-        keyword: ['']
+        keyword: [''],
+        showClosedOpps: []
       });
       this.subscribeToFilterChanges();
 
@@ -264,6 +259,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   get keyword(): string {
     return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  get showClosedOpps(): boolean {
+    return this.searchForm ? this.searchForm.value.showClosedOpps : null;
   }
 
   get ReviewStatus() {
@@ -441,8 +440,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
        * version stored on the server. But with a saved list we do.
        */
 
-      //If we are being driven by a manually modifiable search request, submit
-      //that search.
+      //If we are being driven by a manually modifiable search request (eg someone has changed the
+      //search parameters and clicked on the Apply button) submit that search.
       if (this.searchRequest) {
 
         this.updatedSearch()
@@ -469,6 +468,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           request = new SavedListGetRequest();
         }
         request.keyword = this.keyword;
+        request.showClosedOpps = this.showClosedOpps;
         request.pageNumber = this.pageNumber - 1;
         request.pageSize = this.pageSize;
         request.sortFields = [this.sortField];
@@ -481,8 +481,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.candidateSource, request).subscribe(
           results => {
 
-            //todo Should allow modification of results to be displayed. For example, a job list will filter
-            //candidate opportunities matching the job.
             this.results = results;
             this.cacheResults();
 
@@ -840,8 +838,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return isStarredByMe(this.candidateSource?.users, this.authService);
   }
 
-  isShowStage(): boolean {
+  isJobList(): boolean {
     return isSavedList(this.candidateSource) && this.candidateSource.sfJobOpp != null;
+  }
+
+  isShowStage(): boolean {
+    return this.isJobList();
   }
 
   isEditable(): boolean {
@@ -1347,7 +1349,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  selectSearchResult ($event, input) {
+  selectCandidateToAdd ($event, input) {
     $event.preventDefault();
     input.value = '';
     const candidate: Candidate = $event.item;
@@ -1766,23 +1768,53 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
    */
   getStage(candidate: Candidate): string {
     let stage = null;
-    const opp = candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+    const opp = this.getCandidateOppForThisJob(candidate);
     if (opp) {
-      stage = getCandidateOpportunityStageName(opp.stage);
+      stage = getOpportunityStageName(opp);
     }
     return stage;
   }
 
+  getCandidateOpportunityLink(candidate: Candidate): any[] {
+    const opp = this.getCandidateOppForThisJob(candidate);
+    return opp ? ['/opp', opp.id] : null;
+  }
+
   /**
-   * Get candidate Sales opportunity link to opportunity matching current job
+   * Get candidate opportunity matching current job
    * @param candidate Candidate who opportunities we need to search
    */
-  getSfOpportunityLink(candidate: Candidate): string {
-    let link = null;
-    const opp = candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
-    if (opp) {
-      link = this.salesforceService.sfOppToLink(opp.sfId);
+  getCandidateOppForThisJob(candidate: Candidate): CandidateOpportunity {
+    return candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+  }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
+
+  closeOpportunity(candidate: Candidate) {
+    const job = this.candidateSource.sfJobOpp;
+    if (job) {
+      const editOpp = this.modalService.open(EditCandidateOppComponent, {size: 'lg'});
+      editOpp.componentInstance.closing = true;
+      editOpp.result
+      .then((info: CandidateOpportunityParams) => {
+        this.doUpdateOpp(candidate, job, info)
+      })
+      .catch(() => { });
     }
-    return link;
+  }
+
+  private doUpdateOpp(candidate: Candidate, job: OpportunityIds, info: CandidateOpportunityParams) {
+    this.updating = true;
+    this.error = null;
+    this.candidateService.createUpdateOppsFromCandidates([candidate.id], job.sfId, info)
+    .subscribe(result => {
+        //Refresh to display any changed stages
+        this.doSearch(true);
+        this.updating = false;
+      },
+      err => {this.error = err; this.updating = false; }
+    );
   }
 }

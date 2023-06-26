@@ -24,7 +24,6 @@ import {JobService} from "../../../services/job.service";
 export class NewJobComponent implements OnInit {
   jobName: string;
   job: Job;
-  prepare: boolean;
   savedList: SavedList;
   sfJoblink: string;
   slacklink: string;
@@ -49,9 +48,6 @@ export class NewJobComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit(): void {
-    this.route.data.subscribe(
-      (data) => {this.prepare = data.prepare}
-    )
   }
 
   get listLink(): string {
@@ -159,16 +155,7 @@ export class NewJobComponent implements OnInit {
         this.creatingSFLinks = Progress.NotStarted;
       });
 
-    if (this.prepare) {
       this.postingToSlack = Progress.Finished;
-    } else {
-      //Todo This is the old way - which will eventually not been needed
-      //Mark job as published and then post to Slack
-      this.jobService.publishJob(this.job.id).subscribe(
-        (job) => {this.job = job; this.postJobToSlack()},
-        (error) => {this.errorPostingToSlack = error}
-      )
-    }
   }
 
   private postJobToSlack() {
@@ -203,7 +190,7 @@ export class NewJobComponent implements OnInit {
   }
 
   getBreadCrumb() {
-    return this.prepare ? "Create a new job" : "Register a new Job"
+    return "Create a new job";
   }
 
   doPreparation() {

@@ -13,9 +13,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {Opportunity, PagedSearchRequest} from "./base";
+import {PagedSearchRequest} from "./base";
 import {ShortJob} from "./job";
 import {ShortCandidate} from "./candidate";
+import {Opportunity} from "./opportunity";
+
+export function isCandidateOpportunity(opp: Opportunity): opp is CandidateOpportunity {
+  return opp ? 'jobOpp' in opp : false;
+}
 
 export interface CandidateOpportunity extends Opportunity {
 
@@ -49,7 +54,7 @@ export enum CandidateOpportunityStage {
   relocating = "18. Relocating",
   relocated = "19. Relocated (candidate has arrived at employer's location)",
   settled = "20. Settled (candidate indicates no further need for support)",
-  durableSolution = "21. Durable solution (permanent residence, normal citizen rights)",
+  durableSolution = "21 Closed won. Durable solution (permanent residence, normal citizen rights)",
   noJobOffer = "Closed. No job offer",
   noVisa = "Closed. No visa",
   notFitForRole = "Closed. Not fit for role",
@@ -59,43 +64,15 @@ export enum CandidateOpportunityStage {
   candidateLeavesDestination = "Closed. Candidate leaves destination",
   candidateRejectsOffer = "Closed. Candidate rejects offer",
   candidateUnreachable = "Closed. Candidate unreachable",
-  candidateWithdraws = "Closed. Candidate withdraws"
-
-}
-
-/**
- * Given the key of a CandidateOpportunityStage enum, return the string value abbreviated for
- * easy display by stripping out any numeric prefix or parenthesized suffix.
- * <p/>
- * Just returns the input enumStageNameKey if it does not match any enum key name.
- * @param enumStageNameKey Key name of CandidateOpportunityStag
- */
-export function getCandidateOpportunityStageName(enumStageNameKey: string): string {
-  let s = CandidateOpportunityStage[enumStageNameKey];
-  if (!s) {
-    s = enumStageNameKey;
-  } else {
-    //Strip off extra stuff
-
-    //Strip off any prefix - eg '17. '
-    let prefixIndex = s.indexOf('. ');
-    if (prefixIndex >= 0) {
-      s = s.substring(prefixIndex+2);
-    }
-
-    //Strip off any suffix - eg ' (Canada only)'
-    let suffixIndex = s.indexOf(' (');
-    if (suffixIndex >= 0) {
-      s = s.substring(0, suffixIndex);
-    }
-  }
-  return s;
+  candidateWithdraws = "Closed. Candidate withdraws",
+  jobOfferRetracted = "Closed. Job offer retracted"
 }
 
 /**
  * Base class for both Job opportunity and candidate opportunity requests
  */
 export class SearchOpportunityRequest extends PagedSearchRequest {
+  activeStages?: boolean;
   keyword?: string;
   ownedByMe?: boolean;
   ownedByMyPartner?: boolean;

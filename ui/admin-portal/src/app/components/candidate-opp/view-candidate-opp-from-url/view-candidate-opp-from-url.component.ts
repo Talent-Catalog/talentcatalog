@@ -51,4 +51,7 @@ export class ViewCandidateOppFromUrlComponent implements OnInit {
     this.opp = opp;
   }
 
+  onCandidateOppUpdated(opp: CandidateOpportunity) {
+    this.setOpp(opp)
+  }
 }

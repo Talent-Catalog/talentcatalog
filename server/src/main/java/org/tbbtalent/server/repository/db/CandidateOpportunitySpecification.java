@@ -17,26 +17,17 @@
 package org.tbbtalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.db.CandidateOpportunity;
-import org.tbbtalent.server.model.db.CandidateOpportunityStage;
-import org.tbbtalent.server.model.db.PartnerJobRelation;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
+
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Specification for sorting and searching {@link CandidateOpportunity} entities
@@ -65,23 +56,55 @@ public class CandidateOpportunitySpecification {
                         ));
             }
 
+            //TODO CandidateOpportunitySpecification and JobSpecification are both opportunity
+            //specifications and duplicate a lot of code which should be refactored out.
+
+            final Boolean showActiveStages = request.getActiveStages();
+            final Boolean showClosed = request.getSfOppClosed();
+
+            boolean isStageFilterActive = false;
+
             // STAGE
             List<CandidateOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
                 conjunction.getExpressions().add(builder.isTrue(opp.get("stage").in(stages)));
+                isStageFilterActive = true;
             }
 
-            //CLOSED
-            if (request.getSfOppClosed() != null) {
-                conjunction.getExpressions().add(builder.equal(opp.get("closed"), request.getSfOppClosed()));
+            //ACTIVE STAGES (ignored if doing stage filtering)
+            if (!isStageFilterActive) {
+                //Note that we only check "active stages" if explicit stages have not been requested.
+                if (showActiveStages != null) {
+                    //Only apply filter when we just want to display active stages
+                    //Otherwise, if false, it will ONLY display inactive stages which we don't want
+                    if (showActiveStages) {
+                        final Predicate activePredicate = builder.between(opp.get("stageOrder"),
+                            CandidateOpportunityStage.prospect.ordinal(),
+                            CandidateOpportunityStage.relocating.ordinal());
+                        if (showClosed != null && showClosed) {
+                            //When active stages are requested as well as closed, we need both.
+                            //ie We need to show opps which are active OR closed
+                            conjunction.getExpressions().add(
+                                builder.or(activePredicate,
+                                builder.equal(opp.get("closed"), true)));
+                        } else {
+                            conjunction.getExpressions().add(activePredicate);
+                        }
+                    }
+                }
             }
 
-            //TODO JC Need live checkbox as well as My Opps- defaults to true (ie Closed = false)
-
-            //TODO Also - display candidate name when not Candidate Jobs tab.
+            //CLOSED (ignored if we are doing stage filtering)
+            if (!isStageFilterActive && showClosed != null) {
+                //Only apply filter if we want to exclude closed opps.
+                //Otherwise the filter when true will only show closed opps - which we don't want.
+                if (!showClosed) {
+                    conjunction.getExpressions().add(builder.equal(opp.get("closed"), false));
+                }
+            }
 
             //OWNERSHIP
-            // Owner by me or Owned by my partner
+            // Owned by me or Owned by my partner
             Predicate ors = builder.disjunction();
 
             //If managed by this user (ie by logged in user)
@@ -98,23 +121,35 @@ public class CandidateOpportunitySpecification {
                 if (loggedInUser != null) {
                     Partner loggedInUserPartner = loggedInUser.getPartner();
                     if (loggedInUserPartner != null) {
+
+                        //Get the opp's jobOpp
+                        Join<Object, Object> jobOpp = opp.join("jobOpp");
+
+                        //Get the partner associated with the opp's candidate
+                        Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
+
                         Long partnerId = loggedInUserPartner.getId();
                         Long userId = loggedInUser.getId();
 
                         //Create the Select subquery - giving all the jobs the user is contact for
-                        Subquery<SalesforceJobOpp> sq = query.subquery(SalesforceJobOpp.class);
-                        Root<PartnerJobRelation> pjr = sq.from(PartnerJobRelation.class);
-                        sq.select(pjr.get("job")).where(
+                        Subquery<SalesforceJobOpp> usersJobs = query.subquery(SalesforceJobOpp.class);
+                        Root<PartnerJobRelation> pjr = usersJobs.from(PartnerJobRelation.class);
+                        usersJobs.select(pjr.get("job")).where(
                             builder.and(
                                 builder.equal(pjr.get("partner").get("id"), partnerId),
                                 builder.equal(pjr.get("contact").get("id"), userId)
                             )
                         );
 
-                        //Check that the opp's job appears in the jobs return by the above subquery.
-                        Join<Object, Object> jobOpp = opp.join("jobOpp");
                         ors.getExpressions().add(
-                            builder.in(jobOpp).value(sq)
+                            builder.and(
+                                //User's partner must be the partner associated with the opp's candidate
+                                builder.equal(partner.get("id"), loggedInUserPartner.getId()),
+
+                                //and this job must be one of the jobs that this user is the contact
+                                //for.
+                                builder.in(jobOpp).value(usersJobs)
+                            )
                         );
                     }
                 }
@@ -127,9 +162,7 @@ public class CandidateOpportunitySpecification {
                 if (loggedInUser != null) {
                     Partner loggedInUserPartner = loggedInUser.getPartner();
                     if (loggedInUserPartner != null) {
-                        Join<Object, Object> candidate = opp.join("candidate");
-                        Join<Object, Object> user = candidate.join("user");
-                        Join<Object, Object> partner = user.join("partner");
+                        Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
                         ors.getExpressions().add(
                             builder.equal(partner.get("id"), loggedInUserPartner.getId())
                         );
@@ -143,6 +176,18 @@ public class CandidateOpportunitySpecification {
 
             return conjunction;
         };
+    }
+
+    /**
+     * Walk down the joins from the opp to find the partner associated with the opp's candidate
+     * @param opp Candidate opportunity
+     * @return Associated partner
+     */
+    private static Join<Object, Object> getOppCandidatePartnerJoin(Root<CandidateOpportunity> opp) {
+        Join<Object, Object> candidate = opp.join("candidate");
+        Join<Object, Object> user = candidate.join("user");
+        Join<Object, Object> partner = user.join("partner");
+        return partner;
     }
 
     private static List<Order> getOrdering(PagedSearchRequest request,

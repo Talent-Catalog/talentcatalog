@@ -25,15 +25,20 @@
           <thead class="table-light">
           <tr>
             <th>{{ 'CANDIDATE-OPPS.TABLE.NAME' | translate }}</th>
+<!-- Todo restore when we agree on how to display stage to candidates           -->
+<!--            <th>{{ 'CANDIDATE-OPPS.TABLE.STAGE' | translate }}</th>-->
           </tr>
           </thead>
 
           <tbody>
           <tr *ngFor="let opp of opps" (click)="selectOpp(opp)">
-            <td>
-<!--              todo Fill this job display out a bit more. Including closing comments-->
-              <div class="link underline">{{opp.jobOpp.name}}</div>
+            <td [title]="opp.jobOpp.name">
+                <div class="link underline">{{opp.jobOpp.name | truncate: 40}}</div>
             </td>
+<!-- Todo restore when we agree on how to display stage to candidates           -->
+<!--            <td>-->
+<!--              {{getCandidateOpportunityStageName(opp.stage)}}-->
+<!--            </td>-->
           </tr>
 
           <!-- loading -->

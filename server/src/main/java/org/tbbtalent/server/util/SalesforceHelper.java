@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.util;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +45,28 @@ public class SalesforceHelper {
     @Nullable
     public static String sfOppIdToLink(@Nullable String sfId) {
         return sfId == null ? null : SF_OPPORTUNITY_LINK_PREFIX + sfId + SF_OPPORTUNITY_LINK_SUFFIX;
+    }
+
+    /**
+     * Converts a Salesforce Offset Date Time string to an {@link OffsetDateTime}.
+     * @param sfOffsetDateTime Salesforce offset date time string
+     * @return OffsetDateTime or null if input string is null
+     */
+    @Nullable
+    public static OffsetDateTime parseSalesforceOffsetDateTime(@Nullable String sfOffsetDateTime) {
+        //Salesforce strings have the offset as hhmm instead of hh:mm. We just need to insert the :
+        //For example "2023-06-01T00:21:58.000+0000" -> "2023-06-01T00:21:58.000+00:00" 
+        OffsetDateTime offsetDateTime = null;
+        if (sfOffsetDateTime != null) {
+            final int sfLen = sfOffsetDateTime.length();
+            if (sfLen > 2) {
+                String isoOffsetDateTime =
+                    sfOffsetDateTime.substring(0, sfLen - 2) + ":" + sfOffsetDateTime.substring(
+                        sfLen - 2);
+                offsetDateTime = OffsetDateTime.parse(isoOffsetDateTime);
+            }
+        }
+        return offsetDateTime;
     }
 
 

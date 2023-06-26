@@ -15,8 +15,7 @@
   <div class="d-flex justify-content-between align-items-center">
     <h1>{{job.name}}
       <span class="small text-muted">
-        ({{job.id}}) {{job.stage}}
-        <a *ngIf="job.sfId" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
+        <a *ngIf="job.sfId && canAccessSalesforce()" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
           <i class="fab fa-salesforce" title="Show job in Salesforce"></i>
         </a>
         <a *ngIf="job.submissionList?.folderjdlink" [href]="job.submissionList.folderjdlink" target="_blank">
@@ -48,6 +47,11 @@
     </div>
 
   </div>
+
+  <div>
+    Job Opportunity Number {{job.id}}
+  </div>
+  <hr/>
 
   <app-view-job-preparation-items *ngIf="!job.publishedBy"
     [jobPrepItems]="jobPrepItems"
@@ -119,6 +123,18 @@
               [job]="job"
               [editable]="!loggedInUser.readOnly">
             </app-job-source-contacts-tab>
+          </ng-template>
+        </ng-container>
+
+        <!-- PROGRESS -->
+        <ng-container ngbNavItem="Progress">
+          <a ngbNavLink>Progress</a>
+          <ng-template ngbNavContent>
+            <app-opportunity-stage-next-step
+              [opp]="job"
+              (oppProgressUpdated)="onOppProgressUpdated($event)"
+            >
+            </app-opportunity-stage-next-step>
           </ng-template>
         </ng-container>
 

@@ -17,7 +17,6 @@
 package org.tbbtalent.server.model.db;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,16 +40,16 @@ public class AbstractOpportunity extends AbstractAuditableDomainObject<Long> {
     private boolean closed;
 
     /**
+     * True if opportunity is won
+     */
+    private boolean won;
+
+    /**
      * Closing comments on opportunity.
      * Normally null until opportunity has been closed.
      */
     @Nullable
     private String closingComments;
-
-    /**
-     * Last modified date of the corresponding opportunity on Salesforce
-     */
-    private OffsetDateTime lastModifiedDate;
 
     /**
      * Name of opportunity
