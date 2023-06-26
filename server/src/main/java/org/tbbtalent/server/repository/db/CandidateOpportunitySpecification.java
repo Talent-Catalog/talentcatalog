@@ -17,26 +17,17 @@
 package org.tbbtalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.db.CandidateOpportunity;
-import org.tbbtalent.server.model.db.CandidateOpportunityStage;
-import org.tbbtalent.server.model.db.PartnerJobRelation;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
+
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Specification for sorting and searching {@link CandidateOpportunity} entities
@@ -65,15 +56,51 @@ public class CandidateOpportunitySpecification {
                         ));
             }
 
+            //TODO CandidateOpportunitySpecification and JobSpecification are both opportunity
+            //specifications and duplicate a lot of code which should be refactored out.
+
+            final Boolean showActiveStages = request.getActiveStages();
+            final Boolean showClosed = request.getSfOppClosed();
+
+            boolean isStageFilterActive = false;
+
             // STAGE
             List<CandidateOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
                 conjunction.getExpressions().add(builder.isTrue(opp.get("stage").in(stages)));
+                isStageFilterActive = true;
             }
 
-            //CLOSED
-            if (request.getSfOppClosed() != null) {
-                conjunction.getExpressions().add(builder.equal(opp.get("closed"), request.getSfOppClosed()));
+            //ACTIVE STAGES (ignored if doing stage filtering)
+            if (!isStageFilterActive) {
+                //Note that we only check "active stages" if explicit stages have not been requested.
+                if (showActiveStages != null) {
+                    //Only apply filter when we just want to display active stages
+                    //Otherwise, if false, it will ONLY display inactive stages which we don't want
+                    if (showActiveStages) {
+                        final Predicate activePredicate = builder.between(opp.get("stageOrder"),
+                            CandidateOpportunityStage.prospect.ordinal(),
+                            CandidateOpportunityStage.relocating.ordinal());
+                        if (showClosed != null && showClosed) {
+                            //When active stages are requested as well as closed, we need both.
+                            //ie We need to show opps which are active OR closed
+                            conjunction.getExpressions().add(
+                                builder.or(activePredicate,
+                                builder.equal(opp.get("closed"), true)));
+                        } else {
+                            conjunction.getExpressions().add(activePredicate);
+                        }
+                    }
+                }
+            }
+
+            //CLOSED (ignored if we are doing stage filtering)
+            if (!isStageFilterActive && showClosed != null) {
+                //Only apply filter if we want to exclude closed opps.
+                //Otherwise the filter when true will only show closed opps - which we don't want.
+                if (!showClosed) {
+                    conjunction.getExpressions().add(builder.equal(opp.get("closed"), false));
+                }
             }
 
             //OWNERSHIP
@@ -118,9 +145,9 @@ public class CandidateOpportunitySpecification {
                             builder.and(
                                 //User's partner must be the partner associated with the opp's candidate
                                 builder.equal(partner.get("id"), loggedInUserPartner.getId()),
-                                
-                                //and this job must be one of the jobs that this user is the contact 
-                                //for. 
+
+                                //and this job must be one of the jobs that this user is the contact
+                                //for.
                                 builder.in(jobOpp).value(usersJobs)
                             )
                         );

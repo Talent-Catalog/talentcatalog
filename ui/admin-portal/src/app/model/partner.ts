@@ -51,6 +51,14 @@ export interface PartnerSimpleAttributes {
   websiteUrl: string;
 }
 
+
+export interface ShortPartner {
+  id: number;
+  name: string;
+  abbreviation: string;
+  websiteUrl: string;
+}
+
 export interface Partner extends PartnerSimpleAttributes {
   id: number;
   defaultContact?: User;

@@ -55,7 +55,8 @@ public enum CandidateOpportunityStage {
         candidateLeavesDestination ("Candidate leaves destination", true, true, false),
         candidateRejectsOffer ("Candidate rejects offer", true, false, false),
         candidateUnreachable ("Candidate unreachable", true, false, false),
-        candidateWithdraws ("Candidate withdraws", true, false, false)
+        candidateWithdraws ("Candidate withdraws", true, false, false),
+        jobOfferRetracted ("Job offer retracted", true, false, false)
         ;
 
         private final String salesforceStageName;

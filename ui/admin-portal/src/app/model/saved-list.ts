@@ -54,6 +54,11 @@ export interface SavedList extends CandidateSource {
   tasks?: Task[];
 }
 
+export interface ShortSavedList {
+  id: number;
+  name: string;
+}
+
 export function externalDocLink(savedList: SavedList): string {
   return savedList?.tbbShortName ? environment.publishUrl + "/" + savedList.tbbShortName : null;
 }

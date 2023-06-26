@@ -35,6 +35,7 @@ import {OccupationService} from '../../../../../services/occupation.service';
 import {LanguageLevelService} from '../../../../../services/language-level.service';
 import {CandidateNoteService} from '../../../../../services/candidate-note.service';
 import {AuthService} from '../../../../../services/auth.service';
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-candidate-visa-tab',
@@ -55,15 +56,21 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
               authService: AuthService,
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private localStorageService: LocalStorageService) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 
   onDataLoaded(init: boolean) {
     if (init) {
-      //If we have some visa checks, select the first one
       if (this.candidateIntakeData?.candidateVisaChecks.length > 0) {
-        this.selectedIndex = 0;
+        // If exists, get the last selected visa check from local storage. If nothing there, get the first one.
+        const index: number = this.localStorageService.get('VisaCheckIndex');
+        if (index) {
+          this.selectedIndex = index;
+        } else {
+          this.selectedIndex = 0;
+        }
       }
       this.form = this.fb.group({
         visaCountry: [this.selectedIndex]

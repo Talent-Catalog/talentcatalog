@@ -16,11 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.tbbtalent.server.util.SalesforceHelper.parseSalesforceOffsetDateTime;
-
-import java.time.format.DateTimeParseException;
-import java.util.Collection;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -39,13 +34,20 @@ import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.util.SalesforceHelper;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Collection;
+import java.util.List;
+
+import static org.tbbtalent.server.util.SalesforceHelper.parseSalesforceOffsetDateTime;
+
 @Service
 public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceService salesforceService;
     private final CountryRepository countryRepository;
-    
+
     private final EmailHelper emailHelper;
 
     public SalesforceJobOppServiceImpl(SalesforceJobOppRepository salesforceJobOppRepository,
@@ -171,6 +173,8 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
         salesforceJobOpp.setClosed(op.isClosed());
+        salesforceJobOpp.setClosingComments(op.getClosingComments());
+        salesforceJobOpp.setNextStep(op.getNextStep());
         salesforceJobOpp.setWon(op.isWon());
         salesforceJobOpp.setHiringCommitment(op.getHiringCommitment());
         salesforceJobOpp.setOpportunityScore(op.getOpportunityScore());
@@ -186,6 +190,15 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         }
         salesforceJobOpp.setStage(stage);
 
+        final String nextStepDueDate = op.getNextStepDueDate();
+        if (nextStepDueDate != null) {
+            try {
+                salesforceJobOpp.setNextStepDueDate(LocalDate.parse(nextStepDueDate));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding nextStepDueDate: " + nextStepDueDate + " in job op " + op.getName());
+            }
+        }
+
         final String createdDate = op.getCreatedDate();
         if (createdDate != null) {
             try {
@@ -198,7 +211,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         final String lastModifiedDate = op.getLastModifiedDate();
         if (lastModifiedDate != null) {
             try {
-                //Parse special non-standard Salesforce offset date time format 
+                //Parse special non-standard Salesforce offset date time format
                 salesforceJobOpp.setUpdatedDate(parseSalesforceOffsetDateTime(lastModifiedDate));
             } catch (DateTimeParseException ex) {
                 log.error("Error decoding lastModifiedDate: " + lastModifiedDate + " in job op " + op.getName());
@@ -206,12 +219,12 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         }
 
         //Post processing
-        
+
         // Match a country object with the country name from Salesforce.
         Country country = this.countryRepository.findByNameIgnoreCase(sfCountryName);
         salesforceJobOpp.setCountryObject(country);
         if (country == null ){
              emailHelper.sendAlert("Salesforce country " + sfCountryName + "not found in database.");
-        } 
+        }
     }
 }

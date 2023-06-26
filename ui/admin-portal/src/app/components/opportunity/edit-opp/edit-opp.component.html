@@ -1,0 +1,36 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Update Opportunity Progress</h4>
+
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
+
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="salesforceStageForm">
+
+    <div class="mb-3">
+      <label class="form-label" for="stage">Candidate Opportunity Stage - order is just a guide, most stages are optional.</label>
+      <ng-select id="stage" [formControlName]="'stage'" [items]="opportunityStageOptions"
+                 placeholder="Select" bindLabel="stringValue" bindValue="key" ></ng-select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="nextStep">Next step - please start with date: eg 9Nov21-...</label>
+      <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="nextStepDueDate">Next step due date</label>
+      <app-date-picker id="nextStepDueDate" [control]="salesforceStageForm.controls.nextStepDueDate"
+                       [allowFuture]="true"></app-date-picker>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary"
+          (click)="onSave()">Do it</button>
+  <button type="button" class="btn btn-secondary"
+          (click)="cancel()">Cancel</button>
+</div>

@@ -25,7 +25,8 @@
           <thead class="table-light">
           <tr>
             <th>{{ 'CANDIDATE-OPPS.TABLE.NAME' | translate }}</th>
-            <th>{{ 'CANDIDATE-OPPS.TABLE.STAGE' | translate }}</th>
+<!-- Todo restore when we agree on how to display stage to candidates           -->
+<!--            <th>{{ 'CANDIDATE-OPPS.TABLE.STAGE' | translate }}</th>-->
           </tr>
           </thead>
 
@@ -34,9 +35,10 @@
             <td [title]="opp.jobOpp.name">
                 <div class="link underline">{{opp.jobOpp.name | truncate: 40}}</div>
             </td>
-            <td>
-              {{getCandidateOpportunityStageName(opp.stage)}}
-            </td>
+<!-- Todo restore when we agree on how to display stage to candidates           -->
+<!--            <td>-->
+<!--              {{getCandidateOpportunityStageName(opp.stage)}}-->
+<!--            </td>-->
           </tr>
 
           <!-- loading -->

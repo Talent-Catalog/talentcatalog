@@ -84,7 +84,7 @@
         </button>
         <button class="btn" *ngIf="candidateSource?.sfJobOpp"
            [routerLink]="['/job',candidateSource.sfJobOpp.id]">
-          <i class="fa-solid fa-plane-departure" title="Associated Job"></i>
+          <i class="fa-solid fa-briefcase" title="Associated Job"></i>
         </button>
         <button class="btn" *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()">
           <a target="_blank"
@@ -181,7 +181,7 @@
                 (click)="createUpdateSalesforce()"
                 title="Create or update candidates in Salesforce">
           <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
-          Update Opps
+          Update Case(s)
         </button>
 
         <button class="btn btn-sm btn-secondary" *ngIf="canResolveTasks()" [disabled]="!isSelection()"

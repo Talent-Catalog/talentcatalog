@@ -87,19 +87,30 @@ public class CandidateOpportunityAdminApi implements
             .add("updatedDate")
             ;
     }
-    
+
     private DtoBuilder shortUserDto() {
         return new DtoBuilder()
             .add("username")
             .add("email")
             .add("firstName")
             .add("lastName")
+            .add("partner", shortPartnerDto())
+            ;
+    }
+
+    private DtoBuilder shortPartnerDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("abbreviation")
+            .add("websiteUrl")
             ;
     }
 
     private DtoBuilder shortCandidateDto() {
         return new DtoBuilder()
             .add("candidateNumber")
+            .add("user", shortUserDto())
             ;
     }
 

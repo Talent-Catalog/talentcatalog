@@ -13,20 +13,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {OpportunityIds} from "./base";
-import {SavedList} from "./saved-list";
+import {SavedList, ShortSavedList} from "./saved-list";
 import {User} from "./user";
-import {Partner} from "./partner";
+import {ShortPartner} from "./partner";
 import {SavedSearch} from "./saved-search";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
 import {SearchOpportunityRequest} from "./candidate-opportunity";
+import {Opportunity, OpportunityProgressParams} from "./opportunity";
 
-export interface ShortSavedList {
-  id: number;
-  name: string;
+export function isJob(opp: Opportunity): opp is Job {
+  return opp ? 'submissionList' in opp : false;
 }
 
 export interface ShortJob {
@@ -34,36 +33,31 @@ export interface ShortJob {
   name: string;
   country?: string;
   submissionList?: ShortSavedList;
+  recruiterPartner?: ShortPartner;
 }
 
-export interface Job extends OpportunityIds {
+export interface Job extends Opportunity {
   employerWebsite: string;
   employerHiredInternationally: boolean;
   hiringCommitment: string;
   opportunityScore: string;
   employerDescription: string;
-  accepting: boolean;
   contactEmail: string;
   contactUser: User;
   // Note: this country field comes from Salesforce, why it is a string and not a country object.
   country: string;
-  createdBy: User;
-  createdDate: Date;
   employer: string;
   exclusionList: SavedList;
   jobSummary: string;
-  name: string;
   publishedBy: User;
   publishedDate: Date;
-  recruiterPartner: Partner;
+  recruiterPartner: ShortPartner;
   stage: JobOpportunityStage;
   starringUsers: User[];
   submissionDueDate: Date;
   submissionList: SavedList;
   suggestedList: SavedList;
   suggestedSearches: SavedSearch[];
-  updatedBy: User;
-  updatedDate: Date;
   jobOppIntake: JobOppIntake;
 }
 
@@ -110,14 +104,12 @@ export enum JobOpportunityStage {
  * Adds extra job opportunity specific fields to standard SearchOpportunityRequest
  */
 export class SearchJobRequest extends SearchOpportunityRequest {
-  accepting?: boolean;
   published?: boolean;
   starred?: boolean;
 }
 
-export interface UpdateJobRequest {
+export interface UpdateJobRequest extends OpportunityProgressParams {
   sfJoblink?: string;
-  stage?: string;
   submissionDueDate?: Date;
 }
 

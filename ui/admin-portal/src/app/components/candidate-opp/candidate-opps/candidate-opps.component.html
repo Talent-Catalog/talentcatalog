@@ -9,12 +9,16 @@
   <form [formGroup]="searchForm" (ngSubmit)="search()">
     <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
       <div>
-        <label class="form-label" [title]="myOppsOnlyTip" for="myOppsOnly">My opps only</label>
-        <input [title]="myOppsOnlyTip" type="checkbox" [formControlName]="'myOppsOnly'" id="myOppsOnly">
+        <label class="form-label" [title]="myOppsOnlyTip" for="myOppsOnly">My cases only</label>
+        <input [title]="myOppsOnlyTip" type="checkbox" formControlName="myOppsOnly" id="myOppsOnly">
       </div>
       <div>
-        <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed opps</label>
-        <input [title]="showClosedOppsTip" type="checkbox" [formControlName]="'showClosedOpps'" id="showClosedOpps">
+        <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</label>
+        <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox" [formControlName]="'showClosedOpps'" id="showClosedOpps">
+      </div>
+      <div>
+        <label class="form-label" [title]="showInactiveOppsTip" for="showInactiveOpps">Show inactive cases</label>
+        <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox" formControlName="showInactiveOpps" id="showInactiveOpps">
       </div>
     </div>
 
@@ -22,6 +26,21 @@
       <input #searchFilter type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
              id="keyword">
     </div>
+
+    <div class="mb-3">
+      <label class="form-label">Stage</label>
+      <ng-select
+        id="stage"
+        [items]="stages"
+        [multiple]="true"
+        [closeOnSelect]="true"
+        [searchable]="false"
+        bindLabel="stringValue"
+        bindValue="key"
+        [formControlName]="'selectedStages'">
+      </ng-select>
+    </div>
+
   </form>
 </div>
 
@@ -74,7 +93,7 @@
                 <i class="fas fa-user" title="Candidate"></i>
               </a>
               <a [routerLink]="['/job',opp.jobOpp.id]">
-                <i class="fa-solid fa-plane-departure" title="Job"></i>
+                <i class="fa-solid fa-briefcase" title="Job"></i>
               </a>
             </td>
             <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
@@ -83,7 +102,7 @@
               </a>
             </td>
             <td>
-              {{getCandidateOpportunityStageName(opp.stage)}}
+              {{getCandidateOpportunityStageName(opp)}}
             </td>
             <td [title]="getNextStepHoverString(opp)">
               {{opp.nextStep | truncate: 38}}
