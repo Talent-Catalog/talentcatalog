@@ -9,21 +9,27 @@
   <form [formGroup]="searchForm" (ngSubmit)="search()">
     <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
       <div>
-        <label class="form-label" [title]="myOppsOnlyTip" for="myOppsOnly">My cases only</label>
+        <label class="form-label" [title]="myOppsOnlyTip"
+               for="myOppsOnly">{{myOppsOnlyLabel}}</label>
         <input [title]="myOppsOnlyTip" type="checkbox" formControlName="myOppsOnly" id="myOppsOnly">
       </div>
       <div>
-        <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</label>
-        <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox" [formControlName]="'showClosedOpps'" id="showClosedOpps">
+        <label class="form-label" [title]="showClosedOppsTip"
+               for="showClosedOpps">{{showClosedOppsLabel}}</label>
+        <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox"
+               formControlName="showClosedOpps" id="showClosedOpps">
       </div>
       <div>
-        <label class="form-label" [title]="showInactiveOppsTip" for="showInactiveOpps">Show inactive cases</label>
-        <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox" formControlName="showInactiveOpps" id="showInactiveOpps">
+        <label class="form-label" [title]="showInactiveOppsTip"
+               for="showInactiveOpps">{{showInactiveOppsLabel}}</label>
+        <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox"
+               formControlName="showInactiveOpps" id="showInactiveOpps">
       </div>
     </div>
 
     <div class="mb-3">
-      <input #searchFilter type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
+      <input #searchFilter type="text" class="form-control" placeholder="Search..."
+             aria-label="Search" formControlName="keyword"
              id="keyword">
     </div>
 
@@ -37,10 +43,9 @@
         [searchable]="false"
         bindLabel="stringValue"
         bindValue="key"
-        [formControlName]="'selectedStages'">
+        formControlName="selectedStages">
       </ng-select>
     </div>
-
   </form>
 </div>
 
@@ -81,36 +86,36 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
-              [ngClass]="{'current': currentOpp?.id == opp.id}">
+        <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
+            [ngClass]="{'current': currentOpp?.id == opp.id}">
 
-            <td *ngIf="!showJobOppName" [title]="opp.name">
-              {{opp.name | truncate: 25}}
-              <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
-                <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
-              </a>
-              <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
-                <i class="fas fa-user" title="Candidate"></i>
-              </a>
-              <a [routerLink]="['/job',opp.jobOpp.id]">
-                <i class="fa-solid fa-briefcase" title="Job"></i>
-              </a>
-            </td>
-            <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
-              <a [routerLink]="['/opp',opp.id]">
-               {{opp.jobOpp.name | truncate: 25}}
-              </a>
-            </td>
-            <td>
-              {{getCandidateOpportunityStageName(opp)}}
-            </td>
-            <td [title]="getNextStepHoverString(opp)">
-              {{opp.nextStep | truncate: 38}}
-            </td>
-            <td>
-              {{opp.nextStepDueDate}}
-            </td>
-          </tr>
+          <td *ngIf="!showJobOppName" [title]="opp.name">
+            {{opp.name | truncate: 25}}
+            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
+              <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+            </a>
+            <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+              <i class="fas fa-user" title="Candidate"></i>
+            </a>
+            <a [routerLink]="['/job',opp.jobOpp.id]">
+              <i class="fa-solid fa-briefcase" title="Job"></i>
+            </a>
+          </td>
+          <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
+            <a [routerLink]="['/opp',opp.id]">
+              {{opp.jobOpp.name | truncate: 25}}
+            </a>
+          </td>
+          <td>
+            {{getCandidateOpportunityStageName(opp)}}
+          </td>
+          <td [title]="getNextStepHoverString(opp)">
+            {{opp.nextStep | truncate: 38}}
+          </td>
+          <td>
+            {{opp.nextStepDueDate}}
+          </td>
+        </tr>
         </tbody>
       </table>
 
@@ -141,3 +146,4 @@
     </div>
   </div>
 </div>
+

@@ -5,11 +5,12 @@ import {Observable} from "rxjs";
 import {Job, JobDocType, SearchJobRequest, UpdateJobRequest} from "../model/job";
 import {SearchResults} from "../model/search-results";
 import {UpdateLinkRequest} from "../components/util/input/input-link/input-link.component";
+import {OpportunityService} from "../components/util/opportunity/OpportunityService";
 
 @Injectable({
   providedIn: 'root'
 })
-export class JobService {
+export class JobService implements OpportunityService<Job> {
 
   private apiUrl: string = environment.apiUrl + '/job';
 
