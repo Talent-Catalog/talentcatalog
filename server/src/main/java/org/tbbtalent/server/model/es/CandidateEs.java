@@ -47,6 +47,7 @@ import org.tbbtalent.server.model.db.MaritalStatus;
 import org.tbbtalent.server.model.db.ResidenceStatus;
 import org.tbbtalent.server.model.db.UnhcrStatus;
 import org.tbbtalent.server.request.PagedSearchRequest;
+import org.tbbtalent.server.util.html.TextExtracter;
 
 /**
  * This defines the fields which are stored in Elasticsearch "documents"
@@ -181,12 +182,7 @@ public class CandidateEs {
     public CandidateEs() {
     }
 
-    public CandidateEs(Candidate candidate) {
-        this();
-        copy(candidate);
-    }
-
-    public void copy(Candidate candidate) {
+    public void copy(Candidate candidate, TextExtracter textExtracter) {
 
         this.additionalInfo = candidate.getAdditionalInfo();
         this.firstName = candidate.getUser() == null ? null
@@ -284,12 +280,12 @@ public class CandidateEs {
                 String text = null;
                 if (role == null) {
                     if (description != null) {
-                        text = description;
+                        text = textExtracter.ExtractText(description);
                     }
                 } else {
                     text = role;
                     if (description != null) {
-                        text += " " + description;
+                        text += " " + textExtracter.ExtractText(description);
                     }
                 }
 

@@ -19,6 +19,7 @@ package org.tbbtalent.server.request.work.experience;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import org.tbbtalent.server.util.html.HtmlSanitizer;
 
 public class CreateJobExperienceRequest {
 
@@ -92,5 +93,7 @@ public class CreateJobExperienceRequest {
 
     public String getDescription() { return description; }
 
-    public void setDescription(String description) { this.description = description; }
+    public void setDescription(String description) {
+        this.description = HtmlSanitizer.sanitize(description);
+    }
 }

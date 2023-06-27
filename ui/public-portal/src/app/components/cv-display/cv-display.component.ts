@@ -20,4 +20,8 @@ export class CvDisplayComponent implements OnInit {
     window.print();
   }
 
+  isHtml(text) {
+    // Very simple test for HTML tags - isn't not foolproof but probably good enough
+    return /<\/?[a-z][\s\S]*>/i.test(text);
+  }
 }
