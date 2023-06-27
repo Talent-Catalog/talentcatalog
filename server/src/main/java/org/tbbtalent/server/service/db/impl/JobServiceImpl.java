@@ -518,8 +518,8 @@ public class JobServiceImpl implements JobService {
                     //Missing logic
                     log.warn("Closing logic missing case for job closing stage " + jobCloseStage +
                         " and candidate in stage " + activeOpp.getStage());
-                    //Default to closing candidate opp as noJobOffer
-                    closingStage = CandidateOpportunityStage.noJobOffer;
+                    //Default to closing candidate opp as notFitForRole
+                    closingStage = CandidateOpportunityStage.notFitForRole;
                 }
                 List<Candidate> candidates = closingStageCandidatesMap.computeIfAbsent(
                     closingStage, k -> new ArrayList<>());
