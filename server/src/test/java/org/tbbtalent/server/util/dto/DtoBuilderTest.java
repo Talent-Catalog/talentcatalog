@@ -16,17 +16,16 @@
 
 package org.tbbtalent.server.util.dto;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.experimental.FieldNameConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class DtoBuilderTest {
 
@@ -79,6 +78,110 @@ class DtoBuilderTest {
 
     }
 
+    private Order createStandardOrder(){
+        Customer tim = Customer.builder().
+                name("Tim").
+                id("T1").
+                build();
+
+        OrderItem item1 = OrderItem.builder().
+                stockCode("SC1").
+                price(1.0).
+                quantity(2).
+                build()
+                ;
+
+        OrderItem item2 = OrderItem.builder().
+                stockCode("SC2").
+                price(2.0).
+                quantity(1).
+                build()
+                ;
+
+        OrderItem item3 = OrderItem.builder().
+                stockCode("SC3").
+                price(3.0).
+                quantity(10).
+                build()
+                ;
+
+        Order o = Order.builder().
+                id("O1").
+                customer(tim).
+                items(List.of(item1, item2, item3)).
+                build()
+                ;
+
+        return o;
+    }
+
+    private DtoBuilder createStandardOrderItemDto(DtoCollectionItemFilter<OrderItem> collectionFilter){
+        return new DtoBuilder(collectionFilter).
+                add(OrderItem.Fields.stockCode).
+                add(OrderItem.Fields.price).
+                add(OrderItem.Fields.quantity)
+                ;
+    }
+
+    private DtoBuilder createOrderDto(DtoBuilder itemDtoBuilder){
+        return new DtoBuilder().
+                add(Order.Fields.id).
+                add(Order.Fields.items, itemDtoBuilder)
+                ;
+    }
+
+    @Test
+    void nonFilteredCollection_ReturnsEverything() {
+        Order o = createStandardOrder();
+        DtoBuilder itemDtoBuilder  = createStandardOrderItemDto(null);
+        DtoBuilder orderDtoBuilder  = createOrderDto(itemDtoBuilder);
+
+        Map<String,Object> dto =  orderDtoBuilder.build(o);
+
+        assertNotNull(dto);
+        assertEquals(2, dto.size());
+        assertEquals(o.id, dto.get(Order.Fields.id));
+        assertNotNull(dto.get(Order.Fields.items));
+        List<Map<String,Object>> dtoItems = (List<Map<String, Object>>) dto.get(Order.Fields.items);
+
+        List<OrderItem> orderItems = o.getItems();
+        assertEquals(orderItems.size(), dtoItems.size());
+
+        for (int i = 0; i < orderItems.size(); i++) {
+            OrderItem item = orderItems.get(i);
+            Map<String,Object> dtoItem = dtoItems.get(i);
+            assertEquals(3, dtoItem.size());
+            assertEquals(item.getStockCode(), dtoItem.get(OrderItem.Fields.stockCode));
+            assertEquals(item.getPrice(), dtoItem.get(OrderItem.Fields.price));
+            assertEquals(item.getQuantity(), dtoItem.get(OrderItem.Fields.quantity));
+        }
+    }
+
+    @Test
+    void filteredCollection_RemovesUnwantedItems() {
+        Order o = createStandardOrder();
+        DtoBuilder itemDtoBuilder  = createStandardOrderItemDto(i-> i.getPrice() > 1.0);
+        DtoBuilder orderDtoBuilder  = createOrderDto(itemDtoBuilder);
+
+        Map<String,Object> dto =  orderDtoBuilder.build(o);
+
+        assertNotNull(dto);
+        assertEquals(2, dto.size());
+        assertEquals(o.id, dto.get(Order.Fields.id));
+        assertNotNull(dto.get(Order.Fields.items));
+        List<Map<String,Object>> dtoItems = (List<Map<String, Object>>) dto.get(Order.Fields.items);
+
+        List<OrderItem> orderItems = o.getItems();
+        assertEquals(1, dtoItems.size());
+
+        OrderItem item = orderItems.get(0);
+        Map<String,Object> dtoItem = dtoItems.get(0);
+        assertEquals(3, dtoItem.size());
+        assertEquals(item.getStockCode(), dtoItem.get(OrderItem.Fields.stockCode));
+        assertEquals(item.getPrice(), dtoItem.get(OrderItem.Fields.price));
+        assertEquals(item.getQuantity(), dtoItem.get(OrderItem.Fields.quantity));
+
+    }
     private void doCommonTest(
         ClassWithDiscriminator cwd, SubClass cwd2,
         List<ClassWithDiscriminator> cwdList) {
@@ -158,5 +261,20 @@ class DtoBuilderTest {
         public void setProp1(String prop1) {
             this.prop1 = prop1;
         }
+    }
+
+    @Data @Builder @FieldNameConstants static public class Order{
+        private final String id;
+        private final Customer customer;
+        private final List<OrderItem> items;
+    }
+    @Data @Builder @FieldNameConstants static public class Customer {
+        private final String name;
+        private final String id;
+    }
+    @Data @Builder @FieldNameConstants static public class OrderItem{
+        private final String stockCode;
+        private final double price;
+        private final int quantity;
     }
 }

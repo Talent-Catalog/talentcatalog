@@ -30,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.util.html.JsoupTextExtracterImpl;
+import org.tbbtalent.server.util.html.TextExtracter;
 
 import static org.elasticsearch.index.query.QueryBuilders.fuzzyQuery;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,9 +59,10 @@ public class CandidateEsRepositoryTest {
     void before() {
         CandidateEs candes;
         Candidate cand;
-        
+        TextExtracter textExtracter = new JsoupTextExtracterImpl();
         cand = candidateRepository.findByUserId(9710L);
-        candes = new CandidateEs(cand);
+        candes = new CandidateEs();
+        candes.copy(cand, textExtracter);
         candidateEsRepository.save(candes);
     }
 

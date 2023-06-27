@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+/*
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,30 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.btn-card + .btn-card {
-  margin: 0 0 0 8px;
-}
+package org.tbbtalent.server.util.html;
 
-.job-title {
-  margin: 0 0 8px;
-  font-weight: bold;
-}
-
-.icon {
-  display: inline-block;
-  width: 0.8em;
-  height: 0.8em;
-  background-color: #000;
-  border-radius: 2px;
-  margin: 0 8px;
-}
-
-.text-muted {
-  margin: 1em 0 0 0;
-  &.text{
-    white-space: pre-wrap;
-  }
-  &.html{
-    white-space: normal;
-  }
+/**
+ * Abstracts Text extraction from Html from a specific implementation
+ *
+ * @author Tim Hill
+ */
+public interface TextExtracter {
+    /**
+     * Given an HTML string extract just the text
+     * @param html an HTML string
+     * @return the text from the HTML. Tags replaced with space
+     */
+    String ExtractText(String html);
 }

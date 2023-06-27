@@ -18,6 +18,7 @@ package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.ExportFailedException;
@@ -59,6 +61,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesReque
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.security.CandidateTokenProvider;
+import org.tbbtalent.server.security.CvClaims;
 import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
@@ -320,10 +323,13 @@ public class CandidateAdminApi {
         candidateService.resolveOutstandingTaskAssignments(request);
     }
 
-    @GetMapping("/token/{cn}")
-    public String generateToken(@PathVariable("cn") String candidateNumber) {
-        String token = candidateTokenProvider.generateToken(candidateNumber, 365L);
-        return token;
-    }
+    @GetMapping(value = "/token/{cn}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String generateToken(@PathVariable("cn") String candidateNumber,
+                                @RequestParam(defaultValue = "false") boolean restrictCandidateOccupations,
+                                @RequestParam(defaultValue = "") List<Long> candidateOccupationIds) {
+             CvClaims cvClaims = new CvClaims(candidateNumber, restrictCandidateOccupations, candidateOccupationIds);
+             String token = candidateTokenProvider.generateCvToken(cvClaims, 365L);
+             return token;
+        }
 
 }
