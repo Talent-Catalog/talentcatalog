@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ShortJob} from "../../../../../../model/job";
 import {HasNameSelectorComponent} from "../../../../../util/has-name-selector/has-name-selector.component";
 import {
@@ -21,6 +21,7 @@ export class CandidateVisaJobComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaRecord: CandidateVisa;
+  @Output() selectedJob = new EventEmitter<CandidateVisaJobCheck>();
   loading: boolean;
   error: string;
   form: FormGroup;
@@ -36,7 +37,6 @@ export class CandidateVisaJobComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.visaRecord.candidateVisaJobChecks.length > 0) {
-      //todo need to set index in local storage
       //If exists, get the last selected visa check from local storage. If nothing there, get the first one.
       const index: number = this.localStorageService.get('VisaJobCheckIndex');
       if (index) {
@@ -46,7 +46,7 @@ export class CandidateVisaJobComponent implements OnInit {
       }
     }
     this.form = this.fb.group({
-      visaJob: [this.selectedIndex]
+      jobIndex: [this.selectedIndex]
     });
   }
 
@@ -93,7 +93,6 @@ export class CandidateVisaJobComponent implements OnInit {
         this.visaRecord?.candidateVisaJobChecks?.push(jobCheck);
         this.form.controls['jobIndex'].patchValue(this.visaRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
         this.changeJob(null);
-        this.selectedJobCheck = jobCheck;
         this.loading = false;
       },
       (error) => {
@@ -132,12 +131,21 @@ export class CandidateVisaJobComponent implements OnInit {
       });
   }
 
-  changeJob(event: Event) {
-    this.jobIndex = this.form.controls.jobIndex.value;
-    if (this.visaRecord.candidateVisaJobChecks) {
-      this.selectedJobCheck = this.visaRecord.candidateVisaJobChecks[this.jobIndex];
+  changeJob(index: number) {
+    /**
+     * IF there is an index provided, find the selected job based on that index
+     * ELSE get the job index based on what is checked in the form.
+     */
+    if (this.visaRecord.candidateVisaJobChecks.length > 0) {
+      if (index) {
+        this.selectedJobCheck = this.visaRecord.candidateVisaJobChecks[index];
+      } else {
+        this.selectedJobCheck = this.form.controls.jobIndex.value;
+      }
+    } else {
+      index = null;
     }
-    //this.jobCheckAu.changeCheck(this.selectedJobCheck);
+    this.selectedJob.emit(this.selectedJobCheck);
+    this.localStorageService.set('VisaJobCheckIndex', index)
   }
-
 }

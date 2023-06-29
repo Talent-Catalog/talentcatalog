@@ -210,7 +210,8 @@
           <app-candidate-visa-job
             [candidate]="candidate"
             [candidateIntakeData]="candidateIntakeData"
-            [visaRecord]="visaRecord">
+            [visaRecord]="visaRecord"
+            (selectedJob)="updateSelectedJob($event)">
           </app-candidate-visa-job>
         </ng-template>
       </ngb-panel>
