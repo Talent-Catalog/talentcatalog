@@ -74,3 +74,4 @@ export interface Opportunity extends Auditable, OpportunityIds {
   nextStepDueDate?: Date;
   won: boolean;
 }
+

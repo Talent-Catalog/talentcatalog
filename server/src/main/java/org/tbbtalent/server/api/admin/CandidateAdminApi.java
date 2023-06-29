@@ -18,6 +18,7 @@ package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.ExportFailedException;
@@ -59,6 +61,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesReque
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.security.CandidateTokenProvider;
+import org.tbbtalent.server.security.CvClaims;
 import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
@@ -106,42 +109,42 @@ public class CandidateAdminApi {
 
     @PostMapping("findbyemail")
     public Map<String, Object> findByCandidateEmail(@RequestBody CandidateEmailSearchRequest request) {
-        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        Page<Candidate> candidates = candidateService.searchCandidates(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbyemailorphone")
     public Map<String, Object> findByCandidateEmailOrPhone(@RequestBody CandidateEmailOrPhoneSearchRequest request) {
-        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        Page<Candidate> candidates = candidateService.searchCandidates(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbynumberorname")
     public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateNumberOrNameSearchRequest request) {
-        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        Page<Candidate> candidates = candidateService.searchCandidates(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbyexternalid")
     public Map<String, Object> findByCandidateExternalId(@RequestBody CandidateExternalIdSearchRequest request) {
-        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        Page<Candidate> candidates = candidateService.searchCandidates(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
 
     @GetMapping("number/{number}")
     public Map<String, Object> get(@PathVariable("number") String number) {
-        Candidate candidate = this.candidateService.findByCandidateNumberRestricted(number);
+        Candidate candidate = candidateService.findByCandidateNumberRestricted(number);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
 
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
-        Candidate candidate = this.candidateService.getCandidate(id);
+        Candidate candidate = candidateService.getCandidate(id);
 
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
@@ -164,7 +167,7 @@ public class CandidateAdminApi {
     @PutMapping("{id}/links")
     public Map<String, Object> updateLinks(@PathVariable("id") long id,
                             @RequestBody UpdateCandidateLinksRequest request) {
-        Candidate candidate = this.candidateService.updateCandidateLinks(id, request);
+        Candidate candidate = candidateService.updateCandidateLinks(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -177,7 +180,7 @@ public class CandidateAdminApi {
     @PutMapping("{id}")
     public Map<String, Object> updateContactDetails(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateRequest request) {
-        Candidate candidate = this.candidateService.updateCandidate(id, request);
+        Candidate candidate = candidateService.updateCandidate(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -185,7 +188,7 @@ public class CandidateAdminApi {
     @PutMapping("{id}/info")
     public Map<String, Object> updateAdditionalInfo(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateAdditionalInfoRequest request) {
-        Candidate candidate = this.candidateService.updateCandidateAdditionalInfo(id, request);
+        Candidate candidate = candidateService.updateCandidateAdditionalInfo(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -193,7 +196,7 @@ public class CandidateAdminApi {
     @PutMapping("{id}/shareable-notes")
     public Map<String, Object> updateShareableNotes(@PathVariable("id") long id,
         @RequestBody UpdateCandidateShareableNotesRequest request) {
-        Candidate candidate = this.candidateService.updateShareableNotes(id, request);
+        Candidate candidate = candidateService.updateShareableNotes(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -201,7 +204,7 @@ public class CandidateAdminApi {
     @PutMapping("{id}/shareable-docs")
     public Map<String, Object> updateShareableDocs(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateShareableDocsRequest request) {
-        Candidate candidate = this.candidateSavedListService.updateShareableDocs(id, request);
+        Candidate candidate = candidateSavedListService.updateShareableDocs(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -209,7 +212,7 @@ public class CandidateAdminApi {
     @PutMapping("{id}/survey")
     public Map<String, Object> updateSurvey(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateSurveyRequest request) {
-        Candidate candidate = this.candidateService.updateCandidateSurvey(id, request);
+        Candidate candidate = candidateService.updateCandidateSurvey(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -217,7 +220,7 @@ public class CandidateAdminApi {
     @PutMapping("{id}/media")
     public Map<String, Object> updateMedia(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateMediaRequest request) {
-        Candidate candidate = this.candidateService.updateCandidateMedia(id, request);
+        Candidate candidate = candidateService.updateCandidateMedia(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -225,14 +228,14 @@ public class CandidateAdminApi {
     @PutMapping("{id}/registration")
     public Map<String, Object> updateRegistration(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateRegistrationRequest request) {
-        Candidate candidate = this.candidateService.updateCandidateRegistration(id, request);
+        Candidate candidate = candidateService.updateCandidateRegistration(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
 
     @DeleteMapping("{id}")
     public boolean delete(@PathVariable("id") long id) {
-        return this.candidateService.deleteCandidate(id);
+        return candidateService.deleteCandidate(id);
     }
 
     @PostMapping(value = "export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -320,10 +323,13 @@ public class CandidateAdminApi {
         candidateService.resolveOutstandingTaskAssignments(request);
     }
 
-    @GetMapping("/token/{cn}")
-    public String generateToken(@PathVariable("cn") String candidateNumber) {
-        String token = this.candidateTokenProvider.generateToken(candidateNumber, 365L);
-        return token;
-    }
+    @GetMapping(value = "/token/{cn}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String generateToken(@PathVariable("cn") String candidateNumber,
+                                @RequestParam(defaultValue = "false") boolean restrictCandidateOccupations,
+                                @RequestParam(defaultValue = "") List<Long> candidateOccupationIds) {
+             CvClaims cvClaims = new CvClaims(candidateNumber, restrictCandidateOccupations, candidateOccupationIds);
+             String token = candidateTokenProvider.generateCvToken(cvClaims, 365L);
+             return token;
+        }
 
 }

@@ -20,6 +20,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 class CandidateTokenProviderTest {
 
@@ -43,5 +52,53 @@ class CandidateTokenProviderTest {
 
         String num = ctp.getCandidateNumberFromToken(s);
         assertEquals(numIn, num);
+    }
+
+
+    @Test
+    void oldCandidateOnlyTokenWorksWithCvClaimDecoding() {
+
+        String numIn = "12345";
+
+        String s = ctp.generateToken(numIn, 30000);
+
+        System.out.println(s);
+        System.out.println("Length: " + s.length());
+
+        CvClaims claims = ctp.getCvClaimsFromToken(s);
+        assertEquals(numIn, claims.candidateNumber());
+        assertNotNull(claims.candidateOccupationIds());
+        assertTrue(claims.candidateOccupationIds().isEmpty());
+    }
+
+    static Stream<Arguments> generateCvClaimsRoundTripData() {
+        return Stream.of(
+                Arguments.of("12345", false, null ),
+                Arguments.of("23456", false, Arrays.asList(new Long[] {})),
+                Arguments.of("34567", true, Arrays.asList(new Long[] {})),
+                Arguments.of("45678", true, Arrays.asList(new Long[] {1L})),
+                Arguments.of("56789", true, Arrays.asList(new Long[] {2L,3L}))
+        );
+    }
+    @ParameterizedTest
+    @MethodSource("generateCvClaimsRoundTripData")
+    void cvClaimsRoundTrip(String candidateNumber, boolean restrictCandidateOccupations, List<Long> candidateOccupations) {
+
+
+        String s = ctp.generateCvToken(new CvClaims(candidateNumber, restrictCandidateOccupations, candidateOccupations), 30000);
+
+        System.out.println(s);
+        System.out.println("Length: " + s.length());
+
+        CvClaims claims = ctp.getCvClaimsFromToken(s);
+        assertEquals(candidateNumber, claims.candidateNumber());
+        assertEquals(restrictCandidateOccupations, claims.restrictCandidateOccupations());
+
+        if( restrictCandidateOccupations ) {
+            assertArrayEquals(candidateOccupations.toArray(), claims.candidateOccupationIds().toArray());
+        }else{
+            assertNotNull(claims.candidateOccupationIds());
+            assertTrue(claims.candidateOccupationIds().isEmpty());
+        }
     }
 }

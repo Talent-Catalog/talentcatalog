@@ -701,6 +701,7 @@ import {
 } from './components/candidate-opp/candidate-opps-with-detail/candidate-opps-with-detail.component';
 import {TruncatePipe} from "./pipes/truncate.pipe";
 import {CreatedByComponent} from './components/util/user/created-by/created-by.component';
+import {TailoredCvComponent} from './components/candidates/view/tailored-cv.component';
 import {
   OpportunityStageNextStepComponent
 } from './components/util/opportunity-stage-next-step/opportunity-stage-next-step.component';
@@ -708,9 +709,6 @@ import {EditOppComponent} from './components/opportunity/edit-opp/edit-opp.compo
 import {
   PathwayAssessmentComponent
 } from './components/candidates/visa/pathway-assessment/pathway-assessment.component';
-import {
-  CandidateVisaJobComponent
-} from './components/candidates/view/tab/candidate-visa-tab/job/candidate-visa-job.component';
 
 @NgModule({
   declarations: [
@@ -991,10 +989,10 @@ import {
     CandidateOppsWithDetailComponent,
     TruncatePipe,
     CreatedByComponent,
+    TailoredCvComponent,
     OpportunityStageNextStepComponent,
     EditOppComponent,
-    PathwayAssessmentComponent,
-    CandidateVisaJobComponent
+    PathwayAssessmentComponent
   ],
   imports: [
     BrowserModule,

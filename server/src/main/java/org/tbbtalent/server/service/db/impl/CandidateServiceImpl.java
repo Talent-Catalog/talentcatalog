@@ -173,6 +173,7 @@ import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.BeanHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+import org.tbbtalent.server.util.html.TextExtracter;
 
 
 /**
@@ -252,6 +253,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final TaskService taskService;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
+    private final TextExtracter textExtracter;
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
@@ -280,7 +282,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateExamRepository candidateExamRepository,
         RootRequestService rootRequestService, TaskAssignmentRepository taskAssignmentRepository,
         TaskService taskService, EmailHelper emailHelper,
-        PdfHelper pdfHelper) {
+        PdfHelper pdfHelper, TextExtracter textExtracter) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.candidateRepository = candidateRepository;
@@ -310,6 +312,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.pdfHelper = pdfHelper;
         this.fileSystemService = fileSystemService;
         this.salesforceService = salesforceService;
+        this.textExtracter = textExtracter;
     }
 
     @Transactional
@@ -325,7 +328,8 @@ public class CandidateServiceImpl implements CandidateService {
         for (Candidate candidate : candidates) {
             try {
                 if (createElastic) {
-                    CandidateEs ces = new CandidateEs(candidate);
+                    CandidateEs ces = new CandidateEs();
+                    ces.copy(candidate, textExtracter);
                     ces = candidateEsRepository.save(ces);
 
                     //Update textSearchId on candidate.
@@ -1223,6 +1227,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    /**
+     * This method refers to the 'highest level of education' question, whose answer can only be set from the candidate portal
+    **/
     @Override
     public Candidate updateEducation(UpdateCandidateEducationRequest request) {
         Candidate candidate = getLoggedInCandidate()
@@ -1240,6 +1247,9 @@ public class CandidateServiceImpl implements CandidateService {
         return save(candidate, true);
     }
 
+    /**
+     * This method only manages changes to the candidate portal's Survey section - not the admin portal equivalent
+     */
     @Override
     public Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request) {
         Candidate candidate = getLoggedInCandidate()
@@ -1258,6 +1268,9 @@ public class CandidateServiceImpl implements CandidateService {
         return save(candidate, true);
     }
 
+    /**
+     * This method only manages changes to the candidate portal's Additional Info section - not the admin portal equivalent
+     */
     @Override
     public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = getLoggedInCandidate()
@@ -2036,7 +2049,9 @@ public class CandidateServiceImpl implements CandidateService {
         String originalTextSearchId = textSearchId;
         if (textSearchId == null) {
             //No twin - create one
-            twin = new CandidateEs(candidate);
+            twin = new CandidateEs();
+            twin.copy(candidate, textExtracter);
+
         } else {
             //Get twin
             twin = candidateEsRepository.findById(textSearchId)
@@ -2044,7 +2059,8 @@ public class CandidateServiceImpl implements CandidateService {
             if (twin == null) {
                 //Candidate is referring to non existent twin.
                 //Create new twin
-                twin = new CandidateEs(candidate);
+                twin = new CandidateEs();
+                twin.copy(candidate, textExtracter);
 
                 //Shouldn't really happen (except during a complete reload)
                 // so log warning
@@ -2053,7 +2069,7 @@ public class CandidateServiceImpl implements CandidateService {
                         + textSearchId + ". Creating new twin.");
             } else {
                 //Update twin from candidate
-                twin.copy(candidate);
+                twin.copy(candidate, textExtracter);
             }
         }
         twin = candidateEsRepository.save(twin);

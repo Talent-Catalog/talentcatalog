@@ -25,11 +25,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateJobExperience;
+import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.security.CandidateTokenProvider;
+import org.tbbtalent.server.security.CvClaims;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+import org.tbbtalent.server.util.dto.DtoCollectionItemFilter;
 
-import java.util.Map;
+import lombok.NonNull;
+
+import java.util.*;
 
 /**
  * Public API - accessible without a login
@@ -50,12 +56,14 @@ public class CvPublicApi {
     public Map<String, Object> decodeCvRequest(@PathVariable("token") String token) {
 
         try {
-            String candidateNumber = candidateTokenProvider.getCandidateNumberFromToken(token);
-            Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
+            CvClaims claims = candidateTokenProvider.getCvClaimsFromToken(token);
+            Candidate candidate = candidateService.findByCandidateNumber(claims.candidateNumber());
             if (candidate == null) {
                 throw new NoSuchObjectException("Unknown candidate");
             }
-            return candidateDto().build(candidate);
+            CvBuilder cvBuilder = new CvBuilder(candidate, claims.restrictCandidateOccupations(), claims.candidateOccupationIds());
+            return cvBuilder.build();
+
         } catch (ExpiredJwtException ex) {
             throw new InvalidRequestException("This link has expired");
         } catch (JwtException ex) {
@@ -63,109 +71,129 @@ public class CvPublicApi {
         }
     }
 
-    private DtoBuilder candidateDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("candidateNumber")
-            .add("country", countryDto())
-            .add("candidateOccupations", candidateOccupationDto())
-            .add("candidateJobExperiences", candidateJobExperienceDto())
-            .add("candidateEducations", candidateEducationDto())
-            .add("candidateLanguages", candidateLanguageDto())
-            .add("candidateCertifications", candidateCertificationDto())
-            ;
-    }
+    private class CvBuilder {
+        private final Candidate candidate;
+        private final HashSet<Long> includeIds;
+        private final DtoCollectionItemFilter<CandidateOccupation> candidateOccupationFilter;
+        private final DtoCollectionItemFilter<CandidateJobExperience> candidateJobExperienceFilter;
 
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name");
-    }
+        public CvBuilder(@NonNull Candidate candidate, boolean restrictCandidateOccupations, @NonNull List<Long> candidateOccupationIds) {
+            this.candidate = candidate;
+            includeIds = new HashSet<>(candidateOccupationIds);
+            candidateOccupationFilter = restrictCandidateOccupations ?
+                    i -> !includeIds.contains(i.getId().longValue()) : null;
+            candidateJobExperienceFilter =  restrictCandidateOccupations ?
+                    i -> !includeIds.contains(i.getCandidateOccupation().getId().longValue()) :
+                    null;
+        }
 
-    private DtoBuilder candidateJobExperienceDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("companyName")
-                .add("role")
-                .add("startDate")
-                .add("endDate")
-                .add("fullTime")
-                .add("paid")
-                .add("description")
-                .add("country", countryDto())
-                .add("candidateOccupation", candidateOccupationDto())
-                ;
-    }
+        public Map<String, Object> build() {
+            return candidateDto().build(candidate);
+        }
 
-    private DtoBuilder candidateOccupationDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("occupation", occupationDto())
-                .add("yearsExperience")
-                ;
-    }
+        private DtoBuilder candidateDto() {
+            return new DtoBuilder()
+                    .add("id")
+                    .add("candidateNumber")
+                    .add("country", countryDto())
+                    .add("candidateOccupations", candidateOccupationDto())
+                    .add("candidateJobExperiences", candidateJobExperienceDto())
+                    .add("candidateEducations", candidateEducationDto())
+                    .add("candidateLanguages", candidateLanguageDto())
+                    .add("candidateCertifications", candidateCertificationDto())
+                    ;
+        }
 
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
+        private DtoBuilder countryDto() {
+            return new DtoBuilder()
+                    .add("id")
+                    .add("name");
+        }
 
-    private DtoBuilder candidateEducationDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("educationType")
-                .add("country", countryDto())
-                .add("educationMajor", majorDto())
-                .add("lengthOfCourseYears")
-                .add("institution")
-                .add("courseName")
-                .add("yearCompleted")
-                .add("incomplete")
-                ;
-    }
+        private DtoBuilder candidateJobExperienceDto() {
+            return new DtoBuilder(this.candidateJobExperienceFilter)
+                    .add("id")
+                    .add("companyName")
+                    .add("role")
+                    .add("startDate")
+                    .add("endDate")
+                    .add("fullTime")
+                    .add("paid")
+                    .add("description")
+                    .add("country", countryDto())
+                    .add("candidateOccupation", candidateOccupationDto())
+                    ;
+        }
 
-    private DtoBuilder majorDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                .add("status")
-                ;
-    }
+        private DtoBuilder candidateOccupationDto() {
+            return new DtoBuilder(this.candidateOccupationFilter)
+                    .add("id")
+                    .add("occupation", occupationDto())
+                    .add("yearsExperience")
+                    ;
+        }
 
-    private DtoBuilder candidateLanguageDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("migrationLanguage")
-                .add("language", languageDto())
-                .add("writtenLevel", languageLevelDto())
-                .add("spokenLevel",languageLevelDto())
-                ;
-    }
+        private DtoBuilder occupationDto() {
+            return new DtoBuilder()
+                    .add("id")
+                    .add("name")
+                    ;
+        }
 
-    private DtoBuilder languageDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
+        private DtoBuilder candidateEducationDto() {
+            return new DtoBuilder()
+                    .add("id")
+                    .add("educationType")
+                    .add("country", countryDto())
+                    .add("educationMajor", majorDto())
+                    .add("lengthOfCourseYears")
+                    .add("institution")
+                    .add("courseName")
+                    .add("yearCompleted")
+                    .add("incomplete")
+                    ;
+        }
 
-    private DtoBuilder languageLevelDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                .add("level")
-                ;
-    }
+        private DtoBuilder majorDto() {
+            return new DtoBuilder()
+                    .add("id")
+                    .add("name")
+                    .add("status")
+                    ;
+        }
 
-    private DtoBuilder candidateCertificationDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                .add("institution")
-                .add("dateCompleted")
-                ;
-    }
+        private DtoBuilder candidateLanguageDto() {
+            return new DtoBuilder()
+                    .add("id")
+                    .add("migrationLanguage")
+                    .add("language", languageDto())
+                    .add("writtenLevel", languageLevelDto())
+                    .add("spokenLevel", languageLevelDto())
+                    ;
+        }
 
+        private DtoBuilder languageDto() {
+            return new DtoBuilder()
+                    .add("id")
+                    .add("name")
+                    ;
+        }
+
+        private DtoBuilder languageLevelDto() {
+            return new DtoBuilder()
+                    .add("id")
+                    .add("name")
+                    .add("level")
+                    ;
+        }
+
+        private DtoBuilder candidateCertificationDto() {
+            return new DtoBuilder()
+                    .add("id")
+                    .add("name")
+                    .add("institution")
+                    .add("dateCompleted")
+                    ;
+        }
+    }
 }

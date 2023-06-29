@@ -33,6 +33,7 @@
   break-inside: avoid;
 }
 
+
 table {
   width: 100%;
 }
@@ -64,7 +65,14 @@ img {
 }
 
 p {
-  white-space: pre-wrap;
+  &.html{
+    white-space: normal;
+    line-height: normal;
+  }
+
+  &.text{
+    white-space: pre-wrap;
+  }
 }
 
 h4 {

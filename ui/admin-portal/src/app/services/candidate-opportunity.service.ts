@@ -20,11 +20,12 @@ import {Observable, of} from "rxjs";
 import {CandidateOpportunity, SearchOpportunityRequest} from "../model/candidate-opportunity";
 import {SearchResults} from "../model/search-results";
 import {CandidateOpportunityParams} from "../model/candidate";
+import {OpportunityService} from "../components/util/opportunity/OpportunityService";
 
 @Injectable({
   providedIn: 'root'
 })
-export class CandidateOpportunityService {
+export class CandidateOpportunityService implements OpportunityService<CandidateOpportunity> {
 
   private mocking = false;
   private mockOpp: CandidateOpportunity = {

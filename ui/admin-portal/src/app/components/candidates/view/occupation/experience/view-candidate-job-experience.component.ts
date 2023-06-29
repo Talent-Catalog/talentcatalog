@@ -192,4 +192,8 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
       .catch(() => { /* Isn't possible */ });
   }
 
+  isHtml(text) {
+    // Very simple test for HTML tags - isn't not foolproof but probably good enough
+    return /<\/?[a-z][\s\S]*>/i.test(text);
+  }
 }
