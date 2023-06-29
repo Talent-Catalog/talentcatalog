@@ -51,8 +51,20 @@ export class CandidateVisaJobComponent implements OnInit {
   }
 
   private get filteredJobs(): ShortJob[] {
-    //todo need to filter existing jobs
-    return this.candidate.candidateOpportunities.map(co => co.jobOpp);
+    /**
+     * IF there are no existing visa job checks, return all the jobs associated with their candidate opportunities.
+     * ELSE filter those jobs out from the jobs associated with their candidate opportunites.
+     */
+    if (!this.visaRecord?.candidateVisaJobChecks) {
+      return this.candidate.candidateOpportunities.map(co => co.jobOpp);
+    } else {
+      const existingJobIds: number [] = this.visaRecord.candidateVisaJobChecks
+        .map(jobCheck => jobCheck.jobOpp.id);
+
+      return this.candidate.candidateOpportunities
+        .map(co => co.jobOpp)
+        .filter(jo => !existingJobIds.includes(jo.id))
+    }
   }
 
   addJob() {
@@ -94,9 +106,8 @@ export class CandidateVisaJobComponent implements OnInit {
   deleteJob(i: number) {
     const confirmationModal = this.modalService.open(ConfirmationComponent);
     const visaJobCheck: CandidateVisaJobCheck = this.visaRecord.candidateVisaJobChecks[i];
-
     confirmationModal.componentInstance.message =
-      "Are you sure you want to delete the job check for " + visaJobCheck.name;
+      "Are you sure you want to delete the job check for " + visaJobCheck.jobOpp.name;
     confirmationModal.result
     .then((result) => {
       if (result === true) {
