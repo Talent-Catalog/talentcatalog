@@ -208,8 +208,9 @@
       <ngb-panel id="visa-jobs" title="Job Specific Assessment">
         <ng-template ngbPanelContent>
           <app-candidate-visa-job
-            [
-          >
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [visaRecord]="visaRecord">
           </app-candidate-visa-job>
         </ng-template>
       </ngb-panel>

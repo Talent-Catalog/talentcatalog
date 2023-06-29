@@ -11,7 +11,7 @@ import {CandidateVisaJobCheck} from '../model/candidate';
 // Should eventually just need the job id for the request, and be able to remove name and sf job link.
 
 export interface CreateCandidateVisaJobRequest {
-  jobId?: number;
+  jobOppId?: number;
 }
 
 @Injectable({providedIn: 'root'})

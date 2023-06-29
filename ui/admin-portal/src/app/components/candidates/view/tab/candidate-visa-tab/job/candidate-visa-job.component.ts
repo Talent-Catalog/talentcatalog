@@ -1,19 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ShortJob} from "../../../../../../model/job";
-import {
-  HasNameSelectorComponent
-} from "../../../../../util/has-name-selector/has-name-selector.component";
+import {HasNameSelectorComponent} from "../../../../../util/has-name-selector/has-name-selector.component";
 import {
   CandidateVisaJobService,
   CreateCandidateVisaJobRequest
 } from "../../../../../../services/candidate-visa-job.service";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
-import {
-  Candidate,
-  CandidateIntakeData,
-  CandidateVisa,
-  CandidateVisaJobCheck
-} from "../../../../../../model/candidate";
+import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {CandidateVisaCheckService} from "../../../../../../services/candidate-visa-check.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -78,16 +71,16 @@ export class CandidateVisaJobComponent implements OnInit {
     });
   }
 
-  createVisaJobCheck(job: ShortJob) {
+  createVisaJobCheck(jobOpp: ShortJob) {
     this.loading = true;
     let request: CreateCandidateVisaJobRequest = {
-      jobId: job.id,
+      jobOppId: jobOpp.id,
     }
     this.candidateVisaJobService.create(this.visaRecord.id, request).subscribe(
       (jobCheck) => {
         this.visaRecord?.candidateVisaJobChecks?.push(jobCheck);
         this.form.controls['jobIndex'].patchValue(this.visaRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
-        this.changeJobOpp(null);
+        this.changeJob(null);
         this.selectedJobCheck = jobCheck;
         this.loading = false;
       },
@@ -98,7 +91,7 @@ export class CandidateVisaJobComponent implements OnInit {
 
   }
 
-  deleteRecord(i: number) {
+  deleteJob(i: number) {
     const confirmationModal = this.modalService.open(ConfirmationComponent);
     const visaJobCheck: CandidateVisaJobCheck = this.visaRecord.candidateVisaJobChecks[i];
 
@@ -119,7 +112,7 @@ export class CandidateVisaJobComponent implements OnInit {
       (done) => {
         this.loading = false;
         this.visaRecord.candidateVisaJobChecks.splice(i, 1);
-        this.changeJobOpp(null);
+        this.changeJob(null);
         this.form.controls.jobIndex.patchValue(0);
       },
       (error) => {
@@ -128,7 +121,7 @@ export class CandidateVisaJobComponent implements OnInit {
       });
   }
 
-  changeJobOpp(event: Event) {
+  changeJob(event: Event) {
     this.jobIndex = this.form.controls.jobIndex.value;
     if (this.visaRecord.candidateVisaJobChecks) {
       this.selectedJobCheck = this.visaRecord.candidateVisaJobChecks[this.jobIndex];

@@ -240,6 +240,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("name")
                 .add("sfJobLink")
+                .add("jobOpp", jobOppDto())
                 .add("interest")
                 .add("interestNotes")
                 .add("regional")
@@ -300,6 +301,14 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("candidateNumber")
                 .add("user", userDto())
+                ;
+    }
+
+    private DtoBuilder jobOppDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("sfId")
                 ;
     }
 
