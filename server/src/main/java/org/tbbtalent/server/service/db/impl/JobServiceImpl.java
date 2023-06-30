@@ -166,9 +166,10 @@ public class JobServiceImpl implements JobService {
     }
 
     private User getLoggedInUser(String operation) {
-        User loggedInUser = authService.getLoggedInUser().orElseThrow(
-            () -> new UnauthorisedActionException(operation)
-        );
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new UnauthorisedActionException(operation);
+        }
         return loggedInUser;
     }
 
