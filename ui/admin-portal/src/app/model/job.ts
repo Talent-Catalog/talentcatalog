@@ -51,7 +51,7 @@ export interface Job extends Opportunity {
   jobSummary: string;
   publishedBy: User;
   publishedDate: Date;
-  recruiterPartner: ShortPartner;
+  jobCreator: ShortPartner;
   stage: JobOpportunityStage;
   starringUsers: User[];
   submissionDueDate: Date;

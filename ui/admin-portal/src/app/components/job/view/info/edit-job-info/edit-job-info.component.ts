@@ -84,7 +84,7 @@ export class EditJobInfoComponent implements OnInit {
       submissionDueDate: [this.job.submissionDueDate],
       contactEmail: [this.job.contactEmail],
       contactUser: [this.job.contactUser],
-      recruiterPartner: [this.job.recruiterPartner]
+      jobCreator: [this.job.jobCreator]
       //  todo other fields
     });
   }
