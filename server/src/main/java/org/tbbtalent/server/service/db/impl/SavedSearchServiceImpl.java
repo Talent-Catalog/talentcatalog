@@ -85,6 +85,7 @@ import org.tbbtalent.server.model.db.SearchJoin;
 import org.tbbtalent.server.model.db.SearchType;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.partner.DefaultDestinationPartner;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.es.CandidateEs;
@@ -1536,13 +1537,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Partner partner = userService.getLoggedInPartner();
             if (partner != null) {
                 //Some partners default to seeing candidates from all source partners.
-                final boolean isDefaultSourcePartner = partner instanceof SourcePartner
-                    && ((SourcePartner) partner).isDefaultSourcePartner();
+                final boolean isDefaultPartner = (partner instanceof SourcePartner
+                    && ((SourcePartner) partner).isDefaultSourcePartner()) ||
+                    (partner instanceof DefaultDestinationPartner
+                        && ((SourcePartner) partner).isDefaultSourcePartner());
                 //Different default for simple (non operating partners)
                 //and default source partner
                 if ("Partner".equals(partner.getPartnerType())
                     || "RecruiterPartner".equals(partner.getPartnerType())
-                    || isDefaultSourcePartner) {
+                    || isDefaultPartner) {
                    List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
                    List<Long> partnerIds =
                        sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());

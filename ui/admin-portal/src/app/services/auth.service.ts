@@ -399,8 +399,12 @@ export class AuthService {
    * True if a user is logged in and they are associated with the default destination partner.
    */
   isDefaultDestinationPartner(): boolean {
-    //Currently default source and destination partners are the same.
-    return this.isDefaultSourcePartner();
+    let defaultDestinationPartner = false;
+    const loggedInUser = this.getLoggedInUser();
+    if (loggedInUser) {
+      defaultDestinationPartner = loggedInUser.partner?.defaultDestinationPartner;
+    }
+    return defaultDestinationPartner;
   }
 
   /**
@@ -413,6 +417,10 @@ export class AuthService {
       defaultSourcePartner = loggedInUser.partner?.defaultSourcePartner;
     }
     return defaultSourcePartner;
+  }
+
+  isDefaultPartner(): boolean {
+    return this.isDefaultSourcePartner() || this.isDefaultDestinationPartner();
   }
 
   /**

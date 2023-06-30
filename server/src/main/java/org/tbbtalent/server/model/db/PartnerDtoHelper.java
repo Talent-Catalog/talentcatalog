@@ -54,6 +54,7 @@ public class PartnerDtoHelper {
             .add("abbreviation")
             .add("autoAssignable")
             .add("defaultContact", userDto())
+            .add("defaultDestinationPartner")
             .add("defaultSourcePartner")
             .add("defaultPartnerRef")
             .add("id")
