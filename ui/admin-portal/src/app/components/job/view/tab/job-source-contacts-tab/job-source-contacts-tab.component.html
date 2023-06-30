@@ -1,5 +1,47 @@
-<app-view-job-source-contacts
-  [job]="job"
-  [editable]="editable">
+<!-- TABS -->
+<nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
-</app-view-job-source-contacts>
+  <ng-container ngbNavItem="Partners">
+    <a ngbNavLink>Partners</a>
+    <ng-template ngbNavContent>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="Candidates">
+    <a ngbNavLink>Candidates & Partners</a>
+    <ng-template ngbNavContent>
+    </ng-template>
+  </ng-container>
+
+  <ng-container title="India - BOSCO" ngbNavItem="BOSCO">
+    <a ngbNavLink>BOSCO</a>
+    <ng-template ngbNavContent>
+    </ng-template>
+  </ng-container>
+
+  <ng-container title="Indonesia - Catholic Relief Services" ngbNavItem="CRS">
+    <a ngbNavLink>CRS</a>
+    <ng-template ngbNavContent>
+    </ng-template>
+  </ng-container>
+
+  <ng-container title="Uganda - Finn Church Aid" ngbNavItem="FCA">
+    <a ngbNavLink>FCA</a>
+    <ng-template ngbNavContent>
+    </ng-template>
+  </ng-container>
+
+  <ng-container title="Peru - HIAS" ngbNavItem="HIAS">
+    <a ngbNavLink>HIAS</a>
+    <ng-template ngbNavContent>
+    </ng-template>
+  </ng-container>
+
+  <ng-container title="Kenya - Refuge Point" ngbNavItem="RP">
+    <a ngbNavLink>RP</a>
+    <ng-template ngbNavContent>
+    </ng-template>
+  </ng-container>
+
+</nav>
+<div [ngbNavOutlet]="nav" class="mt-2"></div>
