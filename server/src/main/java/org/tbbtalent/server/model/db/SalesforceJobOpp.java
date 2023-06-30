@@ -16,15 +16,26 @@
 
 package org.tbbtalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.annotation.Nullable;
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.Nullable;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * This is a copy of an Employer Job Opportunity on Salesforce
@@ -47,8 +58,6 @@ import java.util.Set;
 @Table(name = "salesforce_job_opp")
 @SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
 public class SalesforceJobOpp extends AbstractOpportunity {
-
-    //TODO JC accepting DB field is no longer used and can be removed
 
     /**
      * Salesforce id of account (ie employer) associated with opportunity
