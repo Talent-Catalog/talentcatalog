@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,14 +17,10 @@
 package org.tbbtalent.server.model.db.partner;
 
 /**
- * This is a partner, typically located in a destination, who helps employers in that destination
- * recruit candidates. In other words, and employment agency working with us.
- * <p/>
- * Sometimes employers can connect directly to us. See {@link EmployerPartner}.
- * However some employers prefer to outsource that process to RecruiterPartners.
+ * There can only be one instance of this kind of partner.
  *
  * @author John Cameron
  */
-public interface RecruiterPartner extends JobCreator {
+public interface DefaultDestinationPartner extends JobCreator {
 
 }

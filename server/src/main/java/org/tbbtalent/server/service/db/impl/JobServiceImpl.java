@@ -46,9 +46,10 @@ import org.tbbtalent.server.exception.UnauthorisedActionException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.tbbtalent.server.model.db.JobCreatorImpl;
 import org.tbbtalent.server.model.db.JobOppIntake;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
-import org.tbbtalent.server.model.db.RecruiterPartnerImpl;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
@@ -159,8 +160,9 @@ public class JobServiceImpl implements JobService {
         SavedList exclusionList = salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
         job.setExclusionList(exclusionList);
 
-        //The partner associated with the person who created the job is the recruiter partner
-        job.setRecruiterPartner((RecruiterPartnerImpl) loggedInUser.getPartner());
+        //The partner associated with the person who created the job is the job creator
+        final PartnerImpl loggedInUserPartner = loggedInUser.getPartner();
+        job.setJobCreator((JobCreatorImpl) loggedInUserPartner);
 
         return salesforceJobOppRepository.save(job);
     }

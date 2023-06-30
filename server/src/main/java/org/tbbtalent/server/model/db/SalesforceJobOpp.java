@@ -149,7 +149,7 @@ public class SalesforceJobOpp extends AbstractOpportunity {
      */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruiter_partner_id")
-    private RecruiterPartnerImpl recruiterPartner;
+    private JobCreatorImpl jobCreator;
 
     /**
      * Stage of job opportunity
