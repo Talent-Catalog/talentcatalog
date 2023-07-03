@@ -436,7 +436,7 @@ export class AuthService {
     if (loggedInUser) {
       let partnerType = this.getPartnerType();
       if (partnerType != null) {
-        result = this.isDefaultSourcePartner() || partnerType == PartnerType.SourcePartner;
+        result = this.isDefaultPartner() || partnerType == PartnerType.SourcePartner;
       }
     }
 
