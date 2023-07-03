@@ -1538,9 +1538,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             if (partner != null) {
                 //Some partners default to seeing candidates from all source partners.
                 final boolean isDefaultPartner = (partner instanceof SourcePartner
-                    && ((SourcePartner) partner).isDefaultSourcePartner()) ||
+                    && partner.isDefaultSourcePartner()) ||
                     (partner instanceof DefaultDestinationPartner
-                        && ((SourcePartner) partner).isDefaultSourcePartner());
+                        && partner.isDefaultDestinationPartner());
                 //Different default for simple (non operating partners)
                 //and default source partner
                 if ("Partner".equals(partner.getPartnerType())

@@ -193,8 +193,8 @@ export class AuthService {
         //Must have some kind of admin role
         const role = this.getLoggedInRole();
         if (role !== Role.limited && role !== Role.semilimited) {
-          if (this.isDefaultSourcePartner()) {
-            //Default source partners with admin roles can see all candidate info
+          if (this.isDefaultPartner()) {
+            //Default partners with admin roles can see all candidate info
             visible = true;
           } else {
             //Can only see private candidate info if the candidate is assigned to the user's partner

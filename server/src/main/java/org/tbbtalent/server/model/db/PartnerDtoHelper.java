@@ -37,7 +37,7 @@ public class PartnerDtoHelper {
         //These properties should only be extracted for source partner's
         private final Set<String> sourcePartnerOnlyProperties =
             new HashSet<>(Arrays.asList(
-                "registrationLandingPage", "sourceCountries", "defaultSourcePartner",
+                "registrationLandingPage", "sourceCountries",
                 "autoAssignable", "defaultPartnerRef"));
 
         public boolean ignoreProperty(Object o, String property) {
@@ -47,7 +47,7 @@ public class PartnerDtoHelper {
 
             return ignore;
         }
-    };
+    }
 
     public static DtoBuilder getPartnerDto() {
         return new DtoBuilder(new PartnerDtoPropertyFilter())
