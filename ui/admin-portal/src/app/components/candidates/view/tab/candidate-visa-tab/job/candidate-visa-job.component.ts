@@ -21,13 +21,11 @@ export class CandidateVisaJobComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaRecord: CandidateVisa;
-  @Output() selectedJob = new EventEmitter<CandidateVisaJobCheck>();
+  @Output() selectedJobIndex = new EventEmitter<number>();
+  selectedIndex: number;
   loading: boolean;
   error: string;
   form: FormGroup;
-  selectedIndex: number;
-  selectedJobCheck: CandidateVisaJobCheck;
-  jobIndex: number;
 
   constructor(private candidateVisaCheckService: CandidateVisaCheckService,
               private candidateVisaJobService: CandidateVisaJobService,
@@ -92,7 +90,7 @@ export class CandidateVisaJobComponent implements OnInit {
       (jobCheck) => {
         this.visaRecord?.candidateVisaJobChecks?.push(jobCheck);
         this.form.controls['jobIndex'].patchValue(this.visaRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
-        this.changeJob(null);
+        this.setSelectedIndex()
         this.loading = false;
       },
       (error) => {
@@ -122,8 +120,8 @@ export class CandidateVisaJobComponent implements OnInit {
       (done) => {
         this.loading = false;
         this.visaRecord.candidateVisaJobChecks.splice(i, 1);
-        this.changeJob(null);
         this.form.controls.jobIndex.patchValue(0);
+        this.setSelectedIndex();
       },
       (error) => {
         this.error = error;
@@ -131,21 +129,12 @@ export class CandidateVisaJobComponent implements OnInit {
       });
   }
 
-  changeJob(index: number) {
-    /**
-     * IF there is an index provided, find the selected job based on that index
-     * ELSE get the job index based on what is checked in the form.
-     */
-    if (this.visaRecord.candidateVisaJobChecks.length > 0) {
-      if (index) {
-        this.selectedJobCheck = this.visaRecord.candidateVisaJobChecks[index];
-      } else {
-        this.selectedJobCheck = this.form.controls.jobIndex.value;
-      }
-    } else {
-      index = null;
-    }
-    this.selectedJob.emit(this.selectedJobCheck);
-    this.localStorageService.set('VisaJobCheckIndex', index)
+  /**
+   * This emits the selected job index to the outer component to display AND stores the selected index in the local storage.
+   */
+  setSelectedIndex() {
+    this.selectedIndex = this.form.controls.jobIndex.value;
+    this.selectedJobIndex.emit(this.selectedIndex);
+    this.localStorageService.set('VisaJobCheckIndex', this.selectedIndex)
   }
 }
