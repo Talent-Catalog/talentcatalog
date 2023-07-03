@@ -6,7 +6,7 @@ import {Job, JobOpportunityStage, SearchJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {SearchOppsBy} from "../../../model/base";
-import {FilteredOppsComponent} from "../../opportunity/filtered-opps/filtered-opps.component";
+import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {SearchOpportunityRequest} from "../../../model/candidate-opportunity";
 
@@ -15,7 +15,7 @@ import {SearchOpportunityRequest} from "../../../model/candidate-opportunity";
   templateUrl: './jobs.component.html',
   styleUrls: ['./jobs.component.scss']
 })
-export class JobsComponent extends FilteredOppsComponent<Job> {
+export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
   //Override text to replace "opps" text with "jobs"
   myOppsOnlyLabel = "My jobs only";
