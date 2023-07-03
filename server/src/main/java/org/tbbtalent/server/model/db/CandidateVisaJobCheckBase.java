@@ -16,14 +16,10 @@
 
 package org.tbbtalent.server.model.db;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -35,7 +31,6 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     private CandidateVisaCheck candidateVisaCheck;
 
     /**
-     * todo add this new field to database using flyway,have added temporarily locally remember to delete!
      * Associated job opportunity
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,7 +41,6 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
      * No longer populating these two fields (name & sfJobLink) we used these prior to adding the SF job opps onto the TC,
      * and when Australia was the only country doing their visa checks on the TC. 
      * Now we can just use the jobOppId above to retrieve and set job data.
-     * todo what do we do with these fields, they have data in them, but we are no longer going to be using them going forward?
      */
     private String name;
     private String sfJobLink;
