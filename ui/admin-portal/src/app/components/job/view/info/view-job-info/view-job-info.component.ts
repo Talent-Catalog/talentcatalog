@@ -53,20 +53,6 @@ export class ViewJobInfoComponent implements OnInit {
     return email ? "mailto:" + email : "";
   }
 
-  isSpecialContactEmail(): boolean {
-    let isSpecial = false;
-    if (this.job.contactEmail) {
-      if (this.job.contactUser?.email) {
-        //We have a contact user email - so job contact email is only special if it is different
-        isSpecial = this.job.contactEmail !== this.job.contactUser.email;
-      } else {
-        //No contact user or no contact user email. Contact email is all we have, so it is special
-        isSpecial = true;
-      }
-    }
-    return isSpecial;
-  }
-
   highlightCandidates() {
     return this.highlightItem instanceof JobPrepSuggestedCandidates;
   }

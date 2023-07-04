@@ -68,13 +68,6 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private Set<CandidateOpportunity> candidateOpportunities = new HashSet<>();
 
     /**
-     * Email to use for enquiries about this job.
-     * <p/>
-     * Should default to email of {@link #contactUser} - but can be different
-     */
-    private String contactEmail;
-
-    /**
      * TC user responsible for this job - will normally be "destination" staff located in the same
      * region as the {@link #employer}
      */

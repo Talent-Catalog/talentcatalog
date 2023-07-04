@@ -55,7 +55,6 @@ public class JobIntakeDataBuilderSelector {
         return new DtoBuilder()
             .add("id")
             .add("sfId")
-            .add("contactEmail")
             .add("countryObject", countryDto())
             .add("createdDate")
             .add("employer")
