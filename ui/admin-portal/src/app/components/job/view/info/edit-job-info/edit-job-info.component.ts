@@ -19,8 +19,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
 import {Job, UpdateJobRequest} from "../../../../../model/job";
-import {forkJoin} from "rxjs";
 import {PartnerService} from "../../../../../services/partner.service";
+import {Partner} from "../../../../../model/partner";
 import {SearchUserRequest} from "../../../../../model/base";
 import {UserService} from "../../../../../services/user.service";
 import {User} from "../../../../../model/user";
@@ -37,6 +37,7 @@ export class EditJobInfoComponent implements OnInit {
 
   jobForm: FormGroup;
 
+  recruiters: Partner[];
   users: User[];
 
   error;
@@ -55,28 +56,30 @@ export class EditJobInfoComponent implements OnInit {
     this.error = null;
     this.loading = true;
     const userRequest: SearchUserRequest = {
-      partnerId: this.job.recruiterPartner.id, //todo recruiter is currently always null.
+      partnerId: this.job.jobCreator?.id,
       sortFields: ["firstName", "lastName"],
       sortDirection: "ASC"
     };
-    forkJoin({
-      'users': this.userService.search(userRequest),
-    }).subscribe(results => {
-      this.loading = false;
-      this.users = results['users'].map(u => {u.name = u.firstName + " " + u.lastName; return u});
-      this.createForm();
-    }, error => {
-      this.loading = false;
-      this.error = error;
-    });
+
+    this.userService.search(userRequest).subscribe(
+      users => {
+        this.users = users.map(u => {u.name = u.firstName + " " + u.lastName; return u});
+        this.loading = false;
+        this.createForm()
+      },
+      error => {this.error = error; this.loading = false}
+    )
   }
 
   private createForm() {
     this.jobForm = this.fb.group({
       submissionDueDate: [this.job.submissionDueDate],
       contactUser: [this.job.contactUser],
-      recruiterPartner: [this.job.recruiterPartner]
     });
+  }
+
+  get contactUser(): User {
+    return this.jobForm?.value.contactUser;
   }
 
   get submissionDueDate(): Date {
@@ -86,8 +89,8 @@ export class EditJobInfoComponent implements OnInit {
   onSave() {
     this.error = null;
     this.saving = true;
-    //todo need to add contactUser  etc
     const request: UpdateJobRequest = {
+      contactUserId: this.contactUser?.id,
       submissionDueDate: this.submissionDueDate
     }
 

@@ -19,7 +19,7 @@
 
     <!-- LOGO -->
     <a class="navbar-brand" [href]="websiteUrl" target="_blank">
-      <img class="logo" [src]="logo" alt="Logo">
+      <img *ngIf="logo" class="logo" [src]="logo" alt="Logo">
     </a>
 
     <button class="navbar-toggler hidden-sm-up" type="button"

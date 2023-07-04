@@ -66,6 +66,9 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     @Transient
     private Long contextJobId;
 
+    private boolean defaultSourcePartner;
+    private boolean defaultDestinationPartner;
+
     @Nullable
     private String logo;
 

@@ -81,7 +81,6 @@ import org.tbbtalent.server.util.SalesforceHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
 @Service
 public class JobServiceImpl implements JobService {
     private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
@@ -154,19 +153,22 @@ public class JobServiceImpl implements JobService {
 
         String exclusionListName = submissionList.getName() + EXCLUSION_LIST_SUFFIX;
 
-        //TODO JC Set recruiter partner
-
         //Create exclusion list for the employer (account) associated with this job
         SavedList exclusionList = salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
         job.setExclusionList(exclusionList);
+
+        //The partner associated with the person who created the job is the job creator
+        final PartnerImpl loggedInUserPartner = loggedInUser.getPartner();
+        job.setJobCreator((JobCreatorImpl) loggedInUserPartner);
 
         return salesforceJobOppRepository.save(job);
     }
 
     private User getLoggedInUser(String operation) {
-        User loggedInUser = authService.getLoggedInUser().orElseThrow(
-            () -> new UnauthorisedActionException(operation)
-        );
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new UnauthorisedActionException(operation);
+        }
         return loggedInUser;
     }
 

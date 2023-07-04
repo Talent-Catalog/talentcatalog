@@ -32,7 +32,7 @@ export class ViewJobInfoComponent implements OnInit {
       backdrop: 'static'
     });
 
-    editModal.componentInstance.jobId = this.job.id;
+    editModal.componentInstance.job = this.job;
 
     editModal.result
     .then((job) => this.jobUpdated.emit(job))

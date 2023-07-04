@@ -51,7 +51,7 @@ export interface Job extends Opportunity {
   jobSummary: string;
   publishedBy: User;
   publishedDate: Date;
-  recruiterPartner: ShortPartner;
+  jobCreator: ShortPartner;
   stage: JobOpportunityStage;
   starringUsers: User[];
   submissionDueDate: Date;
@@ -109,6 +109,7 @@ export class SearchJobRequest extends SearchOpportunityRequest {
 }
 
 export interface UpdateJobRequest extends OpportunityProgressParams {
+  contactUserId?: number;
   sfJoblink?: string;
   submissionDueDate?: Date;
 }

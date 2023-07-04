@@ -85,14 +85,4 @@ public interface SourcePartner extends Partner {
      */
     boolean isAutoAssignable();
     void setAutoAssignable(boolean b);
-
-    /**
-     * True if this partner is the default source partner - associated with candidates who are
-     * not clearly associated with any other source partner.
-     * <p/>
-     * Only one source partner at any given time can be the default.
-     * @return True if this is the default source partner
-     */
-    boolean isDefaultSourcePartner();
-    void setDefaultSourcePartner(boolean b);
 }

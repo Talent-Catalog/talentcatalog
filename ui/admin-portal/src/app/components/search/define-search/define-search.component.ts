@@ -721,7 +721,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     //Simple non-operating partners default to seeing candidates from all partners
     if (partnerType === PartnerType.Partner
       || partnerType === PartnerType.RecruiterPartner
-      || partner && partner.defaultSourcePartner) {
+      || this.authService.isDefaultPartner()) {
       s = "If nothing is specified, the default is to show candidates managed by any partner";
     } else {
       s = "If nothing is specified, the default is to just show candidates belonging to your partner";

@@ -54,12 +54,12 @@
         </div>
       </div>
 
-      <div *ngIf="job.recruiterPartner" class="mb-3 col-sm-12 col-md-4">
+      <div *ngIf="job.jobCreator" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-id-badge"></i>Recruiter</label>
 
         <div class="form-control-plaintext">
-          <a target="_blank" href="{{job.recruiterPartner.websiteUrl}}">
-            {{job.recruiterPartner.name}}
+          <a target="_blank" href="{{job.jobCreator.websiteUrl}}">
+            {{job.jobCreator.name}}
           </a>
         </div>
       </div>

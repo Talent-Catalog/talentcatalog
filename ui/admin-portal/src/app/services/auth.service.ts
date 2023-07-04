@@ -193,8 +193,8 @@ export class AuthService {
         //Must have some kind of admin role
         const role = this.getLoggedInRole();
         if (role !== Role.limited && role !== Role.semilimited) {
-          if (this.isDefaultSourcePartner()) {
-            //Default source partners with admin roles can see all candidate info
+          if (this.isDefaultPartner()) {
+            //Default partners with admin roles can see all candidate info
             visible = true;
           } else {
             //Can only see private candidate info if the candidate is assigned to the user's partner
@@ -399,8 +399,12 @@ export class AuthService {
    * True if a user is logged in and they are associated with the default destination partner.
    */
   isDefaultDestinationPartner(): boolean {
-    //Currently default source and destination partners are the same.
-    return this.isDefaultSourcePartner();
+    let defaultDestinationPartner = false;
+    const loggedInUser = this.getLoggedInUser();
+    if (loggedInUser) {
+      defaultDestinationPartner = loggedInUser.partner?.defaultDestinationPartner;
+    }
+    return defaultDestinationPartner;
   }
 
   /**
@@ -413,6 +417,10 @@ export class AuthService {
       defaultSourcePartner = loggedInUser.partner?.defaultSourcePartner;
     }
     return defaultSourcePartner;
+  }
+
+  isDefaultPartner(): boolean {
+    return this.isDefaultSourcePartner() || this.isDefaultDestinationPartner();
   }
 
   /**
@@ -428,7 +436,7 @@ export class AuthService {
     if (loggedInUser) {
       let partnerType = this.getPartnerType();
       if (partnerType != null) {
-        result = this.isDefaultSourcePartner() || partnerType == PartnerType.SourcePartner;
+        result = this.isDefaultPartner() || partnerType == PartnerType.SourcePartner;
       }
     }
 
