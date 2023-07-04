@@ -60,4 +60,8 @@ export class ViewJobInfoComponent implements OnInit {
   highlightSubmissionDate() {
     return this.highlightItem instanceof JobPrepDueDate;
   }
+
+  getContactUser(): User {
+    return this.job.contactUser ? this.job.contactUser : this.job.createdBy;
+  }
 }

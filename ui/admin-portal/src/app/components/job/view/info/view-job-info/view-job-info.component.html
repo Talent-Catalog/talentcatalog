@@ -64,13 +64,13 @@
         </div>
       </div>
 
-      <div *ngIf="job.contactUser" class="mb-3 col-sm-12 col-md-4">
+      <div class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-user"></i>Job Contact</label>
 
         <div class="form-control-plaintext">
-          <div>{{showUser(job.contactUser)}}</div>
+          <div>{{showUser(getContactUser())}}</div>
           <div>
-          <a target="_blank" href="{{showEmailUrl(job.contactUser.email)}}">{{job.contactUser.email}}</a>
+            <a target="_blank" href="{{showEmailUrl(getContactUser().email)}}">{{getContactUser().email}}</a>
           </div>
         </div>
       </div>
