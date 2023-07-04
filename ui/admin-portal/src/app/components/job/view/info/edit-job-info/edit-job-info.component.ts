@@ -72,11 +72,11 @@ export class EditJobInfoComponent implements OnInit {
   private createForm() {
     this.jobForm = this.fb.group({
       submissionDueDate: [this.job.submissionDueDate],
-      contactUser: [this.job.contactUser],
+      contactUser: [this.job.contactUser?.id],
     });
   }
 
-  get contactUser(): User {
+  get contactUser(): number {
     return this.jobForm?.value.contactUser;
   }
 
@@ -88,7 +88,7 @@ export class EditJobInfoComponent implements OnInit {
     this.error = null;
     this.saving = true;
     const request: UpdateJobRequest = {
-      contactUserId: this.contactUser?.id,
+      contactUserId: this.contactUser,
       submissionDueDate: this.submissionDueDate
     }
 
