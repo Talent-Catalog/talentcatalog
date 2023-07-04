@@ -30,8 +30,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.service.db.CaptchaService;
@@ -65,11 +63,6 @@ class AuthAdminApiTest extends ApiTestBase {
     private static final String JWT_ACCESS_TOKEN = "jwt-abc-def-123";
     private static final String JWT_TOKEN_TYPE = "Bearer";
 
-    private static final String USER_NAME = "user_name";
-    private static final String FIRST_NAME = "sadat";
-    private static final String LAST_NAME = "malik";
-    private static final String EMAIL = "sadat@malik.moon";
-
     private static final String INVALID_CREDENTIALS_MESSAGE = "Invalid credentials";
     private static final String ACCOUNT_LOCKED_MESSAGE = "Account locked";
     private static final String USER_DEACTIVATED_MESSAGE = "Account deactivated";
@@ -84,7 +77,6 @@ class AuthAdminApiTest extends ApiTestBase {
     private static final String QR_CODE_GEN_ERROR_CODE = "qr_error";
     private static final String RECAPTCHA_INVALID_CODE = "recaptcha";
 
-    private User user;
     private LoginRequest loginRequest;
 
     @Autowired AuthAdminApi controller;
@@ -96,7 +88,7 @@ class AuthAdminApiTest extends ApiTestBase {
 
     @BeforeEach
     public void setUp() {
-        user = new User(USER_NAME, FIRST_NAME, LAST_NAME, EMAIL, Role.user);
+        configureAuthentication();
 
         loginRequest = new LoginRequest();
         loginRequest.setUsername("sadat");

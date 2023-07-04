@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2023 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {
-  Component,
+  Directive,
   ElementRef,
   EventEmitter,
   Inject,
@@ -22,15 +38,11 @@ import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {formatDate} from "@angular/common";
-import {OpportunityService} from "../../util/opportunity/OpportunityService";
+import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
 
-@Component({
-  selector: 'app-filtered-opps',
-  templateUrl: './filtered-opps.component.html',
-  styleUrls: ['./filtered-opps.component.scss']
-})
-export abstract class FilteredOppsComponent<T extends Opportunity> implements OnInit, OnChanges {
+@Directive()
+export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges {
   @Input() searchBy: SearchOppsBy;
   @Output() oppSelection = new EventEmitter();
 

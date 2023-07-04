@@ -10,14 +10,14 @@ import {FormBuilder} from "@angular/forms";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthService} from "../../../services/auth.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
-import {FilteredOppsComponent} from "../../opportunity/filtered-opps/filtered-opps.component";
+import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
 
 @Component({
   selector: 'app-candidate-opps',
   templateUrl: './candidate-opps.component.html',
   styleUrls: ['./candidate-opps.component.scss']
 })
-export class CandidateOppsComponent extends FilteredOppsComponent<CandidateOpportunity> {
+export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateOpportunity> {
   /**
    * Only one of these inputs should be selected - one does a search, the other just takes
    * an array of opps.
