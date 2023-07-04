@@ -244,6 +244,8 @@ public class JobServiceImpl implements JobService {
             throw new InvalidRequestException("No such Salesforce opportunity: " + sfJoblink);
         }
 
+        updateJobFromRequest(job, request);
+
         job.setAuditFields(loggedInUser);
 
         //Create submission list
@@ -471,12 +473,7 @@ public class JobServiceImpl implements JobService {
         }
     }
 
-    @NonNull
-    @Override
-    public SalesforceJobOpp updateJob(long id, UpdateJobRequest request)
-        throws NoSuchObjectException, SalesforceException {
-        User loggedInUser = getLoggedInUser("update job");
-        SalesforceJobOpp job = getJob(id);
+    private void updateJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
         final JobOpportunityStage stage = request.getStage();
         if (stage != null) {
             job.setStage(stage);
@@ -497,10 +494,32 @@ public class JobServiceImpl implements JobService {
             job.setNextStepDueDate(nextStepDueDate);
         }
 
+        final Long contactUserId = request.getContactUserId();
+        if (contactUserId != null) {
+            User contactUser = userService.getUser(contactUserId);
+            job.setContactUser(contactUser);
+        }
+
+        final LocalDate submissionDueDate = request.getSubmissionDueDate();
+        if (submissionDueDate != null) {
+            job.setSubmissionDueDate(submissionDueDate);
+        }
+    }
+
+    @NonNull
+    @Override
+    public SalesforceJobOpp updateJob(long id, UpdateJobRequest request)
+        throws NoSuchObjectException, SalesforceException {
+        User loggedInUser = getLoggedInUser("update job");
+        SalesforceJobOpp job = getJob(id);
+
+        final JobOpportunityStage stage = request.getStage();
+        final String nextStep = request.getNextStep();
+        final LocalDate nextStepDueDate = request.getNextStepDueDate();
         salesforceService.updateEmployerOpportunityStage(
             job.getSfId(), stage, nextStep, nextStepDueDate);
 
-        job.setSubmissionDueDate(request.getSubmissionDueDate());
+        updateJobFromRequest(job, request);
         job.setAuditFields(loggedInUser);
         return salesforceJobOppRepository.save(job);
     }

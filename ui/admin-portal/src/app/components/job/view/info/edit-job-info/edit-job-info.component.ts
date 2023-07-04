@@ -20,7 +20,6 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
 import {Job, UpdateJobRequest} from "../../../../../model/job";
 import {PartnerService} from "../../../../../services/partner.service";
-import {Partner} from "../../../../../model/partner";
 import {SearchUserRequest} from "../../../../../model/base";
 import {UserService} from "../../../../../services/user.service";
 import {User} from "../../../../../model/user";
@@ -37,7 +36,6 @@ export class EditJobInfoComponent implements OnInit {
 
   jobForm: FormGroup;
 
-  recruiters: Partner[];
   users: User[];
 
   error;
