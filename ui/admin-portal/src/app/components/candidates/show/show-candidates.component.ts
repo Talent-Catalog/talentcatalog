@@ -34,7 +34,7 @@ import {
 } from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbOffcanvas, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
 import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
@@ -115,6 +115,7 @@ import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
+import {CandidateSideProfileComponent} from "../../util/candidate-side-profile/candidate-side-profile.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -188,6 +189,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   public filterSearch: boolean = false;
 
+  sideProfile: NgbOffcanvasRef;
+
   constructor(private http: HttpClient,
               private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -205,7 +208,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private candidateFieldService: CandidateFieldService,
               private authService: AuthService,
               private publishedDocColumnService: PublishedDocColumnService,
-              public salesforceService: SalesforceService
+              public salesforceService: SalesforceService,
+              private offcanvasService: NgbOffcanvas
 
   ) {}
 
@@ -530,6 +534,18 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   selectCandidate(candidate: Candidate) {
     this.setCurrentCandidate(candidate);
+    /**
+     * If there is no side profile already open, open one and pass in the candidate.
+     * Else just send the existing offcanvas the selected candidate.
+     */
+    if (!this.offcanvasService.hasOpenOffcanvas()) {
+      this.sideProfile = this.offcanvasService.open(CandidateSideProfileComponent,
+        { position: 'end', backdrop: false, scroll: true, panelClass: 'custom-side-profile' });
+      this.sideProfile.componentInstance.candidate = candidate;
+      this.sideProfile.componentInstance.candidateSource = this.candidateSource;
+    } else {
+      this.sideProfile.componentInstance.candidate = candidate;
+    }
   }
 
   onReviewStatusChange() {
