@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,17 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.candidate.visa.job;
-
-public class CreateCandidateVisaJobCheckRequest {
-    private Long jobOppId;
-
-    public Long getJobOppId() {
-        return jobOppId;
-    }
-
-    public void setJobOppId(Long jobOppId) {
-        this.jobOppId = jobOppId;
-    }
-    
-}
+update salesforce_job_opp set recruiter_partner_id =
+                                  (select id from partner where default_destination_partner = true)
+where recruiter_partner_id is null;

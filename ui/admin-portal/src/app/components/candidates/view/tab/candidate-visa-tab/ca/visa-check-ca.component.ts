@@ -16,7 +16,7 @@
 
 import {Component, Input} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../../util/intake/IntakeComponentTabBase';
-import {CandidateIntakeData, CandidateVisa} from '../../../../../../model/candidate';
+import {CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from '../../../../../../model/candidate';
 import {FormGroup} from '@angular/forms';
 import {CandidateService} from "../../../../../../services/candidate.service";
 import {CountryService} from "../../../../../../services/country.service";
@@ -36,6 +36,7 @@ export class VisaCheckCaComponent extends IntakeComponentTabBase {
   @Input() selectedIndex: number;
   @Input() candidateIntakeData: CandidateIntakeData;
   visaRecord: CandidateVisa;
+  jobRecord: CandidateVisaJobCheck
   form: FormGroup;
 
   public tbbEligibilityHide = true;
@@ -70,5 +71,9 @@ export class VisaCheckCaComponent extends IntakeComponentTabBase {
 
   private setSelectedVisaCheckIndex(index: number) {
     this.localStorageService.set('VisaCheckIndex', index);
+  }
+
+  updateSelectedJob(selectedJob: CandidateVisaJobCheck) {
+    this.jobRecord = selectedJob;
   }
 }
