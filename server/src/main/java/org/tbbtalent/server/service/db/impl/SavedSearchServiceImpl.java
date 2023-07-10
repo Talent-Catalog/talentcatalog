@@ -36,6 +36,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
+
+import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -43,7 +45,6 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -130,6 +131,7 @@ import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 
 @Service
+@RequiredArgsConstructor
 public class SavedSearchServiceImpl implements SavedSearchService {
 
     private static final Logger log = LoggerFactory.getLogger(SavedSearchServiceImpl.class);
@@ -174,59 +176,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             CandidateStatus.ineligible,
             CandidateStatus.withdrawn
         )));
-
-    @Autowired
-    public SavedSearchServiceImpl (
-            CandidateRepository candidateRepository,
-            CandidateService candidateService,
-            CandidateReviewStatusRepository candidateReviewStatusRepository,
-            CandidateSavedListService candidateSavedListService,
-            CountryService countryService,
-            PartnerService partnerService,
-            ElasticsearchOperations elasticsearchOperations,
-            EmailHelper emailHelper,
-            UserRepository userRepository,
-            UserService userService,
-            SalesforceJobOppService salesforceJobOppService, SavedListRepository savedListRepository,
-            SavedListService savedListService,
-            SavedSearchRepository savedSearchRepository,
-            SearchJoinRepository searchJoinRepository,
-            LanguageLevelRepository languageLevelRepository,
-            LanguageRepository languageRepository,
-            CountryRepository countryRepository,
-            PartnerRepository partnerRepository,
-            OccupationRepository occupationRepository,
-            SurveyTypeRepository surveyTypeRepository,
-            EducationMajorRepository educationMajorRepository,
-            EducationLevelRepository educationLevelRepository,
-            OccupationService occupationService,
-            EducationMajorService educationMajorService) {
-        this.candidateRepository = candidateRepository;
-        this.candidateService = candidateService;
-        this.candidateReviewStatusRepository = candidateReviewStatusRepository;
-        this.candidateSavedListService = candidateSavedListService;
-        this.countryService = countryService;
-        this.partnerService = partnerService;
-        this.elasticsearchOperations = elasticsearchOperations;
-        this.emailHelper = emailHelper;
-        this.userRepository = userRepository;
-        this.userService = userService;
-        this.salesforceJobOppService = salesforceJobOppService;
-        this.savedListRepository = savedListRepository;
-        this.savedListService = savedListService;
-        this.savedSearchRepository = savedSearchRepository;
-        this.searchJoinRepository = searchJoinRepository;
-        this.languageLevelRepository = languageLevelRepository;
-        this.languageRepository = languageRepository;
-        this.partnerRepository = partnerRepository;
-        this.countryRepository = countryRepository;
-        this.occupationRepository = occupationRepository;
-        this.surveyTypeRepository = surveyTypeRepository;
-        this.educationMajorRepository = educationMajorRepository;
-        this.educationLevelRepository = educationLevelRepository;
-        this.occupationService = occupationService;
-        this.educationMajorService = educationMajorService;
-    }
 
     @Override
     public List<SavedSearch> search(SearchSavedSearchRequest request) {
