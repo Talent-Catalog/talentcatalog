@@ -179,9 +179,7 @@
               <app-candidate-additional-info-tab
                 [candidate]="candidate"
                 [editable]="isEditable()"
-                [adminUser]="isAnAdmin()"
                 [canViewPrivateInfo]="canViewPrivateInfo()"
-                [loggedInUser]="loggedInUser"
                 (candidateChanged)="onCandidateChanged()">
               </app-candidate-additional-info-tab>
             </ng-template>

@@ -14,7 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {FormBuilder, FormGroup} from '@angular/forms';
@@ -37,7 +45,6 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
-  @Input() adminUser: boolean;
   @Output() candidateChanged = new EventEmitter();
 
   loading: boolean;
