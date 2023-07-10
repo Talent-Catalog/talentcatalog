@@ -73,9 +73,11 @@ import org.tbbtalent.server.model.db.CandidateFilterByOpps;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.EducationMajor;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
@@ -118,6 +120,8 @@ import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.EducationMajorService;
+import org.tbbtalent.server.service.db.OccupationService;
 import org.tbbtalent.server.service.db.PartnerService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SavedListService;
@@ -150,8 +154,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final CountryRepository countryRepository;
     private final PartnerRepository partnerRepository;
     private final OccupationRepository occupationRepository;
+    private final OccupationService occupationService;
     private final SurveyTypeRepository surveyTypeRepository;
     private final EducationMajorRepository educationMajorRepository;
+    private final EducationMajorService educationMajorService;
     private final EducationLevelRepository educationLevelRepository;
 
     /**
@@ -170,29 +176,31 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         )));
 
     @Autowired
-    public SavedSearchServiceImpl(
-        CandidateRepository candidateRepository,
-        CandidateService candidateService,
-        CandidateReviewStatusRepository candidateReviewStatusRepository,
-        CandidateSavedListService candidateSavedListService,
-        CountryService countryService,
-        PartnerService partnerService,
-        ElasticsearchOperations elasticsearchOperations,
-        EmailHelper emailHelper,
-        UserRepository userRepository,
-        UserService userService,
-        SalesforceJobOppService salesforceJobOppService, SavedListRepository savedListRepository,
-        SavedListService savedListService,
-        SavedSearchRepository savedSearchRepository,
-        SearchJoinRepository searchJoinRepository,
-        LanguageLevelRepository languageLevelRepository,
-        LanguageRepository languageRepository,
-        CountryRepository countryRepository,
-        PartnerRepository partnerRepository,
-        OccupationRepository occupationRepository,
-        SurveyTypeRepository surveyTypeRepository,
-        EducationMajorRepository educationMajorRepository,
-        EducationLevelRepository educationLevelRepository) {
+    public SavedSearchServiceImpl (
+            CandidateRepository candidateRepository,
+            CandidateService candidateService,
+            CandidateReviewStatusRepository candidateReviewStatusRepository,
+            CandidateSavedListService candidateSavedListService,
+            CountryService countryService,
+            PartnerService partnerService,
+            ElasticsearchOperations elasticsearchOperations,
+            EmailHelper emailHelper,
+            UserRepository userRepository,
+            UserService userService,
+            SalesforceJobOppService salesforceJobOppService, SavedListRepository savedListRepository,
+            SavedListService savedListService,
+            SavedSearchRepository savedSearchRepository,
+            SearchJoinRepository searchJoinRepository,
+            LanguageLevelRepository languageLevelRepository,
+            LanguageRepository languageRepository,
+            CountryRepository countryRepository,
+            PartnerRepository partnerRepository,
+            OccupationRepository occupationRepository,
+            SurveyTypeRepository surveyTypeRepository,
+            EducationMajorRepository educationMajorRepository,
+            EducationLevelRepository educationLevelRepository,
+            OccupationService occupationService,
+            EducationMajorService educationMajorService) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateReviewStatusRepository = candidateReviewStatusRepository;
@@ -216,6 +224,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.surveyTypeRepository = surveyTypeRepository;
         this.educationMajorRepository = educationMajorRepository;
         this.educationLevelRepository = educationLevelRepository;
+        this.occupationService = occupationService;
+        this.educationMajorService = educationMajorService;
     }
 
     @Override
@@ -977,6 +987,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 SearchType.not,"masterId", candidateIds);
         }
 
+        //Occupations
+        final List<Long> occupationIds = request.getOccupationIds();
+        if (occupationIds != null) {
+            //Look up names from ids.
+            List<Object> reqOccupations = new ArrayList<>();
+            for (Long id : occupationIds) {
+                final Occupation occupation = occupationService.getOccupation(id);
+                reqOccupations.add(occupation.getName());
+            }
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                    null,"occupations.keyword", reqOccupations);
+        }
+
         //Countries - need to take account of source country restrictions
         final List<Long> countryIds = request.getCountryIds();
         List<Object> reqCountries = new ArrayList<>();
@@ -1052,6 +1075,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (gender != null) {
             boolQueryBuilder = boolQueryBuilder.filter(
                 QueryBuilders.termQuery("gender", gender.name()));
+        }
+
+        //Education Level (minimum)
+        Integer minEducationLevel = request.getMinEducationLevel();
+        if (minEducationLevel != null) {
+            boolQueryBuilder =
+                    addElasticRangeFilter(boolQueryBuilder,
+                            "maxEducationLevel",
+                            minEducationLevel, null);
+        }
+
+        //Educations
+        final List<Long> educationMajorIds = request.getEducationMajorIds();
+        if (educationMajorIds != null) {
+            //Look up names from ids.
+            List<Object> reqEducations = new ArrayList<>();
+            for (Long id : educationMajorIds) {
+                final EducationMajor educationMajor = educationMajorService.getEducationMajor(id);
+                reqEducations.add(educationMajor.getName());
+            }
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                    request.getNationalitySearchType(),
+                    "educations.keyword", reqEducations);
         }
         return boolQueryBuilder;
     }
