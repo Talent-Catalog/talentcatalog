@@ -30,6 +30,7 @@ import {isSavedSearch} from "../../../model/saved-search";
 import {isSavedList} from "../../../model/saved-list";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -57,9 +58,8 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   @ViewChild(NgbNav)
   nav: NgbNav;
 
-  constructor(
-    private localStorageService: LocalStorageService
-  ) { }
+  constructor(private localStorageService: LocalStorageService,
+              private authService: AuthService) { }
 
   ngOnInit() {
   }
@@ -111,6 +111,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   private selectDefaultTab() {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
     this.setActiveTabId(defaultActiveTabID == null ? "general" : defaultActiveTabID);
+  }
+
+  canViewPrivateInfo() {
+    return this.authService.canViewPrivateCandidateInfo(this.candidate);
   }
 
 }

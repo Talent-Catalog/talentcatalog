@@ -1,10 +1,15 @@
+<button (click)="activeOffcanvas.dismiss('Cross click')" ngbAutofocus type="button"
+        class="btn-close text-reset float-end m-3" aria-label="Close"></button>
 <div *ngIf="isList" class="offcanvas-header pb-0">
   <h5 class="offcanvas-title">List Specific</h5>
-  <button (click)="toggleAttachments()" id="bt" class="btn btn-sm btn-secondary">
-    Shareable Docs
-    <i *ngIf="!showAttachments" class="fas fa-eye"></i>
-    <i *ngIf="showAttachments" class="fas fa-eye-slash"></i>
-  </button>
+  <div>
+
+    <button (click)="toggleAttachments()" id="bt" class="btn btn-sm btn-secondary">
+      Shareable Docs
+      <i *ngIf="!showAttachments" class="fas fa-eye"></i>
+      <i *ngIf="showAttachments" class="fas fa-eye-slash"></i>
+    </button>
+  </div>
 </div>
 
 <div *ngIf="isContextNoteDisplayed() && !isList" class="offcanvas-header" >
@@ -49,7 +54,6 @@
       <i *ngIf="!showNotes" class="fas fa-eye"></i>
       <i *ngIf="showNotes" class="fas fa-eye-slash"></i>
     </button>
-    <button ngbAutofocus type="button" class="btn-close text-reset" aria-label="Close" (click)="activeOffcanvas.dismiss('Cross click')"></button>
   </div>
 </div>
 <div class="offcanvas-body">
