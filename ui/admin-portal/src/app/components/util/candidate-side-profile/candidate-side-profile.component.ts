@@ -5,6 +5,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {isSavedList} from "../../../model/saved-list";
 import {CandidateSource} from "../../../model/base";
 import {isSavedSearch} from "../../../model/saved-search";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-candidate-side-profile',
@@ -27,7 +28,8 @@ export class CandidateSideProfileComponent implements OnInit, AfterViewChecked {
 
 
   constructor(public activeOffcanvas: NgbActiveOffcanvas,
-              private localStorageService: LocalStorageService) {
+              private localStorageService: LocalStorageService,
+              private authService: AuthService) {
   }
 
   ngOnInit(): void {
@@ -76,5 +78,9 @@ export class CandidateSideProfileComponent implements OnInit, AfterViewChecked {
       }
     }
     return display;
+  }
+
+  canViewPrivateInfo() {
+    return this.authService.canViewPrivateCandidateInfo(this.candidate);
   }
 }

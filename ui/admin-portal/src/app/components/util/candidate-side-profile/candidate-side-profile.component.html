@@ -96,6 +96,18 @@
       </ng-template>
     </ng-container>
 
+    <!-- ADDITIONAL INFO -->
+    <ng-container ngbNavItem="additional">
+      <a ngbNavLink>Additional Info</a>
+      <ng-template ngbNavContent>
+        <app-candidate-additional-info-tab
+          [candidate]="candidate"
+          [editable]="false"
+          [canViewPrivateInfo]="canViewPrivateInfo()">
+        </app-candidate-additional-info-tab>
+      </ng-template>
+    </ng-container>
+
     <!-- TASKS -->
     <ng-container ngbNavItem="tasks">
       <a ngbNavLink>Tasks</a>
