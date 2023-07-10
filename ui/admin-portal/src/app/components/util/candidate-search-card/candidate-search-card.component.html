@@ -18,7 +18,6 @@
   <button (click)="close()" type="button" class="btn-close text-reset float-end ms-4" aria-label="Close"></button>
 
     <div class="list-specific">
-
       <div class="candidate-header" *ngIf="isList">
         <h5>List Specific</h5>
         <button (click)="toggleAttachments()" id="bt" class="btn btn-sm btn-secondary-light">
@@ -32,23 +31,44 @@
         <h5>Search Specific</h5>
       </div>
 
-      <ng-container *ngIf="isContextNoteDisplayed()">
-        <app-candidate-context-note
-          [candidate]="candidate"
-          [candidateSource]="candidateSource">
-        </app-candidate-context-note>
-      </ng-container>
+      <nav ngbNav #navContext="ngbNav" class="nav-tabs">
 
-      <ng-container *ngIf="showAttachments">
-        <div>
-          <app-shareable-docs
-            [candidate]="candidate"
-            [candidateSource]="candidateSource"
-          >
-          </app-shareable-docs>
-        </div>
-      </ng-container>
+        <!-- CONTEXT NOTES -->
+        <ng-container ngbNavItem="contextNotes">
+          <a ngbNavLink>Context Notes</a>
+          <ng-template ngbNavContent>
+            <app-candidate-context-note
+              [candidate]="candidate"
+              [candidateSource]="candidateSource">
+            </app-candidate-context-note>
+          </ng-template>
+        </ng-container>
 
+        <!-- SHAREABLE DOCS -->
+        <ng-container ngbNavItem="docs">
+          <a ngbNavLink>Shareable Docs</a>
+          <ng-template ngbNavContent>
+            <app-shareable-docs
+              [candidate]="candidate"
+              [candidateSource]="candidateSource">
+            </app-shareable-docs>
+          </ng-template>
+        </ng-container>
+
+        <!-- PREVIEW CV -->
+        <ng-container ngbNavItem="cv">
+          <a ngbNavLink>Preview CV</a>
+          <ng-template ngbNavContent>
+            <!-- todo add loading symbol -->
+            <iframe *ngIf="candidate.listShareableCv || candidate.shareableCv; else noCv"
+                    [src]="url" width="640" height="480"></iframe>
+            <ng-template #noCv>
+              <p class="text-center text-muted">No shareable CV selected</p>
+            </ng-template>
+          </ng-template>
+        </ng-container>
+      </nav>
+      <div [ngbNavOutlet]="navContext" class="mt-2"></div>
     </div>
 
     <hr *ngIf="isContextNoteDisplayed()" class="my-4">

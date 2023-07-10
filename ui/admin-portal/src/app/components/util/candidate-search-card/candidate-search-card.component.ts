@@ -19,8 +19,10 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {Candidate} from '../../../model/candidate';
@@ -31,13 +33,14 @@ import {isSavedList} from "../../../model/saved-list";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthService} from "../../../services/auth.service";
+import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-candidate-search-card',
   templateUrl: './candidate-search-card.component.html',
   styleUrls: ['./candidate-search-card.component.scss']
 })
-export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
+export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() loggedInUser: User;
@@ -55,13 +58,22 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   private lastTabKey: string = 'SelectedCandidateLastTab';
 
   //Get reference to the nav element
-  @ViewChild(NgbNav)
+  @ViewChild('nav')
   nav: NgbNav;
 
+  url: SafeResourceUrl;
+
   constructor(private localStorageService: LocalStorageService,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              public sanitizer: DomSanitizer) { }
 
   ngOnInit() {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.candidate?.previousValue !== changes.candidate?.currentValue) {
+      this.previewCVLink();
+    }
   }
 
   close() {
@@ -96,7 +108,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     //This is called in order for the navigation tabs, this.nav, to be set.
-    this.selectDefaultTab()
+    this.selectDefaultTab();
   }
 
   onTabChanged(event: NgbNavChangeEvent) {
@@ -115,6 +127,25 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
 
   canViewPrivateInfo() {
     return this.authService.canViewPrivateCandidateInfo(this.candidate);
+  }
+
+  previewCVLink() {
+    /**
+     * Sanitise the shareable CV link to avoid XSS errors when showing in iframe.
+     * See more here:  todo change the preview when changing candidate. ng on changes?
+     */
+    if (this.candidate?.listShareableCv) {
+      this.processUrlForIframe(this.candidate?.listShareableCv.location);
+    } else if (this.candidate?.shareableCv) {
+      this.processUrlForIframe(this.candidate?.shareableCv.location);
+    } else {
+      this.url = null;
+    }
+  }
+
+  processUrlForIframe(url: string) {
+    let previewUrl = url.substring(0, url.lastIndexOf('/')) + '/preview'
+    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(previewUrl);
   }
 
 }
