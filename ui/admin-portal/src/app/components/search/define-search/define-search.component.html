@@ -167,14 +167,12 @@
                   <label class="form-label">Occupation</label>
                   <ng-select
                     id="occupationIds"
-                    [ngClass]="{'disabled' : elastic()}"
                     [items]="candidateOccupations"
                     [multiple]="true"
                     [closeOnSelect]="false"
                     [clearSearchOnAdd]="true"
                     placeholder="Select or type..."
                     bindLabel="name"
-                    [readonly]="elastic()"
                     [formControlName]="'occupations'">
                     <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                       <div *ngFor="let item of items | slice:0:3" class="ng-value">
@@ -272,12 +270,10 @@
                   <label class="form-label">Education Level (minimum)</label>
                   <ng-select
                     id="minEducationLevel"
-                    [ngClass]="{'disabled' : elastic()}"
                     [items]="educationLevels"
                     placeholder="Select or type..."
                     bindLabel="name"
                     bindValue="level"
-                    [readonly]="elastic()"
                     [formControlName]="'minEducationLevel'">
                   </ng-select>
                 </div>
@@ -287,14 +283,12 @@
                   <label class="form-label">Education major</label>
                   <ng-select
                     id="educationMajorIds"
-                    [ngClass]="{'disabled' : elastic()}"
                     [items]="educationMajors"
                     [multiple]="true"
                     [closeOnSelect]="false"
                     [clearSearchOnAdd]="true"
                     placeholder="Select or type..."
                     bindLabel="name"
-                    [readonly]="elastic()"
                     [formControlName]="'educationMajors'">
                     <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                       <div *ngFor="let item of items | slice:0:3" class="ng-value">
