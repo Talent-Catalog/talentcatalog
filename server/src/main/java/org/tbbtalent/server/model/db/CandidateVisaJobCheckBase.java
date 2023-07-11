@@ -30,8 +30,19 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     @JoinColumn(name = "candidate_visa_check_id")
     private CandidateVisaCheck candidateVisaCheck;
 
-    private String name;
+    /**
+     * Associated job opportunity
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_opp_id")
+    SalesforceJobOpp jobOpp;
 
+    /**
+     * No longer populating these two fields (name & sfJobLink) we used these prior to adding the SF job opps onto the TC,
+     * and when Australia was the only country doing their visa checks on the TC. 
+     * Now we can just use the jobOppId above to retrieve and set job data.
+     */
+    private String name;
     private String sfJobLink;
 
     @Enumerated(EnumType.STRING)
