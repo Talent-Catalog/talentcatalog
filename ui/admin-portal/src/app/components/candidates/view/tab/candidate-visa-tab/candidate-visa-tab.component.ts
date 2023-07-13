@@ -24,9 +24,7 @@ import {
   CreateCandidateVisaCheckRequest
 } from '../../../../../services/candidate-visa-check.service';
 import {Country} from '../../../../../model/country';
-import {
-  HasNameSelectorComponent
-} from '../../../../util/has-name-selector/has-name-selector.component';
+import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {CandidateVisa} from '../../../../../model/candidate';
@@ -169,10 +167,6 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
     this.selectedIndex = this.form.controls.visaCountry.value;
     this.selectedCountry = this.candidateIntakeData
       .candidateVisaChecks[this.selectedIndex]?.country?.name;
-  }
-
-  getVisaCheck(countryName: string): CandidateVisa {
-    return this.candidateIntakeData?.candidateVisaChecks?.find(check => check.country.name == countryName);
   }
 
 }

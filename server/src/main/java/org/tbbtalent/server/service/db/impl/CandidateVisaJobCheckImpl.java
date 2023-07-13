@@ -25,10 +25,12 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
 import org.tbbtalent.server.model.db.CandidateVisaJobCheck;
 import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaJobRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaRepository;
 import org.tbbtalent.server.repository.db.OccupationRepository;
+import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
@@ -41,17 +43,19 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
     private final CandidateRepository candidateRepository;
     private final CandidateVisaRepository candidateVisaRepository;
     private final OccupationRepository occupationRepository;
+    private final SalesforceJobOppRepository salesforceJobOppRepository;
 
     public CandidateVisaJobCheckImpl(
             CandidateVisaJobRepository candidateVisaJobRepository,
             CandidateRepository candidateRepository,
             CandidateVisaRepository candidateVisaRepository,
-            OccupationRepository occupationRepository) {
+            OccupationRepository occupationRepository,
+            SalesforceJobOppRepository salesforceJobOppRepository) {
         this.candidateVisaJobRepository = candidateVisaJobRepository;
         this.candidateRepository = candidateRepository;
         this.candidateVisaRepository = candidateVisaRepository;
         this.occupationRepository = occupationRepository;
-
+        this.salesforceJobOppRepository = salesforceJobOppRepository;
     }
 
     @Override
@@ -64,8 +68,10 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
 
         CandidateVisaJobCheck jobCheck = new CandidateVisaJobCheck();
         jobCheck.setCandidateVisaCheck(visaCheck);
-        jobCheck.setName(request.getName());
-        jobCheck.setSfJobLink(request.getSfJobLink());
+
+        SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(request.getJobOppId())
+                .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, request.getJobOppId()));
+        jobCheck.setJobOpp(jobOpp);
 
         return candidateVisaJobRepository.save(jobCheck);
     }

@@ -20,7 +20,6 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
 import {Job, UpdateJobRequest} from "../../../../../model/job";
 import {PartnerService} from "../../../../../services/partner.service";
-import {Partner} from "../../../../../model/partner";
 import {SearchUserRequest} from "../../../../../model/base";
 import {UserService} from "../../../../../services/user.service";
 import {User} from "../../../../../model/user";
@@ -37,7 +36,6 @@ export class EditJobInfoComponent implements OnInit {
 
   jobForm: FormGroup;
 
-  recruiters: Partner[];
   users: User[];
 
   error;
@@ -74,11 +72,11 @@ export class EditJobInfoComponent implements OnInit {
   private createForm() {
     this.jobForm = this.fb.group({
       submissionDueDate: [this.job.submissionDueDate],
-      contactUser: [this.job.contactUser],
+      contactUser: [this.job.contactUser?.id],
     });
   }
 
-  get contactUser(): User {
+  get contactUser(): number {
     return this.jobForm?.value.contactUser;
   }
 
@@ -90,7 +88,7 @@ export class EditJobInfoComponent implements OnInit {
     this.error = null;
     this.saving = true;
     const request: UpdateJobRequest = {
-      contactUserId: this.contactUser?.id,
+      contactUserId: this.contactUser,
       submissionDueDate: this.submissionDueDate
     }
 
