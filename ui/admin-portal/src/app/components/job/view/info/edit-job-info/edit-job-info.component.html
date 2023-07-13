@@ -41,42 +41,20 @@
         <app-date-picker id="submissionDueDate" [control]="jobForm.controls.submissionDueDate"></app-date-picker>
       </div>
 
-<!--      todo Uncomment this out when we are ready to update these fields-->
-<!--      &lt;!&ndash; CONTACT EMAIL &ndash;&gt;-->
-<!--      <div class="mb-3">-->
-<!--        <label class="form-label" for="email">Contact Email</label>-->
-<!--        <input type="email" class="form-control" id="email" placeholder="Enter contact email" [formControlName]="'contactEmail'">-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Contact user &ndash;&gt;-->
-<!--      <div class="mb-3">-->
-<!--        <label class="form-label" for="contactUser">Contact User</label>-->
-<!--        <ng-select-->
-<!--          id="contactUser"-->
-<!--          [items]="users"-->
-<!--          [multiple]="false"-->
-<!--          [closeOnSelect]="true"-->
-<!--          [clearSearchOnAdd]="true"-->
-<!--          placeholder="Select or type..."-->
-<!--          bindLabel="name"-->
-<!--          [formControlName]="'contactUser'">-->
-<!--        </ng-select>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Recruiter &ndash;&gt;-->
-<!--      <div class="mb-3">-->
-<!--        <label class="form-label" for="recruiter">Recruiter</label>-->
-<!--        <ng-select-->
-<!--          id="recruiter"-->
-<!--          [items]="recruiters"-->
-<!--          [multiple]="false"-->
-<!--          [closeOnSelect]="true"-->
-<!--          [clearSearchOnAdd]="true"-->
-<!--          placeholder="Select or type..."-->
-<!--          bindLabel="name"-->
-<!--          [formControlName]="'recruiterPartner'">-->
-<!--        </ng-select>-->
-<!--      </div>-->
+      <!-- Contact user -->
+      <div class="mb-3">
+        <label class="form-label" for="contactUser">Contact User</label>
+        <ng-select
+          id="contactUser"
+          [items]="users"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          bindValue="id"
+          formControlName="contactUser">
+        </ng-select>
+      </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"

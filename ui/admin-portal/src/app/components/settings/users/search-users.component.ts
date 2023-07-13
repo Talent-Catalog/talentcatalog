@@ -98,8 +98,8 @@ export class SearchUsersComponent implements OnInit {
     request.pageNumber = this.pageNumber - 1;
     request.pageSize =  this.pageSize;
 
-    //Partners other than the default source partner only see users for their partner.
-    if (!this.authService.isDefaultSourcePartner()) {
+    //Partners other than the default  partner only see users for their partner.
+    if (!this.authService.isDefaultPartner()) {
       request.partnerId = this.loggedInUser.partner.id;
     }
     this.userService.searchPaged(request).subscribe(results => {
