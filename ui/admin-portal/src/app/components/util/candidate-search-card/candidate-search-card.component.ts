@@ -71,6 +71,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, O
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log(this.url)
     if (changes.candidate?.previousValue !== changes.candidate?.currentValue) {
       this.previewCVLink();
     }
@@ -129,22 +130,32 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, O
     return this.authService.canViewPrivateCandidateInfo(this.candidate);
   }
 
+  updateShareableCVPreview() {
+    this.previewCVLink();
+  }
+
   previewCVLink() {
     /**
      * Sanitise the shareable CV link to avoid XSS errors when showing in iframe.
-     * See more here:  todo change the preview when changing candidate. ng on changes?
+     * See more here:
      */
     if (this.candidate?.listShareableCv) {
-      this.processUrlForIframe(this.candidate?.listShareableCv.location);
+      this.processUrlForIframe(this.candidate?.listShareableCv.url);
     } else if (this.candidate?.shareableCv) {
-      this.processUrlForIframe(this.candidate?.shareableCv.location);
+      this.processUrlForIframe(this.candidate?.shareableCv.url);
     } else {
       this.url = null;
     }
   }
 
   processUrlForIframe(url: string) {
-    let previewUrl = url.substring(0, url.lastIndexOf('/')) + '/preview'
+    let previewUrl;
+    if (this.candidate?.listShareableCv.type == 'googlefile') {
+      previewUrl = url.substring(0, url.lastIndexOf('/')) + '/preview'
+    } else if (this.candidate?.listShareableCv.type == 'file') {
+      previewUrl = url;
+    }
+    console.log(previewUrl);
     this.url = this.sanitizer.bypassSecurityTrustResourceUrl(previewUrl);
   }
 

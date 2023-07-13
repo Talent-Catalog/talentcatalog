@@ -51,7 +51,8 @@
           <ng-template ngbNavContent>
             <app-shareable-docs
               [candidate]="candidate"
-              [candidateSource]="candidateSource">
+              [candidateSource]="candidateSource"
+              (updatedShareableCV)="updateShareableCVPreview()">
             </app-shareable-docs>
           </ng-template>
         </ng-container>
