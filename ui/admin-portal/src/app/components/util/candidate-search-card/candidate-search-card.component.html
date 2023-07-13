@@ -63,7 +63,7 @@
           <ng-template ngbNavContent>
             <!-- todo add loading symbol -->
             <iframe *ngIf="candidate.listShareableCv || candidate.shareableCv; else noCv"
-                    [src]="url" width="640" height="480"></iframe>
+                    [src]="sanitisedUrl" width="640" height="480"></iframe>
             <ng-template #noCv>
               <p class="text-center text-muted">No shareable CV selected</p>
             </ng-template>
