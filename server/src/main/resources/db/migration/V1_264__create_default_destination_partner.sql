@@ -14,17 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.candidate.visa.job;
+alter table partner add column default_destination_partner boolean not null default false;
 
-public class CreateCandidateVisaJobCheckRequest {
-    private Long jobOppId;
+insert into partner (name, abbreviation, default_destination_partner, partner_type, status)
+values ('Talent Beyond Boundaries Dest', 'TBB D', true, 'DefaultDestinationPartner', 'active');
 
-    public Long getJobOppId() {
-        return jobOppId;
-    }
-
-    public void setJobOppId(Long jobOppId) {
-        this.jobOppId = jobOppId;
-    }
-    
-}

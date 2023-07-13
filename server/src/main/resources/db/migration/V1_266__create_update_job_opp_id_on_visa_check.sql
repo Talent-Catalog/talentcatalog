@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,17 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.candidate.visa.job;
+alter table candidate_visa_job_check add column job_opp_id bigint references salesforce_job_opp;
 
-public class CreateCandidateVisaJobCheckRequest {
-    private Long jobOppId;
-
-    public Long getJobOppId() {
-        return jobOppId;
-    }
-
-    public void setJobOppId(Long jobOppId) {
-        this.jobOppId = jobOppId;
-    }
-    
-}
+update candidate_visa_job_check set job_opp_id =
+    (select id from salesforce_job_opp where candidate_visa_job_check.sf_job_link = CONCAT('https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/', sf_id, '/view'))
+where job_opp_id is null;

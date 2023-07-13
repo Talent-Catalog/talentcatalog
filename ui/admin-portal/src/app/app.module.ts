@@ -481,7 +481,9 @@ import {
 } from './components/util/opportunity-stage-next-step/opportunity-stage-next-step.component';
 import {EditOppComponent} from './components/opportunity/edit-opp/edit-opp.component';
 import {PathwayAssessmentComponent} from './components/candidates/visa/pathway-assessment/pathway-assessment.component';
-import {CandidateSideProfileComponent} from './components/util/candidate-side-profile/candidate-side-profile.component';
+import {
+  CandidateVisaJobComponent
+} from './components/candidates/view/tab/candidate-visa-tab/job/candidate-visa-job.component';
 
 @NgModule({
   declarations: [
@@ -766,7 +768,7 @@ import {CandidateSideProfileComponent} from './components/util/candidate-side-pr
     OpportunityStageNextStepComponent,
     EditOppComponent,
     PathwayAssessmentComponent,
-    CandidateSideProfileComponent
+    CandidateVisaJobComponent
   ],
   imports: [
     BrowserModule,

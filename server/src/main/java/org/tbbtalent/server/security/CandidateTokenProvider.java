@@ -106,6 +106,7 @@ public class CandidateTokenProvider implements InitializingBean {
                 .signWith(jwtSecret, SignatureAlgorithm.HS256)
                 .compact();
     }
+
     /**
      * Retrieves the candidate number from the token, otherwise throws exceptions if the token
      * is not valid or has expired.
