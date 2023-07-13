@@ -111,7 +111,7 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         if (partner instanceof SourcePartner) {
             res = partner.isDefaultSourcePartner();
         } else if (partner instanceof DefaultDestinationPartner) {
-            res = partner.isDefaultDestinationPartner();
+            res = partner.isDefaultJobCreator();
         }
         return res;
     }

@@ -49,13 +49,13 @@ public interface Partner {
     void setDefaultSourcePartner(boolean b);
 
     /**
-     * True if this partner is the default destination partner.
+     * True if this partner is the default job creator.
      * <p/>
-     * Only one destination partner at any given time can be the default.
-     * @return True if this is the default destination partner
+     * Only one partner at any given time can be the default.
+     * @return True if this is the default job creator
      */
-    boolean isDefaultDestinationPartner();
-    void setDefaultDestinationPartner(boolean b);
+    boolean isDefaultJobCreator();
+    void setDefaultJobCreator(boolean b);
 
     @Nullable
     Long getContextJobId();

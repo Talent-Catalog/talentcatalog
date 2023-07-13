@@ -161,7 +161,7 @@ export class AuthService {
   isJobOurs(job: ShortJob): boolean {
 
     //For now all jobs belong to just the default partner.
-    return this.isDefaultDestinationPartner();
+    return this.isDefaultJobCreator();
 
     //todo Eventually when we have proper recruiter partner support, the code will look like this:
     /*
@@ -398,13 +398,13 @@ export class AuthService {
   /**
    * True if a user is logged in and they are associated with the default destination partner.
    */
-  isDefaultDestinationPartner(): boolean {
-    let defaultDestinationPartner = false;
+  isDefaultJobCreator(): boolean {
+    let defaultJobCreator = false;
     const loggedInUser = this.getLoggedInUser();
     if (loggedInUser) {
-      defaultDestinationPartner = loggedInUser.partner?.defaultDestinationPartner;
+      defaultJobCreator = loggedInUser.partner?.defaultJobCreator;
     }
-    return defaultDestinationPartner;
+    return defaultJobCreator;
   }
 
   /**
@@ -420,7 +420,7 @@ export class AuthService {
   }
 
   isDefaultPartner(): boolean {
-    return this.isDefaultSourcePartner() || this.isDefaultDestinationPartner();
+    return this.isDefaultSourcePartner() || this.isDefaultJobCreator();
   }
 
   /**

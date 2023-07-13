@@ -66,8 +66,15 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     @Transient
     private Long contextJobId;
 
+    @Column(name="default_destination_partner")
+    private boolean defaultJobCreator;
+
     private boolean defaultSourcePartner;
-    private boolean defaultDestinationPartner;
+
+    /**
+     * True if this partner is a job creator - ie the partner can have users who can create jobs
+     */
+    private boolean jobCreator;
 
     @Nullable
     private String logo;
@@ -92,6 +99,11 @@ public class PartnerImpl extends AbstractDomainObject<Long>
 
     @Nullable
     private String sflink;
+
+    /**
+     * True if this partner is a source partner
+     */
+    private boolean sourcePartner;
 
     @Enumerated(EnumType.STRING)
     @NonNull

@@ -62,7 +62,7 @@ export interface ShortPartner {
 export interface Partner extends PartnerSimpleAttributes {
   id: number;
   defaultContact?: User;
-  defaultDestinationPartner: boolean;
+  defaultJobCreator: boolean;
   defaultSourcePartner: boolean;
   sourceCountries: Country[];
 }

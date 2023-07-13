@@ -1540,7 +1540,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 final boolean isDefaultPartner = (partner instanceof SourcePartner
                     && partner.isDefaultSourcePartner()) ||
                     (partner instanceof DefaultDestinationPartner
-                        && partner.isDefaultDestinationPartner());
+                        && partner.isDefaultJobCreator());
                 //Different default for simple (non operating partners)
                 //and default source partner
                 if ("Partner".equals(partner.getPartnerType())
