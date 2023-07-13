@@ -55,7 +55,7 @@ public class JobIntakeDataBuilderSelector {
         return new DtoBuilder()
             .add("id")
             .add("sfId")
-            .add("contactEmail")
+            .add("contactUser", shortUserDto())
             .add("countryObject", countryDto())
             .add("createdDate")
             .add("employer")
@@ -67,6 +67,15 @@ public class JobIntakeDataBuilderSelector {
         return new DtoBuilder()
             .add("id")
             .add("name")
+            ;
+    }
+
+    private DtoBuilder shortUserDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("firstName")
+            .add("lastName")
+            .add("email")
             ;
     }
 }

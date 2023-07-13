@@ -28,5 +28,5 @@ import org.tbbtalent.server.model.db.partner.RecruiterPartner;
 @ToString
 @Entity(name = "RecruiterPartner")
 @DiscriminatorValue("RecruiterPartner")
-public class RecruiterPartnerImpl extends PartnerImpl implements RecruiterPartner {
+public class RecruiterPartnerImpl extends JobCreatorImpl implements RecruiterPartner {
 }

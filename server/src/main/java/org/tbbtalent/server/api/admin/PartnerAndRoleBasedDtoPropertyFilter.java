@@ -22,6 +22,7 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.partner.DefaultDestinationPartner;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.util.dto.DtoPropertyFilter;
@@ -56,8 +57,8 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         boolean ignore;
 
         if (role == Role.systemadmin
-            //Allows default source partner (eg TBB) admins to see everything.
-            || isDefaultSourcePartner(partner) && (role == Role.admin || role == Role.sourcepartneradmin)
+            //Allows default partner (eg TBB) admins to see everything.
+            || isDefaultPartner(partner) && (role == Role.admin || role == Role.sourcepartneradmin)
         ) {
             ignore = false;
         } else {
@@ -105,10 +106,12 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         return ignore;
     }
 
-    private boolean isDefaultSourcePartner(Partner partner) {
+    private boolean isDefaultPartner(Partner partner) {
         boolean res = false;
         if (partner instanceof SourcePartner) {
-            res = ((SourcePartner) partner).isDefaultSourcePartner();
+            res = partner.isDefaultSourcePartner();
+        } else if (partner instanceof DefaultDestinationPartner) {
+            res = partner.isDefaultDestinationPartner();
         }
         return res;
     }
