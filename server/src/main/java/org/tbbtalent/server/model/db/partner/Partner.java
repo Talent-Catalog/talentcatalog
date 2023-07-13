@@ -38,6 +38,25 @@ public interface Partner {
     String getAbbreviation();
     void setAbbreviation(@Nullable String s);
 
+    /**
+     * True if this partner is the default source partner - associated with candidates who are
+     * not clearly associated with any other source partner.
+     * <p/>
+     * Only one source partner at any given time can be the default.
+     * @return True if this is the default source partner
+     */
+    boolean isDefaultSourcePartner();
+    void setDefaultSourcePartner(boolean b);
+
+    /**
+     * True if this partner is the default destination partner.
+     * <p/>
+     * Only one destination partner at any given time can be the default.
+     * @return True if this is the default destination partner
+     */
+    boolean isDefaultDestinationPartner();
+    void setDefaultDestinationPartner(boolean b);
+
     @Nullable
     Long getContextJobId();
     void setContextJobId(@Nullable Long contextJobId);

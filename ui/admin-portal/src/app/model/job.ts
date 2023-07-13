@@ -42,7 +42,6 @@ export interface Job extends Opportunity {
   hiringCommitment: string;
   opportunityScore: string;
   employerDescription: string;
-  contactEmail: string;
   contactUser: User;
   // Note: this country field comes from Salesforce, why it is a string and not a country object.
   country: string;
@@ -51,7 +50,7 @@ export interface Job extends Opportunity {
   jobSummary: string;
   publishedBy: User;
   publishedDate: Date;
-  recruiterPartner: ShortPartner;
+  jobCreator: ShortPartner;
   stage: JobOpportunityStage;
   starringUsers: User[];
   submissionDueDate: Date;
@@ -109,6 +108,7 @@ export class SearchJobRequest extends SearchOpportunityRequest {
 }
 
 export interface UpdateJobRequest extends OpportunityProgressParams {
+  contactUserId?: number;
   sfJoblink?: string;
   submissionDueDate?: Date;
 }

@@ -14,17 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db.partner;
+package org.tbbtalent.server.model.db;
 
-/**
- * This is a partner, typically located in a destination, who helps employers in that destination
- * recruit candidates. In other words, and employment agency working with us.
- * <p/>
- * Sometimes employers can connect directly to us. See {@link EmployerPartner}.
- * However some employers prefer to outsource that process to RecruiterPartners.
- *
- * @author John Cameron
- */
-public interface RecruiterPartner extends JobCreator {
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.tbbtalent.server.model.db.partner.JobCreator;
 
+@Getter
+@Setter
+@ToString
+@Entity(name = "JobCreator")
+@DiscriminatorValue("JobCreator")
+public class JobCreatorImpl extends PartnerImpl implements JobCreator {
 }

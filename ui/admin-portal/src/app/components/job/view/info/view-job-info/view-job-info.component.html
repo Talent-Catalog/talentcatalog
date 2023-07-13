@@ -54,35 +54,23 @@
         </div>
       </div>
 
-      <div *ngIf="job.recruiterPartner" class="mb-3 col-sm-12 col-md-4">
+      <div *ngIf="job.jobCreator" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-id-badge"></i>Recruiter</label>
 
         <div class="form-control-plaintext">
-          <a target="_blank" href="{{job.recruiterPartner.websiteUrl}}">
-            {{job.recruiterPartner.name}}
+          <a target="_blank" href="{{job.jobCreator.websiteUrl}}">
+            {{job.jobCreator.name}}
           </a>
         </div>
       </div>
 
       <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-envelope"></i>Job Contact Email</label>
-
-        <div *ngIf="isSpecialContactEmail()" class="form-control-plaintext">
-          <a target="_blank" href="{{showEmailUrl(job.contactEmail)}}">{{job.contactEmail}}</a>
-        </div>
-
-        <div *ngIf="!isSpecialContactEmail()" class="form-control-plaintext">
-          See email of person who created job
-        </div>
-      </div>
-
-      <div *ngIf="job.contactUser" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-user"></i>Contact</label>
+        <label class="col-form-label"><i class="fas fa-user"></i>Job Contact</label>
 
         <div class="form-control-plaintext">
-          <div>{{showUser(job.contactUser)}}</div>
+          <div>{{showUser(getContactUser())}}</div>
           <div>
-          <a target="_blank" href="{{showEmailUrl(job.contactUser.email)}}">{{job.contactUser.email}}</a>
+            <a target="_blank" href="{{showEmailUrl(getContactUser().email)}}">{{getContactUser().email}}</a>
           </div>
         </div>
       </div>

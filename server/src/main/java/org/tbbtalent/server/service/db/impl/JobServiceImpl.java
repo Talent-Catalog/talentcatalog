@@ -52,8 +52,10 @@ import org.tbbtalent.server.exception.UnauthorisedActionException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.tbbtalent.server.model.db.JobCreatorImpl;
 import org.tbbtalent.server.model.db.JobOppIntake;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
@@ -242,6 +244,8 @@ public class JobServiceImpl implements JobService {
             throw new InvalidRequestException("No such Salesforce opportunity: " + sfJoblink);
         }
 
+        updateJobFromRequest(job, request);
+
         job.setAuditFields(loggedInUser);
 
         //Create submission list
@@ -257,13 +261,18 @@ public class JobServiceImpl implements JobService {
         SavedList exclusionList = salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
         job.setExclusionList(exclusionList);
 
+        //The partner associated with the person who created the job is the job creator
+        final PartnerImpl loggedInUserPartner = loggedInUser.getPartner();
+        job.setJobCreator((JobCreatorImpl) loggedInUserPartner);
+
         return salesforceJobOppRepository.save(job);
     }
 
     private User getLoggedInUser(String operation) {
-        User loggedInUser = authService.getLoggedInUser().orElseThrow(
-            () -> new UnauthorisedActionException(operation)
-        );
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new UnauthorisedActionException(operation);
+        }
         return loggedInUser;
     }
 
@@ -464,12 +473,7 @@ public class JobServiceImpl implements JobService {
         }
     }
 
-    @NonNull
-    @Override
-    public SalesforceJobOpp updateJob(long id, UpdateJobRequest request)
-        throws NoSuchObjectException, SalesforceException {
-        User loggedInUser = getLoggedInUser("update job");
-        SalesforceJobOpp job = getJob(id);
+    private void updateJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
         final JobOpportunityStage stage = request.getStage();
         if (stage != null) {
             job.setStage(stage);
@@ -490,10 +494,32 @@ public class JobServiceImpl implements JobService {
             job.setNextStepDueDate(nextStepDueDate);
         }
 
+        final Long contactUserId = request.getContactUserId();
+        if (contactUserId != null) {
+            User contactUser = userService.getUser(contactUserId);
+            job.setContactUser(contactUser);
+        }
+
+        final LocalDate submissionDueDate = request.getSubmissionDueDate();
+        if (submissionDueDate != null) {
+            job.setSubmissionDueDate(submissionDueDate);
+        }
+    }
+
+    @NonNull
+    @Override
+    public SalesforceJobOpp updateJob(long id, UpdateJobRequest request)
+        throws NoSuchObjectException, SalesforceException {
+        User loggedInUser = getLoggedInUser("update job");
+        SalesforceJobOpp job = getJob(id);
+
+        final JobOpportunityStage stage = request.getStage();
+        final String nextStep = request.getNextStep();
+        final LocalDate nextStepDueDate = request.getNextStepDueDate();
         salesforceService.updateEmployerOpportunityStage(
             job.getSfId(), stage, nextStep, nextStepDueDate);
 
-        job.setSubmissionDueDate(request.getSubmissionDueDate());
+        updateJobFromRequest(job, request);
         job.setAuditFields(loggedInUser);
         return salesforceJobOppRepository.save(job);
     }
