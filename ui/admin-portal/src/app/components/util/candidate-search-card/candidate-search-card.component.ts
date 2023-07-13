@@ -33,7 +33,6 @@ import {isSavedList} from "../../../model/saved-list";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthService} from "../../../services/auth.service";
-import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {CandidateAttachment} from "../../../model/candidate-attachment";
 
 @Component({
@@ -61,13 +60,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, O
   //Get reference to the nav element
   @ViewChild('nav')
   nav: NgbNav;
-
-  sanitisedUrl: SafeResourceUrl;
   cvUrl: string;
 
   constructor(private localStorageService: LocalStorageService,
-              private authService: AuthService,
-              public sanitizer: DomSanitizer) { }
+              private authService: AuthService) { }
 
   ngOnInit() {
   }
@@ -145,31 +141,26 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, O
     } else if (this.candidate?.shareableCv) {
       this.processCVForIframe(this.candidate?.shareableCv);
     } else {
-      this.sanitisedUrl = null;
+      this.cvUrl = null
     }
   }
 
   /**
-   * If it is a google file, we need to alter the link by replacing anything after the file id in the link with /preview.
-   * This is so it will work in the iframe.
-   * @param url
-   */
-  getGooglePreviewLink(url: string) {
-    return url.substring(0, url.lastIndexOf('/')) + '/preview'
-  }
-
-  /**
-   * Useful Stack Overflow about how to embed files, word docs in iframe are being downloaded. But using google doc viewer
-   * or microsoft doc viewers put us at a security risk. See here: https://stackoverflow.com/a/27958186
+   * Useful Stack Overflow about using iframe with word docs. Currently word docs in S3 buckets are being downloaded.
+   * However, the s3 buckets are depreciated so only contain older documents, word docs stored the Google drive are displaying.
+   * See here: https://stackoverflow.com/a/27958186
    * @param cv
    */
   processCVForIframe(cv: CandidateAttachment) {
+    /**
+     * If it is a Google file, we need to alter the link by replacing anything after the file id in the link with /preview.
+     * This is so it will work in the iframe.
+     */
     if (cv?.type == 'googlefile') {
       this.cvUrl = cv?.url.substring(0, cv?.url.lastIndexOf('/')) + '/preview'
     } else if (this.candidate?.listShareableCv?.type == 'file') {
       this.cvUrl = cv?.url;
     }
-    this.sanitisedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.cvUrl);
   }
 
 }
