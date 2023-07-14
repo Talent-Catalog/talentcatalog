@@ -16,8 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import javax.validation.constraints.NotNull;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -25,10 +23,11 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.service.db.BrandingService;
 import org.tbbtalent.server.service.db.PartnerService;
 import org.tbbtalent.server.service.db.UserService;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Implements BrandingService
@@ -74,8 +73,8 @@ public class BrandingServiceImpl implements BrandingService {
     private @NotNull BrandingInfo extractBrandingInfoFromPartner(@NonNull Partner partner) {
         BrandingInfo info = new BrandingInfo();
         info.setLogo(partner.getLogo());
-        if (partner instanceof SourcePartner sourcePartner) {
-            info.setLandingPage(sourcePartner.getRegistrationLandingPage());
+        if (partner.isSourcePartner()) {
+            info.setLandingPage(partner.getRegistrationLandingPage());
         }
         info.setPartnerName(partner.getName());
         info.setWebsiteUrl(partner.getWebsiteUrl());

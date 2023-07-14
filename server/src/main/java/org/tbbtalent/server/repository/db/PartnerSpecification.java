@@ -16,11 +16,12 @@
 
 package org.tbbtalent.server.repository.db;
 
-import javax.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.request.partner.SearchPartnerRequest;
+
+import javax.persistence.criteria.Predicate;
 
 public class PartnerSpecification {
 
@@ -45,9 +46,14 @@ public class PartnerSpecification {
                 conjunction.getExpressions().add(builder.equal(partner.get("status"), request.getStatus()));
             }
 
-            // Partner type
-            if (request.getPartnerType() != null){
-                conjunction.getExpressions().add(builder.equal(partner.get("partnerType"), request.getPartnerType()));
+            // Job Creators
+            if (request.getJobCreator() != null){
+                conjunction.getExpressions().add(builder.equal(partner.get("jobCreator"), request.getJobCreator()));
+            }
+
+            // Source Partners
+            if (request.getSourcePartner() != null){
+                conjunction.getExpressions().add(builder.equal(partner.get("sourcePartner"), request.getSourcePartner()));
             }
 
             return conjunction;

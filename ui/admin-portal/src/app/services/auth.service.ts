@@ -217,19 +217,12 @@ export class AuthService {
     const loggedInUser = this.getLoggedInUser()
     //Must be logged in
     if (loggedInUser) {
-
-      //Only certain partner types
-      let partnerType = this.getPartnerType();
-      if (partnerType != null) {
-        if (this.isDefaultSourcePartner()) {
-          //Default source partners can
-          ok = true;
-        } else {
-          switch (partnerType) {
-            case PartnerType.SourcePartner:
-            case PartnerType.RecruiterPartner:
-              ok = true;
-          }
+      if (this.isDefaultSourcePartner()) {
+        //Default source partners can
+        ok = true;
+      } else {
+        if (this.isSourcePartner() || this.isJobCreator()) {
+            ok = true;
         }
       }
     }
@@ -318,6 +311,16 @@ export class AuthService {
   getPartnerType(): string {
     const loggedInUser = this.getLoggedInUser();
     return loggedInUser == null ? null : loggedInUser.partner?.partnerType;
+  }
+
+  isJobCreator(): boolean {
+    const loggedInUser = this.getLoggedInUser();
+    return loggedInUser == null ? false : loggedInUser.partner?.jobCreator;
+  }
+
+  isSourcePartner(): boolean {
+    const loggedInUser = this.getLoggedInUser();
+    return loggedInUser == null ? false : loggedInUser.partner?.sourcePartner;
   }
 
   setNewLoggedInUser(new_user) {
@@ -434,10 +437,7 @@ export class AuthService {
 
     const loggedInUser = this.getLoggedInUser();
     if (loggedInUser) {
-      let partnerType = this.getPartnerType();
-      if (partnerType != null) {
-        result = this.isDefaultPartner() || partnerType == PartnerType.SourcePartner;
-      }
+      result = this.isDefaultSourcePartner() || this.isSourcePartner();
     }
 
     return result;

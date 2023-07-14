@@ -14,16 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 
 import {Candidate, CandidateFilterByOpps, CandidateStatus, Gender} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -53,9 +44,7 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {
-  DateRangePickerComponent
-} from '../../util/form/date-range-picker/date-range-picker.component';
+import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -212,7 +201,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    const partnerRequest: SearchPartnerRequest = {partnerType: PartnerType.SourcePartner};
+    const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
     const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
     forkJoin({
       'lists': this.savedListService.search(request),

@@ -36,12 +36,14 @@ export interface PartnerSimpleAttributes {
   autoAssignable: boolean;
   defaultPartnerRef: boolean;
   jobContact?: User;
+  jobCreator: boolean;
   logo: string;
   name: string;
   notificationEmail: string;
   partnerType: string;
   registrationLandingPage: string;
   sflink: string;
+  sourcePartner: boolean;
 
   //Note that status is a Java Status enum on the server, but it maps to the string value of
   //enum by the JSON processing (Javascript does not know about enums).

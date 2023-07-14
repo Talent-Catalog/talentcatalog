@@ -28,7 +28,7 @@ import org.tbbtalent.server.model.db.User;
  *
  * @author John Cameron
  */
-public interface Partner {
+public interface Partner extends SourcePartner {
 
     /**
      * Abbreviated name of partner, if any.
@@ -47,6 +47,12 @@ public interface Partner {
      */
     boolean isDefaultSourcePartner();
     void setDefaultSourcePartner(boolean b);
+
+    boolean isJobCreator();
+    void setJobCreator(boolean b);
+
+    boolean isSourcePartner();
+    void setSourcePartner(boolean b);
 
     /**
      * True if this partner is the default job creator.
@@ -106,8 +112,6 @@ public interface Partner {
     @Nullable
     String getNotificationEmail();
     void setNotificationEmail(@Nullable String notificationEmail);
-
-    String getPartnerType();
 
     /**
      * Salesforce ID (extracted from {@link #getSflink()}).
