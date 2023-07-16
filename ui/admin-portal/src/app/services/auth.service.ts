@@ -26,7 +26,6 @@ import {Role, User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {EncodedQrImage} from "../util/qr";
 import {Candidate, ShortCandidate} from "../model/candidate";
-import {PartnerType} from "../model/partner";
 import {Job, ShortJob} from "../model/job";
 import {CandidateOpportunity} from "../model/candidate-opportunity";
 
@@ -91,14 +90,7 @@ export class AuthService {
   }
 
   canCreateJob() : boolean {
-    let result: boolean = false;
-
-    let partnerType = this.getPartnerType();
-    if (partnerType != null && partnerType != PartnerType.Partner) {
-      result = this.isDefaultSourcePartner() || partnerType == PartnerType.RecruiterPartner;
-    }
-
-    return result;
+    return this.isJobCreator();
   }
 
   canViewCandidateCountry(): boolean {
@@ -119,8 +111,7 @@ export class AuthService {
   canViewCandidateCV(): boolean {
     let result: boolean = false;
 
-    let partnerType = this.getPartnerType();
-    if (partnerType != null && partnerType != PartnerType.Partner) {
+    if (this.isJobCreator() || this.isSourcePartner()) {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
@@ -136,8 +127,7 @@ export class AuthService {
    */
   canViewCandidateName(): boolean {
     let result: boolean = false;
-    let partnerType = this.getPartnerType();
-    if (partnerType != null && partnerType != PartnerType.Partner) {
+    if (this.isSourcePartner() || this.isJobCreator()) {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
@@ -186,9 +176,7 @@ export class AuthService {
     //Must be logged in
     if (loggedInUser) {
 
-      //Must have more than a basic Partner type.
-      let partnerType = this.getPartnerType();
-      if (partnerType != null && partnerType != PartnerType.Partner) {
+      if (this.isJobCreator() || this.isSourcePartner()) {
 
         //Must have some kind of admin role
         const role = this.getLoggedInRole();

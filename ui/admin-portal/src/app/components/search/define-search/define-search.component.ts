@@ -14,7 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate, CandidateFilterByOpps, CandidateStatus, Gender} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -44,7 +53,9 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
+import {
+  DateRangePickerComponent
+} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -67,7 +78,7 @@ import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
 import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
-import {Partner, PartnerType} from "../../../model/partner";
+import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 
 @Component({
@@ -707,13 +718,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
     let s: string;
 
-    //Simple non-operating partners default to seeing candidates from all partners
-    if (partnerType === PartnerType.Partner
-      || partnerType === PartnerType.RecruiterPartner
-      || this.authService.isDefaultPartner()) {
-      s = "If nothing is specified, the default is to show candidates managed by any partner";
-    } else {
+    //Source partners default to seeing only their candidates (unless they are the default partner)
+    if (this.authService.isSourcePartner() && !this.authService.isDefaultPartner()) {
       s = "If nothing is specified, the default is to just show candidates belonging to your partner";
+    } else {
+      s = "If nothing is specified, the default is to show candidates managed by any partner";
     }
 
     return s;
