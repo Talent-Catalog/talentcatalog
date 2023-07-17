@@ -713,9 +713,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   public getPartnerDefaultMessage(): string {
 
-    const partner = this.loggedInUser?.partner;
-    let partnerType = partner?.partnerType;
-
     let s: string;
 
     //Source partners default to seeing only their candidates (unless they are the default partner)

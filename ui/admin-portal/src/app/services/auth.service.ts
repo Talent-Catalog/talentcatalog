@@ -296,11 +296,6 @@ export class AuthService {
     return this.loggedInUser;
   }
 
-  getPartnerType(): string {
-    const loggedInUser = this.getLoggedInUser();
-    return loggedInUser == null ? null : loggedInUser.partner?.partnerType;
-  }
-
   isJobCreator(): boolean {
     const loggedInUser = this.getLoggedInUser();
     return loggedInUser == null ? false : loggedInUser.partner?.jobCreator;

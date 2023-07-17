@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PartnerService} from "../../../../services/partner.service";
-import {Partner, PartnerType, UpdatePartnerRequest} from "../../../../model/partner";
+import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
 import {salesforceUrlPattern, SearchUserRequest, Status} from "../../../../model/base";
 import {Country} from "../../../../model/country";
 import {CountryService} from "../../../../services/country.service";
@@ -46,7 +46,6 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
   error = null;
   form: FormGroup;
   partner: Partner;
-  partnerTypes = enumOptions(PartnerType);
   partnerUsers: User[];
   statuses = enumOptions(Status);
   working: boolean;
@@ -71,12 +70,14 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       autoAssignable: [this.partner?.autoAssignable],
       defaultContact: [this.partner?.defaultContact],
       defaultPartnerRef: [this.partner?.defaultPartnerRef],
+      jobCreator: [this.partner?.jobCreator],
       logo: [this.partner?.logo],
       name: [this.partner?.name, Validators.required],
       notificationEmail: [this.partner?.notificationEmail],
       registrationLandingPage: [this.partner?.registrationLandingPage],
       sflink: [this.partner?.sflink, [Validators.pattern(salesforceUrlPattern)]],
       sourceCountries: [this.partner?.sourceCountries],
+      sourcePartner: [this.partner?.sourcePartner],
 
       //Note that the value passed in here is the string key of the enum. In the html the
       //of the drop down the EnumOptions of the enum is passed in as allowable value
@@ -84,7 +85,6 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       //enum key and the "bindLabel" set to the enum stringValue (which is what is displayed to
       //the user).
       status: [this.partner?.status, Validators.required],
-      partnerType: [this.partner ? this.partner.partnerType : PartnerType.SourcePartner, Validators.required],
       websiteUrl: [this.partner?.websiteUrl],
     });
 
@@ -143,12 +143,13 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       logo: this.form.value.logo,
       name: this.form.value.name,
       notificationEmail: this.form.value.notificationEmail,
-      partnerType: this.form.value.partnerType,
+      jobCreator: this.form.value.jobCreator,
       registrationLandingPage: this.form.value.registrationLandingPage,
       sflink: this.form.value.sflink,
 
       //Convert countries to country ids
       sourceCountryIds: this.form.value.sourceCountries?.map(c => c.id),
+      sourcePartner: this.form.value.sourcePartner,
 
       //The form status contains the key of the associated enum. On the server side, that field
       //of the corresponding Java UpdatePartnerRequest will be typed as the Java enum Status.
@@ -192,7 +193,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
   }
 
   isSourcePartner(): boolean {
-    return this.form.value.partnerType === PartnerType.SourcePartner;
+    return this.form.value.sourcePartner;
   }
 
   isCreate(): boolean {

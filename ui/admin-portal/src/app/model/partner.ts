@@ -21,15 +21,7 @@ import {User} from "./user";
 
   - Avoid duplicating lists of attributes by using inheritance (ie extends).
   - Link update request to partner attributes (ie don't duplicate attributes)
-  - Map Java enums to strings.
 */
-
-export enum PartnerType {
-  Partner = "Partner",
-  RecruiterPartner = "RecruiterPartner",
-  SourcePartner = "SourcePartner"
-}
-
 
 export interface PartnerSimpleAttributes {
   abbreviation: string;
@@ -40,7 +32,6 @@ export interface PartnerSimpleAttributes {
   logo: string;
   name: string;
   notificationEmail: string;
-  partnerType: string;
   registrationLandingPage: string;
   sflink: string;
   sourcePartner: boolean;
