@@ -19,10 +19,8 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnInit,
   Output,
-  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {Candidate} from '../../../model/candidate';
@@ -33,7 +31,6 @@ import {isSavedList} from "../../../model/saved-list";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthService} from "../../../services/auth.service";
-import {AttachmentType, CandidateAttachment} from "../../../model/candidate-attachment";
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -54,13 +51,16 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   showAttachments: boolean = false;
   showNotes: boolean = true;
 
-  activeTabId: string;
-  private lastTabKey: string = 'SelectedCandidateLastTab';
-
   //Get reference to the nav element
   @ViewChild('nav')
   nav: NgbNav;
-  cvUrl: string;
+  activeTabId: string;
+  private lastTabKey: string = 'SelectedCandidateLastTab';
+
+  @ViewChild('navContext')
+  navContext: NgbNav;
+  activeContextTabId: string;
+  private lastContextTabKey: string = 'SelectedCandidateContextLastTab';
 
   constructor(private localStorageService: LocalStorageService,
               private authService: AuthService) { }
@@ -75,10 +75,6 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
 
   close() {
     this.closeEvent.emit();
-  }
-
-  toggleAttachments() {
-    this.showAttachments = !this.showAttachments;
   }
 
   toggleNotes() {
@@ -107,6 +103,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     this.setActiveTabId(event.nextId);
   }
 
+  onContextTabChanged(event: NgbNavChangeEvent) {
+    this.setActiveContextTabId(event.nextId);
+  }
+
   private setActiveTabId(id: string) {
     this.nav?.select(id);
     this.localStorageService.set(this.lastTabKey, id);
@@ -120,6 +120,9 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   private selectDefaultTab() {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
     this.setActiveTabId(defaultActiveTabID == null ? "general" : defaultActiveTabID);
+
+    const defaultActiveContextTabID: string = this.localStorageService.get(this.lastContextTabKey);
+    this.setActiveContextTabId(defaultActiveContextTabID == null ? "contextNotes" : defaultActiveContextTabID);
   }
 
   canViewPrivateInfo() {
