@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {AttachmentType, CandidateAttachment} from "../../../model/candidate-attachment";
 import {Candidate} from "../../../model/candidate";
 
@@ -7,7 +7,7 @@ import {Candidate} from "../../../model/candidate";
   templateUrl: './cv-preview.component.html',
   styleUrls: ['./cv-preview.component.scss']
 })
-export class CvPreviewComponent implements OnInit, OnChanges, AfterViewChecked {
+export class CvPreviewComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   cvUrl: string;
   loading: boolean;
@@ -15,7 +15,6 @@ export class CvPreviewComponent implements OnInit, OnChanges, AfterViewChecked {
   constructor() { }
 
   ngOnInit(): void {
-    console.log("hi")
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -23,10 +22,6 @@ export class CvPreviewComponent implements OnInit, OnChanges, AfterViewChecked {
       this.loading = true;
       this.updateCvUrlForPreview();
     }
-  }
-
-  ngAfterViewChecked() {
-    this.loading = false;
   }
 
   /**
@@ -40,6 +35,7 @@ export class CvPreviewComponent implements OnInit, OnChanges, AfterViewChecked {
       this.processUrlForIframe(this.candidate.shareableCv);
     } else {
       this.cvUrl = null;
+      this.loading = false;
     }
   }
 
@@ -54,6 +50,7 @@ export class CvPreviewComponent implements OnInit, OnChanges, AfterViewChecked {
     } else {
       this.cvUrl = cv?.url;
     }
+    this.loading = false;
   }
 
   /**
