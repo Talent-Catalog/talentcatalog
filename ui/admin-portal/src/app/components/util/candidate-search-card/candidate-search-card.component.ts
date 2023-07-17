@@ -40,7 +40,7 @@ import {AttachmentType, CandidateAttachment} from "../../../model/candidate-atta
   templateUrl: './candidate-search-card.component.html',
   styleUrls: ['./candidate-search-card.component.scss']
 })
-export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, OnChanges {
+export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
 
   @Input() candidate: Candidate;
   @Input() loggedInUser: User;
@@ -71,58 +71,6 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, O
   ngAfterViewChecked(): void {
     //This is called in order for the navigation tabs, this.nav, to be set.
     this.selectDefaultTab();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.candidate?.previousValue !== changes.candidate?.currentValue) {
-      this.processUrlForIframe(this.cvForPreview);
-    }
-  }
-
-  /**
-   * Return the CV we want to display in the iframe - need to prioritise the listShareableCv &&
-   * make sure it is a file that can be displayed and not automatically downloaded (see canPreviewCV method)
-   */
-  get cvForPreview(): CandidateAttachment {
-    if (this.candidate?.listShareableCv && this.canPreviewCv(this.candidate?.listShareableCv)) {
-      return this.candidate.listShareableCv;
-    } else if (this.candidate?.shareableCv && this.canPreviewCv(this.candidate?.shareableCv)) {
-      return this.candidate.shareableCv;
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * If it is a Google file, we need to alter the link by replacing anything after the file id in the link with /preview.
-   * This is so it will work in the iframe.
-   * @param cv
-   */
-  processUrlForIframe(cv: CandidateAttachment) {
-    if (cv) {
-      if (cv?.type == 'googlefile') {
-        this.cvUrl = cv?.url.substring(0, cv?.url.lastIndexOf('/')) + '/preview'
-      } else {
-        this.cvUrl = cv?.url;
-      }
-    } else {
-      // If a CV is unselected, update the selected CV for preview.
-      this.cvForPreview;
-    }
-  }
-
-  /**
-   * If the CV is hosted on Amazon s3 bucket (older file uploads only) and the file is a doc/docx it
-   * automatically is downloaded and not displayed in the iframe. We want to skip previewing these CVs
-   * so need to filter these out.
-   * @param cv
-   */
-  canPreviewCv(cv: CandidateAttachment): boolean {
-    if(cv.type == AttachmentType.file) {
-      return cv.fileType != ('doc' && 'docx');
-    } else {
-      return true;
-    }
   }
 
   close() {
@@ -162,6 +110,11 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, O
   private setActiveTabId(id: string) {
     this.nav?.select(id);
     this.localStorageService.set(this.lastTabKey, id);
+  }
+
+  private setActiveContextTabId(id: string) {
+    this.navContext?.select(id);
+    this.localStorageService.set(this.lastContextTabKey, id);
   }
 
   private selectDefaultTab() {
