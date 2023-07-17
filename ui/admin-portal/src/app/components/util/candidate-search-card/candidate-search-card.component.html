@@ -52,7 +52,7 @@
             <app-shareable-docs
               [candidate]="candidate"
               [candidateSource]="candidateSource"
-              (updatedShareableCV)="updateShareableCVPreview()">
+              (updatedShareableCV)="processUrlForIframe($event)">
             </app-shareable-docs>
           </ng-template>
         </ng-container>
@@ -62,10 +62,12 @@
           <a ngbNavLink>Preview CV</a>
           <ng-template ngbNavContent>
             <!-- todo add loading symbol -->
-            <iframe *ngIf="candidate.listShareableCv || candidate.shareableCv; else noCv"
+            <iframe *ngIf="cvForPreview; else noCv"
                     [src]="cvUrl | safe" width="640" height="480"></iframe>
             <ng-template #noCv>
-              <p class="text-center text-muted">No shareable CV selected</p>
+              <p class="text-center text-muted">
+                No shareable CV selected, or this CV can't be displayed (some doc/docx files)
+              </p>
             </ng-template>
           </ng-template>
         </ng-container>

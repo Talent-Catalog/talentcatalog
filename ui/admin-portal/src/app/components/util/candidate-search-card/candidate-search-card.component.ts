@@ -33,7 +33,7 @@ import {isSavedList} from "../../../model/saved-list";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthService} from "../../../services/auth.service";
-import {CandidateAttachment} from "../../../model/candidate-attachment";
+import {AttachmentType, CandidateAttachment} from "../../../model/candidate-attachment";
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -68,9 +68,60 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, O
   ngOnInit() {
   }
 
+  ngAfterViewChecked(): void {
+    //This is called in order for the navigation tabs, this.nav, to be set.
+    this.selectDefaultTab();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.candidate?.previousValue !== changes.candidate?.currentValue) {
-      this.previewCVLink();
+      this.processUrlForIframe(this.cvForPreview);
+    }
+  }
+
+  /**
+   * Return the CV we want to display in the iframe - need to prioritise the listShareableCv &&
+   * make sure it is a file that can be displayed and not automatically downloaded (see canPreviewCV method)
+   */
+  get cvForPreview(): CandidateAttachment {
+    if (this.candidate?.listShareableCv && this.canPreviewCv(this.candidate?.listShareableCv)) {
+      return this.candidate.listShareableCv;
+    } else if (this.candidate?.shareableCv && this.canPreviewCv(this.candidate?.shareableCv)) {
+      return this.candidate.shareableCv;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * If it is a Google file, we need to alter the link by replacing anything after the file id in the link with /preview.
+   * This is so it will work in the iframe.
+   * @param cv
+   */
+  processUrlForIframe(cv: CandidateAttachment) {
+    if (cv) {
+      if (cv?.type == 'googlefile') {
+        this.cvUrl = cv?.url.substring(0, cv?.url.lastIndexOf('/')) + '/preview'
+      } else {
+        this.cvUrl = cv?.url;
+      }
+    } else {
+      // If a CV is unselected, update the selected CV for preview.
+      this.cvForPreview;
+    }
+  }
+
+  /**
+   * If the CV is hosted on Amazon s3 bucket (older file uploads only) and the file is a doc/docx it
+   * automatically is downloaded and not displayed in the iframe. We want to skip previewing these CVs
+   * so need to filter these out.
+   * @param cv
+   */
+  canPreviewCv(cv: CandidateAttachment): boolean {
+    if(cv.type == AttachmentType.file) {
+      return cv.fileType != ('doc' && 'docx');
+    } else {
+      return true;
     }
   }
 
@@ -104,11 +155,6 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, O
     return display;
   }
 
-  ngAfterViewChecked(): void {
-    //This is called in order for the navigation tabs, this.nav, to be set.
-    this.selectDefaultTab();
-  }
-
   onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
   }
@@ -125,42 +171,6 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked, O
 
   canViewPrivateInfo() {
     return this.authService.canViewPrivateCandidateInfo(this.candidate);
-  }
-
-  updateShareableCVPreview() {
-    this.previewCVLink();
-  }
-
-  previewCVLink() {
-    /**
-     * Sanitise the shareable CV link to avoid XSS errors when showing in iframe.
-     * See more here:
-     */
-    if (this.candidate?.listShareableCv) {
-      this.processCVForIframe(this.candidate?.listShareableCv);
-    } else if (this.candidate?.shareableCv) {
-      this.processCVForIframe(this.candidate?.shareableCv);
-    } else {
-      this.cvUrl = null
-    }
-  }
-
-  /**
-   * Useful Stack Overflow about using iframe with word docs. Currently word docs in S3 buckets are being downloaded.
-   * However, the s3 buckets are depreciated so only contain older documents, word docs stored the Google drive are displaying.
-   * See here: https://stackoverflow.com/a/27958186
-   * @param cv
-   */
-  processCVForIframe(cv: CandidateAttachment) {
-    /**
-     * If it is a Google file, we need to alter the link by replacing anything after the file id in the link with /preview.
-     * This is so it will work in the iframe.
-     */
-    if (cv?.type == 'googlefile') {
-      this.cvUrl = cv?.url.substring(0, cv?.url.lastIndexOf('/')) + '/preview'
-    } else if (this.candidate?.listShareableCv?.type == 'file') {
-      this.cvUrl = cv?.url;
-    }
   }
 
 }
