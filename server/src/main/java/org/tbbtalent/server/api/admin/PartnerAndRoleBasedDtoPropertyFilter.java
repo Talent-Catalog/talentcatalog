@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
@@ -23,8 +24,6 @@ import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.util.dto.DtoPropertyFilter;
-
-import java.util.Set;
 
 /**
  * Filters out properties in a DtoBuilder based on a user's role and associated partner.
@@ -107,10 +106,12 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
 
     private boolean isDefaultPartner(Partner partner) {
         boolean res = false;
-        if (partner.isSourcePartner()) {
-            res = partner.isDefaultSourcePartner();
-        } else if (partner.isJobCreator()) {
-            res = partner.isDefaultJobCreator();
+        if (partner != null) {
+            if (partner.isSourcePartner()) {
+                res = partner.isDefaultSourcePartner();
+            } else if (partner.isJobCreator()) {
+                res = partner.isDefaultJobCreator();
+            }
         }
         return res;
     }
