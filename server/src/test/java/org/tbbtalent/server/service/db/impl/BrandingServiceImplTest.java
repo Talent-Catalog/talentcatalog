@@ -16,6 +16,12 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,10 +34,6 @@ import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.service.db.PartnerService;
 import org.tbbtalent.server.service.db.UserService;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
 
 /**
  * @author sadatmalik
@@ -55,6 +57,7 @@ class BrandingServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        partner.setSourcePartner(true);
         partner.setRegistrationLandingPage(LANDING_PAGE);
         partner.setLogo(LOGO);
         partner.setName(PARTNER_NAME);
