@@ -16,12 +16,13 @@
 
 package org.tbbtalent.server.model.db;
 
+import org.tbbtalent.server.model.db.partner.Partner;
+import org.tbbtalent.server.util.dto.DtoBuilder;
+import org.tbbtalent.server.util.dto.DtoPropertyFilter;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
-import org.tbbtalent.server.util.dto.DtoBuilder;
-import org.tbbtalent.server.util.dto.DtoPropertyFilter;
 
 /**
  *  DTOs for Partners
@@ -41,9 +42,9 @@ public class PartnerDtoHelper {
                 "autoAssignable", "defaultPartnerRef"));
 
         public boolean ignoreProperty(Object o, String property) {
-            //Ignore properties which do not exist on type of partner
-            boolean ignore =
-                sourcePartnerOnlyProperties.contains(property) && ! (o instanceof SourcePartner);
+            Partner partner = (Partner) o;
+
+            boolean ignore = sourcePartnerOnlyProperties.contains(property) && !partner.isSourcePartner();
 
             return ignore;
         }
@@ -54,15 +55,16 @@ public class PartnerDtoHelper {
             .add("abbreviation")
             .add("autoAssignable")
             .add("defaultContact", userDto())
-            .add("defaultDestinationPartner")
+            .add("defaultJobCreator")
             .add("defaultSourcePartner")
             .add("defaultPartnerRef")
             .add("id")
             .add("jobContact", userDto())
+            .add("jobCreator")
             .add("logo")
             .add("name")
             .add("notificationEmail")
-            .add("partnerType")
+            .add("sourcePartner")
             .add("status")
             .add("websiteUrl")
             .add("registrationLandingPage")

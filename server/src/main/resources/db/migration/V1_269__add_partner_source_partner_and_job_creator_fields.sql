@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,20 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
+alter table partner add column source_partner boolean default false not null;
+alter table partner add column job_creator boolean default false not null;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.tbbtalent.server.model.db.partner.DefaultDestinationPartner;
+update partner set source_partner = true where partner_type = 'SourcePartner';
 
-@Getter
-@Setter
-@ToString
-@Entity(name = "DefaultDestinationPartner")
-@DiscriminatorValue("DefaultDestinationPartner")
-public class DefaultDestinationPartnerImpl extends JobCreatorImpl implements
-    DefaultDestinationPartner {
-}
+update partner set source_partner = true where default_source_partner = true;
+update partner set job_creator = true where default_destination_partner = true;
+

@@ -28,19 +28,19 @@ import org.tbbtalent.server.model.db.Status;
 
 /**
  * MODEL - JPA query joining a collection attribute.
- *
+ * <p/>
  * See {@link #findSourcePartnerByAutoassignableCountry(Country)} - noting join with sourceCountries attribute
  */
 public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, JpaSpecificationExecutor<PartnerImpl> {
 
 
-    @Query("select p from SourcePartner p where p.defaultSourcePartner = :defaultSourcePartner")
+    @Query("select p from Partner p where p.defaultSourcePartner = :defaultSourcePartner")
     Optional<PartnerImpl> findByDefaultSourcePartner(@Param("defaultSourcePartner") boolean defaultSourcePartner);
 
     @Query("select p from Partner p where lower(p.abbreviation) = lower(:abbreviation)")
     Optional<PartnerImpl> findByAbbreviation(@Param("abbreviation") String abbreviation);
 
-    @Query("select p from SourcePartner p join p.sourceCountries c "
+    @Query("select p from Partner p join p.sourceCountries c "
         + "where c = :country and p.autoAssignable = true and p.status = 'active'")
     List<PartnerImpl> findSourcePartnerByAutoassignableCountry(@Param("country") Country country);
 

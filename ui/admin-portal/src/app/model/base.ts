@@ -17,7 +17,6 @@
 import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
-import {PartnerType} from "./partner";
 import {OpportunityIds} from "./opportunity";
 
 export interface HasName {
@@ -209,7 +208,8 @@ export class PagedFilteredSearchRequest extends PagedSearchRequest {
 
 export class SearchPartnerRequest extends PagedFilteredSearchRequest {
   contextJobId?: number;
-  partnerType?: PartnerType;
+  jobCreator?: boolean;
+  sourcePartner?: boolean;
 }
 
 export class SearchUserRequest extends PagedFilteredSearchRequest {
