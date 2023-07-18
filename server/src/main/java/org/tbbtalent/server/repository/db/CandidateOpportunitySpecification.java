@@ -17,17 +17,26 @@
 package org.tbbtalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.CandidateOpportunity;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.tbbtalent.server.model.db.PartnerJobRelation;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
-
-import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Specification for sorting and searching {@link CandidateOpportunity} entities
@@ -111,9 +120,11 @@ public class CandidateOpportunitySpecification {
             if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
                 //This is the where clause we are constructing
                         /*
-                           where jobOpp in
-                           (select job from PartnerJobRelation
-                               where partner.id = partnerId and contact.id = userId)
+                           where 
+                           jobOpp in (select job from PartnerJobRelation
+                               where partner.id = partnerId and contact.id = userId)                               
+                               or
+                           (select contact from PartnerJobRelation where partner.id = partnerId) is null 
                          */
                 //In other words where the candidate opportunity's associated job
                 //is one of the jobs that the logged in user has been nominated by their
@@ -129,6 +140,9 @@ public class CandidateOpportunitySpecification {
                         Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
 
                         Long partnerId = loggedInUserPartner.getId();
+                        
+                        //todo Check for null
+                        Long defaultContactId = loggedInUserPartner.getDefaultContact().getId();
                         Long userId = loggedInUser.getId();
 
                         //Create the Select subquery - giving all the jobs the user is contact for
@@ -140,7 +154,7 @@ public class CandidateOpportunitySpecification {
                                 builder.equal(pjr.get("contact").get("id"), userId)
                             )
                         );
-
+                        
                         ors.getExpressions().add(
                             builder.and(
                                 //User's partner must be the partner associated with the opp's candidate
@@ -151,6 +165,24 @@ public class CandidateOpportunitySpecification {
                                 builder.in(jobOpp).value(usersJobs)
                             )
                         );
+
+                        //If the logged in user is the default contact user for this partner we
+                        //Can add an "or" to the where clause if nobody else from this partner
+                        //has been nominated has been nominated as contact. 
+                        if (userId.equals(defaultContactId)) {
+                            //If nobody else from this partner is contact for this job, then
+                            //it defaults to me
+                            Subquery<User> contact = query.subquery(User.class);
+                            Root<PartnerJobRelation> pjrc = contact.from(PartnerJobRelation.class);
+                            //todo Make this a count and check for 0
+                            contact.select(pjrc.get("contact")).where(
+                                builder.and(
+                                    builder.equal(pjrc.get("partner").get("id"), partnerId),
+                                    builder.equal(pjrc.get("job").get("id"), jobOpp.get("id"))
+                                )
+                            );
+                            ors.getExpressions().add(builder.isNull(contact));
+                        }
                     }
                 }
             }
