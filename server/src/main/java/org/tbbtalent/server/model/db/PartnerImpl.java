@@ -16,23 +16,6 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -41,14 +24,15 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.util.SalesforceHelper;
 
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @ToString
 @Entity(name = "Partner")
 @Table(name = "partner")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "partner_type")
-@DiscriminatorValue("Partner")
 public class PartnerImpl extends AbstractDomainObject<Long>
     implements Partner {
 
@@ -66,8 +50,15 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     @Transient
     private Long contextJobId;
 
+    @Column(name="default_destination_partner")
+    private boolean defaultJobCreator;
+
     private boolean defaultSourcePartner;
-    private boolean defaultDestinationPartner;
+
+    /**
+     * True if this partner is a job creator - ie the partner can have users who can create jobs
+     */
+    private boolean jobCreator;
 
     @Nullable
     private String logo;
@@ -81,10 +72,6 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "partner", cascade = CascadeType.MERGE)
     private Set<PartnerJobRelation> partnerJobRelations = new HashSet<>();
 
-    //See https://stackoverflow.com/questions/43570875/how-to-access-discriminator-column-in-jpa
-    @Column(name="partner_type", insertable = false, updatable = false)
-    private String partnerType;
-
     @Nullable
     public String getSfId() {
         return SalesforceHelper.extractIdFromSfUrl(sflink);
@@ -92,6 +79,11 @@ public class PartnerImpl extends AbstractDomainObject<Long>
 
     @Nullable
     private String sflink;
+
+    /**
+     * True if this partner is a source partner
+     */
+    private boolean sourcePartner;
 
     @Enumerated(EnumType.STRING)
     @NonNull
@@ -113,4 +105,32 @@ public class PartnerImpl extends AbstractDomainObject<Long>
         }
         return contact;
     }
+
+
+    //Source Partner fields
+
+    private boolean defaultPartnerRef;
+
+    @Nullable
+    private String registrationLandingPage;
+
+    @ManyToMany
+    @JoinTable(
+            name = "partner_source_country",
+            joinColumns = @JoinColumn(name = "partner_id"),
+            inverseJoinColumns = @JoinColumn(name = "country_id"))
+    @NonNull
+    private Set<Country> sourceCountries = new HashSet<>();
+
+    private boolean autoAssignable;
+
+    public void setRegistrationLandingPage(@Nullable String registrationLandingPage) {
+        if (registrationLandingPage != null) {
+            if (registrationLandingPage.trim().length() == 0) {
+                registrationLandingPage = null;
+            }
+        }
+        this.registrationLandingPage = registrationLandingPage;
+    }
+
 }

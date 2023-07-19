@@ -22,9 +22,7 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.db.partner.DefaultDestinationPartner;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.util.dto.DtoPropertyFilter;
 
 /**
@@ -108,10 +106,12 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
 
     private boolean isDefaultPartner(Partner partner) {
         boolean res = false;
-        if (partner instanceof SourcePartner) {
-            res = partner.isDefaultSourcePartner();
-        } else if (partner instanceof DefaultDestinationPartner) {
-            res = partner.isDefaultDestinationPartner();
+        if (partner != null) {
+            if (partner.isSourcePartner()) {
+                res = partner.isDefaultSourcePartner();
+            } else if (partner.isJobCreator()) {
+                res = partner.isDefaultJobCreator();
+            }
         }
         return res;
     }

@@ -16,6 +16,12 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,15 +30,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.tbbtalent.server.model.db.BrandingInfo;
-import org.tbbtalent.server.model.db.RecruiterPartnerImpl;
-import org.tbbtalent.server.model.db.SourcePartnerImpl;
+import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.service.db.PartnerService;
 import org.tbbtalent.server.service.db.UserService;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
 
 /**
  * @author sadatmalik
@@ -45,7 +46,7 @@ class BrandingServiceImplTest {
     private static final String PARTNER_NAME = "Talent Beyond Boundaries";
     private static final String WEBSITE_URL = "https://www.talentbeyondboundaries.org";
 
-    private static final SourcePartnerImpl partner = new SourcePartnerImpl();
+    private static final PartnerImpl partner = new PartnerImpl();
 
     @Mock PartnerService partnerService;
     @Mock UserService userService;
@@ -56,6 +57,7 @@ class BrandingServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        partner.setSourcePartner(true);
         partner.setRegistrationLandingPage(LANDING_PAGE);
         partner.setLogo(LOGO);
         partner.setName(PARTNER_NAME);
@@ -97,23 +99,6 @@ class BrandingServiceImplTest {
 
         assertNotNull(info);
         verifyBrandingInfo(info);
-    }
-
-    @Test
-    @DisplayName("verify no landing page for non source partner")
-    void canExtractBrandingInfoFromPartner() {
-        RecruiterPartnerImpl recruiterPartner = new RecruiterPartnerImpl();
-        recruiterPartner.setLogo(LOGO);
-        recruiterPartner.setName(PARTNER_NAME);
-        recruiterPartner.setWebsiteUrl(WEBSITE_URL);
-
-        given(userService.getLoggedInUser()).willReturn(user);
-        given(user.getPartner()).willReturn(recruiterPartner);
-
-        BrandingInfo info = brandingService.getBrandingInfo(null);
-
-        assertNotNull(info);
-        verifyNonSourcePartnerBrandingInfo(info);
     }
 
     private void verifyBrandingInfo(BrandingInfo info) {

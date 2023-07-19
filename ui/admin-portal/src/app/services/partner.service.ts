@@ -4,12 +4,7 @@ import {SearchResults} from "../model/search-results";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {SearchPartnerRequest, Status} from "../model/base";
-import {
-  Partner,
-  PartnerType,
-  UpdatePartnerJobContactRequest,
-  UpdatePartnerRequest
-} from "../model/partner";
+import {Partner, UpdatePartnerJobContactRequest, UpdatePartnerRequest} from "../model/partner";
 import {Job} from "../model/job";
 
 @Injectable({
@@ -40,7 +35,7 @@ export class PartnerService {
   listSourcePartners(jobContext?: Job): Observable<Partner[]> {
     const request: SearchPartnerRequest = {
       contextJobId: jobContext?.id,
-      partnerType: PartnerType.SourcePartner,
+      sourcePartner: true,
       status: Status.active,
       sortFields: ["name"],
       sortDirection: "ASC"

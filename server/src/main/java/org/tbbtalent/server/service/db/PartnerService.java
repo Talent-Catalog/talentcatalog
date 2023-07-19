@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -28,9 +27,10 @@ import org.tbbtalent.server.model.db.PartnerImpl;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.request.partner.SearchPartnerRequest;
 import org.tbbtalent.server.request.partner.UpdatePartnerRequest;
+
+import java.util.List;
 
 /**
  * Service for managing {@link Partner}
@@ -54,7 +54,7 @@ public interface PartnerService {
      * @throws NoSuchObjectException if no default source partner is configured
      */
     @NonNull
-    SourcePartner getDefaultSourcePartner() throws NoSuchObjectException;
+    Partner getDefaultSourcePartner() throws NoSuchObjectException;
 
     /**
      * Returns partner who can be auto assigned to a candidate based on the country the candidate
