@@ -113,7 +113,7 @@ public class SavedListCandidateAdminApi implements
      * once in a list. If a candidate is already in the list, they won't be added a second time.
      * @param savedListId List to be added to.
      * @param request Contains the ids of candidates to be added.
-     * @throws NoSuchObjectException
+     * @throws NoSuchObjectException  If there is no list with that id
      */
     @Override
     public void merge(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request)
@@ -147,6 +147,20 @@ public class SavedListCandidateAdminApi implements
             throws NoSuchObjectException {
         candidateSavedListService.clearSavedList(savedListId);
         savedListService.mergeSavedList(savedListId, request);
+    }
+
+    @Override
+    public  @NotNull List<Map<String, Object>> search(
+        long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
+        SavedList savedList = savedListService.get(savedListId);
+
+        List<Candidate> candidates = this.candidateService
+            .getSavedListCandidatesUnpaged(savedList, request);
+
+        savedListService.setCandidateContext(savedListId, candidates);
+
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder();
+        return builder.buildList(candidates);
     }
 
     @Override
@@ -200,7 +214,7 @@ public class SavedListCandidateAdminApi implements
             HttpServletResponse response) throws IOException, ExportFailedException {
 
         SavedList savedList = savedListService.get(savedListId);
-        
+
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
         response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(savedList, request, response.getWriter());
