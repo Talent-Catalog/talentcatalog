@@ -144,6 +144,9 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
     for (const key of Object.keys(model)) {
       this.form.controls[key].patchValue(model[key]);
     }
+  }
 
+  get languageSelected() {
+    return this.form.controls.languageId.value != null;
   }
 }

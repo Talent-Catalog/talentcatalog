@@ -32,42 +32,50 @@
       <ng-select [formControlName]="'languageId'" [items]="languages" [clearOnBackspace]="false"
                  [clearable]="true" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
-
-    <!-- SPOKEN LEVEL -->
-    <div class="mb-3">
-      <label class="form-label">Spoken Level</label>
-      <div *ngFor="let level of languageLevels">
-        <div class="form-check">
-          <input [id]="level.name" class="form-check-input" type="radio"
-                 [formControlName]="'spokenLevel'" [value]="level.level">
-          <label [for]="level.name" class="form-check-label fw-light" >
-            {{level.name}}
-          </label>
+    <div *ngIf="!languageDisabled && form.value.languageId != null">
+      <!-- SPOKEN LEVEL -->
+      <div class="mb-3">
+        <label class="form-label">Spoken Level</label>
+        <div *ngFor="let level of languageLevels">
+          <div class="form-check">
+            <input [id]="level.name" class="form-check-input" type="radio" required
+                   [formControlName]="'spokenLevel'" [value]="level.level">
+            <label [for]="level.name" class="form-check-label fw-light" >
+              {{level.name}}
+            </label>
+            <div class="invalid-feedback">
+              You must select a proficiency level.
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="text-end">
+        <button class="btn btn-link" (click)="clearSpoken()">Clear</button>
+      </div>
+
+      <!-- WRITTEN LEVEL -->
+      <div class="mb-3">
+        <label class="form-label">Written Level</label>
+        <div *ngFor="let level of languageLevels">
+          <div class="form-check">
+            <input [id]="level.name" class="form-check-input" type="radio" required
+                   [formControlName]="'writtenLevel'" [value]="level.level">
+            <label [for]="level.name" class="form-check-label fw-light">
+              {{level.name}}
+            </label>
+            <div class="invalid-feedback">
+              You must select a proficiency level.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-end">
+        <button class="btn btn-link" (click)="clearWritten()">Clear</button>
       </div>
     </div>
 
-    <div class="text-end">
-      <button class="btn btn-link" (click)="clearSpoken()">Clear</button>
-    </div>
-
-    <!-- WRITTEN LEVEL -->
-    <div class="mb-3">
-      <label class="form-label">Written Level</label>
-      <div *ngFor="let level of languageLevels">
-        <div class="form-check">
-          <input [id]="level.name" class="form-check-input" type="radio"
-                 [formControlName]="'writtenLevel'" [value]="level.level">
-          <label [for]="level.name" class="form-check-label fw-light">
-            {{level.name}}
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="text-end">
-      <button class="btn btn-link" (click)="clearWritten()">Clear</button>
-    </div>
 
   </form>
 

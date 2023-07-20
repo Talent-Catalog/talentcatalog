@@ -13,6 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+@import "~src/scss/variables";
 
 .backdrop {
   position: fixed;
@@ -30,7 +31,7 @@
   background: white;
   padding: 1em;
   border-radius: 8px;
-  border: 1px solid black;
+  border: 1px solid $color-secondary-lighter;
   min-width: 100%;
 
   .form-group {
