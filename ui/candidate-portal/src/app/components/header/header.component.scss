@@ -52,6 +52,17 @@ $navbar-height: 80px;
   }
 }
 
+.navbar-staging {
+  background-color: #e16a0c;
+  height: 80px;
+  #logo {
+    visibility: hidden;
+  }
+  #staging {
+    color: white;
+  }
+}
+
 .translation-toggle {
   color: #0eb1e3 !important;
 }

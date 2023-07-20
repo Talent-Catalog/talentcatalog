@@ -93,4 +93,8 @@ export class HeaderComponent implements OnInit {
     }
     return language ? language.label : 'Language';
   }
+
+  isStagingEnv(): boolean {
+    return window.location.host == 'tctalent-test.org';
+  }
 }
