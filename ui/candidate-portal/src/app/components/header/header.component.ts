@@ -96,5 +96,10 @@ export class HeaderComponent implements OnInit {
 
   isStagingEnv(): boolean {
     return window.location.host == 'tctalent-test.org';
+    //return window.location.host == 'localhost:4200';
+  }
+
+  isLocalEnv(): boolean {
+    return window.location.host == 'localhost:4200';
   }
 }
