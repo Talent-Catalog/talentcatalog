@@ -14,15 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Language} from "../../../../model/language";
 import {LanguageService} from "../../../../services/language.service";
 import {LanguageLevel} from "../../../../model/language-level";
@@ -124,7 +116,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
       const language = val.languageId ? this.languages.find(l => l.id === Number(val.languageId))?.name : '';
       const written = val.writtenLevel !== null ? 'Written: ' + this.languageLevels.find(l => l.level === val.writtenLevel)?.name : '';
       const spoken = val.spokenLevel !== null ? 'Spoken: ' + this.languageLevels.find(l => l.level === val.spokenLevel)?.name : '';
-      const proficiencyString = written && spoken ? written + ', ' + spoken : written || spoken;
+      const proficiencyString = written && spoken ? spoken + ', ' + written : written || spoken;
       return language && proficiencyString ? `${language} (${proficiencyString})` : language ? language : proficiencyString;
     }
   }

@@ -30,15 +30,20 @@
     <div class="mb-3" [hidden]="languageDisabled">
       <label class="form-label">Language</label>
       <ng-select [formControlName]="'languageId'" [items]="languages" [clearOnBackspace]="false"
-                 [clearable]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
+                 [clearable]="true" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
 
     <!-- SPOKEN LEVEL -->
     <div class="mb-3">
       <label class="form-label">Spoken Level</label>
-
-      <div class="radio" *ngFor="let level of languageLevels">
-        <label class="form-label"><input type="radio" [formControlName]="'spokenLevel'" [value]="level.level">{{level.name}}</label>
+      <div *ngFor="let level of languageLevels">
+        <div class="form-check">
+          <input [id]="level.name" class="form-check-input" type="radio"
+                 [formControlName]="'spokenLevel'" [value]="level.level">
+          <label [for]="level.name" class="form-check-label fw-light" >
+            {{level.name}}
+          </label>
+        </div>
       </div>
     </div>
 
@@ -49,9 +54,14 @@
     <!-- WRITTEN LEVEL -->
     <div class="mb-3">
       <label class="form-label">Written Level</label>
-
-      <div class="radio" *ngFor="let level of languageLevels">
-        <label class="form-label"><input type="radio" [formControlName]="'writtenLevel'" [value]="level.level">{{level.name}}</label>
+      <div *ngFor="let level of languageLevels">
+        <div class="form-check">
+          <input [id]="level.name" class="form-check-input" type="radio"
+                 [formControlName]="'writtenLevel'" [value]="level.level">
+          <label [for]="level.name" class="form-check-label fw-light">
+            {{level.name}}
+          </label>
+        </div>
       </div>
     </div>
 
