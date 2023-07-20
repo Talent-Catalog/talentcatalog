@@ -37,3 +37,15 @@
     }
   }
 }
+
+.navbar-staging {
+  background-color: #e16a0c;
+  height: 80px;
+  #logo {
+    visibility: hidden;
+  }
+}
+
+.navbar-local {
+  background-color: #4f3d77;
+}
