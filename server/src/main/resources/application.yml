@@ -37,8 +37,8 @@ spring:
 
   elasticsearch:
     uris: ${ELASTICSEARCH_URL:http://localhost:9200}
-    username: ${ELASTICSEARCH_USERNAME}
-    password: ${ELASTICSEARCH_PASSWORD}
+    username: ${ELASTICSEARCH_USERNAME:}
+    password: ${ELASTICSEARCH_PASSWORD:}
 
   data:
     # We explicitly enable repositories with @EnableJpaRepositories and
