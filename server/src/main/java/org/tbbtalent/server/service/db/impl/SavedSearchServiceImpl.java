@@ -18,8 +18,8 @@ package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
-import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.*;
+import org.apache.lucene.search.join.ScoreMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
