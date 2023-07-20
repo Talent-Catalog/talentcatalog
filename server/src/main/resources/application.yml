@@ -36,10 +36,9 @@ spring:
       max-request-size: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE:10MB}
 
   elasticsearch:
-    rest:
-      uris: ${ELASTICSEARCH_URL:http://localhost:9200}
-      username: ${ELASTICSEARCH_USERNAME:}
-      password: ${ELASTICSEARCH_PASSWORD:}
+    uris: ${ELASTICSEARCH_URL:http://localhost:9200}
+    username: ${ELASTICSEARCH_USERNAME}
+    password: ${ELASTICSEARCH_PASSWORD}
 
   data:
     # We explicitly enable repositories with @EnableJpaRepositories and

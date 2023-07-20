@@ -34,7 +34,7 @@ import {
 } from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbOffcanvas, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
 import {
   CreateFromDefaultSavedSearchRequest,
   SavedSearchService
@@ -195,6 +195,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   public filterSearch: boolean = false;
 
+  sideProfile: NgbOffcanvasRef;
+
   constructor(private http: HttpClient,
               private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -212,7 +214,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private candidateFieldService: CandidateFieldService,
               private authService: AuthService,
               private publishedDocColumnService: PublishedDocColumnService,
-              public salesforceService: SalesforceService
+              public salesforceService: SalesforceService,
+              private offcanvasService: NgbOffcanvas
 
   ) {}
 

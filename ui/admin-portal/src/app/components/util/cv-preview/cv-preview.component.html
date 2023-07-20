@@ -1,0 +1,12 @@
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="!loading">
+  <iframe id="cvIframe" *ngIf="cvUrl; else noCv"
+          [src]="cvUrl | safe" width="640" height="480"></iframe>
+  <ng-template #noCv>
+    <p class="text-center text-muted">
+      No shareable CV selected, or this CV can't be displayed (some doc/docx files)
+    </p>
+  </ng-template>
+</div>
