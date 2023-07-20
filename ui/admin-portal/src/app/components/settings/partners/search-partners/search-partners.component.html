@@ -55,7 +55,8 @@
         <th>Abbreviation</th>
         <th>Contact</th>
         <th>Email</th>
-        <th>Type</th>
+        <th>Job Creator?</th>
+        <th>Source Partner?</th>
         <th>Source countries</th>
         <th>Autoassignable?</th>
         <th>Logo</th>
@@ -75,14 +76,15 @@
           </div>
         </td>
         <td>{{partner.name}}
-          <a *ngIf="partner.sflink" [href]="partner.sflink" target="_blank">
+          <a *ngIf="partner.sflink && canAccessSalesforce()" [href]="partner.sflink" target="_blank">
             <i class="fab fa-salesforce" title="Show partner account in Salesforce"></i>
           </a>
         </td>
         <td>{{partner.abbreviation}}</td>
         <td>{{showContact(partner.defaultContact)}}</td>
         <td>{{partner.notificationEmail}}</td>
-        <td>{{partner.partnerType}}</td>
+        <td>{{partner.jobCreator}}</td>
+        <td>{{partner.sourcePartner}}</td>
         <td>{{sourceCountries(partner)}}</td>
         <td>{{partner.autoAssignable}}</td>
         <td>{{partner.logo}}</td>

@@ -21,17 +21,25 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
+import org.tbbtalent.server.request.candidate.opportunity.OpportunityParams;
 
 @Getter
 @Setter
 @ToString
-public class UpdateJobRequest {
+public class UpdateJobRequest extends OpportunityParams {
+
+    @Nullable
+    private Long contactUserId;
 
     /**
      * Url link to Salesforce EmployerJob opportunity
      */
     @Nullable
     private String sfJoblink;
+
+    @Nullable
+    private JobOpportunityStage stage;
 
     @Nullable
     private LocalDate submissionDueDate;

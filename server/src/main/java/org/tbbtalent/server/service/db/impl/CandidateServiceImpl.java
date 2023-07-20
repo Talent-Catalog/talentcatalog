@@ -17,33 +17,6 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -61,118 +34,49 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.CountryRestrictionException;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.exception.ExportFailedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.PasswordMatchException;
-import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateDestination;
-import org.tbbtalent.server.model.db.CandidateEducation;
-import org.tbbtalent.server.model.db.CandidateExam;
-import org.tbbtalent.server.model.db.CandidateLanguage;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.CandidateProperty;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.CandidateSubfolderType;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.DataRow;
-import org.tbbtalent.server.model.db.DependantRelations;
-import org.tbbtalent.server.model.db.EducationLevel;
-import org.tbbtalent.server.model.db.Exam;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.HasTcQueryParameters;
-import org.tbbtalent.server.model.db.LanguageLevel;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.PartnerImpl;
-import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.RootRequest;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.SearchJoin;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.SurveyType;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
-import org.tbbtalent.server.model.db.UnhcrStatus;
-import org.tbbtalent.server.model.db.UploadTaskImpl;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.db.YesNoUnsure;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.CandidateExamRepository;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CountryRepository;
-import org.tbbtalent.server.repository.db.EducationLevelRepository;
-import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
-import org.tbbtalent.server.repository.db.LanguageLevelRepository;
-import org.tbbtalent.server.repository.db.OccupationRepository;
-import org.tbbtalent.server.repository.db.SurveyTypeRepository;
-import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateExternalIdSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
-import org.tbbtalent.server.request.candidate.ResolveTaskAssignmentsRequest;
-import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateMediaRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRegistrationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.PasswordHelper;
-import org.tbbtalent.server.service.db.CandidateCitizenshipService;
-import org.tbbtalent.server.service.db.CandidateDependantService;
-import org.tbbtalent.server.service.db.CandidateDestinationService;
-import org.tbbtalent.server.service.db.CandidateNoteService;
-import org.tbbtalent.server.service.db.CandidatePropertyService;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
-import org.tbbtalent.server.service.db.CandidateVisaService;
-import org.tbbtalent.server.service.db.CountryService;
-import org.tbbtalent.server.service.db.FileSystemService;
-import org.tbbtalent.server.service.db.PartnerService;
-import org.tbbtalent.server.service.db.RootRequestService;
-import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.SavedSearchService;
-import org.tbbtalent.server.service.db.TaskService;
-import org.tbbtalent.server.service.db.UserService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.BeanHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+import org.tbbtalent.server.util.html.TextExtracter;
+
+import javax.servlet.http.HttpServletRequest;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -252,6 +156,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final TaskService taskService;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
+    private final TextExtracter textExtracter;
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
@@ -280,7 +185,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateExamRepository candidateExamRepository,
         RootRequestService rootRequestService, TaskAssignmentRepository taskAssignmentRepository,
         TaskService taskService, EmailHelper emailHelper,
-        PdfHelper pdfHelper) {
+        PdfHelper pdfHelper, TextExtracter textExtracter) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.candidateRepository = candidateRepository;
@@ -310,6 +215,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.pdfHelper = pdfHelper;
         this.fileSystemService = fileSystemService;
         this.salesforceService = salesforceService;
+        this.textExtracter = textExtracter;
     }
 
     @Transactional
@@ -325,7 +231,8 @@ public class CandidateServiceImpl implements CandidateService {
         for (Candidate candidate : candidates) {
             try {
                 if (createElastic) {
-                    CandidateEs ces = new CandidateEs(candidate);
+                    CandidateEs ces = new CandidateEs();
+                    ces.copy(candidate, textExtracter);
                     ces = candidateEsRepository.save(ces);
 
                     //Update textSearchId on candidate.
@@ -386,9 +293,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Page<Candidate> getSavedListCandidates(long savedListId, SavedListGetRequest request) {
+    public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
+
         Page<Candidate> candidatesPage = candidateRepository.findAll(
-                new GetSavedListCandidatesQuery(savedListId, request), request.getPageRequestWithoutSort());
+                new GetSavedListCandidatesQuery(savedList, request), request.getPageRequestWithoutSort());
         log.info("Found " + candidatesPage.getTotalElements() + " candidates in list");
         return candidatesPage;
     }
@@ -713,7 +621,7 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
 
-    private Candidate createCandidate(CreateCandidateRequest request, SourcePartner partner, String ipAddress,
+    private Candidate createCandidate(CreateCandidateRequest request, Partner partner, String ipAddress,
         HasTcQueryParameters queryParameters, String passwordEncrypted)
         throws UsernameTakenException {
         User user = new User(
@@ -1078,8 +986,8 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Assign partner based on the partner abbreviation, if any
-        SourcePartner sourcePartner = (SourcePartner) partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
-        if (sourcePartner == null) {
+        Partner sourcePartner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+        if (sourcePartner == null || !sourcePartner.isSourcePartner()) {
             //No source partner found based on partner query param.
 
             //HACK - Start - Hack for Alight, using referral query parameter if necessary to assign source partner
@@ -1090,7 +998,7 @@ public class CandidateServiceImpl implements CandidateService {
                 if (referral != null) {
                     if ("alight".equalsIgnoreCase(referral)) {
                         //Referral was to alight - Set source partner to Alight
-                        sourcePartner = (SourcePartner) partnerService.getPartnerFromAbbreviation(referral);
+                        sourcePartner = partnerService.getPartnerFromAbbreviation(referral);
                     }
                 }
             }
@@ -1222,6 +1130,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    /**
+     * This method refers to the 'highest level of education' question, whose answer can only be set from the candidate portal
+    **/
     @Override
     public Candidate updateEducation(UpdateCandidateEducationRequest request) {
         Candidate candidate = getLoggedInCandidate()
@@ -1239,6 +1150,9 @@ public class CandidateServiceImpl implements CandidateService {
         return save(candidate, true);
     }
 
+    /**
+     * This method only manages changes to the candidate portal's Survey section - not the admin portal equivalent
+     */
     @Override
     public Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request) {
         Candidate candidate = getLoggedInCandidate()
@@ -1257,6 +1171,9 @@ public class CandidateServiceImpl implements CandidateService {
         return save(candidate, true);
     }
 
+    /**
+     * This method only manages changes to the candidate portal's Additional Info section - not the admin portal equivalent
+     */
     @Override
     public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = getLoggedInCandidate()
@@ -1528,7 +1445,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Transactional(readOnly = true)
-    void validateContactRequest(User user, BaseCandidateContactRequest request) {
+    public void validateContactRequest(User user, BaseCandidateContactRequest request) {
         // Check email not already taken
         if (!StringUtils.isBlank(request.getEmail())) {
             try {
@@ -1838,7 +1755,7 @@ public class CandidateServiceImpl implements CandidateService {
     // List export
     @Override
     public void exportToCsv(
-            long savedListId, SavedListGetRequest request, PrintWriter writer)
+            SavedList savedList, SavedListGetRequest request, PrintWriter writer)
             throws ExportFailedException {
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
             csvWriter.writeNext(getExportTitles());
@@ -1847,9 +1764,9 @@ public class CandidateServiceImpl implements CandidateService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
-                Page<Candidate> result = getSavedListCandidates(savedListId, request);
+                Page<Candidate> result = getSavedListCandidates(savedList, request);
                 for (Candidate candidate : result.getContent()) {
-                    candidate.setContextSavedListId(savedListId);
+                    candidate.setContextSavedListId(savedList.getId());
                     csvWriter.writeNext(getExportCandidateStrings(candidate));
                 }
 
@@ -2035,7 +1952,9 @@ public class CandidateServiceImpl implements CandidateService {
         String originalTextSearchId = textSearchId;
         if (textSearchId == null) {
             //No twin - create one
-            twin = new CandidateEs(candidate);
+            twin = new CandidateEs();
+            twin.copy(candidate, textExtracter);
+
         } else {
             //Get twin
             twin = candidateEsRepository.findById(textSearchId)
@@ -2043,7 +1962,8 @@ public class CandidateServiceImpl implements CandidateService {
             if (twin == null) {
                 //Candidate is referring to non existent twin.
                 //Create new twin
-                twin = new CandidateEs(candidate);
+                twin = new CandidateEs();
+                twin.copy(candidate, textExtracter);
 
                 //Shouldn't really happen (except during a complete reload)
                 // so log warning
@@ -2052,7 +1972,7 @@ public class CandidateServiceImpl implements CandidateService {
                         + textSearchId + ". Creating new twin.");
             } else {
                 //Update twin from candidate
-                twin.copy(candidate);
+                twin.copy(candidate, textExtracter);
             }
         }
         twin = candidateEsRepository.save(twin);

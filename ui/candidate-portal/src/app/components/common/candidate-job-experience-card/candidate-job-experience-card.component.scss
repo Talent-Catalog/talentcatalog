@@ -34,5 +34,10 @@
 
 .text-muted {
   margin: 1em 0 0 0;
-  white-space: pre-wrap;
+  &.text{
+    white-space: pre-wrap;
+  }
+  &.html{
+    white-space: normal;
+  }
 }

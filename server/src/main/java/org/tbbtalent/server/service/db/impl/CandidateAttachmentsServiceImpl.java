@@ -270,7 +270,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         }
 
         // Update the candidate audit fields
-        candidate.setAuditFields(candidate.getUser());
+        candidate.setAuditFields(user);
         candidateService.save(candidate, true);
 
         //Try and delete associated file on file system

@@ -72,7 +72,7 @@ import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.EmployerCandidateDecision;
 import org.tbbtalent.server.request.candidate.EmployerCandidateFeedbackData;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
@@ -131,14 +131,15 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         "Id,AccountId," + candidateNumberSFFieldName;
 
     private final String commonOpportunityFields =
-        "Id,Name,AccountId,Closing_Comments__c,NextStep,Next_Step_Due_Date__c,StageName,IsClosed,AccountCountry__c";
+        "Id,Name,AccountId,Closing_Comments__c,CreatedDate,LastModifiedDate,NextStep,Next_Step_Due_Date__c,StageName,IsClosed,AccountCountry__c," +
+                "Account.Description, IsWon";
     private final String candidateOpportunityRetrievalFields =
         commonOpportunityFields +
-        ",Employer_Feedback__c,Parent_Opportunity__c,Candidate_TC_id__c,"
+        ",Employer_Feedback__c,Closing_Comments_For_Candidate__c,Parent_Opportunity__c,Candidate_TC_id__c,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
         commonOpportunityFields +
-        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,Account.Description,AccountWebsite__c,AccountHasHiredInternationally__c";
+        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,AccountWebsite__c,AccountHasHiredInternationally__c,Opportunity_Score__c";
 
     private final EmailHelper emailHelper;
 
@@ -184,14 +185,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         webClient = builder.build();
     }
 
-    private Map<String, Candidate> buildCandidateOppsMap(Iterable<Candidate> candidates,
+    private Map<String, String> buildCandidateOppsMap(Iterable<Candidate> candidates,
         String jobOpportunityId) {
-        Map<String, Candidate> idCandidateMap = new HashMap<>();
+        Map<String, String> idCandidateNumberMap = new HashMap<>();
         for (Candidate candidate : candidates) {
             String id = makeExternalId(candidate.getCandidateNumber(), jobOpportunityId);
-            idCandidateMap.put(id, candidate);
+            idCandidateNumberMap.put(id, candidate.getCandidateNumber());
         }
-        return idCandidateMap;
+        return idCandidateNumberMap;
     }
 
     @Override
@@ -277,20 +278,29 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void createOrUpdateCandidateOpportunities(
-        List<Candidate> candidates, SalesforceOppParams salesforceOppParams,
+        List<Candidate> candidates, CandidateOpportunityParams candidateOppParams,
         SalesforceJobOpp jobOpportunity)
         throws WebClientException, SalesforceException {
 
+        log.info("Looking for opps for " + candidates.size() +" candidates");
+
         //Find out which candidates already have opportunities (so just need to be updated)
         //and which need opportunities to be created.
-        List<Candidate> candidatesWithNoOpp = selectCandidatesWithNoOpp(candidates, jobOpportunity);
+        //Note that we need to store candidateNumbers - not the Candidate entities themselves
+        //Otherwise checking membership of this list (ie contains) does not work because
+        //Hibernate proxies of entities do not equal the actual entities.
+        List<String> candidateNumbersWithNoOpp = selectCandidatesWithNoOpp(candidates, jobOpportunity);
+
+        log.info("Need to create opps for " + candidateNumbersWithNoOpp.size() +" candidates");
 
         String recordType = getCandidateOpportunityRecordType(jobOpportunity);
 
         //Now build requests of candidate opportunities we want to create or update
         List<CandidateOpportunityRecordComposite> opportunityRequests = new ArrayList<>();
         for (Candidate candidate : candidates) {
-            boolean create = candidatesWithNoOpp.contains(candidate);
+            boolean create = candidateNumbersWithNoOpp.contains(candidate.getCandidateNumber());
+
+            log.info( (create ? "Create" : "Update") + " opp for " + candidate.getCandidateNumber());
 
             //Build candidate opportunity request (create or update as needed)
             CandidateOpportunityRecordComposite opportunityRequest =
@@ -303,14 +313,16 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             String nextStep = null;
             LocalDate nextStepDueDate = null;
             String closingComments = null;
+            String closingCommentsForCandidate = null;
             String employerFeedback = null;
-            if (salesforceOppParams != null) {
-                final CandidateOpportunityStage stage = salesforceOppParams.getStage();
+            if (candidateOppParams != null) {
+                final CandidateOpportunityStage stage = candidateOppParams.getStage();
                 stageName = stage == null ? null : stage.getSalesforceStageName();
-                nextStep = salesforceOppParams.getNextStep();
-                nextStepDueDate = salesforceOppParams.getNextStepDueDate();
-                closingComments = salesforceOppParams.getClosingComments();
-                employerFeedback = salesforceOppParams.getEmployerFeedback();
+                nextStep = candidateOppParams.getNextStep();
+                nextStepDueDate = candidateOppParams.getNextStepDueDate();
+                closingComments = candidateOppParams.getClosingComments();
+                closingCommentsForCandidate = candidateOppParams.getClosingCommentsForCandidate();
+                employerFeedback = candidateOppParams.getEmployerFeedback();
             }
 
             //Always need to specify a stage name when creating a new opp
@@ -330,6 +342,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             if (closingComments != null) {
                 opportunityRequest.setClosingComments(closingComments);
             }
+            if (closingCommentsForCandidate != null) {
+                opportunityRequest.setClosingCommentsForCandidate(closingCommentsForCandidate);
+            }
             if (employerFeedback != null) {
                 opportunityRequest.setEmployerFeedback(employerFeedback);
             }
@@ -338,24 +353,26 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         executeCandidateOpportunityRequests(opportunityRequests);
     }
 
-    private List<Candidate> selectCandidatesWithNoOpp(List<Candidate> candidates,
+    private List<String> selectCandidatesWithNoOpp(List<Candidate> candidates,
         SalesforceJobOpp jobOpportunity) throws SalesforceException {
 
         //First creating a map of all candidates indexed by their what their unique
         //opportunity id should be.
-        Map<String, Candidate> idCandidateMap =
+        Map<String, String> idCandidateNumberMap =
             buildCandidateOppsMap(candidates, jobOpportunity.getSfId());
 
         //Now find the ids we actually have for candidate opportunities for this job.
         List<Opportunity> opps = findCandidateOpportunitiesByJobOpps(jobOpportunity.getSfId());
 
+        log.info("Found " + opps.size() + " candidate opps on SF for job " + jobOpportunity.getId());
+
         //Remove these from map, leaving just those that need to be created
         for (Opportunity opp : opps) {
-            idCandidateMap.remove(opp.getCandidateExternalId());
+            idCandidateNumberMap.remove(opp.getCandidateExternalId());
         }
 
         //Extract these candidates from the map.
-        return new ArrayList<>(idCandidateMap.values());
+        return new ArrayList<>(idCandidateNumberMap.values());
     }
 
     @Override
@@ -403,6 +420,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Override
     public List<Contact> findCandidateContacts() throws WebClientException {
         return findContacts(candidateNumberSFFieldName + " > 0");
+    }
+
+    @Override
+    public @Nullable Opportunity findCandidateOpportunity(String candidateNumber, String jobSfId) {
+        final String externalId = makeExternalId(candidateNumber, jobSfId);
+        final List<Opportunity> opportunities = findCandidateOpportunities(
+            candidateOpportunitySFFieldName + "='" + externalId + "'");
+        if (opportunities.size() > 1) {
+            log.error("Multiple SF candidate opportunities for externalId " + externalId);
+        }
+        return opportunities.size() == 0 ? null : opportunities.get(0);
     }
 
     @NonNull
@@ -654,7 +682,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         List<Candidate> candidates = feedbacks.stream()
             .map(EmployerCandidateFeedbackData::getCandidate)
             .collect(Collectors.toList());
-        List<Candidate> candidatesWithNoOpp = selectCandidatesWithNoOpp(candidates, jobOpportunity);
+        List<String> candidateNumbersWithNoOpp = selectCandidatesWithNoOpp(candidates, jobOpportunity);
 
         //Now build the requests
         List<CandidateOpportunityRecordComposite> requests = new ArrayList<>();
@@ -666,7 +694,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
                 //Figure our whether this candidate needs an opp created
                 final Candidate candidate = feedback.getCandidate();
-                boolean create = candidatesWithNoOpp.contains(candidate);
+                boolean create = candidateNumbersWithNoOpp.contains(candidate.getCandidateNumber());
 
                 //Build and add the request
                 CandidateOpportunityRecordComposite request = new CandidateOpportunityRecordComposite(
@@ -1476,6 +1504,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public void setClosingComments(String comments) {
             put("Closing_Comments__c", comments);
+        }
+        
+        public void setClosingCommentsForCandidate(String commentsForCandidate) {
+            put("Closing_Comments_For_Candidate__c", commentsForCandidate);
         }
 
         /**

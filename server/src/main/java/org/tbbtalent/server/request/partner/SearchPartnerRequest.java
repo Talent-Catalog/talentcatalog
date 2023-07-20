@@ -36,7 +36,8 @@ public class SearchPartnerRequest extends PagedSearchRequest {
     @Nullable
     private Long contextJobId;
 
+    private Boolean jobCreator;
     private String keyword;
-    private String partnerType;
+    private Boolean sourcePartner;
     private Status status;
 }

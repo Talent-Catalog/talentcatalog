@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,19 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.tbbtalent.server.model.db.partner.RecruiterPartner;
-
-@Getter
-@Setter
-@ToString
-@Entity(name = "RecruiterPartner")
-@DiscriminatorValue("RecruiterPartner")
-public class RecruiterPartnerImpl extends PartnerImpl implements RecruiterPartner {
-}
+alter table candidate_visa_check add column pathway_assessment_notes text;

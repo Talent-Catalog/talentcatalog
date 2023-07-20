@@ -509,8 +509,8 @@ import {
   CreateCandidateLanguageComponent
 } from './components/candidates/view/language/create/create-candidate-language.component';
 import {
-  SalesforceStageComponent
-} from './components/util/salesforce-stage/salesforce-stage.component';
+  EditCandidateOppComponent
+} from './components/candidate-opp/edit-candidate-opp/edit-candidate-opp.component';
 import {
   IeltsScoreValidationComponent
 } from './components/util/ielts-score-validation/ielts-score-validation.component';
@@ -687,6 +687,32 @@ import {
 import {
   ViewCandidateJobsComponent
 } from './components/candidates/view/jobs/view-candidate-jobs/view-candidate-jobs.component';
+import {
+  ViewCandidateOppFromUrlComponent
+} from './components/candidate-opp/view-candidate-opp-from-url/view-candidate-opp-from-url.component';
+import {
+  ViewCandidateOppComponent
+} from './components/candidate-opp/view-candidate-opp/view-candidate-opp.component';
+import {
+  CandidateOppsComponent
+} from './components/candidate-opp/candidate-opps/candidate-opps.component';
+import {
+  CandidateOppsWithDetailComponent
+} from './components/candidate-opp/candidate-opps-with-detail/candidate-opps-with-detail.component';
+import {TruncatePipe} from "./pipes/truncate.pipe";
+import {CreatedByComponent} from './components/util/user/created-by/created-by.component';
+import {TailoredCvComponent} from './components/candidates/view/tailored-cv.component';
+import {
+  OpportunityStageNextStepComponent
+} from './components/util/opportunity-stage-next-step/opportunity-stage-next-step.component';
+import {EditOppComponent} from './components/opportunity/edit-opp/edit-opp.component';
+import {
+  PathwayAssessmentComponent
+} from './components/candidates/visa/pathway-assessment/pathway-assessment.component';
+import {
+  CandidateVisaJobComponent
+} from './components/candidates/view/tab/candidate-visa-tab/job/candidate-visa-job.component';
+import {CvPreviewComponent} from './components/util/cv-preview/cv-preview.component';
 
 @NgModule({
   declarations: [
@@ -885,7 +911,7 @@ import {
     CandidateStatusSelectorComponent,
     FinalAgreementComponent,
     CreateCandidateLanguageComponent,
-    SalesforceStageComponent,
+    EditCandidateOppComponent,
     IeltsScoreValidationComponent,
     FileSelectorComponent,
     NewJobComponent,
@@ -960,7 +986,19 @@ import {
     JobLanguageComponent,
     VisaEligibilityAssessmentComponent,
     CandidateJobsTabComponent,
-    ViewCandidateJobsComponent
+    ViewCandidateJobsComponent,
+    ViewCandidateOppFromUrlComponent,
+    ViewCandidateOppComponent,
+    CandidateOppsComponent,
+    CandidateOppsWithDetailComponent,
+    TruncatePipe,
+    CreatedByComponent,
+    TailoredCvComponent,
+    OpportunityStageNextStepComponent,
+    EditOppComponent,
+    PathwayAssessmentComponent,
+    CandidateVisaJobComponent,
+    CvPreviewComponent
   ],
   imports: [
     BrowserModule,

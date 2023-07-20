@@ -17,7 +17,7 @@
 import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
-import {PartnerType} from "./partner";
+import {OpportunityIds} from "./opportunity";
 
 export interface HasName {
   name?: string;
@@ -43,7 +43,8 @@ export enum Progress {
 export enum PublishedDocColumnType {
   DisplayOnly,
   EmployerCandidateNotes,
-  EmployerCandidateDecision
+  EmployerCandidateDecision,
+  YesNoDropdown
 }
 
 /**
@@ -99,7 +100,10 @@ export enum SearchBy {
   registeredJob
 }
 
-export enum SearchJobsBy {
+/**
+ * Different kinds of searches for both Job Opportunities and Candidate Opportunities
+ */
+export enum SearchOppsBy {
   all,
   mine,
   starredByMe,
@@ -150,9 +154,9 @@ export function findHasId(id: number, hasIds: HasId[]): HasId {
 
 export interface Auditable extends HasId {
   createdBy?: User;
-  createdDate?: number;
+  createdDate?: Date;
   updatedBy?: User
-  updatedDate?: number;
+  updatedDate?: Date;
 }
 
 export interface CandidateSource extends Auditable {
@@ -168,18 +172,6 @@ export interface CandidateSource extends Auditable {
   watcherUserIds?: number[];
 }
 
-export interface OpportunityIds extends HasId {
-  sfId?: string;
-}
-
-export interface Opportunity extends OpportunityIds {
-  closingComments?: string;
-  lastModifiedDate?: Date;
-  name: string;
-  nextStep?: string;
-  nextStepDueDate?: Date;
-
-}
 
 export interface HasJobRelatedLinks {
   sfJoblink: string;
@@ -216,7 +208,8 @@ export class PagedFilteredSearchRequest extends PagedSearchRequest {
 
 export class SearchPartnerRequest extends PagedFilteredSearchRequest {
   contextJobId?: number;
-  partnerType?: PartnerType;
+  jobCreator?: boolean;
+  sourcePartner?: boolean;
 }
 
 export class SearchUserRequest extends PagedFilteredSearchRequest {

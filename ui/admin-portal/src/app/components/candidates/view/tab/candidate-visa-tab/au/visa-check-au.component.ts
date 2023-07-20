@@ -20,10 +20,9 @@ import {
   Candidate,
   CandidateIntakeData,
   CandidateVisa,
-  CandidateVisaJobCheck,
   getIeltsScoreTypeString
 } from '../../../../../../model/candidate';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../../../services/candidate.service";
 import {CountryService} from "../../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../../services/education-level.service";
@@ -31,14 +30,10 @@ import {OccupationService} from "../../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../../services/language-level.service";
 import {CandidateNoteService} from "../../../../../../services/candidate-note.service";
 import {AuthService} from "../../../../../../services/auth.service";
-import {
-  CandidateVisaJobService,
-  CreateCandidateVisaJobRequest
-} from "../../../../../../services/candidate-visa-job.service";
+import {CandidateVisaJobService} from "../../../../../../services/candidate-visa-job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {CreateVisaJobAssessementComponent} from "../../../../visa/visa-job-assessments/modal/create-visa-job-assessement.component";
-import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
 import {Country} from "../../../../../../model/country";
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-visa-check-au',
@@ -49,13 +44,11 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
 
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  @Input() visaRecord: CandidateVisa;
+  visaRecord: CandidateVisa;
   loading: boolean;
-  form: FormGroup;
   @Input() nationalities: Country[];
   saving: boolean;
-  jobIndex: number;
-  selectedJobCheck: CandidateVisaJobCheck;
+  selectedJobIndex: number;
   currentYear: string;
   birthYear: string;
 
@@ -68,98 +61,18 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
               authService: AuthService,
               private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private localStorageService: LocalStorageService) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 
   onDataLoaded(init: boolean) {
     if (init) {
-      if (this.visaRecord) {
-        this.currentYear = new Date().getFullYear().toString();
-        this.birthYear = this.candidate?.dob?.toString().slice(0, 4);
-
-        //If we have some visa checks, select the first one
-        if (this.visaRecord?.candidateVisaJobChecks?.length > 0) {
-          this.jobIndex = 0;
-        }
-      }
-
-      this.form = this.fb.group({
-        jobIndex: [this.jobIndex]
-      });
-
-      this.changeJobOpp(null);
+      this.visaRecord = this.candidateIntakeData?.candidateVisaChecks?.find(v => v.country.id == 6191);
+      this.setSelectedVisaCheckIndex(this.candidateIntakeData?.candidateVisaChecks?.indexOf(this.visaRecord));
+      this.currentYear = new Date().getFullYear().toString();
+      this.birthYear = this.candidate?.dob?.toString().slice(0, 4);
     }
-  }
-
-  addRecord() {
-    const modal = this.modalService.open(CreateVisaJobAssessementComponent);
-
-    modal.result
-      .then((request: CreateCandidateVisaJobRequest) => {
-        if (request) {
-          this.createRecord(request)
-        }
-      })
-      .catch(() => {
-        //User cancelled selection
-      });
-  }
-
-  createRecord(request: CreateCandidateVisaJobRequest) {
-    this.loading = true;
-    this.candidateVisaJobService.create(this.visaRecord.id, request)
-      .subscribe(
-        (jobCheck) => {
-          this.visaRecord?.candidateVisaJobChecks?.push(jobCheck);
-          this.form.controls['jobIndex'].patchValue(this.visaRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
-          this.changeJobOpp(null);
-          this.selectedJobCheck = jobCheck;
-          this.loading = false;
-        },
-        (error) => {
-          this.error = error;
-          this.loading = false;
-        });
-
-  }
-
-  deleteRecord(i: number) {
-    const confirmationModal = this.modalService.open(ConfirmationComponent);
-    const visaJobCheck: CandidateVisaJobCheck = this.visaRecord.candidateVisaJobChecks[i];
-
-    confirmationModal.componentInstance.message =
-      "Are you sure you want to delete the job check for " + visaJobCheck.name;
-    confirmationModal.result
-      .then((result) => {
-        if (result === true) {
-          this.doDelete(i, visaJobCheck);
-        }
-      })
-      .catch(() => {});
-  }
-
-  private doDelete(i: number, visaJobCheck: CandidateVisaJobCheck) {
-    this.loading = true;
-    this.candidateVisaJobService.delete(visaJobCheck.id).subscribe(
-      (done) => {
-        this.loading = false;
-        this.visaRecord.candidateVisaJobChecks.splice(i, 1);
-        this.changeJobOpp(null);
-        this.form.controls.jobIndex.patchValue(0);
-      },
-      (error) => {
-        this.error = error;
-        this.loading = false;
-      });
-  }
-
-  changeJobOpp(event: Event) {
-    this.jobIndex = this.form.controls.jobIndex.value;
-    if (this.visaRecord.candidateVisaJobChecks) {
-      this.selectedJobCheck = this.visaRecord.candidateVisaJobChecks[this.jobIndex];
-    }
-    //this.jobCheckAu.changeCheck(this.selectedJobCheck);
   }
 
   get selectedCountry(): string {
@@ -168,5 +81,13 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
 
   get ieltsScoreType(): string {
     return getIeltsScoreTypeString(this.candidate);
+  }
+
+  private setSelectedVisaCheckIndex(index: number) {
+    this.localStorageService.set('VisaCheckIndex', index);
+  }
+
+  updateJobIndex(index: number){
+    this.selectedJobIndex = index;
   }
 }

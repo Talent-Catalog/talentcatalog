@@ -28,7 +28,7 @@ import org.tbbtalent.server.model.db.User;
  *
  * @author John Cameron
  */
-public interface Partner {
+public interface Partner extends SourcePartner {
 
     /**
      * Abbreviated name of partner, if any.
@@ -37,6 +37,31 @@ public interface Partner {
     @Nullable
     String getAbbreviation();
     void setAbbreviation(@Nullable String s);
+
+    /**
+     * True if this partner is the default source partner - associated with candidates who are
+     * not clearly associated with any other source partner.
+     * <p/>
+     * Only one source partner at any given time can be the default.
+     * @return True if this is the default source partner
+     */
+    boolean isDefaultSourcePartner();
+    void setDefaultSourcePartner(boolean b);
+
+    boolean isJobCreator();
+    void setJobCreator(boolean b);
+
+    boolean isSourcePartner();
+    void setSourcePartner(boolean b);
+
+    /**
+     * True if this partner is the default job creator.
+     * <p/>
+     * Only one partner at any given time can be the default.
+     * @return True if this is the default job creator
+     */
+    boolean isDefaultJobCreator();
+    void setDefaultJobCreator(boolean b);
 
     @Nullable
     Long getContextJobId();
@@ -87,8 +112,6 @@ public interface Partner {
     @Nullable
     String getNotificationEmail();
     void setNotificationEmail(@Nullable String notificationEmail);
-
-    String getPartnerType();
 
     /**
      * Salesforce ID (extracted from {@link #getSflink()}).

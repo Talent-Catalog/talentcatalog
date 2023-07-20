@@ -49,7 +49,7 @@
           <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
             <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
           </a>
-          <a *ngIf="candidate.sflink" [href]="candidate.sflink" target="_blank">
+          <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
             <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
           </a>
           <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
@@ -67,6 +67,9 @@
           </app-cv-icon>
           <a [href]="publicCvUrl()" target="_blank">
             <i class="fas fa-users" title="View candidate's public CV"></i>
+          </a>
+          <a class="btn-link" (click)="createTailoredCv()">
+            <i class="fas fa-users-gear"  title="View tailored candidate's public CV"></i>
           </a>
       </span>
       </h1>
@@ -176,9 +179,7 @@
               <app-candidate-additional-info-tab
                 [candidate]="candidate"
                 [editable]="isEditable()"
-                [adminUser]="isAnAdmin()"
                 [canViewPrivateInfo]="canViewPrivateInfo()"
-                [loggedInUser]="loggedInUser"
                 (candidateChanged)="onCandidateChanged()">
               </app-candidate-additional-info-tab>
             </ng-template>

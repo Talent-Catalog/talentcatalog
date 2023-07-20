@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -31,6 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -57,38 +57,15 @@ import lombok.Setter;
 @Entity
 @Table(name = "salesforce_job_opp")
 @SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
-public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
-
-    /**
-     * ID of copied Salesforce job opportunity is also used as id of this copy.
-     */
-    @Column(name = "sf_job_opp_id")
-    private String sfId;
-
-    /**
-     * True if the job is currently accepting processing by other than its creator.
-     * Setting it false will make the job hidden on the TC front end to all but the creator.
-     * The first time accepting is set true for a job effectively "publishes" the job so that
-     * others can see it and process it.
-     */
-    private boolean accepting;
+public class SalesforceJobOpp extends AbstractOpportunity {
 
     /**
      * Salesforce id of account (ie employer) associated with opportunity
      */
     private String accountId;
 
-    /**
-     * True if opportunity is closed
-     */
-    private boolean closed;
-
-    /**
-     * Email to use for enquiries about this job.
-     * <p/>
-     * Should default to email of {@link #contactUser} - but can be different
-     */
-    private String contactEmail;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "jobOpp", cascade = CascadeType.MERGE)
+    private Set<CandidateOpportunity> candidateOpportunities = new HashSet<>();
 
     /**
      * TC user responsible for this job - will normally be "destination" staff located in the same
@@ -116,7 +93,7 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      * Description given to job in job intake.
      */
     private String description;
-    
+
     /**
      * Name of employer - maps to Account name on Salesforce
      */
@@ -137,11 +114,6 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      * Summary describing job
      */
     private String jobSummary;
-
-    /**
-     * Last time that this was updated from Salesforce (which holds the master copy)
-     */
-    private OffsetDateTime lastUpdate;
 
     /**
      * Name of opportunity - maps to Opportunity name on Salesforce
@@ -166,27 +138,17 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
     private OffsetDateTime publishedDate;
 
     /**
-     * Recruiter partner responsible for this job.
+     * Partner responsible for this job.
      */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruiter_partner_id")
-    private RecruiterPartnerImpl recruiterPartner;
+    private PartnerImpl jobCreator;
 
     /**
      * Stage of job opportunity
      */
     @Enumerated(EnumType.STRING)
     private JobOpportunityStage stage;
-
-    /**
-     * Stage of job opportunity expressed as number - 0 being first stage.
-     * <p/>
-     * Used for sorting by stage.
-     * <p/>
-     * This is effectively a computed field, computed by calling the ordinal() method of the
-     * {@link #stage} enum.
-     */
-    private int stageOrder;
 
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
@@ -234,7 +196,7 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
         joinColumns = @JoinColumn(name = "tc_job_id"),
         inverseJoinColumns = @JoinColumn(name = "saved_search_id"))
     private Set<SavedSearch> suggestedSearches = new HashSet<>();
-    
+
     @Nullable
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_opp_intake_id")
@@ -245,18 +207,28 @@ public class SalesforceJobOpp extends AbstractAuditableDomainObject<Long> {
      * As of 22/5/23 this may change to a text field, stored in database as text but currently a number from SF.
      */
     private Long hiringCommitment;
-    
+
     /**
      * Salesforce field: the website of the employer
      * (On SF exists on Account, but copied to Opportunity and fetched with Opportunity object)
      */
     private String employerWebsite;
-    
-    /**                        
-     * Salesforce field: if the employer has hired internationally before 
-     * (On SF exists on Account, but copied to Opportunity and fetched on Opportunity object) 
+
+    /**
+     * Salesforce field: if the employer has hired internationally before
+     * (On SF exists on Account, but copied to Opportunity and fetched on Opportunity object)
      */
     private String employerHiredInternationally;
+
+    /**
+     * Salesforce field: opportunity score of employer job opportunity
+     */
+    private String opportunityScore;
+
+    /**
+     * Salesforce field: description of employer from account
+     */
+    private String employerDescription;
 
     public void addStarringUser(User user) {
         starringUsers.add(user);

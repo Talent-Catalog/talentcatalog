@@ -2,11 +2,16 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Job} from "../../../model/job";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Router} from "@angular/router";
-import {isStarredByMe, SearchJobsBy} from "../../../model/base";
+import {isStarredByMe, SearchOppsBy} from "../../../model/base";
 import {JobService} from "../../../services/job.service";
 import {AuthService} from "../../../services/auth.service";
 
-
+/**
+ * Displays the jobs returned by the given type of search, together with extra details
+ * related to the selected job.
+ * <p/>
+ * The actual display of the jobs is delegated to the JobsComponent.
+ */
 @Component({
   selector: 'app-jobs-with-detail',
   templateUrl: './jobs-with-detail.component.html',
@@ -17,7 +22,7 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   error: any;
   loading: boolean;
 
-  @Input() searchBy: SearchJobsBy;
+  @Input() searchBy: SearchOppsBy;
 
   constructor(
     private router: Router,

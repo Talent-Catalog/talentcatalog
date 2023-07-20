@@ -24,9 +24,7 @@ import {
   CreateCandidateVisaCheckRequest
 } from '../../../../../services/candidate-visa-check.service';
 import {Country} from '../../../../../model/country';
-import {
-  HasNameSelectorComponent
-} from '../../../../util/has-name-selector/has-name-selector.component';
+import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {CandidateVisa} from '../../../../../model/candidate';
@@ -35,6 +33,7 @@ import {OccupationService} from '../../../../../services/occupation.service';
 import {LanguageLevelService} from '../../../../../services/language-level.service';
 import {CandidateNoteService} from '../../../../../services/candidate-note.service';
 import {AuthService} from '../../../../../services/auth.service';
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-candidate-visa-tab',
@@ -55,15 +54,21 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
               authService: AuthService,
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private localStorageService: LocalStorageService) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 
   onDataLoaded(init: boolean) {
     if (init) {
-      //If we have some visa checks, select the first one
       if (this.candidateIntakeData?.candidateVisaChecks.length > 0) {
-        this.selectedIndex = 0;
+        // If exists, get the last selected visa check from local storage. If nothing there, get the first one.
+        const index: number = this.localStorageService.get('VisaCheckIndex');
+        if (index) {
+          this.selectedIndex = index;
+        } else {
+          this.selectedIndex = 0;
+        }
       }
       this.form = this.fb.group({
         visaCountry: [this.selectedIndex]
@@ -162,10 +167,6 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
     this.selectedIndex = this.form.controls.visaCountry.value;
     this.selectedCountry = this.candidateIntakeData
       .candidateVisaChecks[this.selectedIndex]?.country?.name;
-  }
-
-  getVisaCheck(countryName: string): CandidateVisa {
-    return this.candidateIntakeData?.candidateVisaChecks?.find(check => check.country.name == countryName);
   }
 
 }

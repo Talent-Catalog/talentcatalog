@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,9 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.candidate;
+package org.tbbtalent.server.request.candidate.opportunity;
 
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,7 +23,7 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 
 /**
- * Opportunity parameters - common to candidate opportunities and job opportunities
+ * Candidate Opportunity parameters
  * <p/>
  * These can be set by a user on the admin portal - from Angular
  *
@@ -32,36 +31,23 @@ import org.tbbtalent.server.model.db.CandidateOpportunityStage;
  */
 @Getter
 @Setter
-@ToString
-public class SalesforceOppParams {
+@ToString(callSuper = true)
+public class CandidateOpportunityParams extends OpportunityParams {
 
   /**
-   * todo This is candidate opp specific
-   * Must match the name of a Salesforce Candidate Opportunity stage
+   * Salesforce Candidate Opportunity stage
    */
   @Nullable
   private CandidateOpportunityStage stage;
 
   /**
-   * Any text which will update a Salesforce Opportunity next step
+   * Comments explaining why the opportunity was closed intended to be
+   * shared with candidate
    */
   @Nullable
-  private String nextStep;
+  private String closingCommentsForCandidate;
 
   /**
-   * Any text which will update a Salesforce Opportunity next step due date
-   */
-  @Nullable
-  private LocalDate nextStepDueDate;
-
-  /**
-   * Comments explaining why the opportunity was closed
-   */
-  @Nullable
-  private String closingComments;
-
-  /**
-   * todo This is candidate opp specific
    * Employer feedback on a candidate
    */
   @Nullable

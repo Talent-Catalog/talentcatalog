@@ -17,16 +17,6 @@
 package org.tbbtalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -36,6 +26,10 @@ import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.job.SearchJobRequest;
+
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Specification for sorting and searching {@link SalesforceJobOpp} entities
@@ -90,15 +84,51 @@ public class JobSpecification {
                         ));
             }
 
+            //TODO CandidateOpportunitySpecification and JobSpecification are both opportunity
+            //specifications and duplicate a lot of code which should be refactored out.
+
+            final Boolean showActiveStages = request.getActiveStages();
+            final Boolean showClosed = request.getSfOppClosed();
+
+            boolean isStageFilterActive = false;
+
             // STAGE
             List<JobOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
                 conjunction.getExpressions().add(builder.isTrue(job.get("stage").in(stages)));
+                isStageFilterActive = true;
             }
 
-            //CLOSED
-            if (request.getSfOppClosed() != null) {
-                conjunction.getExpressions().add(builder.equal(job.get("closed"), request.getSfOppClosed()));
+            //ACTIVE STAGES (ignored if doing stage filtering)
+            if (!isStageFilterActive) {
+                //Note that we only check "active stages" if explicit stages have not been requested.
+                if (showActiveStages != null) {
+                    //Only apply filter when we just want to display active stages
+                    //Otherwise, if false, it will ONLY display inactive stages which we don't want
+                    if (showActiveStages) {
+                        final Predicate activePredicate = builder.between(job.get("stageOrder"),
+                            JobOpportunityStage.candidateSearch.ordinal(),
+                            JobOpportunityStage.jobOffer.ordinal());
+                        if (showClosed != null && showClosed) {
+                            //When active stages are requested as well as closed, we need both.
+                            //ie We need to show jobs which are active OR closed
+                            conjunction.getExpressions().add(
+                                builder.or(activePredicate,
+                                    builder.equal(job.get("closed"), true)));
+                        } else {
+                            conjunction.getExpressions().add(activePredicate);
+                        }
+                    }
+                }
+            }
+
+            //CLOSED (ignored if we are doing stage filtering)
+            if (!isStageFilterActive && showClosed != null) {
+                //Only apply filter if we want to exclude closed opps.
+                //Otherwise the filter when true will only show closed opps - which we don't want.
+                if (!showClosed) {
+                    conjunction.getExpressions().add(builder.equal(job.get("closed"), false));
+                }
             }
 
             //PUBLISHED
@@ -110,12 +140,6 @@ public class JobSpecification {
                     published = builder.isNull(job.get("publishedBy"));
                 }
                 conjunction.getExpressions().add(published);
-            }
-
-            //ACCEPTING
-            if (request.getAccepting() != null) {
-                conjunction.getExpressions().add(builder.equal(job.get("accepting"),
-                    request.getAccepting()));
             }
 
             // (starred OR owned)

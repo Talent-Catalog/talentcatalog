@@ -166,30 +166,32 @@ public class JobAdminApi implements
         return new DtoBuilder()
             .add("id")
             .add("sfId")
-            .add("accepting")
-            .add("contactEmail")
-            .add("contactUser", userDto())
+            .add("contactUser", shortUserDto())
             .add("country")
-            .add("createdBy", userDto())
+            .add("createdBy", shortUserDto())
             .add("createdDate")
             .add("employer")
             .add("hiringCommitment")
             .add("employerWebsite")
             .add("employerHiredInternationally")
             .add("hiringCommitment")
+            .add("opportunityScore")
+            .add("employerDescription")
             .add("exclusionList", savedListBuilderSelector.selectBuilder())
             .add("jobSummary")
             .add("name")
-            .add("publishedBy", userDto())
+            .add("nextStep")
+            .add("nextStepDueDate")
+            .add("publishedBy", shortUserDto())
             .add("publishedDate")
-            .add("recruiterPartner", partnerDto())
+            .add("jobCreator", shortPartnerDto())
             .add("stage")
-            .add("starringUsers", userDto())
+            .add("starringUsers", shortUserDto())
             .add("submissionDueDate")
             .add("submissionList", savedListBuilderSelector.selectBuilder())
             .add("suggestedList", savedListBuilderSelector.selectBuilder())
             .add("suggestedSearches", savedSearchDto())
-            .add("updatedBy", userDto())
+            .add("updatedBy", shortUserDto())
             .add("updatedDate")
             .add("jobOppIntake", joiDto())
             ;
@@ -202,7 +204,7 @@ public class JobAdminApi implements
             ;
     }
 
-    private DtoBuilder userDto() {
+    private DtoBuilder shortUserDto() {
         return new DtoBuilder()
             .add("id")
             .add("firstName")
@@ -211,8 +213,9 @@ public class JobAdminApi implements
             ;
     }
 
-    private DtoBuilder partnerDto() {
+    private DtoBuilder shortPartnerDto() {
         return new DtoBuilder()
+            .add("id")
             .add("name")
             .add("abbreviation")
             .add("websiteUrl")

@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {JoblinkValidationEvent} from '../../../../util/joblink/joblink.component';
-import {CreateCandidateVisaJobRequest} from "../../../../../services/candidate-visa-job.service";
 
 @Component({
   selector: 'app-create-visa-job-assessement',
@@ -55,10 +54,10 @@ export class CreateVisaJobAssessementComponent implements OnInit {
   }
 
   onSelect() {
-    const request: CreateCandidateVisaJobRequest = {
-        name: this.name,
-        sfJobLink: this.sfJoblink };
-    this.activeModal.close(request);
+    // const request: CreateCandidateVisaJobRequest = {
+    //     name: this.name,
+    //     sfJobLink: this.sfJoblink };
+    // this.activeModal.close(request);
   }
 
   dismiss() {

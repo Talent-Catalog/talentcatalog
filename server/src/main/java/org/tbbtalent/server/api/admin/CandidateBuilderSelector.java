@@ -16,9 +16,6 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.TaskDtoHelper;
@@ -27,6 +24,10 @@ import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.dto.DtoPropertyFilter;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -181,6 +182,15 @@ public class CandidateBuilderSelector {
                 ;
     }
 
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+            .add("username")
+            .add("email")
+            .add("firstName")
+            .add("lastName")
+            ;
+    }
+
     private DtoBuilder countryDto() {
         return new DtoBuilder()
                 .add("id")
@@ -192,16 +202,27 @@ public class CandidateBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("sfId")
+            .add("candidate", shortCandidateDto())
             .add("closingComments")
             .add("closingCommentsForCandidate")
             .add("employerFeedback")
             .add("jobOpp", jobDto())
-            .add("lastModifiedDate")
             .add("name")
             .add("nextStep")
             .add("nextStepDueDate")
             .add("stage")
-                ;
+            .add("createdBy", userDto())
+            .add("createdDate")
+            .add("updatedBy", userDto())
+            .add("updatedDate")
+
+            ;
+    }
+
+    private DtoBuilder shortCandidateDto() {
+        return new DtoBuilder()
+            .add("candidateNumber")
+            ;
     }
 
     private DtoBuilder jobDto() {
@@ -283,6 +304,7 @@ public class CandidateBuilderSelector {
             .add("createdBy", userDto(userPropertyFilter))
             .add("createdDate")
             .add("uploadType")
+            .add("url")
             ;
     }
 }

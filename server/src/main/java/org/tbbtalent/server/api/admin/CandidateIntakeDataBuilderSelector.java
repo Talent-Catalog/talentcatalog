@@ -16,8 +16,9 @@
 
 package org.tbbtalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -225,6 +226,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("validTravelDocs")
                 .add("validTravelDocsNotes")
                 .add("assessmentNotes")
+                .add("pathwayAssessment")
+                .add("pathwayAssessmentNotes")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())
@@ -237,6 +240,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("name")
                 .add("sfJobLink")
+                .add("jobOpp", jobOppDto())
                 .add("interest")
                 .add("interestNotes")
                 .add("regional")
@@ -297,6 +301,14 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("candidateNumber")
                 .add("user", userDto())
+                ;
+    }
+
+    private DtoBuilder jobOppDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("sfId")
                 ;
     }
 

@@ -117,4 +117,9 @@ export class SearchPartnersComponent implements OnInit {
 
     return user ? user.firstName + " " + user.lastName + "(" + user.email + ")" : "";
   }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
+
 }

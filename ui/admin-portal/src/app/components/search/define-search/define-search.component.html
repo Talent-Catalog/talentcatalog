@@ -427,12 +427,26 @@
               </ng-select>
             </div>
 
-          <!-- REFERRER -->
-          <div class="col-md-4">
-            <label class="form-label" for="referrer">Referrer</label>
-            <input id="referrer" class="form-control"
-                   name="referrer" [formControlName]="'regoReferrerParam'" >
-          </div>
+            <!-- REFERRER -->
+            <div class="col-md-4">
+              <label class="form-label" for="referrer">Referrer</label>
+              <input id="referrer" class="form-control"
+                     name="referrer" [formControlName]="'regoReferrerParam'" >
+            </div>
+
+            <!-- CANDIDATE OPPS -->
+            <div class="col-md-4">
+              <label class="form-label" for="gender">Candidate Job Opportunity Cases</label>
+              <ng-select
+                id="opps"
+                [items]="candidateFilterByOppsOptions"
+                [searchable]="false"
+                placeholder="Select"
+                bindLabel="stringValue"
+                bindValue="key"
+                formControlName="candidateFilterByOpps">
+              </ng-select>
+            </div>
 
             <!-- EXCLUSION LIST -->
             <div class="col-md-4">

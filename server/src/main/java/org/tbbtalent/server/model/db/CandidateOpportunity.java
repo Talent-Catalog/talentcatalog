@@ -22,7 +22,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -65,7 +64,7 @@ public class CandidateOpportunity extends AbstractOpportunity {
     /**
      * Associated job opportunity
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_opp_id")
     SalesforceJobOpp jobOpp;
 
@@ -76,12 +75,14 @@ public class CandidateOpportunity extends AbstractOpportunity {
     CandidateOpportunityStage stage;
 
     /**
-     * Override standard setStage to automatically also update stageOrder
+     * Override standard setStage to automatically also update stageOrder and also closed
      * @param stage New job opportunity stage
      */
     public void setStage(@NonNull CandidateOpportunityStage stage) {
         this.stage = stage;
         setStageOrder(stage.ordinal());
+        setClosed(this.stage.isClosed());
+        setWon(this.stage.isWon());
     }
 
 }

@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.tbbtalent.server.util.SalesforceHelper.parseSalesforceOffsetDateTime;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -23,9 +25,11 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
@@ -38,16 +42,20 @@ import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateOpportunityRepository;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.repository.db.CandidateOpportunitySpecification;
 import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
+import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SalesforceJobOppService;
 import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.UserService;
 
 @Service
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
@@ -56,45 +64,75 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final CandidateService candidateService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
+    private final UserService userService;
+
 
     public CandidateOpportunityServiceImpl(
         CandidateOpportunityRepository candidateOpportunityRepository,
-        CandidateService candidateService, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService) {
+        CandidateService candidateService, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
+        UserService userService) {
         this.candidateOpportunityRepository = candidateOpportunityRepository;
         this.candidateService = candidateService;
         this.salesforceJobOppService = salesforceJobOppService;
         this.salesforceService = salesforceService;
+        this.userService = userService;
     }
 
-    @Override
-    public void createOrUpdateCandidateOpportunities(
-        List<Candidate> candidates, SalesforceOppParams oppParams, SalesforceJobOpp jobOpp) {
+    /**
+     * Creates or updates CandidateOpportunities associated with the given candidates going for
+     * the given job, using the given opportunity data.
+     * @param candidates Candidates whose opportunities are going to be created or updated
+     * @param oppParams Opportunity data common to all opportunities. Can be null in which case
+     *                  no changes are made to existing opps, but new opps will be created
+     *                  if needed with the stage defaulting to "prospect".
+     * @param jobOpp Job associated with candidate opportunities
+     */
+    private void createOrUpdateCandidateOpportunities(
+        List<Candidate> candidates, @Nullable CandidateOpportunityParams oppParams,
+        SalesforceJobOpp jobOpp) {
 
         for (Candidate candidate : candidates) {
-            //Find candidate opp, if any
-            CandidateOpportunity opp = findOpp(candidate, jobOpp);
-            boolean create = opp == null;
-            if (create) {
-                opp = new CandidateOpportunity();
-                opp.setJobOpp(jobOpp);
-                opp.setCandidate(candidate);
-                opp.setName(salesforceService.generateCandidateOppName(candidate, jobOpp));
-            }
-            final CandidateOpportunityStage stage = oppParams.getStage();
-            if (stage != null) {
-                opp.setStage(stage);
-            }
-
-            opp.setNextStep(oppParams.getNextStep());
-            opp.setNextStepDueDate(oppParams.getNextStepDueDate());
-            opp.setClosingComments(oppParams.getClosingComments());
-            opp.setEmployerFeedback(oppParams.getEmployerFeedback());
-            candidateOpportunityRepository.save(opp);
+            createOrUpdateCandidateOpportunity(candidate, oppParams, jobOpp);
         }
     }
 
+    private CandidateOpportunity createOrUpdateCandidateOpportunity(
+        Candidate candidate, @Nullable CandidateOpportunityParams oppParams,
+        SalesforceJobOpp jobOpp) {
+        User loggedInUser = userService.getLoggedInUser();
+
+        CandidateOpportunity opp = findOpp(candidate, jobOpp);
+        boolean create = opp == null;
+        if (create) {
+            opp = new CandidateOpportunity();
+            opp.setJobOpp(jobOpp);
+            opp.setCandidate(candidate);
+            opp.setName(salesforceService.generateCandidateOppName(candidate, jobOpp));
+            opp.setStage(CandidateOpportunityStage.prospect);
+            opp.setNextStep("Contact candidate and do intake");
+            opp.setNextStepDueDate(LocalDate.now().plusWeeks(2));
+            String sfId = fetchSalesforceId(candidate, jobOpp);
+            if (sfId == null) {
+                log.error("Could not find SF candidate opp for candidate "
+                    + candidate.getCandidateNumber() + " job " + jobOpp.getId());
+            }
+            opp.setSfId(sfId);
+        }
+
+        opp.setAuditFields(loggedInUser);
+
+        return updateCandidateOpportunity(opp, oppParams);
+    }
+
+    private String fetchSalesforceId(Candidate candidate, SalesforceJobOpp jobOpp) {
+
+        Opportunity opp = salesforceService.findCandidateOpportunity(
+            candidate.getCandidateNumber(), jobOpp.getSfId());
+        return opp == null ? null : opp.getId();
+    }
+
     @Override
-    public void createUpdateSalesforce(UpdateCandidateOppsRequest request)
+    public void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
         throws NoSuchObjectException, SalesforceException, WebClientException {
 
         List<Candidate> candidates = candidateService.findByIds(request.getCandidateIds());
@@ -102,11 +140,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         final String sfJobOppId = request.getSfJobOppId();
         final SalesforceJobOpp sfJobOpp =
             salesforceJobOppService.getOrCreateJobOppFromId(sfJobOppId);
-        createUpdateSalesforce(candidates, sfJobOpp, request.getSalesforceOppParams());
+        createUpdateCandidateOpportunities(candidates, sfJobOpp, request.getCandidateOppParams());
     }
 
-    public void createUpdateSalesforce(Collection<Candidate> candidates,
-        @Nullable SalesforceJobOpp sfJobOpp, @Nullable SalesforceOppParams salesforceOppParams)
+    public void createUpdateCandidateOpportunities(Collection<Candidate> candidates,
+        @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
         throws SalesforceException, WebClientException {
 
         //Need ordered list so that can match with returned contacts.
@@ -129,21 +167,23 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         //If we have a Salesforce job opportunity, we can also update associated candidate opps.
         if (sfJobOpp != null) {
             //If the sfJobOpp is not very recent, reload it
-            final OffsetDateTime lastUpdate = sfJobOpp.getLastUpdate();
+            final OffsetDateTime lastUpdate = sfJobOpp.getUpdatedDate();
             if (lastUpdate == null ||
                 Duration.between(lastUpdate, OffsetDateTime.now()).toMinutes() >= 3) {
                 sfJobOpp = salesforceJobOppService.updateJob(sfJobOpp);
             }
 
-            //Create/update opportunities on local database as well as on Salesforce
-            createOrUpdateCandidateOpportunities(
-                orderedCandidates, salesforceOppParams, sfJobOpp);
+            //Create/update opportunities on Salesforce first
             salesforceService.createOrUpdateCandidateOpportunities(
-                orderedCandidates, salesforceOppParams, sfJobOpp);
+                orderedCandidates, candidateOppParams, sfJobOpp);
+            //Then update opps on local DB. SF opps already created, which will allow us to
+            //add sfId to created opps on the local db.
+            createOrUpdateCandidateOpportunities(
+                orderedCandidates, candidateOppParams, sfJobOpp);
 
             //Detect any auto candidate status changes based on stage changes
             final CandidateOpportunityStage stage =
-                salesforceOppParams == null ? null : salesforceOppParams.getStage();
+                candidateOppParams == null ? null : candidateOppParams.getStage();
             if (stage != null) {
                 performAutoStageRelatedStatusUpdates(sfJobOpp, orderedCandidates, stage);
             }
@@ -153,6 +193,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     @Override
     public CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp) {
         return candidateOpportunityRepository.findByCandidateIdAndJobId(candidate.getId(), jobOpp.getId());
+    }
+
+    @NonNull
+    @Override
+    public CandidateOpportunity getCandidateOpportunity(long id) throws NoSuchObjectException {
+        return candidateOpportunityRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(CandidateOpportunity.class, id));
     }
 
     @Async
@@ -223,6 +270,9 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
         candidateOpportunity.setCandidate(candidate);
 
+        candidateOpportunity.setClosed(op.isClosed());
+        candidateOpportunity.setWon(op.isWon());
+        candidateOpportunity.setClosingCommentsForCandidate(op.getClosingCommentsForCandidate());
         candidateOpportunity.setEmployerFeedback(op.getEmployerFeedback());
         candidateOpportunity.setName(op.getName());
         candidateOpportunity.setNextStep(op.getNextStep());
@@ -234,6 +284,24 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     LocalDate.parse(nextStepDueDate));
             } catch (DateTimeParseException ex) {
                 log.error("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + op.getName());
+            }
+        }
+
+        final String createdDate = op.getCreatedDate();
+        if (createdDate != null) {
+            try {
+                candidateOpportunity.setCreatedDate(parseSalesforceOffsetDateTime(createdDate));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding createdDate from SF: " + createdDate + " in candidate op " + op.getName());
+            }
+        }
+
+        final String lastModifiedDate = op.getLastModifiedDate();
+        if (lastModifiedDate != null) {
+            try {
+                candidateOpportunity.setUpdatedDate(parseSalesforceOffsetDateTime(lastModifiedDate));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding lastModifiedDate from SF: " + lastModifiedDate + " in candidate op " + op.getName());
             }
         }
         candidateOpportunity.setSfId(op.getId());
@@ -282,4 +350,48 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
     }
 
+    @Override
+    public Page<CandidateOpportunity> searchCandidateOpportunities(
+        SearchCandidateOpportunityRequest request) {
+        User loggedInUser = userService.getLoggedInUser();
+        Page<CandidateOpportunity> opps = candidateOpportunityRepository.findAll(
+            CandidateOpportunitySpecification.buildSearchQuery(request, loggedInUser),
+            request.getPageRequest());
+
+        return opps;
+    }
+
+    @Override
+    public CandidateOpportunity updateCandidateOpportunity(long id,
+        CandidateOpportunityParams request) throws NoSuchObjectException {
+
+        CandidateOpportunity opp = getCandidateOpportunity(id);
+
+        //Update Salesforce
+        final SalesforceJobOpp jobOpp = opp.getJobOpp();
+        final Candidate candidate = opp.getCandidate();
+
+        createUpdateCandidateOpportunities(Collections.singletonList(candidate), jobOpp, request);
+        opp = createOrUpdateCandidateOpportunity(candidate, request, jobOpp );
+
+        return opp;
+    }
+
+    private CandidateOpportunity updateCandidateOpportunity(
+        CandidateOpportunity opp, @Nullable CandidateOpportunityParams oppParams) {
+
+        if (oppParams != null) {
+            final CandidateOpportunityStage stage = oppParams.getStage();
+            if (stage != null) {
+                opp.setStage(stage);
+            }
+
+            opp.setNextStep(oppParams.getNextStep());
+            opp.setNextStepDueDate(oppParams.getNextStepDueDate());
+            opp.setClosingComments(oppParams.getClosingComments());
+            opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
+            opp.setEmployerFeedback(oppParams.getEmployerFeedback());
+        }
+        return candidateOpportunityRepository.save(opp);
+    }
 }

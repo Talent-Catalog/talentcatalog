@@ -25,7 +25,7 @@ import {
   ViewChild
 } from '@angular/core';
 
-import {Candidate, CandidateStatus, Gender} from '../../../model/candidate';
+import {Candidate, CandidateFilterByOpps, CandidateStatus, Gender} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
@@ -78,7 +78,7 @@ import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
 import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
-import {Partner, PartnerType} from "../../../model/partner";
+import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 
 @Component({
@@ -128,7 +128,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
   genderOptions: EnumOption[] = enumOptions(Gender);
-
+  candidateFilterByOppsOptions: EnumOption[] = enumOptions(CandidateFilterByOpps);
   selectedCandidate: Candidate;
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
@@ -197,6 +197,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       regoReferrerParam: [null],
       statusesDisplay: [[]],
       surveyTypes: [[]],
+      candidateFilterByOpps: [null],
       exclusionListId: [null],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
@@ -211,7 +212,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    const partnerRequest: SearchPartnerRequest = {partnerType: PartnerType.SourcePartner};
+    const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
     const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
     forkJoin({
       'lists': this.savedListService.search(request),
@@ -712,18 +713,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   public getPartnerDefaultMessage(): string {
 
-    const partner = this.loggedInUser?.partner;
-    let partnerType = partner?.partnerType;
-
     let s: string;
 
-    //Simple non-operating partners default to seeing candidates from all partners
-    if (partnerType === PartnerType.Partner
-      || partnerType === PartnerType.RecruiterPartner
-      || partner && partner.defaultSourcePartner) {
-      s = "If nothing is specified, the default is to show candidates managed by any partner";
-    } else {
+    //Source partners default to seeing only their candidates (unless they are the default partner)
+    if (this.authService.isSourcePartner() && !this.authService.isDefaultPartner()) {
       s = "If nothing is specified, the default is to just show candidates belonging to your partner";
+    } else {
+      s = "If nothing is specified, the default is to show candidates managed by any partner";
     }
 
     return s;

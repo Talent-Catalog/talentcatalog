@@ -41,29 +41,40 @@ public class DtoBuilder {
     private final List<MappedProperty> mappedProperties;
     private final Boolean skipTranslation;
     private final DtoPropertyFilter propertyFilter;
+    private final DtoCollectionItemFilter collectionItemFilter;
 
     /**
      * Creates a builder which can optionally skip translation and support a discriminator property.
-     * @param skipTranslation If true, the built in translation capability will be deactivated
-     * @param propertyFilter If not null, this object will determine which properties should be
-     *                       ignored.
+     *
+     * @param skipTranslation       If true, the built in translation capability will be deactivated
+     * @param propertyFilter        If not null, this object will determine which properties should be
+     *                              ignored.
+     * @param collectionItemFilter  If not null, this object will determine which items should be
+     *                              ignored.
      */
-    public DtoBuilder(@Nullable Boolean skipTranslation, @Nullable DtoPropertyFilter propertyFilter) {
+    public DtoBuilder(@Nullable Boolean skipTranslation,
+                      @Nullable DtoPropertyFilter propertyFilter,
+                      @Nullable DtoCollectionItemFilter collectionItemFilter) {
         this.mappedProperties = new ArrayList<>();
         this.skipTranslation = skipTranslation;
         this.propertyFilter = propertyFilter;
+        this.collectionItemFilter = collectionItemFilter;
     }
 
     public DtoBuilder() {
-        this(false, null);
+        this(false, null, null);
     }
 
     public DtoBuilder(Boolean skipTranslation) {
-        this(skipTranslation, null);
+        this(skipTranslation, null, null);
     }
 
     public DtoBuilder(DtoPropertyFilter propertyFilter) {
-        this(false, propertyFilter);
+        this(false, propertyFilter, null);
+    }
+
+    public DtoBuilder(DtoCollectionItemFilter collectionItemFilter) {
+        this(false, null, collectionItemFilter);
     }
 
     /**
@@ -95,7 +106,9 @@ public class DtoBuilder {
         if (sourceList != null) {
             List<Map<String, Object>> results = new ArrayList<>();
             for (Object source : sourceList) {
-                results.add(build(source));
+                if( collectionItemFilter == null || !collectionItemFilter.ignoreItem(source)) {
+                    results.add(build(source));
+                }
             }
             return results;
         } else {
@@ -155,6 +168,7 @@ public class DtoBuilder {
      * be Strings or other Maps.
      * This hierarchical structure maps well on to Json which is used to
      * return responses over HTTP.
+     *
      * @param source Object to be converted to a JSon style Map<String, String|Map>
      * @return Null if source is null
      */

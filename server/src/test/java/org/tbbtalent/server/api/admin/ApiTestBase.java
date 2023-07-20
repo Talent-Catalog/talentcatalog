@@ -17,10 +17,16 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
 import org.tbbtalent.server.security.JwtTokenProvider;
+import org.tbbtalent.server.security.TbbUserDetails;
 import org.tbbtalent.server.security.TbbUserDetailsService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 /**
  * Common beans and configuration required by api unit tests.
@@ -28,8 +34,28 @@ import org.tbbtalent.server.service.db.email.EmailHelper;
  * @author smalik
  */
 public class ApiTestBase {
+    private static final String USER_NAME = "test_user";
+    private static final String FIRST_NAME = "test";
+    private static final String LAST_NAME = "user";
+    private static final String EMAIL = "test.user@tbb.org";
+    private static final Role ROLE = Role.admin;
+
+    protected User user;
+
     @MockBean TbbUserDetailsService tbbUserDetailsService;
     @MockBean JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     @MockBean JwtTokenProvider jwtTokenProvider;
     @MockBean EmailHelper emailHelper;
+
+    void configureAuthentication() {
+        user = new User(USER_NAME, FIRST_NAME, LAST_NAME, EMAIL, ROLE);
+
+        when(jwtTokenProvider.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenProvider.getUsernameFromJwt(anyString())).thenReturn(USER_NAME);
+
+        when(tbbUserDetailsService.loadUserByUsername(anyString()))
+                .thenReturn(new TbbUserDetails(user));
+    }
+
+
 }

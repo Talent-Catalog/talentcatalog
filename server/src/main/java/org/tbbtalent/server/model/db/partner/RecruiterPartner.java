@@ -25,6 +25,6 @@ package org.tbbtalent.server.model.db.partner;
  *
  * @author John Cameron
  */
-public interface RecruiterPartner extends Partner {
+public interface RecruiterPartner extends JobCreator {
 
 }

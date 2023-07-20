@@ -16,10 +16,8 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,25 +25,19 @@ import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.service.db.BrandingService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import java.util.Map;
+
 /**
  * Access to branding information for the admin portal.
  */
 @RestController()
 @RequestMapping("/api/admin/branding")
+@Slf4j
+@RequiredArgsConstructor
 public class BrandingAdminApi {
-    private static final Logger log = LoggerFactory.getLogger(BrandingAdminApi.class);
 
     private final BrandingService brandingService;
 
-    @Autowired
-    public BrandingAdminApi(BrandingService brandingService) {
-        this.brandingService = brandingService;
-    }
-
-    /**
-     * Retrieve the branding information for the admin portal.
-     * @return branding information
-     */
     @GetMapping()
     public Map<String, Object> getBrandingInfo() {
 
@@ -60,4 +52,5 @@ public class BrandingAdminApi {
                 .add("websiteUrl")
                 ;
     }
+
 }

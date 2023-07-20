@@ -30,6 +30,7 @@ import {isSavedSearch} from "../../../model/saved-search";
 import {isSavedList} from "../../../model/saved-list";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -50,26 +51,30 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   showAttachments: boolean = false;
   showNotes: boolean = true;
 
+  //Get reference to the nav element
+  @ViewChild('nav')
+  nav: NgbNav;
   activeTabId: string;
   private lastTabKey: string = 'SelectedCandidateLastTab';
 
-  //Get reference to the nav element
-  @ViewChild(NgbNav)
-  nav: NgbNav;
+  @ViewChild('navContext')
+  navContext: NgbNav;
+  activeContextTabId: string;
+  private lastContextTabKey: string = 'SelectedCandidateContextLastTab';
 
-  constructor(
-    private localStorageService: LocalStorageService
-  ) { }
+  constructor(private localStorageService: LocalStorageService,
+              private authService: AuthService) { }
 
   ngOnInit() {
   }
 
-  close() {
-    this.closeEvent.emit();
+  ngAfterViewChecked(): void {
+    //This is called in order for the navigation tabs, this.nav, to be set.
+    this.selectDefaultTab();
   }
 
-  toggleAttachments() {
-    this.showAttachments = !this.showAttachments;
+  close() {
+    this.closeEvent.emit();
   }
 
   toggleNotes() {
@@ -94,13 +99,12 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     return display;
   }
 
-  ngAfterViewChecked(): void {
-    //This is called in order for the navigation tabs, this.nav, to be set.
-    this.selectDefaultTab()
-  }
-
   onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
+  }
+
+  onContextTabChanged(event: NgbNavChangeEvent) {
+    this.setActiveContextTabId(event.nextId);
   }
 
   private setActiveTabId(id: string) {
@@ -108,9 +112,21 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     this.localStorageService.set(this.lastTabKey, id);
   }
 
+  private setActiveContextTabId(id: string) {
+    this.navContext?.select(id);
+    this.localStorageService.set(this.lastContextTabKey, id);
+  }
+
   private selectDefaultTab() {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
     this.setActiveTabId(defaultActiveTabID == null ? "general" : defaultActiveTabID);
+
+    const defaultActiveContextTabID: string = this.localStorageService.get(this.lastContextTabKey);
+    this.setActiveContextTabId(defaultActiveContextTabID == null ? "contextNotes" : defaultActiveContextTabID);
+  }
+
+  canViewPrivateInfo() {
+    return this.authService.canViewPrivateCandidateInfo(this.candidate);
   }
 
 }

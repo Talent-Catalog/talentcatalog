@@ -1,13 +1,5 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import {getJobExternalHref, Job} from "../../../../model/job";
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {getJobExternalHref, isJob, Job} from "../../../../model/job";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
@@ -24,14 +16,17 @@ import {
   JobPrepItem,
   JobPrepJD,
   JobPrepJobSummary,
+  JobPrepJOI,
   JobPrepSuggestedCandidates,
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {
-  CandidateSourceCandidateService
-} from "../../../../services/candidate-source-candidate.service";
+import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
+import {Opportunity} from "../../../../model/opportunity";
 
+/**
+ * Display details of a job object passed in as an @Input.
+ */
 @Component({
   selector: 'app-view-job',
   templateUrl: './view-job.component.html',
@@ -56,7 +51,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   jobPrepItems: JobPrepItem[] = [
     this.jobPrepJobSummary,
     this.jobPrepJD,
-    //todo temporary comment out: new JobPrepJOI(),
+    new JobPrepJOI(),
     new JobPrepSuggestedSearches(),
     this.jobPrepSuggestedCandidates,
     new JobPrepDueDate(),
@@ -146,6 +141,12 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     this.jobUpdated.emit(job);
   }
 
+  onOppProgressUpdated(opp: Opportunity) {
+    if (isJob(opp)) {
+      this.onJobUpdated(opp)
+    }
+  }
+
   getSalesforceJobLink(sfId: string): string {
     return this.salesforceService.sfOppToLink(sfId);
   }
@@ -199,5 +200,9 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   currentPrepItemIsSummary(): boolean {
     return this.currentPrepItem instanceof JobPrepJobSummary;
+  }
+
+  canAccessSalesforce() {
+    return this.authService.canAccessSalesforce();
   }
 }

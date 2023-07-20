@@ -64,6 +64,7 @@ import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationType;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
@@ -73,6 +74,8 @@ import org.tbbtalent.server.repository.db.CandidateNoteRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.request.job.SearchJobRequest;
+import org.tbbtalent.server.request.job.UpdateJobRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.service.db.CandidateService;
@@ -185,6 +188,18 @@ public class SystemAdminApi {
         this.googleDriveConfig = googleDriveConfig;
         countryForGeneralCountry = getExtraCountryMappings();
     }
+    @GetMapping("close_candidate_ops_for_closed_jobs")
+    public void CloseCandidateOpportunitiesForClosedJobs() {
+        SearchJobRequest request = new SearchJobRequest();
+        request.setSfOppClosed(true);
+        final List<SalesforceJobOpp> jobOpps = jobService.searchJobsUnpaged(request);
+        for (SalesforceJobOpp jobOpp : jobOpps) {
+            UpdateJobRequest updateJobRequest = new UpdateJobRequest();
+            updateJobRequest.setStage(jobOpp.getStage());
+            jobService.updateJob(jobOpp.getId(), updateJobRequest);
+        }
+    }
+
     @GetMapping("load_candidate_ops")
     public void loadCandidateOpportunities() {
         //Get all job opps known to TC

@@ -16,33 +16,10 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.validation.constraints.NotNull;
-
 import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.index.query.SimpleQueryStringBuilder;
+import org.elasticsearch.index.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,68 +40,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.tbbtalent.server.exception.CircularReferencedException;
-import org.tbbtalent.server.exception.CountryRestrictionException;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.ExportFailedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.EducationLevel;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.Language;
-import org.tbbtalent.server.model.db.LanguageLevel;
-import org.tbbtalent.server.model.db.PartnerImpl;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.SavedSearchType;
-import org.tbbtalent.server.model.db.SearchJoin;
-import org.tbbtalent.server.model.db.SearchType;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.es.CandidateEs;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CandidateReviewStatusRepository;
-import org.tbbtalent.server.repository.db.CandidateSpecification;
-import org.tbbtalent.server.repository.db.CountryRepository;
-import org.tbbtalent.server.repository.db.EducationLevelRepository;
-import org.tbbtalent.server.repository.db.EducationMajorRepository;
-import org.tbbtalent.server.repository.db.LanguageLevelRepository;
-import org.tbbtalent.server.repository.db.LanguageRepository;
-import org.tbbtalent.server.repository.db.OccupationRepository;
-import org.tbbtalent.server.repository.db.PartnerRepository;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.SavedSearchRepository;
-import org.tbbtalent.server.repository.db.SavedSearchSpecification;
-import org.tbbtalent.server.repository.db.SearchJoinRepository;
-import org.tbbtalent.server.repository.db.SurveyTypeRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
-import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
-import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
-import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
-import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
-import org.tbbtalent.server.request.search.UpdateSharingRequest;
-import org.tbbtalent.server.request.search.UpdateWatchingRequest;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.CountryService;
-import org.tbbtalent.server.service.db.PartnerService;
-import org.tbbtalent.server.service.db.SalesforceJobOppService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.SavedSearchService;
-import org.tbbtalent.server.service.db.UserService;
+import org.tbbtalent.server.request.search.*;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Service
 public class SavedSearchServiceImpl implements SavedSearchService {
@@ -1360,36 +1295,48 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMinEducationLevel(request.getMinEducationLevel());
             savedSearch.setEducationMajorIds(
                     getListAsString(request.getEducationMajorIds()));
+
+            //Save Boolean filters corresponding to enum name
+            final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
+            if (candidateFilterByOpps == null) {
+                savedSearch.setAnyOpps(null);
+                savedSearch.setClosedOpps(null);
+                savedSearch.setRelocatedOpps(null);
+            } else {
+                savedSearch.setAnyOpps(candidateFilterByOpps.getAnyOpps());
+                savedSearch.setClosedOpps(candidateFilterByOpps.getClosedOpps());
+                savedSearch.setRelocatedOpps(candidateFilterByOpps.getRelocatedOpps());
+            }
         }
     }
 
-    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) throws CountryRestrictionException{
+    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch search) throws CountryRestrictionException{
         User user = userService.getLoggedInUser();
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
-        searchCandidateRequest.setSavedSearchId(request.getId());
-        searchCandidateRequest.setSimpleQueryString(request.getSimpleQueryString());
-        searchCandidateRequest.setKeyword(request.getKeyword());
-        searchCandidateRequest.setStatuses(getStatusListFromString(request.getStatuses()));
-        searchCandidateRequest.setGender(request.getGender());
-        searchCandidateRequest.setOccupationIds(getIdsFromString(request.getOccupationIds()));
-        searchCandidateRequest.setMinYrs(request.getMinYrs());
-        searchCandidateRequest.setMaxYrs(request.getMaxYrs());
-        searchCandidateRequest.setRegoReferrerParam(request.getRegoReferrerParam());
-        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
-        searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
-        searchCandidateRequest.setPartnerIds(getIdsFromString(request.getPartnerIds()));
-        searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
-        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(request.getSurveyTypeIds()));
-        searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
-        searchCandidateRequest.setCountrySearchType(request.getCountrySearchType());
+        searchCandidateRequest.setSavedSearchId(search.getId());
+        searchCandidateRequest.setSimpleQueryString(search.getSimpleQueryString());
+        searchCandidateRequest.setKeyword(search.getKeyword());
+        searchCandidateRequest.setStatuses(getStatusListFromString(search.getStatuses()));
+        searchCandidateRequest.setGender(search.getGender());
+        searchCandidateRequest.setOccupationIds(getIdsFromString(search.getOccupationIds()));
+        searchCandidateRequest.setMinYrs(search.getMinYrs());
+        searchCandidateRequest.setMaxYrs(search.getMaxYrs());
+        searchCandidateRequest.setRegoReferrerParam(search.getRegoReferrerParam());
+        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(search.getVerifiedOccupationIds()));
+        searchCandidateRequest.setVerifiedOccupationSearchType(search.getVerifiedOccupationSearchType());
+        searchCandidateRequest.setPartnerIds(getIdsFromString(search.getPartnerIds()));
+        searchCandidateRequest.setNationalityIds(getIdsFromString(search.getNationalityIds()));
+        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
+        searchCandidateRequest.setNationalitySearchType(search.getNationalitySearchType());
+        searchCandidateRequest.setCountrySearchType(search.getCountrySearchType());
 
         // Check if the saved search countries match the source countries of the user
-        List<Long> requestCountries = getIdsFromString(request.getCountryIds());
+        List<Long> requestCountries = getIdsFromString(search.getCountryIds());
 
         // if a user has source country restrictions AND IF the request has countries selected
         if(user != null
                 && user.getSourceCountries().size() > 0
-                && request.getCountryIds() != null) {
+                && search.getCountryIds() != null) {
             List<Long> sourceCountries = user.getSourceCountries().stream()
                     .map(Country::getId)
                     .collect(Collectors.toList());
@@ -1403,24 +1350,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
         searchCandidateRequest.setCountryIds(requestCountries);
 
-        searchCandidateRequest.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
-        searchCandidateRequest.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
+        searchCandidateRequest.setEnglishMinSpokenLevel(search.getEnglishMinSpokenLevel());
+        searchCandidateRequest.setEnglishMinWrittenLevel(search.getEnglishMinWrittenLevel());
         searchCandidateRequest.setExclusionListId(
-            request.getExclusionList() != null ? request.getExclusionList().getId() : null);
+            search.getExclusionList() != null ? search.getExclusionList().getId() : null);
         searchCandidateRequest.setOtherLanguageId(
-            request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
-        searchCandidateRequest.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
-        searchCandidateRequest.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
-        searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
-        searchCandidateRequest.setLastModifiedTo(request.getLastModifiedTo());
+            search.getOtherLanguage() != null ? search.getOtherLanguage().getId() : null);
+        searchCandidateRequest.setOtherMinSpokenLevel(search.getOtherMinSpokenLevel());
+        searchCandidateRequest.setOtherMinWrittenLevel(search.getOtherMinWrittenLevel());
+        searchCandidateRequest.setLastModifiedFrom(search.getLastModifiedFrom());
+        searchCandidateRequest.setLastModifiedTo(search.getLastModifiedTo());
 //        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
 //        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
-        searchCandidateRequest.setMinAge(request.getMinAge());
-        searchCandidateRequest.setMaxAge(request.getMaxAge());
-        searchCandidateRequest.setMinEducationLevel(request.getMinEducationLevel());
-        searchCandidateRequest.setEducationMajorIds(getIdsFromString(request.getEducationMajorIds()));
+        searchCandidateRequest.setMinAge(search.getMinAge());
+        searchCandidateRequest.setMaxAge(search.getMaxAge());
+        searchCandidateRequest.setMinEducationLevel(search.getMinEducationLevel());
+        searchCandidateRequest.setEducationMajorIds(getIdsFromString(search.getEducationMajorIds()));
+
+        CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(
+            search.getAnyOpps(), search.getClosedOpps(), search.getRelocatedOpps());
+        searchCandidateRequest.setCandidateFilterByOpps(candidateFilterByOpps);
+
         List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
-        for (SearchJoin searchJoin : request.getSearchJoins()) {
+        for (SearchJoin searchJoin : search.getSearchJoins()) {
             searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getChildSavedSearch().getName(), searchJoin.getSearchType()));
         }
         searchCandidateRequest.setSearchJoinRequests(searchJoinRequests);
@@ -1550,20 +1502,21 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (requestedPartners == null || requestedPartners.isEmpty()) {
             Partner partner = userService.getLoggedInPartner();
             if (partner != null) {
-                //Some partners default to seeing candidates from all source partners.
-                final boolean isDefaultSourcePartner = partner instanceof SourcePartner
-                    && ((SourcePartner) partner).isDefaultSourcePartner();
-                //Different default for simple (non operating partners)
-                //and default source partner
-                if ("Partner".equals(partner.getPartnerType())
-                    || "RecruiterPartner".equals(partner.getPartnerType())
-                    || isDefaultSourcePartner) {
-                   List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
-                   List<Long> partnerIds =
-                       sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
-                    request.setPartnerIds(partnerIds);
+                //Non source partners (eg destination partners) and default partners see candidates from all
+                //partners - not just their own partner.
+
+                final boolean isDefaultPartner =
+                        partner.isDefaultSourcePartner() || partner.isDefaultJobCreator();
+
+                //A source partner defaults to just seeing their own candidates - unless they are the default partner
+                if (partner.isSourcePartner() && !isDefaultPartner) {
+                    request.setPartnerIds(List.of(partner.getId()));
                 } else {
-                   request.setPartnerIds(List.of(partner.getId()));
+                    //Every one else defaults to seeing candidates from all partners
+                    List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                    List<Long> partnerIds =
+                            sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
+                    request.setPartnerIds(partnerIds);
                 }
             }
         }

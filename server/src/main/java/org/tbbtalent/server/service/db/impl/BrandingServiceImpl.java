@@ -16,17 +16,18 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.BrandingInfo;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.service.db.BrandingService;
 import org.tbbtalent.server.service.db.PartnerService;
 import org.tbbtalent.server.service.db.UserService;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Implements BrandingService
@@ -34,15 +35,17 @@ import org.tbbtalent.server.service.db.UserService;
  * @author John Cameron
  */
 @Service
+@RequiredArgsConstructor
 public class BrandingServiceImpl implements BrandingService {
     private final PartnerService partnerService;
     private final UserService userService;
 
-    public BrandingServiceImpl(PartnerService partnerService, UserService userService) {
-        this.partnerService = partnerService;
-        this.userService = userService;
-    }
-
+    /**
+     * Returns the branding information for a partner.
+     *
+     * @param partnerAbbreviation Optional partner abbreviation
+     * @return branding info
+     */
     @Override
     @NonNull
     public BrandingInfo getBrandingInfo(@Nullable String partnerAbbreviation) {
@@ -70,8 +73,8 @@ public class BrandingServiceImpl implements BrandingService {
     private @NotNull BrandingInfo extractBrandingInfoFromPartner(@NonNull Partner partner) {
         BrandingInfo info = new BrandingInfo();
         info.setLogo(partner.getLogo());
-        if (partner instanceof SourcePartner) {
-            info.setLandingPage(((SourcePartner)partner).getRegistrationLandingPage());
+        if (partner.isSourcePartner()) {
+            info.setLandingPage(partner.getRegistrationLandingPage());
         }
         info.setPartnerName(partner.getName());
         info.setWebsiteUrl(partner.getWebsiteUrl());

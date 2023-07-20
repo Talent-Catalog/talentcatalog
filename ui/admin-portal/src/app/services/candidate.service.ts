@@ -18,7 +18,7 @@ import {Injectable} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
-  SalesforceOppParams,
+  CandidateOpportunityParams,
   UpdateCandidateListOppsRequest,
   UpdateCandidateOppsRequest,
   UpdateCandidateShareableDocsRequest,
@@ -145,22 +145,22 @@ export class CandidateService implements IntakeService {
   }
 
   createUpdateOppsFromCandidateList(source: CandidateSource,
-                                    salesforceOppParams: SalesforceOppParams): Observable<void> {
+                                    candidateOppParams: CandidateOpportunityParams): Observable<void> {
 
     const request: UpdateCandidateListOppsRequest = {
       savedListId: source.id,
-      salesforceOppParams: salesforceOppParams
+      candidateOppParams: candidateOppParams
     }
     return this.http.put<void>(`${this.apiUrl}/update-opps-by-list`, request);
   }
 
   createUpdateOppsFromCandidates(
-    candidateIds: number[], sfJobOpp: string, salesforceOppParams: SalesforceOppParams): Observable<void> {
+    candidateIds: number[], sfJobOpp: string, candidateOppParams: CandidateOpportunityParams): Observable<void> {
 
     const request: UpdateCandidateOppsRequest = {
       candidateIds: candidateIds,
       sfJobOppId: sfJobOpp,
-      salesforceOppParams: salesforceOppParams
+      candidateOppParams: candidateOppParams
     }
 
     return this.http.put<void>(`${this.apiUrl}/update-opps`, request);
@@ -183,7 +183,15 @@ export class CandidateService implements IntakeService {
 
   // As we are just returning the token as a string (not an object) we have to set the response type to text.
   // See explained here: https://angular.io/guide/http#requesting-non-json-data
-  generateToken(cn: string) {
-    return this.http.get(`${this.apiUrl}/token/${cn}`, {responseType: 'text'});
+  generateToken(cn: string, restrictCandidateOccupations: boolean, candidateOccupationIds: number[]) {
+    return this.http.get(`${this.apiUrl}/token/${cn}`,
+      {
+        params:
+        {
+          restrictCandidateOccupations: restrictCandidateOccupations,
+          candidateOccupationIds: candidateOccupationIds
+        },
+        responseType: 'text'
+      });
   }
 }

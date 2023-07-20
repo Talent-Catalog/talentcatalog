@@ -16,9 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -28,17 +25,8 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.PartnerImpl;
-import org.tbbtalent.server.model.db.PartnerJobRelation;
-import org.tbbtalent.server.model.db.PartnerJobRelationKey;
-import org.tbbtalent.server.model.db.RecruiterPartnerImpl;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.SourcePartnerImpl;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.repository.db.PartnerJobRelationRepository;
 import org.tbbtalent.server.repository.db.PartnerRepository;
 import org.tbbtalent.server.repository.db.PartnerSpecification;
@@ -46,6 +34,10 @@ import org.tbbtalent.server.request.partner.SearchPartnerRequest;
 import org.tbbtalent.server.request.partner.UpdatePartnerRequest;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.PartnerService;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class PartnerServiceImpl implements PartnerService {
@@ -72,61 +64,38 @@ public class PartnerServiceImpl implements PartnerService {
             throw new InvalidRequestException("Missing partner name");
         }
 
-        PartnerImpl partner;
-        final String partnerType = request.getPartnerType();
-        switch (partnerType) {
-            case "SourcePartner":
-                SourcePartnerImpl sourcePartner = new SourcePartnerImpl();
+        PartnerImpl partner = new PartnerImpl();
 
-                Set<Country> sourceCountries = new HashSet<>();
-                Set<Long> sourceCountryIds = request.getSourceCountryIds();
-                if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
-                    //Check that all countries are known - populate set
-                    for (Long sourceCountryId : sourceCountryIds) {
-                        Country country = countryService.getCountry(sourceCountryId);
-                        sourceCountries.add(country);
-                    }
-                }
+        //Populate common attributes
+        populateCommonAttributes(request, partner);
 
-                //Populate common attributes
-                populateCommonAttributes(request, sourcePartner);
+        //Source partner attributes
+        partner.setRegistrationLandingPage(request.getRegistrationLandingPage());
+        partner.setAutoAssignable(request.isAutoAssignable());
 
-                //Source partner attributes
-                sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
-                sourcePartner.setAutoAssignable(request.isAutoAssignable());
-                sourcePartner.setSourceCountries(sourceCountries);
-
-                partner = sourcePartner;
-                break;
-
-            case "RecruiterPartner":
-                RecruiterPartnerImpl recruiterPartner = new RecruiterPartnerImpl();
-
-                populateCommonAttributes(request, recruiterPartner);
-
-                partner = recruiterPartner;
-                break;
-
-            case "Partner":
-                PartnerImpl partnerImpl = new PartnerImpl();
-
-                populateCommonAttributes(request, partnerImpl);
-
-                partner = partnerImpl;
-                break;
-
-            default:
-                throw new InvalidRequestException("Unknown partner type: " + partnerType);
+        //Source countries
+        Set<Country> sourceCountries = new HashSet<>();
+        Set<Long> sourceCountryIds = request.getSourceCountryIds();
+        if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
+            //Check that all countries are known - populate set
+            for (Long sourceCountryId : sourceCountryIds) {
+                Country country = countryService.getCountry(sourceCountryId);
+                sourceCountries.add(country);
+            }
         }
+        partner.setSourceCountries(sourceCountries);
 
         return partnerRepository.save(partner);
     }
 
     private void populateCommonAttributes(UpdatePartnerRequest request, Partner partner) {
+
         partner.setAbbreviation(request.getAbbreviation());
         partner.setDefaultContact(request.getDefaultContact());
+        partner.setJobCreator(request.isJobCreator());
         partner.setLogo(request.getLogo());
         partner.setName(request.getName());
+        partner.setSourcePartner(request.isSourcePartner());
 
         Status status = request.getStatus();
         partner.setStatus(status == null ? Status.active : status);
@@ -160,8 +129,8 @@ public class PartnerServiceImpl implements PartnerService {
 
     @NonNull
     @Override
-    public SourcePartner getDefaultSourcePartner() throws NoSuchObjectException {
-        final SourcePartnerImpl partner = (SourcePartnerImpl) partnerRepository.findByDefaultSourcePartner(true)
+    public Partner getDefaultSourcePartner() throws NoSuchObjectException {
+        final PartnerImpl partner = partnerRepository.findByDefaultSourcePartner(true)
             .orElseThrow(() -> new NoSuchObjectException(Partner.class, "default"));
 
         return partner;
@@ -190,7 +159,7 @@ public class PartnerServiceImpl implements PartnerService {
     @Override
     public List<PartnerImpl> listSourcePartners() {
         SearchPartnerRequest request = new SearchPartnerRequest();
-        request.setPartnerType("SourcePartner");
+        request.setSourcePartner(true);
         request.setStatus(Status.active);
         return search(request);
     }
@@ -221,31 +190,25 @@ public class PartnerServiceImpl implements PartnerService {
 
         Partner partner = getPartner(id);
 
-        if (partner instanceof SourcePartner) {
-            SourcePartner sourcePartner = (SourcePartner) partner;
-
-            Set<Country> sourceCountries = new HashSet<>();
-            Set<Long> sourceCountryIds = request.getSourceCountryIds();
-            if (sourceCountryIds != null) {
-                //Check that all countries are known - populate set
-                for (Long sourceCountryId : sourceCountryIds) {
-                    Country country = countryService.getCountry(sourceCountryId);
-                    sourceCountries.add(country);
-                }
+        Set<Country> sourceCountries = new HashSet<>();
+        Set<Long> sourceCountryIds = request.getSourceCountryIds();
+        if (sourceCountryIds != null) {
+            //Check that all countries are known - populate set
+            for (Long sourceCountryId : sourceCountryIds) {
+                Country country = countryService.getCountry(sourceCountryId);
+                sourceCountries.add(country);
             }
-
-            //Populate common attributes
-            populateCommonAttributes(request, sourcePartner);
-
-            //Source partner attributes
-            sourcePartner.setNotificationEmail(request.getNotificationEmail());
-            sourcePartner.setDefaultPartnerRef(request.isDefaultPartnerRef());
-            sourcePartner.setRegistrationLandingPage(request.getRegistrationLandingPage());
-            sourcePartner.setAutoAssignable(request.isAutoAssignable());
-            sourcePartner.setSourceCountries(sourceCountries);
-        } else {
-            populateCommonAttributes(request, partner);
         }
+
+        //Populate common attributes
+        populateCommonAttributes(request, partner);
+
+        //Source partner attributes
+        partner.setNotificationEmail(request.getNotificationEmail());
+        partner.setDefaultPartnerRef(request.isDefaultPartnerRef());
+        partner.setRegistrationLandingPage(request.getRegistrationLandingPage());
+        partner.setAutoAssignable(request.isAutoAssignable());
+        partner.setSourceCountries(sourceCountries);
 
         return partnerRepository.save((PartnerImpl) partner);
     }

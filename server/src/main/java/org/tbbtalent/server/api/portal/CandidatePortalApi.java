@@ -449,13 +449,17 @@ public class CandidatePortalApi {
     private DtoBuilder candidateOpportunityDto() {
         return new DtoBuilder()
             .add("id")
+            .add("closed")
             .add("closingCommentsForCandidate")
             .add("jobOpp", jobDto())
-            .add("lastModifiedDate")
             .add("name")
             .add("nextStep")
             .add("nextStepDueDate")
             .add("stage")
+            .add("createdBy", userDto())
+            .add("createdDate")
+            .add("updatedBy", userDto())
+            .add("updatedDate")
             ;
     }
 

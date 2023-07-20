@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {User} from './user';
+import {ShortUser, User} from './user';
 import {Country} from './country';
 import {CandidateReviewStatusItem} from './candidate-review-status-item';
 import {EducationMajor} from './education-major';
@@ -29,6 +29,13 @@ import {HasId} from "./base";
 import {CandidateAttachment} from "./candidate-attachment";
 import {TaskAssignment} from "./task-assignment";
 import {CandidateOpportunity} from "./candidate-opportunity";
+import {OpportunityProgressParams} from "./opportunity";
+import {ShortJob} from "./job";
+
+export interface ShortCandidate {
+  candidateNumber: string;
+  user: ShortUser;
+}
 
 export interface Candidate extends HasId {
   id: number;
@@ -299,11 +306,14 @@ export interface CandidateVisa {
   updatedBy?: User;
   updatedDate?: number;
   visaEligibilityAssessment?: YesNo;
+  pathwayAssessment?: YesNo;
+  pathwayAssessmentNotes?: string;
   candidateVisaJobChecks?: CandidateVisaJobCheck[];
 
 }
 
 export interface CandidateVisaJobCheck {
+  jobOpp: ShortJob;
   id?: number;
   name?: string;
   sfJobLink?: string;
@@ -357,23 +367,36 @@ export enum CandidateStatus {
   withdrawn = "withdrawn (inactive)"
 }
 
-export interface SalesforceOppParams {
-  stage?: string;
-  nextStep?: string;
-  nextStepDueDate?: string;
+export enum CandidateFilterByOpps {
+  someOpps = "Some cases",
+
+  noOpps = "No cases",
+
+  openOpps = "Some open cases",
+
+  closedOpps = "Some closed cases",
+
+  preRelocationOpps = "Some cases not yet at relocated stage - ie 'live' cases",
+
+  postRelocationOpps = "Some cases at the relocated or later stage"
+
+}
+
+export interface CandidateOpportunityParams extends OpportunityProgressParams {
   closingComments?: string;
+  closingCommentsForCandidate?: string;
   employerFeedback?: string;
 }
 
 export interface UpdateCandidateOppsRequest {
   candidateIds: number[];
   sfJobOppId: string;
-  salesforceOppParams?: SalesforceOppParams;
+  candidateOppParams?: CandidateOpportunityParams;
 }
 
 export interface UpdateCandidateListOppsRequest {
   savedListId: number;
-  salesforceOppParams?: SalesforceOppParams;
+  candidateOppParams?: CandidateOpportunityParams;
 }
 
 export interface UpdateCandidateShareableNotesRequest {
