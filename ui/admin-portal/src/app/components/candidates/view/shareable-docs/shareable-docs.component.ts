@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {AutoSaveComponentBase} from "../../../util/autosave/AutoSaveComponentBase";
 import {Candidate, UpdateCandidateShareableDocsRequest} from "../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
@@ -17,6 +17,8 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
 
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
+
+  @Output() updatedShareableCV = new EventEmitter<CandidateAttachment>();
 
   cvs: CandidateAttachment[];
   other: CandidateAttachment[];
@@ -73,6 +75,7 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
       } else {
         this.candidate.listShareableDoc = null;
       }
+      this.updatedShareableCV.emit(this.candidate.listShareableCv);
     }
 
   }

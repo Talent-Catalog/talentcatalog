@@ -16,11 +16,12 @@
 
 package org.tbbtalent.server.model.db.partner;
 
-import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Country;
+
+import java.util.Set;
 
 /**
  * A source partner works with displaced talent candidate users, encouraging them to register with
@@ -37,7 +38,7 @@ import org.tbbtalent.server.model.db.Country;
  *
  * @author John Cameron
  */
-public interface SourcePartner extends Partner {
+public interface SourcePartner {
 
     /**
      * If true, candidates managed by this partner will use {@link Candidate#getCandidateNumber()}
@@ -85,14 +86,4 @@ public interface SourcePartner extends Partner {
      */
     boolean isAutoAssignable();
     void setAutoAssignable(boolean b);
-
-    /**
-     * True if this partner is the default source partner - associated with candidates who are
-     * not clearly associated with any other source partner.
-     * <p/>
-     * Only one source partner at any given time can be the default.
-     * @return True if this is the default source partner
-     */
-    boolean isDefaultSourcePartner();
-    void setDefaultSourcePartner(boolean b);
 }

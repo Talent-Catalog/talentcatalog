@@ -110,7 +110,7 @@
 
   </ng-container>
 
-  <ng-container *ngIf="operatingPartnerSourcePartnerAdminOrGreater()">
+  <ng-container *ngIf="canSeeExternalLinksAndTasks()">
     <!-- External Links -->
     <ng-container ngbNavItem="links">
       <a ngbNavLink>External Links</a>

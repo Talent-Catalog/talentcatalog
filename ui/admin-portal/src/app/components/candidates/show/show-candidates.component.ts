@@ -34,8 +34,11 @@ import {
 } from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
+import {NgbModal, NgbOffcanvas, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
+import {
+  CreateFromDefaultSavedSearchRequest,
+  SavedSearchService
+} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
@@ -85,7 +88,9 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
+import {
+  CandidateSourceCandidateService
+} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {
   EditCandidateReviewStatusItemComponent
@@ -104,7 +109,9 @@ import {
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
-import {EditCandidateOppComponent} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
+import {
+  EditCandidateOppComponent
+} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {
@@ -188,6 +195,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   public filterSearch: boolean = false;
 
+  sideProfile: NgbOffcanvasRef;
+
   constructor(private http: HttpClient,
               private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -205,7 +214,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private candidateFieldService: CandidateFieldService,
               private authService: AuthService,
               private publishedDocColumnService: PublishedDocColumnService,
-              public salesforceService: SalesforceService
+              public salesforceService: SalesforceService,
+              private offcanvasService: NgbOffcanvas
 
   ) {}
 

@@ -16,25 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -44,21 +25,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.exception.UnauthorisedActionException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateOpportunity;
-import org.tbbtalent.server.model.db.CandidateOpportunityStage;
-import org.tbbtalent.server.model.db.JobOppIntake;
-import org.tbbtalent.server.model.db.JobOpportunityStage;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.SavedSearchType;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
@@ -72,21 +40,24 @@ import org.tbbtalent.server.request.link.UpdateLinkRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.CandidateOpportunityService;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.FileSystemService;
-import org.tbbtalent.server.service.db.JobOppIntakeService;
-import org.tbbtalent.server.service.db.JobService;
-import org.tbbtalent.server.service.db.SalesforceBridgeService;
-import org.tbbtalent.server.service.db.SalesforceJobOppService;
-import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.SavedSearchService;
-import org.tbbtalent.server.service.db.UserService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.util.SalesforceHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Service
 public class JobServiceImpl implements JobService {
@@ -228,6 +199,12 @@ public class JobServiceImpl implements JobService {
         throws EntityExistsException, SalesforceException {
         User loggedInUser = getLoggedInUser("create job");
 
+        //The partner associated with the person who created the job is the job creator
+        final PartnerImpl loggedInUserPartner = loggedInUser.getPartner();
+        if (!loggedInUserPartner.isJobCreator()) {
+            throw new UnauthorisedActionException("create job");
+        }
+
         //Check if we already have a job for this Salesforce job opp.
         final String sfJoblink = request.getSfJoblink();
         String sfId = SalesforceHelper.extractIdFromSfUrl(sfJoblink);
@@ -241,6 +218,8 @@ public class JobServiceImpl implements JobService {
         if (job == null) {
             throw new InvalidRequestException("No such Salesforce opportunity: " + sfJoblink);
         }
+
+        updateJobFromRequest(job, request);
 
         job.setAuditFields(loggedInUser);
 
@@ -257,13 +236,16 @@ public class JobServiceImpl implements JobService {
         SavedList exclusionList = salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
         job.setExclusionList(exclusionList);
 
+        job.setJobCreator(loggedInUserPartner);
+
         return salesforceJobOppRepository.save(job);
     }
 
     private User getLoggedInUser(String operation) {
-        User loggedInUser = authService.getLoggedInUser().orElseThrow(
-            () -> new UnauthorisedActionException(operation)
-        );
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new UnauthorisedActionException(operation);
+        }
         return loggedInUser;
     }
 
@@ -464,12 +446,7 @@ public class JobServiceImpl implements JobService {
         }
     }
 
-    @NonNull
-    @Override
-    public SalesforceJobOpp updateJob(long id, UpdateJobRequest request)
-        throws NoSuchObjectException, SalesforceException {
-        User loggedInUser = getLoggedInUser("update job");
-        SalesforceJobOpp job = getJob(id);
+    private void updateJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
         final JobOpportunityStage stage = request.getStage();
         if (stage != null) {
             job.setStage(stage);
@@ -490,10 +467,32 @@ public class JobServiceImpl implements JobService {
             job.setNextStepDueDate(nextStepDueDate);
         }
 
+        final Long contactUserId = request.getContactUserId();
+        if (contactUserId != null) {
+            User contactUser = userService.getUser(contactUserId);
+            job.setContactUser(contactUser);
+        }
+
+        final LocalDate submissionDueDate = request.getSubmissionDueDate();
+        if (submissionDueDate != null) {
+            job.setSubmissionDueDate(submissionDueDate);
+        }
+    }
+
+    @NonNull
+    @Override
+    public SalesforceJobOpp updateJob(long id, UpdateJobRequest request)
+        throws NoSuchObjectException, SalesforceException {
+        User loggedInUser = getLoggedInUser("update job");
+        SalesforceJobOpp job = getJob(id);
+
+        final JobOpportunityStage stage = request.getStage();
+        final String nextStep = request.getNextStep();
+        final LocalDate nextStepDueDate = request.getNextStepDueDate();
         salesforceService.updateEmployerOpportunityStage(
             job.getSfId(), stage, nextStep, nextStepDueDate);
 
-        job.setSubmissionDueDate(request.getSubmissionDueDate());
+        updateJobFromRequest(job, request);
         job.setAuditFields(loggedInUser);
         return salesforceJobOppRepository.save(job);
     }

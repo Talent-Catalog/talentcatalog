@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,17 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db.partner;
+alter table partner add column source_partner boolean default false not null;
+alter table partner add column job_creator boolean default false not null;
 
-/**
- * This is a partner, typically located in a destination, who helps employers in that destination
- * recruit candidates. In other words, and employment agency working with us.
- * <p/>
- * Sometimes employers can connect directly to us. See {@link EmployerPartner}.
- * However some employers prefer to outsource that process to RecruiterPartners.
- *
- * @author John Cameron
- */
-public interface RecruiterPartner extends JobCreator {
+update partner set source_partner = true where partner_type = 'SourcePartner';
 
-}
+update partner set source_partner = true where default_source_partner = true;
+update partner set job_creator = true where default_destination_partner = true;
+

@@ -21,27 +21,20 @@ import {User} from "./user";
 
   - Avoid duplicating lists of attributes by using inheritance (ie extends).
   - Link update request to partner attributes (ie don't duplicate attributes)
-  - Map Java enums to strings.
 */
-
-export enum PartnerType {
-  Partner = "Partner",
-  RecruiterPartner = "RecruiterPartner",
-  SourcePartner = "SourcePartner"
-}
-
 
 export interface PartnerSimpleAttributes {
   abbreviation: string;
   autoAssignable: boolean;
   defaultPartnerRef: boolean;
   jobContact?: User;
+  jobCreator: boolean;
   logo: string;
   name: string;
   notificationEmail: string;
-  partnerType: string;
   registrationLandingPage: string;
   sflink: string;
+  sourcePartner: boolean;
 
   //Note that status is a Java Status enum on the server, but it maps to the string value of
   //enum by the JSON processing (Javascript does not know about enums).
@@ -62,6 +55,7 @@ export interface ShortPartner {
 export interface Partner extends PartnerSimpleAttributes {
   id: number;
   defaultContact?: User;
+  defaultJobCreator: boolean;
   defaultSourcePartner: boolean;
   sourceCountries: Country[];
 }

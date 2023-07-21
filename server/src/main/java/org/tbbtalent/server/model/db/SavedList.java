@@ -202,7 +202,7 @@ public class SavedList extends AbstractCandidateSource {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedLists", cascade = CascadeType.MERGE)
     private Set<User> users = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedList", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedList", cascade = CascadeType.ALL)
     @OrderBy("index ASC")
     private List<ExportColumn> exportColumns;
 

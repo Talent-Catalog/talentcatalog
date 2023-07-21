@@ -13,71 +13,73 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-
 <div class="candidate-card" *ngIf="!!candidate">
   <div class="content">
+  <button (click)="close()" type="button" class="btn-close text-reset float-end ms-4" aria-label="Close"></button>
 
     <div class="list-specific">
-
-      <div class="candidate-header" *ngIf="isList">
-        <h5>List Specific</h5>
-        <button (click)="toggleAttachments()" id="bt" class="btn btn-sm btn-secondary-light">
-          Shareable Docs
-          <i *ngIf="!showAttachments" class="fas fa-eye"></i>
-          <i *ngIf="showAttachments" class="fas fa-eye-slash"></i>
-        </button>
+      <div class="candidate-header" >
+        <h5 *ngIf="isList">List Specific</h5>
+        <h5  *ngIf="isContextNoteDisplayed() && !isList">Search Specific</h5>
       </div>
 
-      <div class="candidate-header" *ngIf="isContextNoteDisplayed() && !isList">
-        <h5>Search Specific</h5>
-      </div>
+      <nav ngbNav #navContext="ngbNav" class="nav-tabs" [activeId]="activeContextTabId" (navChange)="onContextTabChanged($event)">
+        <!-- todo save the tab in localhost-->
 
-      <ng-container *ngIf="isContextNoteDisplayed()">
-        <app-candidate-context-note
-          [candidate]="candidate"
-          [candidateSource]="candidateSource">
-        </app-candidate-context-note>
-      </ng-container>
+        <!-- CONTEXT NOTES -->
+        <ng-container ngbNavItem="contextNotes">
+          <a ngbNavLink>Context Notes</a>
+          <ng-template ngbNavContent>
+            <app-candidate-context-note
+              [candidate]="candidate"
+              [candidateSource]="candidateSource">
+            </app-candidate-context-note>
+          </ng-template>
+        </ng-container>
 
-      <ng-container *ngIf="showAttachments">
-        <div>
-          <app-shareable-docs
-            [candidate]="candidate"
-            [candidateSource]="candidateSource"
-          >
-          </app-shareable-docs>
-        </div>
-      </ng-container>
+        <!-- SHAREABLE DOCS -->
+        <ng-container ngbNavItem="docs">
+          <a ngbNavLink>Shareable Docs</a>
+          <ng-template ngbNavContent>
+            <app-shareable-docs
+              [candidate]="candidate"
+              [candidateSource]="candidateSource">
+            </app-shareable-docs>
+          </ng-template>
+        </ng-container>
 
+        <!-- PREVIEW CV -->
+        <ng-container ngbNavItem="cv">
+          <a ngbNavLink>Preview CV</a>
+          <ng-template ngbNavContent>
+            <app-cv-preview
+              [candidate]="candidate">
+            </app-cv-preview>
+          </ng-template>
+        </ng-container>
+      </nav>
+      <div [ngbNavOutlet]="navContext" class="mt-2"></div>
     </div>
 
-    <hr *ngIf="isContextNoteDisplayed()">
+    <hr *ngIf="isContextNoteDisplayed()" class="my-4">
 
 
     <!-- HEADER -->
-    <div class="candidate-header">
-
-      <h4>{{candidate.candidateNumber}} <small>{{candidate.status | titlecase}}</small></h4>
-
-      <div class="btn-toolbar">
-        <button class="btn btn-sm btn-outline-primary" [routerLink]="['/candidate', candidate.candidateNumber]" title="Open">
-          <i class="fas fa-external-link-square-alt"></i></button>
-        <button class="btn btn-sm btn-secondary" (click)="close()">x</button>
-      </div>
-
+    <div class="candidate-header mt-3">
+      <h3>{{candidate.user?.firstName}} {{candidate.user?.lastName}}
+        <span class="small text-muted me-2">
+          {{candidate.candidateNumber}} - {{candidate.status | titlecase}}
+        </span>
+        <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+          <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
+        </a>
+      </h3>
+      <button (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-secondary-light me-5">
+        General Notes
+        <i *ngIf="!showNotes" class="fas fa-eye"></i>
+        <i *ngIf="showNotes" class="fas fa-eye-slash"></i>
+      </button>
     </div>
-
-    <div class="candidate-header">
-      <!-- NAME -->
-      <h5>{{candidate.user?.firstName}} {{candidate.user?.lastName}}</h5>
-
-        <button (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-secondary-light">
-          General Notes
-          <i *ngIf="!showNotes" class="fas fa-eye"></i>
-          <i *ngIf="showNotes" class="fas fa-eye-slash"></i>
-        </button>
-    </div>
-
 
     <!-- AUTO UPDATING SHAREABLE NOTES -->
     <ng-container *ngIf="showNotes">
@@ -119,6 +121,18 @@
             [candidate]="candidate"
             [editable]="false">
           </app-candidate-education-tab>
+        </ng-template>
+      </ng-container>
+
+      <!-- ADDITIONAL INFO -->
+      <ng-container ngbNavItem="additional">
+        <a ngbNavLink>Additional Info</a>
+        <ng-template ngbNavContent>
+          <app-candidate-additional-info-tab
+            [candidate]="candidate"
+            [editable]="false"
+            [canViewPrivateInfo]="canViewPrivateInfo()">
+          </app-candidate-additional-info-tab>
         </ng-template>
       </ng-container>
 

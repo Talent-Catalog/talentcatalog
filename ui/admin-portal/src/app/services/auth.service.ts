@@ -26,7 +26,6 @@ import {Role, User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {EncodedQrImage} from "../util/qr";
 import {Candidate, ShortCandidate} from "../model/candidate";
-import {PartnerType} from "../model/partner";
 import {Job, ShortJob} from "../model/job";
 import {CandidateOpportunity} from "../model/candidate-opportunity";
 
@@ -91,14 +90,7 @@ export class AuthService {
   }
 
   canCreateJob() : boolean {
-    let result: boolean = false;
-
-    let partnerType = this.getPartnerType();
-    if (partnerType != null && partnerType != PartnerType.Partner) {
-      result = this.isDefaultSourcePartner() || partnerType == PartnerType.RecruiterPartner;
-    }
-
-    return result;
+    return this.isJobCreator();
   }
 
   canViewCandidateCountry(): boolean {
@@ -119,8 +111,7 @@ export class AuthService {
   canViewCandidateCV(): boolean {
     let result: boolean = false;
 
-    let partnerType = this.getPartnerType();
-    if (partnerType != null && partnerType != PartnerType.Partner) {
+    if (this.isJobCreator() || this.isSourcePartner()) {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
@@ -136,8 +127,7 @@ export class AuthService {
    */
   canViewCandidateName(): boolean {
     let result: boolean = false;
-    let partnerType = this.getPartnerType();
-    if (partnerType != null && partnerType != PartnerType.Partner) {
+    if (this.isSourcePartner() || this.isJobCreator()) {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
@@ -161,7 +151,7 @@ export class AuthService {
   isJobOurs(job: ShortJob): boolean {
 
     //For now all jobs belong to just the default partner.
-    return this.isDefaultDestinationPartner();
+    return this.isDefaultJobCreator();
 
     //todo Eventually when we have proper recruiter partner support, the code will look like this:
     /*
@@ -186,15 +176,13 @@ export class AuthService {
     //Must be logged in
     if (loggedInUser) {
 
-      //Must have more than a basic Partner type.
-      let partnerType = this.getPartnerType();
-      if (partnerType != null && partnerType != PartnerType.Partner) {
+      if (this.isJobCreator() || this.isSourcePartner()) {
 
         //Must have some kind of admin role
         const role = this.getLoggedInRole();
         if (role !== Role.limited && role !== Role.semilimited) {
-          if (this.isDefaultSourcePartner()) {
-            //Default source partners with admin roles can see all candidate info
+          if (this.isDefaultPartner()) {
+            //Default partners with admin roles can see all candidate info
             visible = true;
           } else {
             //Can only see private candidate info if the candidate is assigned to the user's partner
@@ -217,19 +205,12 @@ export class AuthService {
     const loggedInUser = this.getLoggedInUser()
     //Must be logged in
     if (loggedInUser) {
-
-      //Only certain partner types
-      let partnerType = this.getPartnerType();
-      if (partnerType != null) {
-        if (this.isDefaultSourcePartner()) {
-          //Default source partners can
-          ok = true;
-        } else {
-          switch (partnerType) {
-            case PartnerType.SourcePartner:
-            case PartnerType.RecruiterPartner:
-              ok = true;
-          }
+      if (this.isDefaultSourcePartner()) {
+        //Default source partners can
+        ok = true;
+      } else {
+        if (this.isSourcePartner() || this.isJobCreator()) {
+            ok = true;
         }
       }
     }
@@ -315,9 +296,14 @@ export class AuthService {
     return this.loggedInUser;
   }
 
-  getPartnerType(): string {
+  isJobCreator(): boolean {
     const loggedInUser = this.getLoggedInUser();
-    return loggedInUser == null ? null : loggedInUser.partner?.partnerType;
+    return loggedInUser == null ? false : loggedInUser.partner?.jobCreator;
+  }
+
+  isSourcePartner(): boolean {
+    const loggedInUser = this.getLoggedInUser();
+    return loggedInUser == null ? false : loggedInUser.partner?.sourcePartner;
   }
 
   setNewLoggedInUser(new_user) {
@@ -398,9 +384,13 @@ export class AuthService {
   /**
    * True if a user is logged in and they are associated with the default destination partner.
    */
-  isDefaultDestinationPartner(): boolean {
-    //Currently default source and destination partners are the same.
-    return this.isDefaultSourcePartner();
+  isDefaultJobCreator(): boolean {
+    let defaultJobCreator = false;
+    const loggedInUser = this.getLoggedInUser();
+    if (loggedInUser) {
+      defaultJobCreator = loggedInUser.partner?.defaultJobCreator;
+    }
+    return defaultJobCreator;
   }
 
   /**
@@ -415,6 +405,10 @@ export class AuthService {
     return defaultSourcePartner;
   }
 
+  isDefaultPartner(): boolean {
+    return this.isDefaultSourcePartner() || this.isDefaultJobCreator();
+  }
+
   /**
    * True is a user is logged in and they are solely responsible for certain candidate opportunities.
    * <p/>
@@ -426,10 +420,7 @@ export class AuthService {
 
     const loggedInUser = this.getLoggedInUser();
     if (loggedInUser) {
-      let partnerType = this.getPartnerType();
-      if (partnerType != null) {
-        result = this.isDefaultSourcePartner() || partnerType == PartnerType.SourcePartner;
-      }
+      result = this.isDefaultSourcePartner() || this.isSourcePartner();
     }
 
     return result;

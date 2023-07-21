@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
-import {User} from "../../../../../model/user";
+import {AuthService} from "../../../../../services/auth.service";
 
 @Component({
   selector: 'app-candidate-additional-info-tab',
@@ -28,11 +28,9 @@ export class CandidateAdditionalInfoTabComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() editable: boolean = false;
   @Input() canViewPrivateInfo: boolean = false;
-  @Input() adminUser: boolean;
-  @Input() loggedInUser: User;
   @Output() candidateChanged = new EventEmitter();
 
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
   }
