@@ -434,7 +434,7 @@ export class AuthService {
     let result: boolean = false;
 
     //Can only change stage of jobs that have been published
-    if (job.publishedBy != null) {
+    if (job.publishedDate != null) {
       //Current logic is that only a system admin or the contact user, defaulting to the creating user
       //of the job, can change the stage.
       const loggedInUser = this.getLoggedInUser();
