@@ -5,6 +5,7 @@ import {EnumOption, enumOptions} from "../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
 import {isJob, JobOpportunityStage} from "../../../model/job";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-edit-opp',
@@ -22,6 +23,7 @@ export class EditOppComponent implements OnInit {
 
   constructor(
     private activeModal: NgbActiveModal,
+    private authService: AuthService,
     private fb: FormBuilder) { }
 
   ngOnInit(): void {
@@ -65,7 +67,7 @@ export class EditOppComponent implements OnInit {
     this.activeModal.close(info)
   }
 
-  isOnlyChild(this): boolean {
+  showCopyToParentOption(): boolean {
     return this.authService.isOnlyChild(this.opp);
   }
 
