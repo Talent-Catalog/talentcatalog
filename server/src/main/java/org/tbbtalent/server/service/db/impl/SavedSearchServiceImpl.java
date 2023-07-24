@@ -19,6 +19,7 @@ package org.tbbtalent.server.service.db.impl;
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
 import org.elasticsearch.index.query.*;
+import org.apache.lucene.search.join.ScoreMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -902,6 +903,37 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 addElasticRangeFilter(boolQueryBuilder,
                     "minEnglishWrittenLevel",
                     minWrittenLevel, null);
+        }
+
+        //Other languages
+        Long otherLanguageId = request.getOtherLanguageId();
+        if (otherLanguageId != null) {
+            Optional<Language> otherLanguage = languageRepository.findById(request.getOtherLanguageId());
+            if (otherLanguage.isPresent()) {
+
+                BoolQueryBuilder nestedQueryBuilder = QueryBuilders.boolQuery().must(
+                        QueryBuilders.termQuery("otherLanguages.name.keyword", otherLanguage.get().getName()));
+
+                Integer minOtherSpokenLevel = request.getOtherMinSpokenLevel();
+                if (minOtherSpokenLevel != null) {
+                    nestedQueryBuilder =
+                            addElasticRangeFilter(nestedQueryBuilder,
+                                    "otherLanguages.minSpokenLevel",
+                                    minOtherSpokenLevel, null);
+                }
+
+                Integer minOtherWrittenLevel = request.getOtherMinWrittenLevel();
+                if (minOtherWrittenLevel != null) {
+                    nestedQueryBuilder =
+                            addElasticRangeFilter(nestedQueryBuilder,
+                                    "otherLanguages.minWrittenLevel",
+                                    minOtherWrittenLevel, null);
+                }
+
+                boolQueryBuilder = boolQueryBuilder.filter(
+                        QueryBuilders.nestedQuery("otherLanguages", nestedQueryBuilder, ScoreMode.Avg));
+            }
+
         }
 
         //Exclude given candidates
