@@ -67,8 +67,11 @@ export class EditOppComponent implements OnInit {
     this.activeModal.close(info)
   }
 
-  showCopyToParentOption(): boolean {
-    return this.authService.isOnlyChild(this.opp);
+  /**
+   * Checks whether this is a candidate opportunity and if so whether it is the only remaining child of its parent job opportunity — if both are true, the 'Update Opportunity Progress' form will show an option to update the parent with the same 'next step' info. Introduced to reduce unnecessary user work and encourage clean data.
+   */
+  showCopyToParentJobOption(): boolean {
+    return isCandidateOpportunity(this.opp) && this.authService.isOnlyChild(this.opp);
   }
 
 }
