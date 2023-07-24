@@ -65,4 +65,8 @@ export class EditOppComponent implements OnInit {
     this.activeModal.close(info)
   }
 
+  isOnlyChild(this): boolean {
+    return this.authService.isOnlyChild(this.opp);
+  }
+
 }

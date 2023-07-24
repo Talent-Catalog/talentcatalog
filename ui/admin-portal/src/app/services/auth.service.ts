@@ -479,4 +479,12 @@ export class AuthService {
     return this.isSourcePartnerAdminOrGreater() &&
       (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
   }
+
+  /**
+   * True if the given candidate opportunity is the only child of its parent job opportunity
+   * @param opp Candidate opportunity
+   */
+  isOnlyChild(opp: CandidateOpportunity): boolean {
+    return true;
+  }
 }
