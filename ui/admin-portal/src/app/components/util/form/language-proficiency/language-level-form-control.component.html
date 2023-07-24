@@ -19,7 +19,7 @@
 <div class="position-relative">
 
   <div class="form-control language-label" [ngClass]="disabledClasses" (click)="toggle()">
-      <span class="placeholder-text" *ngIf="!renderLevel()">Select</span>
+      <span class="placeholder-text" *ngIf="!renderLevel()">Choose the language proficiency</span>
       <span class="input-text">{{renderLevel()}}</span>
       <span class="fas fa-caret-down"></span>
   </div>
@@ -29,53 +29,53 @@
     <!-- LANGUAGE -->
     <div class="mb-3" [hidden]="languageDisabled">
       <label class="form-label">Language</label>
-      <ng-select [formControlName]="'languageId'" [items]="languages" [clearOnBackspace]="false"
+      <ng-select [formControlName]="'languageId'" [items]="languages" [clearOnBackspace]="false" (clear)="clearProficiencies()" [ngClass]="{'is-invalid' : form.hasError('disableLevels')}"
                  [clearable]="true" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
+      <div *ngIf="form.hasError('languageLevelRequired')" class="small alert alert-danger">
+        You must select at least one proficiency level.
+      </div>
     </div>
-    <div *ngIf="!languageDisabled && form.value.languageId != null">
+
+    <div>
+
       <!-- SPOKEN LEVEL -->
       <div class="mb-3">
-        <label class="form-label">Spoken Level</label>
-        <div *ngFor="let level of languageLevels">
-          <div class="form-check">
-            <input [id]="level.name" class="form-check-input" type="radio" required
-                   [formControlName]="'spokenLevel'" [value]="level.level">
-            <label [for]="level.name" class="form-check-label fw-light" >
-              {{level.name}}
-            </label>
-            <div class="invalid-feedback">
-              You must select a proficiency level.
+        <fieldset [disabled]="form.hasError('disableLevels')">
+          <label class="form-label">Minimum Spoken Level</label>
+          <div class="float-end">
+            <button class="btn btn-sm btn-secondary" (click)="clearSpoken()">Clear</button>
+          </div>
+          <div *ngFor="let level of languageLevels">
+            <div class="form-check">
+              <input [id]="level.name" class="form-check-input" type="radio"
+                     [formControlName]="'spokenLevel'" [value]="level.level">
+              <label [for]="level.name" class="form-check-label fw-light" >
+                {{level.name}}
+              </label>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="text-end">
-        <button class="btn btn-link" (click)="clearSpoken()">Clear</button>
+        </fieldset>
       </div>
 
       <!-- WRITTEN LEVEL -->
       <div class="mb-3">
-        <label class="form-label">Written Level</label>
-        <div *ngFor="let level of languageLevels">
-          <div class="form-check">
-            <input [id]="level.name" class="form-check-input" type="radio" required
-                   [formControlName]="'writtenLevel'" [value]="level.level">
-            <label [for]="level.name" class="form-check-label fw-light">
-              {{level.name}}
-            </label>
-            <div class="invalid-feedback">
-              You must select a proficiency level.
+        <fieldset [disabled]="form.hasError('disableLevels')">
+          <label class="form-label">Minimum Written Level</label>
+          <div class="float-end">
+            <button class="btn btn-sm btn-secondary" (click)="clearWritten()">Clear</button>
+          </div>
+          <div *ngFor="let level of languageLevels">
+            <div class="form-check">
+              <input [id]="level.name" class="form-check-input" type="radio" required
+                     [formControlName]="'writtenLevel'" [value]="level.level">
+              <label [for]="level.name" class="form-check-label fw-light">
+                {{level.name}}
+              </label>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="text-end">
-        <button class="btn btn-link" (click)="clearWritten()">Clear</button>
+        </fieldset>
       </div>
     </div>
-
 
   </form>
 
