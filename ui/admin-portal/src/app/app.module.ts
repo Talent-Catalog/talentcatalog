@@ -713,6 +713,7 @@ import {
   CandidateVisaJobComponent
 } from './components/candidates/view/tab/candidate-visa-tab/job/candidate-visa-job.component';
 import {CvPreviewComponent} from './components/util/cv-preview/cv-preview.component';
+import {DirectiveModule} from "./directives/directive.module";
 
 @NgModule({
   declarations: [
@@ -1012,6 +1013,7 @@ import {CvPreviewComponent} from './components/util/cv-preview/cv-preview.compon
     ChartsModule,
     NgxWigModule,
     NgSelectModule,
+    DirectiveModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'
