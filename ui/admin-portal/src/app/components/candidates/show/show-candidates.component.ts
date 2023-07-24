@@ -987,16 +987,20 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Selected becomes unselected and vice versa.
    * <p/>
-   * Note that this only works for saved lists. Html should prevent
-   * this from being called - but if it is, it will do nothing.
+   * Note that this only works for saved lists.
+   * If it is called on a saved search it will do nothing.
    */
   swapSelection() {
     if (isSavedList(this.candidateSource)) {
 
       //First of all, get all candidates in this list from the server.
+      let request = new SavedListGetRequest();
+      request.keyword = this.keyword;
+      request.showClosedOpps = this.showClosedOpps;
+
       this.searching = true;
       this.error = null;
-      this.candidateSourceCandidateService.list(this.candidateSource).subscribe(
+      this.candidateSourceCandidateService.search(this.candidateSource, request).subscribe(
         (candidates: Candidate[]) => {
           //Now do the actual swap
           this.doSwapSelection(candidates)
