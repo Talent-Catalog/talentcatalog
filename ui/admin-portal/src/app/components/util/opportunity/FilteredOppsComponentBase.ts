@@ -295,7 +295,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private subscribeToFilterChanges() {
     this.searchForm.valueChanges
     .pipe(
-      debounceTime(400),
+      debounceTime(1000),
       distinctUntilChanged()
     )
     .subscribe(() => {
