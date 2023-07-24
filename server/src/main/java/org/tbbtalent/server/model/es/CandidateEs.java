@@ -113,7 +113,6 @@ public class CandidateEs {
     @Field(type = FieldType.Text)
     private List<String> cvs;
 
-    @Field(type = FieldType.Text)
     private List<String> educations;
 
     @Enumerated(EnumType.STRING)
@@ -172,7 +171,6 @@ public class CandidateEs {
 
     private String partner;
 
-    @Field(type = FieldType.Text)
     private List<String> occupations;
 
     @Field(type = FieldType.Text)
