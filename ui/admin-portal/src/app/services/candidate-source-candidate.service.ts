@@ -42,6 +42,15 @@ export class CandidateSourceCandidateService {
     return this.http.get<boolean>(`${apiUrl}/${source.id}/is-empty`);
   }
 
+  search(source: CandidateSource, request: SearchCandidateSourcesRequest):
+    Observable<Candidate[]> {
+
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+    return this.http.post<Candidate[]>(
+      `${apiUrl}/${source.id}/search`, request)
+  }
+
   searchPaged(source: CandidateSource, request: SearchCandidateSourcesRequest):
     Observable<SearchResults<Candidate>> {
 
