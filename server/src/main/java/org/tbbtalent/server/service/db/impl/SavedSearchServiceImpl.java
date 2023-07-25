@@ -16,31 +16,12 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.validation.constraints.NotNull;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.index.query.SimpleQueryStringBuilder;
+
+import lombok.RequiredArgsConstructor;
+import org.elasticsearch.index.query.*;
+import org.apache.lucene.search.join.ScoreMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,72 +42,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.tbbtalent.server.exception.CircularReferencedException;
-import org.tbbtalent.server.exception.CountryRestrictionException;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.ExportFailedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateFilterByOpps;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.EducationLevel;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.Language;
-import org.tbbtalent.server.model.db.LanguageLevel;
-import org.tbbtalent.server.model.db.PartnerImpl;
-import org.tbbtalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.SavedSearchType;
-import org.tbbtalent.server.model.db.SearchJoin;
-import org.tbbtalent.server.model.db.SearchType;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.db.partner.DefaultDestinationPartner;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.es.CandidateEs;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CandidateReviewStatusRepository;
-import org.tbbtalent.server.repository.db.CandidateSpecification;
-import org.tbbtalent.server.repository.db.CountryRepository;
-import org.tbbtalent.server.repository.db.EducationLevelRepository;
-import org.tbbtalent.server.repository.db.EducationMajorRepository;
-import org.tbbtalent.server.repository.db.LanguageLevelRepository;
-import org.tbbtalent.server.repository.db.LanguageRepository;
-import org.tbbtalent.server.repository.db.OccupationRepository;
-import org.tbbtalent.server.repository.db.PartnerRepository;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.SavedSearchRepository;
-import org.tbbtalent.server.repository.db.SavedSearchSpecification;
-import org.tbbtalent.server.repository.db.SearchJoinRepository;
-import org.tbbtalent.server.repository.db.SurveyTypeRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
-import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
-import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
-import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
-import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
-import org.tbbtalent.server.request.search.UpdateSharingRequest;
-import org.tbbtalent.server.request.search.UpdateWatchingRequest;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.CountryService;
-import org.tbbtalent.server.service.db.PartnerService;
-import org.tbbtalent.server.service.db.SalesforceJobOppService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.SavedSearchService;
-import org.tbbtalent.server.service.db.UserService;
+import org.tbbtalent.server.request.search.*;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 @Service
+@RequiredArgsConstructor
 public class SavedSearchServiceImpl implements SavedSearchService {
 
     private static final Logger log = LoggerFactory.getLogger(SavedSearchServiceImpl.class);
@@ -151,8 +89,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final CountryRepository countryRepository;
     private final PartnerRepository partnerRepository;
     private final OccupationRepository occupationRepository;
+    private final OccupationService occupationService;
     private final SurveyTypeRepository surveyTypeRepository;
     private final EducationMajorRepository educationMajorRepository;
+    private final EducationMajorService educationMajorService;
     private final EducationLevelRepository educationLevelRepository;
 
     /**
@@ -169,55 +109,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             CandidateStatus.ineligible,
             CandidateStatus.withdrawn
         )));
-
-    @Autowired
-    public SavedSearchServiceImpl(
-        CandidateRepository candidateRepository,
-        CandidateService candidateService,
-        CandidateReviewStatusRepository candidateReviewStatusRepository,
-        CandidateSavedListService candidateSavedListService,
-        CountryService countryService,
-        PartnerService partnerService,
-        ElasticsearchOperations elasticsearchOperations,
-        EmailHelper emailHelper,
-        UserRepository userRepository,
-        UserService userService,
-        SalesforceJobOppService salesforceJobOppService, SavedListRepository savedListRepository,
-        SavedListService savedListService,
-        SavedSearchRepository savedSearchRepository,
-        SearchJoinRepository searchJoinRepository,
-        LanguageLevelRepository languageLevelRepository,
-        LanguageRepository languageRepository,
-        CountryRepository countryRepository,
-        PartnerRepository partnerRepository,
-        OccupationRepository occupationRepository,
-        SurveyTypeRepository surveyTypeRepository,
-        EducationMajorRepository educationMajorRepository,
-        EducationLevelRepository educationLevelRepository) {
-        this.candidateRepository = candidateRepository;
-        this.candidateService = candidateService;
-        this.candidateReviewStatusRepository = candidateReviewStatusRepository;
-        this.candidateSavedListService = candidateSavedListService;
-        this.countryService = countryService;
-        this.partnerService = partnerService;
-        this.elasticsearchOperations = elasticsearchOperations;
-        this.emailHelper = emailHelper;
-        this.userRepository = userRepository;
-        this.userService = userService;
-        this.salesforceJobOppService = salesforceJobOppService;
-        this.savedListRepository = savedListRepository;
-        this.savedListService = savedListService;
-        this.savedSearchRepository = savedSearchRepository;
-        this.searchJoinRepository = searchJoinRepository;
-        this.languageLevelRepository = languageLevelRepository;
-        this.languageRepository = languageRepository;
-        this.partnerRepository = partnerRepository;
-        this.countryRepository = countryRepository;
-        this.occupationRepository = occupationRepository;
-        this.surveyTypeRepository = surveyTypeRepository;
-        this.educationMajorRepository = educationMajorRepository;
-        this.educationLevelRepository = educationLevelRepository;
-    }
 
     @Override
     public List<SavedSearch> search(SearchSavedSearchRequest request) {
@@ -970,12 +861,56 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     minWrittenLevel, null);
         }
 
+        //Other languages
+        Long otherLanguageId = request.getOtherLanguageId();
+        if (otherLanguageId != null) {
+            Optional<Language> otherLanguage = languageRepository.findById(request.getOtherLanguageId());
+            if (otherLanguage.isPresent()) {
+
+                BoolQueryBuilder nestedQueryBuilder = QueryBuilders.boolQuery().must(
+                        QueryBuilders.termQuery("otherLanguages.name.keyword", otherLanguage.get().getName()));
+
+                Integer minOtherSpokenLevel = request.getOtherMinSpokenLevel();
+                if (minOtherSpokenLevel != null) {
+                    nestedQueryBuilder =
+                            addElasticRangeFilter(nestedQueryBuilder,
+                                    "otherLanguages.minSpokenLevel",
+                                    minOtherSpokenLevel, null);
+                }
+
+                Integer minOtherWrittenLevel = request.getOtherMinWrittenLevel();
+                if (minOtherWrittenLevel != null) {
+                    nestedQueryBuilder =
+                            addElasticRangeFilter(nestedQueryBuilder,
+                                    "otherLanguages.minWrittenLevel",
+                                    minOtherWrittenLevel, null);
+                }
+
+                boolQueryBuilder = boolQueryBuilder.filter(
+                        QueryBuilders.nestedQuery("otherLanguages", nestedQueryBuilder, ScoreMode.Avg));
+            }
+
+        }
+
         //Exclude given candidates
         if (excludedCandidates != null && excludedCandidates.size() > 0) {
             List<Object> candidateIds = excludedCandidates.stream()
                 .map(Candidate::getId).collect(Collectors.toList());
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
                 SearchType.not,"masterId", candidateIds);
+        }
+
+        //Occupations
+        final List<Long> occupationIds = request.getOccupationIds();
+        if (occupationIds != null) {
+            //Look up names from ids.
+            List<Object> reqOccupations = new ArrayList<>();
+            for (Long id : occupationIds) {
+                final Occupation occupation = occupationService.getOccupation(id);
+                reqOccupations.add(occupation.getName());
+            }
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                    null,"occupations.keyword", reqOccupations);
         }
 
         //Countries - need to take account of source country restrictions
@@ -1053,6 +988,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (gender != null) {
             boolQueryBuilder = boolQueryBuilder.filter(
                 QueryBuilders.termQuery("gender", gender.name()));
+        }
+
+        //Education Level (minimum)
+        Integer minEducationLevel = request.getMinEducationLevel();
+        if (minEducationLevel != null) {
+            boolQueryBuilder =
+                    addElasticRangeFilter(boolQueryBuilder,
+                            "maxEducationLevel",
+                            minEducationLevel, null);
+        }
+
+        //Educations
+        final List<Long> educationMajorIds = request.getEducationMajorIds();
+        if (educationMajorIds != null) {
+            //Look up names from ids.
+            List<Object> reqEducations = new ArrayList<>();
+            for (Long id : educationMajorIds) {
+                final EducationMajor educationMajor = educationMajorService.getEducationMajor(id);
+                reqEducations.add(educationMajor.getName());
+            }
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                    request.getNationalitySearchType(),
+                    "educations.keyword", reqEducations);
         }
         return boolQueryBuilder;
     }
@@ -1536,22 +1494,21 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (requestedPartners == null || requestedPartners.isEmpty()) {
             Partner partner = userService.getLoggedInPartner();
             if (partner != null) {
-                //Some partners default to seeing candidates from all source partners.
-                final boolean isDefaultPartner = (partner instanceof SourcePartner
-                    && partner.isDefaultSourcePartner()) ||
-                    (partner instanceof DefaultDestinationPartner
-                        && partner.isDefaultDestinationPartner());
-                //Different default for simple (non operating partners)
-                //and default source partner
-                if ("Partner".equals(partner.getPartnerType())
-                    || "RecruiterPartner".equals(partner.getPartnerType())
-                    || isDefaultPartner) {
-                   List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
-                   List<Long> partnerIds =
-                       sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
-                    request.setPartnerIds(partnerIds);
+                //Non source partners (eg destination partners) and default partners see candidates from all
+                //partners - not just their own partner.
+
+                final boolean isDefaultPartner =
+                        partner.isDefaultSourcePartner() || partner.isDefaultJobCreator();
+
+                //A source partner defaults to just seeing their own candidates - unless they are the default partner
+                if (partner.isSourcePartner() && !isDefaultPartner) {
+                    request.setPartnerIds(List.of(partner.getId()));
                 } else {
-                   request.setPartnerIds(List.of(partner.getId()));
+                    //Every one else defaults to seeing candidates from all partners
+                    List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                    List<Long> partnerIds =
+                            sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
+                    request.setPartnerIds(partnerIds);
                 }
             }
         }

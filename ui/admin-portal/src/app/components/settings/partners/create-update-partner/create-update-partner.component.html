@@ -14,24 +14,17 @@
 
   <form [formGroup]="form">
     <div class="mb-3">
-
-      <div *ngIf="isCreate()" class="mb-3">
-        <label class="form-label">Type? *</label>
-        <ng-select
-          id="partnerType"
-          [items]="partnerTypes"
-          [multiple]="false"
-          [closeOnSelect]="true"
-          [searchable]="false"
-          bindLabel="stringValue"
-          bindValue="key"
-          [formControlName]="'partnerType'">
-        </ng-select>
-      </div>
       <div class="mb-3">
         <label class="form-label" for="name">Name *</label>
         <input class="form-control" id="name" formControlName="name">
       </div>
+
+      <label class="form-label" for="jobCreator">Job creator?</label>
+      <input type="checkbox" formControlName="jobCreator" id="jobCreator">
+
+      <label class="form-label" for="sourcePartner">sourcePartner?</label>
+      <input type="checkbox" formControlName="sourcePartner" id="sourcePartner">
+
       <div class="mb-3">
         <label class="form-label">Status? *</label>
         <ng-select

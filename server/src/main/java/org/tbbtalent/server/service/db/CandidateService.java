@@ -130,6 +130,8 @@ public interface CandidateService {
 
     Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request);
 
+    List<Candidate> getSavedListCandidatesUnpaged(SavedList savedList, SavedListGetRequest request);
+
     Candidate getCandidate(long id) throws NoSuchObjectException;
 
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);

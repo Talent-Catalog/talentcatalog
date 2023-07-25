@@ -138,11 +138,11 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private OffsetDateTime publishedDate;
 
     /**
-     * Recruiter partner responsible for this job.
+     * Partner responsible for this job.
      */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruiter_partner_id")
-    private JobCreatorImpl jobCreator;
+    private PartnerImpl jobCreator;
 
     /**
      * Stage of job opportunity

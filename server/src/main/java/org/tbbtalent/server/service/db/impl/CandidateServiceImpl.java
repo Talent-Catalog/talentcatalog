@@ -104,7 +104,6 @@ import org.tbbtalent.server.model.db.UploadTaskImpl;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.db.YesNoUnsure;
 import org.tbbtalent.server.model.db.partner.Partner;
-import org.tbbtalent.server.model.db.partner.SourcePartner;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
 import org.tbbtalent.server.model.db.task.Task;
@@ -391,11 +390,20 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
-        
+
         Page<Candidate> candidatesPage = candidateRepository.findAll(
                 new GetSavedListCandidatesQuery(savedList, request), request.getPageRequestWithoutSort());
         log.info("Found " + candidatesPage.getTotalElements() + " candidates in list");
         return candidatesPage;
+    }
+
+    @Override
+    public List<Candidate> getSavedListCandidatesUnpaged(SavedList savedList,
+        SavedListGetRequest request) {
+        List<Candidate> candidates = candidateRepository.findAll(
+            new GetSavedListCandidatesQuery(savedList, request));
+        log.info("Found " + candidates.size() + " candidates in list");
+        return candidates;
     }
 
     /**
@@ -718,7 +726,7 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
 
-    private Candidate createCandidate(CreateCandidateRequest request, SourcePartner partner, String ipAddress,
+    private Candidate createCandidate(CreateCandidateRequest request, Partner partner, String ipAddress,
         HasTcQueryParameters queryParameters, String passwordEncrypted)
         throws UsernameTakenException {
         User user = new User(
@@ -1083,8 +1091,8 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Assign partner based on the partner abbreviation, if any
-        SourcePartner sourcePartner = (SourcePartner) partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
-        if (sourcePartner == null) {
+        Partner sourcePartner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+        if (sourcePartner == null || !sourcePartner.isSourcePartner()) {
             //No source partner found based on partner query param.
 
             //HACK - Start - Hack for Alight, using referral query parameter if necessary to assign source partner
@@ -1095,7 +1103,7 @@ public class CandidateServiceImpl implements CandidateService {
                 if (referral != null) {
                     if ("alight".equalsIgnoreCase(referral)) {
                         //Referral was to alight - Set source partner to Alight
-                        sourcePartner = (SourcePartner) partnerService.getPartnerFromAbbreviation(referral);
+                        sourcePartner = partnerService.getPartnerFromAbbreviation(referral);
                     }
                 }
             }
@@ -1542,7 +1550,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Transactional(readOnly = true)
-    void validateContactRequest(User user, BaseCandidateContactRequest request) {
+    public void validateContactRequest(User user, BaseCandidateContactRequest request) {
         // Check email not already taken
         if (!StringUtils.isBlank(request.getEmail())) {
             try {
