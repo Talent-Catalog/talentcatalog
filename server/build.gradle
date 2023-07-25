@@ -125,7 +125,7 @@ jib {
     to {
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"
-        } else {
+        } else if (project.hasProperty("prod-tc-system")) {
             image = "968457613372.dkr.ecr.us-east-1.amazonaws.com/tbbtalentv2"
         }
         credHelper = 'ecr-login'
