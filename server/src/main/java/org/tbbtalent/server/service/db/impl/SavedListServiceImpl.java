@@ -1014,4 +1014,12 @@ public class SavedListServiceImpl implements SavedListService {
         savedList.setAuditFields(userService.getLoggedInUser());
         return savedListRepository.save(savedList);
     }
+
+    @Override
+    @NonNull
+    public int getCandidateCount(long savedListId) {
+        SavedList savedList = savedListRepository.findById(savedListId)
+                .orElseThrow(() -> new NoSuchObjectException(SavedList.class, savedListId));
+        return savedList.getCandidates().size();
+    }
 }

@@ -29,7 +29,6 @@ import {Candidate, ShortCandidate} from "../model/candidate";
 import {PartnerType} from "../model/partner";
 import {Job, ShortJob} from "../model/job";
 import {CandidateOpportunity} from "../model/candidate-opportunity";
-import {Opportunity} from "../model/opportunity";
 
 @Injectable({
   providedIn: 'root'
@@ -481,11 +480,4 @@ export class AuthService {
       (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
   }
 
-  /**
-   * True if the given candidate opportunity is the only child of its parent job opportunity
-   * @param opp Candidate opportunity
-   */
-  isOnlyChild(opp: Opportunity): boolean {
-    return true;
-  }
 }

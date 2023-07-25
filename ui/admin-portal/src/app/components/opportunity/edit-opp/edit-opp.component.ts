@@ -1,11 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {CandidateOpportunityStage, isCandidateOpportunity} from "../../../model/candidate-opportunity";
+import {
+  CandidateOpportunity,
+  CandidateOpportunityStage,
+  isCandidateOpportunity
+} from "../../../model/candidate-opportunity";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
 import {isJob, JobOpportunityStage} from "../../../model/job";
-import {AuthService} from "../../../services/auth.service";
+import {SavedListService} from "../../../services/saved-list.service";
 
 @Component({
   selector: 'app-edit-opp',
@@ -21,9 +25,11 @@ export class EditOppComponent implements OnInit {
 
   closing = false;
 
+  isOnlyChild: boolean;
+
   constructor(
     private activeModal: NgbActiveModal,
-    private authService: AuthService,
+    private savedListService: SavedListService,
     private fb: FormBuilder) { }
 
   ngOnInit(): void {
@@ -32,6 +38,7 @@ export class EditOppComponent implements OnInit {
       stage = this.opp.stage;
       if (isCandidateOpportunity(this.opp)) {
         this.opportunityStageOptions = enumOptions(CandidateOpportunityStage);
+        this.setIsOnlyChild(this.opp);
       }
       if (isJob(this.opp)) {
         this.opportunityStageOptions = enumOptions(JobOpportunityStage);
@@ -68,10 +75,13 @@ export class EditOppComponent implements OnInit {
   }
 
   /**
-   * Checks whether this is a candidate opportunity and if so whether it is the only remaining child of its parent job opportunity — if both are true, the 'Update Opportunity Progress' form will show an option to update the parent with the same 'next step' info. Introduced to reduce unnecessary user work and encourage clean data.
+   * Sets this.isOnlyChild to 'true' if there is only one candidate remaining on the parent job submission list — i.e., only one remaining child candidate opportunity (case) belonging to its parent job opportunity — in turn causing 'Copy 'next step' info to parent job opportunity?' checkbox to be displayed in the 'Update Opportunity Progress' modal.
+   * @param opp candidate opportunity
+   * TODO: set error message for safety here?
    */
-  showCopyToParentJobOption(): boolean {
-    return isCandidateOpportunity(this.opp) && this.authService.isOnlyChild(this.opp);
+  async setIsOnlyChild(opp: CandidateOpportunity) {
+    const candidateCount = await this.savedListService.getCandidateCount(opp.jobOpp.submissionList.id).toPromise().then((candidateCount) => {
+      this.isOnlyChild = candidateCount === 1;
+    })
   }
-
 }

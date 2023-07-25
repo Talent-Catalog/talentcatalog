@@ -24,11 +24,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -281,4 +277,8 @@ public class SavedListAdminApi implements
         savedListService.updateTbbShortName(request);
     }
 
+    @GetMapping("/candidate-count/{id}")
+    public int getCandidateCount(@PathVariable("id") long id) {
+        return savedListService.getCandidateCount(id);
+    }
 }
