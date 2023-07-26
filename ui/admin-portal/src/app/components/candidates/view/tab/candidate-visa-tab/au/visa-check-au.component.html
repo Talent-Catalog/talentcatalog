@@ -247,11 +247,10 @@ Downside == upside : standard appearance of same question
 
       <hr/>
 
-      <!--  Some clever code to add/delete/select current job -->
-
       <!--  Generate all job entries - but only one is enabled at a time-->
       <div *ngFor="let job of visaRecord.candidateVisaJobChecks; let i = index;">
         <app-visa-job-check-au *ngIf="i == selectedJobIndex"
+                               [id]="i"
                                [selectedJobCheck]="job"
                                [candidate]="candidate"
                                [candidateIntakeData]="candidateIntakeData"
