@@ -132,8 +132,6 @@ jib {
     }
 }
 
-tasks.build.dependsOn tasks.jib
-
 test {
     useJUnitPlatform()
 }
