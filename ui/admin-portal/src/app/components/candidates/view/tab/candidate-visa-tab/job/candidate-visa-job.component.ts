@@ -36,9 +36,9 @@ export class CandidateVisaJobComponent implements OnInit {
   ngOnInit(): void {
     if (this.visaRecord.candidateVisaJobChecks.length > 0) {
       //If exists, get the last selected visa check from local storage. If nothing there, get the first one.
-      const index: number = this.localStorageService.get('VisaJobCheckIndex');
-      if (index) {
-        this.selectedIndex = index;
+      const memoryIndex: number = this.localStorageService.get('VisaJobCheckIndex');
+      if (memoryIndex) {
+        this.selectedIndex = memoryIndex;
       } else {
         this.selectedIndex = 0;
       }
@@ -46,6 +46,7 @@ export class CandidateVisaJobComponent implements OnInit {
     this.form = this.fb.group({
       jobIndex: [this.selectedIndex]
     });
+    this.selectedJobIndex.emit(this.selectedIndex);
   }
 
   private get filteredSfJobs(): ShortJob[] {
@@ -107,8 +108,9 @@ export class CandidateVisaJobComponent implements OnInit {
   deleteJob(i: number) {
     const confirmationModal = this.modalService.open(ConfirmationComponent);
     const visaJobCheck: CandidateVisaJobCheck = this.visaRecord.candidateVisaJobChecks[i];
+    const jobName = visaJobCheck.jobOpp ? visaJobCheck.jobOpp.name : visaJobCheck.name
     confirmationModal.componentInstance.message =
-      "Are you sure you want to delete the job check for " + visaJobCheck.jobOpp.name;
+      "Are you sure you want to delete the job check for " + jobName + '?';
     confirmationModal.result
     .then((result) => {
       if (result === true) {
