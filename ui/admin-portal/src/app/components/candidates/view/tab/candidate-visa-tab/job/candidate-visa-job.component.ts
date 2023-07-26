@@ -48,16 +48,20 @@ export class CandidateVisaJobComponent implements OnInit {
     });
   }
 
-  private get filteredJobs(): ShortJob[] {
+  private get filteredSfJobs(): ShortJob[] {
     /**
-     * IF there are no existing visa job checks, return all the jobs associated with their candidate opportunities.
-     * ELSE filter those jobs out from the jobs associated with their candidate opportunites.
+     * IF there are no existing visa job checks, return all the jobs associated with the candidate's candidate opportunities.
+     * ELSE filter those jobs out from the jobs associated with their candidate opportunities
+     * SO that we avoid double ups of visa job checks for the same job.
      */
     if (!this.visaRecord?.candidateVisaJobChecks) {
       return this.candidate.candidateOpportunities.map(co => co.jobOpp);
     } else {
+      /**
+       * NOTE: Some job checks don't have a SF Job Opp associated as these were entered in an earlier version of the code.
+       */
       const existingJobIds: number [] = this.visaRecord.candidateVisaJobChecks
-        .map(jobCheck => jobCheck.jobOpp.id);
+        .map(jobCheck => jobCheck?.jobOpp?.id);
 
       return this.candidate.candidateOpportunities
         .map(co => co.jobOpp)
@@ -67,7 +71,7 @@ export class CandidateVisaJobComponent implements OnInit {
 
   addJob() {
     const modal = this.modalService.open(HasNameSelectorComponent);
-    modal.componentInstance.hasNames = this.filteredJobs;
+    modal.componentInstance.hasNames = this.filteredSfJobs;
     modal.componentInstance.label = "Candidate's Job Opportunities";
 
     modal.result
