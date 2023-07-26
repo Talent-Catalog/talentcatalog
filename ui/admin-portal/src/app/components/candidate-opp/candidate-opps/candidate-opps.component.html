@@ -72,7 +72,7 @@
                            *ngIf="searchBy"></app-sorted-by>
             Stage
           </th>
-          <th (click)="toggleSort('updatedDate', 'DESC')">
+          <th *ngIf="!preview" (click)="toggleSort('updatedDate', 'DESC')">
             <app-sorted-by column="updatedDate" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             Next step
@@ -81,6 +81,9 @@
             <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             Due
+          </th>
+          <th *ngIf="preview">
+            Next Step
           </th>
         </tr>
         </thead>
@@ -109,11 +112,16 @@
           <td>
             {{getCandidateOpportunityStageName(opp)}}
           </td>
-          <td [title]="getNextStepHoverString(opp)">
+          <td *ngIf="!preview" [title]="getNextStepHoverString(opp)">
             {{opp.nextStep | truncate: 38}}
           </td>
           <td>
             {{opp.nextStepDueDate}}
+          </td>
+          <td *ngIf="preview">
+            <div *ngIf="opp?.nextStep" [ngbPopover]="opp.nextStep" triggers="mouseenter:mouseleave" container="body">
+              <i class="far fa-comment-dots hover-color"></i>
+            </div>
           </td>
         </tr>
         </tbody>
