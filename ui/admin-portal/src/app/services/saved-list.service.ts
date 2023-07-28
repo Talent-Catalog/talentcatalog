@@ -91,8 +91,4 @@ export class SavedListService {
   updateShortName(request: UpdateShortNameRequest): Observable<SavedList>  {
     return this.http.put<SavedList>(`${this.apiUrl}/short-name`, request);
   }
-
-  getCandidateCount(id: number): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/candidate-count/${id}`)
-  }
 }

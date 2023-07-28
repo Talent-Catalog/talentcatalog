@@ -426,6 +426,4 @@ public interface SavedListService {
     @Nullable
     SavedList fetchSourceList(UpdateSavedListContentsRequest request) throws NoSuchObjectException;
 
-    @Nullable
-    int getCandidateCount(long savedListId) throws NoSuchObjectException;
 }

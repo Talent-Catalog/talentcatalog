@@ -462,5 +462,4 @@ export class AuthService {
     return this.isSourcePartnerAdminOrGreater() &&
       (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
   }
-
 }
