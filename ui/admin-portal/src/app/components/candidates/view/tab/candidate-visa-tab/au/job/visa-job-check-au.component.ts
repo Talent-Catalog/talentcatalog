@@ -18,6 +18,7 @@ import {CandidateOccupationService} from "../../../../../../../services/candidat
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
+import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 
 @Component({
   selector: 'app-visa-job-check-au',
@@ -34,6 +35,7 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
   candQualifications: CandidateEducation[];
   yrsExp: CandidateOccupation;
   ausDest: CandidateDestination;
+  familyInAus: string;
 
   constructor(candidateService: CandidateService,
               countryService: CountryService,
@@ -51,6 +53,7 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
   }
 
   ngOnInit() {
+    console.log(this.visaRecord)
     super.ngOnInit();
 
     // Get the candidate occupations
@@ -72,6 +75,8 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
     // Get the candidate Australia destinations
     //todo make the value not undefined if no family is there (e.g. put 'No family') instead of undefined in undefined
     this.ausDest = this.candidateIntakeData.candidateDestinations.find(d => d.country.name === 'Australia')
+
+    this.familyInAus = describeFamilyInDestination(this.visaRecord?.country.id, this.candidateIntakeData);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -84,19 +89,6 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
 
   get birthYear(): string {
     return this.candidate?.dob.toString().slice(0, 4);
-  }
-
-  get familyInAus(): string {
-    let answer: string = 'No family entered'
-    if (this.ausDest?.family) {
-      if (this.ausDest?.location) {
-        answer = this.ausDest?.family + ' in ' + this.ausDest?.location;
-      } else {
-        answer = this.ausDest?.family;
-      }
-      return answer;
-    }
-    return answer;
   }
 
   get selectedOccupations(): CandidateOccupation {

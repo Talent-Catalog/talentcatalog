@@ -7,7 +7,13 @@ import {OccupationService} from "../../../../../../../services/occupation.servic
 import {LanguageLevelService} from "../../../../../../../services/language-level.service";
 import {CandidateNoteService} from "../../../../../../../services/candidate-note.service";
 import {AuthService} from "../../../../../../../services/auth.service";
-import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../../model/candidate";
+import {
+  CandidateDestination,
+  CandidateIntakeData,
+  CandidateVisa,
+  CandidateVisaJobCheck
+} from "../../../../../../../model/candidate";
+import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 
 @Component({
   selector: 'app-visa-job-check-ca',
@@ -16,8 +22,10 @@ import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../../model/c
 })
 export class VisaJobCheckCaComponent extends IntakeComponentTabBase implements OnInit {
   @Input() visaRecord: CandidateVisa;
-  selectedJob: CandidateVisaJobCheck;
-  selectedJobIndex: number;
+  @Input() destinationIntake: CandidateDestination;
+  @Input() candidateIntakeData: CandidateIntakeData;
+  selectedJobCheck: CandidateVisaJobCheck;
+  familyInCanada: string;
 
   constructor(candidateService: CandidateService,
               countryService: CountryService,
@@ -31,10 +39,10 @@ export class VisaJobCheckCaComponent extends IntakeComponentTabBase implements O
   }
 
   ngOnInit(): void {
+    this.familyInCanada = describeFamilyInDestination(this.visaRecord?.country.id, this.candidateIntakeData)
   }
 
   updateSelectedJob(index: number){
-    this.selectedJob = this.visaRecord.candidateVisaJobChecks[index];
+    this.selectedJobCheck = this.visaRecord.candidateVisaJobChecks[index];
   }
-
 }

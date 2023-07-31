@@ -22,8 +22,6 @@
   </div>
 </div>
 
-{{this.selectedJob?.jobOpp ? this.selectedJob?.jobOpp?.name : this.selectedJob?.name}}
-
 <ngb-accordion #visaJobCanada="ngbAccordion" [destroyOnHide]="false">
 
   <ngb-panel id="occupation-eligibility" title="Occupation Eligibility">
@@ -50,7 +48,6 @@
         <app-job-interest
           [entity]="candidate"
           [candidateIntakeData]="candidateIntakeData"
-          [selectedIndex]="jobIndex"
           [visaCheckRecord]="visaRecord"
           [selectedJobCheck]="selectedJobCheck">
         </app-job-interest>
@@ -58,7 +55,6 @@
         <app-job-eligibility-assessment
           [entity]="candidate"
           [candidateIntakeData]="candidateIntakeData"
-          [selectedIndex]="jobIndex"
           [visaCheckRecord]="visaRecord"
           [selectedJobCheck]="selectedJobCheck">
         </app-job-eligibility-assessment>
@@ -67,7 +63,7 @@
       <div class="card card-body intake-data">
         <app-fixed-input
           [question]="'Family in Canada that may impact offer'"
-          [answer]="familyInAus">
+          [answer]="familyInCanada">
         </app-fixed-input>
       </div>
     </ng-template>
