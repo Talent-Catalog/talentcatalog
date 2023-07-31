@@ -64,6 +64,10 @@ export class CandidateVisaTabComponent implements OnInit {
     this.countryService.listTBBDestinations().subscribe((results) => {
       this.tbbDestinations = results;
     })
+
+    this.form = this.fb.group({
+      visaCountry: [null]
+    });
   }
 
   setSelectedCountry() {
@@ -77,9 +81,7 @@ export class CandidateVisaTabComponent implements OnInit {
       }
     }
 
-    this.form = this.fb.group({
-      visaCountry: [this.selectedIndex]
-    });
+    this.form.controls.visaCountry.patchValue(this.selectedIndex);
 
     this.changeVisaCountry(null);
   }

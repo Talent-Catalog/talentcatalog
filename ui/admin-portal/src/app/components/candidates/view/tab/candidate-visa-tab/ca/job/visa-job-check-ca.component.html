@@ -38,6 +38,15 @@
 
   <ngb-panel id="candidate-qualifications" title="Candidate Qualifications">
     <ng-template ngbPanelContent>
+
+      <div>
+        <app-english-threshold
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [visaCheckRecord]="visaCheckRecord">
+        </app-english-threshold>
+      </div>
+      <hr>
       <div class="card card-body intake-data">
         <div>
           <div class="card-title">Education</div>
@@ -71,12 +80,12 @@
                 <app-fixed-input
                   *ngIf="co.occupation"
                   [question]="co.occupation?.name"
-                  [answer]="co.yearsExperience">
+                  [answer]="co.yearsExperience.toString()">
                 </app-fixed-input>
                 <app-fixed-input
                   *ngIf="co.occupation == null && co.migrationOccupation"
                   [question]="co.migrationOccupation"
-                  [answer]="co.yearsExperience">
+                  [answer]="co.yearsExperience.toString()">
                 </app-fixed-input>
               </li>
             </ul>
@@ -85,6 +94,19 @@
             <p>No experience entered</p>
           </div>
         </div>
+
+        <div class="card-title">English exams</div>
+        <div *ngIf="candidateIntakeData.candidateExams.length == 0">
+          <p>No exams entered</p>
+        </div>
+        <ul>
+          <li *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
+            <p class="mb-0">{{ce?.exam}}<span *ngIf="ce.otherExam">, </span>{{ce.otherExam}}: {{ce?.score}}<span *ngIf="ce.year"> ({{ce?.year}})</span>
+            </p>
+          </li>
+        </ul>
+        <div class="card-title">Estimated IELTS Score: <span>{{candidateIntakeData.langAssessmentScore}}</span></div>
+        <div class="card-title">Partner IELTS Score: <span>{{candidateIntakeData.partnerIeltsScore}}</span></div>
       </div>
 
     </ng-template>
