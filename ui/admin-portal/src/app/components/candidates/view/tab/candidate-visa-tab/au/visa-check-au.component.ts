@@ -15,24 +15,9 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {IntakeComponentTabBase} from '../../../../../util/intake/IntakeComponentTabBase';
-import {
-  Candidate,
-  CandidateIntakeData,
-  CandidateVisa,
-  getIeltsScoreTypeString
-} from '../../../../../../model/candidate';
-import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../../../services/candidate.service";
-import {CountryService} from "../../../../../../services/country.service";
-import {EducationLevelService} from "../../../../../../services/education-level.service";
-import {OccupationService} from "../../../../../../services/occupation.service";
-import {LanguageLevelService} from "../../../../../../services/language-level.service";
-import {CandidateNoteService} from "../../../../../../services/candidate-note.service";
-import {AuthService} from "../../../../../../services/auth.service";
+import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../../model/candidate';
 import {CandidateVisaJobService} from "../../../../../../services/candidate-visa-job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {Country} from "../../../../../../model/country";
 import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
@@ -40,47 +25,30 @@ import {LocalStorageService} from "angular-2-local-storage";
   templateUrl: './visa-check-au.component.html',
   styleUrls: ['./visa-check-au.component.scss']
 })
-export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnInit {
+export class VisaCheckAuComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  visaRecord: CandidateVisa;
+  @Input() visaCheckRecord: CandidateVisa;
   loading: boolean;
-  @Input() nationalities: Country[];
   saving: boolean;
   selectedJobIndex: number;
   currentYear: string;
   birthYear: string;
+  error: boolean;
 
-  constructor(candidateService: CandidateService,
-              countryService: CountryService,
-              educationLevelService: EducationLevelService,
-              occupationService: OccupationService,
-              languageLevelService: LanguageLevelService,
-              noteService: CandidateNoteService,
-              authService: AuthService,
-              private candidateVisaJobService: CandidateVisaJobService,
+  constructor(private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
-              private fb: FormBuilder,
-              private localStorageService: LocalStorageService) {
-    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
-  }
+              private localStorageService: LocalStorageService) {}
 
-  onDataLoaded(init: boolean) {
-    if (init) {
-      this.visaRecord = this.candidateIntakeData?.candidateVisaChecks?.find(v => v.country.id == 6191);
-      this.setSelectedVisaCheckIndex(this.candidateIntakeData?.candidateVisaChecks?.indexOf(this.visaRecord));
-      this.currentYear = new Date().getFullYear().toString();
-      this.birthYear = this.candidate?.dob?.toString().slice(0, 4);
-    }
+  ngOnInit() {
+    this.setSelectedVisaCheckIndex(this.candidateIntakeData?.candidateVisaChecks?.indexOf(this.visaCheckRecord));
+    this.currentYear = new Date().getFullYear().toString();
+    this.birthYear = this.candidate?.dob?.toString().slice(0, 4);
   }
 
   get selectedCountry(): string {
-    return this.visaRecord?.country?.name;
-  }
-
-  get ieltsScoreType(): string {
-    return getIeltsScoreTypeString(this.candidate);
+    return this.visaCheckRecord?.country?.name;
   }
 
   private setSelectedVisaCheckIndex(index: number) {

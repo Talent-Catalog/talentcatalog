@@ -54,17 +54,23 @@
   </div>
 </div>
 
-
 <hr *ngIf="candidateIntakeData?.candidateVisaChecks.length > 0">
 
-<div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
+<button class="btn btn-primary" (click)="exportAsPdf('VisaCheck')" [disabled]="saving">
+  <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+  Export PDF
+</button>
+
+<div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined" id="VisaCheck">
   <app-visa-check-au *ngSwitchCase="'Australia'"
                      [candidate]="candidate"
+                     [visaCheckRecord]="getVisaCheckCountryRecord()"
                      [candidateIntakeData]="candidateIntakeData">
   </app-visa-check-au>
 
   <app-visa-check-ca *ngSwitchCase="'Canada'"
                      [candidate]="candidate"
+                     [visaCheckRecord]="getVisaCheckCountryRecord()"
                      [candidateIntakeData]="candidateIntakeData">
   </app-visa-check-ca>
 

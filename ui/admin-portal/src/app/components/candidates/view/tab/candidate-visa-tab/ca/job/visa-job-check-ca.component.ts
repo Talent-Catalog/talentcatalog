@@ -1,14 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {IntakeComponentTabBase} from "../../../../../../util/intake/IntakeComponentTabBase";
-import {CandidateService} from "../../../../../../../services/candidate.service";
-import {CountryService} from "../../../../../../../services/country.service";
-import {EducationLevelService} from "../../../../../../../services/education-level.service";
-import {OccupationService} from "../../../../../../../services/occupation.service";
-import {LanguageLevelService} from "../../../../../../../services/language-level.service";
-import {CandidateNoteService} from "../../../../../../../services/candidate-note.service";
-import {AuthService} from "../../../../../../../services/auth.service";
 import {
-  CandidateDestination,
+  Candidate,
   CandidateIntakeData,
   CandidateVisa,
   CandidateVisaJobCheck
@@ -20,29 +12,20 @@ import {describeFamilyInDestination} from "../../../../../../../model/candidate-
   templateUrl: './visa-job-check-ca.component.html',
   styleUrls: ['./visa-job-check-ca.component.scss']
 })
-export class VisaJobCheckCaComponent extends IntakeComponentTabBase implements OnInit {
-  @Input() visaRecord: CandidateVisa;
-  @Input() destinationIntake: CandidateDestination;
+export class VisaJobCheckCaComponent implements OnInit {
+  @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
+  @Input() visaCheckRecord: CandidateVisa;
   selectedJobCheck: CandidateVisaJobCheck;
   familyInCanada: string;
 
-  constructor(candidateService: CandidateService,
-              countryService: CountryService,
-              educationLevelService: EducationLevelService,
-              occupationService: OccupationService,
-              languageLevelService: LanguageLevelService,
-              noteService: CandidateNoteService,
-              authService: AuthService) {
-    super(candidateService, countryService, educationLevelService,
-      occupationService, languageLevelService, noteService, authService)
-  }
+  constructor() {}
 
   ngOnInit(): void {
-    this.familyInCanada = describeFamilyInDestination(this.visaRecord?.country.id, this.candidateIntakeData)
+    this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
   }
 
   updateSelectedJob(index: number){
-    this.selectedJobCheck = this.visaRecord.candidateVisaJobChecks[index];
+    this.selectedJobCheck = this.visaCheckRecord.candidateVisaJobChecks[index];
   }
 }

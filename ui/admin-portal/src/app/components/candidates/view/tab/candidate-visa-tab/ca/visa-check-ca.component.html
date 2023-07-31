@@ -14,14 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div *ngIf="error">
-  {{error}}
-</div>
-
-<div *ngIf="!loading" id="VisaCanada">
+<div id="VisaCanada">
   <div class="row my-4">
     <div class="col-6">
       <h5>Section 1: Visa Assessment - Canada</h5>
@@ -30,10 +23,6 @@
     <div class="col-6">
       <div class="row">
         <div class="col text-end">
-          <button class="btn btn-sm btn-primary me-2" (click)="exportAsPdf('VisaCanada')" [disabled]="saving">
-            <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-            Export PDF
-          </button>
           <button (click)="visaCanada.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
           <button (click)="visaCanada.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>
@@ -62,7 +51,7 @@
             <app-int-protection
               [entity]="candidate"
               [candidateIntakeData]="candidateIntakeData"
-              [visaCheckRecord]="visaRecord">
+              [visaCheckRecord]="visaCheckRecord">
             </app-int-protection>
           </div>
           <hr>
@@ -92,7 +81,7 @@
             <app-pathway-assessment
               [entity]="candidate"
               [candidateIntakeData]="candidateIntakeData"
-              [visaCheckRecord]="visaRecord">
+              [visaCheckRecord]="visaCheckRecord">
             </app-pathway-assessment>
           </div>
           <hr>
@@ -126,7 +115,7 @@
           <app-health-assessment
             [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaRecord">
+            [visaCheckRecord]="visaCheckRecord">
           </app-health-assessment>
           <hr>
           <div class="card card-body intake-data">
@@ -154,7 +143,7 @@
           <app-character-assessment
             [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaRecord">
+            [visaCheckRecord]="visaCheckRecord">
           </app-character-assessment>
           <hr>
           <div class="card card-body intake-data">
@@ -172,7 +161,7 @@
           <app-security-risk
             [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaRecord">
+            [visaCheckRecord]="visaCheckRecord">
           </app-security-risk>
           <hr>
           <div class="card card-body intake-data">
@@ -200,7 +189,7 @@
           <app-risk-assessment
             [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaRecord">
+            [visaCheckRecord]="visaCheckRecord">
           </app-risk-assessment>
         </ng-template>
       </ngb-panel>
@@ -210,7 +199,7 @@
     <!-- SECTION 2 VISA JOB CHECK -->
     <app-visa-job-check-ca
       [candidate]="candidate"
-      [visaRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [candidateIntakeData]="candidateIntakeData">
     </app-visa-job-check-ca>
 

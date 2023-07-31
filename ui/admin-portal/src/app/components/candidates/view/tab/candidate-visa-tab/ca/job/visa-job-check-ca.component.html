@@ -16,7 +16,7 @@
     <app-candidate-visa-job
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData"
-      [visaRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       (selectedJobIndex)="updateSelectedJob($event)">
     </app-candidate-visa-job>
   </div>
@@ -38,6 +38,54 @@
 
   <ngb-panel id="candidate-qualifications" title="Candidate Qualifications">
     <ng-template ngbPanelContent>
+      <div class="card card-body intake-data">
+        <div>
+          <div class="card-title">Education</div>
+          <!-- Display All Candidate Qualifications   -->
+          <div *ngIf="candQualifications?.length > 0">
+            <ul>
+              <li class="display" *ngFor="let edu of candQualifications">
+                <app-fixed-input
+                  *ngIf="edu.educationMajor"
+                  [question]="edu.educationMajor?.name + ' ' + edu.courseName"
+                  [answer]="edu.educationType">
+                </app-fixed-input>
+                <app-fixed-input
+                  *ngIf="edu.educationMajor == null && edu.courseName"
+                  [question]="edu.courseName"
+                  [answer]="edu.educationType">
+                </app-fixed-input>
+              </li>
+            </ul>
+          </div>
+          <div *ngIf="candQualifications?.length == 0">
+            <p>No qualifications entered</p>
+          </div>
+        </div>
+        <div>
+          <div class="card-title">Experience</div>
+          <!-- Display All Candidate Experience   -->
+          <div *ngIf="candOccupations?.length > 0">
+            <ul>
+              <li class="display" *ngFor="let co of candOccupations" >
+                <app-fixed-input
+                  *ngIf="co.occupation"
+                  [question]="co.occupation?.name"
+                  [answer]="co.yearsExperience">
+                </app-fixed-input>
+                <app-fixed-input
+                  *ngIf="co.occupation == null && co.migrationOccupation"
+                  [question]="co.migrationOccupation"
+                  [answer]="co.yearsExperience">
+                </app-fixed-input>
+              </li>
+            </ul>
+          </div>
+          <div *ngIf="candOccupations?.length == 0">
+            <p>No experience entered</p>
+          </div>
+        </div>
+      </div>
 
     </ng-template>
   </ngb-panel>
@@ -48,14 +96,14 @@
         <app-job-interest
           [entity]="candidate"
           [candidateIntakeData]="candidateIntakeData"
-          [visaCheckRecord]="visaRecord"
+          [visaCheckRecord]="visaCheckRecord"
           [selectedJobCheck]="selectedJobCheck">
         </app-job-interest>
 
         <app-job-eligibility-assessment
           [entity]="candidate"
           [candidateIntakeData]="candidateIntakeData"
-          [visaCheckRecord]="visaRecord"
+          [visaCheckRecord]="visaCheckRecord"
           [selectedJobCheck]="selectedJobCheck">
         </app-job-eligibility-assessment>
       </div>
