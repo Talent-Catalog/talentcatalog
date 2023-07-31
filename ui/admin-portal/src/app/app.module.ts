@@ -484,6 +484,9 @@ import {PathwayAssessmentComponent} from './components/candidates/visa/pathway-a
 import {
   CandidateVisaJobComponent
 } from './components/candidates/view/tab/candidate-visa-tab/job/candidate-visa-job.component';
+import {
+  VisaJobCheckCaComponent
+} from './components/candidates/view/tab/candidate-visa-tab/ca/job/visa-job-check-ca.component';
 
 @NgModule({
   declarations: [
@@ -768,7 +771,8 @@ import {
     OpportunityStageNextStepComponent,
     EditOppComponent,
     PathwayAssessmentComponent,
-    CandidateVisaJobComponent
+    CandidateVisaJobComponent,
+    VisaJobCheckCaComponent
   ],
   imports: [
     BrowserModule,
