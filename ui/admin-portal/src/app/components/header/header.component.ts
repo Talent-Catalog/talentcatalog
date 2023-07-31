@@ -42,6 +42,8 @@ export class HeaderComponent implements OnInit {
   logo: string;
   websiteUrl: string;
 
+  stagingEnv: boolean = false;
+
 
   constructor(private authService: AuthService,
               private brandingService: BrandingService,
@@ -49,6 +51,7 @@ export class HeaderComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
+    this.stagingEnv = window.location.host == 'tctalent-test.org'
 
     this.brandingService.getBrandingInfo().subscribe(
       (response: BrandingInfo) => {
@@ -170,5 +173,13 @@ export class HeaderComponent implements OnInit {
 
   isAnAdmin(): boolean {
     return this.authService.isAnAdmin();
+  }
+
+  isStagingEnv(): boolean {
+    return window.location.host == 'tctalent-test.org';
+  }
+
+  isLocalEnv(): boolean {
+    return window.location.host == 'localhost:4201';
   }
 }

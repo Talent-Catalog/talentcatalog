@@ -36,6 +36,7 @@ export interface CandidateAttachment {
   migrated: boolean; // A flag determining is the file was migrated from the previous system
   cv: boolean;
   uploadType: UploadType;
+  fileType: string;
 }
 
 export class CandidateAttachmentRequest {

@@ -14,14 +14,16 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+<nav class="navbar navbar-expand-md navbar-light fixed-top" [ngClass]="{'navbar-staging': isStagingEnv(), 'navbar-local': isLocalEnv()}">
 
   <div class="container">
 
     <!-- LOGO -->
-    <a *ngIf="logo" [href]="websiteUrl" target="_blank">
-      <img class="logo" [src]="logo" alt="Logo">
+    <a class="navbar-brand" [href]="websiteUrl" target="_blank">
+      <img id="logo" *ngIf="logo && !isStagingEnv()" class="logo" [src]="logo" alt="Logo">
+      <div id="staging" *ngIf="isStagingEnv()" class="px-3">PREVIEW</div>
     </a>
+
 
     <!-- MOBILE NAV TOGGLE -->
     <button class="navbar-toggler" type="button"

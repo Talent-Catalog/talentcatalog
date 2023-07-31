@@ -16,15 +16,26 @@
 
 package org.tbbtalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.annotation.Nullable;
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.Nullable;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * This is a copy of an Employer Job Opportunity on Salesforce
@@ -48,8 +59,6 @@ import java.util.Set;
 @SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
 public class SalesforceJobOpp extends AbstractOpportunity {
 
-    //TODO JC accepting DB field is no longer used and can be removed
-
     /**
      * Salesforce id of account (ie employer) associated with opportunity
      */
@@ -57,13 +66,6 @@ public class SalesforceJobOpp extends AbstractOpportunity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "jobOpp", cascade = CascadeType.MERGE)
     private Set<CandidateOpportunity> candidateOpportunities = new HashSet<>();
-
-    /**
-     * Email to use for enquiries about this job.
-     * <p/>
-     * Should default to email of {@link #contactUser} - but can be different
-     */
-    private String contactEmail;
 
     /**
      * TC user responsible for this job - will normally be "destination" staff located in the same
@@ -136,11 +138,11 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private OffsetDateTime publishedDate;
 
     /**
-     * Recruiter partner responsible for this job.
+     * Partner responsible for this job.
      */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruiter_partner_id")
-    private RecruiterPartnerImpl recruiterPartner;
+    private PartnerImpl jobCreator;
 
     /**
      * Stage of job opportunity

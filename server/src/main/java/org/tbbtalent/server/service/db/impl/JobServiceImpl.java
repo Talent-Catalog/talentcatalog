@@ -55,13 +55,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 @Service
 public class JobServiceImpl implements JobService {
+
+    /**
+     * This is initialized (in {@link #initialiseClosingCandidateStageLogic()} with the logic which
+     * drives selecting the appropriate candidate opp closing stage to be selected when the
+     * associated job opp is closed with the given stage.
+     */
+    private final EnumMap<JobOpportunityStage, EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>>
+        closingStageLogic = new EnumMap<>(JobOpportunityStage.class);
+
     private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
 
     private final static DateTimeFormatter nextStepDateFormat = DateTimeFormatter.ofPattern("ddMMMyy", Locale.ENGLISH);
@@ -100,12 +108,102 @@ public class JobServiceImpl implements JobService {
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
         this.jobOppIntakeService = jobOppIntakeService;
+
+        initialiseClosingCandidateStageLogic();
+    }
+
+    /**
+     * Updates the closing logic to say tha when a job is closed in the given stage, then any
+     * candidate opp associated with that job, which is currently in the given currentCandidateStage
+     * should be closed with the given closedCandidateStage.
+     * @param closedJobStage Stage of closed job
+     * @param currentCandidateStage Current stage of candidate opp
+     * @param closedCandidateStage Stage that the candidate opp should be closed as
+     */
+    private void addClosingLogic(JobOpportunityStage closedJobStage,
+        CandidateOpportunityStage currentCandidateStage,
+        CandidateOpportunityStage closedCandidateStage) {
+
+        EnumMap<CandidateOpportunityStage, CandidateOpportunityStage> oppCurrentToCloseMap
+            = closingStageLogic.get(closedJobStage);
+        if (oppCurrentToCloseMap == null) {
+            oppCurrentToCloseMap = new EnumMap<>(CandidateOpportunityStage.class);
+            closingStageLogic.put(closedJobStage, oppCurrentToCloseMap);
+        }
+        oppCurrentToCloseMap.put(currentCandidateStage, closedCandidateStage);
+
+    }
+
+    /**
+     * Constructs the closing logic in {@link #closingStageLogic}.
+     */
+    private void initialiseClosingCandidateStageLogic() {
+
+        //Candidates who have not got to an employed stage before job is closed for any reason
+        //are closed with notFitForRole
+        Arrays.stream(CandidateOpportunityStage.values())
+            .filter(s -> !s.isEmployed() && !s.isClosed())
+                .forEach(s -> {
+                    addClosingLogic(JobOpportunityStage.noInterest,
+                        s, CandidateOpportunityStage.notFitForRole);
+                    addClosingLogic(JobOpportunityStage.noSuitableCandidates,
+                        s, CandidateOpportunityStage.notFitForRole);
+                    addClosingLogic(JobOpportunityStage.noJobOffer,
+                        s, CandidateOpportunityStage.notFitForRole);
+                    addClosingLogic(JobOpportunityStage.noVisa,
+                        s, CandidateOpportunityStage.notFitForRole);
+                });
+
+        //Override cases after twoWayReview to close with noJobOffer
+        addClosingLogic(JobOpportunityStage.noInterest,
+            CandidateOpportunityStage.twoWayReview, CandidateOpportunityStage.noJobOffer);
+        addClosingLogic(JobOpportunityStage.noInterest,
+            CandidateOpportunityStage.offer, CandidateOpportunityStage.noJobOffer);
+        addClosingLogic(JobOpportunityStage.noSuitableCandidates,
+            CandidateOpportunityStage.twoWayReview, CandidateOpportunityStage.noJobOffer);
+        addClosingLogic(JobOpportunityStage.noSuitableCandidates,
+            CandidateOpportunityStage.offer, CandidateOpportunityStage.noJobOffer);
+        addClosingLogic(JobOpportunityStage.noJobOffer,
+            CandidateOpportunityStage.twoWayReview, CandidateOpportunityStage.noJobOffer);
+        addClosingLogic(JobOpportunityStage.noJobOffer,
+            CandidateOpportunityStage.offer, CandidateOpportunityStage.noJobOffer);
+        addClosingLogic(JobOpportunityStage.noVisa,
+            CandidateOpportunityStage.twoWayReview, CandidateOpportunityStage.noJobOffer);
+        addClosingLogic(JobOpportunityStage.noVisa,
+            CandidateOpportunityStage.offer, CandidateOpportunityStage.noJobOffer);
+
+        //Candidates who have had an offer and are at the acceptance stage before job is closed
+        //for any reason  are closed with candidateRejectsOffer (because they didn't accept it).
+        addClosingLogic(JobOpportunityStage.noInterest,
+            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
+        addClosingLogic(JobOpportunityStage.noSuitableCandidates,
+            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
+        addClosingLogic(JobOpportunityStage.noJobOffer,
+            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
+        addClosingLogic(JobOpportunityStage.noVisa,
+            CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
+
+        //Candidates in later stages when job is closed with noVisa are set to noVisa
+        addClosingLogic(JobOpportunityStage.noVisa,
+            CandidateOpportunityStage.provincialVisaPreparation, CandidateOpportunityStage.noVisa);
+        addClosingLogic(JobOpportunityStage.noVisa,
+            CandidateOpportunityStage.provincialVisaProcessing, CandidateOpportunityStage.noVisa);
+        addClosingLogic(JobOpportunityStage.noVisa,
+            CandidateOpportunityStage.visaPreparation, CandidateOpportunityStage.noVisa);
+        addClosingLogic(JobOpportunityStage.noVisa,
+            CandidateOpportunityStage.visaProcessing, CandidateOpportunityStage.noVisa);
     }
 
     @Override
     public SalesforceJobOpp createJob(UpdateJobRequest request)
         throws EntityExistsException, SalesforceException {
         User loggedInUser = getLoggedInUser("create job");
+
+        //The partner associated with the person who created the job is the job creator
+        final PartnerImpl loggedInUserPartner = loggedInUser.getPartner();
+        if (!loggedInUserPartner.isJobCreator()) {
+            throw new UnauthorisedActionException("create job");
+        }
 
         //Check if we already have a job for this Salesforce job opp.
         final String sfJoblink = request.getSfJoblink();
@@ -120,6 +218,8 @@ public class JobServiceImpl implements JobService {
         if (job == null) {
             throw new InvalidRequestException("No such Salesforce opportunity: " + sfJoblink);
         }
+
+        updateJobFromRequest(job, request);
 
         job.setAuditFields(loggedInUser);
 
@@ -136,13 +236,16 @@ public class JobServiceImpl implements JobService {
         SavedList exclusionList = salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
         job.setExclusionList(exclusionList);
 
+        job.setJobCreator(loggedInUserPartner);
+
         return salesforceJobOppRepository.save(job);
     }
 
     private User getLoggedInUser(String operation) {
-        User loggedInUser = authService.getLoggedInUser().orElseThrow(
-            () -> new UnauthorisedActionException(operation)
-        );
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new UnauthorisedActionException(operation);
+        }
         return loggedInUser;
     }
 
@@ -343,17 +446,11 @@ public class JobServiceImpl implements JobService {
         }
     }
 
-    @NonNull
-    @Override
-    public SalesforceJobOpp updateJob(long id, UpdateJobRequest request)
-        throws NoSuchObjectException, SalesforceException {
-        User loggedInUser = getLoggedInUser("update job");
-        SalesforceJobOpp job = getJob(id);
+    private void updateJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
         final JobOpportunityStage stage = request.getStage();
         if (stage != null) {
             job.setStage(stage);
 
-            //todo Add Zeynep's new logic
             //Do automation logic
             if (stage.isClosed()) {
                 closeUnclosedCandidateOppsForJob(job, stage);
@@ -370,30 +467,80 @@ public class JobServiceImpl implements JobService {
             job.setNextStepDueDate(nextStepDueDate);
         }
 
+        final Long contactUserId = request.getContactUserId();
+        if (contactUserId != null) {
+            User contactUser = userService.getUser(contactUserId);
+            job.setContactUser(contactUser);
+        }
+
+        final LocalDate submissionDueDate = request.getSubmissionDueDate();
+        if (submissionDueDate != null) {
+            job.setSubmissionDueDate(submissionDueDate);
+        }
+    }
+
+    @NonNull
+    @Override
+    public SalesforceJobOpp updateJob(long id, UpdateJobRequest request)
+        throws NoSuchObjectException, SalesforceException {
+        User loggedInUser = getLoggedInUser("update job");
+        SalesforceJobOpp job = getJob(id);
+
+        final JobOpportunityStage stage = request.getStage();
+        final String nextStep = request.getNextStep();
+        final LocalDate nextStepDueDate = request.getNextStepDueDate();
         salesforceService.updateEmployerOpportunityStage(
             job.getSfId(), stage, nextStep, nextStepDueDate);
 
-        job.setSubmissionDueDate(request.getSubmissionDueDate());
+        updateJobFromRequest(job, request);
         job.setAuditFields(loggedInUser);
         return salesforceJobOppRepository.save(job);
     }
 
-    private void closeUnclosedCandidateOppsForJob(SalesforceJobOpp job, JobOpportunityStage stage) {
+    private void closeUnclosedCandidateOppsForJob(SalesforceJobOpp job, JobOpportunityStage jobCloseStage) {
         Set<CandidateOpportunity> candidateOpportunities = job.getCandidateOpportunities();
-        final Set<Candidate> candidates = candidateOpportunities.stream()
+        final List<CandidateOpportunity> activeOpps = candidateOpportunities.stream()
             //Not interested in opps which are already closed or at an employed stage
-            .filter(co -> !co.isClosed() && !co.getStage().isEmployed())
-            .map(CandidateOpportunity::getCandidate).collect(Collectors.toSet());
+            .filter(co -> !co.isClosed() && !co.getStage().isEmployed()).toList();
 
-        if (candidates.size() > 0) {
-            CandidateOpportunityParams params = new CandidateOpportunityParams();
-            params.setStage(CandidateOpportunityStage.noJobOffer);
-            params.setClosingComments("Job opportunity closed: " + stage.toString());
+        //This will be populated with the candidates whose opps need to be updated for each
+        //closing stage.
+        Map<CandidateOpportunityStage, List<Candidate>> closingStageCandidatesMap = new HashMap<>();
 
-            candidateOpportunityService.createUpdateCandidateOpportunities(candidates, job, params);
+        if (activeOpps.size() > 0) {
+            final EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>
+                currentToClosingStageMap = closingStageLogic.get(jobCloseStage);
+
+            for (CandidateOpportunity activeOpp : activeOpps) {
+                CandidateOpportunityStage closingStage = currentToClosingStageMap.get(activeOpp.getStage());
+                if (closingStage == null) {
+                    //Missing logic
+                    log.warn("Closing logic missing case for job closing stage " + jobCloseStage +
+                        " and candidate in stage " + activeOpp.getStage());
+                    //Default to closing candidate opp as notFitForRole
+                    closingStage = CandidateOpportunityStage.notFitForRole;
+                }
+                List<Candidate> candidates = closingStageCandidatesMap.computeIfAbsent(
+                    closingStage, k -> new ArrayList<>());
+                candidates.add(activeOpp.getCandidate());
+            }
+
+            for (Entry<CandidateOpportunityStage, List<Candidate>> stageListEntry :
+                closingStageCandidatesMap.entrySet()) {
+
+                CandidateOpportunityParams params = new CandidateOpportunityParams();
+                final CandidateOpportunityStage candidateOppClosedStage = stageListEntry.getKey();
+                params.setStage(candidateOppClosedStage);
+                params.setClosingComments("Job opportunity closed: " + jobCloseStage.toString());
+
+                candidateOpportunityService.createUpdateCandidateOpportunities(
+                    stageListEntry.getValue(), job, params);
+            }
 
             log.info("Closed opps for candidates going for job  " + job.getId() + ": "
-                + candidates.stream().map(Candidate::getCandidateNumber).collect(Collectors.joining(",")));
+                + activeOpps.stream().map(opp -> opp.getCandidate().getCandidateNumber())
+                .collect(Collectors.joining(",")));
+
         }
     }
 

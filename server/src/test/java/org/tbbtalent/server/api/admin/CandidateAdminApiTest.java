@@ -538,22 +538,21 @@ class CandidateAdminApiTest extends ApiTestBase {
     @DisplayName("generate token succeeds")
     void generateTokenSucceeds() throws Exception {
         String cn = "99";
-        long expiryTimeDays = 365L;
         String token = "token";
 
-        given(candidateTokenProvider.generateToken(cn, expiryTimeDays))
+        given(candidateTokenProvider.generateCvToken(any(CvClaims.class), anyLong()))
                 .willReturn(token);
 
         mockMvc.perform(get(BASE_PATH + GENERATE_TOKEN_PATH.replace("{cn}", cn))
                         .header("Authorization", "Bearer " + "jwt-token")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.TEXT_PLAIN_VALUE))
 
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN_VALUE))
                 .andExpect(jsonPath("$", is(token)));
 
-        verify(candidateTokenProvider).generateToken(cn, expiryTimeDays);
+        verify(candidateTokenProvider).generateCvToken(any(CvClaims.class), anyLong());
     }
 
     private void postSearchRequestAndVerifyResponse(String path, String body) throws Exception {

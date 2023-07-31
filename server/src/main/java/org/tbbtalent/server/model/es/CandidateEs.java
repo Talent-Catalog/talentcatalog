@@ -25,6 +25,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -112,7 +113,6 @@ public class CandidateEs {
     @Field(type = FieldType.Text)
     private List<String> cvs;
 
-    @Field(type = FieldType.Text)
     private List<String> educations;
 
     @Enumerated(EnumType.STRING)
@@ -128,6 +128,21 @@ public class CandidateEs {
     private Integer minEnglishSpokenLevel;
 
     private Integer minEnglishWrittenLevel;
+
+    @Field(type = FieldType.Nested)
+    private List<Language> otherLanguages;
+
+    @Getter
+    @Setter
+    static class Language {
+        private String name;
+
+        @Field(type = FieldType.Integer)
+        private Integer minSpokenLevel;
+
+        @Field(type = FieldType.Integer)
+        private Integer minWrittenLevel;
+    }
 
     private String regoReferrerParam;
 
@@ -156,7 +171,6 @@ public class CandidateEs {
 
     private String partner;
 
-    @Field(type = FieldType.Text)
     private List<String> occupations;
 
     @Field(type = FieldType.Text)
@@ -219,19 +233,31 @@ public class CandidateEs {
 
         this.minEnglishSpokenLevel = null;
         this.minEnglishWrittenLevel = null;
+        this.otherLanguages = new ArrayList<>();
         List<CandidateLanguage> proficiencies = candidate.getCandidateLanguages();
         if (proficiencies != null) {
             for (CandidateLanguage proficiency : proficiencies) {
                 //Protect against bad data
                 if (proficiency.getLanguage() != null) {
-                    if ("english".equals(proficiency.getLanguage().getName().toLowerCase())) {
+                    final String languageName = proficiency.getLanguage().getName();
+                    if ("english".equalsIgnoreCase(languageName)) {
                         if (proficiency.getSpokenLevel() != null) {
                             this.minEnglishSpokenLevel = proficiency.getSpokenLevel().getLevel();
                         }
                         if (proficiency.getWrittenLevel() != null) {
                             this.minEnglishWrittenLevel = proficiency.getWrittenLevel().getLevel();
                         }
-                        break;
+                    } else if (StringUtils.isNotBlank(languageName)) {
+                        Language language = new Language();
+                        language.setName(languageName);
+
+                        if (proficiency.getSpokenLevel() != null) {
+                            language.setMinSpokenLevel(proficiency.getSpokenLevel().getLevel());
+                        }
+                        if (proficiency.getWrittenLevel() != null) {
+                            language.setMinWrittenLevel(proficiency.getWrittenLevel().getLevel());
+                        }
+                        this.otherLanguages.add(language);
                     }
                 }
             }

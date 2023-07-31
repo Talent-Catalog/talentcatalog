@@ -16,17 +16,16 @@
 
 package org.tbbtalent.server.request.partner;
 
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 
+import java.util.Set;
+
 @Getter
 @Setter
 public class UpdatePartnerRequest {
-
-    private String partnerType;
 
     private String abbreviation;
 
@@ -44,11 +43,15 @@ public class UpdatePartnerRequest {
 
     private boolean defaultPartnerRef;
 
+    private boolean jobCreator;
+
     private String logo;
 
     private String name;
 
     private String notificationEmail;
+
+    private boolean sourcePartner;
 
     private Status status;
 
