@@ -36,9 +36,9 @@ export class CandidateVisaJobComponent implements OnInit {
   ngOnInit(): void {
     if (this.visaRecord.candidateVisaJobChecks.length > 0) {
       //If exists, get the last selected visa check from local storage. If nothing there, get the first one.
-      const index: number = this.localStorageService.get('VisaJobCheckIndex');
-      if (index) {
-        this.selectedIndex = index;
+      const memoryIndex: number = this.localStorageService.get('VisaJobCheckIndex');
+      if (memoryIndex) {
+        this.selectedIndex = memoryIndex;
       } else {
         this.selectedIndex = 0;
       }
@@ -46,18 +46,23 @@ export class CandidateVisaJobComponent implements OnInit {
     this.form = this.fb.group({
       jobIndex: [this.selectedIndex]
     });
+    this.selectedJobIndex.emit(this.selectedIndex);
   }
 
-  private get filteredJobs(): ShortJob[] {
+  private get filteredSfJobs(): ShortJob[] {
     /**
-     * IF there are no existing visa job checks, return all the jobs associated with their candidate opportunities.
-     * ELSE filter those jobs out from the jobs associated with their candidate opportunites.
+     * IF there are no existing visa job checks, return all the jobs associated with the candidate's candidate opportunities.
+     * ELSE filter those jobs out from the jobs associated with their candidate opportunities
+     * SO that we avoid double ups of visa job checks for the same job.
      */
     if (!this.visaRecord?.candidateVisaJobChecks) {
       return this.candidate.candidateOpportunities.map(co => co.jobOpp);
     } else {
+      /**
+       * NOTE: Some job checks don't have a SF Job Opp associated as these were entered in an earlier version of the code.
+       */
       const existingJobIds: number [] = this.visaRecord.candidateVisaJobChecks
-        .map(jobCheck => jobCheck.jobOpp.id);
+        .map(jobCheck => jobCheck?.jobOpp?.id);
 
       return this.candidate.candidateOpportunities
         .map(co => co.jobOpp)
@@ -67,7 +72,7 @@ export class CandidateVisaJobComponent implements OnInit {
 
   addJob() {
     const modal = this.modalService.open(HasNameSelectorComponent);
-    modal.componentInstance.hasNames = this.filteredJobs;
+    modal.componentInstance.hasNames = this.filteredSfJobs;
     modal.componentInstance.label = "Candidate's Job Opportunities";
 
     modal.result
@@ -103,8 +108,9 @@ export class CandidateVisaJobComponent implements OnInit {
   deleteJob(i: number) {
     const confirmationModal = this.modalService.open(ConfirmationComponent);
     const visaJobCheck: CandidateVisaJobCheck = this.visaRecord.candidateVisaJobChecks[i];
+    const jobName = visaJobCheck.jobOpp ? visaJobCheck.jobOpp.name : visaJobCheck.name
     confirmationModal.componentInstance.message =
-      "Are you sure you want to delete the job check for " + visaJobCheck.jobOpp.name;
+      "Are you sure you want to delete the job check for " + jobName + '?';
     confirmationModal.result
     .then((result) => {
       if (result === true) {
