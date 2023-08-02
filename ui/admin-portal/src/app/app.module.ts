@@ -314,9 +314,6 @@ import {
 import {
   VisaOtherOptionsComponent
 } from "./components/candidates/visa/visa-job-assessments/visa-other-options/visa-other-options.component";
-import {
-  YearsRelevantExpComponent
-} from "./components/candidates/visa/visa-job-assessments/years-relevant-exp/years-relevant-exp.component";
 import {IeltsLevelComponent} from "./components/candidates/visa/visa-job-assessments/ielts-level/ielts-level.component";
 import {
   QualificationRelevantComponent
@@ -488,6 +485,12 @@ import {CvPreviewComponent} from './components/util/cv-preview/cv-preview.compon
 import {
   VisaJobCheckCaComponent
 } from './components/candidates/view/tab/candidate-visa-tab/ca/job/visa-job-check-ca.component';
+import {
+  RelevantWorkExpComponent
+} from './components/candidates/visa/visa-job-assessments/relevant-work-exp/relevant-work-exp.component';
+import {
+  AgeRequirementComponent
+} from './components/candidates/visa/visa-job-assessments/age-requirement/age-requirement.component';
 
 @NgModule({
   declarations: [
@@ -674,7 +677,6 @@ import {
     VisaFourNineFourComponent,
     VisaOneEightSixComponent,
     VisaOtherOptionsComponent,
-    YearsRelevantExpComponent,
     IeltsLevelComponent,
     QualificationRelevantComponent,
     DatePickerComponent,
@@ -775,7 +777,9 @@ import {
     CandidateVisaJobComponent,
     CvPreviewComponent,
     CandidateVisaJobComponent,
-    VisaJobCheckCaComponent
+    VisaJobCheckCaComponent,
+    RelevantWorkExpComponent,
+    AgeRequirementComponent
   ],
   imports: [
     BrowserModule,

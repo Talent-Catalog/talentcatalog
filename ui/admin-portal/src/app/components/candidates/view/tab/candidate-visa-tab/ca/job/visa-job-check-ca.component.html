@@ -40,37 +40,29 @@
     <ng-template ngbPanelContent>
 
       <div>
+        <app-relevant-work-exp
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [visaCheckRecord]="visaCheckRecord">
+        </app-relevant-work-exp>
+        <app-age-requirement
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [visaCheckRecord]="visaCheckRecord">
+        </app-age-requirement>
         <app-english-threshold
           [entity]="candidate"
           [candidateIntakeData]="candidateIntakeData"
           [visaCheckRecord]="visaCheckRecord">
         </app-english-threshold>
+        <app-qualification-relevant
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [visaCheckRecord]="visaCheckRecord">
+        </app-qualification-relevant>
       </div>
       <hr>
       <div class="card card-body intake-data">
-        <div>
-          <div class="card-title">Education</div>
-          <!-- Display All Candidate Qualifications   -->
-          <div *ngIf="candQualifications?.length > 0">
-            <ul>
-              <li class="display" *ngFor="let edu of candQualifications">
-                <app-fixed-input
-                  *ngIf="edu.educationMajor"
-                  [question]="edu.educationMajor?.name + ' ' + edu.courseName"
-                  [answer]="edu.educationType">
-                </app-fixed-input>
-                <app-fixed-input
-                  *ngIf="edu.educationMajor == null && edu.courseName"
-                  [question]="edu.courseName"
-                  [answer]="edu.educationType">
-                </app-fixed-input>
-              </li>
-            </ul>
-          </div>
-          <div *ngIf="candQualifications?.length == 0">
-            <p>No qualifications entered</p>
-          </div>
-        </div>
         <div>
           <div class="card-title">Experience</div>
           <!-- Display All Candidate Experience   -->
@@ -94,19 +86,43 @@
             <p>No experience entered</p>
           </div>
         </div>
-
-        <div class="card-title">Language exams</div>
-        <div *ngIf="candidateIntakeData.candidateExams.length == 0">
-          <p>No exams entered</p>
+        <div>
+          <div class="card-title">Language exams</div>
+          <div *ngIf="candidateIntakeData.candidateExams.length == 0">
+            <p>No exams entered</p>
+          </div>
+          <ul>
+            <li *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
+              <p class="mb-0">{{ce?.exam}}<span *ngIf="ce.otherExam">, </span>{{ce.otherExam}}: {{ce?.score}}<span *ngIf="ce.year"> ({{ce?.year}})</span>
+              </p>
+            </li>
+          </ul>
+          <div class="card-title">Estimated IELTS Score: <span>{{candidateIntakeData.langAssessmentScore}}</span></div>
+          <div class="card-title">Partner IELTS Score: <span>{{candidateIntakeData.partnerIeltsScore}}</span></div>
         </div>
-        <ul>
-          <li *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
-            <p class="mb-0">{{ce?.exam}}<span *ngIf="ce.otherExam">, </span>{{ce.otherExam}}: {{ce?.score}}<span *ngIf="ce.year"> ({{ce?.year}})</span>
-            </p>
-          </li>
-        </ul>
-        <div class="card-title">Estimated IELTS Score: <span>{{candidateIntakeData.langAssessmentScore}}</span></div>
-        <div class="card-title">Partner IELTS Score: <span>{{candidateIntakeData.partnerIeltsScore}}</span></div>
+        <div>
+          <div class="card-title">Education</div>
+          <!-- Display All Candidate Qualifications   -->
+          <div *ngIf="candQualifications?.length > 0">
+            <ul>
+              <li class="display" *ngFor="let edu of candQualifications">
+                <app-fixed-input
+                  *ngIf="edu.educationMajor"
+                  [question]="edu.educationMajor?.name + ' ' + edu.courseName"
+                  [answer]="edu.educationType">
+                </app-fixed-input>
+                <app-fixed-input
+                  *ngIf="edu.educationMajor == null && edu.courseName"
+                  [question]="edu.courseName"
+                  [answer]="edu.educationType">
+                </app-fixed-input>
+              </li>
+            </ul>
+          </div>
+          <div *ngIf="candQualifications?.length == 0">
+            <p>No qualifications entered</p>
+          </div>
+        </div>
       </div>
 
     </ng-template>
@@ -141,7 +157,16 @@
 
   <ngb-panel id="family-assessment" title="Family Assessment">
     <ng-template ngbPanelContent>
-
+      <div class="card card-body intake-data">
+        <app-fixed-input
+          [question]="'Marital Status:'"
+          [answer]="candidateIntakeData?.maritalStatus">
+        </app-fixed-input>
+        <app-fixed-input
+          [question]="'Spouse Education:'"
+          [answer]="candidateIntakeData?.partnerEduLevel?.toString()">
+        </app-fixed-input>
+      </div>
     </ng-template>
   </ngb-panel>
 
