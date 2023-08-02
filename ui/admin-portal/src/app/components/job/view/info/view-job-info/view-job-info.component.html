@@ -67,7 +67,7 @@
       <div class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-user"></i>Job Contact</label>
 
-        <div class="form-control-plaintext">
+        <div *ngIf="getContactUser()" class="form-control-plaintext">
           <div>{{showUser(getContactUser())}}</div>
           <div>
             <a target="_blank" href="{{showEmailUrl(getContactUser().email)}}">{{getContactUser().email}}</a>
