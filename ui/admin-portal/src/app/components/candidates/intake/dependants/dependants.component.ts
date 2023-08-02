@@ -16,9 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
-import {
-  CandidateDependantService
-} from '../../../../services/candidate-dependant.service';
+import {CandidateDependantService} from '../../../../services/candidate-dependant.service';
 import {Country} from "../../../../model/country";
 
 @Component({
@@ -30,6 +28,7 @@ export class DependantsComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
+  @Input() editable: boolean = true;
   error: boolean;
   @Input() nationalities: Country[];
   saving: boolean;
