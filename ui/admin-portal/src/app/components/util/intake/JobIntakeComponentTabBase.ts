@@ -97,7 +97,6 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
       'job':  this.jobService.get(this.job.id),
     }).subscribe(results => {
       this.loading = false;
-      // todo add hardcoded data to test with
       this.jobIntakeData = results['job'].jobOppIntake;
       this.onDataLoaded(init);
     }, error => {
