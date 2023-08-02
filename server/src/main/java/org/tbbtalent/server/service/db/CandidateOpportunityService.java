@@ -26,12 +26,13 @@ import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateOpportunity;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tbbtalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
 public interface CandidateOpportunityService {
-    
+
     /**
      * Creates or updates Contact records on Salesforce for the given candidates and, if sfJobOpp
      * is not null, indicating that these candidates are associated with a job opportunity,
@@ -40,9 +41,9 @@ public interface CandidateOpportunityService {
      *
      * @param candidates Candidates to update
      * @param sfJobOpp If not null candidate opportunities are created/updated
-     * @param candidateOppParams Used to create/update candidate opportunities. 
-     *                           Can be null in which case no changes are made to existing opps, 
-     *                           but new opps will be created if needed with the stage defaulting 
+     * @param candidateOppParams Used to create/update candidate opportunities.
+     *                           Can be null in which case no changes are made to existing opps,
+     *                           but new opps will be created if needed with the stage defaulting
      *                           to "prospect".
      * @throws SalesforceException If there are errors relating to keys and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
@@ -54,7 +55,7 @@ public interface CandidateOpportunityService {
     /**
      * See {@link #createUpdateCandidateOpportunities(Collection, SalesforceJobOpp, CandidateOpportunityParams)}
      * <p/>
-     * This method extracts the appropriate data from the given request and then calls the 
+     * This method extracts the appropriate data from the given request and then calls the
      * above method.
      *
      * @param request Identifies candidates as well as optional Salesforce fields to set on
@@ -83,6 +84,18 @@ public interface CandidateOpportunityService {
      * @throws SalesforceException if there are issues contacting Salesforce
      */
     void loadCandidateOpportunities(String... jobOpportunityIds) throws SalesforceException;
+
+    /**
+     * Creates or updates a CandidateOpportunity on the TC associated with given opportunity
+     * retrieved from Salesforce.
+     * <p/>
+     * This will also create the associated job opportunity on the TC if it is not already present.
+     * @param op Candidate opportunity data retrieved from Salesforce
+     * @return Updated or created CandidateOpportunity
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    @NonNull
+    CandidateOpportunity loadCandidateOpportunity(Opportunity op) throws SalesforceException;
 
 
     /**

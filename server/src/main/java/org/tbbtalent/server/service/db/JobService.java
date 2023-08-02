@@ -81,6 +81,11 @@ public interface JobService {
     JobInfoForSlackPost extractJobInfoForSlack(long id, String tcJobLink) throws NoSuchObjectException;
 
     /**
+     * Loads ALL old jobs which had candidates, together with their candidate opps.
+     */
+    void loadJobOppsAndCandidateOpps();
+
+    /**
      * Marks job as published by the current user.
      * <p/>
      * <ul>

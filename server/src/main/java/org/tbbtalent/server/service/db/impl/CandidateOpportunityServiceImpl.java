@@ -229,19 +229,30 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
             log.info("Loaded " + ops.size() + " candidate opportunities from Salesforce");
             for (Opportunity op : ops) {
-                String id = op.getId();
-                //Fetch DB with id
-                CandidateOpportunity candidateOpportunity = candidateOpportunityRepository.findBySfId(id)
-                    .orElse(null);
-                if (candidateOpportunity == null) {
-                    candidateOpportunity = new CandidateOpportunity();
-                }
-                copyOpportunityToCandidateOpportunity(op, candidateOpportunity);
-                candidateOpportunityRepository.save(candidateOpportunity);
+                loadCandidateOpportunity(op, false);
             }
 
             startJobIndex = endJobIndex;
         }
+    }
+
+    @Override
+    @NonNull
+    public CandidateOpportunity loadCandidateOpportunity(Opportunity op) throws SalesforceException {
+        return loadCandidateOpportunity(op, true);
+    }
+
+    @NonNull
+    private CandidateOpportunity loadCandidateOpportunity(Opportunity op, boolean createJobOpp) throws SalesforceException {
+        String id = op.getId();
+        //Look for existing candidate op with that SF id.
+        CandidateOpportunity candidateOpportunity = candidateOpportunityRepository.findBySfId(id)
+            .orElse(null);
+        if (candidateOpportunity == null) {
+            candidateOpportunity = new CandidateOpportunity();
+        }
+        copyOpportunityToCandidateOpportunity(op, candidateOpportunity, createJobOpp);
+        return candidateOpportunityRepository.save(candidateOpportunity);
     }
 
     /**
@@ -250,13 +261,18 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
      * @param candidateOpportunity Cached job opp on our DB
      */
     private void copyOpportunityToCandidateOpportunity(
-        @NonNull Opportunity op, @NonNull CandidateOpportunity candidateOpportunity) {
+        @NonNull Opportunity op, @NonNull CandidateOpportunity candidateOpportunity, boolean createJobOpp) {
 
         //Update DB with data from op
 
         //Look up job opp from parent
         String jobOppSfid = op.getParentOpportunityId();
-        SalesforceJobOpp jobOpp = salesforceJobOppService.getJobOppById(jobOppSfid);
+        SalesforceJobOpp jobOpp;
+        if (createJobOpp) {
+            jobOpp = salesforceJobOppService.getOrCreateJobOppFromId(jobOppSfid);
+        } else {
+            jobOpp = salesforceJobOppService.getJobOppById(jobOppSfid);
+        }
         if (jobOpp == null) {
             log.error("Could not find job opp: " + jobOppSfid + " parent of " + op.getName());
         }

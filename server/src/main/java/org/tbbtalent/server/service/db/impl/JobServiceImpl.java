@@ -16,6 +16,25 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,8 +44,23 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.SalesforceException;
+import org.tbbtalent.server.exception.UnauthorisedActionException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOpportunity;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.tbbtalent.server.model.db.JobOppIntake;
+import org.tbbtalent.server.model.db.JobOpportunityStage;
+import org.tbbtalent.server.model.db.PartnerImpl;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SavedSearchType;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
@@ -40,24 +74,21 @@ import org.tbbtalent.server.request.link.UpdateLinkRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.AuthService;
-import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.CandidateOpportunityService;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.service.db.JobOppIntakeService;
+import org.tbbtalent.server.service.db.JobService;
+import org.tbbtalent.server.service.db.SalesforceBridgeService;
+import org.tbbtalent.server.service.db.SalesforceJobOppService;
+import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.SalesforceHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 @Service
 public class JobServiceImpl implements JobService {
@@ -319,6 +350,37 @@ public class JobServiceImpl implements JobService {
         jobInfo.setTcJobLink(tcJobLink);
 
         return jobInfo;
+    }
+
+    @Async
+    @Override
+    public void loadJobOppsAndCandidateOpps() {
+
+        log.info("Loading candidate opportunities from Salesforce");
+
+        final int limit = 20;
+
+        int offset = 0;
+        int nOpps = -1;
+        while (nOpps != 0) {
+
+            log.info("Attempting to load " + limit + " opps from " + offset);
+            List<Opportunity> ops = salesforceService.findCandidateOpportunitiesPage(null, offset, limit);
+            nOpps = ops.size();
+            log.info("Loaded " + nOpps + " candidate opportunities from Salesforce");
+            offset += nOpps;
+
+            for (Opportunity op : ops) {
+                String jobOppId = op.getParentOpportunityId();
+                if (jobOppId == null) {
+                    log.warn("Candidate opportunity without parent job opp: " + op.getName());
+                } else {
+                    CandidateOpportunity candidateOpp =
+                        candidateOpportunityService.loadCandidateOpportunity(op);
+                    log.info("Updated/created candidate opportunity " + candidateOpp.getName());
+                }
+            }
+        }
     }
 
     @Override

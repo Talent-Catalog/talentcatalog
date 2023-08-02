@@ -93,6 +93,17 @@ public interface SalesforceService {
     List<Opportunity> findCandidateOpportunities(String condition) throws WebClientException;
 
     /**
+     * Searches Salesforce for a page of Candidate Opportunity records matching the given condition.
+     *
+     * @param condition Effectively the logical (predicate) part of a SOQL WHERE clause.
+     * @param offset Start of requested page - origin 0
+     * @param limit Page size
+     * @return List of Salesforce Candidate Opportunity records
+     * @throws WebClientException       if there is a problem connecting to Salesforce
+     */
+    List<Opportunity> findCandidateOpportunitiesPage(String condition, int offset, int limit);
+
+    /**
      * Searches Salesforce for all Candidate Opportunity records associated with the given
      * Salesforce job ids.
      *
