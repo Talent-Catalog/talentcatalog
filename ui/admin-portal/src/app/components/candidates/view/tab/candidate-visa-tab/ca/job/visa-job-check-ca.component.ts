@@ -3,7 +3,8 @@ import {
   Candidate,
   CandidateIntakeData,
   CandidateVisa,
-  CandidateVisaJobCheck
+  CandidateVisaJobCheck,
+  IeltsStatus
 } from "../../../../../../../model/candidate";
 import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
@@ -25,6 +26,7 @@ export class VisaJobCheckCaComponent implements OnInit {
   candQualifications: CandidateEducation[];
   selectedJobCheck: CandidateVisaJobCheck;
   familyInCanada: string;
+  partnerIeltsString: string;
 
   error: string;
 
@@ -50,9 +52,15 @@ export class VisaJobCheckCaComponent implements OnInit {
     )
 
     this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
+    this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts]
+    + (this.candidateIntakeData?.partnerIeltsScore ? ', Score: ' + this.candidateIntakeData.partnerIeltsScore : null);
   }
+
+
 
   updateSelectedJob(index: number){
     this.selectedJobCheck = this.visaCheckRecord.candidateVisaJobChecks[index];
   }
+
+  protected readonly IeltsStatus = IeltsStatus;
 }
