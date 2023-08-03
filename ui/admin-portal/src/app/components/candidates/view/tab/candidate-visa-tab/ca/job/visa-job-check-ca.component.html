@@ -26,22 +26,42 @@
 
   <ngb-panel id="occupation-eligibility" title="Occupation Eligibility">
     <ng-template ngbPanelContent>
+      <app-occupation-category
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaCheckRecord">
+      </app-occupation-category>
+      <app-occupation-subcategory
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaCheckRecord">
+      </app-occupation-subcategory>
+      <hr>
       <div class="card card-body intake-data">
         <app-fixed-input
           [question]="'Job location'"
           [answer]="selectedJob?.jobOppIntake?.location">
-        </app-fixed-input>>
+        </app-fixed-input>
         <app-fixed-input
           [question]="'Job location details'"
           [answer]="selectedJob?.jobOppIntake?.locationDetails">
-        </app-fixed-input>>
+        </app-fixed-input>
+        <small class="text-center text-muted">All job information can be found on the job's page - to view click the linked job name under Job Specific Assessment above.</small>
       </div>
     </ng-template>
   </ngb-panel>
 
-  <ngb-panel id="pathway-eligibility" title="Pathway Eligibility">
+  <ngb-panel id="pathway-eligibility">
+    <ng-template ngbPanelTitle>
+      <p class="mb-0">Pathway Eligibility
+        <span class="small fw-light fst-italic">
+          <a [href]="pathwaysInfoLink" target="_blank">
+            (For more information on the pathways click here <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>)
+          </a>
+        </span>
+      </p>
+    </ng-template>
     <ng-template ngbPanelContent>
-        <button class="btn btn-sm btn-secondary mb-2" (click)="openPathwaysLink()"><i class="fa-solid fa-road"></i> View pathways</button>
       <app-preferred-pathways
         [entity]="candidate"
         [candidateIntakeData]="candidateIntakeData"

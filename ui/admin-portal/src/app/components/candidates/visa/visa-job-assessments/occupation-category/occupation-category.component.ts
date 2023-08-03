@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CandidateVisaJobCheck} from "../../../../../model/candidate";
+import {CandidateVisaJobCheck, getDestinationOccupationCatLink} from "../../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
@@ -12,6 +12,7 @@ import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
 export class OccupationCategoryComponent extends IntakeComponentBase implements OnInit {
 
   @Input() selectedJobCheck: CandidateVisaJobCheck;
+  occupationCatLink: string;
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -22,6 +23,8 @@ export class OccupationCategoryComponent extends IntakeComponentBase implements 
       visaJobId: [this.selectedJobCheck?.id],
       visaJobOccupationCategory: [this.selectedJobCheck?.occupationCategory],
     });
+
+    this.occupationCatLink = getDestinationOccupationCatLink(this.visaCheckRecord?.country.id);
   }
 
 }

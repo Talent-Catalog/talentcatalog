@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CandidateVisaJobCheck} from "../../../../../model/candidate";
+import {CandidateVisaJobCheck, getDestinationOccupationSubcatLink} from "../../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
@@ -11,6 +11,7 @@ import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
 })
 export class OccupationSubcategoryComponent extends IntakeComponentBase implements OnInit {
   @Input() selectedJobCheck: CandidateVisaJobCheck;
+  occupationSubcatLink: string;
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -21,6 +22,7 @@ export class OccupationSubcategoryComponent extends IntakeComponentBase implemen
       visaJobId: [this.selectedJobCheck?.id],
       visaJobOccupationSubcategory: [this.selectedJobCheck?.occupationSubcategory],
     });
+    this.occupationSubcatLink = getDestinationOccupationSubcatLink(this.visaCheckRecord?.country.id);
   }
 
 }

@@ -29,8 +29,10 @@ export class VisaJobCheckCaComponent implements OnInit {
   candQualifications: CandidateEducation[];
   selectedJobCheck: CandidateVisaJobCheck;
   selectedJob: Job;
+
   familyInCanada: string;
   partnerIeltsString: string;
+  pathwaysInfoLink: string;
 
   error: string;
 
@@ -56,7 +58,7 @@ export class VisaJobCheckCaComponent implements OnInit {
       }
     )
 
-    this.jobService.get(this.selectedJobCheck.jobOpp.id).subscribe(
+    this.jobService.get(this.selectedJobCheck?.jobOpp.id).subscribe(
       (response) => {
         this.selectedJob = response;
       }, (error) => {
@@ -64,22 +66,16 @@ export class VisaJobCheckCaComponent implements OnInit {
       }
     )
 
+    // Process & fetch values that need to be displayed.
     this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
-    this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts]
-    + (this.candidateIntakeData?.partnerIeltsScore ? ', Score: ' + this.candidateIntakeData.partnerIeltsScore : null);
+    this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts] +
+      (this.candidateIntakeData?.partnerIeltsScore ? ', Score: ' + this.candidateIntakeData.partnerIeltsScore : null);
+    this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
   }
 
 
 
   updateSelectedJob(index: number){
     this.selectedJobCheck = this.visaCheckRecord.candidateVisaJobChecks[index];
-  }
-
-  openPathwaysLink() {
-    let url = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
-    if (url) {
-      //Open link in new window
-      window.open(url, "_blank");
-    }
   }
 }
