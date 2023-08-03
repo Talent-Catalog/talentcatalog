@@ -133,8 +133,14 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private User publishedBy;
 
     /**
-     * Time that this job was published on the TC
+     * Time that this job was published on the TC.
+     * <p/>
+     * A null publishedDate indicates that the job has not been published.
+     * <p/>
+     * Note that for old jobs that predated the concept of "publishing" a job, publishedDate
+     * should equal createdDate.
      */
+    @Nullable
     private OffsetDateTime publishedDate;
 
     /**
