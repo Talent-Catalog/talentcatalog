@@ -491,6 +491,21 @@ import {
 import {
   AgeRequirementComponent
 } from './components/candidates/visa/visa-job-assessments/age-requirement/age-requirement.component';
+import {
+  PreferredPathwaysComponent
+} from './components/candidates/visa/visa-job-assessments/preferred-pathways/preferred-pathways.component';
+import {
+  EligiblePathwaysComponent
+} from './components/candidates/visa/visa-job-assessments/eligible-pathways/eligible-pathways.component';
+import {
+  IneligiblePathwaysComponent
+} from './components/candidates/visa/visa-job-assessments/ineligible-pathways/ineligible-pathways.component';
+import {
+  OccupationCategoryComponent
+} from './components/candidates/visa/visa-job-assessments/occupation-category/occupation-category.component';
+import {
+  OccupationSubcategoryComponent
+} from './components/candidates/visa/visa-job-assessments/occupation-subcategory/occupation-subcategory.component';
 
 @NgModule({
   declarations: [
@@ -779,7 +794,12 @@ import {
     CandidateVisaJobComponent,
     VisaJobCheckCaComponent,
     RelevantWorkExpComponent,
-    AgeRequirementComponent
+    AgeRequirementComponent,
+    PreferredPathwaysComponent,
+    EligiblePathwaysComponent,
+    IneligiblePathwaysComponent,
+    OccupationCategoryComponent,
+    OccupationSubcategoryComponent
   ],
   imports: [
     BrowserModule,

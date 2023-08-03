@@ -26,13 +26,37 @@
 
   <ngb-panel id="occupation-eligibility" title="Occupation Eligibility">
     <ng-template ngbPanelContent>
-
+      <div class="card card-body intake-data">
+        <app-fixed-input
+          [question]="'Job location'"
+          [answer]="selectedJob?.jobOppIntake?.location">
+        </app-fixed-input>>
+        <app-fixed-input
+          [question]="'Job location details'"
+          [answer]="selectedJob?.jobOppIntake?.locationDetails">
+        </app-fixed-input>>
+      </div>
     </ng-template>
   </ngb-panel>
 
   <ngb-panel id="pathway-eligibility" title="Pathway Eligibility">
     <ng-template ngbPanelContent>
-
+        <button class="btn btn-sm btn-secondary mb-2" (click)="openPathwaysLink()"><i class="fa-solid fa-road"></i> View pathways</button>
+      <app-preferred-pathways
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaCheckRecord">
+      </app-preferred-pathways>
+      <app-eligible-pathways
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaCheckRecord">
+      </app-eligible-pathways>
+      <app-ineligible-pathways
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaCheckRecord">
+      </app-ineligible-pathways>
     </ng-template>
   </ngb-panel>
 

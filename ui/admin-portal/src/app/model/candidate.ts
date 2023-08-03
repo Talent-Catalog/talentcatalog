@@ -335,8 +335,14 @@ export interface CandidateVisaJobCheck {
   putForward?: VisaEligibility;
   tbbEligibility?: TBBEligibilityAssessment;
   notes?: String;
+  // TODO: NEW FIELDS FROM CANADA VISA CHECK TO BE ENTERED INTO BACKEND
   workExp?: String;
   ageRequirement?: YesNo;
+  preferredPathways?: string;
+  ineligiblePathways?: string;
+  eligiblePathways?: string;
+  occupationCategory?: string;
+  occupationSubcategory?: string;
 }
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)
@@ -666,5 +672,18 @@ export function getIeltsScoreTypeString(candidate: Candidate): string {
     return 'Academic';
   } else {
     return 'Estimated'
+  }
+}
+
+/**
+ * Returns the immigration pathway link for each destination country. Used in the visa intake.
+ * @param countryId
+ */
+export function getDestinationPathwayInfoLink(countryId: number): string {
+  switch (countryId) {
+  case 6216:
+    return 'https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/hire-permanent-foreign.html';
+  case 6191:
+    return 'www.australia.com';
   }
 }

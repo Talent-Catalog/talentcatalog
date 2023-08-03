@@ -4,6 +4,7 @@ import {
   CandidateIntakeData,
   CandidateVisa,
   CandidateVisaJobCheck,
+  getDestinationPathwayInfoLink,
   IeltsStatus
 } from "../../../../../../../model/candidate";
 import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
@@ -11,6 +12,8 @@ import {CandidateEducationService} from "../../../../../../../services/candidate
 import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
+import {JobService} from "../../../../../../../services/job.service";
+import {Job} from "../../../../../../../model/job";
 
 @Component({
   selector: 'app-visa-job-check-ca',
@@ -25,13 +28,15 @@ export class VisaJobCheckCaComponent implements OnInit {
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
   selectedJobCheck: CandidateVisaJobCheck;
+  selectedJob: Job;
   familyInCanada: string;
   partnerIeltsString: string;
 
   error: string;
 
   constructor(private candidateEducationService: CandidateEducationService,
-              private candidateOccupationService: CandidateOccupationService) {}
+              private candidateOccupationService: CandidateOccupationService,
+              private jobService: JobService) {}
 
   ngOnInit(): void {
     // Get the candidate occupations
@@ -51,6 +56,14 @@ export class VisaJobCheckCaComponent implements OnInit {
       }
     )
 
+    this.jobService.get(this.selectedJobCheck.jobOpp.id).subscribe(
+      (response) => {
+        this.selectedJob = response;
+      }, (error) => {
+        this.error = error;
+      }
+    )
+
     this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
     this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts]
     + (this.candidateIntakeData?.partnerIeltsScore ? ', Score: ' + this.candidateIntakeData.partnerIeltsScore : null);
@@ -62,5 +75,11 @@ export class VisaJobCheckCaComponent implements OnInit {
     this.selectedJobCheck = this.visaCheckRecord.candidateVisaJobChecks[index];
   }
 
-  protected readonly IeltsStatus = IeltsStatus;
+  openPathwaysLink() {
+    let url = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
+    if (url) {
+      //Open link in new window
+      window.open(url, "_blank");
+    }
+  }
 }
