@@ -16,6 +16,14 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.tbbtalent.server.util.SalesforceHelper.parseSalesforceOffsetDateTime;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Collection;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -34,16 +42,11 @@ import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.util.SalesforceHelper;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.Collection;
-import java.util.List;
-
-import static org.tbbtalent.server.util.SalesforceHelper.parseSalesforceOffsetDateTime;
-
 @Service
 public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
+    private static final OffsetDateTime FIRST_PUBLISHED_JOB_DATE =
+        OffsetDateTime.parse("2022-11-01T00:00:00Z", DateTimeFormatter.ISO_DATE_TIME);
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceService salesforceService;
     private final CountryRepository countryRepository;
@@ -202,7 +205,16 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         final String createdDate = op.getCreatedDate();
         if (createdDate != null) {
             try {
-                salesforceJobOpp.setCreatedDate(parseSalesforceOffsetDateTime(createdDate));
+                final OffsetDateTime date = parseSalesforceOffsetDateTime(createdDate);
+                salesforceJobOpp.setCreatedDate(date);
+
+                final OffsetDateTime publishedDate = salesforceJobOpp.getPublishedDate();
+                if (publishedDate == null) {
+                    //Set published date to created date if job is an old one - pre publishing
+                    if (date != null && date.isBefore(FIRST_PUBLISHED_JOB_DATE)) {
+                        salesforceJobOpp.setPublishedDate(date);
+                    }
+                }
             } catch (DateTimeParseException ex) {
                 log.error("Error decoding createdDate from SF: " + createdDate + " in job op " + op.getName());
             }
