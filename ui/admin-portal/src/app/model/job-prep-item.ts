@@ -25,7 +25,6 @@ export abstract class JobPrepItem {
 
   /**
    * Every item has a ...
-   * @param _job the job being prepared for publication
    * @param _description displayable description of this item
    * @param _tabId ID of job display tab where this item is defined
    */
@@ -95,9 +94,12 @@ export class JobPrepJOI extends JobPrepItem {
   }
 
   isCompleted(): boolean {
-    //todo this needs updating. What marks JOI as complete? Non empty Job summary?
-    const fileJoiLink = this.job?.submissionList?.fileJoiLink;
-    return fileJoiLink != null && fileJoiLink.trim().length > 0;
+    const joi = this.job?.jobOppIntake;
+    let completed = false;
+    if (joi != null) {
+      completed = joi.employerCostCommitment != null;
+    }
+    return completed;
   }
 }
 
