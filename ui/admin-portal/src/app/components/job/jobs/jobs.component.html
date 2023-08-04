@@ -91,10 +91,10 @@
               <i class="fa-solid fa-briefcase" title="Job"></i>
             </a>
           </td>
-          <td title="Contact {{fullUserName(opp.contactUser)}}">
-            {{opp.stage | truncate: 13}}
+          <td title="{{getCandidateOpportunityStageName(opp)}}">
+            {{getCandidateOpportunityStageName(opp) | truncate: 15}}
           </td>
-          <td>
+          <td title="Contact {{fullUserName(opp.contactUser)}}">
             {{opp.createdDate | date}}
           </td>
           <td>
