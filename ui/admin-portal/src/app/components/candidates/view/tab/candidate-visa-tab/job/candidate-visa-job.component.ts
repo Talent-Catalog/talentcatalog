@@ -20,7 +20,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 export class CandidateVisaJobComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  @Input() visaRecord: CandidateVisa;
+  @Input() visaCheckRecord: CandidateVisa;
   @Output() selectedJobIndex = new EventEmitter<number>();
   selectedIndex: number;
   loading: boolean;
@@ -34,7 +34,7 @@ export class CandidateVisaJobComponent implements OnInit {
               private fb: FormBuilder) { }
 
   ngOnInit(): void {
-    if (this.visaRecord.candidateVisaJobChecks.length > 0) {
+    if (this.visaCheckRecord.candidateVisaJobChecks.length > 0) {
       //If exists, get the last selected visa check from local storage. If nothing there, get the first one.
       const memoryIndex: number = this.localStorageService.get('VisaJobCheckIndex');
       if (memoryIndex) {
@@ -55,13 +55,13 @@ export class CandidateVisaJobComponent implements OnInit {
      * ELSE filter those jobs out from the jobs associated with their candidate opportunities
      * SO that we avoid double ups of visa job checks for the same job.
      */
-    if (!this.visaRecord?.candidateVisaJobChecks) {
+    if (!this.visaCheckRecord?.candidateVisaJobChecks) {
       return this.candidate.candidateOpportunities.map(co => co.jobOpp);
     } else {
       /**
        * NOTE: Some job checks don't have a SF Job Opp associated as these were entered in an earlier version of the code.
        */
-      const existingJobIds: number [] = this.visaRecord.candidateVisaJobChecks
+      const existingJobIds: number [] = this.visaCheckRecord.candidateVisaJobChecks
         .map(jobCheck => jobCheck?.jobOpp?.id);
 
       return this.candidate.candidateOpportunities
@@ -91,10 +91,10 @@ export class CandidateVisaJobComponent implements OnInit {
     let request: CreateCandidateVisaJobRequest = {
       jobOppId: jobOpp.id,
     }
-    this.candidateVisaJobService.create(this.visaRecord.id, request).subscribe(
+    this.candidateVisaJobService.create(this.visaCheckRecord.id, request).subscribe(
       (jobCheck) => {
-        this.visaRecord?.candidateVisaJobChecks?.push(jobCheck);
-        this.form.controls['jobIndex'].patchValue(this.visaRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
+        this.visaCheckRecord?.candidateVisaJobChecks?.push(jobCheck);
+        this.form.controls['jobIndex'].patchValue(this.visaCheckRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
         this.setSelectedIndex()
         this.loading = false;
       },
@@ -107,7 +107,7 @@ export class CandidateVisaJobComponent implements OnInit {
 
   deleteJob(i: number) {
     const confirmationModal = this.modalService.open(ConfirmationComponent);
-    const visaJobCheck: CandidateVisaJobCheck = this.visaRecord.candidateVisaJobChecks[i];
+    const visaJobCheck: CandidateVisaJobCheck = this.visaCheckRecord.candidateVisaJobChecks[i];
     const jobName = visaJobCheck.jobOpp ? visaJobCheck.jobOpp.name : visaJobCheck.name
     confirmationModal.componentInstance.message =
       "Are you sure you want to delete the job check for " + jobName + '?';
@@ -125,7 +125,7 @@ export class CandidateVisaJobComponent implements OnInit {
     this.candidateVisaJobService.delete(visaJobCheck.id).subscribe(
       (done) => {
         this.loading = false;
-        this.visaRecord.candidateVisaJobChecks.splice(i, 1);
+        this.visaCheckRecord.candidateVisaJobChecks.splice(i, 1);
         this.form.controls.jobIndex.patchValue(0);
         this.setSelectedIndex();
       },

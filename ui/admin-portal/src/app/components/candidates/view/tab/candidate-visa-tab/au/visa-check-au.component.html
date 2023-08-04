@@ -18,15 +18,11 @@
   <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 <div *ngIf="error">
-  {{error}}
+  {{this.error}}
 </div>
 <div *ngIf="!loading" id="VisaAustralia">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h5>Visa Australia</h5>
-    <button class="btn btn-primary" (click)="exportAsPdf('VisaAustralia')" [disabled]="saving">
-      <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-      Export PDF
-    </button>
   </div>
 
 <!--  todo Why not put this formatting inside component?
@@ -71,7 +67,7 @@ Downside == upside : standard appearance of same question
       <app-int-protection
         [entity]="candidate"
         [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaRecord">
+        [visaCheckRecord]="visaCheckRecord">
       </app-int-protection>
     </div>
   </div>
@@ -83,7 +79,7 @@ Downside == upside : standard appearance of same question
       English Threshold
     </div>
     <div class="card-body intake-data">
-      <div class="card-title">English exams</div>
+      <div class="card-title">Language exams</div>
       <div *ngIf="candidateIntakeData.candidateExams.length == 0">
         <p>No exams entered</p>
       </div>
@@ -100,7 +96,7 @@ Downside == upside : standard appearance of same question
       <app-english-threshold
         [entity]="candidate"
         [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaRecord">
+        [visaCheckRecord]="visaCheckRecord">
       </app-english-threshold>
     </div>
   </div>
@@ -132,7 +128,7 @@ Downside == upside : standard appearance of same question
       <app-health-assessment
         [entity]="candidate"
         [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaRecord">
+        [visaCheckRecord]="visaCheckRecord">
       </app-health-assessment>
     </div>
   </div>
@@ -154,7 +150,7 @@ Downside == upside : standard appearance of same question
       <app-character-assessment
         [entity]="candidate"
         [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaRecord">
+        [visaCheckRecord]="visaCheckRecord">
       </app-character-assessment>
     </div>
   </div>
@@ -186,7 +182,7 @@ Downside == upside : standard appearance of same question
       <app-security-risk
         [entity]="candidate"
         [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaRecord">
+        [visaCheckRecord]="visaCheckRecord">
       </app-security-risk>
     </div>
   </div>
@@ -201,7 +197,7 @@ Downside == upside : standard appearance of same question
       <app-risk-assessment
         [entity]="candidate"
         [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaRecord">
+        [visaCheckRecord]="visaCheckRecord">
       </app-risk-assessment>
     </div>
   </div>
@@ -226,7 +222,7 @@ Downside == upside : standard appearance of same question
       <app-travel-document
         [entity]="candidate"
         [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaRecord">
+        [visaCheckRecord]="visaCheckRecord">
       </app-travel-document>
     </div>
   </div>
@@ -241,19 +237,20 @@ Downside == upside : standard appearance of same question
       <app-candidate-visa-job
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData"
-        [visaRecord]="visaRecord"
+        [visaCheckRecord]="visaCheckRecord"
         (selectedJobIndex)="updateJobIndex($event)">
       </app-candidate-visa-job>
 
       <hr/>
 
       <!--  Generate all job entries - but only one is enabled at a time-->
-      <div *ngFor="let job of visaRecord.candidateVisaJobChecks; let i = index;">
+      <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;">
         <app-visa-job-check-au *ngIf="i == selectedJobIndex"
                                [id]="i"
                                [selectedJobCheck]="job"
                                [candidate]="candidate"
                                [candidateIntakeData]="candidateIntakeData"
+                               [visaCheckRecord]="visaCheckRecord"
         ></app-visa-job-check-au>
       </div>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,21 +14,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Input, OnInit} from "@angular/core";
+import {Candidate, CandidateIntakeData, CandidateVisa} from "../../../model/candidate";
 
-@Component({
-  selector: 'app-fixed-input',
-  templateUrl: './fixed-input.component.html',
-  styleUrls: ['./fixed-input.component.scss']
-})
-export class FixedInputComponent implements OnInit {
-  @Input() question: string;
-  @Input() answer: any;
+export abstract class VisaCheckComponentBase implements OnInit {
+  /**
+   * This is the existing candidate data (if any) which is used to
+   * initialize the form data.
+   */
+  @Input() candidateIntakeData: CandidateIntakeData;
 
-  constructor() { }
+  /**
+   * Visa Check Object for selected country.
+   */
+  @Input() visaCheckRecord: CandidateVisa;
 
-  ngOnInit(): void {
-    this.answer = this.answer?.toString();
+  /**
+   * Candidate the visa check/intake data relates to.
+   */
+  @Input() candidate: Candidate;
+
+  ngOnInit() {
   }
-
 }
