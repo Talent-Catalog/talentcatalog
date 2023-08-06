@@ -56,10 +56,11 @@
 
 <hr *ngIf="candidateIntakeData?.candidateVisaChecks.length > 0">
 
-<button class="btn btn-primary" (click)="exportAsPdf('VisaCheck')" [disabled]="saving">
-  <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-  Export PDF
-</button>
+<!--todo Not sure where exportAsPdf should be calling-->
+<!--<button class="btn btn-primary" (click)="exportAsPdf('VisaCheck')" [disabled]="saving">-->
+<!--  <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>-->
+<!--  Export PDF-->
+<!--</button>-->
 
 <div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined" id="VisaCheck">
   <app-visa-check-au *ngSwitchCase="'Australia'"

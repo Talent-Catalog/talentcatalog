@@ -14,9 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Input, OnInit} from "@angular/core";
+import {Directive, Input, OnInit} from "@angular/core";
 import {Candidate, CandidateIntakeData, CandidateVisa} from "../../../model/candidate";
 
+@Directive()
 export abstract class VisaCheckComponentBase implements OnInit {
   /**
    * This is the existing candidate data (if any) which is used to
