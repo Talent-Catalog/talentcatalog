@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
@@ -21,7 +29,9 @@ import {
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
+import {
+  CandidateSourceCandidateService
+} from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 
 /**
@@ -46,12 +56,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   private jobPrepJobSummary = new JobPrepJobSummary();
   private jobPrepJD = new JobPrepJD();
+  private jobPrepJOI = new JobPrepJOI();
   private jobPrepSuggestedCandidates = new JobPrepSuggestedCandidates();
 
   jobPrepItems: JobPrepItem[] = [
     this.jobPrepJobSummary,
     this.jobPrepJD,
-    new JobPrepJOI(),
+    this.jobPrepJOI,
     new JobPrepSuggestedSearches(),
     this.jobPrepSuggestedCandidates,
     new JobPrepDueDate(),
@@ -113,12 +124,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   publishJob() {
     //Reject if not enough info has been supplied about the job.
-    if (!this.jobPrepJD.isCompleted() || !this.jobPrepJobSummary.isCompleted()) {
+    if (!this.jobPrepJOI.isCompleted() || !this.jobPrepJD.isCompleted() || !this.jobPrepJobSummary.isCompleted()) {
       const showReport = this.modalService.open(ConfirmationComponent, {
         centered: true, backdrop: 'static'});
       showReport.componentInstance.title = "More information needed about job";
       showReport.componentInstance.showCancel = false;
-      let mess = "At the minimum you need to supply a job summary and job description document " +
+      let mess = "At the minimum you need to supply a job summary, job description document " +
+        "and job opportunity intake " +
         "before publishing a job. Otherwise our source colleagues won't have enough information to " +
         "work with. Please consider providing more information than the absolute minimum " +
         "if you have it, as suggested in the preparation items. " +

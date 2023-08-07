@@ -14,17 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
-import {IntakeComponentTabBase} from '../../../../../util/intake/IntakeComponentTabBase';
-import {CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from '../../../../../../model/candidate';
+import {Component, Input, OnInit} from '@angular/core';
+import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../../model/candidate';
 import {FormGroup} from '@angular/forms';
 import {CandidateService} from "../../../../../../services/candidate.service";
-import {CountryService} from "../../../../../../services/country.service";
-import {EducationLevelService} from "../../../../../../services/education-level.service";
-import {OccupationService} from "../../../../../../services/occupation.service";
-import {LanguageLevelService} from "../../../../../../services/language-level.service";
-import {CandidateNoteService} from "../../../../../../services/candidate-note.service";
-import {AuthService} from "../../../../../../services/auth.service";
 import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
@@ -32,48 +25,20 @@ import {LocalStorageService} from "angular-2-local-storage";
   templateUrl: './visa-check-ca.component.html',
   styleUrls: ['./visa-check-ca.component.scss']
 })
-export class VisaCheckCaComponent extends IntakeComponentTabBase {
-  @Input() selectedIndex: number;
+export class VisaCheckCaComponent implements OnInit {
+  @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  visaRecord: CandidateVisa;
-  jobRecord: CandidateVisaJobCheck
+  @Input() visaCheckRecord: CandidateVisa;
   form: FormGroup;
 
-  public tbbEligibilityHide = true;
-  public caEligibilityHide = true;
-  public healthAssessHide = true;
-  public characterAssessHide = true;
-  public securityAssessHide = true;
+  constructor(private candidateService: CandidateService,
+              private localStorageService: LocalStorageService) {}
 
-  constructor(candidateService: CandidateService,
-              countryService: CountryService,
-              educationLevelService: EducationLevelService,
-              occupationService: OccupationService,
-              languageLevelService: LanguageLevelService,
-              noteService: CandidateNoteService,
-              authService: AuthService,
-              private localStorageService: LocalStorageService) {
-    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
-  }
-
-  onDataLoaded(init: boolean) {
-    if (init) {
-      this.visaRecord = this.candidateIntakeData?.candidateVisaChecks?.find(v => v.country.id == 6216);
-      this.setSelectedVisaCheckIndex(this.candidateIntakeData?.candidateVisaChecks?.indexOf(this.visaRecord));
-    }
-  }
-
-  private get myRecord(): CandidateVisa {
-    return this.candidateIntakeData.candidateVisaChecks ?
-      this.candidateIntakeData.candidateVisaChecks[this.selectedIndex]
-      : null;
+  ngOnInit() {
+      this.setSelectedVisaCheckIndex(this.candidateIntakeData?.candidateVisaChecks?.indexOf(this.visaCheckRecord));
   }
 
   private setSelectedVisaCheckIndex(index: number) {
     this.localStorageService.set('VisaCheckIndex', index);
-  }
-
-  updateSelectedJob(selectedJob: CandidateVisaJobCheck) {
-    this.jobRecord = selectedJob;
   }
 }

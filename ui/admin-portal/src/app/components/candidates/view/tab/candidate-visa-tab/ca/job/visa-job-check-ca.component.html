@@ -1,0 +1,226 @@
+<div class="row my-4">
+  <div class="col-6">
+    <h5>Section 2: Job Specific Assessment</h5>
+  </div>
+
+  <div class="col-6">
+    <div class="row">
+      <div class="col text-end">
+        <button (click)="visaJobCanada.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
+        <button (click)="visaJobCanada.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col mt-3">
+    <app-candidate-visa-job
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [visaCheckRecord]="visaCheckRecord"
+      (selectedJobIndex)="updateSelectedJob($event)">
+    </app-candidate-visa-job>
+  </div>
+</div>
+
+<ngb-accordion #visaJobCanada="ngbAccordion" [destroyOnHide]="false">
+
+  <ngb-panel id="occupation-eligibility" title="Occupation Eligibility">
+    <ng-template ngbPanelContent>
+      <app-occupation-category
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaCheckRecord">
+      </app-occupation-category>
+      <app-occupation-subcategory
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaCheckRecord">
+      </app-occupation-subcategory>
+      <hr>
+      <div class="card card-body intake-data">
+        <app-fixed-input
+          [question]="'Job location'"
+          [answer]="selectedJob?.jobOppIntake?.location">
+        </app-fixed-input>
+        <app-fixed-input
+          [question]="'Job location details'"
+          [answer]="selectedJob?.jobOppIntake?.locationDetails">
+        </app-fixed-input>
+        <small class="text-center text-muted">All job information can be found on the job's page - to view click the linked job name under Job Specific Assessment above.</small>
+      </div>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel id="pathway-eligibility">
+    <ng-template ngbPanelTitle>
+      <p class="mb-0">Pathway Eligibility
+        <span class="small fw-light fst-italic">
+          <a [href]="pathwaysInfoLink" target="_blank">
+            (For more information on the pathways click here <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>)
+          </a>
+        </span>
+      </p>
+    </ng-template>
+    <ng-template ngbPanelContent>
+      <app-preferred-pathways
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaCheckRecord">
+      </app-preferred-pathways>
+      <app-eligible-pathways
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaCheckRecord">
+      </app-eligible-pathways>
+      <app-ineligible-pathways
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaCheckRecord">
+      </app-ineligible-pathways>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel id="candidate-qualifications" title="Candidate Qualifications">
+    <ng-template ngbPanelContent>
+
+      <div>
+        <app-relevant-work-exp
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [visaCheckRecord]="visaCheckRecord">
+        </app-relevant-work-exp>
+        <app-age-requirement
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [visaCheckRecord]="visaCheckRecord">
+        </app-age-requirement>
+        <app-english-threshold
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [visaCheckRecord]="visaCheckRecord">
+        </app-english-threshold>
+        <app-qualification-relevant
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [visaCheckRecord]="visaCheckRecord">
+        </app-qualification-relevant>
+      </div>
+      <hr>
+      <div class="card card-body intake-data">
+        <div>
+          <div class="card-title">Experience</div>
+          <!-- Display All Candidate Experience   -->
+          <div *ngIf="candOccupations?.length > 0">
+            <ul>
+              <li class="display" *ngFor="let co of candOccupations" >
+                <app-fixed-input
+                  *ngIf="co.occupation"
+                  [question]="co.occupation?.name"
+                  [answer]="co.yearsExperience.toString()">
+                </app-fixed-input>
+                <app-fixed-input
+                  *ngIf="co.occupation == null && co.migrationOccupation"
+                  [question]="co.migrationOccupation"
+                  [answer]="co.yearsExperience.toString()">
+                </app-fixed-input>
+              </li>
+            </ul>
+          </div>
+          <div *ngIf="candOccupations?.length == 0">
+            <p>No experience entered</p>
+          </div>
+        </div>
+        <div>
+          <div class="card-title">Language exams</div>
+          <div *ngIf="candidateIntakeData.candidateExams.length == 0">
+            <p>No exams entered</p>
+          </div>
+          <ul>
+            <li *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
+              <p class="mb-0">{{ce?.exam}}<span *ngIf="ce.otherExam">, </span>{{ce.otherExam}}: {{ce?.score}}<span *ngIf="ce.year"> ({{ce?.year}})</span>
+              </p>
+            </li>
+          </ul>
+          <div class="card-title">Estimated IELTS Score: <span>{{candidateIntakeData.langAssessmentScore}}</span></div>
+          <div class="card-title">Partner IELTS Score: <span>{{candidateIntakeData.partnerIeltsScore}}</span></div>
+        </div>
+        <div>
+          <div class="card-title">Education</div>
+          <!-- Display All Candidate Qualifications   -->
+          <div *ngIf="candQualifications?.length > 0">
+            <ul>
+              <li class="display" *ngFor="let edu of candQualifications">
+                <app-fixed-input
+                  *ngIf="edu.educationMajor"
+                  [question]="edu.educationMajor?.name + ' ' + edu.courseName"
+                  [answer]="edu.educationType">
+                </app-fixed-input>
+                <app-fixed-input
+                  *ngIf="edu.educationMajor == null && edu.courseName"
+                  [question]="edu.courseName"
+                  [answer]="edu.educationType">
+                </app-fixed-input>
+              </li>
+            </ul>
+          </div>
+          <div *ngIf="candQualifications?.length == 0">
+            <p>No qualifications entered</p>
+          </div>
+        </div>
+      </div>
+
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel id="tbb-eligibility" title="TBB Eligibility">
+    <ng-template ngbPanelContent>
+      <div>
+        <app-job-interest
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [visaCheckRecord]="visaCheckRecord"
+          [selectedJobCheck]="selectedJobCheck">
+        </app-job-interest>
+
+        <app-job-eligibility-assessment
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [visaCheckRecord]="visaCheckRecord"
+          [selectedJobCheck]="selectedJobCheck">
+        </app-job-eligibility-assessment>
+      </div>
+      <hr>
+      <div class="card card-body intake-data">
+        <app-fixed-input
+          [question]="'Family in Canada that may impact offer'"
+          [answer]="familyInCanada">
+        </app-fixed-input>
+      </div>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel id="family-assessment" title="Family Assessment">
+    <ng-template ngbPanelContent>
+      <div class="card card-body intake-data">
+        <app-fixed-input [question]="'Marital status'" [answer]="candidateIntakeData?.maritalStatus"></app-fixed-input>
+        <app-fixed-input [question]="'Spouse\'s highest level education'" [answer]="candidateIntakeData?.partnerEduLevel.name"></app-fixed-input>
+        <app-fixed-input [question]="'Did spouse take IELTS?'" [answer]="partnerIeltsString"></app-fixed-input>
+        <hr>
+        <div>
+          <div class="card-title">Dependant Family</div>
+          <app-dependants
+            [candidateIntakeData]="candidateIntakeData"
+            [candidate]="candidate"
+            [editable]="false"
+          ></app-dependants>
+        </div>
+      </div>
+    </ng-template>
+  </ngb-panel>
+  <ngb-panel id="final-assessment" title="Final Assessment">
+    <ng-template ngbPanelContent>
+      TBC
+    </ng-template>
+  </ngb-panel>
+
+</ngb-accordion>

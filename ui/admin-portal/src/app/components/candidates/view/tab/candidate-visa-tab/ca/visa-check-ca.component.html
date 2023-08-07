@@ -14,26 +14,18 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div *ngIf="error">
-  {{error}}
-</div>
-
-<div *ngIf="!loading" id="VisaCanada">
-  <div class="row mb-3">
+<div id="VisaCanada">
+  <div class="alert alert-warning mt-2" role="alert">
+    PLEASE NOTE: The Canada Visa Check is in a test stage and NOT FUNCTIONAL so if data is entered it will not be saved.
+  </div>
+  <div class="row my-4">
     <div class="col-6">
-      <h5>Visa Canada</h5>
+      <h5>Section 1: Visa Assessment - Canada</h5>
     </div>
 
     <div class="col-6">
       <div class="row">
         <div class="col text-end">
-          <button class="btn btn-sm btn-primary me-2" (click)="exportAsPdf('VisaCanada')" [disabled]="saving">
-            <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-            Export PDF
-          </button>
           <button (click)="visaCanada.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
           <button (click)="visaCanada.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>
@@ -62,7 +54,7 @@
             <app-int-protection
               [entity]="candidate"
               [candidateIntakeData]="candidateIntakeData"
-              [visaCheckRecord]="visaRecord">
+              [visaCheckRecord]="visaCheckRecord">
             </app-int-protection>
           </div>
           <hr>
@@ -92,7 +84,7 @@
             <app-pathway-assessment
               [entity]="candidate"
               [candidateIntakeData]="candidateIntakeData"
-              [visaCheckRecord]="visaRecord">
+              [visaCheckRecord]="visaCheckRecord">
             </app-pathway-assessment>
           </div>
           <hr>
@@ -126,7 +118,7 @@
           <app-health-assessment
             [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaRecord">
+            [visaCheckRecord]="visaCheckRecord">
           </app-health-assessment>
           <hr>
           <div class="card card-body intake-data">
@@ -154,7 +146,7 @@
           <app-character-assessment
             [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaRecord">
+            [visaCheckRecord]="visaCheckRecord">
           </app-character-assessment>
           <hr>
           <div class="card card-body intake-data">
@@ -172,7 +164,7 @@
           <app-security-risk
             [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaRecord">
+            [visaCheckRecord]="visaCheckRecord">
           </app-security-risk>
           <hr>
           <div class="card card-body intake-data">
@@ -200,249 +192,20 @@
           <app-risk-assessment
             [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaRecord">
+            [visaCheckRecord]="visaCheckRecord">
           </app-risk-assessment>
         </ng-template>
       </ngb-panel>
 
-      <ngb-panel id="visa-jobs" title="Job Specific Assessment">
-        <ng-template ngbPanelContent>
-          <app-candidate-visa-job
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData"
-            [visaRecord]="visaRecord"
-            (selectedJob)="updateSelectedJob($event)">
-          </app-candidate-visa-job>
-        </ng-template>
-      </ngb-panel>
-
     </ngb-accordion>
+
+    <!-- SECTION 2 VISA JOB CHECK -->
+    <app-visa-job-check-ca
+      [candidate]="candidate"
+      [visaCheckRecord]="visaCheckRecord"
+      [candidateIntakeData]="candidateIntakeData">
+    </app-visa-job-check-ca>
+
   </div>
 
 </div>
-
-<!-- ALTERNATIVE FORM LAYOUT WITH HIDE/SHOW BUTTONS (NOT ACCORDION) -->
-<!--<div *ngIf="!loading" id="VisaCanada">-->
-<!--  <div class="d-flex justify-content-between align-items-center mb-2">-->
-<!--    <h5>Visa Canada</h5>-->
-<!--    <button class="btn btn-primary" (click)="exportAsPdf('VisaCanada')" [disabled]="saving">-->
-<!--      <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>-->
-<!--      Export PDF-->
-<!--    </button>-->
-<!--  </div>-->
-
-<!--  <div class="card">-->
-<!--    <div class="card-header">-->
-<!--      Confirmation Details-->
-<!--    </div>-->
-<!--    <div class="card-body intake-data">-->
-<!--      <app-confirm-contact-->
-<!--        [candidate]="candidate"-->
-<!--        [candidateIntakeData]="candidateIntakeData">-->
-<!--      </app-confirm-contact>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <hr/>-->
-
-<!--  <div class="card">-->
-<!--    <div class="card-header">-->
-<!--      Assessing TBB Eligibility-->
-<!--      <button type="button" class="btn btn-sm btn-secondary float-end" (click)="tbb.toggle()"-->
-<!--              [attr.aria-expanded]="!tbbEligibilityHide" aria-controls="collapseExample">-->
-<!--        <i [ngClass]="tbbEligibilityHide ? 'fa-eye':'fa-eye-slash'" class="fa-solid me-1" ></i> See data-->
-<!--      </button>-->
-<!--    </div>-->
-<!--    <div #tbb="ngbCollapse" [(ngbCollapse)]="tbbEligibilityHide">-->
-<!--      <div class="card-body intake-data">-->
-<!--        <app-left-home-reason-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-left-home-reason>-->
-<!--        <app-return-home-safe-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-return-home-safe>-->
-<!--        <app-host-challenges-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-host-challenges>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div class="card-body">-->
-<!--      <app-int-protection-->
-<!--        [entity]="candidate"-->
-<!--        [candidateIntakeData]="candidateIntakeData"-->
-<!--        [visaCheckRecord]="visaRecord">-->
-<!--      </app-int-protection>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <hr>-->
-
-<!--  <div class="card">-->
-<!--    <div class="card-header">-->
-<!--      Assessing Canada Visa Eligibility-->
-<!--      <button type="button" class="btn btn-sm btn-secondary float-end" (click)="ca.toggle()"-->
-<!--              [attr.aria-expanded]="!caEligibilityHide" aria-controls="collapseExample">-->
-<!--        <i [ngClass]="caEligibilityHide ? 'fa-eye':'fa-eye-slash'" class="fa-solid me-1" ></i> See data-->
-<!--      </button>-->
-<!--    </div>-->
-<!--    <div #ca="ngbCollapse" [(ngbCollapse)]="caEligibilityHide">-->
-<!--      <div class="card-body intake-data">-->
-<!--        <app-host-entry-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-host-entry>-->
-<!--        <app-host-challenges-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-host-challenges>-->
-<!--        <app-work-permit-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-work-permit>-->
-<!--        <app-work-status-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-work-status>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div class="card-body">-->
-<!--      <app-visa-eligibility-assessment-->
-<!--        [entity]="candidate"-->
-<!--        [candidateIntakeData]="candidateIntakeData"-->
-<!--        [visaCheckRecord]="visaRecord">-->
-<!--      </app-visa-eligibility-assessment>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <hr>-->
-
-<!--  <div class="card">-->
-<!--    <div class="card-header">-->
-<!--      Health Assessment-->
-<!--      <button type="button" class="btn btn-sm btn-secondary float-end" (click)="health.toggle()"-->
-<!--              [attr.aria-expanded]="!healthAssessHide" aria-controls="collapseExample">-->
-<!--        <i [ngClass]="healthAssessHide ? 'fa-eye':'fa-eye-slash'" class="fa-solid me-1" ></i> See data-->
-<!--      </button>-->
-<!--    </div>-->
-<!--    <div #health="ngbCollapse" [(ngbCollapse)]="healthAssessHide">-->
-<!--      <div class="card-body intake-data">-->
-<!--        <app-health-issues-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-health-issues>-->
-<!--        <div>-->
-<!--          <label class="form-label mb-1">Do any dependants have health concerns?</label>-->
-<!--          <div *ngIf="candidateIntakeData.candidateDependants.length == 0">-->
-<!--            <p>No dependants entered</p>-->
-<!--          </div>-->
-<!--          <ul *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">-->
-<!--            <li *ngIf="dependant?.relation"><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}-->
-<!--              <span *ngIf="dependant.healthNotes">,</span>{{dependant.healthNotes}}</p></li>-->
-<!--          </ul>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div class="card-body">-->
-<!--      <app-health-assessment-->
-<!--        [entity]="candidate"-->
-<!--        [candidateIntakeData]="candidateIntakeData"-->
-<!--        [visaCheckRecord]="visaRecord">-->
-<!--      </app-health-assessment>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <hr>-->
-
-<!--  <div class="card">-->
-<!--    <div class="card-header">-->
-<!--      Character Assessment-->
-<!--      <button type="button" class="btn btn-sm btn-secondary float-end" (click)="character.toggle()"-->
-<!--              [attr.aria-expanded]="!characterAssessHide" aria-controls="collapseExample">-->
-<!--        <i [ngClass]="characterAssessHide ? 'fa-eye':'fa-eye-slash'" class="fa-solid me-1" ></i> See data-->
-<!--      </button>-->
-<!--    </div>-->
-<!--    <div #character="ngbCollapse" [(ngbCollapse)]="characterAssessHide">-->
-<!--      <div class="card-body intake-data">-->
-<!--        <app-crime-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-crime>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div class="card-body">-->
-<!--      <app-character-assessment-->
-<!--        [entity]="candidate"-->
-<!--        [candidateIntakeData]="candidateIntakeData"-->
-<!--        [visaCheckRecord]="visaRecord">-->
-<!--      </app-character-assessment>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <hr>-->
-
-<!--  <div class="card">-->
-<!--    <div class="card-header">-->
-<!--      Security Assessment-->
-<!--      <button type="button" class="btn btn-sm btn-secondary float-end" (click)="security.toggle()"-->
-<!--              [attr.aria-expanded]="!securityAssessHide" aria-controls="collapseExample">-->
-<!--        <i [ngClass]="securityAssessHide ? 'fa-eye':'fa-eye-slash'" class="fa-solid me-1" ></i> See data-->
-<!--      </button>-->
-<!--    </div>-->
-<!--    <div #security="ngbCollapse" [(ngbCollapse)]="securityAssessHide">-->
-<!--      <div class="card-body intake-data">-->
-<!--        <app-military-service-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-military-service>-->
-<!--        <app-visa-reject-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-visa-reject>-->
-<!--        <app-visa-issues-->
-<!--          [entity]="candidate"-->
-<!--          [candidateIntakeData]="candidateIntakeData"-->
-<!--          [editable]="false">-->
-<!--        </app-visa-issues>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div class="card-body">-->
-<!--      <app-security-risk-->
-<!--        [entity]="candidate"-->
-<!--        [candidateIntakeData]="candidateIntakeData"-->
-<!--        [visaCheckRecord]="visaRecord">-->
-<!--      </app-security-risk>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <hr>-->
-
-<!--  <div class="card">-->
-<!--    <div class="card-header">-->
-<!--      Overall Risk Assessment-->
-<!--    </div>-->
-<!--    <div class="card-body">-->
-<!--      <app-risk-assessment-->
-<!--        [entity]="candidate"-->
-<!--        [candidateIntakeData]="candidateIntakeData"-->
-<!--        [visaCheckRecord]="visaRecord">-->
-<!--      </app-risk-assessment>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <hr>-->
-
-<!--</div>-->

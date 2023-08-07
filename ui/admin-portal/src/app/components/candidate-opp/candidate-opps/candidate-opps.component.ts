@@ -31,6 +31,12 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
    */
   @Input() showJobOppName: boolean = false;
 
+  /**
+   * This is to determine if the component is being viewed from the candidate preview (from within a list/search) or not.
+   * If preview is true we have less space to display the component so can use this boolean to make space efficient changes of the CSS.
+   */
+  @Input() preview: boolean = false;
+
   //Override text to replace "opps" text with "cases"
   myOppsOnlyLabel = "My cases only";
   myOppsOnlyTip = "Only show cases that I am the contact for";
