@@ -506,6 +506,7 @@ import {
 import {
   OccupationSubcategoryComponent
 } from './components/candidates/visa/visa-job-assessments/occupation-subcategory/occupation-subcategory.component';
+import {DirectiveModule} from "./directives/directive.module";
 
 @NgModule({
   declarations: [
@@ -813,6 +814,7 @@ import {
     ChartsModule,
     NgxWigModule,
     NgSelectModule,
+    DirectiveModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'
