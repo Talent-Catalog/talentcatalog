@@ -293,7 +293,7 @@ public class CandidateSpecification {
             // REFERRER
             if (request.getRegoReferrerParam() != null && request.getRegoReferrerParam().trim().length() != 0) {
                 conjunction.getExpressions().add(
-                        builder.equal(candidate.get("regoReferrerParam"), request.getRegoReferrerParam())
+                        builder.like(builder.lower(candidate.get("regoReferrerParam")), request.getRegoReferrerParam().toLowerCase())
                 );
             }
 
