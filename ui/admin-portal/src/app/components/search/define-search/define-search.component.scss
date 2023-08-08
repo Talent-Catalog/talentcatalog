@@ -160,3 +160,23 @@ $candidate-card-width: 375px;
 .ng-dropdown-panel > .ng-dropdown-panel-items {
     max-height: fit-content;
 }
+
+// ::ng-deep is used here since the NgbTooltip directive is outside this component's encapsulation scope
+::ng-deep .search-tips .tooltip-inner {
+  text-align: left;
+  font-size: small;
+  max-width: 50%;
+  background-color: #212529;
+  padding: 1em
+}
+
+// Making the search tip icon a button enables it to be keyboard-focusable, per Bootstrap doc advice https://getbootstrap.com/docs/5.0/components/tooltips/#markup - overriding the native button style fixes the visual aspect
+.search-tip-button {
+  border: none;
+  padding: 0;
+}
+
+// To make example search queries more visible
+#keyword-search-tip-list code {
+  color: #0cd5e4;
+}
