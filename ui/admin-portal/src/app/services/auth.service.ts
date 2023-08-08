@@ -435,21 +435,25 @@ export class AuthService {
 
     //Can only change stage of jobs that have been published
     if (job.publishedDate != null) {
+      //Todo Temporary fix
+      result = this.isSourcePartnerAdminOrGreater();
+
+      //todo Temporary commented out
       //Current logic is that only a system admin or the contact user, defaulting to the creating user
       //of the job, can change the stage.
-      const loggedInUser = this.getLoggedInUser();
-      if (loggedInUser) {
-        if (this.isSystemAdminOnly()) {
-          result = true;
-        } else {
-          const contactUser = job.contactUser;
-          const createUser = job.createdBy;
-          const owner = contactUser != null ? contactUser : createUser;
-          if (owner != null) {
-            result = owner.id === loggedInUser.id;
-          }
-        }
-      }
+      // const loggedInUser = this.getLoggedInUser();
+      // if (loggedInUser) {
+      //   if (this.isSystemAdminOnly()) {
+      //     result = true;
+      //   } else {
+      //     const contactUser = job.contactUser;
+      //     const createUser = job.createdBy;
+      //     const owner = contactUser != null ? contactUser : createUser;
+      //     if (owner != null) {
+      //       result = owner.id === loggedInUser.id;
+      //     }
+      //   }
+      // }
     }
     return result
   }
