@@ -81,16 +81,16 @@
             <li>Use brackets to group terms - e.g. <code>accountant + (excel powerpoint)</code> finds profiles containing the word 'accountant' AND <em>either</em> 'excel' or 'powerpoint', whereas <code>(accountant + excel) powerpoint</code> finds profiles containing 'accountant' AND 'excel', OR profiles containing the word 'powerpoint'.</li>
           </ul>
           Once you've entered your query, you will need to click the 'Search' button below.
-          <!-- TODO: add the fields that can be combined with elastic search -->
+          <!-- TODO: add note re fields that can be combined with elastic search -->
         </ng-template>
 
         <div class="container-fluid">
           <div class="row">
             <div class="mb-3 col-md-6">
-              <!-- providing 'placement' as an empty string makes the tooltip appear over the element in a suitable direction for the viewport -->
+              <!-- providing 'placement' as an empty string makes the tooltip appear over the element in a suitable direction for the viewport - adding the keydown.enter event stops the tooltip from being triggered by pressing enter while using the input field -->
               <label class="form-label" for="simpleQueryString">Keyword Search</label><button class="search-tip-button" [ngbTooltip]="keywordSearchTip" placement="" triggers="click" tooltipClass="search-tips"><i class="fa-regular fa-circle-question fa-xs"></i></button>
               <input id="simpleQueryString" type="text" class="form-control" placeholder="E.g. 'welder diesel+mechanic'" aria-label="Keyword Search"
-                     formControlName="simpleQueryString"
+                     formControlName="simpleQueryString" (keydown.enter)="$event.preventDefault()"
                      >
             </div>
 
