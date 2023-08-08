@@ -16,7 +16,13 @@
 
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {CandidateDependant, DependantRelations, Gender, Registrations, YesNo} from '../../../../../model/candidate';
+import {
+  CandidateDependant,
+  DependantRelations,
+  Gender,
+  Registrations,
+  YesNo
+} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';
@@ -63,7 +69,7 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
     return this.form.value.dependantHealthConcerns;
   }
 
-  private get myRecord(): CandidateDependant {
+  get myRecord(): CandidateDependant {
     return this.candidateIntakeData.candidateDependants ?
       this.candidateIntakeData.candidateDependants[this.myRecordIndex]
       : null;

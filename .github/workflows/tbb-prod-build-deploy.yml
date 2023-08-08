@@ -32,6 +32,8 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Deploy with Jib
+        run: ./gradlew jib -Pprod-tc-system
 
         # These env variables will be used by the jib stage of the gradle
         # build which is configured to use the ecr credential helper.

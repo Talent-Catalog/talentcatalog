@@ -51,7 +51,7 @@
 
 <div class="card" *ngIf="!loading">
   <div class="card-body">
-    <div class="table-wrapper">
+    <div class="table-responsive">
       <table class="table table-hover">
         <!--          Header-->
         <thead class="table-light">
@@ -91,10 +91,10 @@
               <i class="fa-solid fa-briefcase" title="Job"></i>
             </a>
           </td>
-          <td title="Contact {{fullUserName(opp.contactUser)}}">
-            {{opp.stage | truncate: 13}}
+          <td title="{{getCandidateOpportunityStageName(opp)}}">
+            {{getCandidateOpportunityStageName(opp) | truncate: 15}}
           </td>
-          <td>
+          <td title="Contact {{fullUserName(opp.contactUser)}}">
             {{opp.createdDate | date}}
           </td>
           <td>

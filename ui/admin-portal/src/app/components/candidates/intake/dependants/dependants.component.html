@@ -22,6 +22,7 @@
 <div *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;" class="dependant-card">
   <app-dependants-card
     [entity]="candidate"
+    [editable]="editable"
     [candidateIntakeData]="candidateIntakeData"
     [myRecordIndex]="i"
     (delete)="deleteRecord(i)">

@@ -8,6 +8,7 @@ import {Candidate} from "../../../../../model/candidate";
 })
 export class ViewCandidateJobsComponent implements OnInit {
   @Input() candidate: Candidate;
+  @Input() preview: boolean = false;
 
   constructor() { }
 
