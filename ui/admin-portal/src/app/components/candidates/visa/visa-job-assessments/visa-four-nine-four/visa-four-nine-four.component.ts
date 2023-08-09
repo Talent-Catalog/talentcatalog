@@ -11,8 +11,6 @@ import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
   styleUrls: ['./visa-four-nine-four.component.scss']
 })
 export class VisaFourNineFourComponent extends IntakeComponentBase implements OnInit {
-
-  @Input() selectedIndex: number;
   @Input() selectedJobCheck: CandidateVisaJobCheck;
   public visa494Options: EnumOption[] = enumOptions(YesNo);
 

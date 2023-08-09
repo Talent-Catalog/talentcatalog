@@ -10,6 +10,8 @@ export class CandidateJobsTabComponent implements OnInit {
 
   @Input() candidate: Candidate;
 
+  @Input() preview: boolean = false;
+
   constructor() { }
 
   ngOnInit(): void {

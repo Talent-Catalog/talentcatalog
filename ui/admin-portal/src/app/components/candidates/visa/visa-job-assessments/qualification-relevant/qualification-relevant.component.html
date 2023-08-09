@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div *ngIf="editable" class="mb-3">
-    <label class="form-label" for="visaJobQualification">Relevant qualification?</label>
+    <label class="form-label" for="visaJobQualification">Relevant qualifications?</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -14,7 +14,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="editable" class="mb-3">
-    <label class="form-label" for="visaJobQualificationNotes">Notes on qualification (eg. relevant experience) </label>
+    <label class="form-label" for="visaJobQualificationNotes">Notes on qualifications (e.g. relevancy of education; recency or relevancy of work experience; language proficiency) </label>
     <textarea type="text" class="md-textarea-auto form-control" rows="3"
               id="visaJobQualificationNotes" formControlName="visaJobQualificationNotes"
               placeholder="" ></textarea>

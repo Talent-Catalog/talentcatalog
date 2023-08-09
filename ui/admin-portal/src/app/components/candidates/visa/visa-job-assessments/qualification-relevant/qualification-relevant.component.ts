@@ -12,7 +12,6 @@ import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 })
 export class QualificationRelevantComponent extends IntakeComponentBase implements OnInit {
 
-  @Input() selectedIndex: number;
   @Input() selectedJobCheck: CandidateVisaJobCheck;
   public relevantQualificationOptions: EnumOption[] = enumOptions(YesNo);
 

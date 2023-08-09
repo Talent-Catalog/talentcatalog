@@ -52,7 +52,7 @@
 <div class="card" *ngIf="!loading">
 
   <div class="card-body">
-    <div class="table-wrapper">
+    <div class="table-responsive">
       <table class="table table-hover">
         <!--          Header-->
         <thead class="table-light">
@@ -72,15 +72,18 @@
                            *ngIf="searchBy"></app-sorted-by>
             Stage
           </th>
-          <th (click)="toggleSort('updatedDate', 'DESC')">
+          <th *ngIf="!preview" (click)="toggleSort('updatedDate', 'DESC')">
             <app-sorted-by column="updatedDate" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             Next step
           </th>
-          <th (click)="toggleSort('nextStepDueDate', 'DESC')">
+          <th *ngIf="!preview" (click)="toggleSort('nextStepDueDate', 'DESC')">
             <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             Due
+          </th>
+          <th *ngIf="preview">
+            Next?
           </th>
         </tr>
         </thead>
@@ -103,17 +106,26 @@
           </td>
           <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
             <a [routerLink]="['/opp',opp.id]">
-              {{opp.jobOpp.name | truncate: 25}}
+              {{opp.jobOpp.name}}
             </a>
           </td>
           <td>
             {{getCandidateOpportunityStageName(opp)}}
           </td>
-          <td [title]="getNextStepHoverString(opp)">
+          <td *ngIf="!preview" [title]="getNextStepHoverString(opp)">
             {{opp.nextStep | truncate: 38}}
           </td>
-          <td>
+          <td *ngIf="!preview">
             {{opp.nextStepDueDate}}
+          </td>
+          <td *ngIf="preview">
+            <div *ngIf="opp?.nextStep" [ngbPopover]="nextStepPopover" triggers="mouseenter:mouseleave" container="body">
+              <i class="fa-solid fa-shoe-prints"></i>
+            </div>
+            <ng-template #nextStepPopover>
+              <strong>Due date: </strong>{{opp.nextStepDueDate}}<br>
+              <strong>Next step: </strong>{{opp.nextStep}}
+            </ng-template>
           </td>
         </tr>
         </tbody>
