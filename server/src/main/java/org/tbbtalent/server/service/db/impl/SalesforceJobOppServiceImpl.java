@@ -102,6 +102,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             if (jobOpp == null) {
                 //Create one if none exists
                 jobOpp = createJobOpp(sfId);
+                log.info("Created job " + jobOpp.getName() + "(" + jobOpp.getId() + ")");
             }
         }
         return jobOpp;
