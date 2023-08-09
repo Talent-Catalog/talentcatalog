@@ -21,11 +21,11 @@ import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
-import {SearchOpportunityRequest} from "./candidate-opportunity";
+import {isCandidateOpportunity, SearchOpportunityRequest} from "./candidate-opportunity";
 import {Opportunity, OpportunityProgressParams} from "./opportunity";
 
 export function isJob(opp: Opportunity): opp is Job {
-  return opp ? 'submissionList' in opp : false;
+  return !isCandidateOpportunity(opp);
 }
 
 export interface ShortJob {
