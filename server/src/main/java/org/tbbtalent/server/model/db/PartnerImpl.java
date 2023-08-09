@@ -16,6 +16,20 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,10 +37,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.util.SalesforceHelper;
-
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -50,7 +60,6 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     @Transient
     private Long contextJobId;
 
-    @Column(name="default_destination_partner")
     private boolean defaultJobCreator;
 
     private boolean defaultSourcePartner;
