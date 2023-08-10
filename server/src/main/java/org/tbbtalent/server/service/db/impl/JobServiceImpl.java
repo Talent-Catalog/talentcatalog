@@ -358,26 +358,29 @@ public class JobServiceImpl implements JobService {
 
         log.info("Loading candidate opportunities from Salesforce");
 
-        final int limit = 20;
+        final int limit = 250;
 
-        int offset = 0;
+        String lastId = null;
         int nOpps = -1;
         while (nOpps != 0) {
 
-            log.info("Attempting to load " + limit + " opps from " + offset);
-            List<Opportunity> ops = salesforceService.findCandidateOpportunitiesPage(null, offset, limit);
+            log.info("Attempting to load up to " + limit + " opps from " + (lastId == null ? "start" : lastId));
+            List<Opportunity> ops = salesforceService.findCandidateOpportunities(
+                lastId == null ? null : "Id > '" + lastId + "'", limit);
             nOpps = ops.size();
             log.info("Loaded " + nOpps + " candidate opportunities from Salesforce");
-            offset += nOpps;
+            if (nOpps > 0) {
+                lastId = ops.get(nOpps - 1).getId();
 
-            for (Opportunity op : ops) {
-                String jobOppId = op.getParentOpportunityId();
-                if (jobOppId == null) {
-                    log.warn("Candidate opportunity without parent job opp: " + op.getName());
-                } else {
-                    CandidateOpportunity candidateOpp =
-                        candidateOpportunityService.loadCandidateOpportunity(op);
-                    log.info("Updated/created candidate opportunity " + candidateOpp.getName());
+                for (Opportunity op : ops) {
+                    String jobOppId = op.getParentOpportunityId();
+                    if (jobOppId == null) {
+                        log.warn("Candidate opportunity without parent job opp: " + op.getName());
+                    } else {
+                        CandidateOpportunity candidateOpp =
+                            candidateOpportunityService.loadCandidateOpportunity(op);
+                        log.info("Updated/created candidate opportunity " + candidateOpp.getName());
+                    }
                 }
             }
         }

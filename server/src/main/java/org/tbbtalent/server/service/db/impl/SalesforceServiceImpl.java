@@ -438,12 +438,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public List<Opportunity> findCandidateOpportunities(String condition)
         throws WebClientException {
 
-        return findCandidateOpportunitiesPage(condition, 0 , 0);
+        return findCandidateOpportunities(condition, 0);
     }
 
     @Override
-    public List<Opportunity> findCandidateOpportunitiesPage(
-        String condition, int offset, int limit) {
+    public List<Opportunity> findCandidateOpportunities(String condition, int limit) {
 
         //Extra condition of Candidate_TC_id__c > '0' rules out Job opportunities for which
         //it will be ''.
@@ -453,10 +452,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         if (condition != null) {
             query += " AND " + condition;
         }
+        query += "  ORDER BY Id";
         if (limit != 0) {
-            query += " LIMIT " + limit + " OFFSET " + offset;
+            query += " LIMIT " + limit;
         }
-
 
         ClientResponse response = executeQuery(query);
         OpportunityQueryResult result =
