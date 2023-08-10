@@ -31,7 +31,7 @@ import org.springframework.lang.Nullable;
  */
 public class SalesforceHelper {
     private final static String SF_URL
-    = "https://talentbeyondboundaries.lightning.force.com";
+    = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com";
     private final static String SF_OPPORTUNITY_LINK_PREFIX
             = SF_URL + "/lightning/r/Opportunity/";
     private final static String SF_OPPORTUNITY_LINK_SUFFIX

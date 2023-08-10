@@ -119,7 +119,7 @@ export enum SearchOppsBy {
  * eg /Opportunity/...id...
  */
 export const salesforceUrlPattern: string =
-  'https://talentbeyondboundaries.lightning.force.com/' +
+  'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/' +
   '.*/[\\w]+/[\\w]{15,}[^\\w]?.*';
 
 export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);

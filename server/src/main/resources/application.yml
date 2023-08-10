@@ -103,6 +103,7 @@ salesforce:
   #
   # For dev this should be set in tbb-secrets
   privatekey: ${SALESFORCE_PRIVATEKEY:}
+#  url: ${SALESFORCE_URL:https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/}
   daysAgoRecent: 7
   recordType:
     employerJob: 0121N000001890wQAA
