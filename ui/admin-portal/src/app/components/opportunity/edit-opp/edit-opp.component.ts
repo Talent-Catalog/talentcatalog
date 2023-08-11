@@ -28,7 +28,7 @@ export class EditOppComponent implements OnInit {
   /**
    * When set to true, this will indicate that the given case is the only remaining child of its job parent
    */
-  isOnlyOpenCaseOfParentJob: boolean;
+  onlyOpenCaseOfParentJob: boolean;
 
   error;
 
@@ -45,7 +45,7 @@ export class EditOppComponent implements OnInit {
       stage = this.opp.stage;
       if (isCandidateOpportunity(this.opp)) {
         this.opportunityStageOptions = enumOptions(CandidateOpportunityStage);
-        this.setIsOnlyOpenCaseOfParentJob(this.opp);
+        this.isOnlyOpenCaseOfParentJob(this.opp);
       }
       if (isJob(this.opp)) {
         this.opportunityStageOptions = enumOptions(JobOpportunityStage);
@@ -99,7 +99,7 @@ export class EditOppComponent implements OnInit {
    * @param opp CandidateOpportunity/case whose progress is being updated
    *
    */
-  setIsOnlyOpenCaseOfParentJob(opp: CandidateOpportunity) {
+  isOnlyOpenCaseOfParentJob(opp: CandidateOpportunity) {
     if (!this.opp.closed) {
       const request: SearchCandidateSourcesRequest = {
         keyword: null, global: null, owned: null, shared: null
@@ -112,7 +112,7 @@ export class EditOppComponent implements OnInit {
           )
         )
         .subscribe((result) => {
-          this.isOnlyOpenCaseOfParentJob = (result.length === 1);
+          this.onlyOpenCaseOfParentJob = (result.length === 1);
         },
           (error) => this.error = error);
       }

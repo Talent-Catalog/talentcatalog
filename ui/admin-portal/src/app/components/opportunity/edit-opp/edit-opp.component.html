@@ -26,7 +26,7 @@
                        [allowFuture]="true"></app-date-picker>
     </div>
 
-    <div *ngIf="this.isOnlyOpenCaseOfParentJob" class="mb-3">
+    <div *ngIf="this.onlyOpenCaseOfParentJob" class="mb-3">
       <input type="checkbox" id="copyToParentJob" [formControlName]="'copyToParentJob'">
       <label class ="form-label ms-2" for="copyToParentJob">Copy 'next step' info to parent job opportunity?</label>
     </div>
