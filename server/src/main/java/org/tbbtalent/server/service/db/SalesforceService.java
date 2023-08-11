@@ -93,6 +93,20 @@ public interface SalesforceService {
     List<Opportunity> findCandidateOpportunities(String condition) throws WebClientException;
 
     /**
+     * Searches Salesforce for Candidate Opportunity records matching the given condition.
+     * Up to limit records are returned.
+     * <p/>
+     * Records are ordered by ascending Id. This can be used to page through large numbers of
+     * records by changing the condition to take into account the last Id loaded.
+     *
+     * @param condition Effectively the logical (predicate) part of a SOQL WHERE clause.
+     * @param limit Maximum number of records to be returned.
+     * @return List of Salesforce Candidate Opportunity records
+     * @throws WebClientException       if there is a problem connecting to Salesforce
+     */
+    List<Opportunity> findCandidateOpportunities(String condition, int limit);
+
+    /**
      * Searches Salesforce for all Candidate Opportunity records associated with the given
      * Salesforce job ids.
      *

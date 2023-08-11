@@ -335,6 +335,14 @@ export interface CandidateVisaJobCheck {
   putForward?: VisaEligibility;
   tbbEligibility?: TBBEligibilityAssessment;
   notes?: String;
+  // TODO: NEW FIELDS FROM CANADA VISA CHECK TO BE ENTERED INTO BACKEND
+  workExp?: String;
+  ageRequirement?: YesNo;
+  preferredPathways?: string;
+  ineligiblePathways?: string;
+  eligiblePathways?: string;
+  occupationCategory?: string;
+  occupationSubcategory?: string;
 }
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)
@@ -664,5 +672,62 @@ export function getIeltsScoreTypeString(candidate: Candidate): string {
     return 'Academic';
   } else {
     return 'Estimated'
+  }
+}
+
+/**
+ * Returns the immigration pathway link for each destination country. Used in the visa intake.
+ * We are hard coding these links as the websites should stay the same.
+ * Note: These are currently for demo purposes only.
+ * todo get the desired links from destination
+ * @param countryId: The country we want the relevant links for.
+ */
+export function getDestinationPathwayInfoLink(countryId: number): string {
+  switch (countryId) {
+    // Canada
+    case 6216:
+      return 'https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/hire-permanent-foreign.html';
+
+    // Australia
+    case 6191:
+      return 'test link: www.australia.com';
+  }
+}
+
+/**
+ * Returns the occupation category help link for each destination country. Used in the visa intake.
+ * We are hard coding these links as the websites should stay the same.
+ * Note: These are currently for demo purposes only.
+ * todo get the desired links from destination
+ * @param countryId: The country we want the relevant links for.
+ */
+export function getDestinationOccupationCatLink(countryId: number): string {
+  switch (countryId) {
+    // Canada
+    case 6216:
+      return 'https://noc.esdc.gc.ca/Home/Welcome';
+
+    //Australia
+    case 6191:
+      return 'this is a test link for australia to use';
+  }
+}
+
+/**
+ * Returns the occupation sub category help link for each destination country. Used in the visa intake.
+ * We are hard coding these links as the websites should stay the same.
+ * Note: These are currently for demo purposes only.
+ * todo get the desired links from destination
+ * @param countryId: The country we want the relevant links for.
+ */
+export function getDestinationOccupationSubcatLink(countryId: number): string {
+  switch (countryId) {
+    // Canada
+    case 6216:
+      return 'https://noc.esdc.gc.ca/Structure/Hierarchy';
+
+    //Australia
+    case 6191:
+      return 'this is a test link for australia to use';
   }
 }

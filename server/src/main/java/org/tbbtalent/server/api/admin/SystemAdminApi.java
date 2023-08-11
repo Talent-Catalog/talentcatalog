@@ -188,8 +188,17 @@ public class SystemAdminApi {
         this.googleDriveConfig = googleDriveConfig;
         countryForGeneralCountry = getExtraCountryMappings();
     }
+
+    /**
+     * This loads ALL historical data of jobs which had candidates.
+     */
+    @GetMapping("load_job_opps_and_candidate_opps")
+    public void loadJobOppsAndCandidateOpps() {
+        jobService.loadJobOppsAndCandidateOpps();
+    }
+
     @GetMapping("close_candidate_ops_for_closed_jobs")
-    public void CloseCandidateOpportunitiesForClosedJobs() {
+    public void closeCandidateOpportunitiesForClosedJobs() {
         SearchJobRequest request = new SearchJobRequest();
         request.setSfOppClosed(true);
         final List<SalesforceJobOpp> jobOpps = jobService.searchJobsUnpaged(request);

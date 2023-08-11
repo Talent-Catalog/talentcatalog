@@ -26,7 +26,7 @@ import {
 import {Language} from "../../../../model/language";
 import {LanguageService} from "../../../../services/language.service";
 import {LanguageLevel} from "../../../../model/language-level";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {LanguageLevelService} from "../../../../services/language-level.service";
 import {LanguageLevelFormControlModel} from "./language-level-form-control-model";
 
@@ -60,10 +60,11 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   ngOnInit() {
 
     this.form = this.fb.group({
-      languageId: [this.model ? this.model.languageId : null, Validators.required],
-      writtenLevel: [this.model ? this.model.writtenLevel : null, Validators.required],
-      spokenLevel: [this.model ? this.model.spokenLevel : null, Validators.required],
-    });
+      languageId: [this.model ? this.model.languageId : null],
+      writtenLevel: [this.model ? this.model.writtenLevel : null],
+      spokenLevel: [this.model ? this.model.spokenLevel : null]
+    }, {validator: [this.languageLevelsRequired(), this.languageRequired()]});
+
     if (this.languageDisabled) {
       this.form.controls['languageId'].disable()
     }
@@ -94,6 +95,35 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
     this.form.valueChanges.subscribe(() => this.modelUpdated.emit(this.form.value));
   }
 
+  private languageLevelsRequired(): ValidatorFn {
+    return (group: FormGroup): ValidationErrors | null => {
+      //If a language is selected, and there is no written level or spoken level
+      //selected then a 'language level required' error needs to be displayed.
+      return this.language != null && this.written == null && this.spoken == null ?
+        { 'languageLevelRequired': true } : null;
+    };
+  };
+
+  private languageRequired(): ValidatorFn {
+    return (group: FormGroup): ValidationErrors | null => {
+      //If language isn't disabled (not english) and no language is selected,
+      // we want to disable the radio buttons of the language levels.
+      return !this.languageDisabled && this.language == null ? { 'disableLevels': true } : null;
+    };
+  };
+
+  get language() {
+    return this.form?.value?.languageId;
+  }
+
+  get spoken() {
+    return this.form?.value?.spokenLevel;
+  }
+
+  get written() {
+    return this.form?.value?.writtenLevel;
+  }
+
   ngOnChanges(c: SimpleChanges) {
     //This is needed to grey out the language-label element (constructed by renderLevel below)
     //when this whole component is disabled (as controlled by the @Input disable - generally when
@@ -110,10 +140,6 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
     }
   }
 
-  open() {
-    this.showMenu = true;
-  }
-
   close() {
     this.showMenu = false;
   }
@@ -124,7 +150,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
       const language = val.languageId ? this.languages.find(l => l.id === Number(val.languageId))?.name : '';
       const written = val.writtenLevel !== null ? 'Written: ' + this.languageLevels.find(l => l.level === val.writtenLevel)?.name : '';
       const spoken = val.spokenLevel !== null ? 'Spoken: ' + this.languageLevels.find(l => l.level === val.spokenLevel)?.name : '';
-      const proficiencyString = written && spoken ? written + ', ' + spoken : written || spoken;
+      const proficiencyString = written && spoken ? spoken + ', ' + written : written || spoken;
       return language && proficiencyString ? `${language} (${proficiencyString})` : language ? language : proficiencyString;
     }
   }
@@ -152,6 +178,5 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
     for (const key of Object.keys(model)) {
       this.form.controls[key].patchValue(model[key]);
     }
-
   }
 }

@@ -45,7 +45,7 @@ public interface SalesforceJobOppService {
     /**
      * Looks up SalesforceJobOp from id, creating one if needed.
      * @param sfId id of salesforce job opportunity
-     * @return SalesforceJobOpp associated with id, or null if none found or id is null
+     * @return SalesforceJobOpp associated with id, or null if id is null
      */
     @Nullable
     SalesforceJobOpp getOrCreateJobOppFromId(String sfId) throws InvalidRequestException;

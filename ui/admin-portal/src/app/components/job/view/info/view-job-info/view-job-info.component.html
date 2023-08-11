@@ -64,10 +64,10 @@
         </div>
       </div>
 
-      <div class="mb-3 col-sm-12 col-md-4">
+      <div *ngIf="getContactUser()" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-user"></i>Job Contact</label>
 
-        <div class="form-control-plaintext">
+        <div *ngIf="getContactUser()" class="form-control-plaintext">
           <div>{{showUser(getContactUser())}}</div>
           <div>
             <a target="_blank" href="{{showEmailUrl(getContactUser().email)}}">{{getContactUser().email}}</a>
@@ -112,7 +112,7 @@
         </div>
       </div>
 
-      <div *ngIf="job.publishedBy" class="mb-3 col-sm-12 col-md-4">
+      <div *ngIf="job.publishedDate" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Published</label>
 
         <div class="form-control-plaintext">

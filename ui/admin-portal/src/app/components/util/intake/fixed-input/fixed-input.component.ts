@@ -23,11 +23,12 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class FixedInputComponent implements OnInit {
   @Input() question: string;
-  @Input() answer: string;
+  @Input() answer: any;
 
   constructor() { }
 
   ngOnInit(): void {
+    this.answer = this.answer?.toString();
   }
 
 }
