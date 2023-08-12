@@ -10,14 +10,14 @@
         </div>
       </div>
 
-<!-- Todo restore when we agree on how to display stage to candidates           -->
-<!--      <div class="mb-3 col-sm-12 col-md-4">-->
-<!--        <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>-->
-<!--          {{ 'CANDIDATE-OPPS.TABLE.STAGE' | translate }}</label>-->
-<!--        <div class="form-control-plaintext">-->
-<!--          {{getCandidateOpportunityStageName(selectedOpp?.stage)}}-->
-<!--        </div>-->
-<!--      </div>-->
+      <div class="mb-3 col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
+          {{ 'CANDIDATE-OPPS.TABLE.STAGE' | translate }}</label>
+        <div class="form-control-plaintext">
+          {{getCandidateOpportunityStageTranslationKey(selectedOpp?.stage) | translate}}
+        </div>
+      </div>
+
       <div>
         <label class="form-label" for="closingComments">
           {{ 'CANDIDATE-OPPS.TABLE.COMMENTS' | translate }}
