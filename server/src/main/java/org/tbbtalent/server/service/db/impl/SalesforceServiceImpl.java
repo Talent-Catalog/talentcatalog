@@ -1104,7 +1104,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Create the JWT Claims Object
         String[] claimArray = new String[4];
-        claimArray[0] = "3MVG9qwrtt_SGpCvmWiwAMzNH.iFbNCvQVedh8bdxXh1kTNccg7_JfHZeuuPSf30dWfN4JOMbfTOV_ses6sAq";
+        claimArray[0] = "3MVG9qwrtt_SGpCvmWiwAMzNH.nkMo_Z3wlBDfJ5fnx_itH5bJ.O3ZIsibHlhwk_WgzmmYd2EnqOexzRrelun";
         claimArray[1] = "sschlicht@talentbeyondboundaries.org.sfstaging";
         claimArray[2] = "https://test.salesforce.com/";
         claimArray[3] = Long.toString((System.currentTimeMillis() / 1000) + 180);
