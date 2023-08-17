@@ -94,7 +94,7 @@ public class ErrorHandler {
     @ResponseBody
     public ErrorDTO processReCaptchaInvalidException(ReCaptchaInvalidException ex) {
         log.info("Processing : ReCaptchaInvalidException: " + ex);
-        return new ErrorDTO("recaptcha", ex.getMessage());
+        return new ErrorDTO("recaptcha_invalid", ex.getMessage());
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)

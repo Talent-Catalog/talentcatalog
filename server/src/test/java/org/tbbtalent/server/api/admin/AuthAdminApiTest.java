@@ -75,7 +75,7 @@ class AuthAdminApiTest extends ApiTestBase {
     private static final String USER_DEACTIVATED_CODE = "user_deactivated";
     private static final String PASSWORD_EXPIRED_CODE = "password_expired";
     private static final String QR_CODE_GEN_ERROR_CODE = "qr_error";
-    private static final String RECAPTCHA_INVALID_CODE = "recaptcha";
+    private static final String RECAPTCHA_INVALID_CODE = "recaptcha_invalid";
 
     private LoginRequest loginRequest;
 
