@@ -229,7 +229,7 @@ class AuthAdminApiTest extends ApiTestBase {
                         .content(objectMapper.writeValueAsString(loginRequest))
                         .accept(MediaType.APPLICATION_JSON))
 
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code", containsString(errorCode)))
                 .andExpect(jsonPath("$.message", containsString(message)));
