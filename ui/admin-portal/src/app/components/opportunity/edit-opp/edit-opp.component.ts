@@ -45,7 +45,7 @@ export class EditOppComponent implements OnInit {
       stage = this.opp.stage;
       if (isCandidateOpportunity(this.opp)) {
         this.opportunityStageOptions = enumOptions(CandidateOpportunityStage);
-        this.isOnlyOpenCaseOfParentJobCheck(this.opp);
+        this.checkOpenCases(this.opp);
       }
       if (isJob(this.opp)) {
         this.opportunityStageOptions = enumOptions(JobOpportunityStage);
@@ -99,7 +99,7 @@ export class EditOppComponent implements OnInit {
    * @param opp CandidateOpportunity/case whose progress is being updated
    *
    */
-  isOnlyOpenCaseOfParentJobCheck(opp: CandidateOpportunity) {
+  checkOpenCases(opp: CandidateOpportunity) {
     if (!this.opp.closed) {
       const request: SearchCandidateSourcesRequest = {
         keyword: null, global: null, owned: null, shared: null
