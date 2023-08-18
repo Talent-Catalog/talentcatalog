@@ -16,8 +16,7 @@
 
 package org.tbbtalent.server.util.dto;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +28,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.PasswordExpiredException;
+import org.tbbtalent.server.exception.ReCaptchaInvalidException;
 import org.tbbtalent.server.exception.ServiceException;
+import org.tbbtalent.server.exception.UserDeactivatedException;
 import org.tbbtalent.server.service.db.email.EmailHelper;
+
+import javax.security.auth.login.AccountLockedException;
 
 
 @ControllerAdvice
@@ -50,16 +54,47 @@ public class ErrorHandler {
     @ResponseBody
     public ErrorDTO processServiceException(ServiceException ex) {
         log.error("Processing ServiceException: " + ex);
-        ErrorDTO errorDTO = new ErrorDTO(ex.getErrorCode(), ex.getMessage());
-        return errorDTO;
+        return new ErrorDTO(ex.getErrorCode(), ex.getMessage());
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
     public ErrorDTO processInvalidCredentialsException(InvalidCredentialsException ex) {
         log.info("Processing : InvalidCredentialsException: " + ex);
         return new ErrorDTO("invalid_credentials", ex.getMessage());
+    }
+
+    @ExceptionHandler(AccountLockedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ErrorDTO processAccountLockedException(AccountLockedException ex) {
+        log.info("Processing : AccountLockedException: " + ex);
+        return new ErrorDTO("account_locked", ex.getMessage());
+    }
+
+    @ExceptionHandler(UserDeactivatedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ErrorDTO processUserDeactivatedExceptionException(UserDeactivatedException ex) {
+        log.info("Processing : UserDeactivatedException: " + ex);
+        return new ErrorDTO("user_deactivated", ex.getMessage());
+    }
+
+    @ExceptionHandler(PasswordExpiredException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ErrorDTO processPasswordExpiredException(PasswordExpiredException ex) {
+        log.info("Processing : PasswordExpiredException: " + ex);
+        return new ErrorDTO("password_expired", ex.getMessage());
+    }
+
+    @ExceptionHandler(ReCaptchaInvalidException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ErrorDTO processReCaptchaInvalidException(ReCaptchaInvalidException ex) {
+        log.info("Processing : ReCaptchaInvalidException: " + ex);
+        return new ErrorDTO("recaptcha_invalid", ex.getMessage());
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
@@ -106,13 +141,12 @@ public class ErrorHandler {
         return new ErrorDTO(code, ex.toString());
     }
 
-    //-------------------------------------------------------------------------
+    @Getter
+    public static class ErrorDTO {
 
-    private class ErrorDTO {
-
-        private long timestamp;
-        private String code;
-        private String message;
+        private final long timestamp;
+        private final String code;
+        private final String message;
         private Object data;
 
         public ErrorDTO(String code, String message) {
@@ -121,71 +155,9 @@ public class ErrorHandler {
             this.timestamp = System.currentTimeMillis();
         }
 
-        public long getTimestamp() {
-            return timestamp;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public Object getData() {
-            return data;
-        }
-
         public void setData(Object data) {
             this.data = data;
         }
     }
 
-    //-------------------------------------------------------------------------
-
-    private class ValidationErrorDTO extends ErrorDTO {
-
-        private List<FieldErrorDTO> fieldErrors = new ArrayList<>();
-
-        public ValidationErrorDTO(String code, String message) {
-            super(code, message);
-        }
-
-        public void addFieldError(String path, String code, String message) {
-            FieldErrorDTO error = new FieldErrorDTO(path, code, message);
-            fieldErrors.add(error);
-        }
-
-        public List<FieldErrorDTO> getFieldErrors() {
-            return fieldErrors;
-        }
-    }
-
-    //-------------------------------------------------------------------------
-
-    private class FieldErrorDTO {
-
-        private String field;
-        private String code;
-        private String message;
-
-        public FieldErrorDTO(String field, String code, String message) {
-            this.field = field;
-            this.code = code;
-            this.message = message;
-        }
-
-        public String getField() {
-            return field;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
 }
