@@ -30,30 +30,6 @@
 </div>
 
 <div *ngIf="jobName" class="card">
-  <div class="alert alert-danger">
-    <p>
-      NOTE: Creating a new job is now a two stage process.
-    </p>
-    <p>
-      This allows you to prepare a job - for example uploading the employer's job description
-      - before letting everyone see it.
-    </p>
-    <p>
-      Click on the button below to create the job.
-      The job will be created - but so far only you can see it.
-      When the creation process is done, the button will change to display "Show Job".
-      Click on it to display all the job details. You can then provide whatever you think our
-      source team and source partners will need to help them find candidates matching the job.
-      When you are ready you can click on the job's "Publish"
-      button to make the job visible to everyone (including posting it on Slack, as before).
-    </p>
-    <p>
-      Note that you can take as long as you like or need to prepare a job. For example you might now
-      choose to create the job early on in your discussions with the employer - maybe working
-      with them to do some trial searches or look at some sample candidate CVs - updating your
-      notes on the job as you go. Then you finally publish the job when you are happy with it.
-    </p>
-  </div>
   <div class="card-header d-flex align-items-baseline justify-content-between">
     <h5>{{jobName}}</h5>
       <ng-container>
