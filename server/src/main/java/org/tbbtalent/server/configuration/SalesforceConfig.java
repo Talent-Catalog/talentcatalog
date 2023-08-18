@@ -19,6 +19,7 @@ package org.tbbtalent.server.configuration;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
 /**
  * Salesforce configuration - read from application.yml
@@ -43,5 +44,12 @@ public class SalesforceConfig {
      * Private key used for accessing Salesforce
      */
     private String privatekey;
+
+    /**
+     * Root URL directing to SF sandbox or production, depending on environment
+     */
+    private String baseUrl;
+
+    private String baseLoginUrl;
 
 }
