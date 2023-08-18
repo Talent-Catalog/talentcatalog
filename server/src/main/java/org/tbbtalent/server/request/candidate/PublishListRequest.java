@@ -37,6 +37,13 @@ public class PublishListRequest {
   private List<PublishedDocColumnConfig> columns;
 
   /**
+   * If not null, indicates that this list is associated with a job (eg a submission list), and
+   * the boolean value indicates whether to publish candidates who have closed opportunities for
+   * the job.
+   */
+  private Boolean publishClosedOpps;
+
+  /**
    * This extracts the corresponding ExportColumn information - this is what is stored on the 
    * server. 
    */

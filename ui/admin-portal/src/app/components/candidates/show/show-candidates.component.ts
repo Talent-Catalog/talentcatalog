@@ -655,6 +655,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     //Construct the request
     const request: PublishListRequest = new PublishListRequest();
+    if (this.isJobList()) {
+      request.publishClosedOpps = this.showClosedOpps;
+    }
     request.columns = exportColumns;
 
     this.savedListService.publish(this.candidateSource.id, request).subscribe(
