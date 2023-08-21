@@ -178,7 +178,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         WebClient.Builder builder =
             WebClient.builder()
                 .baseUrl(
-                        salesforceConfig.getBaseUrl() + "services/data/" + apiVersion)
+                        salesforceConfig.getBaseClassicUrl() + "services/data/" + apiVersion)
                 .defaultHeader("Content_Type", "application/json")
                 .defaultHeader("Accept", "application/json");
 
@@ -1104,8 +1104,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Create the JWT Claims Object
         String[] claimArray = new String[4];
-        claimArray[0] = "3MVG9qwrtt_SGpCvjWgjr6iTlzfTFKyMBA_e35U3kaeInR8QA.rSDVXrCgjeExdS84NlSxXw07x91wiv9FpT.";
-        claimArray[1] = "sschlicht@talentbeyondboundaries.org.sfstaging";
+        claimArray[0] = salesforceConfig.getConsumerKey();
+        claimArray[1] = salesforceConfig.getUser();
         claimArray[2] = salesforceConfig.getBaseLoginUrl();
         claimArray[3] = Long.toString((System.currentTimeMillis() / 1000) + 180);
         MessageFormat claims;

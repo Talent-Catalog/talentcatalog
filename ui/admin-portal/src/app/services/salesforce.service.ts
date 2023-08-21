@@ -20,7 +20,7 @@ export class SalesforceService {
    */
   sfOppToLink(id: string): string {
     const sfOpportunityLinkPrefix: string
-      = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/lightning/r/Opportunity/";
+      = environment.sfLightningUrl + "lightning/r/Opportunity/";
     const sfOpportunityLinkSuffix: string = "/view";
 
     return id == null ? null : sfOpportunityLinkPrefix + id + sfOpportunityLinkSuffix;

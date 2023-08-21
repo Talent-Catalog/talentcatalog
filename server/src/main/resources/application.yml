@@ -107,10 +107,21 @@ salesforce:
   privatekey: ${SALESFORCE_PRIVATEKEY:}
 
   # prod: https://talentbeyondboundaries.my.salesforce.com/
-  baseUrl: ${BASE_URL:https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/}
+  baseClassicUrl: ${BASE_CLASSIC_URL:https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/}
+
+  # prod: https://talentbeyondboundaries.lightning.force.com
+  baseLightningUrl: ${BASE_LIGHTNING_URL:https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com}
 
   # prod: https://login.salesforce.com/
   baseLoginUrl: ${BASE_LOGIN_URL:https://test.salesforce.com/}
+
+  # In the doc for the JWT bearer token, this is referred to as 'client_id' - it is obtained from SF at Setup and differs per SF user > App Manager > View (tbbtalent) > Manager Consumer Details
+  # NEEDS TO BE HIDDEN - prod: 3MVG9mclR62wycM3f9iy572tIEVmeyMN8eFW5h2BK7eD96hD19zYvpx1vup07kfpCidboRyF56WF3QjL7LAYl
+  consumerKey: ${SF_CONSUMER_KEY:3MVG9qwrtt_SGpCvjWgjr6iTlzfTFKyMBA_e35U3kaeInR8QA.rSDVXrCgjeExdS84NlSxXw07x91wiv9FpT.}
+
+  # The SF user to be associated with the API login
+  # PERHAPS HIDDEN TOO - prod: jcameron@talentbeyondboundaries.org
+  user: ${SF_USER:sschlicht@talentbeyondboundaries.org.sfstaging}
 
   daysAgoRecent: 7
   recordType:

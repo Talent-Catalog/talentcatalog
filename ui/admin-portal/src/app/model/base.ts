@@ -18,6 +18,7 @@ import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
 import {OpportunityIds} from "./opportunity";
+import {environment} from "../../environments/environment";
 
 export interface HasName {
   name?: string;
@@ -119,7 +120,7 @@ export enum SearchOppsBy {
  * eg /Opportunity/...id...
  */
 export const salesforceUrlPattern: string =
-  'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/' +
+  environment.sfLightningUrl +
   '.*/[\\w]+/[\\w]{15,}[^\\w]?.*';
 
 export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);

@@ -46,10 +46,20 @@ public class SalesforceConfig {
     private String privatekey;
 
     /**
-     * Root URL directing to SF sandbox or production, depending on environment
+     * Root URL directing to SF Classic sandbox or production, depending on environment
      */
-    private String baseUrl;
+    private String baseClassicUrl;
 
+    /**
+     * Root URL directing to SF login for sandbox or production, depending on environment
+     */
     private String baseLoginUrl;
+
+
+    private String consumerKey;
+
+    private String user;
+
+    private String baseLightningUrl;
 
 }

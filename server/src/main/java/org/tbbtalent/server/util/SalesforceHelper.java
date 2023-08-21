@@ -21,8 +21,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.configuration.SalesforceConfig;
 
 /**
  * Some useful Salesforce utilities.
@@ -30,12 +34,18 @@ import org.springframework.lang.Nullable;
  * @author John Cameron
  */
 public class SalesforceHelper {
-    private final static String SF_URL
-    = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com";
-    private final static String SF_OPPORTUNITY_LINK_PREFIX
-            = SF_URL + "/lightning/r/Opportunity/";
+    @Autowired
+    SalesforceConfig salesforceConfig;
+    private static String SF_URL;
+    private static String SF_OPPORTUNITY_LINK_PREFIX;
     private final static String SF_OPPORTUNITY_LINK_SUFFIX
         = "/view/";
+
+    @PostConstruct
+    private void initialize() {
+        SF_URL = salesforceConfig.getBaseLightningUrl();
+        SF_OPPORTUNITY_LINK_PREFIX = SF_URL + "/lightning/r/Opportunity/";
+    }
 
     /**
      * Converts a Salesforce record id to the opportunity link (url) for that record.
