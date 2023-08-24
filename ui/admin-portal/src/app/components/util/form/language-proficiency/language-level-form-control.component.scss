@@ -13,6 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+@import "~src/scss/variables";
 
 .backdrop {
   position: fixed;
@@ -24,28 +25,15 @@
 
 .language-dropdown {
   position: absolute;
-  top: calc(100% + 8px);
   right: 0;
   z-index: 10;
   background: white;
   padding: 1em;
-  border-radius: 8px;
-  border: 1px solid black;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border: 1px solid $color-secondary-lighter;
+  border-top: none;
   min-width: 100%;
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-
-    label {
-      white-space: pre;
-    }
-
-    input[type="radio"] {
-      margin-right: 1em;
-    }
-
-  }
 }
 
 .input-group {
@@ -57,6 +45,7 @@
   justify-content: space-between;
   min-width: 0;
   align-items: center;
+  min-height: 2.5rem;
 }
 
 .input-text {

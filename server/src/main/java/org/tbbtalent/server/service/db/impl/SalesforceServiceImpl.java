@@ -438,11 +438,24 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public List<Opportunity> findCandidateOpportunities(String condition)
         throws WebClientException {
 
+        return findCandidateOpportunities(condition, 0);
+    }
+
+    @Override
+    public List<Opportunity> findCandidateOpportunities(String condition, int limit) {
+
         //Extra condition of Candidate_TC_id__c > '0' rules out Job opportunities for which
         //it will be ''.
         String query =
             "SELECT " + candidateOpportunityRetrievalFields +
-                " FROM Opportunity WHERE Candidate_TC_id__c > '0' AND " + condition;
+                " FROM Opportunity WHERE Candidate_TC_id__c > '0'";
+        if (condition != null) {
+            query += " AND " + condition;
+        }
+        query += "  ORDER BY Id";
+        if (limit != 0) {
+            query += " LIMIT " + limit;
+        }
 
         ClientResponse response = executeQuery(query);
         OpportunityQueryResult result =
@@ -1505,7 +1518,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public void setClosingComments(String comments) {
             put("Closing_Comments__c", comments);
         }
-        
+
         public void setClosingCommentsForCandidate(String commentsForCandidate) {
             put("Closing_Comments_For_Candidate__c", commentsForCandidate);
         }

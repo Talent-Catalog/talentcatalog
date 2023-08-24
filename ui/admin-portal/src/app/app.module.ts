@@ -314,9 +314,6 @@ import {
 import {
   VisaOtherOptionsComponent
 } from "./components/candidates/visa/visa-job-assessments/visa-other-options/visa-other-options.component";
-import {
-  YearsRelevantExpComponent
-} from "./components/candidates/visa/visa-job-assessments/years-relevant-exp/years-relevant-exp.component";
 import {IeltsLevelComponent} from "./components/candidates/visa/visa-job-assessments/ielts-level/ielts-level.component";
 import {
   QualificationRelevantComponent
@@ -484,6 +481,32 @@ import {PathwayAssessmentComponent} from './components/candidates/visa/pathway-a
 import {
   CandidateVisaJobComponent
 } from './components/candidates/view/tab/candidate-visa-tab/job/candidate-visa-job.component';
+import {CvPreviewComponent} from './components/util/cv-preview/cv-preview.component';
+import {
+  VisaJobCheckCaComponent
+} from './components/candidates/view/tab/candidate-visa-tab/ca/job/visa-job-check-ca.component';
+import {
+  RelevantWorkExpComponent
+} from './components/candidates/visa/visa-job-assessments/relevant-work-exp/relevant-work-exp.component';
+import {
+  AgeRequirementComponent
+} from './components/candidates/visa/visa-job-assessments/age-requirement/age-requirement.component';
+import {
+  PreferredPathwaysComponent
+} from './components/candidates/visa/visa-job-assessments/preferred-pathways/preferred-pathways.component';
+import {
+  EligiblePathwaysComponent
+} from './components/candidates/visa/visa-job-assessments/eligible-pathways/eligible-pathways.component';
+import {
+  IneligiblePathwaysComponent
+} from './components/candidates/visa/visa-job-assessments/ineligible-pathways/ineligible-pathways.component';
+import {
+  OccupationCategoryComponent
+} from './components/candidates/visa/visa-job-assessments/occupation-category/occupation-category.component';
+import {
+  OccupationSubcategoryComponent
+} from './components/candidates/visa/visa-job-assessments/occupation-subcategory/occupation-subcategory.component';
+import {DirectiveModule} from "./directives/directive.module";
 
 @NgModule({
   declarations: [
@@ -670,7 +693,6 @@ import {
     VisaFourNineFourComponent,
     VisaOneEightSixComponent,
     VisaOtherOptionsComponent,
-    YearsRelevantExpComponent,
     IeltsLevelComponent,
     QualificationRelevantComponent,
     DatePickerComponent,
@@ -768,7 +790,17 @@ import {
     OpportunityStageNextStepComponent,
     EditOppComponent,
     PathwayAssessmentComponent,
-    CandidateVisaJobComponent
+    CandidateVisaJobComponent,
+    CvPreviewComponent,
+    CandidateVisaJobComponent,
+    VisaJobCheckCaComponent,
+    RelevantWorkExpComponent,
+    AgeRequirementComponent,
+    PreferredPathwaysComponent,
+    EligiblePathwaysComponent,
+    IneligiblePathwaysComponent,
+    OccupationCategoryComponent,
+    OccupationSubcategoryComponent
   ],
   imports: [
     BrowserModule,
@@ -782,6 +814,7 @@ import {
     ChartsModule,
     NgxWigModule,
     NgSelectModule,
+    DirectiveModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'

@@ -434,7 +434,7 @@ export class AuthService {
     let result: boolean = false;
 
     //Can only change stage of jobs that have been published
-    if (job.publishedBy != null) {
+    if (job.publishedDate != null) {
       //Todo Temporary fix
       result = this.isSourcePartnerAdminOrGreater();
 

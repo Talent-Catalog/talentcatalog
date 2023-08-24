@@ -7,19 +7,19 @@
       [entity]="candidate"
       [occupations]="occupations"
       [candidateIntakeData]="candidateIntakeData"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-job-occupation>
     <app-salary-tsmit
       [entity]="candidate"
       [candidateIntakeData]="candidateIntakeData"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-salary-tsmit>
     <app-regional-area
       [entity]="candidate"
       [candidateIntakeData]="candidateIntakeData"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-regional-area>
   </div>
@@ -44,16 +44,14 @@
     <app-job-interest
       [entity]="candidate"
       [candidateIntakeData]="candidateIntakeData"
-      [selectedIndex]="jobIndex"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-job-interest>
 
     <app-job-eligibility-assessment
       [entity]="candidate"
       [candidateIntakeData]="candidateIntakeData"
-      [selectedIndex]="jobIndex"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-job-eligibility-assessment>
   </div>
@@ -140,12 +138,12 @@
             <app-fixed-input
               *ngIf="co.occupation"
               [question]="co.occupation?.name"
-              [answer]="co.yearsExperience">
+              [answer]="co.yearsExperience.toString()">
             </app-fixed-input>
             <app-fixed-input
               *ngIf="co.occupation == null && co.migrationOccupation"
               [question]="co.migrationOccupation"
-              [answer]="co.yearsExperience">
+              [answer]="co.yearsExperience.toString()">
             </app-fixed-input>
           </li>
         </ul>
@@ -159,8 +157,7 @@
     <app-qualification-relevant
       [entity]="candidate"
       [candidateIntakeData]="candidateIntakeData"
-      [selectedIndex]="jobIndex"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-qualification-relevant>
   </div>
@@ -175,30 +172,27 @@
   <div class="card-body">
     <app-visa-four-nine-four
       [entity]="candidate"
-      [selectedIndex]="jobIndex"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-visa-four-nine-four>
     <app-visa-one-eight-six
       [entity]="candidate"
-      [selectedIndex]="jobIndex"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-visa-one-eight-six>
     <app-visa-other-options
       [entity]="candidate"
-      [selectedIndex]="jobIndex"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-visa-other-options>
     <app-visa-job-put-forward
       [entity]="candidate"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-visa-job-put-forward>
     <app-visa-job-notes
       [entity]="candidate"
-      [visaCheckRecord]="visaRecord"
+      [visaCheckRecord]="visaCheckRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-visa-job-notes>
   </div>

@@ -14,9 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {CandidateService} from '../../../../../services/candidate.service';
-import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {CountryService} from '../../../../../services/country.service';
 import {
@@ -27,12 +26,7 @@ import {Country} from '../../../../../model/country';
 import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
-import {CandidateVisa} from '../../../../../model/candidate';
-import {EducationLevelService} from '../../../../../services/education-level.service';
-import {OccupationService} from '../../../../../services/occupation.service';
-import {LanguageLevelService} from '../../../../../services/language-level.service';
-import {CandidateNoteService} from '../../../../../services/candidate-note.service';
-import {AuthService} from '../../../../../services/auth.service';
+import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../model/candidate';
 import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
@@ -40,42 +34,56 @@ import {LocalStorageService} from "angular-2-local-storage";
   templateUrl: './candidate-visa-tab.component.html',
   styleUrls: ['./candidate-visa-tab.component.scss']
 })
-export class CandidateVisaTabComponent extends IntakeComponentTabBase implements OnInit {
+export class CandidateVisaTabComponent implements OnInit {
+  @Input() candidate: Candidate;
+  candidateIntakeData: CandidateIntakeData;
+  tbbDestinations: Country[];
   form: FormGroup;
   selectedIndex: number;
   selectedCountry: string;
 
-  constructor(candidateService: CandidateService,
-              countryService: CountryService,
-              educationLevelService: EducationLevelService,
-              occupationService: OccupationService,
-              languageLevelService: LanguageLevelService,
-              noteService: CandidateNoteService,
-              authService: AuthService,
+  loading: boolean;
+  error: boolean;
+  saving: boolean;
+
+  constructor(private candidateService: CandidateService,
+              private countryService: CountryService,
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
               private fb: FormBuilder,
               private localStorageService: LocalStorageService) {
-    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 
-  onDataLoaded(init: boolean) {
-    if (init) {
-      if (this.candidateIntakeData?.candidateVisaChecks.length > 0) {
-        // If exists, get the last selected visa check from local storage. If nothing there, get the first one.
-        const index: number = this.localStorageService.get('VisaCheckIndex');
-        if (index) {
-          this.selectedIndex = index;
-        } else {
-          this.selectedIndex = 0;
-        }
-      }
-      this.form = this.fb.group({
-        visaCountry: [this.selectedIndex]
-      });
+  ngOnInit(): void {
+    // FETCH INTAKE DATA
+    this.candidateService.getIntakeData(this.candidate.id).subscribe((results) => {
+      this.candidateIntakeData = results;
+      this.setSelectedCountry()
+    })
+    // FETCH TBB DESTINATIONS
+    this.countryService.listTBBDestinations().subscribe((results) => {
+      this.tbbDestinations = results;
+    })
 
-      this.changeVisaCountry(null);
+    this.form = this.fb.group({
+      visaCountry: [null]
+    });
+  }
+
+  setSelectedCountry() {
+    // If exists, get the last selected visa check from local storage. If nothing there, get the first one.
+    if (this.candidateIntakeData?.candidateVisaChecks.length > 0) {
+      const index: number = this.localStorageService.get('VisaCheckIndex');
+      if (index) {
+        this.selectedIndex = index;
+      } else {
+        this.selectedIndex = 0;
+      }
     }
+
+    this.form.controls.visaCountry.patchValue(this.selectedIndex);
+
+    this.changeVisaCountry(null);
   }
 
   /**
@@ -96,7 +104,6 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
       );
     }
   }
-
 
   addRecord() {
     const modal = this.modalService.open(HasNameSelectorComponent);
@@ -165,8 +172,11 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
 
   changeVisaCountry(event: Event) {
     this.selectedIndex = this.form.controls.visaCountry.value;
-    this.selectedCountry = this.candidateIntakeData
-      .candidateVisaChecks[this.selectedIndex]?.country?.name;
+    this.selectedCountry = this.candidateIntakeData?.candidateVisaChecks[this.selectedIndex]?.country?.name;
+  }
+
+  getVisaCheckCountryRecord(){
+    return this.candidateIntakeData.candidateVisaChecks.find(v => v.country.name == this.selectedCountry)
   }
 
 }

@@ -360,6 +360,42 @@ public class JobServiceImpl implements JobService {
         return jobInfo;
     }
 
+    @Async
+    @Override
+    public void loadJobOppsAndCandidateOpps() {
+
+        log.info("Loading candidate opportunities from Salesforce");
+
+        final int limit = 100;
+
+        String lastId = null;
+        int totalOpps = 0;
+        int nOpps = -1;
+        while (nOpps != 0) {
+
+            log.info("Attempting to load up to " + limit + " opps from " + (lastId == null ? "start" : lastId));
+            List<Opportunity> ops = salesforceService.findCandidateOpportunities(
+                lastId == null ? null : "Id > '" + lastId + "'", limit);
+            nOpps = ops.size();
+            totalOpps += nOpps;
+            log.info("Loaded " + nOpps + " candidate opportunities from Salesforce. Total " + totalOpps);
+            if (nOpps > 0) {
+                lastId = ops.get(nOpps - 1).getId();
+
+                for (Opportunity op : ops) {
+                    String jobOppId = op.getParentOpportunityId();
+                    if (jobOppId == null) {
+                        log.warn("Candidate opportunity without parent job opp: " + op.getName());
+                    } else {
+                        CandidateOpportunity candidateOpp =
+                            candidateOpportunityService.loadCandidateOpportunity(op);
+//                        log.info("Updated/created candidate opportunity " + candidateOpp.getName());
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public @NonNull SalesforceJobOpp publishJob(long id) throws NoSuchObjectException {
         SalesforceJobOpp job = getJob(id);
