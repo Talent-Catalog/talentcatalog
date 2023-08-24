@@ -60,6 +60,7 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SavedSearchType;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
