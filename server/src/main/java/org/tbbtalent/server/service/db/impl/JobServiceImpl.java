@@ -60,7 +60,6 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.SavedSearchType;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.JobSpecification;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
@@ -263,8 +262,17 @@ public class JobServiceImpl implements JobService {
 
         String exclusionListName = submissionList.getName() + EXCLUSION_LIST_SUFFIX;
 
-        //Create exclusion list for the employer (account) associated with this job
-        SavedList exclusionList = salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
+        SavedList exclusionList;
+        try {
+           //Create exclusion list for the employer (account) associated with this job
+           exclusionList =
+               salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
+        } catch (Exception ex) {
+            log.error("CreateJob: Could not create exclusion list", ex);
+            UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
+            req.setName(exclusionListName);
+            exclusionList = savedListService.createSavedList(req);
+        }
         job.setExclusionList(exclusionList);
 
         job.setJobCreator(loggedInUserPartner);
