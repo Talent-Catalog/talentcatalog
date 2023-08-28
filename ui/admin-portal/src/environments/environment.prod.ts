@@ -23,6 +23,5 @@ export const environment = {
   publishUrl: document.location.origin + '/published',
   apiUrl: '/api/admin',
   systemApiUrl: '/api/system',
-  s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org',
-  sfLightningUrl: 'https://talentbeyondboundaries.lightning.force.com/'
+  s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org'
 };

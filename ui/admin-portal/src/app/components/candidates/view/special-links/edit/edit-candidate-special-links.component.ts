@@ -19,7 +19,7 @@ import {Candidate} from "../../../../../model/candidate";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
-import {environment} from "../../../../../../environments/environment";
+import {EnvService} from "../../../../../services/env.service";
 
 @Component({
   selector: 'app-edit-candidate-special-links',
@@ -35,11 +35,12 @@ export class EditCandidateSpecialLinksComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
-  sfUrlPlaceholder: string = environment.sfLightningUrl;
+  sfUrlPlaceholder: string = this.envService.sfLightningUrl;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
-              private candidateService: CandidateService) { }
+              private candidateService: CandidateService,
+              private envService: EnvService) { }
 
   ngOnInit() {
     this.loading = true;

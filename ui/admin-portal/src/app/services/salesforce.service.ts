@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {CandidateSource, UpdateEmployerOpportunityRequest} from "../model/base";
 import {Opportunity} from "../model/opportunity";
+import {EnvService} from "./env.service";
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ import {Opportunity} from "../model/opportunity";
 export class SalesforceService {
   private apiUrl: string = environment.apiUrl + '/sf';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private envService: EnvService) { }
 
   /**
    * Converts a Salesforce opportunity id to a URL (link).
@@ -20,7 +21,7 @@ export class SalesforceService {
    */
   sfOppToLink(id: string): string {
     const sfOpportunityLinkPrefix: string
-      = environment.sfLightningUrl + "lightning/r/Opportunity/";
+      = this.envService.sfLightningUrl + "lightning/r/Opportunity/";
     const sfOpportunityLinkSuffix: string = "/view";
 
     return id == null ? null : sfOpportunityLinkPrefix + id + sfOpportunityLinkSuffix;

@@ -18,7 +18,7 @@ import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
 import {OpportunityIds} from "./opportunity";
-import {environment} from "../../environments/environment";
+import {EnvService} from '../services/env.service';
 
 export interface HasName {
   name?: string;
@@ -118,10 +118,15 @@ export enum SearchOppsBy {
  * Salesforce record ID which is a string 15 or more of "word" characters
  * preceeded by a record type delimited by "/".
  * eg /Opportunity/...id...
+ * Any validation method needs to use BOTH the SF sandbox and prod patterns below, combining them as OR options using a pipe: Validators.pattern(`${salesforceUrlPattern}|${salesforceSandboxUrlPattern}`)
  */
 export const salesforceUrlPattern: string =
-  environment.sfLightningUrl +
+  'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/' +
   '.*/[\\w]+/[\\w]{15,}[^\\w]?.*';
+
+export const salesforceSandboxUrlPattern: string =
+  'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/' +
+    '.*/[\\w]+/[\\w]{15,}[^\\w]?.*';
 
 export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 
