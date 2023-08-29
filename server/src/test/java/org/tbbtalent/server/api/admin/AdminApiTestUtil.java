@@ -18,6 +18,7 @@ package org.tbbtalent.server.api.admin;
 
 import org.tbbtalent.server.model.db.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -65,5 +66,18 @@ public class AdminApiTestUtil {
         candidate.setId(99L);
         candidate.setNationality(new Country("Pakistan", Status.active));
         return candidate;
+    }
+
+    static List<CandidateCertification> getListOfCandidateCertifications() {
+        return List.of(getCandidateCertification());
+    }
+
+    static CandidateCertification getCandidateCertification() {
+        return new CandidateCertification(
+                getCandidate(),
+                "BA",
+                "Cambridge",
+                LocalDate.of(1998, 5, 1)
+        );
     }
 }
