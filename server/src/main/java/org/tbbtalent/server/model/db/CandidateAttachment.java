@@ -50,7 +50,7 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     /**
      * For links {@link AttachmentType#link} and Google Docs
      * {@link AttachmentType#googlefile}, the associated url.
-     *
+     * <p>
      * For S3 files {@link AttachmentType#file}, it is the unique filename
      * generated on S3.
      */
@@ -68,6 +68,7 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     //todo Eventually get rid of this cv attribute altogether - replacing it with just uploadType
     //For now they duplicate each other
     private boolean cv;
+
     @Enumerated(EnumType.STRING)
     private UploadType uploadType;
 
