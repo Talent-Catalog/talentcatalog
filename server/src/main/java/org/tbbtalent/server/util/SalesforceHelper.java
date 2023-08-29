@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.configuration.SalesforceConfig;
 
 /**
  * Some useful Salesforce utilities.
@@ -32,7 +31,7 @@ import org.tbbtalent.server.configuration.SalesforceConfig;
  */
 public class SalesforceHelper {
     private final static String SF_OPPORTUNITY_LINK_MIDDLE
-        = "/lightning/r/Opportunity/";
+            = "/lightning/r/Opportunity/";
     private final static String SF_OPPORTUNITY_LINK_SUFFIX
         = "/view/";
 
@@ -42,9 +41,7 @@ public class SalesforceHelper {
      * @return Url (ie link) to opportunity record with that id - null if sfId is null
      */
     @Nullable
-    public static String sfOppIdToLink(@Nullable String sfId) {
-        SalesforceConfig salesforceConfig = new SalesforceConfig();
-        String baseLightningUrl = salesforceConfig.getBaseLightningUrl();
+    public static String sfOppIdToLink(@Nullable String sfId, String baseLightningUrl) {
         return sfId == null ? null : baseLightningUrl + SF_OPPORTUNITY_LINK_MIDDLE + sfId + SF_OPPORTUNITY_LINK_SUFFIX;
     }
 
@@ -124,13 +121,10 @@ public class SalesforceHelper {
             return null;
         }
 
-        SalesforceConfig salesforceConfig = new SalesforceConfig();
-        String baseLightningUrl = salesforceConfig.getBaseLightningUrl();
-
         //https://salesforce.stackexchange.com/questions/1653/what-are-salesforce-ids-composed-of
         String pattern =
             //This is the standard prefix for our Salesforce.
-            baseLightningUrl + "/" +
+            "https://talentbeyondboundaries\\S*\\.lightning\\.force\\.com" + "/" +
 
                 //This part just checks for 15 or more "word" characters with
                 //no "punctuation" - eg . or /.
