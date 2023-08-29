@@ -178,7 +178,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         WebClient.Builder builder =
             WebClient.builder()
                 .baseUrl(
-                        salesforceConfig.getBaseClassicUrl() + "services/data/" + apiVersion)
+                    salesforceConfig.getBaseClassicUrl() + "services/data/" + apiVersion)
                 .defaultHeader("Content_Type", "application/json")
                 .defaultHeader("Accept", "application/json");
 

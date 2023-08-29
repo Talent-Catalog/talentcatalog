@@ -33,12 +33,12 @@ public class TestExtractSFIDFromUrl {
     @Test
     @DisplayName("correctly extracts SF object info from SF url")
     void testExtract() {
-        String url = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/0063l00000onLl3AAE/view";
+        String url = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/0061N00000gO3zXQAS/view";
         String id = SalesforceHelper.extractIdFromSfUrl(url);
         assertNotNull(id);
         String objectType = SalesforceHelper.extractObjectTypeFromSfUrl(url);
         assertEquals("Opportunity", objectType);
-        url = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/0063l00000onLl3AAE";
+        url = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/0061N00000gO3zXQAS";
         id = SalesforceHelper.extractIdFromSfUrl(url);
         assertNotNull(id);
         objectType = SalesforceHelper.extractObjectTypeFromSfUrl(url);

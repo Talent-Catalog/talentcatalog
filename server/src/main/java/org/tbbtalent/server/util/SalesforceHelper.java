@@ -123,7 +123,7 @@ public class SalesforceHelper {
 
         //https://salesforce.stackexchange.com/questions/1653/what-are-salesforce-ids-composed-of
         String pattern =
-            //This is the standard prefix for our Salesforce.
+            //This is the standard prefix for our Salesforce, allowing for both sandbox and prod versions.
             "https://talentbeyondboundaries\\S*\\.lightning\\.force\\.com" + "/" +
 
                 //This part just checks for 15 or more "word" characters with

@@ -18,7 +18,6 @@ import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
 import {OpportunityIds} from "./opportunity";
-import {EnvService} from '../services/env.service';
 
 export interface HasName {
   name?: string;

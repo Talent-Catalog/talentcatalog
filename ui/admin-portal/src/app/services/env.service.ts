@@ -15,8 +15,7 @@
  */
 
 // Based on this article: https://mokkapps.de/blog/how-to-build-an-angular-app-once-and-deploy-it-to-multiple-environments
-// This is referred to as the "quick and dirty" method, but actually we can't infer the environment from the REST API call at the moment, nor do we have an environment.ts defined for staging - for those reasons, this is a good alternative for now, and suggest a
-// TODO: define en environment and adapt build/deploy instructions for staging, to allow the most efficient and reliable env vars setting.
+// Is initialised at startup, when it infers the environment from the url and set's the env vars used elsewhere
 
 import {Injectable} from "@angular/core";
 

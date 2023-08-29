@@ -361,9 +361,10 @@ public class JobServiceImpl implements JobService {
 
         log.info("Loading candidate opportunities from Salesforce");
 
-        final int limit = 250;
+        final int limit = 100;
 
         String lastId = null;
+        int totalOpps = 0;
         int nOpps = -1;
         while (nOpps != 0) {
 
@@ -371,7 +372,8 @@ public class JobServiceImpl implements JobService {
             List<Opportunity> ops = salesforceService.findCandidateOpportunities(
                 lastId == null ? null : "Id > '" + lastId + "'", limit);
             nOpps = ops.size();
-            log.info("Loaded " + nOpps + " candidate opportunities from Salesforce");
+            totalOpps += nOpps;
+            log.info("Loaded " + nOpps + " candidate opportunities from Salesforce. Total " + totalOpps);
             if (nOpps > 0) {
                 lastId = ops.get(nOpps - 1).getId();
 
@@ -382,7 +384,7 @@ public class JobServiceImpl implements JobService {
                     } else {
                         CandidateOpportunity candidateOpp =
                             candidateOpportunityService.loadCandidateOpportunity(op);
-                        log.info("Updated/created candidate opportunity " + candidateOpp.getName());
+//                        log.info("Updated/created candidate opportunity " + candidateOpp.getName());
                     }
                 }
             }
