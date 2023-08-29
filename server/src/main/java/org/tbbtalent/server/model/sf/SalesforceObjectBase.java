@@ -20,10 +20,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.tbbtalent.server.configuration.SalesforceConfig;
-
-import javax.annotation.PostConstruct;
 
 /**
  * Base class for Salesforce objects
@@ -34,19 +30,8 @@ import javax.annotation.PostConstruct;
 @Setter
 @ToString
 public abstract class SalesforceObjectBase {
-  static String urlRoot;
+  static final String urlMiddle = "/lightning/r/";
   static final String urlSuffix = "/view";
-
-  @Autowired
-  private SalesforceConfig salesforceConfig;
-
-  /**
-   * PostConstruct (baeldung.com/spring-postconstruct-predestroy) populates the urlRoot field right after initialisation using the SalesforceConfig dependency - this gets around having to change the constructor of this class and thereby it's SF object subclasses, which gets a little tricky.
-   */
-  @PostConstruct
-  private void initialize() {
-    urlRoot = this.salesforceConfig.getBaseLightningUrl() + "/lightning/r/";
-  }
 
   /**
    * This is the Salesforce Id that every Salesforce record has.
@@ -60,10 +45,10 @@ public abstract class SalesforceObjectBase {
    */
   abstract String getSfObjectName();
 
-  public String getUrl() {
+  public String getUrl(String baseLightningUrl) {
     String url = null;
     if (id != null) {
-      url = urlRoot + getSfObjectName() + "/" + id + urlSuffix;
+      url = baseLightningUrl + urlMiddle + getSfObjectName() + "/" + id + urlSuffix;
     }
     return url;
   }

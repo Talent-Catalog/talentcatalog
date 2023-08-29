@@ -19,7 +19,6 @@ package org.tbbtalent.server.configuration;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 
 /**
  * Salesforce configuration - read from application.yml
@@ -46,20 +45,28 @@ public class SalesforceConfig {
     private String privatekey;
 
     /**
-     * Root URL directing to SF Classic sandbox or production, depending on environment
+     * Base URL for API methods that use SF Classic
      */
     private String baseClassicUrl;
 
     /**
-     * Root URL directing to SF login for sandbox or production, depending on environment
+     * Base URL for SF login
      */
     private String baseLoginUrl;
 
-
+    /**
+     *  In the doc for the JWT bearer token, this is referred to as 'client_id' - it is obtained from SF at Setup and differs per SF user > App Manager > View (tbbtalent) > Manage Consumer Details
+     */
     private String consumerKey;
 
+    /**
+     * The SF user to be associated with the API login
+     */
     private String user;
 
+    /**
+     * Base url for API methods that use SF Lightning
+     */
     private String baseLightningUrl;
 
 }

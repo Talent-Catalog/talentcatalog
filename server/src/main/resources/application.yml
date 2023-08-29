@@ -103,22 +103,12 @@ salesforce:
   #
   # For dev this should be set in tbb-secrets
   #
-  # We use the same SF connected app and key/certificate for TC dev and staging to access our SF sandbox, but other URLs and access credentials are different and therefore defined below and in respective build definitions.
+  # We use the same SF connected app and key/certificate for TC dev and staging to access our SF sandbox, but other URLs and access credentials are different and therefore defined below and designated per environment.
   privatekey: ${SF_PRIVATE_KEY:}
-
-  # prod: https://talentbeyondboundaries.my.salesforce.com/
   baseClassicUrl: ${SF_BASE_CLASSIC_URL:https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/}
-
-  # prod: https://talentbeyondboundaries.lightning.force.com
   baseLightningUrl: ${SF_BASE_LIGHTNING_URL:https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com}
-
-  # prod: https://login.salesforce.com/
   baseLoginUrl: ${SF_BASE_LOGIN_URL:https://test.salesforce.com/}
-
-  # In the doc for the JWT bearer token, this is referred to as 'client_id' - it is obtained from SF at Setup and differs per SF user > App Manager > View (tbbtalent) > Manage Consumer Details
   consumerKey: ${SF_CONSUMER_KEY:}
-
-  # The SF user to be associated with the API login
   user: ${SF_USER:}
 
   daysAgoRecent: 7
