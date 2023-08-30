@@ -80,4 +80,15 @@ public class AdminApiTestUtil {
                 LocalDate.of(1998, 5, 1)
         );
     }
+
+    static CandidateCitizenship getCandidateCitizenship() {
+        CandidateCitizenship citizenship = new CandidateCitizenship();
+        citizenship.setCandidate(getCandidate());
+        citizenship.setHasPassport(HasPassport.ValidPassport);
+        citizenship.setPassportExp(LocalDate.of(2035, 12, 25));
+        citizenship.setNationality(new Country("Pakistan", Status.active));
+        citizenship.setNotes("Some example citizenship notes");
+        return citizenship;
+    }
+
 }
