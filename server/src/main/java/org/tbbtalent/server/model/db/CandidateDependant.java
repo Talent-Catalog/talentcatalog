@@ -17,6 +17,7 @@
 package org.tbbtalent.server.model.db;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
@@ -29,6 +30,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "candidate_dependant")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_dependant_id_seq", allocationSize = 1)
+@NoArgsConstructor
 public class CandidateDependant extends AbstractDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,9 +59,6 @@ public class CandidateDependant extends AbstractDomainObject<Long> {
     private YesNo healthConcern;
 
     private String healthNotes;
-
-    public CandidateDependant() {
-    }
 
     public void populateIntakeData(
             @NonNull Candidate candidate,
