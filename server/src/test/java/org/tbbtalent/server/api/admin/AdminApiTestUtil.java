@@ -118,4 +118,21 @@ public class AdminApiTestUtil {
         return destination;
     }
 
+    static List<CandidateEducation> getListOfCandidateEducations() {
+        return List.of(getCandidateEducation());
+    }
+
+    static CandidateEducation getCandidateEducation() {
+        return new CandidateEducation(
+                getCandidate(),
+                EducationType.Masters,
+                new Country("UK", Status.active),
+                new EducationMajor("MA", Status.active),
+                4,
+                "Cambridge",
+                "Computer Science",
+                1998,
+                false
+        );
+    }
 }
