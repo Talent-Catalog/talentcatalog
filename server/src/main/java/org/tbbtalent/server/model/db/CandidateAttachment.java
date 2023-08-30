@@ -25,9 +25,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.task.UploadType;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "candidate_attachment")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_attachment_id_seq", allocationSize = 1)
@@ -43,9 +48,9 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     private String name;
 
     /**
-     * For links {@link AttachmentType#link} and Google docs
+     * For links {@link AttachmentType#link} and Google Docs
      * {@link AttachmentType#googlefile}, the associated url.
-     *
+     * <p>
      * For S3 files {@link AttachmentType#file}, it is the unique filename
      * generated on S3.
      */
@@ -63,6 +68,7 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     //todo Eventually get rid of this cv attribute altogether - replacing it with just uploadType
     //For now they duplicate each other
     private boolean cv;
+
     @Enumerated(EnumType.STRING)
     private UploadType uploadType;
 
@@ -82,68 +88,4 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
         return url;
     }
 
-
-    public Candidate getCandidate() {
-        return candidate;
-    }
-
-    public void setCandidate(Candidate candidate) {
-        this.candidate = candidate;
-    }
-
-    public AttachmentType getType() {
-        return type;
-    }
-
-    public void setType(AttachmentType type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
-    }
-
-    public boolean isMigrated() {
-        return migrated;
-    }
-
-    public void setMigrated(boolean migrated) {
-        this.migrated = migrated;
-    }
-
-    public boolean isCv() { return cv; }
-
-    public void setCv(boolean cv) { this.cv = cv; }
-
-    public String getTextExtract() { return textExtract; }
-
-    public void setTextExtract(String textExtract) { this.textExtract = textExtract; }
-
-    public UploadType getUploadType() {
-        return uploadType;
-    }
-
-    public void setUploadType(UploadType uploadType) {
-        this.uploadType = uploadType;
-    }
 }
