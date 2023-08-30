@@ -135,4 +135,16 @@ public class AdminApiTestUtil {
                 false
         );
     }
+
+    static CandidateExam getCandidateExam() {
+        CandidateExam exam = new CandidateExam();
+        exam.setCandidate(getCandidate());
+        exam.setExam(Exam.IELTSGen);
+        exam.setOtherExam("IELTS");
+        exam.setScore("100");
+        exam.setYear(2023L);
+        exam.setNotes("Some exam notes");
+        return exam;
+    }
+
 }
