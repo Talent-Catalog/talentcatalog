@@ -107,5 +107,15 @@ public class AdminApiTestUtil {
         return dependant;
     }
 
+    static CandidateDestination getCandidateDestination() {
+        CandidateDestination destination = new CandidateDestination();
+        destination.setCandidate(getCandidate());
+        destination.setCountry(new Country("USA", Status.active));
+        destination.setInterest(YesNoUnsure.Yes);
+        destination.setFamily(FamilyRelations.Cousin);
+        destination.setLocation("New York");
+        destination.setNotes("Some destination notes");
+        return destination;
+    }
 
 }
