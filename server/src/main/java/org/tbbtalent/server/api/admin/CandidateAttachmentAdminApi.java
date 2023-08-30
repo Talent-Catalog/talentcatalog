@@ -16,7 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +25,6 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.AttachmentType;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.request.attachment.*;
-import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -37,32 +36,25 @@ import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-attachment")
+@RequiredArgsConstructor
 public class CandidateAttachmentAdminApi {
 
     private final CandidateAttachmentService candidateAttachmentService;
-    private final AuthService authService;
-
-    @Autowired
-    public CandidateAttachmentAdminApi(CandidateAttachmentService candidateAttachmentService,
-                                       AuthService authService) {
-        this.candidateAttachmentService = candidateAttachmentService;
-        this.authService = authService;
-    }
 
     @PostMapping("search")
     public List<Map<String, Object>> search(@RequestBody SearchByIdCandidateAttachmentRequest request) {
         List<CandidateAttachment> candidateAttachments;
         if (request.isCvOnly()) {
-            candidateAttachments = this.candidateAttachmentService.listCandidateCvs(request.getCandidateId());
+            candidateAttachments = candidateAttachmentService.listCandidateCvs(request.getCandidateId());
         } else {
-            candidateAttachments = this.candidateAttachmentService.listCandidateAttachments(request.getCandidateId());
+            candidateAttachments = candidateAttachmentService.listCandidateAttachments(request.getCandidateId());
         }
         return candidateAttachmentDto().buildList(candidateAttachments);
     }
 
     @PostMapping("search-paged")
     public Map<String, Object> searchPaged(@RequestBody SearchCandidateAttachmentsRequest request) {
-        Page<CandidateAttachment> candidateAttachments = this.candidateAttachmentService.searchCandidateAttachments(request);
+        Page<CandidateAttachment> candidateAttachments = candidateAttachmentService.searchCandidateAttachments(request);
         return candidateAttachmentDto().buildPage(candidateAttachments);
     }
 
@@ -133,14 +125,14 @@ public class CandidateAttachmentAdminApi {
             @RequestBody UpdateCandidateAttachmentRequest request)
             throws IOException {
         CandidateAttachment candidateAttachment =
-                this.candidateAttachmentService.updateCandidateAttachment(id, request);
+                candidateAttachmentService.updateCandidateAttachment(id, request);
         return candidateAttachmentDto().build(candidateAttachment);
     }
 
     @PostMapping("list-by-type")
     public List<Map<String, Object>> listByType(@RequestBody ListByUploadTypeRequest request) {
         List<CandidateAttachment> candidateAttachments;
-        candidateAttachments = this.candidateAttachmentService.listCandidateAttachmentsByType(request);
+        candidateAttachments = candidateAttachmentService.listCandidateAttachmentsByType(request);
         return candidateAttachmentDto().buildList(candidateAttachments);
     }
 
@@ -150,11 +142,10 @@ public class CandidateAttachmentAdminApi {
      * @return ???
      */
     @DeleteMapping("{id}")
-    public ResponseEntity deleteCandidateAttachment(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteCandidateAttachment(@PathVariable("id") Long id) {
         candidateAttachmentService.deleteCandidateAttachment(id);
         return ResponseEntity.ok().build();
     }
-
 
     private DtoBuilder candidateAttachmentDto() {
         return new DtoBuilder()
@@ -174,7 +165,6 @@ public class CandidateAttachmentAdminApi {
                 ;
     }
 
-
     private DtoBuilder userDto() {
         return new DtoBuilder()
                 .add("id")
@@ -182,6 +172,5 @@ public class CandidateAttachmentAdminApi {
                 .add("lastName")
                 ;
     }
-
 
 }
