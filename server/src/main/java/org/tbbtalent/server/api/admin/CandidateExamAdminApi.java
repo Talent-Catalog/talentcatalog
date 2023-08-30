@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityReferencedException;
@@ -33,17 +34,12 @@ import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-exam")
-public class CandidateExamAdminApi
-        implements IJoinedTableApi<CreateCandidateExamRequest,
-        CreateCandidateExamRequest,CreateCandidateExamRequest> {
+@RequiredArgsConstructor
+public class CandidateExamAdminApi implements IJoinedTableApi<CreateCandidateExamRequest,
+                                                              CreateCandidateExamRequest,
+                                                              CreateCandidateExamRequest> {
     private final CandidateExamService candidateExamService;
     private final CandidateService candidateService;
-
-    public CandidateExamAdminApi(CandidateExamService candidateExamService,
-                                 CandidateService candidateService) {
-        this.candidateExamService = candidateExamService;
-        this.candidateService = candidateService;
-    }
 
     /**
      * Creates a new candidate exam record from the data in the given
@@ -55,12 +51,9 @@ public class CandidateExamAdminApi
      * that candidateId or no Nationality with the id given in the request  
      */
     @Override
-    public @NotNull Map<String, Object> create(
-            long candidateId, @Valid CreateCandidateExamRequest request)
+    public @NotNull Map<String, Object> create(long candidateId, @Valid CreateCandidateExamRequest request)
             throws NoSuchObjectException {
-        CandidateExam candidateExam =
-                this.candidateExamService
-                        .createExam(candidateId, request);
+        CandidateExam candidateExam = candidateExamService.createExam(candidateId, request);
         return candidateExamDto().build(candidateExam);
     }
 
@@ -73,8 +66,7 @@ public class CandidateExamAdminApi
      * @throws InvalidRequestException if not authorized to delete this list.
      */
     @Override
-    public boolean delete(long id) 
-            throws EntityReferencedException, InvalidRequestException {
+    public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
         return candidateService.deleteCandidateExam(id);
     }
     
@@ -88,5 +80,4 @@ public class CandidateExamAdminApi
                 ;
     }
 
-    
 }
