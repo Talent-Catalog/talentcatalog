@@ -59,7 +59,7 @@ import static org.tbbtalent.server.api.admin.AdminApiTestUtil.getListOfCandidate
  */
 @WebMvcTest(CandidateCertificationAdminApi.class)
 @AutoConfigureMockMvc
-class CandidateCertificationAdminApiTest extends ApiTestBase{
+class CandidateCertificationAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-certification";
     private static final String GET_CERTIFICATION_LIST_BY_ID_PATH = "/{id}/list";
     private static final long CANDIDATE_ID = 99L;
