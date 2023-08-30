@@ -91,4 +91,21 @@ public class AdminApiTestUtil {
         return citizenship;
     }
 
+    static CandidateDependant getCandidateDependant() {
+        CandidateDependant dependant = new CandidateDependant();
+        dependant.setCandidate(getCandidate());
+        dependant.setRelation(DependantRelations.Partner);
+        dependant.setRelationOther("Husband");
+        dependant.setDob(LocalDate.of(1998, 1, 1));
+        dependant.setGender(Gender.male);
+        dependant.setName("Ahmad Fatah");
+        dependant.setRegistered(Registration.UNHCR);
+        dependant.setRegisteredNumber("123456");
+        dependant.setRegisteredNotes("Some dependant registration notes");
+        dependant.setHealthConcern(YesNo.No);
+        dependant.setHealthNotes("Some dependant health notes");
+        return dependant;
+    }
+
+
 }
