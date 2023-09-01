@@ -58,14 +58,6 @@ export class VisaJobCheckCaComponent implements OnInit {
       }
     )
 
-    this.jobService.get(this.selectedJobCheck?.jobOpp.id).subscribe(
-      (response) => {
-        this.selectedJob = response;
-      }, (error) => {
-        this.error = error;
-      }
-    )
-
     // Process & fetch values that need to be displayed.
     this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
     this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts] +
@@ -77,5 +69,17 @@ export class VisaJobCheckCaComponent implements OnInit {
 
   updateSelectedJob(index: number){
     this.selectedJobCheck = this.visaCheckRecord.candidateVisaJobChecks[index];
+
+    if (this.selectedJobCheck?.jobOpp) {
+      this.jobService.get(this.selectedJobCheck?.jobOpp?.id).subscribe(
+        (response) => {
+          this.selectedJob = response;
+        }, (error) => {
+          this.error = error;
+        }
+      )
+    } else {
+      this.selectedJob = null;
+    }
   }
 }
