@@ -931,7 +931,7 @@ public class SavedListServiceImpl implements SavedListService {
         if (sfJob != null && 
             request.getPublishClosedOpps() != null && !request.getPublishClosedOpps()) {
             //For job lists where publishClosedOpps is false, filter out closed opps (unless they
-            // are "won" - we always publish won opps, which a special kind of closed). 
+            //are "won" - we always publish won opps, which are a special kind of closed). 
             candidates = savedList.getCandidates().stream().filter(
                 candidate -> {
                     return candidate.getCandidateOpportunities().stream()
