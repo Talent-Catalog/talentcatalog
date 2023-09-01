@@ -2220,22 +2220,28 @@ public class CandidateServiceImpl implements CandidateService {
 
         //Check that all candidate subfolders are present and links are stored
         //Use the candidate drive associated with the main folder
-        candidateDrive = fileSystemService.getDriveFromEntity(folder);
-        for (CandidateSubfolderType cstype: CandidateSubfolderType.values()) {
-            if (getCandidateSubfolderlink(candidate, cstype) == null) {
-                //No link stored = check if folder exists
-                final String subfolderName = getCandidateSubfolderName(cstype);
-                GoogleFileSystemFolder subfolder =
-                    fileSystemService.findAFolder(candidateDrive, folder, subfolderName);
-                if (subfolder == null) {
-                    //No subfolder exists - create one
-                    subfolder = fileSystemService.createFolder(candidateDrive, folder, subfolderName);
-                    //Make publicly viewable
-                    fileSystemService.publishFolder(subfolder);
-                }
+        try {
+            candidateDrive = fileSystemService.getDriveFromEntity(folder);
+            for (CandidateSubfolderType cstype : CandidateSubfolderType.values()) {
+                if (getCandidateSubfolderlink(candidate, cstype) == null) {
+                    //No link stored = check if folder exists
+                    final String subfolderName = getCandidateSubfolderName(cstype);
+                    GoogleFileSystemFolder subfolder =
+                        fileSystemService.findAFolder(candidateDrive, folder, subfolderName);
+                    if (subfolder == null) {
+                        //No subfolder exists - create one
+                        subfolder = fileSystemService.createFolder(candidateDrive, folder,
+                            subfolderName);
+                        //Make publicly viewable
+                        fileSystemService.publishFolder(subfolder);
+                    }
 
-                setCandidateSubfolderlink(candidate, cstype, subfolder.getUrl());
+                    setCandidateSubfolderlink(candidate, cstype, subfolder.getUrl());
+                }
             }
+        } catch (IOException ex) {
+            log.error(
+                "Problem creating sub folders for candidate " + candidate.getCandidateNumber(), ex);
         }
 
         save(candidate, false);
