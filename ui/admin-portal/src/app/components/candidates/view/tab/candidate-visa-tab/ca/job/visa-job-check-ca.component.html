@@ -219,7 +219,16 @@
   </ngb-panel>
   <ngb-panel id="final-assessment" title="Final Assessment">
     <ng-template ngbPanelContent>
-      TBC
+      <app-visa-job-put-forward
+        [entity]="candidate"
+        [visaCheckRecord]="visaCheckRecord"
+        [selectedJobCheck]="selectedJobCheck">
+      </app-visa-job-put-forward>
+      <app-visa-job-notes
+        [entity]="candidate"
+        [visaCheckRecord]="visaCheckRecord"
+        [selectedJobCheck]="selectedJobCheck">
+      </app-visa-job-notes>
     </ng-template>
   </ngb-panel>
 
