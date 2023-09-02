@@ -13,11 +13,4 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-create table user_privilege (
-  user_id      bigint not null references users,
-  privilege    text not null,
-
---   Name must be unique for a user. ie a user cannot have the same privilege twice
-  primary key (user_id, privilege)
-);
+alter table users add column job_creator boolean not null default false;

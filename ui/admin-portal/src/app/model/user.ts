@@ -24,6 +24,7 @@ export class User {
   lastName: string;
   email: string;
   role: string;
+  jobCreator: boolean;
   approver: User;
   purpose: string;
   readOnly: boolean;
@@ -52,6 +53,7 @@ export interface ShortUser {
 export interface UpdateUserRequest {
   email: string;
   firstName: string;
+  jobCreator: boolean;
   lastName: string;
   partnerId: number;
   password?: string;
