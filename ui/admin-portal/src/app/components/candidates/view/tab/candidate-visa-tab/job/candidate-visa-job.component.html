@@ -1,9 +1,9 @@
-<button type="button" class="btn btn-primary btn-sm float-end" (click)="addJob()">
+<button [disabled]="!hasJobOpps" type="button" class="btn btn-primary btn-sm float-end" (click)="addJob()">
   <i class="fas fa-plus"></i> Add Job
 </button>
 
-<div *ngIf="visaCheckRecord?.candidateVisaJobChecks.length == 0">
-  <p class="small text-muted text-center fw-light">No jobs added</p>
+<div *ngIf="!hasJobChecks">
+  <p class="small text-muted text-center fw-light">No job checks added. If candidate has job opportunities click the Add Job button.</p>
 </div>
 
 <div class="row">

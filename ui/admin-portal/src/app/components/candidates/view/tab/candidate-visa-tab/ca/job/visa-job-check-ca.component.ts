@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
@@ -14,6 +14,7 @@ import {CandidateOccupation} from "../../../../../../../model/candidate-occupati
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {JobService} from "../../../../../../../services/job.service";
 import {Job} from "../../../../../../../model/job";
+import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-visa-job-check-ca',
@@ -24,6 +25,8 @@ export class VisaJobCheckCaComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
+
+  @ViewChild('visaJobCanada') visaJobCanada: NgbAccordion;
 
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
@@ -60,12 +63,18 @@ export class VisaJobCheckCaComponent implements OnInit {
 
     // Process & fetch values that need to be displayed.
     this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
-    this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts] +
-      (this.candidateIntakeData?.partnerIeltsScore ? ', Score: ' + this.candidateIntakeData.partnerIeltsScore : null);
+    if (this.candidateIntakeData?.partnerIelts) {
+      this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts] +
+        (this.candidateIntakeData?.partnerIeltsScore ? ', Score: ' + this.candidateIntakeData.partnerIeltsScore : null);
+    } else {
+      this.partnerIeltsString = null;
+    }
     this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
   }
 
-
+  get hasJobChecks() {
+    return this.visaCheckRecord?.candidateVisaJobChecks?.length > 0;
+  }
 
   updateSelectedJob(index: number){
     this.selectedJobCheck = this.visaCheckRecord.candidateVisaJobChecks[index];
