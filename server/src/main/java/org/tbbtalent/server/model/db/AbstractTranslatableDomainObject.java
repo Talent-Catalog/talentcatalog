@@ -21,8 +21,12 @@ import java.io.Serializable;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+@Getter
+@Setter
 @MappedSuperclass
 @Translatable(value = "name", translation = "translatedName")
 public abstract class AbstractTranslatableDomainObject<IdType extends Serializable> 
@@ -61,29 +65,9 @@ public abstract class AbstractTranslatableDomainObject<IdType extends Serializab
         return this.name.compareTo(other.getName());
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getTranslatedId() {
-        return translatedId;
-    }
-
-    public void setTranslatedId(Long translatedId) {
-        this.translatedId = translatedId;
-    }
-
     public String getTranslatedName() {
         if (StringUtils.isBlank(translatedName)) return name;
         return translatedName;
-    }
-
-    public void setTranslatedName(String translatedName) {
-        this.translatedName = translatedName;
     }
 
     @Override

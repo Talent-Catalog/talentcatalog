@@ -16,7 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.UsernameTakenException;
@@ -31,37 +31,32 @@ import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-certification")
+@RequiredArgsConstructor
 public class CandidateCertificationAdminApi {
 
     private final CandidateCertificationService candidateCertificationService;
 
-    @Autowired
-    public CandidateCertificationAdminApi(CandidateCertificationService candidateCertificationService) {
-        this.candidateCertificationService = candidateCertificationService;
-    }
-
-
     @GetMapping("{id}/list")
     public List<Map<String, Object>> get(@PathVariable("id") long id) {
-        List<CandidateCertification> candidateCertifications = this.candidateCertificationService.list(id);
+        List<CandidateCertification> candidateCertifications = candidateCertificationService.list(id);
         return candidateCertificationDto().buildList(candidateCertifications);
     }
 
     @PostMapping()
     public Map<String, Object> create(@RequestBody CreateCandidateCertificationRequest request) throws UsernameTakenException {
-        CandidateCertification candidateCertification = this.candidateCertificationService.createCandidateCertification(request);
+        CandidateCertification candidateCertification = candidateCertificationService.createCandidateCertification(request);
         return candidateCertificationDto().build(candidateCertification);
     }
 
     @PutMapping()
     public Map<String, Object> update(@RequestBody UpdateCandidateCertificationRequest request) {
-        CandidateCertification candidateCertification = this.candidateCertificationService.updateCandidateCertification(request);
+        CandidateCertification candidateCertification = candidateCertificationService.updateCandidateCertification(request);
         return candidateCertificationDto().build(candidateCertification);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity delete(@PathVariable("id") Long id) {
-        this.candidateCertificationService.deleteCandidateCertification(id);
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        candidateCertificationService.deleteCandidateCertification(id);
         return ResponseEntity.ok().build();
     }
 

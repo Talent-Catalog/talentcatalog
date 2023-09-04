@@ -25,6 +25,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 
@@ -36,8 +37,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "candidate_destination")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_destination_id_seq", allocationSize = 1)
-public class CandidateDestination extends AbstractDomainObject<Long> 
-        implements Comparable<CandidateDestination>{
+@NoArgsConstructor
+public class CandidateDestination extends AbstractDomainObject<Long>
+        implements Comparable<CandidateDestination> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -56,9 +58,6 @@ public class CandidateDestination extends AbstractDomainObject<Long>
     private String location;
 
     private String notes;
-
-    public CandidateDestination() {
-    }
 
     @Override
     public int compareTo(CandidateDestination o) {

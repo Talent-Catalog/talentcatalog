@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityReferencedException;
@@ -34,17 +35,13 @@ import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-dependant")
+@RequiredArgsConstructor
 public class CandidateDependantAdminApi
         implements IJoinedTableApi<CreateCandidateDependantRequest,
         CreateCandidateDependantRequest,CreateCandidateDependantRequest> {
 
     private final CandidateDependantService candidateDependantService;
     private final CandidateService candidateService;
-
-    public CandidateDependantAdminApi(CandidateDependantService candidateDependantService, CandidateService candidateService) {
-        this.candidateDependantService = candidateDependantService;
-        this.candidateService = candidateService;
-    }
 
     /**
      * Creates a new candidate dependant record from the data in the given
@@ -59,9 +56,9 @@ public class CandidateDependantAdminApi
     public @NotNull Map<String, Object> create(
             long candidateId, @Valid CreateCandidateDependantRequest request)
             throws NoSuchObjectException {
-        CandidateDependant candidateDependant = this.candidateDependantService.createDependant(candidateId, request);
+        CandidateDependant candidateDependant = candidateDependantService.createDependant(candidateId, request);
         // Need to save the Candidate as we set the number of dependants value on the candidate object when creating dependant.
-        this.candidateService.save(candidateDependant.getCandidate(), true);
+        candidateService.save(candidateDependant.getCandidate(), true);
         return candidateDependantDto().build(candidateDependant);
     }
 
@@ -78,7 +75,7 @@ public class CandidateDependantAdminApi
             throws EntityReferencedException, InvalidRequestException {
         Candidate ownerOfDependant = candidateDependantService.deleteDependant(id);
         // Need to save the Candidate as we set the number of dependants value on the candidate object when deleting dependant.
-        this.candidateService.save(ownerOfDependant, true);
+        candidateService.save(ownerOfDependant, true);
         return true;
     }
 

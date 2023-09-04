@@ -18,6 +18,7 @@ package org.tbbtalent.server.api.admin;
 
 import org.tbbtalent.server.model.db.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -66,4 +67,84 @@ public class AdminApiTestUtil {
         candidate.setNationality(new Country("Pakistan", Status.active));
         return candidate;
     }
+
+    static List<CandidateCertification> getListOfCandidateCertifications() {
+        return List.of(getCandidateCertification());
+    }
+
+    static CandidateCertification getCandidateCertification() {
+        return new CandidateCertification(
+                getCandidate(),
+                "BA",
+                "Cambridge",
+                LocalDate.of(1998, 5, 1)
+        );
+    }
+
+    static CandidateCitizenship getCandidateCitizenship() {
+        CandidateCitizenship citizenship = new CandidateCitizenship();
+        citizenship.setCandidate(getCandidate());
+        citizenship.setHasPassport(HasPassport.ValidPassport);
+        citizenship.setPassportExp(LocalDate.of(2035, 12, 25));
+        citizenship.setNationality(new Country("Pakistan", Status.active));
+        citizenship.setNotes("Some example citizenship notes");
+        return citizenship;
+    }
+
+    static CandidateDependant getCandidateDependant() {
+        CandidateDependant dependant = new CandidateDependant();
+        dependant.setCandidate(getCandidate());
+        dependant.setRelation(DependantRelations.Partner);
+        dependant.setRelationOther("Husband");
+        dependant.setDob(LocalDate.of(1998, 1, 1));
+        dependant.setGender(Gender.male);
+        dependant.setName("Ahmad Fatah");
+        dependant.setRegistered(Registration.UNHCR);
+        dependant.setRegisteredNumber("123456");
+        dependant.setRegisteredNotes("Some dependant registration notes");
+        dependant.setHealthConcern(YesNo.No);
+        dependant.setHealthNotes("Some dependant health notes");
+        return dependant;
+    }
+
+    static CandidateDestination getCandidateDestination() {
+        CandidateDestination destination = new CandidateDestination();
+        destination.setCandidate(getCandidate());
+        destination.setCountry(new Country("USA", Status.active));
+        destination.setInterest(YesNoUnsure.Yes);
+        destination.setFamily(FamilyRelations.Cousin);
+        destination.setLocation("New York");
+        destination.setNotes("Some destination notes");
+        return destination;
+    }
+
+    static List<CandidateEducation> getListOfCandidateEducations() {
+        return List.of(getCandidateEducation());
+    }
+
+    static CandidateEducation getCandidateEducation() {
+        return new CandidateEducation(
+                getCandidate(),
+                EducationType.Masters,
+                new Country("UK", Status.active),
+                new EducationMajor("MA", Status.active),
+                4,
+                "Cambridge",
+                "Computer Science",
+                1998,
+                false
+        );
+    }
+
+    static CandidateExam getCandidateExam() {
+        CandidateExam exam = new CandidateExam();
+        exam.setCandidate(getCandidate());
+        exam.setExam(Exam.IELTSGen);
+        exam.setOtherExam("IELTS");
+        exam.setScore("100");
+        exam.setYear(2023L);
+        exam.setNotes("Some exam notes");
+        return exam;
+    }
+
 }

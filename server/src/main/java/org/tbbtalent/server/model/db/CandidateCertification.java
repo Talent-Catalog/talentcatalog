@@ -16,6 +16,11 @@
 
 package org.tbbtalent.server.model.db;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
@@ -25,9 +30,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "candidate_certification")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_certification_id_seq", allocationSize = 1)
+@NoArgsConstructor
+@AllArgsConstructor
 public class CandidateCertification extends AbstractDomainObject<Long>  {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,33 +47,4 @@ public class CandidateCertification extends AbstractDomainObject<Long>  {
     private String institution;
     private LocalDate dateCompleted;
 
-    public CandidateCertification() {
-    }
-
-    public CandidateCertification(Candidate candidate, String name, String institution, LocalDate dateCompleted) {
-        this.candidate = candidate;
-        this.name = name;
-        this.institution = institution;
-        this.dateCompleted = dateCompleted;
-    }
-
-    public Candidate getCandidate() {
-        return candidate;
-    }
-
-    public void setCandidate(Candidate candidate) {
-        this.candidate = candidate;
-    }
-
-    public String getName() { return name; }
-
-    public void setName(String name) { this.name = name; }
-
-    public String getInstitution() { return institution; }
-
-    public void setInstitution(String institution) { this.institution = institution; }
-
-    public LocalDate getDateCompleted() { return dateCompleted; }
-
-    public void setDateCompleted(LocalDate dateCompleted) { this.dateCompleted = dateCompleted; }
 }
