@@ -22,7 +22,7 @@
   </div>
 </div>
 
-<ngb-accordion #visaJobCanada="ngbAccordion" [destroyOnHide]="false">
+<ngb-accordion *ngIf="hasJobChecks" #visaJobCanada="ngbAccordion" [destroyOnHide]="false">
   <ngb-panel id="occupation-eligibility" title="Occupation Eligibility">
     <ng-template ngbPanelContent>
       <app-occupation-category
