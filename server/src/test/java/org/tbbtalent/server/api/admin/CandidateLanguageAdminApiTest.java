@@ -29,7 +29,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
 import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguageRequest;
-import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tbbtalent.server.service.db.CandidateLanguageService;
 
 import java.util.List;
