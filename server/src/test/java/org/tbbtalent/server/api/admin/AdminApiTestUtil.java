@@ -163,6 +163,17 @@ public class AdminApiTestUtil {
         return jobExperience;
     }
 
+    static List<Occupation> getListOfOccupations() {
+        return List.of(
+                new Occupation("Builder", Status.active),
+                new Occupation("Baker", Status.active)
+        );
+    }
+
+    static List<CandidateOccupation> getListOfCandidateOccupations() {
+        return List.of(getCandidateOccupation());
+    }
+
     static CandidateOccupation getCandidateOccupation() {
         return new CandidateOccupation(
                 getCandidate(),
