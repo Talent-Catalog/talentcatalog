@@ -183,4 +183,13 @@ public class AdminApiTestUtil {
                 new LanguageLevel("Good", Status.active, 9)
         );
     }
+
+    static CandidateNote getCandidateNote() {
+        CandidateNote candidateNote = new CandidateNote();
+        candidateNote.setCandidate(getCandidate());
+        candidateNote.setTitle("A title");
+        candidateNote.setComment("Some comments");
+        candidateNote.setNoteType(NoteType.candidate);
+        return candidateNote;
+    }
 }
