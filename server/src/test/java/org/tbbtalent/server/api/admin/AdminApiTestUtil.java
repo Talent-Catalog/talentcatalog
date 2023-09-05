@@ -203,4 +203,18 @@ public class AdminApiTestUtil {
         candidateNote.setNoteType(NoteType.candidate);
         return candidateNote;
     }
+
+    static CandidateOpportunity getCandidateOpportunity() {
+        CandidateOpportunity opportunity = new CandidateOpportunity();
+        opportunity.setCandidate(getCandidate());
+        opportunity.setClosingCommentsForCandidate("Some closing comments for candidate");
+        opportunity.setEmployerFeedback("Some employer feedback");
+        opportunity.setStage(CandidateOpportunityStage.offer);
+        opportunity.setJobOpp(getSalesforceJobOpp());
+        return opportunity;
+    }
+
+    static SalesforceJobOpp getSalesforceJobOpp() {
+        return new SalesforceJobOpp();
+    }
 }
