@@ -217,4 +217,13 @@ public class AdminApiTestUtil {
     static SalesforceJobOpp getSalesforceJobOpp() {
         return new SalesforceJobOpp();
     }
+
+    static CandidateReviewStatusItem getCandidateReviewStatusItem() {
+        CandidateReviewStatusItem reviewStatusItem = new CandidateReviewStatusItem();
+        reviewStatusItem.setCandidate(getCandidate());
+        reviewStatusItem.setSavedSearch(new SavedSearch());
+        reviewStatusItem.setComment("A review comment");
+        reviewStatusItem.setReviewStatus(ReviewStatus.verified);
+        return reviewStatusItem;
+    }
 }
