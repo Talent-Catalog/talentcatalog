@@ -30,6 +30,11 @@ import org.tbbtalent.server.model.db.chat.Post;
  * <p/>
  * So, for example, {@link #sendPost} below would be executed in response to the url ending in
  * /app/chat/{chatId}.
+ * <p/>
+ * This code is modelled on
+ * <a href="https://spring.io/guides/gs/messaging-stomp-websocket/">this example from Spring.io</a>
+ * and <a href="https://stackoverflow.com/questions/27047310/path-variables-in-spring-websockets-sendto-mapping/27055764#27055764">
+ *     this Stackoverflow post</a>
  *
  * @author John Cameron
  */
