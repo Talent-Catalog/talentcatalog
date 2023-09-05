@@ -71,11 +71,11 @@ class AuthAdminApiTest extends ApiTestBase {
     private static final String RECAPTCHA_INVALID_MESSAGE = "reCaptcha was not successfully validated";
 
     private static final String INVALID_CREDENTIALS_CODE = "invalid_credentials";
+    private static final String ACCOUNT_LOCKED_EXCEPTION = "account_locked";
     private static final String USER_DEACTIVATED_CODE = "user_deactivated";
     private static final String PASSWORD_EXPIRED_CODE = "password_expired";
-    private static final String UNEXPECTED_EXCEPTION_CODE = "unexpected_exception";
     private static final String QR_CODE_GEN_ERROR_CODE = "qr_error";
-    private static final String RECAPTCHA_INVALID_CODE = "recaptcha";
+    private static final String RECAPTCHA_INVALID_CODE = "recaptcha_invalid";
 
     private LoginRequest loginRequest;
 
@@ -189,7 +189,7 @@ class AuthAdminApiTest extends ApiTestBase {
     private static Stream<Arguments> provideLoginExceptionsAndCodes() {
         return Stream.of(
                 Arguments.of(new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE), INVALID_CREDENTIALS_CODE),
-                Arguments.of(new AccountLockedException(ACCOUNT_LOCKED_MESSAGE), UNEXPECTED_EXCEPTION_CODE),
+                Arguments.of(new AccountLockedException(ACCOUNT_LOCKED_MESSAGE), ACCOUNT_LOCKED_EXCEPTION),
                 Arguments.of(new UserDeactivatedException(USER_DEACTIVATED_MESSAGE), USER_DEACTIVATED_CODE),
                 Arguments.of(new PasswordExpiredException(PASSWORD_EXPIRED_MESSAGE), PASSWORD_EXPIRED_CODE)
         );
@@ -229,7 +229,7 @@ class AuthAdminApiTest extends ApiTestBase {
                         .content(objectMapper.writeValueAsString(loginRequest))
                         .accept(MediaType.APPLICATION_JSON))
 
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code", containsString(errorCode)))
                 .andExpect(jsonPath("$.message", containsString(message)));
