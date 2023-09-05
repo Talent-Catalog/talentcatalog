@@ -16,6 +16,10 @@
 
 package org.tbbtalent.server.model.db;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -23,9 +27,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "candidate_language")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_language_id_seq", allocationSize = 1)
+@NoArgsConstructor
 public class CandidateLanguage  extends AbstractDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,54 +53,14 @@ public class CandidateLanguage  extends AbstractDomainObject<Long> {
 
     private String migrationLanguage;
 
-    public CandidateLanguage() {
-    }
 
-    public CandidateLanguage(Candidate candidate, Language language, LanguageLevel writtenLevel, LanguageLevel spokenLevel) {
+    public CandidateLanguage(Candidate candidate, Language language, LanguageLevel writtenLevel,
+                             LanguageLevel spokenLevel) {
+
         this.candidate = candidate;
         this.language = language;
         this.writtenLevel = writtenLevel;
         this.spokenLevel = spokenLevel;
     }
 
-    public Candidate getCandidate() {
-        return candidate;
-    }
-
-    public void setCandidate(Candidate candidate) {
-        this.candidate = candidate;
-    }
-
-    public Language getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(Language language) {
-        this.language = language;
-    }
-
-    public LanguageLevel getWrittenLevel() {
-        return writtenLevel;
-    }
-
-    public void setWrittenLevel(LanguageLevel writtenLevel) {
-        this.writtenLevel = writtenLevel;
-    }
-
-    public LanguageLevel getSpokenLevel() {
-        return spokenLevel;
-    }
-
-    public void setSpokenLevel(LanguageLevel spokenLevel) {
-        this.spokenLevel = spokenLevel;
-    }
-
-    public String getMigrationLanguage() {
-        return migrationLanguage;
-    }
-
-    public void setMigrationLanguage(String migrationLanguage) {
-        this.migrationLanguage = migrationLanguage;
-    }
 }
-
