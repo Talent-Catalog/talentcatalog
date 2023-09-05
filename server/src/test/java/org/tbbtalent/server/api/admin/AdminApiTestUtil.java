@@ -170,4 +170,17 @@ public class AdminApiTestUtil {
                 10L
         );
     }
+
+    static List<CandidateLanguage> getListOfCandidateLanguages() {
+        return List.of(getCandidateLanguage());
+    }
+
+    static CandidateLanguage getCandidateLanguage() {
+        return new CandidateLanguage(
+                getCandidate(),
+                new Language("Arabic", Status.active),
+                new LanguageLevel("Good", Status.active, 9),
+                new LanguageLevel("Good", Status.active, 9)
+        );
+    }
 }
