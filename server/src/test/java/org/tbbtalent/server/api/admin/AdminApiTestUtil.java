@@ -147,4 +147,27 @@ public class AdminApiTestUtil {
         return exam;
     }
 
+    static CandidateJobExperience getCandidateJobExperience() {
+        CandidateJobExperience jobExperience = new CandidateJobExperience(
+                getCandidate(),
+                new Country("Syria", Status.active),
+                getCandidateOccupation(),
+                "Microsoft",
+                "Software Engineer",
+                LocalDate.of(1998, 1, 1),
+                LocalDate.of(2008, 1, 1),
+                "Some job experience description"
+        );
+        jobExperience.setFullTime(true);
+        jobExperience.setPaid(true);
+        return jobExperience;
+    }
+
+    static CandidateOccupation getCandidateOccupation() {
+        return new CandidateOccupation(
+                getCandidate(),
+                new Occupation("Software Engineer", Status.active),
+                10L
+        );
+    }
 }
