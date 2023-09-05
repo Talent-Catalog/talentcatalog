@@ -89,7 +89,6 @@ class CandidateLanguageAdminApiTest extends ApiTestBase {
     @Test
     @DisplayName("get candidate languages succeeds")
     void getCandidateLanguagesSucceeds() throws Exception {
-        SearchJobExperienceRequest request = new SearchJobExperienceRequest();
 
         given(candidateLanguageService
                 .list(anyLong()))
