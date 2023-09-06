@@ -265,6 +265,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("preferredPathways")
                 .add("ineligiblePathways")
                 .add("eligiblePathways")
+                .add("occupationCategory")
                 ;
     }
 
