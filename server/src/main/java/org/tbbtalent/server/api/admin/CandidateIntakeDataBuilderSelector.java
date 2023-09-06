@@ -264,6 +264,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("ageRequirement")
                 .add("preferredPathways")
                 .add("ineligiblePathways")
+                .add("eligiblePathways")
                 ;
     }
 

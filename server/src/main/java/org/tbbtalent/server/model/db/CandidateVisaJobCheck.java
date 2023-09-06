@@ -97,6 +97,9 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobIneligiblePathways() != null) {
             setIneligiblePathways(data.getVisaJobIneligiblePathways());
         }
+        if (data.getVisaJobEligiblePathways() != null) {
+            setEligiblePathways(data.getVisaJobEligiblePathways());
+        }
 
     }
     
