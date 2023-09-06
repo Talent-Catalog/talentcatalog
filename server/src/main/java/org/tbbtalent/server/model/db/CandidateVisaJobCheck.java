@@ -85,6 +85,9 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobTbbEligibility() != null) {
             setTbbEligibility(data.getVisaJobTbbEligibility());
         }
+        if (data.getVisaJobRelevantWorkExp() != null) {
+            setRelevantWorkExp(data.getVisaJobRelevantWorkExp());
+        }
 
     }
     

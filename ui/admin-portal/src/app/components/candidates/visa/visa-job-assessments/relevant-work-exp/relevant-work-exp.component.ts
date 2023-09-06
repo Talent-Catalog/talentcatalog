@@ -20,7 +20,7 @@ export class RelevantWorkExpComponent extends IntakeComponentBase implements OnI
   ngOnInit(): void {
     this.form = this.fb.group({
       visaJobId: [this.selectedJobCheck?.id],
-      visaJobWorkExp: [this.selectedJobCheck?.workExp]
+      visaJobRelevantWorkExp: [this.selectedJobCheck?.relevantWorkExp]
     });
   }
 }

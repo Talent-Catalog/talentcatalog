@@ -260,6 +260,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("occupation", occupationDto())
                 .add("occupationNotes")
                 .add("qualificationNotes")
+                .add("relevantWorkExp")
                 ;
     }
 
