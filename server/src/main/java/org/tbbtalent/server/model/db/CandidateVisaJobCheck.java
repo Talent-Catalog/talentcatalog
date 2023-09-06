@@ -91,6 +91,9 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobAgeRequirement() != null) {
             setAgeRequirement(data.getVisaJobAgeRequirement());
         }
+        if (data.getVisaJobPreferredPathways() != null) {
+            setPreferredPathways(data.getVisaJobPreferredPathways());
+        }
 
     }
     
