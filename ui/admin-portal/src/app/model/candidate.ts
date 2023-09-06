@@ -336,7 +336,7 @@ export interface CandidateVisaJobCheck {
   tbbEligibility?: TBBEligibilityAssessment;
   notes?: String;
   // TODO: NEW FIELDS FROM CANADA VISA CHECK TO BE ENTERED INTO BACKEND
-  relevantWorkExp?: String;
+  relevantWorkExp?: string;
   ageRequirement?: YesNo;
   preferredPathways?: string;
   ineligiblePathways?: string;

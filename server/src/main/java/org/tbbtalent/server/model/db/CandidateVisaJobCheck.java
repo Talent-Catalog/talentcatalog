@@ -88,6 +88,9 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobRelevantWorkExp() != null) {
             setRelevantWorkExp(data.getVisaJobRelevantWorkExp());
         }
+        if (data.getVisaJobAgeRequirement() != null) {
+            setAgeRequirement(data.getVisaJobAgeRequirement());
+        }
 
     }
     

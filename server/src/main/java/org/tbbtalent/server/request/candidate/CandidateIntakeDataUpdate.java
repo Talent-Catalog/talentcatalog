@@ -215,6 +215,7 @@ public class CandidateIntakeDataUpdate {
     private TBBEligibilityAssessment visaJobTbbEligibility;
     private String visaJobNotes;
     private String visaJobRelevantWorkExp;
+    private String visaJobAgeRequirement;
 
     private YesNoUnsure visaReject;
     private String visaRejectNotes;

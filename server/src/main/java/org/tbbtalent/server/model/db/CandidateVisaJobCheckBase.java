@@ -91,4 +91,6 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     private String notes;
 
     private String relevantWorkExp;
+
+    private String ageRequirement;
 }

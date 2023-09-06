@@ -261,6 +261,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("occupationNotes")
                 .add("qualificationNotes")
                 .add("relevantWorkExp")
+                .add("ageRequirement")
                 ;
     }
 
