@@ -342,7 +342,7 @@ export interface CandidateVisaJobCheck {
   ineligiblePathways?: string;
   eligiblePathways?: string;
   occupationCategory?: string;
-  occupationSubcategory?: string;
+  occupationSubCategory?: string;
 }
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)

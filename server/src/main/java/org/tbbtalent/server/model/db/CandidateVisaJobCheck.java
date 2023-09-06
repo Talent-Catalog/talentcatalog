@@ -103,6 +103,9 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobOccupationCategory() != null) {
             setOccupationCategory(data.getVisaJobOccupationCategory());
         }
+        if (data.getVisaJobOccupationSubCategory() != null) {
+            setOccupationSubCategory(data.getVisaJobOccupationSubCategory());
+        }
 
     }
     

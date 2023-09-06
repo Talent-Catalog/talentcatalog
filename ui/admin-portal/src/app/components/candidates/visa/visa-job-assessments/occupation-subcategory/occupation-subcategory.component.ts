@@ -20,7 +20,7 @@ export class OccupationSubcategoryComponent extends IntakeComponentBase implemen
   ngOnInit(): void {
     this.form = this.fb.group({
       visaJobId: [this.selectedJobCheck?.id],
-      visaJobOccupationSubcategory: [this.selectedJobCheck?.occupationSubcategory],
+      visaJobOccupationSubCategory: [this.selectedJobCheck?.occupationSubCategory],
     });
     this.occupationSubcatLink = getDestinationOccupationSubcatLink(this.visaCheckRecord?.country.id);
   }

@@ -101,4 +101,6 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     private String eligiblePathways;
 
     private String occupationCategory;
+
+    private String occupationSubCategory;
 }
