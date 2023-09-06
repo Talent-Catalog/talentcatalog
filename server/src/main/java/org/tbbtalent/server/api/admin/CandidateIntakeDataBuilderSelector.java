@@ -263,6 +263,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("relevantWorkExp")
                 .add("ageRequirement")
                 .add("preferredPathways")
+                .add("ineligiblePathways")
                 ;
     }
 

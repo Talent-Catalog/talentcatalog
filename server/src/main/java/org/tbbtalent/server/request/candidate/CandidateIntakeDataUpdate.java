@@ -217,6 +217,7 @@ public class CandidateIntakeDataUpdate {
     private String visaJobRelevantWorkExp;
     private String visaJobAgeRequirement;
     private String visaJobPreferredPathways;
+    private String visaJobIneligiblePathways;
 
     private YesNoUnsure visaReject;
     private String visaRejectNotes;
