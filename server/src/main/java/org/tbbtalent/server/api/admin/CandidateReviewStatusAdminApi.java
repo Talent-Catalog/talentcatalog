@@ -20,7 +20,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,36 +35,31 @@ import org.tbbtalent.server.request.reviewstatus.UpdateCandidateReviewStatusRequ
 import org.tbbtalent.server.service.db.CandidateReviewStatusService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/candidate-reviewstatus")
+@RequiredArgsConstructor
 public class CandidateReviewStatusAdminApi {
 
     private final CandidateReviewStatusService candidateReviewStatusService;
 
-    @Autowired
-    public CandidateReviewStatusAdminApi(CandidateReviewStatusService candidateReviewStatusService) {
-        this.candidateReviewStatusService = candidateReviewStatusService;
-    }
-
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
-        CandidateReviewStatusItem reviewStatusItem = this.candidateReviewStatusService.getCandidateReviewStatusItem(id);
+        CandidateReviewStatusItem reviewStatusItem = candidateReviewStatusService.getCandidateReviewStatusItem(id);
         return candidateReviewStatusDto().build(reviewStatusItem);
     }
 
     @PostMapping
     public Map<String, Object> create(@Valid @RequestBody CreateCandidateReviewStatusRequest request) throws EntityExistsException {
-        CandidateReviewStatusItem candidateReviewStatusItem = this.candidateReviewStatusService.createCandidateReviewStatusItem(request);
+        CandidateReviewStatusItem candidateReviewStatusItem = candidateReviewStatusService.createCandidateReviewStatusItem(request);
         return candidateReviewStatusDto().build(candidateReviewStatusItem);
     }
 
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateReviewStatusRequest request) {
-        CandidateReviewStatusItem candidateReviewStatusItem = this.candidateReviewStatusService.updateCandidateReviewStatusItem(id, request);
+        CandidateReviewStatusItem candidateReviewStatusItem = candidateReviewStatusService.updateCandidateReviewStatusItem(id, request);
         return candidateReviewStatusDto().build(candidateReviewStatusItem);
     }
-
 
     private DtoBuilder candidateReviewStatusDto() {
         return new DtoBuilder()
@@ -85,10 +80,5 @@ public class CandidateReviewStatusAdminApi {
                 .add("lastName")
                 ;
     }
-
-
-
-
-
 
 }

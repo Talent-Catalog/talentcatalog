@@ -22,6 +22,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -29,6 +30,7 @@ import lombok.Setter;
 @SequenceGenerator(name = "seq_gen", sequenceName = "language_id_seq", allocationSize = 1)
 @Getter
 @Setter
+@NoArgsConstructor
 public class Language  extends AbstractTranslatableDomainObject<Long> {
 
     /**
@@ -38,9 +40,6 @@ public class Language  extends AbstractTranslatableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    public Language() {
-    }
 
     public Language(String name, Status status) {
         setName(name);

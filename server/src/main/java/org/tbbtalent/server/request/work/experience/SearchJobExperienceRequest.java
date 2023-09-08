@@ -18,8 +18,12 @@ package org.tbbtalent.server.request.work.experience;
 
 import javax.validation.constraints.NotNull;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
+@Getter
+@Setter
 public class SearchJobExperienceRequest extends PagedSearchRequest {
 
     @NotNull
@@ -27,20 +31,4 @@ public class SearchJobExperienceRequest extends PagedSearchRequest {
 
     private Long candidateId;
 
-    public Long getCandidateOccupationId() {
-        return candidateOccupationId;
-    }
-
-    public void setCandidateOccupationId(Long candidateOccupationId) {
-        this.candidateOccupationId = candidateOccupationId;
-    }
-
-    public Long getCandidateId() {
-        return candidateId;
-    }
-
-    public void setCandidateId(Long candidateId) {
-        this.candidateId = candidateId;
-    }
 }
-

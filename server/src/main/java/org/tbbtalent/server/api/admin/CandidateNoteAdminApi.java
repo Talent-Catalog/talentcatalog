@@ -18,7 +18,8 @@ package org.tbbtalent.server.api.admin;
 
 import java.util.Map;
 import javax.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,34 +37,29 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-note")
+@RequiredArgsConstructor
 public class CandidateNoteAdminApi {
 
     private final CandidateNoteService candidateNoteService;
 
-    @Autowired
-    public CandidateNoteAdminApi(CandidateNoteService candidateNoteService) {
-        this.candidateNoteService = candidateNoteService;
-    }
-
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateNotesRequest request) {
-        Page<CandidateNote> candidateNotes = this.candidateNoteService.searchCandidateNotes(request);
+        Page<CandidateNote> candidateNotes = candidateNoteService.searchCandidateNotes(request);
         return candidateNoteDto().buildPage(candidateNotes);
     }
 
     @PostMapping
     public Map<String, Object> create(@Valid @RequestBody CreateCandidateNoteRequest request) throws EntityExistsException {
-        CandidateNote candidateNote = this.candidateNoteService.createCandidateNote(request);
+        CandidateNote candidateNote = candidateNoteService.createCandidateNote(request);
         return candidateNoteDto().build(candidateNote);
     }
 
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateNoteRequest request) {
-        CandidateNote candidateNote = this.candidateNoteService.updateCandidateNote(id, request);
+        CandidateNote candidateNote = candidateNoteService.updateCandidateNote(id, request);
         return candidateNoteDto().build(candidateNote);
     }
-
 
     private DtoBuilder candidateNoteDto() {
         return new DtoBuilder()
