@@ -43,6 +43,7 @@ import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.model.db.CandidateSkill;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.DocumentStatus;
+import org.tbbtalent.server.model.db.EducationMajor;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.MaritalStatus;
 import org.tbbtalent.server.model.db.ResidenceStatus;
@@ -289,7 +290,15 @@ public class CandidateEs {
         List<CandidateEducation> educations = candidate.getCandidateEducations();
         if (educations != null) {
             for (CandidateEducation education : educations) {
-                final String text = education.getCourseName();
+                String text = null;
+                final EducationMajor educationMajor = education.getEducationMajor();
+                if (educationMajor != null) {
+                    text = educationMajor.getName();
+                }
+                final String courseName = education.getCourseName();
+                if (courseName != null) {
+                    text = text == null ? courseName : text + " " + courseName;
+                }
                 if (text != null) {
                     this.educations.add(text);
                 }
