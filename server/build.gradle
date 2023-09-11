@@ -94,6 +94,12 @@ dependencies {
     //See https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch
     implementation 'org.springframework.data:spring-data-elasticsearch'
 
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-web
+    implementation 'org.springframework.security:spring-security-web'
+
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-messaging
+    implementation 'org.springframework.security:spring-security-messaging'
+
     //See https://github.com/samdjstevens/java-totp/tree/master/totp-spring-boot-starter
     implementation 'dev.samstevens.totp:totp-spring-boot-starter:1.7.1'
 
