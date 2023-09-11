@@ -63,6 +63,7 @@ export class CandidateFieldService {
     "user.firstName",
     "user.lastName",
     "status",
+    "intaked",
     "updatedDate",
     "nationality.name",
     "country.name",
@@ -127,6 +128,8 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Dependants", "numberDependants", null,
         null, null),
       new CandidateFieldInfo("NextStep", "candidateOpportunities.nextStep", null,
+      null, null),
+      new CandidateFieldInfo("Intaked", "intaked", null,
       null, null),
       // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
       // new CandidateFieldInfo("Tasks Status", "taskAssignments", null,

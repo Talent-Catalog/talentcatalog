@@ -99,6 +99,7 @@ export interface Candidate extends HasId {
   candidateOpportunities: CandidateOpportunity[];
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
+  intaked: string;
 }
 
 export interface CandidateProperty {
