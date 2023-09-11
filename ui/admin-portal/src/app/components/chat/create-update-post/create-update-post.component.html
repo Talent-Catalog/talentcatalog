@@ -1,0 +1,24 @@
+
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+
+<form [formGroup]="postForm">
+
+  <!-- POST -->
+  <div class="mb-3">
+    <label class="form-label" for="post">Post</label>
+    <ngx-wig id="post" formControlName="post"></ngx-wig>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="onSend()"
+            [disabled]="postForm.invalid || saving">
+      <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+      Send
+    </button>
+  </div>
+</form>
+<div>
+  Response: {{response}}
+</div>

@@ -49,6 +49,9 @@
         <li *ngIf="isAnAdmin()" class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/settings'">Settings</a>
         </li>
+        <li *ngIf="isSystemAdminOnly()" class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/chat'">Chat</a>
+        </li>
 
       </ul>
 

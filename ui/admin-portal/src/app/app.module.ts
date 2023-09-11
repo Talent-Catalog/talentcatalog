@@ -737,6 +737,9 @@ import {
 import {DirectiveModule} from "./directives/directive.module";
 import {rxStompServiceFactory} from "./services/rx-stomp-service-factory";
 import {RxStompService} from "./services/rx-stomp.service";
+import {
+  CreateUpdatePostComponent
+} from './components/chat/create-update-post/create-update-post.component';
 
 @NgModule({
   declarations: [
@@ -1030,7 +1033,8 @@ import {RxStompService} from "./services/rx-stomp.service";
     EligiblePathwaysComponent,
     IneligiblePathwaysComponent,
     OccupationCategoryComponent,
-    OccupationSubcategoryComponent
+    OccupationSubcategoryComponent,
+    CreateUpdatePostComponent
   ],
   imports: [
     BrowserModule,

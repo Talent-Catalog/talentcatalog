@@ -175,6 +175,10 @@ export class HeaderComponent implements OnInit {
     return this.authService.isAnAdmin();
   }
 
+  isSystemAdminOnly(): boolean {
+    return this.authService.isSystemAdminOnly();
+  }
+
   isStagingEnv(): boolean {
     return window.location.host == 'tctalent-test.org';
   }
