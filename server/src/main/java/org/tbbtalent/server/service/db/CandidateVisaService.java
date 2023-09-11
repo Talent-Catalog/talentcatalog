@@ -26,7 +26,26 @@ import org.tbbtalent.server.model.db.CandidateVisaCheck;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 
+import java.util.List;
+
 public interface CandidateVisaService {
+
+    /**
+     * Gets the candidate visa check record from the given id.
+     * @param visaId ID of visa
+     * @return Desired record
+     * @throws NoSuchObjectException if the there is no visa job check record with that id
+     */
+    CandidateVisaCheck getVisaCheck(long visaId) throws NoSuchObjectException;
+
+    /**
+     * Gets the candidate visa check record from the given id.
+     *
+     * @param candidateId ID of visa
+     * @return Desired record
+     * @throws NoSuchObjectException if the there is no visa job check record with that id
+     */
+    List<CandidateVisaCheck> listCandidateVisaChecks(long candidateId) throws NoSuchObjectException;
 
     /**
      * Creates a new candidate visa check record from the data in the given 

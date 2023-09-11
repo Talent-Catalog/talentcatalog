@@ -43,6 +43,35 @@ public class CandidateVisaCheckAdminApi
     }
 
     /**
+     * Get a new candidate visa check record from the data in the given request.
+     * @param visaId ID of visa check
+     * @return Created record - including database id of visa check record
+     * @throws NoSuchObjectException if the there is no Candidate record with
+     * that candidateId or no country with the id given in the request
+     */
+    @Override
+    public @NotNull Map<String, Object> get(long visaId)
+            throws NoSuchObjectException {
+        CandidateVisaCheck candidateVisaCheck = this.candidateVisaService.getVisaCheck(visaId);
+        return candidateVisaDto().build(candidateVisaCheck);
+    }
+
+    /**
+     * Get a new candidate visa check record from the data in the given request.
+     *
+     * @param visaId ID of visa check
+     * @return Created record - including database id of visa check record
+     * @throws NoSuchObjectException if the there is no Candidate record with
+     *                               that candidateId or no country with the id given in the request
+     */
+    @Override
+    public @NotNull List<Map<String, Object>> list(long candidateId)
+            throws NoSuchObjectException {
+        List<CandidateVisaCheck> candidateVisaChecks = this.candidateVisaService.listCandidateVisaChecks(candidateId);
+        return candidateVisaDto().buildList(candidateVisaChecks);
+    }
+
+    /**
      * Creates a new candidate visa check record from the data in the given 
      * request. 
      * @param candidateId ID of candidate

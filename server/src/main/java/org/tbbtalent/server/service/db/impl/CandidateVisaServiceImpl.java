@@ -23,6 +23,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
+import org.tbbtalent.server.model.db.CandidateVisaJobCheck;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaRepository;
@@ -31,6 +32,8 @@ import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaService;
+
+import java.util.List;
 
 /**
  * Manage candidate visa checks
@@ -42,7 +45,6 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
     private final CandidateVisaRepository candidateVisaRepository;
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
-    private final UserRepository userRepository;
 
     public CandidateVisaServiceImpl(
             CandidateVisaRepository candidateVisaRepository,
@@ -51,7 +53,21 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
         this.candidateVisaRepository = candidateVisaRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
-        this.userRepository = userRepository;
+    }
+
+    @Override
+    public CandidateVisaCheck getVisaCheck(long visaId)
+            throws NoSuchObjectException {
+
+        return candidateVisaRepository.findById(visaId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateVisaJobCheck.class, visaId));
+    }
+
+    @Override
+    public List<CandidateVisaCheck> listCandidateVisaChecks(long candidateId)
+            throws NoSuchObjectException {
+
+        return candidateVisaRepository.findByCandidateId(candidateId);
     }
 
     @Override
