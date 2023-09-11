@@ -23,6 +23,10 @@ logging:
             #See notes in that class
             InFlightMetadataCollectorImpl: ERROR
       springframework:
+        web:
+          filter:
+            # Enable HTTP request logging by setting this to DEBUG
+            CommonsRequestLoggingFilter: INFO
         data:
           convert:
             #Gets rid of registering converter warnings at start up
