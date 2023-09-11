@@ -28,6 +28,7 @@ import {EncodedQrImage} from "../util/qr";
 import {Candidate, ShortCandidate} from "../model/candidate";
 import {Job, ShortJob} from "../model/job";
 import {CandidateOpportunity} from "../model/candidate-opportunity";
+import {RxStomp, RxStompConfig} from "@stomp/rx-stomp";
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +41,8 @@ export class AuthService {
 
   constructor(private router: Router,
               private http: HttpClient,
-              private localStorageService: LocalStorageService) {
+              private localStorageService: LocalStorageService,
+              private rxStomp: RxStomp) {
   }
 
   login(credentials: LoginRequest) {
@@ -331,8 +333,52 @@ export class AuthService {
     }
   }
 
+  /**
+   * Returns an RxStompConfig, populated with the current Authorization header token in
+   * currentHeaders.
+   */
+  getRxStompConfig(): RxStompConfig {
+
+    const config: RxStompConfig = {
+      // Which server?
+      //todo 9090
+      //todo websocket twice?
+      brokerURL: 'ws://localhost:9090/websocket/websocket',
+
+      // Headers
+      connectHeaders: {
+      },
+
+      // How often to heartbeat?
+      // Interval in milliseconds, set to 0 to disable
+      heartbeatIncoming: 0, // Typical value 0 - disabled
+      heartbeatOutgoing: 20000, // Typical value 20000 - every 20 seconds
+
+      // Wait in milliseconds before attempting auto reconnect
+      // Set to 0 to disable
+      // Typical value 500 (500 milli seconds)
+      reconnectDelay: 10000,
+
+      // Will log diagnostics on console
+      // It can be quite verbose, not recommended in production
+      // Skip this key to stop logging to console
+      debug: (msg: string): void => {
+        console.log(new Date(), msg);
+      },
+    }
+
+    const token = this.getToken();
+    if (token) {
+      config.connectHeaders.Authorization = `Bearer ${token}`
+    }
+
+    return config;
+  }
+
   getToken(): string {
-    return this.localStorageService.get('access-token');
+      //Automatically reconfigure RxStomp with the current token
+      // like this.rxStomp.configure(this.getRxStompConfig()); - but currently is recursive
+      return this.localStorageService.get('access-token');
   }
 
   logout() {
