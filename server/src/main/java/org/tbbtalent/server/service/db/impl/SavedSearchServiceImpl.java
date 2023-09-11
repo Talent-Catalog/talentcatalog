@@ -336,9 +336,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (!StringUtils.isEmpty(savedSearch.getOccupationIds())){
             savedSearch.setOccupationNames(occupationRepository.getNamesForIds(getIdsFromString(savedSearch.getOccupationIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getVerifiedOccupationIds())){
-            savedSearch.setVettedOccupationNames(occupationRepository.getNamesForIds(getIdsFromString(savedSearch.getVerifiedOccupationIds())));
-        }
         if (!StringUtils.isEmpty(savedSearch.getEducationMajorIds())){
             savedSearch.setEducationMajors(educationMajorRepository.getNamesForIds(getIdsFromString(savedSearch.getEducationMajorIds())));
         }
@@ -1247,10 +1244,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMinYrs(request.getMinYrs());
             savedSearch.setMaxYrs(request.getMaxYrs());
             savedSearch.setRegoReferrerParam(request.getRegoReferrerParam());
-            savedSearch.setVerifiedOccupationIds(
-                    getListAsString(request.getVerifiedOccupationIds()));
-            savedSearch.setVerifiedOccupationSearchType(
-                    request.getVerifiedOccupationSearchType());
             savedSearch.setPartnerIds(getListAsString(request.getPartnerIds()));
             savedSearch.setNationalityIds(
                     getListAsString(request.getNationalityIds()));
@@ -1314,8 +1307,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMinYrs(search.getMinYrs());
         searchCandidateRequest.setMaxYrs(search.getMaxYrs());
         searchCandidateRequest.setRegoReferrerParam(search.getRegoReferrerParam());
-        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(search.getVerifiedOccupationIds()));
-        searchCandidateRequest.setVerifiedOccupationSearchType(search.getVerifiedOccupationSearchType());
         searchCandidateRequest.setPartnerIds(getIdsFromString(search.getPartnerIds()));
         searchCandidateRequest.setNationalityIds(getIdsFromString(search.getNationalityIds()));
         searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
