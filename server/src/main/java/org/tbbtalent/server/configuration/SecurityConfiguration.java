@@ -90,7 +90,7 @@ import org.tbbtalent.server.security.TbbUserDetailsService;
  * </ul>
  */
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @EnableGlobalMethodSecurity(
         securedEnabled = true,
         jsr250Enabled = true,
@@ -134,6 +134,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/branding").permitAll()
                 .antMatchers("/").permitAll()
                 .antMatchers("/published/**").permitAll()
+
+                .antMatchers("/websocket","/websocket/**").permitAll()
+                .antMatchers("/app/**","/app/**/**").permitAll()
+                .antMatchers("/topic", "/topic/**").permitAll()
+                .antMatchers("/status**", "/status/**").permitAll()
+
 
                 // DELETE: DELETE SAVE SEARCHES
                 .antMatchers(HttpMethod.DELETE, "/api/admin/saved-search/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
