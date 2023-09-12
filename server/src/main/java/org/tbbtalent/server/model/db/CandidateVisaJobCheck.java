@@ -19,7 +19,7 @@ package org.tbbtalent.server.model.db;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.visa.CandidateVisaCheckData;
 
 import javax.persistence.Entity;
 import javax.persistence.SequenceGenerator;
@@ -33,7 +33,7 @@ import javax.persistence.Table;
 public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
 
     public void populateIntakeData(
-            @Nullable Occupation occupation, CandidateIntakeDataUpdate data) {
+            @Nullable Occupation occupation, CandidateVisaCheckData data) {
         if (data.getVisaJobOccupationId() != null) {
             setOccupation(occupation);
         }
@@ -85,27 +85,27 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobTbbEligibility() != null) {
             setTbbEligibility(data.getVisaJobTbbEligibility());
         }
-        if (data.getVisaJobRelevantWorkExp() != null) {
-            setRelevantWorkExp(data.getVisaJobRelevantWorkExp());
-        }
-        if (data.getVisaJobAgeRequirement() != null) {
-            setAgeRequirement(data.getVisaJobAgeRequirement());
-        }
-        if (data.getVisaJobPreferredPathways() != null) {
-            setPreferredPathways(data.getVisaJobPreferredPathways());
-        }
-        if (data.getVisaJobIneligiblePathways() != null) {
-            setIneligiblePathways(data.getVisaJobIneligiblePathways());
-        }
-        if (data.getVisaJobEligiblePathways() != null) {
-            setEligiblePathways(data.getVisaJobEligiblePathways());
-        }
-        if (data.getVisaJobOccupationCategory() != null) {
-            setOccupationCategory(data.getVisaJobOccupationCategory());
-        }
-        if (data.getVisaJobOccupationSubCategory() != null) {
-            setOccupationSubCategory(data.getVisaJobOccupationSubCategory());
-        }
+//        if (data.getVisaJobRelevantWorkExp() != null) {
+//            setRelevantWorkExp(data.getVisaJobRelevantWorkExp());
+//        }
+//        if (data.getVisaJobAgeRequirement() != null) {
+//            setAgeRequirement(data.getVisaJobAgeRequirement());
+//        }
+//        if (data.getVisaJobPreferredPathways() != null) {
+//            setPreferredPathways(data.getVisaJobPreferredPathways());
+//        }
+//        if (data.getVisaJobIneligiblePathways() != null) {
+//            setIneligiblePathways(data.getVisaJobIneligiblePathways());
+//        }
+//        if (data.getVisaJobEligiblePathways() != null) {
+//            setEligiblePathways(data.getVisaJobEligiblePathways());
+//        }
+//        if (data.getVisaJobOccupationCategory() != null) {
+//            setOccupationCategory(data.getVisaJobOccupationCategory());
+//        }
+//        if (data.getVisaJobOccupationSubCategory() != null) {
+//            setOccupationSubCategory(data.getVisaJobOccupationSubCategory());
+//        }
 
     }
     

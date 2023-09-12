@@ -21,9 +21,8 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 
 import java.util.List;
@@ -75,13 +74,11 @@ public interface CandidateVisaService {
      * Updates the candidate visa intake data associated with the given 
      * country and given candidate.
      * @param visaId ID of visa entity - If null this method does nothing
-     * @param candidate Candidate
      * @param data Partially populated CandidateIntakeData record. Null data
      *             fields are ignored. Only non null fields are updated.
      * @throws NoSuchObjectException if the there is no country with the
      * given id or no CandidateVisa record with the id given in the data  
      */
     void updateIntakeData(
-            @Nullable Long visaId, @NonNull Candidate candidate,
-            CandidateIntakeDataUpdate data) throws NoSuchObjectException;
+            @Nullable Long visaId, @NonNull CandidateVisaCheckData data) throws NoSuchObjectException;
 }

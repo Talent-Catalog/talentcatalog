@@ -43,6 +43,21 @@ public class CandidateVisaJobCheckAdminApi
     }
 
     /**
+     * Creates a new candidate visa check record from the data in the given
+     * request.
+     * @param visaJobId ID of visa job check
+     * @return Created record - including database id of visa check record
+     * @throws NoSuchObjectException if the there is no Candidate record with
+     * that candidateId or no country with the id given in the request
+     */
+    @Override
+    public @NotNull Map<String, Object> get(long visaJobId)
+            throws NoSuchObjectException {
+        CandidateVisaJobCheck candidateVisaJobCheck = this.candidateVisaJobCheckService.getVisaJobCheck(visaJobId);
+        return candidateVisaJobDto().build(candidateVisaJobCheck);
+    }
+
+    /**
      * Creates a new candidate visa check record from the data in the given 
      * request. 
      * @param visaId ID of visa
@@ -72,11 +87,39 @@ public class CandidateVisaJobCheckAdminApi
             throws EntityReferencedException, InvalidRequestException {
         return candidateVisaJobCheckService.deleteVisaJobCheck(id);
     }
-    
+
     private DtoBuilder candidateVisaJobDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("name")
+                .add("sfJobLink")
                 .add("jobOpp", jobOppDto())
+                .add("interest")
+                .add("interestNotes")
+                .add("regional")
+                .add("salaryTsmit")
+                .add("interest")
+                .add("interestNotes")
+                .add("qualification")
+                .add("eligible_494")
+                .add("eligible_494_Notes")
+                .add("eligible_186")
+                .add("eligible_186_Notes")
+                .add("eligibleOther")
+                .add("eligibleOtherNotes")
+                .add("putForward")
+                .add("tbbEligibility")
+                .add("notes")
+                .add("occupation", occupationDto())
+                .add("occupationNotes")
+                .add("qualificationNotes")
+//                .add("relevantWorkExp")
+//                .add("ageRequirement")
+//                .add("preferredPathways")
+//                .add("ineligiblePathways")
+//                .add("eligiblePathways")
+//                .add("occupationCategory")
+//                .add("occupationSubCategory")
                 ;
     }
 
@@ -85,6 +128,21 @@ public class CandidateVisaJobCheckAdminApi
                 .add("id")
                 .add("name")
                 .add("sfId")
+                .add("jobOppIntake", joiDto())
+                ;
+    }
+
+    private DtoBuilder joiDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("location")
+                .add("locationDetails")
+                ;
+    }
+
+    private DtoBuilder occupationDto() {
+        return new DtoBuilder()
+                .add("id")
                 ;
     }
     
