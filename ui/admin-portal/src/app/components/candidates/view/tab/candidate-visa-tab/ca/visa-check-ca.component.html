@@ -199,12 +199,31 @@
 
     </ngb-accordion>
 
-    <!-- SECTION 2 VISA JOB CHECK -->
-    <app-visa-job-check-ca
+    <div class="row my-4">
+      <div class="col-6">
+        <h5>Section 2: Job Specific Assessment</h5>
+      </div>
+    </div>
+
+    <app-candidate-visa-job
       [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
       [visaCheckRecord]="visaCheckRecord"
-      [candidateIntakeData]="candidateIntakeData">
-    </app-visa-job-check-ca>
+      (selectedJobIndex)="updateJobIndex($event)">
+    </app-candidate-visa-job>
+
+    <hr *ngIf="visaCheckRecord.candidateVisaJobChecks.length > 0"/>
+
+    <!--  Generate all job entries - but only one is enabled at a time-->
+    <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;">
+      <app-visa-job-check-ca *ngIf="i == selectedJobIndex"
+                             [id]="i"
+                             [selectedJobCheck]="job"
+                             [candidate]="candidate"
+                             [candidateIntakeData]="candidateIntakeData"
+                             [visaCheckRecord]="visaCheckRecord"
+      ></app-visa-job-check-ca>
+    </div>
 
   </div>
 
