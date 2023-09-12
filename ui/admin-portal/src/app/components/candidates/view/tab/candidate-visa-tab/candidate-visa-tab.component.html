@@ -62,7 +62,7 @@
 <!--  Export PDF-->
 <!--</button>-->
 
-<div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined" id="VisaCheck">
+<div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined && !loading" id="VisaCheck">
   <app-visa-check-au *ngSwitchCase="'Australia'"
                      [candidate]="candidate"
                      [visaCheckRecord]="getVisaCheckCountryRecord()"

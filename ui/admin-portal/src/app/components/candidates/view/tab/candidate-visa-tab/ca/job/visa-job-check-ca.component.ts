@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
@@ -20,7 +20,7 @@ import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
   templateUrl: './visa-job-check-ca.component.html',
   styleUrls: ['./visa-job-check-ca.component.scss']
 })
-export class VisaJobCheckCaComponent implements OnInit {
+export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
   @Input() selectedJobCheck: CandidateVisaJobCheck;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
@@ -72,4 +72,12 @@ export class VisaJobCheckCaComponent implements OnInit {
     }
     this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
   }
+
+  ngAfterViewInit() {
+    this.visaJobCanada.expandAll();
+  }
 }
+
+
+
+

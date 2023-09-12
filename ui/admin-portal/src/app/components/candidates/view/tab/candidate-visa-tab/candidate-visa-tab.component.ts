@@ -57,9 +57,11 @@ export class CandidateVisaTabComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading = true;
     // FETCH INTAKE DATA
     this.candidateService.getIntakeData(this.candidate.id).subscribe((results) => {
       this.candidateIntakeData = results;
+      this.loading = false;
 
     })
     // FETCH TBB DESTINATIONS
