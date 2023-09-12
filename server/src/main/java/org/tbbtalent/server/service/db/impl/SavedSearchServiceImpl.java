@@ -1075,7 +1075,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 reqEducations.add(educationMajor.getName());
             }
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                    null, "educations.keyword", reqEducations);
+                    null, "educationMajors.keyword", reqEducations);
         }
         return boolQueryBuilder;
     }

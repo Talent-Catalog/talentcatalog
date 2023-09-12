@@ -33,6 +33,7 @@ import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.CandidateCertification;
@@ -114,7 +115,15 @@ public class CandidateEs {
     @Field(type = FieldType.Text)
     private List<String> cvs;
 
+    /**
+     * This is populated (in {@link #copy(Candidate, TextExtracter)}) with the course names of the
+     * candidate's various {@link CandidateEducation}s which is just free text because course names
+     * can be anything.
+     */
+    @Field(type = FieldType.Text)
     private List<String> educations;
+
+    private List<String> educationMajors;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -286,24 +295,28 @@ public class CandidateEs {
             }
         }
 
+        //Copy education related data
+        List<CandidateEducation> candidateEducations = candidate.getCandidateEducations();
+
+        //Course names are extracted as searchable text
         this.educations = new ArrayList<>();
-        List<CandidateEducation> educations = candidate.getCandidateEducations();
-        if (educations != null) {
-            for (CandidateEducation education : educations) {
-                String text = null;
-                final EducationMajor educationMajor = education.getEducationMajor();
-                if (educationMajor != null) {
-                    text = educationMajor.getName();
-                }
+
+        //Education majors are extracted as keywords that can be used as search filters
+        this.educationMajors = new ArrayList<>();
+
+        if (candidateEducations != null) {
+            for (CandidateEducation education : candidateEducations) {
                 final String courseName = education.getCourseName();
                 if (courseName != null) {
-                    text = text == null ? courseName : text + " " + courseName;
+                    this.educations.add(courseName);
                 }
-                if (text != null) {
-                    this.educations.add(text);
-                }
+
+                addEducationMajor(education.getEducationMajor());
             }
         }
+
+        //Education major can also come from the candidate's special migrationEducationMajor field
+        addEducationMajor(candidate.getMigrationEducationMajor());
 
         this.jobExperiences = new ArrayList<>();
         List<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
@@ -354,6 +367,15 @@ public class CandidateEs {
                 if (skill != null && skill.getSkill() != null) {
                     this.skills.add(skill.getSkill());
                 }
+            }
+        }
+    }
+
+    private void addEducationMajor(@Nullable EducationMajor educationMajor) {
+        if (educationMajor != null) {
+            String majorName = educationMajor.getName();
+            if (majorName != null) {
+                this.educationMajors.add(majorName);
             }
         }
     }
