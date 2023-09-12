@@ -1,30 +1,30 @@
 import {Component, OnInit} from '@angular/core';
-import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 import {EnumOption, enumOptions} from "../../../../util/enum";
 import {YesNo} from "../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../services/candidate.service";
+import {VisaCheckComponentBase} from "../../../util/intake/VisaCheckComponentBase";
+import {CandidateVisaCheckService} from "../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-pathway-assessment',
   templateUrl: './pathway-assessment.component.html',
   styleUrls: ['./pathway-assessment.component.scss']
 })
-export class PathwayAssessmentComponent extends IntakeComponentBase implements OnInit {
+export class PathwayAssessmentComponent extends VisaCheckComponentBase implements OnInit {
 
 //Drop down values for enumeration
   assessmentOptions: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
+  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+    super(fb, candidateVisaCheckService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaId: [this.visaCheckRecord?.id],
-      visaCountryId: [this.visaCheckRecord?.country?.id],
-      visaPathwayAssessment: [this.visaCheckRecord?.pathwayAssessment],
-      visaPathwayAssessmentNotes: [this.visaCheckRecord?.pathwayAssessmentNotes],
+      visaId: [this.visaCheck?.id],
+      visaCountryId: [this.visaCheck?.country?.id],
+      visaPathwayAssessment: [this.visaCheck?.pathwayAssessment],
+      visaPathwayAssessmentNotes: [this.visaCheck?.pathwayAssessmentNotes],
     });
   }
 

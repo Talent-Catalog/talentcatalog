@@ -52,9 +52,7 @@
         <ng-template ngbPanelContent>
           <div>
             <app-int-protection
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [visaCheckRecord]="visaCheckRecord">
+              [entity]="visaCheckRecord">
             </app-int-protection>
           </div>
           <hr>
@@ -82,9 +80,7 @@
         <ng-template ngbPanelContent>
           <div>
             <app-pathway-assessment
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [visaCheckRecord]="visaCheckRecord">
+              [entity]="visaCheckRecord">
             </app-pathway-assessment>
           </div>
           <hr>
@@ -116,9 +112,7 @@
       <ngb-panel id="visa-ca-health" title="Health Assessment" class="intake-data">
         <ng-template ngbPanelContent>
           <app-health-assessment
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaCheckRecord">
+            [entity]="visaCheckRecord">
           </app-health-assessment>
           <hr>
           <div class="card card-body intake-data">
@@ -144,9 +138,7 @@
       <ngb-panel id="visa-ca-character" title="Character Assessment" class="intake-data">
         <ng-template ngbPanelContent>
           <app-character-assessment
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaCheckRecord">
+            [entity]="visaCheckRecord">
           </app-character-assessment>
           <hr>
           <div class="card card-body intake-data">
@@ -162,9 +154,7 @@
       <ngb-panel id="visa-ca-security" title="Security Assessment" class="intake-data">
         <ng-template ngbPanelContent>
           <app-security-risk
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaCheckRecord">
+            [entity]="visaCheckRecord">
           </app-security-risk>
           <hr>
           <div class="card card-body intake-data">
@@ -190,9 +180,7 @@
       <ngb-panel id="visa-ca-risk" title="Overall Risk Assessment" class="intake-data">
         <ng-template ngbPanelContent>
           <app-risk-assessment
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData"
-            [visaCheckRecord]="visaCheckRecord">
+            [entity]="visaCheckRecord">
           </app-risk-assessment>
         </ng-template>
       </ngb-panel>
