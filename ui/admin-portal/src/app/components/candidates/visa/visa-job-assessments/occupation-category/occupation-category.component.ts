@@ -1,30 +1,29 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {CandidateVisaJobCheck, getDestinationOccupationCatLink} from "../../../../../model/candidate";
+import {Component, OnInit} from '@angular/core';
+import {getDestinationOccupationCatLink} from "../../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../../services/candidate.service";
-import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
+import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
+import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-occupation-category',
   templateUrl: './occupation-category.component.html',
   styleUrls: ['./occupation-category.component.scss']
 })
-export class OccupationCategoryComponent extends IntakeComponentBase implements OnInit {
+export class OccupationCategoryComponent extends VisaCheckComponentBase implements OnInit {
 
-  @Input() selectedJobCheck: CandidateVisaJobCheck;
   occupationCatLink: string;
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
+  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+    super(fb, candidateVisaCheckService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaJobId: [this.selectedJobCheck?.id],
-      visaJobOccupationCategory: [this.selectedJobCheck?.occupationCategory],
+      visaJobId: [this.visaJobCheck?.id],
+      visaJobOccupationCategory: [this.visaJobCheck?.occupationCategory],
     });
 
-    this.occupationCatLink = getDestinationOccupationCatLink(this.visaCheckRecord?.country.id);
+    this.occupationCatLink = getDestinationOccupationCatLink(this.visaCheck?.country.id);
   }
 
 }
