@@ -147,4 +147,83 @@ public class AdminApiTestUtil {
         return exam;
     }
 
+    static CandidateJobExperience getCandidateJobExperience() {
+        CandidateJobExperience jobExperience = new CandidateJobExperience(
+                getCandidate(),
+                new Country("Syria", Status.active),
+                getCandidateOccupation(),
+                "Microsoft",
+                "Software Engineer",
+                LocalDate.of(1998, 1, 1),
+                LocalDate.of(2008, 1, 1),
+                "Some job experience description"
+        );
+        jobExperience.setFullTime(true);
+        jobExperience.setPaid(true);
+        return jobExperience;
+    }
+
+    static List<Occupation> getListOfOccupations() {
+        return List.of(
+                new Occupation("Builder", Status.active),
+                new Occupation("Baker", Status.active)
+        );
+    }
+
+    static List<CandidateOccupation> getListOfCandidateOccupations() {
+        return List.of(getCandidateOccupation());
+    }
+
+    static CandidateOccupation getCandidateOccupation() {
+        return new CandidateOccupation(
+                getCandidate(),
+                new Occupation("Software Engineer", Status.active),
+                10L
+        );
+    }
+
+    static List<CandidateLanguage> getListOfCandidateLanguages() {
+        return List.of(getCandidateLanguage());
+    }
+
+    static CandidateLanguage getCandidateLanguage() {
+        return new CandidateLanguage(
+                getCandidate(),
+                new Language("Arabic", Status.active),
+                new LanguageLevel("Good", Status.active, 9),
+                new LanguageLevel("Good", Status.active, 9)
+        );
+    }
+
+    static CandidateNote getCandidateNote() {
+        CandidateNote candidateNote = new CandidateNote();
+        candidateNote.setCandidate(getCandidate());
+        candidateNote.setTitle("A title");
+        candidateNote.setComment("Some comments");
+        candidateNote.setNoteType(NoteType.candidate);
+        return candidateNote;
+    }
+
+    static CandidateOpportunity getCandidateOpportunity() {
+        CandidateOpportunity opportunity = new CandidateOpportunity();
+        opportunity.setCandidate(getCandidate());
+        opportunity.setClosingCommentsForCandidate("Some closing comments for candidate");
+        opportunity.setEmployerFeedback("Some employer feedback");
+        opportunity.setStage(CandidateOpportunityStage.offer);
+        opportunity.setJobOpp(getSalesforceJobOpp());
+        return opportunity;
+    }
+
+    static SalesforceJobOpp getSalesforceJobOpp() {
+        return new SalesforceJobOpp();
+    }
+
+    static CandidateReviewStatusItem getCandidateReviewStatusItem() {
+        CandidateReviewStatusItem reviewStatusItem = new CandidateReviewStatusItem();
+        reviewStatusItem.setCandidate(getCandidate());
+        reviewStatusItem.setSavedSearch(new SavedSearch());
+        reviewStatusItem.setComment("A review comment");
+        reviewStatusItem.setReviewStatus(ReviewStatus.verified);
+        return reviewStatusItem;
+    }
 }
