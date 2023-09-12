@@ -30,7 +30,7 @@ import {CandidateAttachment} from "./candidate-attachment";
 import {TaskAssignment} from "./task-assignment";
 import {CandidateOpportunity} from "./candidate-opportunity";
 import {OpportunityProgressParams} from "./opportunity";
-import {ShortJob} from "./job";
+import {Job} from "./job";
 
 export interface ShortCandidate {
   candidateNumber: string;
@@ -313,13 +313,13 @@ export interface CandidateVisa {
 }
 
 export interface CandidateVisaJobCheck {
-  jobOpp: ShortJob;
+  jobOpp?: Job;
   id?: number;
   name?: string;
   sfJobLink?: string;
   occupation?: Occupation;
   occupationNotes?: string;
-  qualification?: EducationType;
+  qualification?: YesNo;
   qualificationNotes?: string;
   salaryTsmit?: YesNo;
   regional?: YesNo;

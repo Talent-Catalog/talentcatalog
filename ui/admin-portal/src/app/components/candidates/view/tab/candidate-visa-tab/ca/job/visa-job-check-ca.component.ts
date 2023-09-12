@@ -13,7 +13,6 @@ import {CandidateOccupationService} from "../../../../../../../services/candidat
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {JobService} from "../../../../../../../services/job.service";
-import {Job} from "../../../../../../../model/job";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
@@ -22,6 +21,7 @@ import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
   styleUrls: ['./visa-job-check-ca.component.scss']
 })
 export class VisaJobCheckCaComponent implements OnInit {
+  @Input() selectedJobCheck: CandidateVisaJobCheck;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
@@ -30,8 +30,6 @@ export class VisaJobCheckCaComponent implements OnInit {
 
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
-  selectedJobCheck: CandidateVisaJobCheck;
-  selectedJob: Job;
 
   familyInCanada: string;
   partnerIeltsString: string;
@@ -39,11 +37,14 @@ export class VisaJobCheckCaComponent implements OnInit {
 
   error: string;
 
+  index: number;
+
   constructor(private candidateEducationService: CandidateEducationService,
               private candidateOccupationService: CandidateOccupationService,
               private jobService: JobService) {}
 
   ngOnInit(): void {
+    this.index = this.visaCheckRecord.candidateVisaJobChecks.lastIndexOf(this.selectedJobCheck)
     // Get the candidate occupations
     this.candidateOccupationService.get(this.candidate.id).subscribe(
       (response) => {
@@ -70,25 +71,5 @@ export class VisaJobCheckCaComponent implements OnInit {
       this.partnerIeltsString = null;
     }
     this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
-  }
-
-  get hasJobChecks() {
-    return this.visaCheckRecord?.candidateVisaJobChecks?.length > 0;
-  }
-
-  updateSelectedJob(index: number){
-    this.selectedJobCheck = this.visaCheckRecord.candidateVisaJobChecks[index];
-
-    if (this.selectedJobCheck?.jobOpp) {
-      this.jobService.get(this.selectedJobCheck?.jobOpp?.id).subscribe(
-        (response) => {
-          this.selectedJob = response;
-        }, (error) => {
-          this.error = error;
-        }
-      )
-    } else {
-      this.selectedJob = null;
-    }
   }
 }

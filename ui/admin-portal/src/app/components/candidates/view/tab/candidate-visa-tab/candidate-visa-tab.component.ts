@@ -70,28 +70,12 @@ export class CandidateVisaTabComponent implements OnInit {
     // FETCH VISA CHECKS
     this.candidateVisaCheckService.list(this.candidate.id).subscribe((results) => {
       this.visaChecks = results;
-      this.setSelectedCountry();
+      this.changeVisaCountry(null);
     })
 
     this.form = this.fb.group({
-      visaCountry: [null]
+      visaCountry: [0]
     });
-  }
-
-  setSelectedCountry() {
-    // If exists, get the last selected visa check from local storage. If nothing there, get the first one.
-    if (this.visaChecks.length > 0) {
-      const index: number = this.localStorageService.get('VisaCheckIndex');
-      if (index) {
-        this.selectedIndex = index;
-      } else {
-        this.selectedIndex = 0;
-      }
-    }
-
-    this.form.controls.visaCountry.patchValue(this.selectedIndex);
-
-    this.changeVisaCountry(null);
   }
 
   /**
@@ -179,8 +163,8 @@ export class CandidateVisaTabComponent implements OnInit {
   }
 
   changeVisaCountry(event: Event) {
-    this.selectedIndex = this.form.controls.visaCountry.value;
-    this.selectedCountry = this.visaChecks[this.selectedIndex]?.country?.name;
+    let index = this.form.controls.visaCountry.value;
+    this.selectedCountry = this.visaChecks[index]?.country?.name;
     this.getVisaCheckCountryRecord();
   }
 

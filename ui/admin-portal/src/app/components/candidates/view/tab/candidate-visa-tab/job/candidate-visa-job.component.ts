@@ -21,6 +21,7 @@ export class CandidateVisaJobComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
+  @Output() selectedJob = new EventEmitter<CandidateVisaJobCheck>();
   @Output() selectedJobIndex = new EventEmitter<number>();
   selectedIndex: number;
   loading: boolean;
@@ -34,19 +35,10 @@ export class CandidateVisaJobComponent implements OnInit {
               private fb: FormBuilder) { }
 
   ngOnInit(): void {
-    if (this.hasJobChecks) {
-      //If exists, get the last selected visa check from local storage. If nothing there, get the first one.
-      const memoryIndex: number = this.localStorageService.get('VisaJobCheckIndex');
-      if (memoryIndex) {
-        this.selectedIndex = memoryIndex;
-      } else {
-        this.selectedIndex = 0;
-      }
-    }
     this.form = this.fb.group({
-      jobIndex: [this.selectedIndex]
+      jobIndex: [0]
     });
-    this.selectedJobIndex.emit(this.selectedIndex);
+    this.selectedJobIndex.emit(0);
   }
 
   private get filteredSfJobs(): ShortJob[] {
@@ -103,7 +95,7 @@ export class CandidateVisaJobComponent implements OnInit {
       (jobCheck) => {
         this.visaCheckRecord?.candidateVisaJobChecks?.push(jobCheck);
         this.form.controls['jobIndex'].patchValue(this.visaCheckRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
-        this.setSelectedIndex()
+        this.selectedJob.emit(jobCheck);
         this.loading = false;
       },
       (error) => {
@@ -144,11 +136,10 @@ export class CandidateVisaJobComponent implements OnInit {
   }
 
   /**
-   * This emits the selected job index to the outer component to display AND stores the selected index in the local storage.
+   * Sets the selected visa job index and emits to parent component for display
    */
   setSelectedIndex() {
-    this.selectedIndex = this.form.controls.jobIndex.value;
-    this.selectedJobIndex.emit(this.selectedIndex);
-    this.localStorageService.set('VisaJobCheckIndex', this.selectedIndex)
+    let index = this.form.controls.jobIndex.value;
+    this.selectedJobIndex.emit(index);
   }
 }

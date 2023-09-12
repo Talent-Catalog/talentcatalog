@@ -40,7 +40,7 @@ export abstract class VisaCheckComponentBase extends AutoSaveComponentBase imple
   }
 
   get visaJobCheck(): CandidateVisaJobCheck {
-    return this.visaCheck[this.jobRecordIndex];
+    return this.visaCheck.candidateVisaJobChecks[this.jobRecordIndex];
   }
 
   /**

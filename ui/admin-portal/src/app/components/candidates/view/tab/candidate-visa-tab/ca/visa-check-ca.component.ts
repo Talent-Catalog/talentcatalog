@@ -16,9 +16,6 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../../model/candidate';
-import {FormGroup} from '@angular/forms';
-import {CandidateService} from "../../../../../../services/candidate.service";
-import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-visa-check-ca',
@@ -29,16 +26,14 @@ export class VisaCheckCaComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
-  form: FormGroup;
+  selectedJobIndex: number
 
-  constructor(private candidateService: CandidateService,
-              private localStorageService: LocalStorageService) {}
+  constructor() {}
 
   ngOnInit() {
-      this.setSelectedVisaCheckIndex(this.candidateIntakeData?.candidateVisaChecks?.indexOf(this.visaCheckRecord));
   }
 
-  private setSelectedVisaCheckIndex(index: number) {
-    this.localStorageService.set('VisaCheckIndex', index);
+  updateJobIndex(index: number){
+    this.selectedJobIndex = index;
   }
 }
