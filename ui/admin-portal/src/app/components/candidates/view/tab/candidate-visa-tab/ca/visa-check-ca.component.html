@@ -197,14 +197,16 @@
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData"
       [visaCheckRecord]="visaCheckRecord"
-      (selectedJobIndex)="updateJobIndex($event)">
+      [(selectedJob)]="selectedJob">
     </app-candidate-visa-job>
+    <!-- todo could I make selected job a two way input? Also select the first job on default so could send in first index, then
+     the output will be reflected without a method? -->
 
     <hr *ngIf="visaCheckRecord.candidateVisaJobChecks.length > 0"/>
 
-    <!--  Generate all job entries - but only one is enabled at a time-->
+    <!--  Generate all job entries - but only one is enabled and loaded at a time. Reloaded with selectedJobIndex changes.-->
     <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;">
-      <app-visa-job-check-ca *ngIf="i == selectedJobIndex"
+      <app-visa-job-check-ca *ngIf="job.id == selectedJob.id"
                              [id]="i"
                              [selectedJobCheck]="job"
                              [candidate]="candidate"

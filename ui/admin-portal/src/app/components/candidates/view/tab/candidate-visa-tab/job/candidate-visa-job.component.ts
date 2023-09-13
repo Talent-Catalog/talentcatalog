@@ -21,8 +21,15 @@ export class CandidateVisaJobComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
-  @Output() selectedJob = new EventEmitter<CandidateVisaJobCheck>();
-  @Output() selectedJobIndex = new EventEmitter<number>();
+
+  /**
+   * Two way data binding to keep logic contained in this reusable component. Handle the selection of the visa job check
+   * and also fetching the updated version of the visa job to be passed back to display.
+   * This allows us to keep the form data updated when switching between visa jobs.
+   */
+  @Input() selectedJob: CandidateVisaJobCheck;
+  @Output() selectedJobChange = new EventEmitter<CandidateVisaJobCheck>();
+
   selectedIndex: number;
   loading: boolean;
   error: string;
@@ -38,7 +45,7 @@ export class CandidateVisaJobComponent implements OnInit {
     this.form = this.fb.group({
       jobIndex: [0]
     });
-    this.selectedJobIndex.emit(0);
+    this.selectedJobChange.emit(this.visaCheckRecord.candidateVisaJobChecks[0]);
   }
 
   private get filteredSfJobs(): ShortJob[] {
@@ -95,7 +102,7 @@ export class CandidateVisaJobComponent implements OnInit {
       (jobCheck) => {
         this.visaCheckRecord?.candidateVisaJobChecks?.push(jobCheck);
         this.form.controls['jobIndex'].patchValue(this.visaCheckRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
-        this.selectedJob.emit(jobCheck);
+        this.selectedJobChange.emit(jobCheck);
         this.loading = false;
       },
       (error) => {
@@ -127,7 +134,7 @@ export class CandidateVisaJobComponent implements OnInit {
         this.loading = false;
         this.visaCheckRecord.candidateVisaJobChecks.splice(i, 1);
         this.form.controls.jobIndex.patchValue(0);
-        this.setSelectedIndex();
+        this.fetchUpdatedSelectedJob(this.visaCheckRecord.candidateVisaJobChecks[0]);
       },
       (error) => {
         this.error = error;
@@ -136,10 +143,16 @@ export class CandidateVisaJobComponent implements OnInit {
   }
 
   /**
-   * Sets the selected visa job index and emits to parent component for display
+   * Takes in the selected visa job and gets the updated object from the database. This updated visa job check
+   * object is emitted back to parent and the visa check record is updated.
+   * This allows us to retain the changed form data when switching between visa jobs.
    */
-  setSelectedIndex() {
-    let index = this.form.controls.jobIndex.value;
-    this.selectedJobIndex.emit(index);
+  fetchUpdatedSelectedJob(visaJob: CandidateVisaJobCheck) {
+    this.candidateVisaJobService.get(visaJob.id).subscribe(
+      (result) => {
+        this.visaCheckRecord.candidateVisaJobChecks[this.form.controls.jobIndex.value] = result;
+        this.selectedJobChange.emit(result);
+      }
+    )
   }
 }

@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../../model/candidate';
+import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from '../../../../../../model/candidate';
 
 @Component({
   selector: 'app-visa-check-ca',
@@ -26,14 +26,15 @@ export class VisaCheckCaComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
-  selectedJobIndex: number
+  selectedJob: CandidateVisaJobCheck
 
   constructor() {}
 
   ngOnInit() {
-  }
-
-  updateJobIndex(index: number){
-    this.selectedJobIndex = index;
+    /**
+     * Default select the first job in the array on init. This gets changed and updated via
+     * two-way data binding of selectedJob on the CandidateVisaJobComponent.
+     */
+    this.selectedJob = this.visaCheckRecord.candidateVisaJobChecks[0]
   }
 }
