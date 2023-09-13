@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../../model/candidate';
+import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from '../../../../../../model/candidate';
 import {CandidateVisaJobService} from "../../../../../../services/candidate-visa-job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -30,7 +30,7 @@ export class VisaCheckAuComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
-  selectedJobIndex: number;
+  selectedJob: CandidateVisaJobCheck
 
   currentYear: string;
   birthYear: string;
@@ -42,10 +42,10 @@ export class VisaCheckAuComponent implements OnInit {
   ngOnInit() {
     this.currentYear = new Date().getFullYear().toString();
     this.birthYear = this.candidate?.dob?.toString().slice(0, 4);
-  }
-
-  updateJobIndex(index: number){
-    this.selectedJobIndex = index;
-    console.log(this.visaCheckRecord)
+    /**
+     * Default select the first job in the array on init. This gets changed and updated via
+     * two-way data binding of selectedJob on the CandidateVisaJobComponent.
+     */
+    this.selectedJob = this.visaCheckRecord.candidateVisaJobChecks[0]
   }
 }
