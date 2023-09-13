@@ -936,7 +936,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Transient
-    @Nullable
     public String getIntaked() {
         String intaked = "-";
         for (CandidateNote note : candidateNotes) {
