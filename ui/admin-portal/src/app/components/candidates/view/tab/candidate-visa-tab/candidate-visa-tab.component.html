@@ -45,7 +45,7 @@
       <div *ngFor="let visaCheck of visaChecks; let i = index;">
         <div class="form-check">
           <input class="form-check-input" type="radio" [value]="i" name="visaCountry" [id]="'radio'+i"
-                 [formControlName]="'visaCountry'" (change)="changeVisaCountry($event)">
+                 [formControlName]="'visaCountry'" (change)="reloadAndSelectVisaCheck(i)">
           <label class="form-check-label fw-light" [for]="'radio'+i">{{visaCheck?.country?.name}}</label>
           <a class="link-secondary float-end" (click)="deleteRecord(i)"><i class="fas fa-trash"></i></a>
         </div>
@@ -62,16 +62,16 @@
 <!--  Export PDF-->
 <!--</button>-->
 
-<div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined && !loading" id="VisaCheck">
+<div [ngSwitch]="selectedCountry" *ngIf="selectedVisaCheck != undefined && !loading" id="VisaCheck">
   <app-visa-check-au *ngSwitchCase="'Australia'"
                      [candidate]="candidate"
-                     [visaCheckRecord]="getVisaCheckCountryRecord()"
+                     [visaCheckRecord]="selectedVisaCheck"
                      [candidateIntakeData]="candidateIntakeData">
   </app-visa-check-au>
 
   <app-visa-check-ca *ngSwitchCase="'Canada'"
                      [candidate]="candidate"
-                     [visaCheckRecord]="getVisaCheckCountryRecord()"
+                     [visaCheckRecord]="selectedVisaCheck"
                      [candidateIntakeData]="candidateIntakeData">
   </app-visa-check-ca>
 
