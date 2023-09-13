@@ -13,7 +13,6 @@ import {CandidateOccupationService} from "../../../../../../../services/candidat
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateVisaCheckService} from "../../../../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-visa-job-check-ca',
@@ -38,8 +37,7 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
   error: string;
 
   constructor(private candidateEducationService: CandidateEducationService,
-              private candidateOccupationService: CandidateOccupationService,
-              private candidateVisaCheckService: CandidateVisaCheckService) {}
+              private candidateOccupationService: CandidateOccupationService) {}
 
   ngOnInit(): void {
     // Get the candidate occupations
