@@ -16,7 +16,7 @@ export abstract class VisaCheckComponentBase extends AutoSaveComponentBase imple
   /**
    * Index into job check array member of data if that is what is being updated.
    */
-  @Input() jobRecordIndex: number;
+  @Input() visaJobCheck: CandidateVisaJobCheck;
 
   @Input() editable: boolean = true;
 
@@ -26,7 +26,7 @@ export abstract class VisaCheckComponentBase extends AutoSaveComponentBase imple
    * @param candidateVisaCheckService Service which saves the intake data
    */
   protected constructor(protected fb: FormBuilder,
-                        candidateVisaCheckService: CandidateVisaCheckService) {
+                        private candidateVisaCheckService: CandidateVisaCheckService) {
     super(candidateVisaCheckService);
   }
 
@@ -37,10 +37,6 @@ export abstract class VisaCheckComponentBase extends AutoSaveComponentBase imple
    */
   get visaCheck(): CandidateVisa {
     return <CandidateVisa>this.entity;
-  }
-
-  get visaJobCheck(): CandidateVisaJobCheck {
-    return this.visaCheck.candidateVisaJobChecks[this.jobRecordIndex];
   }
 
   /**
@@ -57,4 +53,6 @@ export abstract class VisaCheckComponentBase extends AutoSaveComponentBase imple
   setNoResponse(formControlName: string) {
     this.form.controls[formControlName].setValue('NoResponse');
   };
+
+
 }

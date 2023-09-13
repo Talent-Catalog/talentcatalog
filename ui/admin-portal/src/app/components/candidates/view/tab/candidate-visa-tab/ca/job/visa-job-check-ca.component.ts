@@ -12,8 +12,8 @@ import {CandidateEducationService} from "../../../../../../../services/candidate
 import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
-import {JobService} from "../../../../../../../services/job.service";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateVisaCheckService} from "../../../../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-visa-job-check-ca',
@@ -37,14 +37,11 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
 
   error: string;
 
-  index: number;
-
   constructor(private candidateEducationService: CandidateEducationService,
               private candidateOccupationService: CandidateOccupationService,
-              private jobService: JobService) {}
+              private candidateVisaCheckService: CandidateVisaCheckService) {}
 
   ngOnInit(): void {
-    this.index = this.visaCheckRecord.candidateVisaJobChecks.lastIndexOf(this.selectedJobCheck)
     // Get the candidate occupations
     this.candidateOccupationService.get(this.candidate.id).subscribe(
       (response) => {

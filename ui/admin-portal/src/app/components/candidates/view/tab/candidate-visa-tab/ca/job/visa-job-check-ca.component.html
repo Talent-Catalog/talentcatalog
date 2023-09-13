@@ -5,11 +5,11 @@
   <ngb-panel id="occupation-eligibility" title="Occupation Eligibility">
     <ng-template ngbPanelContent>
       <app-occupation-category
-        [jobRecordIndex]="index"
+        [visaJobCheck]="selectedJobCheck"
         [entity]="visaCheckRecord">
       </app-occupation-category>
       <app-occupation-subcategory
-        [jobRecordIndex]="index"
+        [visaJobCheck]="selectedJobCheck"
         [entity]="visaCheckRecord">
       </app-occupation-subcategory>
       <hr>
@@ -39,15 +39,15 @@
     </ng-template>
     <ng-template ngbPanelContent>
       <app-preferred-pathways
-        [jobRecordIndex]="index"
+        [visaJobCheck]="selectedJobCheck"
         [entity]="visaCheckRecord">
       </app-preferred-pathways>
       <app-eligible-pathways
-        [jobRecordIndex]="index"
+        [visaJobCheck]="selectedJobCheck"
         [entity]="visaCheckRecord">
       </app-eligible-pathways>
       <app-ineligible-pathways
-        [jobRecordIndex]="index"
+        [visaJobCheck]="selectedJobCheck"
         [entity]="visaCheckRecord">
       </app-ineligible-pathways>
     </ng-template>
@@ -58,19 +58,19 @@
 
       <div>
         <app-relevant-work-exp
-          [jobRecordIndex]="index"
+          [visaJobCheck]="selectedJobCheck"
           [entity]="visaCheckRecord">
         </app-relevant-work-exp>
         <app-age-requirement
-          [jobRecordIndex]="index"
+          [visaJobCheck]="selectedJobCheck"
           [entity]="visaCheckRecord">
         </app-age-requirement>
         <app-english-threshold
-          [jobRecordIndex]="index"
+          [visaJobCheck]="selectedJobCheck"
           [entity]="visaCheckRecord">
         </app-english-threshold>
         <app-qualification-relevant
-          [jobRecordIndex]="index"
+          [visaJobCheck]="selectedJobCheck"
           [entity]="visaCheckRecord">
         </app-qualification-relevant>
       </div>
@@ -150,11 +150,11 @@
     <ng-template ngbPanelContent>
       <div>
         <app-job-interest
-          [jobRecordIndex]="index"
+          [visaJobCheck]="selectedJobCheck"
           [entity]="visaCheckRecord">
         </app-job-interest>
         <app-job-eligibility-assessment
-          [jobRecordIndex]="index"
+          [visaJobCheck]="selectedJobCheck"
           [entity]="visaCheckRecord">
         </app-job-eligibility-assessment>
       </div>
@@ -189,11 +189,11 @@
   <ngb-panel id="final-assessment" title="Final Assessment">
     <ng-template ngbPanelContent>
       <app-visa-job-put-forward
-        [jobRecordIndex]="index"
+        [visaJobCheck]="selectedJobCheck"
         [entity]="visaCheckRecord">
       </app-visa-job-put-forward>
       <app-visa-job-notes
-        [jobRecordIndex]="index"
+        [visaJobCheck]="selectedJobCheck"
         [entity]="visaCheckRecord">
       </app-visa-job-notes>
     </ng-template>
