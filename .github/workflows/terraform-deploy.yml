@@ -19,7 +19,7 @@ defaults:
     shell: bash
 
 env:
-  TERRAFORM_VERSION: 1.3.0
+  TERRAFORM_VERSION: 1.5.7
   AWS_REGION: "us-east-1"
   INFRA_PATH: './infra/prod'
   AWS_ACCESS_KEY_ID: "AKIATLUVZAGYXPLKILO3"
