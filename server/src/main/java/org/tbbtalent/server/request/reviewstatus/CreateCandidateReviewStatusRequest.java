@@ -18,8 +18,12 @@ package org.tbbtalent.server.request.reviewstatus;
 
 import javax.validation.constraints.NotNull;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.tbbtalent.server.model.db.ReviewStatus;
 
+@Getter
+@Setter
 public class CreateCandidateReviewStatusRequest {
 
     @NotNull
@@ -33,35 +37,4 @@ public class CreateCandidateReviewStatusRequest {
 
     String comment;
 
-    public Long getCandidateId() {
-        return candidateId;
-    }
-
-    public void setCandidateId(Long candidateId) {
-        this.candidateId = candidateId;
-    }
-
-    public Long getSavedSearchId() {
-        return savedSearchId;
-    }
-
-    public void setSavedSearchId(Long savedSearchId) {
-        this.savedSearchId = savedSearchId;
-    }
-
-    public ReviewStatus getReviewStatus() {
-        return reviewStatus;
-    }
-
-    public void setReviewStatus(ReviewStatus reviewStatus) {
-        this.reviewStatus = reviewStatus;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
 }

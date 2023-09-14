@@ -40,7 +40,7 @@ import java.util.List;
 
 class GoogleDriveConfigTest {
   private static final String APPLICATION_NAME = "TalentCatalog";
-  private static final String DELEGATED_USER = "candidates@talentbeyondboundaries.org";
+  private static final String DELEGATED_USER = "tcstorage@talentbeyondboundaries.org";
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
   
 //  @Test
