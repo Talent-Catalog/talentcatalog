@@ -165,13 +165,13 @@ public class CandidateVisaCheckAdminApi
                 .add("occupation", occupationDto())
                 .add("occupationNotes")
                 .add("qualificationNotes")
-//                .add("relevantWorkExp")
-//                .add("ageRequirement")
-//                .add("preferredPathways")
-//                .add("ineligiblePathways")
-//                .add("eligiblePathways")
-//                .add("occupationCategory")
-//                .add("occupationSubCategory")
+                .add("relevantWorkExp")
+                .add("ageRequirement")
+                .add("preferredPathways")
+                .add("ineligiblePathways")
+                .add("eligiblePathways")
+                .add("occupationCategory")
+                .add("occupationSubCategory")
                 ;
     }
 
