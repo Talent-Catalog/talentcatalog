@@ -507,6 +507,7 @@ import {
   OccupationSubcategoryComponent
 } from './components/candidates/visa/visa-job-assessments/occupation-subcategory/occupation-subcategory.component';
 import {DirectiveModule} from "./directives/directive.module";
+import {ExportPdfComponent} from './components/util/export-pdf/export-pdf.component';
 
 @NgModule({
   declarations: [
@@ -800,7 +801,8 @@ import {DirectiveModule} from "./directives/directive.module";
     EligiblePathwaysComponent,
     IneligiblePathwaysComponent,
     OccupationCategoryComponent,
-    OccupationSubcategoryComponent
+    OccupationSubcategoryComponent,
+    ExportPdfComponent
   ],
   imports: [
     BrowserModule,
