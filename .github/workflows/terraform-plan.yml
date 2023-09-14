@@ -56,7 +56,7 @@ jobs:
       - name: Init Terraform
         id: init
         run: |
-          terraform init
+          terraform init -upgrade
         working-directory: ${{ env.INFRA_PATH }}
 
       - name: Validate Terraform files
