@@ -17,33 +17,6 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -61,48 +34,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.CountryRestrictionException;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.exception.ExportFailedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.PasswordMatchException;
-import org.tbbtalent.server.exception.SalesforceException;
-import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateDestination;
-import org.tbbtalent.server.model.db.CandidateEducation;
-import org.tbbtalent.server.model.db.CandidateExam;
-import org.tbbtalent.server.model.db.CandidateLanguage;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.CandidateProperty;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.CandidateSubfolderType;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.DataRow;
-import org.tbbtalent.server.model.db.DependantRelations;
-import org.tbbtalent.server.model.db.EducationLevel;
-import org.tbbtalent.server.model.db.Exam;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.HasTcQueryParameters;
-import org.tbbtalent.server.model.db.LanguageLevel;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.PartnerImpl;
-import org.tbbtalent.server.model.db.QuestionTaskAssignmentImpl;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.RootRequest;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.SearchJoin;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.SurveyType;
-import org.tbbtalent.server.model.db.TaskAssignmentImpl;
-import org.tbbtalent.server.model.db.UnhcrStatus;
-import org.tbbtalent.server.model.db.UploadTaskImpl;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.db.YesNoUnsure;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.db.partner.Partner;
 import org.tbbtalent.server.model.db.task.QuestionTask;
 import org.tbbtalent.server.model.db.task.QuestionTaskAssignment;
@@ -110,69 +43,40 @@ import org.tbbtalent.server.model.db.task.Task;
 import org.tbbtalent.server.model.db.task.TaskAssignment;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.CandidateExamRepository;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CountryRepository;
-import org.tbbtalent.server.repository.db.EducationLevelRepository;
-import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
-import org.tbbtalent.server.repository.db.LanguageLevelRepository;
-import org.tbbtalent.server.repository.db.OccupationRepository;
-import org.tbbtalent.server.repository.db.SurveyTypeRepository;
-import org.tbbtalent.server.repository.db.TaskAssignmentRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateExternalIdSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
-import org.tbbtalent.server.request.candidate.ResolveTaskAssignmentsRequest;
-import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateMediaRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRegistrationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.PasswordHelper;
-import org.tbbtalent.server.service.db.CandidateCitizenshipService;
-import org.tbbtalent.server.service.db.CandidateDependantService;
-import org.tbbtalent.server.service.db.CandidateDestinationService;
-import org.tbbtalent.server.service.db.CandidateNoteService;
-import org.tbbtalent.server.service.db.CandidatePropertyService;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
-import org.tbbtalent.server.service.db.CandidateVisaService;
-import org.tbbtalent.server.service.db.CountryService;
-import org.tbbtalent.server.service.db.FileSystemService;
-import org.tbbtalent.server.service.db.PartnerService;
-import org.tbbtalent.server.service.db.RootRequestService;
-import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.SavedListService;
-import org.tbbtalent.server.service.db.SavedSearchService;
-import org.tbbtalent.server.service.db.TaskService;
-import org.tbbtalent.server.service.db.UserService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.BeanHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tbbtalent.server.util.html.TextExtracter;
+
+import javax.servlet.http.HttpServletRequest;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -2296,22 +2200,6 @@ public class CandidateServiceImpl implements CandidateService {
         if (destinationCountryId != null) {
             candidateDestinationService
                     .updateIntakeData(destinationCountryId, candidate, data);
-        }
-
-        //If there is a non null visa id, that means that this
-        //is a visa check update.
-        final Long visaId = data.getVisaId();
-        if (visaId != null) {
-            candidateVisaService
-                    .updateIntakeData(visaId, candidate, data);
-        }
-
-        //If there is a non null visa job id, that means that this
-        //is a visa job check update.
-        final Long visaJobId = data.getVisaJobId();
-        if (visaJobId != null) {
-            candidateVisaJobCheckService
-                    .updateIntakeData(visaJobId, candidate, data);
         }
 
         //If there is a non null exam type, that means that this

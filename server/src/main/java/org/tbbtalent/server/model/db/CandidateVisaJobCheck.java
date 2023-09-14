@@ -85,27 +85,27 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobTbbEligibility() != null) {
             setTbbEligibility(data.getVisaJobTbbEligibility());
         }
-//        if (data.getVisaJobRelevantWorkExp() != null) {
-//            setRelevantWorkExp(data.getVisaJobRelevantWorkExp());
-//        }
-//        if (data.getVisaJobAgeRequirement() != null) {
-//            setAgeRequirement(data.getVisaJobAgeRequirement());
-//        }
-//        if (data.getVisaJobPreferredPathways() != null) {
-//            setPreferredPathways(data.getVisaJobPreferredPathways());
-//        }
-//        if (data.getVisaJobIneligiblePathways() != null) {
-//            setIneligiblePathways(data.getVisaJobIneligiblePathways());
-//        }
-//        if (data.getVisaJobEligiblePathways() != null) {
-//            setEligiblePathways(data.getVisaJobEligiblePathways());
-//        }
-//        if (data.getVisaJobOccupationCategory() != null) {
-//            setOccupationCategory(data.getVisaJobOccupationCategory());
-//        }
-//        if (data.getVisaJobOccupationSubCategory() != null) {
-//            setOccupationSubCategory(data.getVisaJobOccupationSubCategory());
-//        }
+        if (data.getVisaJobRelevantWorkExp() != null) {
+            setRelevantWorkExp(data.getVisaJobRelevantWorkExp());
+        }
+        if (data.getVisaJobAgeRequirement() != null) {
+            setAgeRequirement(data.getVisaJobAgeRequirement());
+        }
+        if (data.getVisaJobPreferredPathways() != null) {
+            setPreferredPathways(data.getVisaJobPreferredPathways());
+        }
+        if (data.getVisaJobIneligiblePathways() != null) {
+            setIneligiblePathways(data.getVisaJobIneligiblePathways());
+        }
+        if (data.getVisaJobEligiblePathways() != null) {
+            setEligiblePathways(data.getVisaJobEligiblePathways());
+        }
+        if (data.getVisaJobOccupationCategory() != null) {
+            setOccupationCategory(data.getVisaJobOccupationCategory());
+        }
+        if (data.getVisaJobOccupationSubCategory() != null) {
+            setOccupationSubCategory(data.getVisaJobOccupationSubCategory());
+        }
 
     }
     
