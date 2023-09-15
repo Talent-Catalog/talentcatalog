@@ -58,14 +58,11 @@ public interface CandidateVisaJobCheckService {
             throws EntityReferencedException, InvalidRequestException;
 
     /**
-     * Updates the candidate visa intake data associated with the given
-     * country and given candidate.
+     * Updates the candidate visa job data associated with the ID provided.
      * @param visaJobId ID of visa job entity - If null this method does nothing
-     * @param candidate Candidate
-     * @param data Partially populated CandidateIntakeData record. Null data
+     * @param data Partially populated CandidateVisaCheckData object. Null data
      *             fields are ignored. Only non null fields are updated.
-     * @throws NoSuchObjectException if the there is no country with the
-     * given id or no CandidateVisa record with the id given in the data
+     * @throws NoSuchObjectException if the there is no CandidateVisaJobCheck record with the given ID.
      */
     void updateIntakeData(
             @Nullable Long visaJobId, CandidateVisaCheckData data) throws NoSuchObjectException;

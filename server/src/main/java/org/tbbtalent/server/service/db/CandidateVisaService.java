@@ -38,13 +38,11 @@ public interface CandidateVisaService {
     CandidateVisaCheck getVisaCheck(long visaId) throws NoSuchObjectException;
 
     /**
-     * Gets the candidate visa check record from the given id.
-     *
-     * @param candidateId ID of visa
-     * @return Desired record
-     * @throws NoSuchObjectException if the there is no visa job check record with that id
+     * Lists all the candidate's visa check records from the given candidate id.
+     * @param candidateId ID of candidate whose visa checks we want to list
+     * @return List of desired records. List can be empty if no visa checks associated.
      */
-    List<CandidateVisaCheck> listCandidateVisaChecks(long candidateId) throws NoSuchObjectException;
+    List<CandidateVisaCheck> listCandidateVisaChecks(long candidateId);
 
     /**
      * Creates a new candidate visa check record from the data in the given 
@@ -71,13 +69,12 @@ public interface CandidateVisaService {
             throws EntityReferencedException, InvalidRequestException;
 
     /**
-     * Updates the candidate visa intake data associated with the given 
-     * country and given candidate.
+     * Updates the candidate visa intake data of the visa intake with the given ID. This includes updating
+     * the associated visa job check data.
      * @param visaId ID of visa entity - If null this method does nothing
-     * @param data Partially populated CandidateIntakeData record. Null data
+     * @param data Partially populated visa check data which includes visa job check data. Null data
      *             fields are ignored. Only non null fields are updated.
-     * @throws NoSuchObjectException if the there is no country with the
-     * given id or no CandidateVisa record with the id given in the data  
+     * @throws NoSuchObjectException if the there is no visa check with the given id
      */
     void updateIntakeData(
             @Nullable Long visaId, @NonNull CandidateVisaCheckData data) throws NoSuchObjectException;

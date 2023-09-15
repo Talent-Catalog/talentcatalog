@@ -43,12 +43,10 @@ public class CandidateVisaJobCheckAdminApi
     }
 
     /**
-     * Creates a new candidate visa check record from the data in the given
-     * request.
+     * Gets visa job check record using the visa job check ID
      * @param visaJobId ID of visa job check
-     * @return Created record - including database id of visa check record
-     * @throws NoSuchObjectException if the there is no Candidate record with
-     * that candidateId or no country with the id given in the request
+     * @return Desired record
+     * @throws NoSuchObjectException if if the there is no visa job check record with that id
      */
     @Override
     public @NotNull Map<String, Object> get(long visaJobId)
@@ -113,13 +111,13 @@ public class CandidateVisaJobCheckAdminApi
                 .add("occupation", occupationDto())
                 .add("occupationNotes")
                 .add("qualificationNotes")
-//                .add("relevantWorkExp")
-//                .add("ageRequirement")
-//                .add("preferredPathways")
-//                .add("ineligiblePathways")
-//                .add("eligiblePathways")
-//                .add("occupationCategory")
-//                .add("occupationSubCategory")
+                .add("relevantWorkExp")
+                .add("ageRequirement")
+                .add("preferredPathways")
+                .add("ineligiblePathways")
+                .add("eligiblePathways")
+                .add("occupationCategory")
+                .add("occupationSubCategory")
                 ;
     }
 

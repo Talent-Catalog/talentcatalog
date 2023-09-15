@@ -58,20 +58,22 @@ public class CandidateVisaCheckAdminApi
     }
 
     /**
-     * Get a new candidate visa check record from the data in the given request.
+     * List of visa check records belonging to the candidate passed in by the candidateId.
      *
-     * @param candidateId ID of visa check
-     * @return Created record - including database id of visa check record
-     * @throws NoSuchObjectException if the there is no Candidate record with
-     *                               that candidateId or no country with the id given in the request
+     * @param candidateId ID of candidate whose visa checks we want
+     * @return List of visa check records - can be empty if candidate has no visa checks associated.
      */
     @Override
-    public @NotNull List<Map<String, Object>> list(long candidateId)
-            throws NoSuchObjectException {
+    public @NotNull List<Map<String, Object>> list(long candidateId) {
         List<CandidateVisaCheck> candidateVisaChecks = this.candidateVisaService.listCandidateVisaChecks(candidateId);
         return candidateVisaDto().buildList(candidateVisaChecks);
     }
 
+    /**
+     * Populates the visa check object OR visa job check object using the visa data provided.
+     * @param id ID of the visa check to be updated directly, or whose associated job check is to be updated.
+     * @param data data of the visa intake, only updates the non null fields.
+     */
     @PutMapping("{id}/intake")
     public void updateIntakeData(
             @PathVariable("id") long id, @RequestBody CandidateVisaCheckData data) {

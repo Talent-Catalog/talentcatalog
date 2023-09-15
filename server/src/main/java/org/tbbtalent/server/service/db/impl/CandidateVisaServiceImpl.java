@@ -28,7 +28,6 @@ import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaRepository;
 import org.tbbtalent.server.repository.db.CountryRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
@@ -52,7 +51,7 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
     public CandidateVisaServiceImpl(
             CandidateVisaRepository candidateVisaRepository,
             CandidateRepository candidateRepository,
-            CountryRepository countryRepository, UserRepository userRepository,
+            CountryRepository countryRepository,
             CandidateVisaJobCheckService candidateVisaJobCheckService) {
         this.candidateVisaRepository = candidateVisaRepository;
         this.candidateRepository = candidateRepository;
@@ -69,9 +68,7 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
     }
 
     @Override
-    public List<CandidateVisaCheck> listCandidateVisaChecks(long candidateId)
-            throws NoSuchObjectException {
-
+    public List<CandidateVisaCheck> listCandidateVisaChecks(long candidateId) {
         return candidateVisaRepository.findByCandidateId(candidateId);
     }
 
