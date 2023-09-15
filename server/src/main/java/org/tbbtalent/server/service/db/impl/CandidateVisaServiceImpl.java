@@ -18,6 +18,7 @@ package org.tbbtalent.server.service.db.impl;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -75,23 +76,23 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
     @Override
     public CandidateVisaCheck createVisaCheck(
             long candidateId, CreateCandidateVisaCheckRequest request) 
-            throws NoSuchObjectException {
+            throws NoSuchObjectException, EntityExistsException {
 
         Candidate candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
 
+        final Long countryId = request.getCountryId();
+        CandidateVisaCheck existing = candidateVisaRepository.findByCandidateIdCountryId(candidateId, countryId).orElse(null);
+
+        if (existing != null) {
+            throw new EntityExistsException("Visa Check", "There is already a visa check associated with this country.");
+        }
+
         CandidateVisaCheck cv = new CandidateVisaCheck();
         cv.setCandidate(candidate);
-
-        final Long countryId = request.getCountryId();
-        if (countryId != null) {
-            Country country = countryRepository.findById(countryId)
-                    .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
-            cv.setCountry(country);
-        }
-        //cv.setEligibility(request.getEligibility());
-        cv.setAssessmentNotes(request.getAssessmentNotes());
-
+        Country country = countryRepository.findById(countryId)
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
+        cv.setCountry(country);
         return candidateVisaRepository.save(cv);
     }
 
