@@ -101,7 +101,12 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
     @Override
     public boolean deleteVisaCheck(long visaId) 
             throws EntityReferencedException, InvalidRequestException {
-        candidateVisaRepository.deleteById(visaId);
+        try {
+            candidateVisaRepository.deleteById(visaId);
+        } catch (Exception e) {
+            throw new InvalidRequestException("There are job specific visa checks associated with this country's visa check, " +
+                    "cannot delete unless this country's job specific visa checks are deleted first.");
+        }
         return true;
     }
 
