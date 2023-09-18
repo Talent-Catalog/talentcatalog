@@ -1,0 +1,85 @@
+/*!
+ * Copyright (c) 2023 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+/* _sass/styles.scss */
+
+/* Apply some basic styling to the entire page */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+/* Style the page title */
+h1 {
+  color: #333;
+  text-align: center;
+}
+
+/* Style the release version headings */
+h2 {
+  color: #555;
+  margin-top: 20px;
+}
+
+/* Style the different sections (New Features, Improvements, Bug Fixes) */
+h3 {
+  color: #777;
+  margin-top: 10px;
+}
+
+/* Style the bullet points in the release notes */
+ul {
+  list-style: disc;
+  margin-left: 20px;
+}
+
+/* Style the links */
+a {
+  color: #007acc;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Add some spacing between sections and releases */
+section {
+  margin-bottom: 40px;
+}
+
+/* Add a border to the entire section */
+section {
+  border: 1px solid #ddd;
+  padding: 20px;
+}
+
+/* Style the download link */
+#download-link {
+  display: block;
+  text-align: center;
+  margin-top: 30px;
+  padding: 10px;
+  background-color: #007acc;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+#download-link:hover {
+  background-color: #00578b;
+}
