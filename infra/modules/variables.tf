@@ -154,11 +154,6 @@ variable "m2_home" {
   description = "M2 home directory"
 }
 
-variable "sf_privatekey" {
-  type        = string
-  description = "Salesforce private key"
-}
-
 variable "server_port" {
   type        = string
   description = "Server port"
@@ -167,6 +162,35 @@ variable "server_port" {
 variable "server_url" {
   type        = string
   description = "Server URL"
+}
+
+variable "sf_base_classic_url" {
+  type        = string
+  description = "Salesforce Classic base url"
+}
+
+variable "sf_base_lightning_url" {
+  type        = string
+  description = "Salesforce Lightning base url"
+}
+
+variable "sf_base_login_url" {
+  type        = string
+  description = "Salesforce login base url - for obtaining an access token"
+}
+
+variable "sf_consumer_key" {
+  type        = string
+  description = "Salesforce connected app client ID, also for access token"
+}
+variable "sf_private_key" {
+  type        = string
+  description = "Salesforce private key"
+}
+
+variable "sf_user" {
+  type        = string
+  description = "Salesforce logging-in user for access token"
 }
 
 variable "slack_token" {

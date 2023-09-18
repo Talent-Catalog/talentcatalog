@@ -178,7 +178,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         WebClient.Builder builder =
             WebClient.builder()
                 .baseUrl(
-                    "https://talentbeyondboundaries.my.salesforce.com/services/data/" + apiVersion)
+                    salesforceConfig.getBaseClassicUrl() + "services/data/" + apiVersion)
                 .defaultHeader("Content_Type", "application/json")
                 .defaultHeader("Accept", "application/json");
 
@@ -1040,7 +1040,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         String jwtBearerToken = makeJwtBearerToken();
 
         WebClient client = WebClient
-            .create("https://login.salesforce.com/services/oauth2/token");
+            .create(salesforceConfig.getBaseLoginUrl() + "services/oauth2/token");
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type",
@@ -1104,9 +1104,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Create the JWT Claims Object
         String[] claimArray = new String[4];
-        claimArray[0] = "3MVG9mclR62wycM3f9iy572tIEVmeyMN8eFW5h2BK7eD96hD19zYvpx1vup07kfpCidboRyF56WF3QjL7LAYl";
-        claimArray[1] = "jcameron@talentbeyondboundaries.org";
-        claimArray[2] = "https://login.salesforce.com";
+        claimArray[0] = salesforceConfig.getConsumerKey();
+        claimArray[1] = salesforceConfig.getUser();
+        claimArray[2] = salesforceConfig.getBaseLoginUrl();
         claimArray[3] = Long.toString((System.currentTimeMillis() / 1000) + 180);
         MessageFormat claims;
         claims = new MessageFormat(claimTemplate);

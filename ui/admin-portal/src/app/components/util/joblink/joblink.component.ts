@@ -23,7 +23,7 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import {salesforceUrlPattern} from '../../../model/base';
+import {salesforceSandboxUrlPattern, salesforceUrlPattern} from '../../../model/base';
 import {Observable, of} from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
 import {SalesforceService} from "../../../services/salesforce.service";
@@ -56,7 +56,7 @@ export class JoblinkComponent extends FormComponentBase implements OnInit {
 
     this.form = this.fb.group({
       sfJoblink: [this.joblink,
-        [Validators.pattern(salesforceUrlPattern)], //Sync validators
+        [Validators.pattern(`${salesforceUrlPattern}|${salesforceSandboxUrlPattern}`)], //Sync validators
         [this.sfJoblinkValidator()] //Async validators
       ],
     });

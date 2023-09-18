@@ -79,9 +79,14 @@ module "parameters" {
   jwt_secret                      = var.jwt_secret
   m2                              = var.m2
   m2_home                         = var.m2_home
-  sf_privatekey                   = var.sf_privatekey
   server_port                     = var.server_port
   server_url                      = var.server_url
+  sf_base_classic_url             = var.sf_base_classic_url
+  sf_base_lightning_url           = var.sf_base_lightning_url
+  sf_base_login_url               = var.sf_base_login_url
+  sf_consumer_key                 = var.sf_consumer_key
+  sf_private_key                  = var.sf_private_key
+  sf_user                         = var.sf_user
   slack_token                     = var.slack_token
   spring_client_url               = var.spring_client_url
   database_url                    = module.database.database_url
