@@ -4,7 +4,7 @@ sass:
   style: compressed
 ---
 
-<link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/styles.css">
+[//]: # (<link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/styles.css">)
 
 # Release Notes for Talent Catalog
 
