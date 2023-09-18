@@ -4,6 +4,8 @@ sass:
   style: compressed
 ---
 
+<link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/styles.css">
+
 # Release Notes for Talent Catalog
 
 ## Version 2.1.0 (September 29, 2023)
