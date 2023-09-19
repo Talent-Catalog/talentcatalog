@@ -19,6 +19,7 @@ package org.tbbtalent.server;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.tbbtalent.server.util.SalesforceHelper;
 
@@ -30,6 +31,7 @@ import org.tbbtalent.server.util.SalesforceHelper;
 public class TestExtractSFIDFromUrl {
 
     @Test
+    @DisplayName("correctly extracts SF object info from SF url")
     void testExtract() {
         String url = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/0061N00000gO3zXQAS/view";
         String id = SalesforceHelper.extractIdFromSfUrl(url);

@@ -30,10 +30,8 @@ import org.springframework.lang.Nullable;
  * @author John Cameron
  */
 public class SalesforceHelper {
-    private final static String SF_URL
-    = "https://talentbeyondboundaries.lightning.force.com";
-    private final static String SF_OPPORTUNITY_LINK_PREFIX
-            = SF_URL + "/lightning/r/Opportunity/";
+    private final static String SF_OPPORTUNITY_LINK_MIDDLE
+            = "/lightning/r/Opportunity/";
     private final static String SF_OPPORTUNITY_LINK_SUFFIX
         = "/view/";
 
@@ -43,8 +41,8 @@ public class SalesforceHelper {
      * @return Url (ie link) to opportunity record with that id - null if sfId is null
      */
     @Nullable
-    public static String sfOppIdToLink(@Nullable String sfId) {
-        return sfId == null ? null : SF_OPPORTUNITY_LINK_PREFIX + sfId + SF_OPPORTUNITY_LINK_SUFFIX;
+    public static String sfOppIdToLink(@Nullable String sfId, String baseLightningUrl) {
+        return sfId == null ? null : baseLightningUrl + SF_OPPORTUNITY_LINK_MIDDLE + sfId + SF_OPPORTUNITY_LINK_SUFFIX;
     }
 
     /**
@@ -55,7 +53,7 @@ public class SalesforceHelper {
     @Nullable
     public static OffsetDateTime parseSalesforceOffsetDateTime(@Nullable String sfOffsetDateTime) {
         //Salesforce strings have the offset as hhmm instead of hh:mm. We just need to insert the :
-        //For example "2023-06-01T00:21:58.000+0000" -> "2023-06-01T00:21:58.000+00:00" 
+        //For example "2023-06-01T00:21:58.000+0000" -> "2023-06-01T00:21:58.000+00:00"
         OffsetDateTime offsetDateTime = null;
         if (sfOffsetDateTime != null) {
             final int sfLen = sfOffsetDateTime.length();
@@ -125,8 +123,8 @@ public class SalesforceHelper {
 
         //https://salesforce.stackexchange.com/questions/1653/what-are-salesforce-ids-composed-of
         String pattern =
-            //This is the standard prefix for our Salesforce.
-            SF_URL + "/" +
+            //This is the standard prefix for our Salesforce, allowing for both sandbox and prod versions.
+            "https://talentbeyondboundaries\\S*\\.lightning\\.force\\.com" + "/" +
 
                 //This part just checks for 15 or more "word" characters with
                 //no "punctuation" - eg . or /.

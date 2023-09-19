@@ -19,8 +19,11 @@ package org.tbbtalent.server.api.admin;
 import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,19 +37,18 @@ import org.tbbtalent.server.request.candidate.opportunity.SearchCandidateOpportu
 import org.tbbtalent.server.service.db.CandidateOpportunityService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/opp")
-public class CandidateOpportunityAdminApi implements
-    ITableApi<SearchCandidateOpportunityRequest, CandidateOpportunityParams, CandidateOpportunityParams> {
+@RequiredArgsConstructor
+public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOpportunityRequest,
+                                                               CandidateOpportunityParams,
+                                                               CandidateOpportunityParams> {
 
     private final CandidateOpportunityService candidateOpportunityService;
-    public CandidateOpportunityAdminApi(CandidateOpportunityService candidateOpportunityService) {
-        this.candidateOpportunityService = candidateOpportunityService;
-    }
 
     @Override
     @GetMapping("{id}")
-    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
+    public @NotNull Map<String, Object> get(@PathVariable long id) throws NoSuchObjectException {
         CandidateOpportunity opp = candidateOpportunityService.getCandidateOpportunity(id);
         return candidateOpportunityDto().build(opp);
     }
@@ -61,7 +63,7 @@ public class CandidateOpportunityAdminApi implements
 
     @Override
     @PutMapping("{id}")
-    public @NotNull Map<String, Object> update(long id, CandidateOpportunityParams request)
+    public @NotNull Map<String, Object> update(@PathVariable long id, CandidateOpportunityParams request)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         CandidateOpportunity opp = candidateOpportunityService.updateCandidateOpportunity(id, request);
         return candidateOpportunityDto().build(opp);

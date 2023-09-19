@@ -20,6 +20,7 @@ import {User} from '../../../../model/user';
 import {AuthService} from "../../../../services/auth.service";
 import {LanguageService} from "../../../../services/language.service";
 import {SystemLanguage} from "../../../../model/language";
+import {CandidateOpportunityStage} from "../../../../model/candidate-opportunity";
 
 /**
  * This admin settings component is used to configure translations for the candidate portal code.
@@ -73,6 +74,12 @@ export class GeneralTranslationsComponent implements OnInit {
   }
 
   ngOnInit() {
+    //Populate the translation keys for each candidate opp stage
+    const CASE_STAGE_GROUP = "CASE-STAGE";
+    ALL_FIELDS[CASE_STAGE_GROUP] = {};
+    for (const key of Object.keys(CandidateOpportunityStage)) {
+      ALL_FIELDS[CASE_STAGE_GROUP][key.toUpperCase()] = null;
+    }
 
     this.loading = true;
     this.languageService.listSystemLanguages().subscribe(

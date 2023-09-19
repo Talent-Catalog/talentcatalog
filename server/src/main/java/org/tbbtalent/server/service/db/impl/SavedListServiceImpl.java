@@ -925,8 +925,26 @@ public class SavedListServiceImpl implements SavedListService {
 
         String publishedSheetDataRangeName = googleDriveConfig.getPublishedSheetDataRangeName();
 
-        //Fetch candidates in list
-        List<Candidate> candidates = new ArrayList<>(savedList.getCandidates());
+        //Candidates to publish
+        List<Candidate> candidates;
+        SalesforceJobOpp sfJob = savedList.getSfJobOpp();
+        if (sfJob != null && 
+            request.getPublishClosedOpps() != null && !request.getPublishClosedOpps()) {
+            //For job lists where publishClosedOpps is false, filter out closed opps (unless they
+            //are "won" - we always publish won opps, which are a special kind of closed). 
+            candidates = savedList.getCandidates().stream().filter(
+                candidate -> {
+                    return candidate.getCandidateOpportunities().stream()
+                        .anyMatch(opp -> {
+                            return opp.getJobOpp().getId().equals(sfJob.getId()) 
+                                && (opp.isWon() || !opp.isClosed()); 
+                        });
+                }
+            ).toList();
+        } else {
+            //Publish all for non job lists, or job lists where we have been asked to publish all 
+            candidates = new ArrayList<>(savedList.getCandidates());
+        }
 
         //Create an empty doc - leaving room for the number of candidates
         String link = docPublisherService.createPublishedDoc(listFolder, savedList.getName(),

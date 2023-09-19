@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityReferencedException;
@@ -32,15 +33,11 @@ import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-citizenship")
-public class CandidateCitizenshipAdminApi 
-        implements IJoinedTableApi<CreateCandidateCitizenshipRequest,
-        CreateCandidateCitizenshipRequest,CreateCandidateCitizenshipRequest> {
-    private final CandidateCitizenshipService candidateCitizenshipService;
+@RequiredArgsConstructor
+public class CandidateCitizenshipAdminApi implements IJoinedTableApi<CreateCandidateCitizenshipRequest,
+        CreateCandidateCitizenshipRequest, CreateCandidateCitizenshipRequest> {
 
-    public CandidateCitizenshipAdminApi(
-            CandidateCitizenshipService candidateCitizenshipService) {
-        this.candidateCitizenshipService = candidateCitizenshipService;
-    }
+    private final CandidateCitizenshipService candidateCitizenshipService;
 
     /**
      * Creates a new candidate citizenship record from the data in the given 
@@ -52,12 +49,9 @@ public class CandidateCitizenshipAdminApi
      * that candidateId or no Nationality with the id given in the request  
      */
     @Override
-    public @NotNull Map<String, Object> create(
-            long candidateId, @Valid CreateCandidateCitizenshipRequest request) 
+    public @NotNull Map<String, Object> create(long candidateId, @Valid CreateCandidateCitizenshipRequest request)
             throws NoSuchObjectException {
-        CandidateCitizenship candidateCitizenship = 
-                this.candidateCitizenshipService
-                        .createCitizenship(candidateId, request);
+        CandidateCitizenship candidateCitizenship = candidateCitizenshipService.createCitizenship(candidateId, request);
         return candidateCitizenshipDto().build(candidateCitizenship);
     }
 
@@ -70,8 +64,7 @@ public class CandidateCitizenshipAdminApi
      * @throws InvalidRequestException if not authorized to delete this list.
      */
     @Override
-    public boolean delete(long id) 
-            throws EntityReferencedException, InvalidRequestException {
+    public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
         return candidateCitizenshipService.deleteCitizenship(id);
     }
     

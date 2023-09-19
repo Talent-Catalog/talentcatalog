@@ -16,6 +16,10 @@
 
 package org.tbbtalent.server.model.db;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -25,9 +29,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "candidate_note")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_note_id_seq", allocationSize = 1)
+@NoArgsConstructor
 public class CandidateNote extends AbstractAuditableDomainObject<Long>  {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,41 +43,8 @@ public class CandidateNote extends AbstractAuditableDomainObject<Long>  {
 
     private String title;
     private String comment;
+
     @Enumerated(EnumType.STRING)
     private NoteType noteType;
 
-    public CandidateNote() {
-    }
-
-    public Candidate getCandidate() {
-        return candidate;
-    }
-
-    public void setCandidate(Candidate candidate) {
-        this.candidate = candidate;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public NoteType getNoteType() {
-        return noteType;
-    }
-
-    public void setNoteType(NoteType noteType) {
-        this.noteType = noteType;
-    }
 }

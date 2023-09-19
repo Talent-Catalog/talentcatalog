@@ -223,6 +223,7 @@ export class ExportColumn {
 }
 
 export class PublishListRequest {
+  publishClosedOpps?: boolean;
   columns: PublishedDocColumnConfig[] = [];
 }
 

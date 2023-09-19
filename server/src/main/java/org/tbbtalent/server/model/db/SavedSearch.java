@@ -57,10 +57,6 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer minYrs;
     private Integer maxYrs;
 
-    private String verifiedOccupationIds;
-    @Enumerated(EnumType.STRING)
-    private SearchType verifiedOccupationSearchType;
-
     private String partnerIds;
     private String nationalityIds;
     @Enumerated(EnumType.STRING)
@@ -231,14 +227,6 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setMaxYrs(Integer maxYrs) { this.maxYrs = maxYrs; }
 
-    public String getVerifiedOccupationIds() {
-        return verifiedOccupationIds;
-    }
-
-    public void setVerifiedOccupationIds(String verifiedOccupationIds) {
-        this.verifiedOccupationIds = verifiedOccupationIds;
-    }
-
     public String getPartnerIds() {
         return partnerIds;
     }
@@ -253,14 +241,6 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setNationalityIds(String nationalityIds) {
         this.nationalityIds = nationalityIds;
-    }
-
-    public SearchType getVerifiedOccupationSearchType() {
-        return verifiedOccupationSearchType;
-    }
-
-    public void setVerifiedOccupationSearchType(SearchType verifiedOccupationSearchType) {
-        this.verifiedOccupationSearchType = verifiedOccupationSearchType;
     }
 
     public SearchType getNationalitySearchType() {

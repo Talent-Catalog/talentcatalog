@@ -17,6 +17,7 @@
 package org.tbbtalent.server.model.db;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -30,6 +31,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "candidate_citizenship")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_citizenship_id_seq", allocationSize = 1)
+@NoArgsConstructor
 public class CandidateCitizenship extends AbstractDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,9 +49,6 @@ public class CandidateCitizenship extends AbstractDomainObject<Long> {
     private Country nationality;
 
     private String notes;
-
-    public CandidateCitizenship() {
-    }
 
     public void populateIntakeData(
             @NonNull Candidate candidate, @NonNull Country nationality,

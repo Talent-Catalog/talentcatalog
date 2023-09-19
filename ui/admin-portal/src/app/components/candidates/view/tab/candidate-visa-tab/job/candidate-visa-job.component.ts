@@ -34,7 +34,7 @@ export class CandidateVisaJobComponent implements OnInit {
               private fb: FormBuilder) { }
 
   ngOnInit(): void {
-    if (this.visaCheckRecord.candidateVisaJobChecks.length > 0) {
+    if (this.hasJobChecks) {
       //If exists, get the last selected visa check from local storage. If nothing there, get the first one.
       const memoryIndex: number = this.localStorageService.get('VisaJobCheckIndex');
       if (memoryIndex) {
@@ -55,7 +55,7 @@ export class CandidateVisaJobComponent implements OnInit {
      * ELSE filter those jobs out from the jobs associated with their candidate opportunities
      * SO that we avoid double ups of visa job checks for the same job.
      */
-    if (!this.visaCheckRecord?.candidateVisaJobChecks) {
+    if (!this.hasJobChecks) {
       return this.candidate.candidateOpportunities.map(co => co.jobOpp);
     } else {
       /**
@@ -68,6 +68,14 @@ export class CandidateVisaJobComponent implements OnInit {
         .map(co => co.jobOpp)
         .filter(jo => !existingJobIds.includes(jo.id))
     }
+  }
+
+  get hasJobOpps() {
+    return this.candidate.candidateOpportunities?.length > 0;
+  }
+
+  get hasJobChecks() {
+    return this.visaCheckRecord?.candidateVisaJobChecks?.length > 0;
   }
 
   addJob() {

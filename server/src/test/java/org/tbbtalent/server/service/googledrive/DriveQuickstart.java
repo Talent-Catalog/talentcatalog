@@ -64,7 +64,7 @@ public class DriveQuickstart {
         }
         GoogleCredential credential = GoogleCredential.fromStream(in)
                 .createScoped(Collections.singleton(DriveScopes.DRIVE))
-                .createDelegated("candidates@talentbeyondboundaries.org");
+                .createDelegated("tcstorage@talentbeyondboundaries.org");
         return credential;
     }
 

@@ -80,6 +80,7 @@ public class CandidateVisaCheckAdminApi
                 .add("id")
                 .add("country", countryDto())
                 .add("assessmentNotes")
+                .add("candidateVisaJobChecks", candidateVisaJobDto())
                 ;
     }
 
@@ -87,6 +88,12 @@ public class CandidateVisaCheckAdminApi
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                ;
+    }
+
+    private DtoBuilder candidateVisaJobDto() {
+        return new DtoBuilder()
+                .add("id")
                 ;
     }
     

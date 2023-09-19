@@ -1,9 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from "../../../../../../../model/candidate";
-import {
-  CandidateOpportunity,
-  getCandidateOpportunityStageName
-} from "../../../../../../../model/candidate-opportunity";
+import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
+
+const STAGE_TRANSLATION_KEY_ROOT = 'CASE-STAGE.';
 
 @Component({
   selector: 'app-candidate-opp',
@@ -19,9 +18,14 @@ export class CandidateOppComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
-  get getCandidateOpportunityStageName() {
-    return getCandidateOpportunityStageName;
+  /**
+   * Given the key of a CandidateOpportunityStage enum, return the translation key which is
+   * used to display the meaning of this stage to candidates.
+   * @param enumStageNameKey Key name of CandidateOpportunityStage
+   * @return Translation key of stage description
+   */
+  getCandidateOpportunityStageTranslationKey(enumStageNameKey: string): string {
+    return STAGE_TRANSLATION_KEY_ROOT + enumStageNameKey.toUpperCase();
   }
 
   goBack() {

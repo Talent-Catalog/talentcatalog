@@ -16,7 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.UsernameTakenException;
@@ -29,42 +29,36 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 import java.util.List;
 import java.util.Map;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/candidate-language")
+@RequiredArgsConstructor
 public class CandidateLanguageAdminApi {
 
     private final CandidateLanguageService candidateLanguageService;
 
-    @Autowired
-    public CandidateLanguageAdminApi(CandidateLanguageService candidateLanguageService) {
-        this.candidateLanguageService = candidateLanguageService;
-    }
-
-
     @GetMapping("{id}/list")
     public List<Map<String, Object>> get(@PathVariable("id") long id) {
-        List<CandidateLanguage> candidateLanguages = this.candidateLanguageService.list(id);
+        List<CandidateLanguage> candidateLanguages = candidateLanguageService.list(id);
         return candidateLanguageDto().buildList(candidateLanguages);
     }
 
-    @PostMapping()
+    @PostMapping
     public Map<String, Object> create(@RequestBody CreateCandidateLanguageRequest request) throws UsernameTakenException {
-        CandidateLanguage candidateLanguage = this.candidateLanguageService.createCandidateLanguage(request);
+        CandidateLanguage candidateLanguage = candidateLanguageService.createCandidateLanguage(request);
         return candidateLanguageDto().build(candidateLanguage);
     }
 
-    @PutMapping()
+    @PutMapping
     public Map<String, Object> update(@RequestBody UpdateCandidateLanguageRequest request) {
-        CandidateLanguage candidateLanguage = this.candidateLanguageService.updateCandidateLanguage(request);
+        CandidateLanguage candidateLanguage = candidateLanguageService.updateCandidateLanguage(request);
         return candidateLanguageDto().build(candidateLanguage);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity delete(@PathVariable("id") Long id) {
-        this.candidateLanguageService.deleteCandidateLanguage(id);
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        candidateLanguageService.deleteCandidateLanguage(id);
         return ResponseEntity.ok().build();
     }
-
 
     private DtoBuilder candidateLanguageDto() {
         return new DtoBuilder()
