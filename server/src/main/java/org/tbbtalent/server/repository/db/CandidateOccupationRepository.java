@@ -43,11 +43,6 @@ public interface CandidateOccupationRepository extends JpaRepository<CandidateOc
     List<CandidateOccupation> findByOccupationId(@Param("occupationId") Long occupationId);
 
     @Query("select distinct o from CandidateOccupation co"
-            + " join co.occupation o "
-            + " where co.verified = true order by o.name asc")
-    List<Occupation> findAllVerifiedOccupations();
-
-    @Query("select distinct o from CandidateOccupation co"
             + " join co.occupation o order by o.name asc")
     List<Occupation> findAllOccupations();
 

@@ -31,7 +31,6 @@ import org.tbbtalent.server.repository.db.OccupationRepository;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
-import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.service.db.CandidateService;
@@ -88,9 +87,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         if (authService.hasAdminPrivileges(user.getRole())) {
             candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
-            // Set verified if request coming from admin user
-            candidateOccupation.setVerified(request.isVerified());
-
             candidateOccupation.setAuditFields(user);
         } else {
             candidate = authService.getLoggedInCandidate();
@@ -159,12 +155,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     @Override
     public List<CandidateOccupation> listCandidateOccupations(Long candidateId) {
         return candidateOccupationRepository.findByCandidateId(candidateId);
-    }
-
-    @Override
-    public List<Occupation> listVerifiedOccupations() {
-        List<Occupation> verifiedOccupations = candidateOccupationRepository.findAllVerifiedOccupations();
-        return verifiedOccupations;
     }
 
     @Override
@@ -251,13 +241,12 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     }
 
     @Override
-    //@Audit(type = AuditType.CANDIDATE_OCCUPATION, action = AuditAction.VERIFY, extraInfo = "Set verified to {input.verified} with comment: {input.comment}")
-    public CandidateOccupation verifyCandidateOccupation(VerifyCandidateOccupationRequest request) {
+    public CandidateOccupation updateCandidateOccupation(UpdateCandidateOccupationRequest request) {
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getId()));
 
-        // Load the verified occupation from the database - throw an exception if not found
-        Occupation verifiedOccupation = occupationRepository.findById(request.getOccupationId())
+        // Load the occupation from the database - throw an exception if not found
+        Occupation occupationToBeUpdated = occupationRepository.findById(request.getOccupationId())
                 .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
 
         // Check candidate doesn't already have this occupation and isn't the same candidateOccupation
@@ -266,9 +255,8 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             throw new EntityExistsException("occupation");
         }
 
-        candidateOccupation.setOccupation(verifiedOccupation);
+        candidateOccupation.setOccupation(occupationToBeUpdated);
         candidateOccupation.setYearsExperience(request.getYearsExperience());
-        candidateOccupation.setVerified(request.isVerified());
 
         candidateOccupation.setAuditFields(authService.getLoggedInUser().orElse(null));
 
