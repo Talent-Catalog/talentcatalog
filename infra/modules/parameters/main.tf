@@ -124,12 +124,6 @@ resource "aws_ssm_parameter" "m2_home" {
   value = var.m2_home
 }
 
-resource "aws_ssm_parameter" "sf_privatekey" {
-  name  = "/${var.app}/${var.env}/SALESFORCE_PRIVATEKEY"
-  type  = "SecureString"
-  value = var.sf_privatekey
-}
-
 resource "aws_ssm_parameter" "server_port" {
   name  = "/${var.app}/${var.env}/SERVER_PORT"
   type  = "String"
@@ -140,6 +134,42 @@ resource "aws_ssm_parameter" "server_url" {
   name  = "/${var.app}/${var.env}/SERVER_URL"
   type  = "String"
   value = var.server_url
+}
+
+resource "aws_ssm_parameter" "sf_base_classic_url" {
+  name  = "/${var.app}/${var.env}/SF_BASE_CLASSIC_URL"
+  type  = "String"
+  value = var.sf_base_classic_url
+}
+
+resource "aws_ssm_parameter" "sf_base_lightning_url" {
+  name  = "/${var.app}/${var.env}/SF_BASE_LIGHTNING_URL"
+  type  = "String"
+  value = var.sf_base_lightning_url
+}
+
+resource "aws_ssm_parameter" "sf_base_login_url" {
+  name  = "/${var.app}/${var.env}/SF_BASE_LOGIN_URL"
+  type  = "String"
+  value = var.sf_base_login_url
+}
+
+resource "aws_ssm_parameter" "sf_consumer_key" {
+  name  = "/${var.app}/${var.env}/SF_CONSUMER_KEY"
+  type  = "SecureString"
+  value = var.sf_consumer_key
+}
+
+resource "aws_ssm_parameter" "sf_private_key" {
+  name  = "/${var.app}/${var.env}/SF_PRIVATE_KEY"
+  type  = "SecureString"
+  value = var.sf_private_key
+}
+
+resource "aws_ssm_parameter" "sf_user" {
+  name  = "/${var.app}/${var.env}/SF_USER"
+  type  = "SecureString"
+  value = var.sf_user
 }
 
 resource "aws_ssm_parameter" "slack_token" {

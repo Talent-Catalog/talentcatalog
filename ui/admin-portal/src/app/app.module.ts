@@ -15,7 +15,7 @@
  */
 
 import {BrowserModule, Title} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 import {DatePipe, TitleCasePipe} from '@angular/common';
@@ -507,6 +507,7 @@ import {
   OccupationSubcategoryComponent
 } from './components/candidates/visa/visa-job-assessments/occupation-subcategory/occupation-subcategory.component';
 import {DirectiveModule} from "./directives/directive.module";
+import {EnvService} from "./services/env.service";
 
 @NgModule({
   declarations: [
@@ -827,6 +828,7 @@ import {DirectiveModule} from "./directives/directive.module";
     {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
+    {provide: APP_INITIALIZER, useFactory: (envService: EnvService) => () => envService.init(), deps: [EnvService], multi: true},
     AuthService,
     RoleGuardService,
     Title,
