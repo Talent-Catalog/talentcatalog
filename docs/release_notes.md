@@ -42,7 +42,7 @@ integration processes.
   
 ### UX / UI Enhancements
 
-- Introduced a dedicated candidate opportunities page, providing users with a visual interface for viewing individual 
+- Introduced a dedicated candidate opportunities page, providing users with an interface for viewing individual 
 opportunities.
 - Revamped job icons and introduced the term 'Cases' to refer to Candidate Opportunities, making the terminology more 
 intuitive and aligned with admin user expectations.
