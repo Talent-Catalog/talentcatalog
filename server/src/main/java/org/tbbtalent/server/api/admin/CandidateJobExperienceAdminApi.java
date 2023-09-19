@@ -16,7 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,18 +33,15 @@ import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-job-experience")
+@RequiredArgsConstructor
 public class CandidateJobExperienceAdminApi {
 
     private final CandidateJobExperienceService candidateJobExperienceService;
 
-    @Autowired
-    public CandidateJobExperienceAdminApi(CandidateJobExperienceService candidateJobExperienceService) {
-        this.candidateJobExperienceService = candidateJobExperienceService;
-    }
-
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchJobExperienceRequest request) {
-        Page<CandidateJobExperience> candidateJobExperiences = this.candidateJobExperienceService.searchCandidateJobExperience(request);
+        Page<CandidateJobExperience> candidateJobExperiences =
+                candidateJobExperienceService.searchCandidateJobExperience(request);
         return candidateJobExperienceDto().buildPage(candidateJobExperiences);
     }
 
@@ -52,19 +49,21 @@ public class CandidateJobExperienceAdminApi {
     public Map<String, Object> create(@Valid @PathVariable("id") Long candidateId,
                                       @RequestBody CreateJobExperienceRequest request) throws EntityExistsException {
         request.setCandidateId(candidateId);
-        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.createCandidateJobExperience(request);
+        CandidateJobExperience candidateJobExperience =
+                candidateJobExperienceService.createCandidateJobExperience(request);
         return candidateJobExperienceDto().build(candidateJobExperience);
     }
 
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") Long id,
                                       @RequestBody UpdateJobExperienceRequest request) {
-        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.updateCandidateJobExperience(id, request);
+        CandidateJobExperience candidateJobExperience =
+                candidateJobExperienceService.updateCandidateJobExperience(id, request);
         return candidateJobExperienceDto().build(candidateJobExperience);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         candidateJobExperienceService.deleteCandidateJobExperience(id);
         return ResponseEntity.ok().build();
     }

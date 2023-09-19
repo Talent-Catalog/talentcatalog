@@ -16,6 +16,10 @@
 
 package org.tbbtalent.server.model.db;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -23,9 +27,12 @@ import javax.persistence.Enumerated;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "occupation")
 @SequenceGenerator(name = "seq_gen", sequenceName = "occupation_id_seq", allocationSize = 1)
+@NoArgsConstructor
 public class Occupation extends AbstractTranslatableDomainObject<Long> {
 
     @Column(name = "isco08_code")
@@ -34,27 +41,9 @@ public class Occupation extends AbstractTranslatableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public Occupation() {
-    }
-
     public Occupation(String name, Status status) {
         setName(name);
         this.status = status;
     }
 
-    public String getIsco08Code() {
-        return isco08Code;
-    }
-
-    public void setIsco08Code(String isco08Code) {
-        this.isco08Code = isco08Code;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 }

@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityReferencedException;
@@ -32,15 +33,12 @@ import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-destination")
-public class CandidateDestinationAdminApi
-        implements IJoinedTableApi<CreateCandidateDestinationRequest,
-        CreateCandidateDestinationRequest,CreateCandidateDestinationRequest> {
-    private final CandidateDestinationService candidateDestinationService;
+@RequiredArgsConstructor
+public class CandidateDestinationAdminApi implements IJoinedTableApi<CreateCandidateDestinationRequest,
+                                                                     CreateCandidateDestinationRequest,
+                                                                     CreateCandidateDestinationRequest> {
 
-    public CandidateDestinationAdminApi(
-            CandidateDestinationService candidateDestinationService) {
-        this.candidateDestinationService = candidateDestinationService;
-    }
+    private final CandidateDestinationService candidateDestinationService;
 
     /**
      * Creates a new candidate destination record from the data in the given
@@ -52,12 +50,9 @@ public class CandidateDestinationAdminApi
      * that candidateId or no Nationality with the id given in the request
      */
     @Override
-    public @NotNull Map<String, Object> create(
-            long candidateId, @Valid CreateCandidateDestinationRequest request)
+    public @NotNull Map<String, Object> create(long candidateId, @Valid CreateCandidateDestinationRequest request)
             throws NoSuchObjectException {
-        CandidateDestination candidateDestination =
-                this.candidateDestinationService
-                        .createDestination(candidateId, request);
+        CandidateDestination candidateDestination = candidateDestinationService.createDestination(candidateId, request);
         return candidateDestinationDto().build(candidateDestination);
     }
 
@@ -70,8 +65,7 @@ public class CandidateDestinationAdminApi
      * @throws InvalidRequestException if not authorized to delete this list.
      */
     @Override
-    public boolean delete(long id)
-            throws EntityReferencedException, InvalidRequestException {
+    public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
         return candidateDestinationService.deleteDestination(id);
     }
 

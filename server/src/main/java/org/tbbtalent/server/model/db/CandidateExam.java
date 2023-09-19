@@ -25,6 +25,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -32,6 +33,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "candidate_exam")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_exam_id_seq", allocationSize = 1)
+@NoArgsConstructor
 public class CandidateExam extends AbstractDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,6 +51,4 @@ public class CandidateExam extends AbstractDomainObject<Long> {
 
     private String notes;
 
-    public CandidateExam() {
-    }
 }

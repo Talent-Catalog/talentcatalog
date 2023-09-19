@@ -5,7 +5,7 @@
 
   <div class="col-6">
     <div class="row">
-      <div class="col text-end">
+      <div *ngIf="hasJobChecks" class="col text-end">
         <button (click)="visaJobCanada.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
         <button (click)="visaJobCanada.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
       </div>
@@ -22,8 +22,7 @@
   </div>
 </div>
 
-<ngb-accordion #visaJobCanada="ngbAccordion" [destroyOnHide]="false">
-
+<ngb-accordion *ngIf="hasJobChecks" #visaJobCanada="ngbAccordion" [destroyOnHide]="false">
   <ngb-panel id="occupation-eligibility" title="Occupation Eligibility">
     <ng-template ngbPanelContent>
       <app-occupation-category
@@ -55,10 +54,10 @@
     <ng-template ngbPanelTitle>
       <p class="mb-0">Pathway Eligibility
         <span class="small fw-light fst-italic">
-          <a [href]="pathwaysInfoLink" target="_blank">
-            (For more information on the pathways click here <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>)
-          </a>
-        </span>
+        <a [href]="pathwaysInfoLink" target="_blank">
+          (For more information on the pathways click here <i class="fas fa-external-link-alt" title="Show in new tab"></i>)
+        </a>
+      </span>
       </p>
     </ng-template>
     <ng-template ngbPanelContent>
@@ -129,25 +128,30 @@
           <div *ngIf="candOccupations?.length == 0">
             <p>No experience entered</p>
           </div>
+          <hr>
         </div>
         <div>
           <div class="card-title">Language exams</div>
-          <div *ngIf="candidateIntakeData.candidateExams.length == 0">
-            <p>No exams entered</p>
+          <div *ngIf="candidateIntakeData.candidateExams?.length > 0; else noLang">
+            <ul>
+              <li *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
+                <p class="mb-0">{{ce?.exam}}<span *ngIf="ce.otherExam">, </span>{{ce.otherExam}}: {{ce?.score}}<span *ngIf="ce.year"> ({{ce?.year}})</span>
+                </p>
+              </li>
+            </ul>
           </div>
-          <ul>
-            <li *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
-              <p class="mb-0">{{ce?.exam}}<span *ngIf="ce.otherExam">, </span>{{ce.otherExam}}: {{ce?.score}}<span *ngIf="ce.year"> ({{ce?.year}})</span>
-              </p>
-            </li>
-          </ul>
+          <ng-template #noLang>
+            <p>No exams entered</p>
+          </ng-template>
+
           <div class="card-title">Estimated IELTS Score: <span>{{candidateIntakeData.langAssessmentScore}}</span></div>
           <div class="card-title">Partner IELTS Score: <span>{{candidateIntakeData.partnerIeltsScore}}</span></div>
+          <hr>
         </div>
         <div>
           <div class="card-title">Education</div>
           <!-- Display All Candidate Qualifications   -->
-          <div *ngIf="candQualifications?.length > 0">
+          <div *ngIf="candQualifications?.length > 0; else noQual">
             <ul>
               <li class="display" *ngFor="let edu of candQualifications">
                 <app-fixed-input
@@ -163,9 +167,9 @@
               </li>
             </ul>
           </div>
-          <div *ngIf="candQualifications?.length == 0">
+          <ng-template #noQual>
             <p>No qualifications entered</p>
-          </div>
+          </ng-template>
         </div>
       </div>
 
@@ -203,7 +207,7 @@
     <ng-template ngbPanelContent>
       <div class="card card-body intake-data">
         <app-fixed-input [question]="'Marital status'" [answer]="candidateIntakeData?.maritalStatus"></app-fixed-input>
-        <app-fixed-input [question]="'Spouse\'s highest level education'" [answer]="candidateIntakeData?.partnerEduLevel.name"></app-fixed-input>
+        <app-fixed-input [question]="'Spouse\'s highest level education'" [answer]="candidateIntakeData?.partnerEduLevel?.name"></app-fixed-input>
         <app-fixed-input [question]="'Did spouse take IELTS?'" [answer]="partnerIeltsString"></app-fixed-input>
         <hr>
         <div>
@@ -219,7 +223,16 @@
   </ngb-panel>
   <ngb-panel id="final-assessment" title="Final Assessment">
     <ng-template ngbPanelContent>
-      TBC
+      <app-visa-job-put-forward
+        [entity]="candidate"
+        [visaCheckRecord]="visaCheckRecord"
+        [selectedJobCheck]="selectedJobCheck">
+      </app-visa-job-put-forward>
+      <app-visa-job-notes
+        [entity]="candidate"
+        [visaCheckRecord]="visaCheckRecord"
+        [selectedJobCheck]="selectedJobCheck">
+      </app-visa-job-notes>
     </ng-template>
   </ngb-panel>
 

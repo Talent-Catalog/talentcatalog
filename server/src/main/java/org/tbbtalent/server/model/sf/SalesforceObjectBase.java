@@ -30,7 +30,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public abstract class SalesforceObjectBase {
-  static final String urlRoot = "https://talentbeyondboundaries.lightning.force.com/lightning/r/";
+  static final String urlMiddle = "/lightning/r/";
   static final String urlSuffix = "/view";
 
   /**
@@ -45,10 +45,10 @@ public abstract class SalesforceObjectBase {
    */
   abstract String getSfObjectName();
 
-  public String getUrl() {
+  public String getUrl(String baseLightningUrl) {
     String url = null;
     if (id != null) {
-      url = urlRoot + getSfObjectName() + "/" + id + urlSuffix;
+      url = baseLightningUrl + urlMiddle + getSfObjectName() + "/" + id + urlSuffix;
     }
     return url;
   }

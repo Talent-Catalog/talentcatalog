@@ -21,7 +21,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,30 +40,26 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-occupation")
+@RequiredArgsConstructor
 public class CandidateOccupationAdminApi {
 
     private final CandidateOccupationService candidateOccupationService;
 
-    @Autowired
-    public CandidateOccupationAdminApi(CandidateOccupationService candidateOccupationService) {
-        this.candidateOccupationService = candidateOccupationService;
-    }
-
     @GetMapping("verified")
     public List<Map<String, Object>> getVerifiedOccupations() {
-        List<Occupation> candidateOccupations = this.candidateOccupationService.listVerifiedOccupations();
+        List<Occupation> candidateOccupations = candidateOccupationService.listVerifiedOccupations();
         return occupationDto().buildList(candidateOccupations);
     }
 
     @GetMapping("occupation")
     public List<Map<String, Object>> getAllOccupations() {
-        List<Occupation> candidateOccupations = this.candidateOccupationService.listOccupations();
+        List<Occupation> candidateOccupations = candidateOccupationService.listOccupations();
         return occupationDto().buildList(candidateOccupations);
     }
 
     @GetMapping("{id}/list")
     public List<Map<String, Object>> get(@PathVariable("id") long candidateId) {
-        List<CandidateOccupation> candidateOccupations = this.candidateOccupationService.listCandidateOccupations(candidateId);
+        List<CandidateOccupation> candidateOccupations = candidateOccupationService.listCandidateOccupations(candidateId);
         return candidateOccupationDto().buildList(candidateOccupations);
     }
 
@@ -71,20 +67,20 @@ public class CandidateOccupationAdminApi {
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @RequestBody VerifyCandidateOccupationRequest request) {
         request.setId(id);
-        CandidateOccupation candidateOccupation = this.candidateOccupationService.verifyCandidateOccupation(request);
+        CandidateOccupation candidateOccupation = candidateOccupationService.verifyCandidateOccupation(request);
         return candidateOccupationDto().build(candidateOccupation);
     }
 
     @PostMapping("{id}")
     public Map<String, Object> create(@Valid @PathVariable("id") Long candidateId,
-                                                         @Valid @RequestBody CreateCandidateOccupationRequest request) {
+                                      @Valid @RequestBody CreateCandidateOccupationRequest request) {
         request.setCandidateId(candidateId);
         CandidateOccupation candidateOccupation = candidateOccupationService.createCandidateOccupation(request);
         return candidateOccupationDto().build(candidateOccupation);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         candidateOccupationService.deleteCandidateOccupation(id);
         return ResponseEntity.ok().build();
     }

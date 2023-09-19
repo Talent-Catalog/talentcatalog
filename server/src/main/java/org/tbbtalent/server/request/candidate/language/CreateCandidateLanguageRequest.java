@@ -15,8 +15,12 @@
  */
 
 package org.tbbtalent.server.request.candidate.language;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
+@Getter
+@Setter
 public class CreateCandidateLanguageRequest {
     //todo make subclass? But then need two different methods in service taking in two different requests
     /**
@@ -30,21 +34,4 @@ public class CreateCandidateLanguageRequest {
     private Long writtenLevelId;
     private Long spokenLevelId;
 
-    @Nullable
-    public Long getCandidateId() { return candidateId; }
-
-    public void setCandidateId(@Nullable Long candidateId) { this.candidateId = candidateId; }
-
-    public Long getLanguageId() { return languageId; }
-
-    public void setLanguageId(Long languageId) { this.languageId = languageId; }
-
-    public Long getWrittenLevelId() { return writtenLevelId; }
-
-    public void setWrittenLevelId(Long writtenLevelId) { this.writtenLevelId = writtenLevelId; }
-
-    public Long getSpokenLevelId() { return spokenLevelId; }
-
-    public void setSpokenLevelId(Long spokenLevelId) { this.spokenLevelId = spokenLevelId;
-    }
 }

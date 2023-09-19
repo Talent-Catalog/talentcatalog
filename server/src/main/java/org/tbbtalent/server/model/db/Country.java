@@ -27,6 +27,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -34,6 +35,7 @@ import lombok.Setter;
 @SequenceGenerator(name = "seq_gen", sequenceName = "country_id_seq", allocationSize = 1)
 @Getter
 @Setter
+@NoArgsConstructor
 public class Country extends AbstractTranslatableDomainObject<Long> {
 
     /**
@@ -46,9 +48,6 @@ public class Country extends AbstractTranslatableDomainObject<Long> {
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sourceCountries")
     Set<User> users = new HashSet<>();
-
-    public Country() {
-    }
 
     public Country(String name, Status status) {
         setName(name);

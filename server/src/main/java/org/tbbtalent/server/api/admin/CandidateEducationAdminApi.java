@@ -16,7 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.UsernameTakenException;
@@ -31,37 +31,32 @@ import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-education")
+@RequiredArgsConstructor
 public class CandidateEducationAdminApi {
 
     private final CandidateEducationService candidateEducationService;
 
-    @Autowired
-    public CandidateEducationAdminApi(CandidateEducationService candidateEducationService) {
-        this.candidateEducationService = candidateEducationService;
-    }
-
-
     @GetMapping("{id}/list")
     public List<Map<String, Object>> get(@PathVariable("id") long id) {
-        List<CandidateEducation> candidateEducations = this.candidateEducationService.list(id);
+        List<CandidateEducation> candidateEducations = candidateEducationService.list(id);
         return candidateEducationDto().buildList(candidateEducations);
     }
 
     @PostMapping()
     public Map<String, Object> create(@RequestBody CreateCandidateEducationRequest request) throws UsernameTakenException {
-        CandidateEducation candidateEducation = this.candidateEducationService.createCandidateEducation(request);
+        CandidateEducation candidateEducation = candidateEducationService.createCandidateEducation(request);
         return candidateEducationDto().build(candidateEducation);
     }
 
     @PutMapping()
     public Map<String, Object> update(@RequestBody UpdateCandidateEducationRequest request) {
-        CandidateEducation candidateEducation = this.candidateEducationService.updateCandidateEducation(request);
+        CandidateEducation candidateEducation = candidateEducationService.updateCandidateEducation(request);
         return candidateEducationDto().build(candidateEducation);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity delete(@PathVariable("id") Long id) {
-        this.candidateEducationService.deleteCandidateEducation(id);
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        candidateEducationService.deleteCandidateEducation(id);
         return ResponseEntity.ok().build();
     }
 

@@ -16,6 +16,11 @@
 
 package org.tbbtalent.server.request.candidate.language;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class UpdateCandidateLanguageRequest {
 
     private Long id;
@@ -23,19 +28,4 @@ public class UpdateCandidateLanguageRequest {
     private Long writtenLevelId;
     private Long spokenLevelId;
 
-    public Long getId() { return id; }
-
-    public void setId(Long id) { this.id = id; }
-
-    public Long getLanguageId() { return languageId; }
-
-    public void setLanguageId(Long languageId) { this.languageId = languageId; }
-
-    public Long getWrittenLevelId() { return writtenLevelId; }
-
-    public void setWrittenLevelId(Long writtenLevelId) { this.writtenLevelId = writtenLevelId; }
-
-    public Long getSpokenLevelId() { return spokenLevelId; }
-
-    public void setSpokenLevelId(Long spokenLevelId) { this.spokenLevelId = spokenLevelId; }
 }
