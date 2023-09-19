@@ -49,8 +49,6 @@ public class CandidateOccupation extends AbstractAuditableDomainObject<Long> {
 
     private Long yearsExperience;
 
-    private boolean verified;
-
     private Boolean topCandidate;
 
     private String migrationOccupation;

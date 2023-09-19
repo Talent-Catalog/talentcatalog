@@ -21,8 +21,8 @@ import java.util.List;
 import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
+import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
-import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
 
 public interface CandidateOccupationService {
 
@@ -34,13 +34,10 @@ public interface CandidateOccupationService {
 
     List<CandidateOccupation> listCandidateOccupations(Long candidateId);
 
-    /* Lists only verified occupations */
-    List<Occupation> listVerifiedOccupations();
-
-    /* Lists all occupations elected by candidates, regardless of verified flag */
+    /* Lists all occupations selected by candidates */
     List<Occupation> listOccupations();
 
     List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request);
 
-    CandidateOccupation verifyCandidateOccupation(VerifyCandidateOccupationRequest request);
+    CandidateOccupation updateCandidateOccupation(UpdateCandidateOccupationRequest request);
 }

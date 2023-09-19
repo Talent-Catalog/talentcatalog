@@ -25,8 +25,6 @@ export interface SearchCandidateRequest {
   statuses?: string[];
   occupationIds?: number[];
   orProfileKeyword?: string;
-  verifiedOccupationIds?: number[];
-  verifiedOccupationSearchType?: string;
   partnerIds?: number[];
   nationalityIds?: number[];
   nationalitySearchType?: string;
