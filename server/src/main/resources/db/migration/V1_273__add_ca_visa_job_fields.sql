@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,4 +13,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-alter table users add column job_creator boolean not null default false;
+
+alter table candidate_visa_job_check add column relevant_work_exp text;
+alter table candidate_visa_job_check add column age_requirement text;
+alter table candidate_visa_job_check add column preferred_pathways text;
+alter table candidate_visa_job_check add column ineligible_pathways text;
+alter table candidate_visa_job_check add column eligible_pathways text;
+alter table candidate_visa_job_check add column occupation_category text;
+alter table candidate_visa_job_check add column occupation_sub_category text;
