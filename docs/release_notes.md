@@ -65,12 +65,12 @@ intuitive and aligned with admin user expectations.
 - Implemented strong visual indicators to clearly distinguish between production, staging, and local environments, 
 reducing the risk of accidental actions in the wrong environment.
 - Established dedicated Google storage credentials, ensuring secure access and authentication for storage operations.
+- Addressed an issue where candidate profile audit fields were not updating correctly, ensuring accurate audit tracking
+  of profile changes.
 
 
 ### Bug Fixes
 
-- Addressed an issue where candidate profile audit fields were not updating correctly, ensuring accurate audit tracking 
-of profile changes.
 - Resolved an issue where deleting a referrer in a new search would not properly clear and reset the search field, 
 improving search functionality.
 - Conducted data cleanup in Salesforce to handle opportunities with country names abbreviated as 'CA' (instead of 
