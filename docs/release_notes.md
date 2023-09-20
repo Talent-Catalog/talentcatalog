@@ -69,7 +69,7 @@ sass:
 }
 </style>
 
-### Version 2.1.0 (September 29, 2023)
+# Version 2.1.0 (September 29, 2023)
 
 Check out the newest features and enhancements.
 
