@@ -4,40 +4,83 @@ sass:
   style: compressed
 ---
 
+<style>
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.card {
+  width: calc(33.33% - 16px);
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: inherit;
+}
+
+.card:hover {
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.card-description {
+  font-size: 1em;
+  color: #555;
+}
+
+.card-image {
+  max-width: 100%;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+</style>
+
 # Release Notes
 
 ## Version 2.1.0 (September 29, 2023)
 
 ### New Features
 
-#### Canada Visa Eligibility Checks
+<div class="card-container">
 
-- Introduced comprehensive Canada visa eligibility support, encompassing initial checks, job-specific questions, and 
-standardized final assessment criteria. This marks the first iteration of this functionality, which will now be extended 
-to other regions.
+<a href="./v210/visa_eligibility_details.md" class="card">
+  <img src="./assets/images/v210/CanadaVisaChecks.png" alt="Visa Eligibility" class="card-image">
+  <div class="card-title">Canada Visa Eligibility Checks</div>
+</a>
 
-#### Integrated Support for Candidate Opportunities
+<a href="./v210/candidate_opportunities.md" class="card">
+  <img src="./assets/images/v210/CandidateOpportunities.png" alt="Job Opportunities" class="card-image">
+  <div class="card-title">Integrated Support for Candidate Opportunities</div>
+</a>
 
-- Admin portal now supports tracking candidate opportunities, providing TC administrators with a more streamlined 
-experience.
-- Candidates can now view relevant job listings directly from their candidate portal.
-- Implemented robust support for reporting on various stages in the candidate opportunity lifecycle, enhancing 
-end-to-end workflow.
+<a href="./v210/enhanced_search.md" class="card">
+  <img src="./assets/images/v210/EnhancedSearch.png" alt="Final Assessment" class="card-image">
+  <div class="card-title">Enhanced Search</div>
+</a>
+
+</div>
+
+
+
+
+
+
 
 #### Recruiter Access Related Enhancements
 
 - Added back-end functionality to support default destination and source partners, simplifying partner management and 
 integration processes.
-
-#### Enhanced Search
-
-- Enhanced elastic search capabilities by extending support to include all search fields, including other languages,
-  occupation, education level, and education major. This allows users to perform more versatile and precise searches.
-- Improved search accuracy by making the referrer field case-insensitive in new searches.
-- Clarified selections for other languages in new searches, for easier user understanding and navigation.
-- Renamed Elasticsearch label to 'Keyword Search' in the new search screen, accompanied by tool tips for improved search
-  guidance.
-- Enhanced visibility of the search button on the New Search screen, improving accessibility and user interaction.
 
   
 ### UX / UI Enhancements
