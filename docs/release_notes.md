@@ -32,7 +32,7 @@ sass:
 
 .card-title {
   font-size: 1.2em;
-  font-weight: bold;
+  font-weight: normal;
   margin-bottom: 8px;
 }
 
