@@ -42,6 +42,12 @@ sass:
   margin-bottom: 12px;
 }
 
+.card-description {
+  font-size: 1em;
+  color: #555;
+  flex-grow: 1;
+}
+
 @media screen and (max-width: 768px) {
   .card {
     width: 100%;
@@ -59,7 +65,7 @@ sass:
 
   <a href="./v210/candidate_opportunities" class="card">
     <img src="./assets/images/v210/CandidateOpportunities.png" alt="Job Opportunities" class="card-image">
-    <div class="card-title">Integrated Support for Candidate Opportunities</div>
+    <div class="card-title">Integrated Support for Candidate Case Management</div>
   </a>
   
   <a href="./v210/enhanced_search" class="card">
@@ -84,13 +90,32 @@ sass:
 </div>
 
   
-## UX / UI Enhancements
+## UI / UX Enhancements
 
-- Introduced a dedicated candidate opportunities page, providing users with an interface for viewing individual 
-opportunities.
+<div class="card-container">
+
+  <div class="card">
+    <img src="./assets/images/v210/CandidateOpportunitiesTab.png" alt="Candidate Opportunities Tab" class="card-image">
+    <div class="card-title">Candidate Opportunities Tab</div>
+    <div class="card-description">
+      Dedicated candidate opportunities tab, providing administrators with a convenient interface for viewing an 
+      individual candidate's job opportunities and history.
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="./assets/images/v210/EnlargedSidebarProfiles.png" alt="Enlarged Sidebar" class="card-image">
+    <div class="card-title">Enlarged Sidebar Profiles</div>
+    <div class="card-description">
+      Enhanced candidate sidebar profiles for improved readability and user-friendly navigation within the candidate 
+      lists view, now also featuring a convenient CV preview feature.
+    </div>
+  </div>
+
+</div>
+
 - Revamped job icons and introduced the term 'Cases' to refer to Candidate Opportunities, making the terminology more 
 intuitive and aligned with admin user expectations.
-- Enlarged candidate sidebar profiles for improved readability and ease of use within candidate lists view.
 - Fixed side column overlap issues in specific screens, ensuring a consistent and visually appealing user experience.
 - Mapped job stage codes to their corresponding full stage names in job view, providing clearer context for users.
 - Implemented scrollable list sidebars, enhancing navigation and usability in lists with extensive content.
