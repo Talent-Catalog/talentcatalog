@@ -65,7 +65,7 @@ sass:
 
   <a href="./v210/candidate_opportunities" class="card">
     <img src="./assets/images/v210/CandidateOpportunities.png" alt="Job Opportunities" class="card-image">
-    <div class="card-title">Integrated Support for Candidate Case Management</div>
+    <div class="card-title">Candidate Case Management</div>
   </a>
   
   <a href="./v210/enhanced_search" class="card">
