@@ -20,7 +20,7 @@ sass:
 # Integrated Support for Candidate Opportunities
 
 <div class="card-image-container">
-  ![Candidate Opportunities](./../assets/images/v210/CandidateOpportunities.png){: .card-image }
+  <img src="./../assets/images/v210/CandidateOpportunities.png" alt="Job Opportunities" class="card-image">
 </div>
 
 - Admin portal now supports tracking candidate opportunities, providing TC administrators with a more streamlined
