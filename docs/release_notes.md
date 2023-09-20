@@ -69,11 +69,11 @@ sass:
 }
 </style>
 
-# Version 2.1.0 (September 29, 2023)
+## Version 2.1.0 (September 29, 2023)
 
 Check out the newest features and enhancements.
 
-## New Features
+# New Features
 
 <div class="card-container">
 
@@ -110,7 +110,7 @@ Check out the newest features and enhancements.
   user testing environment.
 
   
-## UI / UX Enhancements
+# UI / UX Enhancements
 
 <div class="card-container">
 
@@ -134,7 +134,7 @@ Check out the newest features and enhancements.
 
 </div>
 
-### Other UI / UX Enhancements 
+## Other UI / UX Enhancements 
 
 - Revamped job icons and introduced the term 'Cases' to refer to Candidate Opportunities, making the terminology more 
 intuitive and aligned with admin user expectations.
@@ -144,7 +144,7 @@ intuitive and aligned with admin user expectations.
 - Streamlined job creation by removing unnecessary Red Alert notifications.
 
 
-## Security Fixes
+# Security Fixes
 
 - Implemented strong visual indicators to clearly distinguish between production, staging, and local environments, 
 reducing the risk of accidental actions in the wrong environment.
@@ -153,7 +153,7 @@ reducing the risk of accidental actions in the wrong environment.
   of profile changes.
 
 
-## Bug Fixes
+# Bug Fixes
 
 - Resolved an issue where deleting a referrer in a new search would not properly clear and reset the search field, 
 improving search functionality.
@@ -165,27 +165,27 @@ improving search functionality.
 - Fixed a bug where deleting a candidate's language from their profile would log the user out.
 
 
-## Developer Notes
+# Developer Notes
 
-### Test Coverage
+## Test Coverage
 
 - Expanded unit test coverage across various components, including AuthAdminApi, BrandingAdminApi, CandidateAdminApi, 
 and more, ensuring more robust test coverage and code quality.
 
-### Code Refactoring
+## Code Refactoring
 - Refactored common code elements shared between job and candidate opportunities, reducing redundancy and improving
   code maintainability.
 - Flattened partner classes to accommodate partners that serve as both source partners and job creators, streamlining
   future recruiter partner integration.
 
-### Continuous Integration & Deployment
+## Continuous Integration & Deployment
 - Successfully transitioned the GitHub repository to an organisation account, aligning with the need for multiple
   administrator accounts.
 - Enforced protection rules for master and staging branches, enhancing code integrity and preventing unauthorised or 
 accidental changes.
 - Decoupled Jib deployment in Gradle build steps, improving build efficiency, safety and flexibility.
 
-### Cloud Enhancements
+## Cloud Enhancements
 - Increased AWS cloud CPU allocation to 0.5 per task, optimising resource allocation for improved performance and system
   stability.
 - Enabled AWS application load balancer logs for Amazon support team, facilitating easier troubleshooting and support.
