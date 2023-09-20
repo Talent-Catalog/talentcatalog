@@ -93,7 +93,7 @@ Check out the newest features and enhancements.
 
   <a href="./v210/visa_eligibility_details" class="card">
     <img src="./assets/images/v210/CanadaVisaChecks.png" alt="Visa Eligibility" class="card-image">
-    <div class="card-title">Canada Visa Eligibility Checks</div>
+    <div class="card-title">Visa Eligibility Checks</div>
   </a>
 
   <a href="./v210/recruiter_access_related_enhancements" class="card">
