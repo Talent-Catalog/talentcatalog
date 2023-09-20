@@ -22,6 +22,8 @@ sass:
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-decoration: none;
   color: inherit;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
@@ -32,11 +34,6 @@ sass:
   font-size: 1.2em;
   font-weight: bold;
   margin-bottom: 8px;
-}
-
-.card-description {
-  font-size: 1em;
-  color: #555;
 }
 
 .card-image {
@@ -70,11 +67,6 @@ sass:
 </a>
 
 </div>
-
-
-
-
-
 
 
 #### Recruiter Access Related Enhancements
