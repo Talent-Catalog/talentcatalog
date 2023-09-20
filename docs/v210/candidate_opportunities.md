@@ -40,9 +40,9 @@ candidate portal
 
 # Job Opportunity Updates
 
-The Talent Catalog candidate portal has now implemented a system to keep candidates informed about the progress of 
-jobs for which they have been selected. This automates and enhances communication between administrators and candidates 
-by ensuring that candidates receive timely updates about crucial changes that matter to them. 
+The Talent Catalog candidate portal now implements a system to keep candidates informed about the progress of jobs for 
+which they have been selected. This automates and enhances communication between administrators and candidates by 
+ensuring that candidates receive timely updates about crucial changes that matter to them. 
 
 Our existing Talent Catalog administrators have thoughtfully selected the stage updates to be reported, thus providing 
 candidates with notification that are both meaningful and considerate of their circumstances. We are, as always, deeply 
