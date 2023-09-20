@@ -57,12 +57,12 @@ sass:
 
 <div class="card-container">
 
-  <a href="./v210/candidate_opportunities.md" class="card">
+  <a href="./v210/candidate_opportunities" class="card">
     <img src="./assets/images/v210/CandidateOpportunities.png" alt="Job Opportunities" class="card-image">
     <div class="card-title">Integrated Support for Candidate Opportunities</div>
   </a>
   
-  <a href="./v210/enhanced_search.md" class="card">
+  <a href="./v210/enhanced_search" class="card">
     <img src="./assets/images/v210/EnhancedSearch.png" alt="Final Assessment" class="card-image">
     <div class="card-title">Enhanced Search</div>
   </a>
@@ -71,12 +71,12 @@ sass:
 
 <div class="card-container">
 
-  <a href="./v210/visa_eligibility_details.md" class="card">
+  <a href="./v210/visa_eligibility_details" class="card">
     <img src="./assets/images/v210/CanadaVisaChecks.png" alt="Visa Eligibility" class="card-image">
     <div class="card-title">Canada Visa Eligibility Checks</div>
   </a>
 
-  <a href="./v210/recruiter_access_related_enhancements.md" class="card">
+  <a href="./v210/recruiter_access_related_enhancements" class="card">
     <img src="./assets/images/v210/JobCreator.png" alt="Visa Eligibility" class="card-image">
     <div class="card-title">Recruiter Access Related Enhancements</div>
   </a>
