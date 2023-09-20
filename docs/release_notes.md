@@ -30,6 +30,18 @@ sass:
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
 }
 
+.card-no-border {
+  width: calc(50% - 16px);
+  box-sizing: border-box;
+  padding: 16px;
+  margin: 16px 0;
+  background-color: #fff;
+  text-decoration: none;
+  color: #14B1DD;
+  display: flex;
+  flex-direction: column;
+}
+
 .card-title {
   font-size: 1.3em;
   font-weight: normal;
@@ -100,7 +112,7 @@ sass:
 
 <div class="card-container">
 
-  <div class="card">
+  <div class="card-no-border">
     <img src="./assets/images/v210/CandidateOpportunitiesTab.png" alt="Candidate Opportunities Tab" class="card-image">
     <div class="card-title">Candidate Jobs Tab</div>
     <div class="card-description">
@@ -109,7 +121,7 @@ sass:
     </div>
   </div>
 
-  <div class="card">
+  <div class="card-no-border">
     <img src="./assets/images/v210/EnlargedSidebarProfiles.png" alt="Enlarged Sidebar" class="card-image">
     <div class="card-title">Enlarged Sidebar Profiles</div>
     <div class="card-description">
