@@ -128,12 +128,12 @@
             <app-fixed-input
               *ngIf="co.occupation"
               [question]="co.occupation?.name"
-              [answer]="co.yearsExperience.toString()">
+              [answer]="co.yearsExperience.toString() + 'years'">
             </app-fixed-input>
             <app-fixed-input
               *ngIf="co.occupation == null && co.migrationOccupation"
               [question]="co.migrationOccupation"
-              [answer]="co.yearsExperience.toString()">
+              [answer]="co.yearsExperience.toString() + 'years'">
             </app-fixed-input>
           </li>
         </ul>
