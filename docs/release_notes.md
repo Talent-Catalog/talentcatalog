@@ -89,6 +89,12 @@ sass:
 
 </div>
 
+## General Improvements
+
+- Enhanced Salesforce integration, allowing for automatic updates without manual intervention.
+- Dedicated separate elastic search and Salesforce environments for staging, ensuring a controlled and optimised
+  user testing environment.
+
   
 ## UI / UX Enhancements
 
@@ -114,19 +120,14 @@ sass:
 
 </div>
 
+### Other UI / UX Enhancements 
+
 - Revamped job icons and introduced the term 'Cases' to refer to Candidate Opportunities, making the terminology more 
 intuitive and aligned with admin user expectations.
 - Fixed side column overlap issues in specific screens, ensuring a consistent and visually appealing user experience.
 - Mapped job stage codes to their corresponding full stage names in job view, providing clearer context for users.
 - Implemented scrollable list sidebars, enhancing navigation and usability in lists with extensive content.
-
-
-## General Improvements
-
 - Streamlined job creation by removing unnecessary Red Alert notifications.
-- Enhanced Salesforce integration, allowing for automatic updates without manual intervention.
-- Dedicated separate elastic search and Salesforce environments for staging, ensuring a controlled and optimised
-  user testing environment.
 
 
 ## Security Fixes
