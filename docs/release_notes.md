@@ -69,8 +69,8 @@ sass:
   </a>
   
   <a href="./v210/enhanced_search" class="card">
-    <img src="./assets/images/v210/EnhancedSearch.png" alt="Final Assessment" class="card-image">
-    <div class="card-title">Enhanced Search</div>
+    <img src="./assets/images/v210/EnhancedSearch.png" alt="Enhanced Search Screen" class="card-image">
+    <div class="card-title">Enhanced Search Screen</div>
   </a>
 
 </div>
@@ -83,7 +83,7 @@ sass:
   </a>
 
   <a href="./v210/recruiter_access_related_enhancements" class="card">
-    <img src="./assets/images/v210/JobCreator.png" alt="Visa Eligibility" class="card-image">
+    <img src="./assets/images/v210/JobCreator.png" alt="Recruiter Access Enhancements" class="card-image">
     <div class="card-title">Recruiter Access Related Enhancements</div>
   </a>
 
