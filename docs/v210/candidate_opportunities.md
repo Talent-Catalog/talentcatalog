@@ -1,3 +1,9 @@
+---
+title: Integrated Support for Candidate Opportunities
+sass:
+  style: compressed
+---
+
 # Integrated Support for Candidate Opportunities
 
 - Admin portal now supports tracking candidate opportunities, providing TC administrators with a more streamlined

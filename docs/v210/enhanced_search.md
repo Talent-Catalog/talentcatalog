@@ -1,3 +1,9 @@
+---
+title: Enhanced Search Features
+sass:
+  style: compressed
+---
+
 # Enhanced Search
 
 - Enhanced elastic search capabilities by extending support to include all search fields, including other languages,

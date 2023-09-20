@@ -1,3 +1,9 @@
+---
+title: Canada Visa Eligibility Checks
+sass:
+  style: compressed
+---
+
 # Canada Visa Eligibility Checks
 
 This release introduces a first iteration of functionality to support comprehensive Canada visa eligibility checks from
