@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from "../../../../util/enum";
-import {YesNo} from "../../../../model/candidate";
+import {YesNoUnsure} from "../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
 import {VisaCheckComponentBase} from "../../../util/intake/VisaCheckComponentBase";
 import {CandidateVisaCheckService} from "../../../../services/candidate-visa-check.service";
@@ -13,7 +13,7 @@ import {CandidateVisaCheckService} from "../../../../services/candidate-visa-che
 export class PathwayAssessmentComponent extends VisaCheckComponentBase implements OnInit {
 
 //Drop down values for enumeration
-  assessmentOptions: EnumOption[] = enumOptions(YesNo);
+  assessmentOptions: EnumOption[] = enumOptions(YesNoUnsure);
 
   constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
     super(fb, candidateVisaCheckService);
@@ -35,6 +35,9 @@ export class PathwayAssessmentComponent extends VisaCheckComponentBase implement
         found = true
       }
       if (this.form.value.visaPathwayAssessment === 'No') {
+        found = true
+      }
+      if (this.form.value.visaPathwayAssessment === 'Unsure') {
         found = true
       }
     }

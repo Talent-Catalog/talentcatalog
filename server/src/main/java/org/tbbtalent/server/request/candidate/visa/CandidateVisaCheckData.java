@@ -46,7 +46,7 @@ public class CandidateVisaCheckData {
     private DocumentStatus visaValidTravelDocs;
     private String visaValidTravelDocsNotes;
     private String visaCreatedById;
-    private YesNo visaPathwayAssessment;
+    private YesNoUnsure visaPathwayAssessment;
     private String visaPathwayAssessmentNotes;
 
     //Corresponds to CandidateVisaJobCheck fields
