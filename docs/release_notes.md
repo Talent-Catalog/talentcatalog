@@ -12,7 +12,7 @@ sass:
 }
 
 .card {
-  width: calc(50% - 16px);
+  width: calc(33.33% - 16px);
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -40,6 +40,12 @@ sass:
   max-width: 100%;
   border-radius: 4px;
   margin-bottom: 12px;
+}
+
+@media screen and (max-width: 768px) {
+  .card {
+    width: 100%;
+  }
 }
 </style>
 
