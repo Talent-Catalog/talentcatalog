@@ -12,7 +12,7 @@ sass:
 }
 
 .card {
-  width: calc(33.33% - 16px);
+  width: calc(50% - 16px);
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -60,6 +60,10 @@ sass:
   <img src="./assets/images/v210/CandidateOpportunities.png" alt="Job Opportunities" class="card-image">
   <div class="card-title">Integrated Support for Candidate Opportunities</div>
 </a>
+
+</div>
+
+<div class="card-container">
 
 <a href="./v210/enhanced_search.md" class="card">
   <img src="./assets/images/v210/EnhancedSearch.png" alt="Final Assessment" class="card-image">
