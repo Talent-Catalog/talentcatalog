@@ -84,7 +84,7 @@ sass:
 
   <a href="./v210/recruiter_access_related_enhancements" class="card">
     <img src="./assets/images/v210/JobCreator.png" alt="Recruiter Access Enhancements" class="card-image">
-    <div class="card-title">Recruiter Access Related Enhancements</div>
+    <div class="card-title">Recruiter Access Enhancements</div>
   </a>
 
 </div>
