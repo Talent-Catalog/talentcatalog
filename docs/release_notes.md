@@ -21,7 +21,7 @@ sass:
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-decoration: none;
-  color: inherit;
+  color: #14B1DD;
   display: flex;
   flex-direction: column;
 }
