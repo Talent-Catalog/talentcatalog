@@ -102,10 +102,10 @@ sass:
 
   <div class="card">
     <img src="./assets/images/v210/CandidateOpportunitiesTab.png" alt="Candidate Opportunities Tab" class="card-image">
-    <div class="card-title">Candidate Opportunities Tab</div>
+    <div class="card-title">Candidate Jobs Tab</div>
     <div class="card-description">
-      Dedicated candidate opportunities tab, providing administrators with a convenient interface for viewing an 
-      individual candidate's job opportunities and history.
+      Dedicated candidate jobs tab, providing administrators with a convenient interface for viewing an individual 
+      candidate's job opportunities and history.
     </div>
   </div>
 
