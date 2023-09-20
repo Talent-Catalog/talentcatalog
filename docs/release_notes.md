@@ -12,7 +12,7 @@ sass:
 }
 
 .card {
-  width: calc(33.33% - 16px);
+  width: calc(50% - 16px);
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -67,17 +67,21 @@ sass:
     <div class="card-title">Enhanced Search</div>
   </a>
 
+</div>
+
+<div class="card-container">
+
   <a href="./v210/visa_eligibility_details.md" class="card">
     <img src="./assets/images/v210/CanadaVisaChecks.png" alt="Visa Eligibility" class="card-image">
     <div class="card-title">Canada Visa Eligibility Checks</div>
   </a>
 
+  <a href="./v210/recruiter_access_related_enhancements.md" class="card">
+    <img src="./assets/images/v210/JobCreator.png" alt="Visa Eligibility" class="card-image">
+    <div class="card-title">Recruiter Access Related Enhancements</div>
+  </a>
+
 </div>
-
-### Recruiter Access Related Enhancements
-
-- Added back-end functionality to support default destination and source partners, simplifying partner management and 
-integration processes.
 
   
 ## UX / UI Enhancements
