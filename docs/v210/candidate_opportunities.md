@@ -11,7 +11,7 @@ sass:
 }
 
 .card-image {
-  max-width: 90%;
+  max-width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
