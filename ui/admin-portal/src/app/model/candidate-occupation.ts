@@ -22,7 +22,6 @@ export interface CandidateOccupation {
   occupation: Occupation;
   yearsExperience: number;
   migrationOccupation: string;
-  verified: boolean;
   createdBy: User;
   createdDate: number;
   updatedBy: User;

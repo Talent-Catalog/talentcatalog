@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
-import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
+import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -44,12 +44,6 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 public class CandidateOccupationAdminApi {
 
     private final CandidateOccupationService candidateOccupationService;
-
-    @GetMapping("verified")
-    public List<Map<String, Object>> getVerifiedOccupations() {
-        List<Occupation> candidateOccupations = candidateOccupationService.listVerifiedOccupations();
-        return occupationDto().buildList(candidateOccupations);
-    }
 
     @GetMapping("occupation")
     public List<Map<String, Object>> getAllOccupations() {
@@ -65,9 +59,9 @@ public class CandidateOccupationAdminApi {
 
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
-                                      @RequestBody VerifyCandidateOccupationRequest request) {
+                                      @RequestBody UpdateCandidateOccupationRequest request) {
         request.setId(id);
-        CandidateOccupation candidateOccupation = candidateOccupationService.verifyCandidateOccupation(request);
+        CandidateOccupation candidateOccupation = candidateOccupationService.updateCandidateOccupation(request);
         return candidateOccupationDto().build(candidateOccupation);
     }
 
@@ -98,7 +92,6 @@ public class CandidateOccupationAdminApi {
                 .add("migrationOccupation")
                 .add("occupation", occupationDto())
                 .add("yearsExperience")
-                .add("verified")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

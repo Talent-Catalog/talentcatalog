@@ -33,9 +33,6 @@ public class CreateCandidateOccupationRequest {
     @NotNull
     private Long yearsExperience;
 
-    @NotNull
-    private boolean verified;
-
     private String comment;
 
 }
