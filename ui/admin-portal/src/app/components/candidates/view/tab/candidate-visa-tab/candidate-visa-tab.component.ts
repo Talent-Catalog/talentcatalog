@@ -83,12 +83,11 @@ export class CandidateVisaTabComponent implements OnInit {
   private get filteredDestinations(): Country[] {
     if (!this.tbbDestinations) {
       return [];
-    } else if (!this.candidateIntakeData.candidateCitizenships) {
+    } else if (this.visaChecks?.length <= 0) {
       return this.tbbDestinations;
     } else {
       //Extract currently used ids
-      const existingIds: number[] = this.candidateIntakeData.candidateVisaChecks
-        .map(record => record.country?.id);
+      const existingIds: number[] = this.visaChecks?.map(record => record.country?.id);
       return this.tbbDestinations.filter(
         //Exclude already used ids
         record => !existingIds.includes(record.id)
@@ -105,6 +104,7 @@ export class CandidateVisaTabComponent implements OnInit {
       .then((selection: Country) => {
         if (selection) {
           this.createRecord(selection);
+          this.filteredDestinations;
         }
       })
       .catch(() => {
@@ -154,6 +154,7 @@ export class CandidateVisaTabComponent implements OnInit {
         this.loading = false;
         this.visaChecks.splice(i, 1);
         if (this.visaChecks.length > 0) {
+          this.form.controls['visaCountry'].patchValue(0);
           this.reloadAndSelectVisaCheck(0);
         } else {
           this.selectedVisaCheck = null;
@@ -173,7 +174,7 @@ export class CandidateVisaTabComponent implements OnInit {
       (results) => {
         this.visaChecks = results;
         this.selectedVisaCheck = this.visaChecks[index];
-        this.selectedCountry = this.selectedVisaCheck.country.name;
+        this.selectedCountry = this.selectedVisaCheck?.country?.name;
       })
   }
 

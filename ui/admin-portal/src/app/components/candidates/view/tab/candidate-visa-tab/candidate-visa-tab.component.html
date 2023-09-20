@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <div *ngIf="candidateIntakeData?.candidateVisaChecks.length == 0">
+  <div *ngIf="visaChecks?.length == 0">
     <p class="small text-muted text-center fw-light">No visa checks added - add a country to begin</p>
   </div>
 </div>
@@ -54,7 +54,7 @@
   </div>
 </div>
 
-<hr *ngIf="candidateIntakeData?.candidateVisaChecks.length > 0">
+<hr *ngIf="visaChecks?.length > 0">
 
 <!--todo Not sure where exportAsPdf should be calling-->
 <!--<button class="btn btn-primary" (click)="exportAsPdf('VisaCheck')" [disabled]="saving">-->
