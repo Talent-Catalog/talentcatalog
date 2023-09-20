@@ -106,7 +106,7 @@ Check out the newest features and enhancements.
 ## General Improvements
 
 - Enhanced Salesforce integration, allowing for automatic updates without manual intervention.
-- Dedicated separate elastic search and Salesforce environments for staging, ensuring a controlled and optimised
+- Dedicated separate Elasticsearch and Salesforce environments for staging, ensuring a controlled and optimised
   user testing environment.
 
   
