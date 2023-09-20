@@ -29,7 +29,7 @@ opportunities (or "cases") that have been put forward for jobs.
 
 # Job Listings
 
-Within the Talent Catalog candidate portal, candidates now have the capability to view job listings that they have been 
+In the Talent Catalog candidate portal, candidates now have the capability to view job listings that they have been 
 selected for in line with their qualifications, experience and preferences. This enhancement enables candidates to 
 easily navigate through their potential employment opportunities, from the convenience of their device.
 
