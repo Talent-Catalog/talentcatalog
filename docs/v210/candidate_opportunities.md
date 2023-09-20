@@ -6,6 +6,10 @@ sass:
 
 
 <style>
+.card-image-container {
+  text-align: center;
+}
+
 .card-image {
   max-width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -15,7 +19,9 @@ sass:
 
 # Integrated Support for Candidate Opportunities
 
-![Candidate Opportunities](./../assets/images/v210/CandidateOpportunities.png){: .card-image }
+<div class="card-image-container">
+  ![Candidate Opportunities](./../assets/images/v210/CandidateOpportunities.png){: .card-image }
+</div>
 
 - Admin portal now supports tracking candidate opportunities, providing TC administrators with a more streamlined
   experience.
