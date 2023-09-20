@@ -51,9 +51,9 @@ sass:
 
 # Release Notes
 
-## Version 2.1.0 (September 29, 2023)
+### Version 2.1.0 (September 29, 2023)
 
-### New Features
+## New Features
 
 <div class="card-container">
 
@@ -67,10 +67,6 @@ sass:
     <div class="card-title">Enhanced Search</div>
   </a>
 
-</div>
-
-<div class="card-container">
-
   <a href="./v210/visa_eligibility_details.md" class="card">
     <img src="./assets/images/v210/CanadaVisaChecks.png" alt="Visa Eligibility" class="card-image">
     <div class="card-title">Canada Visa Eligibility Checks</div>
@@ -78,14 +74,13 @@ sass:
 
 </div>
 
-
-#### Recruiter Access Related Enhancements
+### Recruiter Access Related Enhancements
 
 - Added back-end functionality to support default destination and source partners, simplifying partner management and 
 integration processes.
 
   
-### UX / UI Enhancements
+## UX / UI Enhancements
 
 - Introduced a dedicated candidate opportunities page, providing users with an interface for viewing individual 
 opportunities.
@@ -97,7 +92,7 @@ intuitive and aligned with admin user expectations.
 - Implemented scrollable list sidebars, enhancing navigation and usability in lists with extensive content.
 
 
-### General Improvements
+## General Improvements
 
 - Streamlined job creation by removing unnecessary Red Alert notifications.
 - Enhanced Salesforce integration, allowing for automatic updates without manual intervention.
@@ -105,7 +100,7 @@ intuitive and aligned with admin user expectations.
   user testing environment.
 
 
-### Security Fixes
+## Security Fixes
 
 - Implemented strong visual indicators to clearly distinguish between production, staging, and local environments, 
 reducing the risk of accidental actions in the wrong environment.
@@ -114,7 +109,7 @@ reducing the risk of accidental actions in the wrong environment.
   of profile changes.
 
 
-### Bug Fixes
+## Bug Fixes
 
 - Resolved an issue where deleting a referrer in a new search would not properly clear and reset the search field, 
 improving search functionality.
@@ -126,27 +121,27 @@ improving search functionality.
 - Fixed a bug where deleting a candidate's language from their profile would log the user out.
 
 
-### Developer Notes
+## Developer Notes
 
-#### Test Coverage
+### Test Coverage
 
 - Expanded unit test coverage across various components, including AuthAdminApi, BrandingAdminApi, CandidateAdminApi, 
 and more, ensuring more robust test coverage and code quality.
 
-#### Code Refactoring
+### Code Refactoring
 - Refactored common code elements shared between job and candidate opportunities, reducing redundancy and improving
   code maintainability.
 - Flattened partner classes to accommodate partners that serve as both source partners and job creators, streamlining
   future recruiter partner integration.
 
-#### Continuous Integration & Deployment
+### Continuous Integration & Deployment
 - Successfully transitioned the GitHub repository to an organisation account, aligning with the need for multiple
   administrator accounts.
 - Enforced protection rules for master and staging branches, enhancing code integrity and preventing unauthorised or 
 accidental changes.
 - Decoupled Jib deployment in Gradle build steps, improving build efficiency, safety and flexibility.
 
-#### Cloud Enhancements
+### Cloud Enhancements
 - Increased AWS cloud CPU allocation to 0.5 per task, optimising resource allocation for improved performance and system
   stability.
 - Enabled AWS application load balancer logs for Amazon support team, facilitating easier troubleshooting and support.
