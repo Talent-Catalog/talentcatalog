@@ -31,8 +31,7 @@ opportunities (or "cases") that have been put forward for a particular job.
 
 Within the Talent Catalog candidate portal, candidates now have the capability to access and explore job listings that 
 they have been selected for in line with their qualifications, experience and preferences. This enhancement enables 
-candidates to easily navigate through potential employment opportunities, from the convenience of their personalised 
-candidate portal
+candidates to easily navigate through potential employment opportunities, from the convenience of their mobile device.
 
 <div class="card-image-container">
   <img src="./../assets/images/v210/JobListings.png" alt="Candidate Job Listings" class="card-image">
