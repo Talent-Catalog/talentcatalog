@@ -9,6 +9,7 @@ sass:
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  margin-top: 1em;
 }
 
 .card {
@@ -45,7 +46,7 @@ sass:
 }
 
 .card-title {
-  font-size: 1.3em;
+  font-size: 1.35em;
   font-weight: normal;
   margin-bottom: 8px;
 }
