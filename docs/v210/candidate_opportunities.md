@@ -44,7 +44,7 @@ which they have been selected. This automates and enhances communication between
 ensuring that candidates receive timely updates about crucial changes that matter to them. 
 
 Our existing Talent Catalog administrators have thoughtfully selected the stage updates to be reported, thus providing 
-candidates with notification that are both meaningful and considerate of their circumstances. We are, as always, deeply 
+candidates with notifications that are both meaningful and considerate of their circumstances. We are, as always, deeply 
 appreciative of the ongoing collaboration and support from all our valued users!
 
 <div class="card-image-container">
