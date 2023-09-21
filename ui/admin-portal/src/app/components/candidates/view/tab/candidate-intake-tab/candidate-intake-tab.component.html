@@ -23,19 +23,16 @@
 
 <div *ngIf="!loading" id="FullIntakeForm">
   <div class="d-flex justify-content-between mb-2 ms-2">
-    <div class="d-flex flex-column">
+    <div class="d-flex flex-column justify-content-between">
+      <h5 class="mb-2">Full Intake</h5>
       <div class="d-flex">
-        <button class="btn btn-sm btn-primary mb-3" (click)="exportAsPdf('FullIntakeForm')" [disabled]="saving">
-          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-          Export PDF
-        </button>
+        <app-export-pdf [candidate]="candidate" [idToExport]="'FullIntakeForm'"></app-export-pdf>
 
         <div class="btn-group-sm ms-2">
           <button (click)="fullIntake.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
           <button (click)="fullIntake.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>
       </div>
-      <h5>Full Intake</h5>
     </div>
 
     <div class="d-flex flex-column justify-content-between">

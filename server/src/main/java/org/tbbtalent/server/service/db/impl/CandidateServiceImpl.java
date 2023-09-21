@@ -2299,22 +2299,6 @@ public class CandidateServiceImpl implements CandidateService {
                     .updateIntakeData(destinationCountryId, candidate, data);
         }
 
-        //If there is a non null visa id, that means that this
-        //is a visa check update.
-        final Long visaId = data.getVisaId();
-        if (visaId != null) {
-            candidateVisaService
-                    .updateIntakeData(visaId, candidate, data);
-        }
-
-        //If there is a non null visa job id, that means that this
-        //is a visa job check update.
-        final Long visaJobId = data.getVisaJobId();
-        if (visaJobId != null) {
-            candidateVisaJobCheckService
-                    .updateIntakeData(visaJobId, candidate, data);
-        }
-
         //If there is a non null exam type, that means that this
         //is a exam update.
         final Exam exam = data.getExamType();
