@@ -8,38 +8,40 @@
 </div>
 <div *ngIf="candidateSource" class="text-muted mb-3">If left blank, the candidate's default selected shareable documents will be used (if present).</div>
 
-<form [formGroup]="form">
-  <div  class="flex-wrap justify-content-around">
-    <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start mb-2">
+<div *ngIf="this.cvs && this.other">
+  <form [formGroup]="form">
+    <div  class="flex-wrap justify-content-around">
+      <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start mb-2">
           <span class="me-4">
             <i class="far fa-star fa-sm"></i>CV
           </span>
-      <ng-select id="shareableCvId" class="me-2" [formControlName]="'shareableCvAttachmentId'"
-                 [items]="cvs" placeholder="Select" bindValue="id" bindLabel="name">
-        <ng-template ng-option-tmp let-item="item">
-          <span [ngbTooltip]="item.name" container="body">{{item.name}}</span>
-        </ng-template>
-      </ng-select>
-    </div>
-    <div *ngIf="candidateSource && candidate.shareableCv" class="d-flex mt-1">
-      <p class="me-2">Default CV: </p>
-      <span class="text-muted">{{candidate.shareableCv.name}}</span>
-    </div>
+        <ng-select id="shareableCvId" class="me-2" [formControlName]="'shareableCvAttachmentId'"
+                   [items]="cvs" placeholder="Select" bindValue="id" bindLabel="name">
+          <ng-template ng-option-tmp let-item="item">
+            <span [ngbTooltip]="item.name" container="body">{{item.name}}</span>
+          </ng-template>
+        </ng-select>
+      </div>
+      <div *ngIf="candidateSource && candidate.shareableCv" class="d-flex mt-1">
+        <p class="me-2">Default CV: </p>
+        <span class="text-muted">{{candidate.shareableCv.name}}</span>
+      </div>
 
-    <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start">
+      <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start">
           <span class="me-2">
             <i class="far fa-star fa-sm"></i>Other
           </span>
-      <ng-select id="shareableDocId" class="me-2" [formControlName]="'shareableDocAttachmentId'"
-                 [items]="other" placeholder="Select" bindValue="id" bindLabel="name">
-        <ng-template ng-option-tmp let-item="item">
-          <span [ngbTooltip]="item.name" container="body">{{item.name}}</span>
-        </ng-template>
-      </ng-select>
+        <ng-select id="shareableDocId" class="me-2" [formControlName]="'shareableDocAttachmentId'"
+                   [items]="other" placeholder="Select" bindValue="id" bindLabel="name">
+          <ng-template ng-option-tmp let-item="item">
+            <span [ngbTooltip]="item.name" container="body">{{item.name}}</span>
+          </ng-template>
+        </ng-select>
+      </div>
+      <div *ngIf="candidateSource && candidate.shareableDoc" class="d-flex mt-1">
+        <p class="me-2">Default Doc: </p>
+        <span class="text-muted">{{candidate.shareableDoc.name}}</span>
+      </div>
     </div>
-    <div *ngIf="candidateSource && candidate.shareableDoc" class="d-flex mt-1">
-      <p class="me-2">Default Doc: </p>
-      <span class="text-muted">{{candidate.shareableDoc.name}}</span>
-    </div>
-  </div>
-</form>
+  </form>
+</div>
