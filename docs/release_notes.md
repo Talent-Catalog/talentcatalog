@@ -62,8 +62,8 @@ Check out the newest features and enhancements.
     <img src="./assets/images/v210/EnlargedSidebarProfiles.png" alt="Enlarged Sidebar" class="card-image">
     <div class="card-title">Enlarged Sidebar Profiles</div>
     <div class="card-description">
-      Enhanced candidate sidebar profiles for improved readability and user-friendly navigation within the candidate 
-      lists view, now also featuring a convenient CV preview feature.
+      Enhanced candidate sidebar profiles for improved readability and user-friendly navigation within the search view 
+      and candidate lists view, now also featuring a convenient CV preview feature.
     </div>
   </div>
 
@@ -83,7 +83,7 @@ intuitive and aligned with admin user expectations.
 
 - Implemented strong visual indicators to clearly distinguish between production, staging, and local environments, 
 reducing the risk of accidental actions in the wrong environment.
-- Established dedicated Google storage credentials, ensuring secure access and authentication for storage operations.
+- Established dedicated Google storage credentials, ensuring segregated access for storage operations.
 - Addressed an issue where candidate profile audit fields were not updating correctly, ensuring accurate audit tracking
   of profile changes.
 
