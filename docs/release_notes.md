@@ -131,7 +131,7 @@ accidental changes.
 ---
 
 Thank you for using Talent Catalog! Your feedback and support are invaluable to us. If you encounter any issues or have 
-suggestions for improvement, please don't hesitate to [contact us](mailto:support@talentcatalog.org) or 
+suggestions for improvement, please don't hesitate to [contact us](mailto:support@talentcatalog.net) or 
 [open an issue on GitHub](https://github.com/Talent-Catalog/talentcatalog/issues).
 
 *[Access the latest version](https://tctalent.org/admin-portal/login)*
