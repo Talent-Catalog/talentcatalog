@@ -178,6 +178,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
             inverseJoinColumns = @JoinColumn(name = "country_id"))
     Set<Country> sourceCountries = new HashSet<>();
 
+    /**
+     * If true, this user can create new jobs on the TC.
+     */
+    private boolean jobCreator;
+
     public User() {
     }
 
@@ -221,6 +226,14 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isJobCreator() {
+        return jobCreator;
+    }
+
+    public void setJobCreator(boolean jobCreator) {
+        this.jobCreator = jobCreator;
     }
 
     public Role getRole() {

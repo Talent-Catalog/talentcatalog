@@ -283,6 +283,7 @@ public class UserServiceImpl implements UserService {
         user.setStatus(request.getStatus());
         user.setUsingMfa(request.getUsingMfa());
         user.setPurpose(request.getPurpose());
+        user.setJobCreator(request.getJobCreator());
 
         if (creatingUser == null) {
             user.setRole(request.getRole());
