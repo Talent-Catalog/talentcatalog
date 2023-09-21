@@ -1,43 +1,40 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {Occupation} from '../../../../../model/occupation';
-import {CandidateVisaJobCheck} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
-import {CandidateService} from '../../../../../services/candidate.service';
+import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
+import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-job-occupation',
   templateUrl: './job-occupation.component.html',
   styleUrls: ['./job-occupation.component.scss']
 })
-export class JobOccupationComponent extends IntakeComponentBase implements OnInit {
+export class JobOccupationComponent extends VisaCheckComponentBase implements OnInit {
 
   @Input() occupations: Occupation[];
-  @Input() selectedIndex: number;
-  @Input() selectedJobCheck: CandidateVisaJobCheck;
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
+  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+    super(fb, candidateVisaCheckService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaJobId: [this.selectedJobCheck?.id],
-      visaJobOccupationId: [this.selectedJobCheck?.occupation?.id],
-      visaJobOccupationNotes: [this.selectedJobCheck?.occupationNotes],
+      visaJobId: [this.visaJobCheck?.id],
+      visaJobOccupationId: [this.visaJobCheck?.occupation?.id],
+      visaJobOccupationNotes: [this.visaJobCheck?.occupationNotes],
     });
 
     this.form.controls['visaJobOccupationId']?.valueChanges.subscribe(
       change => {
         //Update my existingRecord with occupation object
-          this.selectedJobCheck.occupation =
+          this.visaJobCheck.occupation =
             {id: change, name: null, isco08Code: null, status: null};
       }
     );
   }
 
   get occupationId(): number {
-    return this.selectedJobCheck?.occupation?.id;
+    return this.visaJobCheck?.occupation?.id;
   }
 
 }

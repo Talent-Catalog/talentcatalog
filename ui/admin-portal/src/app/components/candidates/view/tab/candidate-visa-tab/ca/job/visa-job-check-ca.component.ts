@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
@@ -12,8 +12,6 @@ import {CandidateEducationService} from "../../../../../../../services/candidate
 import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
-import {JobService} from "../../../../../../../services/job.service";
-import {Job} from "../../../../../../../model/job";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
@@ -21,7 +19,8 @@ import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
   templateUrl: './visa-job-check-ca.component.html',
   styleUrls: ['./visa-job-check-ca.component.scss']
 })
-export class VisaJobCheckCaComponent implements OnInit {
+export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
+  @Input() selectedJobCheck: CandidateVisaJobCheck;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
@@ -30,8 +29,6 @@ export class VisaJobCheckCaComponent implements OnInit {
 
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
-  selectedJobCheck: CandidateVisaJobCheck;
-  selectedJob: Job;
 
   familyInCanada: string;
   partnerIeltsString: string;
@@ -40,8 +37,7 @@ export class VisaJobCheckCaComponent implements OnInit {
   error: string;
 
   constructor(private candidateEducationService: CandidateEducationService,
-              private candidateOccupationService: CandidateOccupationService,
-              private jobService: JobService) {}
+              private candidateOccupationService: CandidateOccupationService) {}
 
   ngOnInit(): void {
     // Get the candidate occupations
@@ -72,23 +68,11 @@ export class VisaJobCheckCaComponent implements OnInit {
     this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
   }
 
-  get hasJobChecks() {
-    return this.visaCheckRecord?.candidateVisaJobChecks?.length > 0;
-  }
-
-  updateSelectedJob(index: number){
-    this.selectedJobCheck = this.visaCheckRecord.candidateVisaJobChecks[index];
-
-    if (this.selectedJobCheck?.jobOpp) {
-      this.jobService.get(this.selectedJobCheck?.jobOpp?.id).subscribe(
-        (response) => {
-          this.selectedJob = response;
-        }, (error) => {
-          this.error = error;
-        }
-      )
-    } else {
-      this.selectedJob = null;
-    }
+  ngAfterViewInit() {
+    this.visaJobCanada.expandAll();
   }
 }
+
+
+
+

@@ -16,10 +16,10 @@
 <div *ngIf="error">
   {{error}}
 </div>
-<div *ngIf="candidateIntakeData.candidateDependants.length == 0">
+<div *ngIf="candidateIntakeData?.candidateDependants.length == 0">
   <p class="mb-0">No Dependants Added</p>
 </div>
-<div *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;" class="dependant-card">
+<div *ngFor="let dependant of candidateIntakeData?.candidateDependants; let i = index;" class="dependant-card">
   <app-dependants-card
     [entity]="candidate"
     [editable]="editable"

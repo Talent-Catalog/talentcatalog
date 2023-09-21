@@ -74,7 +74,7 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
     private String assessmentNotes;
 
     @Enumerated(EnumType.STRING)
-    private YesNo pathwayAssessment;
+    private YesNoUnsure pathwayAssessment;
 
     private String pathwayAssessmentNotes;
 

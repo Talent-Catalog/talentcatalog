@@ -1,26 +1,26 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateVisaJobCheck} from "../../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../../services/candidate.service";
-import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
+import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
+import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-visa-job-notes',
   templateUrl: './visa-job-notes.component.html',
   styleUrls: ['./visa-job-notes.component.scss']
 })
-export class VisaJobNotesComponent extends IntakeComponentBase implements OnInit {
+export class VisaJobNotesComponent extends VisaCheckComponentBase implements OnInit {
 
   @Input() selectedJobCheck: CandidateVisaJobCheck;
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
+  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+    super(fb, candidateVisaCheckService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaJobId: [this.selectedJobCheck?.id],
-      visaJobNotes: [this.selectedJobCheck?.notes],
+      visaJobId: [this.visaJobCheck?.id],
+      visaJobNotes: [this.visaJobCheck?.notes],
     });
   }
 

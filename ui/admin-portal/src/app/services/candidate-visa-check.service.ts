@@ -31,6 +31,14 @@ export class CandidateVisaCheckService {
 
   constructor(private http: HttpClient) {}
 
+  get(id: number): Observable<CandidateVisa> {
+    return this.http.get<CandidateVisa>(`${this.apiUrl}/${id}`);
+  }
+
+  list(candidateId: number): Observable<CandidateVisa[]> {
+    return this.http.get<CandidateVisa[]>(`${this.apiUrl}/${candidateId}/list`);
+  }
+
   create(candidateId: number, candidateVisaCheckRequest: CreateCandidateVisaCheckRequest):
     Observable<CandidateVisa>  {
     return this.http.post<CandidateVisa>(
@@ -39,5 +47,9 @@ export class CandidateVisaCheckService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  updateIntakeData(id: number, formData: Object): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/intake`, formData);
   }
 }
