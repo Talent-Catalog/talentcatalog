@@ -31,10 +31,6 @@
   margin-bottom: 50px;
 }
 
-.main-content img {
-  max-width: 90%;
-}
-
 .card-container {
   display: flex;
   flex-wrap: wrap;
@@ -91,6 +87,16 @@
   max-width: 100%;
   border-radius: 4px;
   margin-bottom: 12px;
+}
+
+.card-image-container {
+  text-align: center;
+}
+
+.card-image-container .card-image {
+  max-width: 90%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 .card-description {

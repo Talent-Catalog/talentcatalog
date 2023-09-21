@@ -4,19 +4,6 @@ sass:
   style: compressed
 ---
 
-
-<style>
-.card-image-container {
-  text-align: center;
-}
-
-.card-image {
-  max-width: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-}
-</style>
-
 # Case Tracking
 
 Within the admin portal, we have implemented functionality to allow for ease of tracking and management of candidate 
