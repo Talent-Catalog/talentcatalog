@@ -11,7 +11,7 @@ opportunities. This enhancement allows Talent Catalog administrators to easily o
 opportunities (or "cases") that have been put forward for jobs.
 
 <div class="card-image-container">
-  <img src="./../assets/images/v210/CandidateOpportunities.png" alt="Job Opportunity Cases" class="card-image">
+  <img src="./../assets/images/v210/CandidateOpportunitiesCRS.png" alt="Job Opportunity Cases" class="card-image">
 </div>
 
 # Job Listings
