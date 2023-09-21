@@ -17,7 +17,7 @@
 <div *ngIf="loading">
   <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
-<div *ngIf="error">
+<div class="alert alert-danger" *ngIf="error">
   {{error}}
 </div>
 
@@ -35,14 +35,14 @@
 
   <div class="row">
     <div class="col pt-3">
-      <app-export-pdf *ngIf="candidateIntakeData?.candidateVisaChecks.length > 0" [candidate]="candidate" [idToExport]="'VisaCheck'"></app-export-pdf>
+      <app-export-pdf *ngIf="visaChecks?.length > 0" [candidate]="candidate" [idToExport]="'VisaCheck'"></app-export-pdf>
     </div>
     <div class="mx-auto col-10 col-md-8 col-lg-6">
       <form [formGroup]="form">
-        <div *ngFor="let visaCheck of candidateIntakeData?.candidateVisaChecks; let i = index;">
+        <div *ngFor="let visaCheck of visaChecks; let i = index;">
           <div class="form-check">
             <input class="form-check-input" type="radio" [value]="i" name="visaCountry" [id]="'radio'+i"
-                   [formControlName]="'visaCountry'" (change)="changeVisaCountry($event)">
+                   [formControlName]="'visaCountry'" (change)="reloadAndSelectVisaCheck(i)">
             <label class="form-check-label fw-light" [for]="'radio'+i">{{visaCheck?.country?.name}}</label>
             <a class="link-secondary float-end" (click)="deleteRecord(i)"><i class="fas fa-trash"></i></a>
           </div>
@@ -50,26 +50,25 @@
       </form>
     </div>
     <div class="col">
-
     </div>
   </div>
-  <div *ngIf="candidateIntakeData?.candidateVisaChecks.length == 0">
+  <div *ngIf="visaChecks?.length == 0">
     <p class="small text-muted text-center fw-light">No visa checks added - add a country to begin</p>
   </div>
 </div>
 
-<hr *ngIf="candidateIntakeData?.candidateVisaChecks.length > 0">
+<hr *ngIf="visaChecks?.length > 0">
 
-<div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined" id="VisaCheck">
+<div [ngSwitch]="selectedCountry" *ngIf="selectedVisaCheck != undefined && !loading" id="VisaCheck">
   <app-visa-check-au *ngSwitchCase="'Australia'"
                      [candidate]="candidate"
-                     [visaCheckRecord]="getVisaCheckCountryRecord()"
+                     [visaCheckRecord]="selectedVisaCheck"
                      [candidateIntakeData]="candidateIntakeData">
   </app-visa-check-au>
 
   <app-visa-check-ca *ngSwitchCase="'Canada'"
                      [candidate]="candidate"
-                     [visaCheckRecord]="getVisaCheckCountryRecord()"
+                     [visaCheckRecord]="selectedVisaCheck"
                      [candidateIntakeData]="candidateIntakeData">
   </app-visa-check-ca>
 

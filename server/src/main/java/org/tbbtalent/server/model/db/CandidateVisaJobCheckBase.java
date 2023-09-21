@@ -89,4 +89,18 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     private TBBEligibilityAssessment tbbEligibility;
 
     private String notes;
+
+    private String relevantWorkExp;
+
+    private String ageRequirement;
+
+    private String preferredPathways;
+
+    private String ineligiblePathways;
+
+    private String eligiblePathways;
+
+    private String occupationCategory;
+
+    private String occupationSubCategory;
 }

@@ -173,48 +173,6 @@ public class CandidateIntakeDataUpdate {
     private NotRegisteredStatus unrwaNotRegStatus;
     private String unrwaNotes;
 
-    //Corresponds to CandidateVisaCheck fields
-    private Long visaId;
-    private Long visaCountryId;
-    private YesNo visaProtection;
-    private String visaProtectionGrounds;
-    private YesNo visaEnglishThreshold;
-    private String visaEnglishThresholdNotes;
-    private YesNo visaHealthAssessment;
-    private String visaHealthAssessmentNotes;
-    private YesNo visaCharacterAssessment;
-    private String visaCharacterAssessmentNotes;
-    private YesNo visaSecurityRisk;
-    private String visaSecurityRiskNotes;
-    private RiskLevel visaOverallRisk;
-    private String visaOverallRiskNotes;
-    private DocumentStatus visaValidTravelDocs;
-    private String visaValidTravelDocsNotes;
-    private String visaCreatedById;
-    private YesNo visaPathwayAssessment;
-    private String visaPathwayAssessmentNotes;
-
-    //Corresponds to CandidateVisaJobCheck fields
-    private Long visaJobId;
-    private Long visaJobOccupationId;
-    private String visaJobOccupationNotes;
-    private YesNo visaJobQualification;
-    private String visaJobQualificationNotes;
-    private YesNo visaJobInterest;
-    private String visaJobInterestNotes;
-    private YesNo visaJobSalaryTsmit;
-    private YesNo visaJobRegional;
-    private YesNo visaJobFamilyAus;
-    private YesNo visaJobEligible494;
-    private String visaJobEligible494Notes;
-    private YesNo visaJobEligible186;
-    private String visaJobEligible186Notes;
-    private OtherVisas visaJobEligibleOther;
-    private String visaJobEligibleOtherNotes;
-    private VisaEligibility visaJobPutForward;
-    private TBBEligibilityAssessment visaJobTbbEligibility;
-    private String visaJobNotes;
-
     private YesNoUnsure visaReject;
     private String visaRejectNotes;
     private YesNoUnsure visaIssues;

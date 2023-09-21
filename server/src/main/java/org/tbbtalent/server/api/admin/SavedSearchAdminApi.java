@@ -366,8 +366,6 @@ public class SavedSearchAdminApi implements
                 .add("occupationIds")
                 .add("minYrs")
                 .add("maxYrs")
-                .add("verifiedOccupationIds")
-                .add("verifiedOccupationSearchType")
                 .add("partnerIds")
                 .add("nationalityIds")
                 .add("nationalitySearchType")

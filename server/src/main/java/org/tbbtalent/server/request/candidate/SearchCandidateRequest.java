@@ -97,8 +97,6 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private List<Long> occupationIds;
     private Integer minYrs;
     private Integer maxYrs;
-    private List<Long> verifiedOccupationIds;
-    private SearchType verifiedOccupationSearchType;
     private List<Long> partnerIds;
     private List<Long> nationalityIds;
     private SearchType nationalitySearchType;

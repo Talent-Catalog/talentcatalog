@@ -16,18 +16,19 @@
 
 package org.tbbtalent.server.api.admin;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
+import org.tbbtalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Map;
 
 @RestController()
@@ -40,6 +41,43 @@ public class CandidateVisaCheckAdminApi
     public CandidateVisaCheckAdminApi(
             CandidateVisaService candidateVisaService) {
         this.candidateVisaService = candidateVisaService;
+    }
+
+    /**
+     * Get a new candidate visa check record from the data in the given request.
+     * @param visaId ID of visa check
+     * @return Created record - including database id of visa check record
+     * @throws NoSuchObjectException if the there is no Candidate record with
+     * that candidateId or no country with the id given in the request
+     */
+    @Override
+    public @NotNull Map<String, Object> get(long visaId)
+            throws NoSuchObjectException {
+        CandidateVisaCheck candidateVisaCheck = this.candidateVisaService.getVisaCheck(visaId);
+        return candidateVisaDto().build(candidateVisaCheck);
+    }
+
+    /**
+     * List of visa check records belonging to the candidate passed in by the candidateId.
+     *
+     * @param candidateId ID of candidate whose visa checks we want
+     * @return List of visa check records - can be empty if candidate has no visa checks associated.
+     */
+    @Override
+    public @NotNull List<Map<String, Object>> list(long candidateId) {
+        List<CandidateVisaCheck> candidateVisaChecks = this.candidateVisaService.listCandidateVisaChecks(candidateId);
+        return candidateVisaDto().buildList(candidateVisaChecks);
+    }
+
+    /**
+     * Populates the visa check object OR visa job check object using the visa data provided.
+     * @param id ID of the visa check to be updated directly, or whose associated job check is to be updated.
+     * @param data data of the visa intake, only updates the non null fields.
+     */
+    @PutMapping("{id}/intake")
+    public void updateIntakeData(
+            @PathVariable("id") long id, @RequestBody CandidateVisaCheckData data) {
+        candidateVisaService.updateIntakeData(id, data);
     }
 
     /**
@@ -74,13 +112,68 @@ public class CandidateVisaCheckAdminApi
             throws EntityReferencedException, InvalidRequestException {
         return candidateVisaService.deleteVisaCheck(id);
     }
-    
+
     private DtoBuilder candidateVisaDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("candidateVisaJobChecks", visaJobCheckDto())
                 .add("country", countryDto())
+                .add("protection")
+                .add("protectionGrounds")
+                .add("englishThreshold")
+                .add("englishThresholdNotes")
+                .add("healthAssessment")
+                .add("healthAssessmentNotes")
+                .add("characterAssessment")
+                .add("characterAssessmentNotes")
+                .add("securityRisk")
+                .add("securityRiskNotes")
+                .add("overallRisk")
+                .add("overallRiskNotes")
+                .add("validTravelDocs")
+                .add("validTravelDocsNotes")
                 .add("assessmentNotes")
-                .add("candidateVisaJobChecks", candidateVisaJobDto())
+                .add("pathwayAssessment")
+                .add("pathwayAssessmentNotes")
+                .add("createdBy", userDto())
+                .add("createdDate")
+                .add("updatedBy", userDto())
+                .add("updatedDate")
+                ;
+    }
+
+    private DtoBuilder visaJobCheckDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("sfJobLink")
+                .add("jobOpp", jobOppDto())
+                .add("interest")
+                .add("interestNotes")
+                .add("regional")
+                .add("salaryTsmit")
+                .add("interest")
+                .add("interestNotes")
+                .add("qualification")
+                .add("eligible_494")
+                .add("eligible_494_Notes")
+                .add("eligible_186")
+                .add("eligible_186_Notes")
+                .add("eligibleOther")
+                .add("eligibleOtherNotes")
+                .add("putForward")
+                .add("tbbEligibility")
+                .add("notes")
+                .add("occupation", occupationDto())
+                .add("occupationNotes")
+                .add("qualificationNotes")
+                .add("relevantWorkExp")
+                .add("ageRequirement")
+                .add("preferredPathways")
+                .add("ineligiblePathways")
+                .add("eligiblePathways")
+                .add("occupationCategory")
+                .add("occupationSubCategory")
                 ;
     }
 
@@ -91,9 +184,34 @@ public class CandidateVisaCheckAdminApi
                 ;
     }
 
-    private DtoBuilder candidateVisaJobDto() {
+    private DtoBuilder userDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("firstName")
+                .add("lastName")
+                ;
+    }
+
+    private DtoBuilder occupationDto() {
+        return new DtoBuilder()
+                .add("id")
+                ;
+    }
+
+    private DtoBuilder jobOppDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("sfId")
+                .add("jobOppIntake", joiDto())
+                ;
+    }
+
+    private DtoBuilder joiDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("location")
+                .add("locationDetails")
                 ;
     }
     

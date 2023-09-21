@@ -1,26 +1,23 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {CandidateVisaJobCheck} from "../../../../../model/candidate";
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../../services/candidate.service";
-import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
+import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
+import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-eligible-pathways',
   templateUrl: './eligible-pathways.component.html',
   styleUrls: ['./eligible-pathways.component.scss']
 })
-export class EligiblePathwaysComponent extends IntakeComponentBase implements OnInit {
+export class EligiblePathwaysComponent extends VisaCheckComponentBase implements OnInit {
 
-  @Input() selectedJobCheck: CandidateVisaJobCheck;
-
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
+  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+    super(fb, candidateVisaCheckService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaJobId: [this.selectedJobCheck?.id],
-      visaJobEligiblePathways: [this.selectedJobCheck?.eligiblePathways],
+      visaJobId: [this.visaJobCheck?.id],
+      visaJobEligiblePathways: [this.visaJobCheck?.eligiblePathways],
     });
   }
 

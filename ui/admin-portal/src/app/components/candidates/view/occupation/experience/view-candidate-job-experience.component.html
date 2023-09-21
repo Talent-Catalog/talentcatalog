@@ -29,10 +29,6 @@
     {{candidateOccupation.occupation.name}} ({{candidateOccupation.yearsExperience}} years)
 
     <div class="float-end" *ngIf="editable">
-<!--      <button class="btn btn-sm btn-outline-dark me-2" (click)="verifyOccupation()">-->
-<!--        <i *ngIf="candidateOccupation.verified" class="fas fa-check" title="Verified by TBB"></i>-->
-<!--        <i *ngIf="!candidateOccupation.verified" class="fas fa-question" title="Candidate specified, not verified"></i>-->
-<!--      </button>-->
       <button class="btn btn-sm btn-primary me-2" (click)="createCandidateJobExperience()">
         <i class="fas fa-plus"></i>
       </button>

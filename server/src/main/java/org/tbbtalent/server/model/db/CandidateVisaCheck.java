@@ -18,8 +18,7 @@ package org.tbbtalent.server.model.db;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.NonNull;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.visa.CandidateVisaCheckData;
 
 import javax.persistence.Entity;
 import javax.persistence.SequenceGenerator;
@@ -32,11 +31,7 @@ import javax.persistence.Table;
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_visa_check_id_seq", allocationSize = 1)
 public class CandidateVisaCheck extends CandidateVisaCheckBase {
 
-    public void populateIntakeData(
-            @NonNull Candidate candidate, @NonNull Country country,
-            CandidateIntakeDataUpdate data) {
-        setCandidate(candidate);
-        setCountry(country);
+    public void populateIntakeData(CandidateVisaCheckData data) {
 
         if (data.getVisaProtection() != null) {
             setProtection(data.getVisaProtection());

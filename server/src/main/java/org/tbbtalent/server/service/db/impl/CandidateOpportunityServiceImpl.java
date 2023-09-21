@@ -35,6 +35,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.configuration.SalesforceConfig;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
@@ -62,17 +63,19 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private final CandidateOpportunityRepository candidateOpportunityRepository;
     private final CandidateService candidateService;
+    private final SalesforceConfig salesforceConfig;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
     private final UserService userService;
 
 
     public CandidateOpportunityServiceImpl(
-        CandidateOpportunityRepository candidateOpportunityRepository,
-        CandidateService candidateService, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
-        UserService userService) {
+            CandidateOpportunityRepository candidateOpportunityRepository,
+            CandidateService candidateService, SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
+            UserService userService) {
         this.candidateOpportunityRepository = candidateOpportunityRepository;
         this.candidateService = candidateService;
+        this.salesforceConfig = salesforceConfig;
         this.salesforceJobOppService = salesforceJobOppService;
         this.salesforceService = salesforceService;
         this.userService = userService;
@@ -160,7 +163,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             Contact contact = contacts.get(i);
             if (contact.getId() != null) {
                 Candidate candidate = orderedCandidates.get(i);
-                candidateService.updateCandidateSalesforceLink(candidate, contact.getUrl());
+                candidateService.updateCandidateSalesforceLink(candidate, contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             }
         }
 
