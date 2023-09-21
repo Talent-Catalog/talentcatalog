@@ -103,12 +103,12 @@ export class DropdownTranslationsComponent implements OnInit {
 
   /* SEARCH FORM */
   search() {
-    this.loading = true;
     const request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
 
     if (this.searchForm.valid) {
+      this.loading = true;
       const type = this.searchForm.controls['type'].value;
       const language = this.searchForm.controls['language'].value;
       this.translationService.search(request.type, request).subscribe(results => {
