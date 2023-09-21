@@ -62,8 +62,8 @@ Check out the newest features and enhancements.
     <img src="./assets/images/v210/EnlargedSidebarProfiles.png" alt="Enlarged Sidebar" class="card-image">
     <div class="card-title">Enlarged Sidebar Profiles</div>
     <div class="card-description">
-      Enhanced candidate sidebar profiles for improved readability and user-friendly navigation within the search view 
-      and candidate lists view, now also featuring a convenient CV preview feature.
+      Enhanced candidate sidebar profiles for improved readability and user-friendly navigation within the search and 
+      candidate lists view, now also featuring a convenient CV preview feature.
     </div>
   </div>
 
