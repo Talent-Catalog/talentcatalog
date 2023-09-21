@@ -17,7 +17,7 @@
   <div class="content">
   <button (click)="close()" type="button" class="btn-close text-reset float-end ms-4" aria-label="Close"></button>
 
-    <div class="list-specific">
+    <div *ngIf="isContextNoteDisplayed()" class="list-specific">
       <div class="candidate-header" >
         <h5 *ngIf="isList">List Specific</h5>
         <h5  *ngIf="isContextNoteDisplayed() && !isList">Search Specific</h5>
