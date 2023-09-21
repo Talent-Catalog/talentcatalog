@@ -39,7 +39,7 @@
 
         <!-- SHAREABLE DOCS -->
         <ng-container ngbNavItem="docs">
-          <a ngbNavLink>Shareable Docs</a>
+          <a ngbNavLink>{{isList ? "List Specific " : null}}Shareable Docs</a>
           <ng-template ngbNavContent>
             <app-shareable-docs
               [candidate]="candidate"
@@ -74,7 +74,7 @@
           <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
         </a>
       </h3>
-      <button (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-secondary-light me-5">
+      <button (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-secondary-light me-1">
         General Notes
         <i *ngIf="!showNotes" class="fas fa-eye"></i>
         <i *ngIf="showNotes" class="fas fa-eye-slash"></i>
