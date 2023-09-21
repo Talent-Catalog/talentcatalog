@@ -166,6 +166,7 @@ public class CandidateBuilderSelector {
             .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
             .add("candidateProperties", candidatePropertyDto())
             .add("shareableNotes")
+            .add("intaked")
 
             ;
     }
