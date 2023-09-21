@@ -61,9 +61,10 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   }
 
   onSuccessfulSave() {
-    // How to set the value in the front end when changing?
-    // Have only the ID not the full value so can't set with form value.
-    // Answer - search attachments by id.
+    /**
+     * Update the candidate object once saved.
+     * If it's a list update the list shareable document otherwise update the default shareable object.
+     */
     if (this.isList) {
       if (this.shareableCvId != null) {
         this.candidate.listShareableCv = this.cvs.find(att => att.id === this.shareableCvId);
@@ -76,6 +77,18 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
         this.candidate.listShareableDoc = null;
       }
       this.updatedShareableCV.emit(this.candidate.listShareableCv);
+    } else {
+      if (this.shareableCvId != null) {
+        this.candidate.shareableCv = this.cvs.find(att => att.id === this.shareableCvId);
+      } else {
+        this.candidate.shareableCv = null;
+      }
+      if (this.shareableDocId != null) {
+        this.candidate.shareableDoc = this.other.find(att => att.id === this.shareableDocId);
+      } else {
+        this.candidate.shareableDoc = null;
+      }
+      this.updatedShareableCV.emit(this.candidate.shareableCv);
     }
 
   }
