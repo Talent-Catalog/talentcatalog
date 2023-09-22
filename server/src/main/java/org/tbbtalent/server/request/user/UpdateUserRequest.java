@@ -40,6 +40,7 @@ public class UpdateUserRequest {
     private Boolean readOnly;
 
     private Role role;
+    private Boolean jobCreator;
 
     private Long approverId;
 

@@ -17,9 +17,26 @@
 package org.tbbtalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface CandidateVisaRepository 
         extends JpaRepository<CandidateVisaCheck, Long> {
+
+    @Query(" select v from CandidateVisaCheck v "
+            + " where v.candidate.id = :candidateId")
+    List<CandidateVisaCheck> findByCandidateId(
+            @Param("candidateId") Long candidateId);
+
+    @Query(" select v from CandidateVisaCheck v "
+            + " where v.candidate.id = :candidateId"
+            + " and v.country.id = :countryId ")
+    Optional<CandidateVisaCheck> findByCandidateIdCountryId(
+            @Param("candidateId") Long candidateId,
+            @Param("countryId") Long countryId);
     
 }

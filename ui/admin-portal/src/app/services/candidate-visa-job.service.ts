@@ -21,6 +21,10 @@ export class CandidateVisaJobService {
 
   constructor(private http: HttpClient) {}
 
+  get(id: number): Observable<CandidateVisaJobCheck> {
+    return this.http.get<CandidateVisaJobCheck>(`${this.apiUrl}/${id}`);
+  }
+
   create(visaId: number, candidateVisaJobRequest: CreateCandidateVisaJobRequest):
     Observable<CandidateVisaJobCheck>  {
     return this.http.post<CandidateVisaJobCheck>(

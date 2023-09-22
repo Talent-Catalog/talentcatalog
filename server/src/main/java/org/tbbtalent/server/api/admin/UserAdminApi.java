@@ -119,6 +119,7 @@ public class UserAdminApi {
                 .add("lastName")
                 .add("email")
                 .add("role")
+                .add("jobCreator")
                 .add("approver", userDtoApprover())
                 .add("purpose")
                 .add("sourceCountries", countryDto())

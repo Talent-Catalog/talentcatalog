@@ -16,17 +16,23 @@
 
 package org.tbbtalent.server.service.db;
 
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateVisaJobCheck;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tbbtalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 
 public interface CandidateVisaJobCheckService {
+    /**
+     * Gets the candidate visa check record from the given id.
+     * @param visaJobId ID of visa
+     * @return Desired record
+     * @throws NoSuchObjectException if the there is no visa job check record with that id
+     */
+    CandidateVisaJobCheck getVisaJobCheck(long visaJobId) throws NoSuchObjectException;
+
     /**
      * Creates a new candidate visa check record from the data in the given
      * request.
@@ -52,16 +58,12 @@ public interface CandidateVisaJobCheckService {
             throws EntityReferencedException, InvalidRequestException;
 
     /**
-     * Updates the candidate visa intake data associated with the given
-     * country and given candidate.
-     * @param visaId ID of visa job entity - If null this method does nothing
-     * @param candidate Candidate
-     * @param data Partially populated CandidateIntakeData record. Null data
+     * Updates the candidate visa job data associated with the ID provided.
+     * @param visaJobId ID of visa job entity - If null this method does nothing
+     * @param data Partially populated CandidateVisaCheckData object. Null data
      *             fields are ignored. Only non null fields are updated.
-     * @throws NoSuchObjectException if the there is no country with the
-     * given id or no CandidateVisa record with the id given in the data
+     * @throws NoSuchObjectException if the there is no CandidateVisaJobCheck record with the given ID.
      */
     void updateIntakeData(
-            @Nullable Long visaId, @NonNull Candidate candidate,
-            CandidateIntakeDataUpdate data) throws NoSuchObjectException;
+            @Nullable Long visaJobId, CandidateVisaCheckData data) throws NoSuchObjectException;
 }

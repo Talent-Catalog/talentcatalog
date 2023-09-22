@@ -17,7 +17,7 @@
 package org.tbbtalent.server.model.db;
 
 /**
- * Different user roles.
+ * Different user roles which define what each user is authorized to do.
  * <p/>
  * There are two broad categories of user: Candidates and Staff.
  * <p/>
