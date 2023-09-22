@@ -44,18 +44,19 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 16px;
-  margin: 16px 0;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-decoration: none;
   color: #14B1DD;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 @media screen and (max-width: 768px) {
   .card {
     width: 100%;
+    margin: 16px 0;
   }
 }
 
@@ -69,12 +70,12 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 16px;
-  margin: 16px 0;
   background-color: #fff;
   text-decoration: none;
   color: #14B1DD;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .card-title {

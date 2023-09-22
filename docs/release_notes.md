@@ -51,19 +51,23 @@ Check out the newest features and enhancements.
 
   <div class="card-no-border">
     <img src="./assets/images/v210/CandidateOpportunitiesTab.png" alt="Candidate Opportunities Tab" class="card-image">
-    <div class="card-title">Candidate Jobs Tab</div>
-    <div class="card-description">
-      Dedicated candidate jobs tab, providing administrators with a convenient interface for viewing an individual 
-      candidate's job opportunities and history.
+    <div class="card-body">
+      <div class="card-title">Candidate Jobs Tab</div>
+      <div class="card-description">
+        Dedicated candidate jobs tab, providing administrators with a convenient interface for viewing an individual 
+        candidate's job opportunities and history.
+      </div>
     </div>
   </div>
 
   <div class="card-no-border">
     <img src="./assets/images/v210/EnlargedSidebarProfiles.png" alt="Enlarged Sidebar" class="card-image">
-    <div class="card-title">Enlarged Sidebar Profiles</div>
-    <div class="card-description">
-      Enhanced candidate sidebar profiles for improved readability and user-friendly navigation within the search and 
-      candidate lists view, now also featuring a convenient CV preview feature.
+    <div class="card-body">
+      <div class="card-title">Enlarged Sidebar Profiles</div>
+      <div class="card-description">
+        Enhanced candidate sidebar profiles for improved readability and user-friendly navigation within the search and 
+        candidate lists view, now also featuring a convenient CV preview feature.
+      </div>
     </div>
   </div>
 
