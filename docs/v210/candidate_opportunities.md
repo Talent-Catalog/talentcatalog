@@ -20,7 +20,7 @@ In the Talent Catalog candidate portal, candidates now have the capability to vi
 selected for in line with their qualifications, experience and preferences. This enhancement enables candidates to 
 easily navigate through their potential employment opportunities, from the convenience of their device.
 
-<div class="card-image-container">
+<div class="card-image-container-narrow">
   <img src="./../assets/images/v210/JobListings.png" alt="Candidate Job Listings" class="card-image">
 </div>
 
@@ -34,6 +34,6 @@ Our existing Talent Catalog administrators have thoughtfully selected which stag
 providing candidates with notifications that are both meaningful and considerate of their circumstances. We are, as
 always, deeply appreciative of the ongoing collaboration and support from all our valued users!
 
-<div class="card-image-container">
+<div class="card-image-container-narrow">
   <img src="./../assets/images/v210/JobStageUpdates.png" alt="Candidate Job Stage Updates" class="card-image">
 </div>
