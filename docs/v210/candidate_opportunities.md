@@ -31,8 +31,9 @@ which they have been selected. This automates and enhances communication between
 ensuring that candidates receive timely updates about crucial changes that matter to them. 
 
 Our existing Talent Catalog administrators have thoughtfully selected which stage updates will be reported, thus
-providing candidates with notifications that are both meaningful and considerate of their circumstances. We are, as
-always, deeply appreciative of the ongoing collaboration and support from all our valued users!
+providing candidates with notifications that are both meaningful and considerate of their circumstances. The exact 
+wording of the Stage messages that candidates see is completely configurable and can support multi-language, if 
+required. We are, as always, deeply appreciative of the ongoing collaboration and support from all our valued users!
 
 <div class="card-image-container-narrow">
   <img src="./../assets/images/v210/JobStageUpdates.png" alt="Candidate Job Stage Updates" class="card-image">
