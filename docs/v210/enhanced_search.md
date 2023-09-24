@@ -31,7 +31,7 @@ This enhancement guarantees a more complete response for users searching on this
 
 # Enhanced Other Languages Search
 
-We're made improvements to the "other languages" search field, with a visually improved layout for language proficiency 
+We've made improvements to the "other languages" search field, with a visually improved layout for language proficiency 
 options and added reminders to ensure users select at least one proficiency level. This addresses an important 
 usability concern where the proficiency level selection might have been easily overlooked, potentially leading to 
 incomplete search results. With this update, users' other languages selections will be accurately interpreted and 
@@ -54,7 +54,7 @@ more streamlined search experience.
 </div>
 
 
-# Last but Not Least
+# Last but Not Least. . .
 
 Last but not least, we've enhanced the visibility of the search button on the New Search screen, taking into account 
 feedback we've received from users. While seemingly small, this adjustment underscores our commitment to crafting a 
