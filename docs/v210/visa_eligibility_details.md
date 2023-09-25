@@ -34,9 +34,8 @@ unnecessary data duplication.
 
 The second section of the visa eligibility check collects data that will change depending on the particular job 
 opportunity. Data collected is job specific, such as relevant candidate experience for the role and 
-candidate's interest in the role etc. When adding a job to the candidate's visa eligibility check it is automated to 
-only show the candidate's job opportunities as selections to streamline the process and connect the associated job's 
-details to the visa check.
+candidate's interest in the role etc. When adding a job to the candidate's visa eligibility check only that candidate's 
+job opportunities are presented for selection.
 
 <div class="card-image-container">
   <img src="./../assets/images/v210/CanadaVisaCheckSectionTwo.png" alt="Enhanced Other Languages Search" class="card-image">
