@@ -58,11 +58,10 @@ Some of the helpful functionality of the visa eligibility check:
 A starting point to getting the visa eligibility checks onto the TC has been to move off the from the data "black hole" 
 that is documents/spreadsheets and get the data onto the TC. Along with being able to then track and maintain data, 
 we also gain the technical efficiencies listed above. In order to get this process moving at a reasonable pace, 
-we've had to keep the answer fields relatively simple, mainly using free text fields and standardised dropdowns. 
+we've had to keep the answer fields relatively simple mainly using free text fields and standardised dropdowns. 
 This isn't a big difference from the previous way of working on docs/spreadsheets, it also allows us to standardise 
 fields for when we are rolling out to other destinations and stops us from needing to maintain large external 
-data-sources (e.g. Immigration pathways, that may change over time). In saying that the visa eligibility check will continue to 
-evolve and improve in future releases, so it is not in it's final state and we are always open to feedback!
-
-<Link to Caroline's video's>
+data-sources (e.g. Immigration pathways, that may change over time). In saying that the visa eligibility check will 
+continue to evolve and improve in future releases, particularly as more users get familiar with the new process and more 
+destinations get rolled out.
 
