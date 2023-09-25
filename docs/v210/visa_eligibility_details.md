@@ -50,7 +50,7 @@ Some of the helpful functionality of the visa eligibility check:
   - The loading icon indicates the data is being saved
   - The floppy disk icon indicates the current entered data is saved
 - **Useful links:** Links are displayed to help in data collection for example linking to government website listing immigration pathways or to the job's listing on the TC.
-- **Collated data:** The data that is needed to perform the visa eligibility checks can be collated from all areas of the TC. This data can then be and displayed as is or modified to provide the most value. 
+- **Collated data:** The data that is needed to perform the visa eligibility checks can be collated from all areas of the TC. This data can then be displayed as is or tailored to provide the most value. 
 - **Reusability:** The database architecture allows the data to be reusable throughout the TC, for example to search/filter by candidates who have had visa eligibility checks conducted.
 - **User experience:** Using radio buttons and accordions to reduce the total page size to allow easy navigation and nicer experience on smaller screens.
 
