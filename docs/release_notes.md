@@ -27,7 +27,7 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <a href="./v210/visa_eligibility_details" class="card">
-    <img src="./assets/images/v210/CanadaVisaChecks.png" alt="Visa Eligibility" class="card-image">
+    <img src="./assets/images/v210/CanadaVisaCheckOverview.png" alt="Visa Eligibility" class="card-image">
     <div class="card-title">Visa Eligibility Checks</div>
   </a>
 
