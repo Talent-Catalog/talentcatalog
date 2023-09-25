@@ -8,15 +8,15 @@ sass:
 
 
 This release introduces an updated iteration of visa eligibility checks, which was previously designed and used for 
-Australian visa checks only. The new functionality has been introduced to support comprehensive Canada 
-visa eligibility, but has been designed with all other destinations in mind. This will allow us to perform an efficient 
-rollout of this visa eligibility check functionality across all destinations in future releases of the TC.
+Australian visa checks only. The new functionality has been created to support the comprehensive Canada visa 
+eligibility check, but has been designed with all other destinations in mind. This will allow us to perform an 
+efficient rollout of this visa eligibility check functionality across all destinations in future releases of the TC.
 
 The functionality allows users to perform visa eligibility checks from within the TC, encompassing initial checks, 
 job-specific questions, and standardized final assessment criteria. Conducting visa eligibility checks on the TC allows 
-for easy access of the data that is required to effectively perform the check by displaying data from the intakes,
+for easy access of the data that is required to effectively perform the check. It displays data from the intakes,
 candidate registration, job opportunity intake or any other useful data that exists on the TC. Each destination will 
-have their own set of questions and data that is displayed, however the overall design and functionality will be 
+have their own set of questions and data to be displayed, however the overall design and functionality will be 
 standardised (as per what is shown in this release).
 
 
@@ -33,9 +33,10 @@ unnecessary data duplication.
 # Section 2 - Job Specific Assessment Questions
 
 The second section of the visa eligibility check collects data that will change depending on the particular job 
-opportunity. Data collected are job specific, such as relevant experience for the role, the job's location, 
-candidate's interest in the role etc. When adding a job to the visa eligibility check the candidate's job 
-opportunities appear as selections.
+opportunity. Data collected is job specific, such as relevant candidate experience for the role and 
+candidate's interest in the role etc. When adding a job to the candidate's visa eligibility check it is automated to 
+only show the candidate's job opportunities as selections to streamline the process and connect the associated job's 
+details to the visa check.
 
 <div class="card-image-container">
   <img src="./../assets/images/v210/CanadaVisaCheckSectionTwo.png" alt="Enhanced Other Languages Search" class="card-image">
@@ -52,6 +53,16 @@ Some of the helpful functionality of the visa eligibility check:
 - **Collated data:** The data that is needed to perform the visa eligibility checks can be collated from all areas of the TC. This data can then be and displayed as is or modified to provide the most value. 
 - **Reusability:** The database architecture allows the data to be reusable throughout the TC, for example to search/filter by candidates who have had visa eligibility checks conducted.
 - **User experience:** Using radio buttons and accordions to reduce the total page size to allow easy navigation and nicer experience on smaller screens.
+
+# Next steps
+A starting point to getting the visa eligibility checks onto the TC has been to move off the from the data "black hole" 
+that is documents/spreadsheets and get the data onto the TC. Along with being able to then track and maintain data, 
+we also gain the technical efficiencies listed above. In order to get this process moving at a reasonable pace, 
+we've had to keep the answer fields relatively simple, mainly using free text fields and standardised dropdowns. 
+This isn't a big difference from the previous way of working on docs/spreadsheets, it also allows us to standardise 
+fields for when we are rolling out to other destinations and stops us from needing to maintain large external 
+data-sources (e.g. Immigration pathways, that may change over time). In saying that the visa eligibility check will continue to 
+evolve and improve in future releases, so it is not in it's final state and we are always open to feedback!
 
 <Link to Caroline's video's>
 
