@@ -174,6 +174,8 @@ public class CandidateVisaCheckAdminApi
                 .add("eligiblePathways")
                 .add("occupationCategory")
                 .add("occupationSubCategory")
+                .add("englishThreshold")
+                .add("englishThresholdNotes")
                 ;
     }
 

@@ -267,6 +267,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("eligiblePathways")
                 .add("occupationCategory")
                 .add("occupationSubCategory")
+                .add("englishThreshold")
+                .add("englishThresholdNotes")
                 ;
     }
 

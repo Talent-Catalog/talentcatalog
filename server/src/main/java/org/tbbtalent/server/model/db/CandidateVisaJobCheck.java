@@ -106,6 +106,12 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobOccupationSubCategory() != null) {
             setOccupationSubCategory(data.getVisaJobOccupationSubCategory());
         }
+        if (data.getVisaJobEnglishThreshold() != null) {
+            setEnglishThreshold(data.getVisaJobEnglishThreshold());
+        }
+        if (data.getVisaJobEnglishThresholdNotes() != null) {
+            setEnglishThresholdNotes(data.getVisaJobEnglishThresholdNotes());
+        }
 
     }
     
