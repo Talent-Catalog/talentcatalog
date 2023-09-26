@@ -54,7 +54,7 @@ Some of the helpful functionality of the visa eligibility check:
 
 
 <div class="card-image-container">
-  <iframe src="https://drive.google.com/file/d/1f75pMoL6hgCYKh1gy7DWuzL5FRB8GWf4/preview" width="640" height="480" allow="autoplay"></iframe>
+  <iframe src="https://drive.google.com/file/d/1f75pMoL6hgCYKh1gy7DWuzL5FRB8GWf4/preview" width="70%" height="480"></iframe>
 </div>
 
 # Next steps
