@@ -343,6 +343,8 @@ export interface CandidateVisaJobCheck {
   eligiblePathways?: string;
   occupationCategory?: string;
   occupationSubCategory?: string;
+  englishThreshold?: YesNo;
+  englishThresholdNotes?: string;
 }
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)

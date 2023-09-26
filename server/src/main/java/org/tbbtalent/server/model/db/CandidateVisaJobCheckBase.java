@@ -103,4 +103,8 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     private String occupationCategory;
 
     private String occupationSubCategory;
+
+    private YesNo englishThreshold;
+
+    private String englishThresholdNotes;
 }
