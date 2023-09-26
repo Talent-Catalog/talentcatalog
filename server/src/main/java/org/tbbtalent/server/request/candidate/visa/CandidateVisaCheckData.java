@@ -76,4 +76,6 @@ public class CandidateVisaCheckData {
     private String visaJobEligiblePathways;
     private String visaJobOccupationCategory;
     private String visaJobOccupationSubCategory;
+    private YesNo visaJobEnglishThreshold;
+    private String visaJobEnglishThresholdNotes;
 }

@@ -509,6 +509,9 @@ import {
 import {DirectiveModule} from "./directives/directive.module";
 import {EnvService} from "./services/env.service";
 import {ExportPdfComponent} from './components/util/export-pdf/export-pdf.component';
+import {
+  JobEnglishThresholdComponent
+} from './components/candidates/visa/visa-job-assessments/job-english-threshold/job-english-threshold.component';
 
 @NgModule({
   declarations: [
@@ -803,7 +806,8 @@ import {ExportPdfComponent} from './components/util/export-pdf/export-pdf.compon
     IneligiblePathwaysComponent,
     OccupationCategoryComponent,
     OccupationSubcategoryComponent,
-    ExportPdfComponent
+    ExportPdfComponent,
+    JobEnglishThresholdComponent
   ],
   imports: [
     BrowserModule,
