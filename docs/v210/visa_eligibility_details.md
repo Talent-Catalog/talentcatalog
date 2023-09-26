@@ -19,6 +19,12 @@ candidate registration, job opportunity intake or any other useful data that exi
 have their own set of questions and data to be displayed, however the overall design and functionality will be 
 standardised (as per what is shown in this release).
 
+<div class="card-image-container">
+  <video controls>
+    <source src="https://drive.google.com/file/d/1f75pMoL6hgCYKh1gy7DWuzL5FRB8GWf4/view?usp=drive_link" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
 
 # Section 1 - General Visa Assessment Questions
 
