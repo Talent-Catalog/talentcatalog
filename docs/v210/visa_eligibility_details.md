@@ -19,7 +19,6 @@ candidate registration, job opportunity intake or any other useful data that exi
 have their own set of questions and data to be displayed, however the overall design and functionality will be 
 standardised (as per what is shown in this release).
 
-
 # Section 1 - General Visa Assessment Questions
 
 The first section of the visa eligibility check collects data that is relating to the **candidate** and the 
@@ -52,6 +51,11 @@ Some of the helpful functionality of the visa eligibility check:
 - **Collated data:** The data that is needed to perform the visa eligibility checks can be collated from all areas of the TC. This data can then be displayed as is or tailored to provide the most value. 
 - **Reusability:** The database architecture allows the data to be reusable throughout the TC, for example to search/filter by candidates who have had visa eligibility checks conducted.
 - **User experience:** Using radio buttons and accordions to reduce the total page size to allow easy navigation and nicer experience on smaller screens.
+
+
+<div class="card-image-container">
+  <iframe src="https://drive.google.com/file/d/1f75pMoL6hgCYKh1gy7DWuzL5FRB8GWf4/preview" width="70%" height="480"></iframe>
+</div>
 
 # Next steps
 A starting point to getting the visa eligibility checks onto the TC has been to move off the from the data "black hole" 
