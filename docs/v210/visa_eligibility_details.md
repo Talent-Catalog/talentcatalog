@@ -20,10 +20,7 @@ have their own set of questions and data to be displayed, however the overall de
 standardised (as per what is shown in this release).
 
 <div class="card-image-container">
-  <video controls>
-    <source src="https://drive.google.com/file/d/1f75pMoL6hgCYKh1gy7DWuzL5FRB8GWf4/view?usp=drive_link" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  <iframe src="https://drive.google.com/file/d/1f75pMoL6hgCYKh1gy7DWuzL5FRB8GWf4/preview" width="640" height="480" allow="autoplay"></iframe>
 </div>
 
 # Section 1 - General Visa Assessment Questions
