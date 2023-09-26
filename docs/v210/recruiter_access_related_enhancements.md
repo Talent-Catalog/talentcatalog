@@ -4,7 +4,7 @@ sass:
   style: compressed
 ---
 
-# Recruiter Access Related Enhancements
+# Partners as Job Creators
 
 Recruiter access involves providing approved employers and third party recruiter organizations direct access to
 the Talent Catalog. Those new types of user are special in that they have the ability to create 
@@ -18,6 +18,7 @@ access which we hope will be fully operational for employers by the end of the y
 </div>
 
 
+# Authorising Individual Staff Members
 
 Job creating partners also need to specify which of their staff are authorized to create jobs - 
 this is done by adding "job creator" to the relevant user's configuration.  
