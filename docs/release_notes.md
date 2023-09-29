@@ -43,6 +43,7 @@ Check out the newest features and enhancements.
 - Enhanced Salesforce integration, allowing for automatic updates without manual intervention.
 - Dedicated separate Elasticsearch and Salesforce environments for staging, ensuring a controlled and optimised
   user testing environment.
+- Submission lists are now published to Google Sheets, ensuring that closed cases are automatically excluded.
 
   
 # UI / UX Enhancements
@@ -129,6 +130,8 @@ accidental changes.
   stability.
 - Enabled AWS application load balancer logs for Amazon support team, facilitating easier troubleshooting and support.
 - Migrated to the talent-catalog image repository on AWS, ensuring secure and reliable image storage and access.
+- Upgraded Spring Boot version from 2.4.3 to 2.7.13
+- Upgraded Elasticsearch cluster version from 7.12.0 to 7.17.11
 
 
 
