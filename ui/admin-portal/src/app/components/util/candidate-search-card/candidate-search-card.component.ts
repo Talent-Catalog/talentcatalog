@@ -14,15 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  AfterViewChecked,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {AfterViewChecked, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
 import {CandidateSource} from '../../../model/base';
@@ -31,6 +23,7 @@ import {isSavedList} from "../../../model/saved-list";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthService} from "../../../services/auth.service";
+import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -127,6 +120,13 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
 
   canViewPrivateInfo() {
     return this.authService.canViewPrivateCandidateInfo(this.candidate);
+  }
+
+  /**
+   * Get candidate opportunity matching current job (if it is a job submission list)
+   */
+  getCandidateOppForJobSource(): CandidateOpportunity {
+    return this.candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
   }
 
 }

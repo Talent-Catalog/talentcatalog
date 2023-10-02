@@ -57,6 +57,18 @@
             </app-cv-preview>
           </ng-template>
         </ng-container>
+
+        <!-- PROGRESS -->
+        <ng-container *ngIf="isList && candidateSource.sfJobOpp != null" ngbNavItem="Progress">
+          <a ngbNavLink>Progress</a>
+          <ng-template ngbNavContent>
+            <app-opportunity-stage-next-step
+              [opp]="getCandidateOppForJobSource()"
+              (oppProgressUpdated)="onOppProgressUpdated($event)"
+            >
+            </app-opportunity-stage-next-step>
+          </ng-template>
+        </ng-container>
       </nav>
       <div [ngbNavOutlet]="navContext" class="mt-2"></div>
     </div>
