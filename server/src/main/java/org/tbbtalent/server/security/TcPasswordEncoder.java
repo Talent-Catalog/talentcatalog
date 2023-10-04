@@ -18,7 +18,7 @@ package org.tbbtalent.server.security;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-public class TbbPasswordEncoder extends BCryptPasswordEncoder {
+public class TcPasswordEncoder extends BCryptPasswordEncoder {
 
     private static final String DEFAULT_PASSWORD = "password";
 
