@@ -84,7 +84,7 @@ import org.tbbtalent.server.security.TcUserDetailsService;
  *     </li>
  *     <li>
  *         {@link TcAuthenticationProvider} implements AuthenticationProvider passing in our
- *         wired in instance of the above TbbUserDetailsService, and the PasswordEncoder defined
+ *         wired in instance of the above TcUserDetailsService, and the PasswordEncoder defined
  *         below in {@link #passwordEncoder()}.
  *     </li>
  * </ul>

@@ -28,7 +28,7 @@ import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 
 /**
- * Tbb's implementation of Spring's {@link UserDetails}, retrieving user data from database, setting
+ * Talent Catalog's implementation of Spring's {@link UserDetails}, retrieving user data from database, setting
  * authorities based on the user's {@link Role} and exposing the corresponding underlying
  * {@link User} object through {@link #getUser()}.
  * <p/>
