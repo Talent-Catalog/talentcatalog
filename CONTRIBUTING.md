@@ -112,7 +112,7 @@ See [the README for how to do a release](README.md).
 
 
 [new issue]: https://github.com/talentbeyondboundaries/tbbtalentv2/issues/new
-[fork TbbTalent]: https://help.github.com/articles/fork-a-repo
+[fork talentcatalog]: https://help.github.com/articles/fork-a-repo
 [collaborate with issues and pull requests]: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests
 [fork and pull model]: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-collaborative-development-models
 [make a pull request]: https://help.github.com/articles/creating-a-pull-request
