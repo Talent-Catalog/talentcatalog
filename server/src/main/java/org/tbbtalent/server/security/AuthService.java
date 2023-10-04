@@ -44,8 +44,8 @@ public class AuthService {
      */
     public Optional<User> getLoggedInUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof TbbUserDetails) {
-            return Optional.of(((TbbUserDetails) auth.getPrincipal()).getUser());
+        if (auth != null && auth.getPrincipal() instanceof TcUserDetails) {
+            return Optional.of(((TcUserDetails) auth.getPrincipal()).getUser());
         }
         return Optional.empty();
     }

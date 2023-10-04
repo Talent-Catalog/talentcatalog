@@ -45,7 +45,7 @@ import org.tbbtalent.server.security.JwtAuthenticationFilter;
 import org.tbbtalent.server.security.LanguageFilter;
 import org.tbbtalent.server.security.TbbAuthenticationProvider;
 import org.tbbtalent.server.security.TbbPasswordEncoder;
-import org.tbbtalent.server.security.TbbUserDetailsService;
+import org.tbbtalent.server.security.TcUserDetailsService;
 
 /**
  * Talent Catalog security configuration.
@@ -79,7 +79,7 @@ import org.tbbtalent.server.security.TbbUserDetailsService;
  *         them.
  *     </li>
  *     <li>
- *         {@link TbbUserDetailsService} implements UserDetailsService providing access to the user
+ *         {@link TcUserDetailsService} implements UserDetailsService providing access to the user
  *         table in our database
  *     </li>
  *     <li>
@@ -101,7 +101,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private Environment env;
 
     @Autowired
-    private TbbUserDetailsService userDetailsService;
+    private TcUserDetailsService userDetailsService;
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
