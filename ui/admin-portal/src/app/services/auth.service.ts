@@ -272,7 +272,7 @@ export class AuthService {
     return [Role.systemadmin, Role.admin].includes(this.getLoggedInRole());
   }
 
-  isSourcePartnerAdminOrGreater(): boolean {
+  isPartnerAdminOrGreater(): boolean {
     return [Role.systemadmin, Role.admin, Role.partnerAdmin].includes(this.getLoggedInRole());
   }
 
@@ -436,7 +436,7 @@ export class AuthService {
     //Can only change stage of jobs that have been published
     if (job.publishedDate != null) {
       //Todo Temporary fix
-      result = this.isSourcePartnerAdminOrGreater();
+      result = this.isPartnerAdminOrGreater();
 
       //todo Temporary commented out
       //Current logic is that only a system admin or the contact user, defaulting to the creating user
@@ -463,7 +463,7 @@ export class AuthService {
    * @param opp Candidate opportunity
    */
   canEditCandidateOpp(opp: CandidateOpportunity) {
-    return this.isSourcePartnerAdminOrGreater() &&
+    return this.isPartnerAdminOrGreater() &&
       (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
   }
 }
