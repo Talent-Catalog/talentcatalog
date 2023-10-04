@@ -66,8 +66,8 @@ export class SearchUsersComponent implements OnInit {
     this.pageSize = 50;
 
     this.onChanges();
-    if (this.authService.getLoggedInRole() === Role.sourcepartneradmin) {
-      this.roleOptions = this.roleOptions.filter(r => r.key !== "admin" && r.key !== "sourcepartneradmin" );
+    if (this.authService.getLoggedInRole() === Role.partnerAdmin) {
+      this.roleOptions = this.roleOptions.filter(r => r.key !== "admin" && r.key !== "partneradmin" );
     }
   }
 
@@ -210,7 +210,7 @@ export class SearchUsersComponent implements OnInit {
         break;
 
       case Role.admin:
-      case Role.sourcepartneradmin:
+      case Role.partnerAdmin:
         if (user.partner?.id !== myUser.partner?.id) {
           //Can't edit another partner's user.
           editable = false;

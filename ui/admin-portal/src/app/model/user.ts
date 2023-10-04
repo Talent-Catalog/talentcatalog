@@ -70,7 +70,7 @@ export interface UpdateUserRequest {
 export enum Role {
   systemadmin = "System Admin",
   admin = "Full Admin",
-  sourcepartneradmin = "Source Partner Admin",
+  partnerAdmin = "Partner Admin",
   semilimited = "Semi Limited",
   limited = "Limited"
 }
@@ -88,16 +88,16 @@ export function roleGreaterThan(role1: Role, role2: Role): boolean {
       greaterRoles = [Role.systemadmin]
       break;
 
-    case Role.sourcepartneradmin:
+    case Role.partnerAdmin:
       greaterRoles = [Role.admin, Role.systemadmin]
       break;
 
     case Role.semilimited:
-      greaterRoles = [Role.sourcepartneradmin, Role.admin, Role.systemadmin]
+      greaterRoles = [Role.partnerAdmin, Role.admin, Role.systemadmin]
       break;
 
     case Role.limited:
-      greaterRoles = [Role.semilimited, Role.sourcepartneradmin, Role.admin, Role.systemadmin]
+      greaterRoles = [Role.semilimited, Role.partnerAdmin, Role.admin, Role.systemadmin]
       break;
   }
 
