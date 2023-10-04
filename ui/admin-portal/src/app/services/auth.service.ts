@@ -61,12 +61,12 @@ export class AuthService {
     const userRole: Role = this.getLoggedInRole();
     let assignableRoles: Role[] = [];
     switch (userRole) {
-      case Role.partnerAdmin:
+      case Role.partneradmin:
         assignableRoles.push(Role.limited, Role.semilimited);
         break;
 
       case Role.admin:
-        assignableRoles.push(Role.limited, Role.semilimited, Role.partnerAdmin);
+        assignableRoles.push(Role.limited, Role.semilimited, Role.partneradmin);
         break;
 
       case Role.systemadmin:
@@ -98,7 +98,7 @@ export class AuthService {
     switch (this.getLoggedInRole()) {
        case Role.systemadmin:
        case Role.admin:
-       case Role.partnerAdmin:
+       case Role.partneradmin:
        case Role.semilimited:
         result = true;
      }
@@ -115,7 +115,7 @@ export class AuthService {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
-        case Role.partnerAdmin:
+        case Role.partneradmin:
           result = true;
       }
     }
@@ -131,7 +131,7 @@ export class AuthService {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
-        case Role.partnerAdmin:
+        case Role.partneradmin:
           result = true;
       }
     }
@@ -249,7 +249,7 @@ export class AuthService {
     switch (this.getLoggedInRole()) {
        case Role.systemadmin:
        case Role.admin:
-       case Role.partnerAdmin:
+       case Role.partneradmin:
         admin = true;
      }
      return admin;
@@ -273,7 +273,7 @@ export class AuthService {
   }
 
   isPartnerAdminOrGreater(): boolean {
-    return [Role.systemadmin, Role.admin, Role.partnerAdmin].includes(this.getLoggedInRole());
+    return [Role.systemadmin, Role.admin, Role.partneradmin].includes(this.getLoggedInRole());
   }
 
   getLoggedInRole(): Role {
