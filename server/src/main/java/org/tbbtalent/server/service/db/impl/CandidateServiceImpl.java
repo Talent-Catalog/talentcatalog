@@ -518,7 +518,7 @@ public class CandidateServiceImpl implements CandidateService {
 //                    s +'%', sourceCountries,
 //                    request.getPageRequestWithoutSort());
 //        } else {
-//            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+//            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.partneradmin) {
 //                candidates = candidateRepository.searchCandidateName(
 //                        '%' + s + '%', sourceCountries,
 //                        request.getPageRequestWithoutSort());

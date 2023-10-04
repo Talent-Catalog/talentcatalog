@@ -61,12 +61,12 @@ export class AuthService {
     const userRole: Role = this.getLoggedInRole();
     let assignableRoles: Role[] = [];
     switch (userRole) {
-      case Role.sourcepartneradmin:
+      case Role.partnerAdmin:
         assignableRoles.push(Role.limited, Role.semilimited);
         break;
 
       case Role.admin:
-        assignableRoles.push(Role.limited, Role.semilimited, Role.sourcepartneradmin);
+        assignableRoles.push(Role.limited, Role.semilimited, Role.partnerAdmin);
         break;
 
       case Role.systemadmin:
@@ -98,7 +98,7 @@ export class AuthService {
     switch (this.getLoggedInRole()) {
        case Role.systemadmin:
        case Role.admin:
-       case Role.sourcepartneradmin:
+       case Role.partnerAdmin:
        case Role.semilimited:
         result = true;
      }
@@ -115,7 +115,7 @@ export class AuthService {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
-        case Role.sourcepartneradmin:
+        case Role.partnerAdmin:
           result = true;
       }
     }
@@ -131,7 +131,7 @@ export class AuthService {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
-        case Role.sourcepartneradmin:
+        case Role.partnerAdmin:
           result = true;
       }
     }
@@ -249,7 +249,7 @@ export class AuthService {
     switch (this.getLoggedInRole()) {
        case Role.systemadmin:
        case Role.admin:
-       case Role.sourcepartneradmin:
+       case Role.partnerAdmin:
         admin = true;
      }
      return admin;
@@ -272,8 +272,8 @@ export class AuthService {
     return [Role.systemadmin, Role.admin].includes(this.getLoggedInRole());
   }
 
-  isSourcePartnerAdminOrGreater(): boolean {
-    return [Role.systemadmin, Role.admin, Role.sourcepartneradmin].includes(this.getLoggedInRole());
+  isPartnerAdminOrGreater(): boolean {
+    return [Role.systemadmin, Role.admin, Role.partnerAdmin].includes(this.getLoggedInRole());
   }
 
   getLoggedInRole(): Role {
@@ -436,7 +436,7 @@ export class AuthService {
     //Can only change stage of jobs that have been published
     if (job.publishedDate != null) {
       //Todo Temporary fix
-      result = this.isSourcePartnerAdminOrGreater();
+      result = this.isPartnerAdminOrGreater();
 
       //todo Temporary commented out
       //Current logic is that only a system admin or the contact user, defaulting to the creating user
@@ -463,7 +463,7 @@ export class AuthService {
    * @param opp Candidate opportunity
    */
   canEditCandidateOpp(opp: CandidateOpportunity) {
-    return this.isSourcePartnerAdminOrGreater() &&
+    return this.isPartnerAdminOrGreater() &&
       (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
   }
 }
