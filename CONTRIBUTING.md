@@ -45,8 +45,8 @@ If you've noticed a bug or have a feature request, [make one][new issue]! It's
 generally best if you get confirmation of your bug or approval for your feature
 request this way before starting to code.
 
-If you have a general question about TBB, please contact us at 
-contact@talentbeyondboundaries.org, 
+If you have a general question about the Talent Catalog, please contact us at 
+support@talentcatalog.net, 
 the issue tracker is only for software bugs and feature requests.
 
 ## Fork & create a branch
@@ -79,7 +79,7 @@ checks as the rest of the project.
 ## Make a Pull Request
 
 At this point, you should switch back to your master branch and make sure it's
-up to date with the ("upstream") tbbtalentv2 master branch:
+up to date with the ("upstream") talentcatalog master branch:
 
 Then update your feature branch from your local copy of master, and push it!
 
@@ -111,7 +111,7 @@ met.
 See [the README for how to do a release](README.md).
 
 
-[new issue]: https://github.com/talentbeyondboundaries/tbbtalentv2/issues/new
+[new issue]: https://github.com/Talent-Catalog/talentcatalog/issues/new
 [fork talentcatalog]: https://help.github.com/articles/fork-a-repo
 [collaborate with issues and pull requests]: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests
 [fork and pull model]: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-collaborative-development-models
