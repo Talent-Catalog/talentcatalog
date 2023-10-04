@@ -31,7 +31,7 @@ import org.tbbtalent.server.model.db.User;
 @Service
 public class AuthService {
     private final Set<Role> adminRoles = new HashSet<>(Arrays.asList(
-        Role.sourcepartneradmin, Role.admin, Role.systemadmin));
+        Role.partneradmin, Role.admin, Role.systemadmin));
 
     /**
      * Return logged in user. Optional empty if not logged in.
@@ -119,7 +119,7 @@ public class AuthService {
                 return false;
             } else if (user.getRole().equals(Role.admin) || user.getRole().equals(Role.systemadmin)) {
                 return true;
-            } else if (user.getRole().equals(Role.sourcepartneradmin)) {
+            } else if (user.getRole().equals(Role.partneradmin)) {
                 if (!user.getSourceCountries().isEmpty()) {
                     return user.getSourceCountries().contains(owner.getCountry());
                 } else {
