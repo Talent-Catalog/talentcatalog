@@ -31,9 +31,6 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   }
 
   ngOnInit() {
-    this.cvs = this.candidate.candidateAttachments?.filter(a => a.cv === true);
-    this.other = this.candidate.candidateAttachments?.filter(a => a.cv === false);
-
     // Only lists have listShareable attachments
     if (this.isList) {
       this.form = this.fb.group({
@@ -106,6 +103,7 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('changes')
     //Replace the form value with the new candidates context notes when
     //changing from one candidate to the next or when selection has changed.
     this.cvs = this.candidate.candidateAttachments?.filter(a => a.cv === true);
