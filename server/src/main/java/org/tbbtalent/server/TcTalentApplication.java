@@ -39,10 +39,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ConfigurationPropertiesScan
 @EnableScheduling
 @EnableAsync
-public class TbbTalentApplication {
+public class TcTalentApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TbbTalentApplication.class, args);
+        SpringApplication.run(TcTalentApplication.class, args);
     }
 
     /**
