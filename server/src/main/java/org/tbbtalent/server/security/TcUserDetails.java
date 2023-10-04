@@ -51,7 +51,7 @@ public class TcUserDetails implements UserDetails {
         } else if (user.getRole().equals(Role.admin)) {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         } else if (user.getRole().equals(Role.partneradmin)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_SOURCEPARTNERADMIN"));
+            this.authorities.add(new SimpleGrantedAuthority("ROLE_PARTNERADMIN"));
         } else if (user.getRole().equals(Role.semilimited)) {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_SEMILIMITED"));
         } else if (user.getRole().equals(Role.limited)) {
