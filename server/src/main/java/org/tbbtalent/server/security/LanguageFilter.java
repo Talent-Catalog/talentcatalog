@@ -5,24 +5,22 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.security;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +34,7 @@ import org.tbbtalent.server.model.db.User;
  * Sets an authenticated user's selected language based on the X-Language
  * header in the HTTP request.
  * <p/>
- * This matches up with the language.interceptor.ts class on the 
+ * This matches up with the language.interceptor.ts class on the
  * browser (Angular) side.
  */
 public class LanguageFilter extends OncePerRequestFilter {
@@ -56,8 +54,8 @@ public class LanguageFilter extends OncePerRequestFilter {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null) {
                 Object principal = authentication.getPrincipal();
-                if (principal instanceof TbbUserDetails) {
-                    User user = ((TbbUserDetails) principal).getUser();
+                if (principal instanceof TcUserDetails) {
+                    User user = ((TcUserDetails) principal).getUser();
                     user.setSelectedLanguage(selectedLanguage);
                 }
             }

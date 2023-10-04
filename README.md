@@ -198,12 +198,12 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
   For example add "source ~/tbb_secrets.txt" to .bash_profile or .zshenv
   depending on whether you are running bash or zsh.
 
-- Create a new Run Profile for `org.tbbtalent.server.TbbTalentApplication`. 
+- Create a new Run Profile for `org.tbbtalent.server.TcTalentApplication`. 
   In the Environment Variables section of Intellij, check the 
   "Include system environment variables" checkbox.
 - Run the new profile, you should see something similar to this in the logs: 
 ```
-Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
+Started TcTalentApplication in 2.217 seconds (JVM running for 2.99)
 ```
 - your server will be running on port 8080 (default for Spring Boot) 
 (can be overridden by setting server.port in application.yml, or Intellij Run 

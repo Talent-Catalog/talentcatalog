@@ -43,9 +43,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
 import org.tbbtalent.server.security.JwtAuthenticationFilter;
 import org.tbbtalent.server.security.LanguageFilter;
-import org.tbbtalent.server.security.TbbAuthenticationProvider;
-import org.tbbtalent.server.security.TbbPasswordEncoder;
-import org.tbbtalent.server.security.TbbUserDetailsService;
+import org.tbbtalent.server.security.TcAuthenticationProvider;
+import org.tbbtalent.server.security.TcPasswordEncoder;
+import org.tbbtalent.server.security.TcUserDetailsService;
 
 /**
  * Talent Catalog security configuration.
@@ -79,12 +79,12 @@ import org.tbbtalent.server.security.TbbUserDetailsService;
  *         them.
  *     </li>
  *     <li>
- *         {@link TbbUserDetailsService} implements UserDetailsService providing access to the user
+ *         {@link TcUserDetailsService} implements UserDetailsService providing access to the user
  *         table in our database
  *     </li>
  *     <li>
- *         {@link TbbAuthenticationProvider} implements AuthenticationProvider passing in our
- *         wired in instance of the above TbbUserDetailsService, and the PasswordEncoder defined
+ *         {@link TcAuthenticationProvider} implements AuthenticationProvider passing in our
+ *         wired in instance of the above TcUserDetailsService, and the PasswordEncoder defined
  *         below in {@link #passwordEncoder()}.
  *     </li>
  * </ul>
@@ -101,7 +101,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private Environment env;
 
     @Autowired
-    private TbbUserDetailsService userDetailsService;
+    private TcUserDetailsService userDetailsService;
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
@@ -385,7 +385,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new TbbPasswordEncoder();
+        return new TcPasswordEncoder();
     }
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
@@ -399,10 +399,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(userAuthenticationProvider());
     }
 
-    private TbbAuthenticationProvider userAuthenticationProvider() {
-        TbbAuthenticationProvider tbbAuthenticationProvider = new TbbAuthenticationProvider(userDetailsService);
-        tbbAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return tbbAuthenticationProvider;
+    private TcAuthenticationProvider userAuthenticationProvider() {
+        TcAuthenticationProvider tcAuthenticationProvider = new TcAuthenticationProvider(userDetailsService);
+        tcAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        return tcAuthenticationProvider;
     }
 
 }

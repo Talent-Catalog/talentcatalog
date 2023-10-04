@@ -1,6 +1,6 @@
-# Contributing to TbbTalent
+# Contributing to the Talent Catalog
 
-First of all, thank you for considering contributing to TbbTalent. 
+First of all, thank you for considering contributing to the Talent Catalog. 
 
 [Please read and abide by our Code of Conduct](CODE_OF_CONDUCT.md).
 
@@ -53,7 +53,7 @@ the issue tracker is only for software bugs and feature requests.
 
 We [collaborate with issues and pull requests], using the [fork and pull model].
 
-If this is something you think you can fix, then [fork TbbTalent] and create
+If this is something you think you can fix, then [fork talentcatalog] and create
 a branch with a descriptive name.
 
 A good branch name would be (where issue #325 is the one you're working on):
@@ -112,7 +112,7 @@ See [the README for how to do a release](README.md).
 
 
 [new issue]: https://github.com/talentbeyondboundaries/tbbtalentv2/issues/new
-[fork TbbTalent]: https://help.github.com/articles/fork-a-repo
+[fork talentcatalog]: https://help.github.com/articles/fork-a-repo
 [collaborate with issues and pull requests]: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests
 [fork and pull model]: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-collaborative-development-models
 [make a pull request]: https://help.github.com/articles/creating-a-pull-request

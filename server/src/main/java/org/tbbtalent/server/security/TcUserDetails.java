@@ -16,6 +16,10 @@
 
 package org.tbbtalent.server.security;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.validation.constraints.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,24 +27,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 /**
- * Tbb's implementation of Spring's {@link UserDetails}, retrieving user data from database, setting
+ * Talent Catalog's implementation of Spring's {@link UserDetails}, retrieving user data from database, setting
  * authorities based on the user's {@link Role} and exposing the corresponding underlying
  * {@link User} object through {@link #getUser()}.
  * <p/>
  * Note that this is what is returned by {@link Authentication#getPrincipal()}
  */
-public class TbbUserDetails implements UserDetails {
+public class TcUserDetails implements UserDetails {
 
     private User user;
     private List<GrantedAuthority> authorities;
 
-    public TbbUserDetails(@NotNull User user) {
+    public TcUserDetails(@NotNull User user) {
         this.user = user;
         this.authorities = new ArrayList<>();
 
