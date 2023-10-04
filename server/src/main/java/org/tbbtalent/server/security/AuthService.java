@@ -100,7 +100,7 @@ public class AuthService {
      *          Admins or systemadmins are always authorized
      *     </li>
      *     <li>
-     *          sourcepartneradmins which have no country restrictions are always authorized. If they
+     *          partneradmins which have no country restrictions are always authorized. If they
      *          have country restrictions the candidate must be located in one of those countries.
      *     </li>
      *     <li>
