@@ -59,13 +59,12 @@
         </ng-container>
 
         <!-- PROGRESS -->
-        <ng-container *ngIf="isList && candidateSource.sfJobOpp != null" ngbNavItem="Progress">
+        <ng-container *ngIf="isSubmissionList" ngbNavItem="progress">
           <a ngbNavLink>Progress</a>
           <ng-template ngbNavContent>
             <app-opportunity-stage-next-step
               [opp]="getCandidateOppForJobSource()"
-              (oppProgressUpdated)="onOppProgressUpdated($event)"
-            >
+              [notEditable]="true">
             </app-opportunity-stage-next-step>
           </ng-template>
         </ng-container>

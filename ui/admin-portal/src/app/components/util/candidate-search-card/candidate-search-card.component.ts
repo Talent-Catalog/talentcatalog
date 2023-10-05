@@ -82,6 +82,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     return this.candidate.selected;
   }
 
+  get isSubmissionList(): boolean {
+    return this.isList && this.candidateSource.sfJobOpp != null
+  }
+
   isContextNoteDisplayed() {
     let display: boolean = true;
     if (isSavedSearch(this.candidateSource)) {
@@ -114,7 +118,15 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
     this.setActiveTabId(defaultActiveTabID == null ? "general" : defaultActiveTabID);
 
-    const defaultActiveContextTabID: string = this.localStorageService.get(this.lastContextTabKey);
+    let defaultActiveContextTabID: string = this.localStorageService.get(this.lastContextTabKey);
+
+    // IF the saved context tab is 'progress' but the source isn't a submission list
+    // THEN we need to set the saved context tab to null
+    // SO THAT it selects the default 'context notes' tab otherwise it won't select anything
+    // as the progress tab only exists on submission lists.
+    if (defaultActiveContextTabID == "progress" && !this.isSubmissionList) {
+      defaultActiveContextTabID = null;
+    }
     this.setActiveContextTabId(defaultActiveContextTabID == null ? "contextNotes" : defaultActiveContextTabID);
   }
 
