@@ -39,7 +39,7 @@ public enum Role {
      */
     user,
 
-    sourcepartneradmin,
+    partneradmin,
     semilimited,
     limited
 }

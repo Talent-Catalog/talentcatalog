@@ -31,7 +31,7 @@ import org.tbbtalent.server.model.db.User;
 @Service
 public class AuthService {
     private final Set<Role> adminRoles = new HashSet<>(Arrays.asList(
-        Role.sourcepartneradmin, Role.admin, Role.systemadmin));
+        Role.partneradmin, Role.admin, Role.systemadmin));
 
     /**
      * Return logged in user. Optional empty if not logged in.
@@ -44,8 +44,8 @@ public class AuthService {
      */
     public Optional<User> getLoggedInUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof TbbUserDetails) {
-            return Optional.of(((TbbUserDetails) auth.getPrincipal()).getUser());
+        if (auth != null && auth.getPrincipal() instanceof TcUserDetails) {
+            return Optional.of(((TcUserDetails) auth.getPrincipal()).getUser());
         }
         return Optional.empty();
     }
@@ -100,7 +100,7 @@ public class AuthService {
      *          Admins or systemadmins are always authorized
      *     </li>
      *     <li>
-     *          sourcepartneradmins which have no country restrictions are always authorized. If they
+     *          partneradmins which have no country restrictions are always authorized. If they
      *          have country restrictions the candidate must be located in one of those countries.
      *     </li>
      *     <li>
@@ -119,7 +119,7 @@ public class AuthService {
                 return false;
             } else if (user.getRole().equals(Role.admin) || user.getRole().equals(Role.systemadmin)) {
                 return true;
-            } else if (user.getRole().equals(Role.sourcepartneradmin)) {
+            } else if (user.getRole().equals(Role.partneradmin)) {
                 if (!user.getSourceCountries().isEmpty()) {
                     return user.getSourceCountries().contains(owner.getCountry());
                 } else {

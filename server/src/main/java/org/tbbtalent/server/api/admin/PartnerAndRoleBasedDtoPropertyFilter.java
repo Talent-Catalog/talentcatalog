@@ -56,7 +56,7 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
 
         if (role == Role.systemadmin
             //Allows default partner (eg TBB) admins to see everything.
-            || isDefaultPartner(partner) && (role == Role.admin || role == Role.sourcepartneradmin)
+            || isDefaultPartner(partner) && (role == Role.admin || role == Role.partneradmin)
         ) {
             ignore = false;
         } else {
@@ -78,7 +78,7 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
                     switch (role) {
 
                         case admin:
-                        case sourcepartneradmin:
+                        case partneradmin:
                             //Admins see all candidate properties
                             ignore = false;
                             break;

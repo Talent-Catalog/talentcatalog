@@ -73,7 +73,7 @@ public class UserAdminApi {
         switch (loggedInUser.getRole()) {
             case systemadmin:
             case admin:
-            case sourcepartneradmin:
+            case partneradmin:
                 return userDto().build(user);
             default:
                 return userDtoSemiLimited().build(user);

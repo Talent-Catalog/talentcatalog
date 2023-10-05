@@ -832,10 +832,21 @@ public class SystemAdminApi {
         return "done";
     }
 
+    /**
+     * @see PopulateElasticsearchService#populateElasticCandidates(boolean, boolean, Integer, Integer)
+     */
     @GetMapping("esload")
     public void loadElasticsearch(
-            @RequestParam(value = "reset", required = false) String reset) {
-        populateElasticsearchService.populateElasticCandidates(reset != null);
+        @RequestParam(value = "reset", required = false) String reset,
+        @RequestParam(value = "frompage", required = false) Integer fromPage,
+        @RequestParam(value = "topage", required = false) Integer toPage) {
+
+        boolean deleteExisting = reset != null;
+
+        boolean createElastic = deleteExisting;
+
+        populateElasticsearchService.populateElasticCandidates(
+            deleteExisting, createElastic, fromPage, toPage);
     }
 
     @GetMapping("migrate/extract")

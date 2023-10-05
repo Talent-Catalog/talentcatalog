@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -26,23 +26,23 @@ import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.UserRepository;
 
 /**
- * TBB's implementation of Spring's {@link UserDetailsService}, returning {@link TbbUserDetails}
+ * TBB's implementation of Spring's {@link UserDetailsService}, returning {@link TcUserDetails}
  * objects.
  */
 @Component
-public class TbbUserDetailsService implements UserDetailsService {
+public class TcUserDetailsService implements UserDetailsService {
 
-    private static final Logger log = LoggerFactory.getLogger(TbbUserDetailsService.class);
+    private static final Logger log = LoggerFactory.getLogger(TcUserDetailsService.class);
 
     private final UserRepository userRepository;
 
     @Autowired
-    public TbbUserDetailsService(UserRepository userRepository) {
+    public TcUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Override
-    public TbbUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public TcUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = userRepository.findByUsernameIgnoreCase(username);
         if (user == null) {
@@ -50,7 +50,7 @@ public class TbbUserDetailsService implements UserDetailsService {
         }
 
         log.debug("Found user with ID {} for username '{}'", user.getId(), username);
-        return new TbbUserDetails(user);
+        return new TcUserDetails(user);
     }
 
 }

@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -48,7 +48,8 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
 
     @Async
     @Override
-    public void populateElasticCandidates(boolean deleteExisting) {
+    public void populateElasticCandidates(
+        boolean deleteExisting, boolean createElastic, Integer fromPage, Integer toPage) {
         if (deleteExisting) {
             log.info("Replace all candidates in Elasticsearch - deleting old candidates");
             candidateRepository.clearAllCandidateTextSearchIds();
@@ -61,7 +62,8 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
         }
 
         log.info("Loading candidates.");
-        String verb = deleteExisting ? "added" : "updated";
+
+        String verb = createElastic ? "added" : "updated";
 
         final int pageSize = 20;
         boolean logTotal = true;
@@ -70,9 +72,10 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
         //loading all candidates in one go)
         int count = 0;
         int nUpdated;
-        Pageable page = PageRequest.of(0, pageSize, Sort.by("id"));
+        int startPage = fromPage != null ? fromPage : 0;
+        Pageable page = PageRequest.of(startPage, pageSize, Sort.by("id"));
         do {
-            nUpdated = candidateService.populateElasticCandidates(page, logTotal, deleteExisting);
+            nUpdated = candidateService.populateElasticCandidates(page, logTotal, createElastic);
             logTotal = false;
 
             count += nUpdated;
@@ -80,10 +83,10 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
             page = page.next();
             int pageNum = page.getPageNumber();
             if (pageNum % 5 == 0) {
-                log.info(count + " candidates (" + pageNum + " pages) " + verb  
+                log.info(count + " candidates (up to page " + (pageNum-1) + ") " + verb
                         + " to Elasticsearch");
             }
-        } while (nUpdated > 0);
+        } while (nUpdated > 0 && (toPage == null || page.getPageNumber() <= toPage));
 
         log.info("Done: " + count + " candidates " + verb + " to Elasticsearch");
     }

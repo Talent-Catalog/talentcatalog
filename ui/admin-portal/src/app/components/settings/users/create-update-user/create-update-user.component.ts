@@ -111,7 +111,7 @@ export class CreateUpdateUserComponent implements OnInit {
         r => ![Role.systemadmin].includes(Role[r.key]));
     }
 
-    if (role === Role.sourcepartneradmin) {
+    if (role === Role.partneradmin) {
       this.roleOptions = this.roleOptions.filter(
         r => ![Role.systemadmin, Role.admin].includes(Role[r.key]));
     }
