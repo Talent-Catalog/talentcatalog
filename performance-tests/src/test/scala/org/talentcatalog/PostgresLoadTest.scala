@@ -1,52 +1,53 @@
+/*
+ * Copyright (c) 2023 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 package org.talentcatalog
 
 import io.gatling.core.Predef._
-import io.gatling.core.structure.ScenarioBuilder
-import org.talentcatalog.NewSearchScreenQuery.longQuery
+import org.talentcatalog.queries.NewSearchScreenQuery.newSearchScreenQueryName
+import org.talentcatalog.scenarios.EsLoadScenario.esLoadScenario
+import org.talentcatalog.scenarios.NewSearchScreenScenario.newSearchScreenScenario
 import ru.tinkoff.load.jdbc.Predef._
-import ru.tinkoff.load.jdbc.actions.actions.RawSqlActionBuilder
-import ru.tinkoff.load.jdbc.protocol.JdbcProtocolBuilder
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class PostgresLoadTest extends Simulation {
-
-  val dataBase: JdbcProtocolBuilder = DB
-    .url("jdbc:postgresql://localhost:5432/tbbtalent")
-    .username("")
-    .password("")
-    .maximumPoolSize(23)
-    .connectionTimeout(2.minute)
-
-  def selectCandidates(): RawSqlActionBuilder =
-    jdbc("Select Candidates")
-      .rawSql("select * from Candidate c where c.status in ('active', 'unreachable', 'incomplete', 'pending')")
-
-  def newSearchScreenQuery(): RawSqlActionBuilder =
-    jdbc("New Search Screen Query")
-      .rawSql(longQuery)
-
-  // stats
-
-  val scn: ScenarioBuilder = scenario("PostgresLoadTest")
-    .repeat(50) (
-      exec(selectCandidates())
-        .exec(newSearchScreenQuery())
-    )
+class PostgresLoadTest extends JdbcBaseSimulation {
 
   setUp(
-    scn.inject(rampUsers(20) during (10 seconds))
+    newSearchScreenScenario.inject(
+      nothingFor(1 second),
+      atOnceUsers(1),
+      nothingFor(1 minutes),
+      rampUsers(20) during (5 minutes)
+    ).andThen(
+      esLoadScenario.inject(
+        nothingFor(1 second),
+        atOnceUsers(1)
+      )
+    )
   ).protocols(dataBase)
-    .maxDuration(120)
+    .maxDuration(35 minutes) // Set a maximum duration
     .assertions(
       global.failedRequests.percent.is(0.0),
       global.successfulRequests.percent.is(100),
-      details("Select Candidates").responseTime.percentile1.lt(150), // 50th percentile < 150ms
-      details("Select Candidates").responseTime.percentile2.lt(200), // 75th percentile < 200ms
-      details("Select Candidates").responseTime.percentile3.lt(300), // 95th percentile < 300ms
-      details("Select Candidates").responseTime.percentile4.lt(500), // 99th percentile < 500ms
-      details("Select Candidates").responseTime.max.lt(800) // max < 800ms
-  )
-
+      details(newSearchScreenQueryName).responseTime.percentile1.lt(150),
+      details(newSearchScreenQueryName).responseTime.percentile2.lt(200),
+      details(newSearchScreenQueryName).responseTime.percentile3.lt(300),
+      details(newSearchScreenQueryName).responseTime.percentile4.lt(500),
+      details(newSearchScreenQueryName).responseTime.max.lt(800)
+    )
 }
