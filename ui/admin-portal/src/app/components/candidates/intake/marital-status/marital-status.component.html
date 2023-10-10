@@ -40,7 +40,7 @@
   <div *ngIf="hasPartner">
     <div class="mb-3">
       <label class="form-label" for="partnerRegistered">
-        Is your partner registered with TBB?
+        Is your partner registered with the Talent Catalog?
       </label>
       <ng-select id="partnerRegistered" [formControlName]="'partnerRegistered'" (clear)="setNoResponse('partnerRegistered')"
                  [items]="partnerRegisteredOptions" [clearOnBackspace]="false"

@@ -22,7 +22,8 @@
 
   <ng-container *ngIf="!loading">
     <div class="d-sm-flex justify-content-between">
-      <h3 class="mb-3 text-center text-sm-left">TBB-{{candidate?.candidateNumber}}</h3>
+      <h3 class="mb-3 text-center text-sm-left">
+        {{ 'HEADER.NAV.ACCOUNT' | translate }} {{candidate?.candidateNumber}}</h3>
       <app-download-cv></app-download-cv>
     </div>
 
