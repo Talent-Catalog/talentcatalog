@@ -303,7 +303,8 @@ public class SavedList extends AbstractCandidateSource {
     @Nullable
     public String getSfJobCountry() {
         final SalesforceJobOpp sfJobOpp = getSfJobOpp();
-        return sfJobOpp == null ? null : sfJobOpp.getCountry();
+        Country country = sfJobOpp == null ? null : sfJobOpp.getCountry();
+        return country == null ? null : country.getName();
     }
 
     /**
