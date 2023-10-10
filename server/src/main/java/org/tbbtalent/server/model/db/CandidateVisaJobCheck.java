@@ -5,25 +5,24 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-
 import javax.persistence.Entity;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.request.candidate.visa.CandidateVisaCheckData;
 
 @Getter
 @Setter
@@ -33,7 +32,7 @@ import javax.persistence.Table;
 public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
 
     public void populateIntakeData(
-            @Nullable Occupation occupation, CandidateIntakeDataUpdate data) {
+            @Nullable Occupation occupation, CandidateVisaCheckData data) {
         if (data.getVisaJobOccupationId() != null) {
             setOccupation(occupation);
         }
@@ -85,7 +84,34 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobTbbEligibility() != null) {
             setTbbEligibility(data.getVisaJobTbbEligibility());
         }
+        if (data.getVisaJobRelevantWorkExp() != null) {
+            setRelevantWorkExp(data.getVisaJobRelevantWorkExp());
+        }
+        if (data.getVisaJobAgeRequirement() != null) {
+            setAgeRequirement(data.getVisaJobAgeRequirement());
+        }
+        if (data.getVisaJobPreferredPathways() != null) {
+            setPreferredPathways(data.getVisaJobPreferredPathways());
+        }
+        if (data.getVisaJobIneligiblePathways() != null) {
+            setIneligiblePathways(data.getVisaJobIneligiblePathways());
+        }
+        if (data.getVisaJobEligiblePathways() != null) {
+            setEligiblePathways(data.getVisaJobEligiblePathways());
+        }
+        if (data.getVisaJobOccupationCategory() != null) {
+            setOccupationCategory(data.getVisaJobOccupationCategory());
+        }
+        if (data.getVisaJobOccupationSubCategory() != null) {
+            setOccupationSubCategory(data.getVisaJobOccupationSubCategory());
+        }
+        if (data.getVisaJobEnglishThreshold() != null) {
+            setEnglishThreshold(data.getVisaJobEnglishThreshold());
+        }
+        if (data.getVisaJobEnglishThresholdNotes() != null) {
+            setEnglishThresholdNotes(data.getVisaJobEnglishThresholdNotes());
+        }
 
     }
-    
+
 }

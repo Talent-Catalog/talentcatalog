@@ -44,6 +44,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
+import org.tbbtalent.server.configuration.SalesforceConfig;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -111,6 +112,7 @@ public class JobServiceImpl implements JobService {
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceBridgeService salesforceBridgeService;
+    private final SalesforceConfig salesforceConfig;
     private final SalesforceService salesforceService;
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceJobOppService salesforceJobOppService;
@@ -122,8 +124,8 @@ public class JobServiceImpl implements JobService {
 
     public JobServiceImpl(
             AuthService authService, CandidateOpportunityService candidateOpportunityService,
-        CandidateSavedListService candidateSavedListService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
-            SalesforceBridgeService salesforceBridgeService, SalesforceService salesforceService,
+            CandidateSavedListService candidateSavedListService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
+            SalesforceBridgeService salesforceBridgeService, SalesforceConfig salesforceConfig, SalesforceService salesforceService,
             SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
             SavedSearchService savedSearchService, JobOppIntakeService jobOppIntakeService) {
         this.authService = authService;
@@ -133,6 +135,7 @@ public class JobServiceImpl implements JobService {
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
         this.salesforceBridgeService = salesforceBridgeService;
+        this.salesforceConfig = salesforceConfig;
         this.salesforceService = salesforceService;
         this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.salesforceJobOppService = salesforceJobOppService;
@@ -316,7 +319,7 @@ public class JobServiceImpl implements JobService {
         UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
         request.setSavedSearchType(SavedSearchType.job);
         request.setName(job.getName() + "*-" + suffix);
-        request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId()));
+        request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId(), salesforceConfig.getBaseLightningUrl()));
         SavedList exclusionList = job.getExclusionList();
         if (exclusionList != null) {
             //Add job exclusion list to suggested search
@@ -354,7 +357,7 @@ public class JobServiceImpl implements JobService {
         final String jobSummary = job.getJobSummary();
         jobInfo.setJobSummary(jobSummary == null ? "No summary supplied" : jobSummary);
 
-        jobInfo.setSfJobLink(SalesforceHelper.sfOppIdToLink(job.getSfId()));
+        jobInfo.setSfJobLink(SalesforceHelper.sfOppIdToLink(job.getSfId(), salesforceConfig.getBaseLightningUrl()));
 
         jobInfo.setTcJobLink(tcJobLink);
 
@@ -430,7 +433,7 @@ public class JobServiceImpl implements JobService {
             CopySourceContentsRequest request = new CopySourceContentsRequest();
             request.setSavedListId(0L);
             request.setNewListName(submissionList.getName() + "-suggest");
-            request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId()));
+            request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId(), salesforceConfig.getBaseLightningUrl()));
             //Copy to the target list.
             SavedList suggestedList = candidateSavedListService.copy(submissionList, request);
             job.setSuggestedList(suggestedList);

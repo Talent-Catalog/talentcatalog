@@ -106,7 +106,15 @@ salesforce:
   # Setup|Apps|ConnectedApps|Manage Connected Apps)
   #
   # For dev this should be set in tbb-secrets
-  privatekey: ${SALESFORCE_PRIVATEKEY:}
+  #
+  # We use the same SF connected app and key/certificate for TC dev and staging to access our SF sandbox, but other URLs and access credentials are different and therefore defined below and designated per environment.
+  privatekey: ${SF_PRIVATE_KEY:}
+  baseClassicUrl: ${SF_BASE_CLASSIC_URL:https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/}
+  baseLightningUrl: ${SF_BASE_LIGHTNING_URL:https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com}
+  baseLoginUrl: ${SF_BASE_LOGIN_URL:https://test.salesforce.com/}
+  consumerKey: ${SF_CONSUMER_KEY:}
+  user: ${SF_USER:}
+
   daysAgoRecent: 7
   recordType:
     employerJob: 0121N000001890wQAA

@@ -29,11 +29,6 @@ export class CandidateOccupationService {
   constructor(private http: HttpClient) {}
 
   /* Note: This endpoint returns a list of Occupation objects, not CandidateOccupations */
-  listVerifiedOccupations(): Observable<Occupation[]> {
-    return this.http.get<Occupation[]>(`${this.apiUrl}/verified`);
-  }
-
-  /* Note: This endpoint returns a list of Occupation objects, not CandidateOccupations */
   listOccupations(): Observable<Occupation[]> {
     return this.http.get<Occupation[]>(`${this.apiUrl}/occupation`);
   }

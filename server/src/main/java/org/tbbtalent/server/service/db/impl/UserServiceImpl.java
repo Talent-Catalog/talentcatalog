@@ -283,6 +283,7 @@ public class UserServiceImpl implements UserService {
         user.setStatus(request.getStatus());
         user.setUsingMfa(request.getUsingMfa());
         user.setPurpose(request.getPurpose());
+        user.setJobCreator(request.getJobCreator());
 
         if (creatingUser == null) {
             user.setRole(request.getRole());
@@ -375,7 +376,7 @@ public class UserServiceImpl implements UserService {
                 user.getSourceCountries().add(sourceCountry);
             }
         } else {
-            if (creatingUser.getRole().equals(Role.sourcepartneradmin) && !creatingUser.getSourceCountries().isEmpty()) {
+            if (creatingUser.getRole().equals(Role.partneradmin) && !creatingUser.getSourceCountries().isEmpty()) {
                 for (Country sourceCountry : creatingUser.getSourceCountries()) {
                     user.getSourceCountries().add(sourceCountry);
                 }

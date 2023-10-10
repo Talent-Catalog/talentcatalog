@@ -16,12 +16,18 @@
 
 package org.tbbtalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -74,7 +80,7 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
     private String assessmentNotes;
 
     @Enumerated(EnumType.STRING)
-    private YesNo pathwayAssessment;
+    private YesNoUnsure pathwayAssessment;
 
     private String pathwayAssessmentNotes;
 

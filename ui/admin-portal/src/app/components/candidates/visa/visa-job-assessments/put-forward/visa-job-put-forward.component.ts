@@ -14,32 +14,30 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
-import {CandidateVisaJobCheck, VisaEligibility} from "../../../../../model/candidate";
+import {Component, OnInit} from '@angular/core';
+import {VisaEligibility} from "../../../../../model/candidate";
 import {EnumOption, enumOptions} from "../../../../../util/enum";
 import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../../services/candidate.service";
-import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
+import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
+import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-visa-job-put-forward',
   templateUrl: './visa-job-put-forward.component.html',
   styleUrls: ['./visa-job-put-forward.component.scss']
 })
-export class VisaJobPutForwardComponent extends IntakeComponentBase implements OnInit {
-
-  @Input() selectedJobCheck: CandidateVisaJobCheck;
+export class VisaJobPutForwardComponent extends VisaCheckComponentBase implements OnInit {
   //Drop down values for enumeration
   visaEligibilityOptions: EnumOption[] = enumOptions(VisaEligibility);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
+  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+    super(fb, candidateVisaCheckService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaJobId: [this.selectedJobCheck?.id],
-      visaJobPutForward: [this.selectedJobCheck?.putForward],
+      visaJobId: [this.visaJobCheck?.id],
+      visaJobPutForward: [this.visaJobCheck?.putForward],
     });
   }
 

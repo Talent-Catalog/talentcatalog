@@ -16,10 +16,14 @@
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.persistence.*;
 
 @Getter
 @Setter
@@ -39,7 +43,7 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
 
     /**
      * No longer populating these two fields (name & sfJobLink) we used these prior to adding the SF job opps onto the TC,
-     * and when Australia was the only country doing their visa checks on the TC. 
+     * and when Australia was the only country doing their visa checks on the TC.
      * Now we can just use the jobOppId above to retrieve and set job data.
      */
     private String name;
@@ -89,4 +93,23 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     private TBBEligibilityAssessment tbbEligibility;
 
     private String notes;
+
+    private String relevantWorkExp;
+
+    private String ageRequirement;
+
+    private String preferredPathways;
+
+    private String ineligiblePathways;
+
+    private String eligiblePathways;
+
+    private String occupationCategory;
+
+    private String occupationSubCategory;
+
+    @Enumerated(EnumType.STRING)
+    private YesNo englishThreshold;
+
+    private String englishThresholdNotes;
 }

@@ -5,17 +5,20 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityReferencedException;
@@ -25,10 +28,6 @@ import org.tbbtalent.server.model.db.CandidateVisaJobCheck;
 import org.tbbtalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-visa-job")
@@ -43,13 +42,26 @@ public class CandidateVisaJobCheckAdminApi
     }
 
     /**
-     * Creates a new candidate visa check record from the data in the given 
-     * request. 
+     * Gets visa job check record using the visa job check ID
+     * @param visaJobId ID of visa job check
+     * @return Desired record
+     * @throws NoSuchObjectException if if the there is no visa job check record with that id
+     */
+    @Override
+    public @NotNull Map<String, Object> get(long visaJobId)
+            throws NoSuchObjectException {
+        CandidateVisaJobCheck candidateVisaJobCheck = this.candidateVisaJobCheckService.getVisaJobCheck(visaJobId);
+        return candidateVisaJobDto().build(candidateVisaJobCheck);
+    }
+
+    /**
+     * Creates a new candidate visa check record from the data in the given
+     * request.
      * @param visaId ID of visa
      * @param request Request containing visa check details
      * @return Created record - including database id of visa check record
-     * @throws NoSuchObjectException if the there is no Candidate record with 
-     * that candidateId or no country with the id given in the request  
+     * @throws NoSuchObjectException if the there is no Candidate record with
+     * that candidateId or no country with the id given in the request
      */
     @Override
     public @NotNull Map<String, Object> create(
@@ -60,23 +72,53 @@ public class CandidateVisaJobCheckAdminApi
     }
 
     /**
-     * Delete the candidate visa check with the given id.  
+     * Delete the candidate visa check with the given id.
      * @param id ID of record to be deleted
      * @return True if record was deleted, false if it was not found.
-     * @throws EntityReferencedException if the object cannot be deleted because 
+     * @throws EntityReferencedException if the object cannot be deleted because
      * it is referenced by another object.
      * @throws InvalidRequestException if not authorized to delete this list.
      */
     @Override
-    public boolean delete(long id) 
+    public boolean delete(long id)
             throws EntityReferencedException, InvalidRequestException {
         return candidateVisaJobCheckService.deleteVisaJobCheck(id);
     }
-    
+
     private DtoBuilder candidateVisaJobDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("name")
+                .add("sfJobLink")
                 .add("jobOpp", jobOppDto())
+                .add("interest")
+                .add("interestNotes")
+                .add("regional")
+                .add("salaryTsmit")
+                .add("interest")
+                .add("interestNotes")
+                .add("qualification")
+                .add("eligible_494")
+                .add("eligible_494_Notes")
+                .add("eligible_186")
+                .add("eligible_186_Notes")
+                .add("eligibleOther")
+                .add("eligibleOtherNotes")
+                .add("putForward")
+                .add("tbbEligibility")
+                .add("notes")
+                .add("occupation", occupationDto())
+                .add("occupationNotes")
+                .add("qualificationNotes")
+                .add("relevantWorkExp")
+                .add("ageRequirement")
+                .add("preferredPathways")
+                .add("ineligiblePathways")
+                .add("eligiblePathways")
+                .add("occupationCategory")
+                .add("occupationSubCategory")
+                .add("englishThreshold")
+                .add("englishThresholdNotes")
                 ;
     }
 
@@ -85,7 +127,22 @@ public class CandidateVisaJobCheckAdminApi
                 .add("id")
                 .add("name")
                 .add("sfId")
+                .add("jobOppIntake", joiDto())
                 ;
     }
-    
+
+    private DtoBuilder joiDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("location")
+                .add("locationDetails")
+                ;
+    }
+
+    private DtoBuilder occupationDto() {
+        return new DtoBuilder()
+                .add("id")
+                ;
+    }
+
 }

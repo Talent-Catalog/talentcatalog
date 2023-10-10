@@ -16,16 +16,6 @@
 
 package org.tbbtalent.server.security;
 
-import java.security.Key;
-import java.util.Date;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -35,6 +25,14 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import java.security.Key;
+import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 import org.tbbtalent.server.model.db.Role;
 
 /**
@@ -73,8 +71,8 @@ public class JwtTokenProvider implements InitializingBean {
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
         String subject = "";
 
-        if (authentication.getPrincipal() instanceof TbbUserDetails) {
-            TbbUserDetails user = (TbbUserDetails) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof TcUserDetails) {
+            TcUserDetails user = (TcUserDetails) authentication.getPrincipal();
             subject = user.getUsername();
 
             //Candidates can stay logged in forever

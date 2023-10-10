@@ -5,21 +5,37 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.repository.db;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
 
-public interface CandidateVisaRepository 
+public interface CandidateVisaRepository
         extends JpaRepository<CandidateVisaCheck, Long> {
-    
+
+    @Query(" select v from CandidateVisaCheck v "
+            + " where v.candidate.id = :candidateId")
+    List<CandidateVisaCheck> findByCandidateId(
+            @Param("candidateId") Long candidateId);
+
+    @Query(" select v from CandidateVisaCheck v "
+            + " where v.candidate.id = :candidateId"
+            + " and v.country.id = :countryId ")
+    Optional<CandidateVisaCheck> findByCandidateIdCountryId(
+            @Param("candidateId") Long candidateId,
+            @Param("countryId") Long countryId);
+
 }

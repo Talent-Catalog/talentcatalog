@@ -15,7 +15,7 @@
  */
 
 import {BrowserModule, Title} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 import {DatePipe, TitleCasePipe} from '@angular/common';
@@ -740,6 +740,11 @@ import {RxStompService} from "./services/rx-stomp.service";
 import {
   CreateUpdatePostComponent
 } from './components/chat/create-update-post/create-update-post.component';
+import {EnvService} from "./services/env.service";
+import {ExportPdfComponent} from './components/util/export-pdf/export-pdf.component';
+import {
+  JobEnglishThresholdComponent
+} from './components/candidates/visa/visa-job-assessments/job-english-threshold/job-english-threshold.component';
 
 @NgModule({
   declarations: [
@@ -1034,7 +1039,9 @@ import {
     IneligiblePathwaysComponent,
     OccupationCategoryComponent,
     OccupationSubcategoryComponent,
-    CreateUpdatePostComponent
+    CreateUpdatePostComponent,
+    ExportPdfComponent,
+    JobEnglishThresholdComponent
   ],
   imports: [
     BrowserModule,
@@ -1062,6 +1069,7 @@ import {
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {provide: RxStompService, useFactory: rxStompServiceFactory},
+    {provide: APP_INITIALIZER, useFactory: (envService: EnvService) => () => envService.init(), deps: [EnvService], multi: true},
     AuthService,
     RoleGuardService,
     Title,

@@ -16,9 +16,8 @@
 
 package org.tbbtalent.server.api.admin;
 
-import org.tbbtalent.server.util.dto.DtoBuilder;
-
 import javax.validation.constraints.NotNull;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -260,6 +259,15 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("occupation", occupationDto())
                 .add("occupationNotes")
                 .add("qualificationNotes")
+                .add("relevantWorkExp")
+                .add("ageRequirement")
+                .add("preferredPathways")
+                .add("ineligiblePathways")
+                .add("eligiblePathways")
+                .add("occupationCategory")
+                .add("occupationSubCategory")
+                .add("englishThreshold")
+                .add("englishThresholdNotes")
                 ;
     }
 

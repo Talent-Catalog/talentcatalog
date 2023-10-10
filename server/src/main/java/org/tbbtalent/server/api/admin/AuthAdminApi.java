@@ -18,7 +18,6 @@ package org.tbbtalent.server.api.admin;
 
 import java.util.Map;
 import javax.security.auth.login.AccountLockedException;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -124,6 +123,7 @@ public class AuthAdminApi {
                 .add("username")
                 .add("email")
                 .add("role")
+                .add("jobCreator")
                 .add("readOnly")
                 .add("firstName")
                 .add("lastName")

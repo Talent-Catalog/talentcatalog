@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -18,9 +18,7 @@ package org.tbbtalent.server.api.admin;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
-import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
+import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -44,12 +42,6 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 public class CandidateOccupationAdminApi {
 
     private final CandidateOccupationService candidateOccupationService;
-
-    @GetMapping("verified")
-    public List<Map<String, Object>> getVerifiedOccupations() {
-        List<Occupation> candidateOccupations = candidateOccupationService.listVerifiedOccupations();
-        return occupationDto().buildList(candidateOccupations);
-    }
 
     @GetMapping("occupation")
     public List<Map<String, Object>> getAllOccupations() {
@@ -65,9 +57,9 @@ public class CandidateOccupationAdminApi {
 
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
-                                      @RequestBody VerifyCandidateOccupationRequest request) {
+                                      @RequestBody UpdateCandidateOccupationRequest request) {
         request.setId(id);
-        CandidateOccupation candidateOccupation = candidateOccupationService.verifyCandidateOccupation(request);
+        CandidateOccupation candidateOccupation = candidateOccupationService.updateCandidateOccupation(request);
         return candidateOccupationDto().build(candidateOccupation);
     }
 
@@ -98,7 +90,6 @@ public class CandidateOccupationAdminApi {
                 .add("migrationOccupation")
                 .add("occupation", occupationDto())
                 .add("yearsExperience")
-                .add("verified")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

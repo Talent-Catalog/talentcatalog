@@ -208,6 +208,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateOccupation> candidateOccupations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private List<CandidateNote> candidateNotes;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @OrderBy("yearCompleted DESC")
     private List<CandidateEducation> candidateEducations;
 
@@ -932,6 +935,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return s.toString();
     }
 
+    @Transient
+    public String getIntaked() {
+        String intaked = "-";
+        for (CandidateNote note : candidateNotes) {
+            if (note.getTitle().contains("Full Intake interview completed")) {
+                intaked = "Full";
+                break;
+            }
+        }
+        if (!"Full".equals(intaked)) {
+            for (CandidateNote note : candidateNotes) {
+                if (note.getTitle().contains("Mini Intake interview completed")) {
+                    intaked = "Mini";
+                    break;
+                }
+            }
+        }
+        return intaked;
+    }
+
     public String getTcLink() {
         return "https://tctalent.org/admin-portal/candidate/" + candidateNumber;
     }
@@ -1090,6 +1113,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateOccupations(List<CandidateOccupation> candidateOccupations) {
         this.candidateOccupations = candidateOccupations;
+    }
+
+    public List<CandidateNote> getCandidateNotes() {
+        return candidateNotes;
+    }
+
+    public void setCandidateNotes(List<CandidateNote> candidateNotes) {
+        this.candidateNotes = candidateNotes;
     }
 
     public List<CandidateOpportunity> getCandidateOpportunities() {

@@ -56,6 +56,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
+import org.tbbtalent.server.configuration.SalesforceConfig;
 import org.tbbtalent.server.model.db.AttachmentType;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateAttachment;
@@ -117,6 +118,7 @@ public class SystemAdminApi {
     private final LanguageService languageService;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
+    private final SalesforceConfig salesforceConfig;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListRepository savedListRepository;
     private final SavedListService savedListService;
@@ -152,21 +154,21 @@ public class SystemAdminApi {
 
     @Autowired
     public SystemAdminApi(
-        DataSharingService dataSharingService,
-        AuthService authService,
-        CandidateAttachmentRepository candidateAttachmentRepository,
-        CandidateNoteRepository candidateNoteRepository,
-        CandidateRepository candidateRepository,
-        CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
-        CountryService countryService,
-        FileSystemService fileSystemService,
-        JobService jobService, LanguageService languageService,
-        PopulateElasticsearchService populateElasticsearchService,
-        SalesforceService salesforceService,
-        SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
-        SavedListRepository savedListRepository, SavedSearchService savedSearchService,
-        SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
-        GoogleDriveConfig googleDriveConfig) {
+            DataSharingService dataSharingService,
+            AuthService authService,
+            CandidateAttachmentRepository candidateAttachmentRepository,
+            CandidateNoteRepository candidateNoteRepository,
+            CandidateRepository candidateRepository,
+            CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
+            CountryService countryService,
+            FileSystemService fileSystemService,
+            JobService jobService, LanguageService languageService,
+            PopulateElasticsearchService populateElasticsearchService,
+            SalesforceService salesforceService,
+            SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
+            SavedListRepository savedListRepository, SavedSearchService savedSearchService,
+            SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
+            GoogleDriveConfig googleDriveConfig) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -180,6 +182,7 @@ public class SystemAdminApi {
         this.languageService = languageService;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
+        this.salesforceConfig = salesforceConfig;
         this.salesforceJobOppService = salesforceJobOppService;
         this.savedListRepository = savedListRepository;
         this.savedListService = savedListService;
@@ -582,9 +585,9 @@ public class SystemAdminApi {
             Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
             if (candidate == null) {
                 log.warn("No candidate found for TBBid " + candidateNumber
-                + " SF link " + contact.getUrl());
+                + " SF link " + contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             } else {
-                candidate.setSflink(contact.getUrl());
+                candidate.setSflink(contact.getUrl(salesforceConfig.getBaseLightningUrl()));
                 candidateRepository.save(candidate);
             }
             count++;
@@ -607,13 +610,13 @@ public class SystemAdminApi {
 
             final Long sfTbbId = contact.getTbbId();
             if (sfTbbId == null) {
-                log.warn("Contact is not a TBB candidate: " + contact.getUrl());
+                log.warn("Contact is not a TBB candidate: " + contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             } else {
                 final String candidateNumber = sfTbbId.toString();
                 Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
                 if (candidate == null) {
                     log.warn("No candidate found for TBBid " + candidateNumber
-                            + " SF link " + contact.getUrl());
+                            + " SF link " + contact.getUrl(salesforceConfig.getBaseLightningUrl()));
                 } else {
                     try {
                         salesforceService.updateContact(candidate);
@@ -829,10 +832,21 @@ public class SystemAdminApi {
         return "done";
     }
 
+    /**
+     * @see PopulateElasticsearchService#populateElasticCandidates(boolean, boolean, Integer, Integer)
+     */
     @GetMapping("esload")
     public void loadElasticsearch(
-            @RequestParam(value = "reset", required = false) String reset) {
-        populateElasticsearchService.populateElasticCandidates(reset != null);
+        @RequestParam(value = "reset", required = false) String reset,
+        @RequestParam(value = "frompage", required = false) Integer fromPage,
+        @RequestParam(value = "topage", required = false) Integer toPage) {
+
+        boolean deleteExisting = reset != null;
+
+        boolean createElastic = deleteExisting;
+
+        populateElasticsearchService.populateElasticCandidates(
+            deleteExisting, createElastic, fromPage, toPage);
     }
 
     @GetMapping("migrate/extract")

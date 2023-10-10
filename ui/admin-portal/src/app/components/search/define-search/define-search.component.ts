@@ -119,7 +119,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   lists: SavedList[] = [];
   educationLevels: EducationLevel[];
   educationMajors: EducationMajor[];
-  verifiedOccupations: Occupation[];
   candidateOccupations: Occupation[];
   languageLevels: LanguageLevel[];
   surveyTypes: SurveyType[];
@@ -164,8 +163,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       occupationIds: [[]],
       minYrs: [null],
       maxYrs: [null],
-      verifiedOccupationIds: [[]],
-      verifiedOccupationSearchType: ['or'],
       partnerIds: [[]],
       nationalityIds: [[]],
       nationalitySearchType: ['or'],
@@ -189,7 +186,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       searchJoinRequests: this.fb.array([]),
       //for display purposes
       occupations: [[]],
-      verifiedOccupations: [[]],
       countries: [[]],
       partners: [[]],
       educationMajors: [[]],
@@ -223,7 +219,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       'educationLevels': this.educationLevelService.listEducationLevels(),
       'majors': this.educationMajorService.listMajors(),
       'partners': this.partnerService.listSourcePartners(),
-      'verifiedOccupation': this.candidateOccupationService.listVerifiedOccupations(),
       'occupations': this.candidateOccupationService.listOccupations(),
       'surveyTypes': this.surveyTypeService.listSurveyTypes()
     }).subscribe(results => {
@@ -235,7 +230,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       this.languageLevels = results['languageLevels'];
       this.educationLevels = results['educationLevels'];
       this.educationMajors = results['majors'];
-      this.verifiedOccupations = results['verifiedOccupation'];
       this.candidateOccupations = results['occupations'];
       this.surveyTypes = results['surveyTypes'];
       this.lists = results['lists'];
@@ -503,21 +497,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.searchForm.controls['statusesDisplay'].patchValue(statuses);
 
-    /* VERIFIED OCCUPATIONS */
-    let verifiedOccupations = [];
-    if (request.verifiedOccupationIds && this.verifiedOccupations) {
-      verifiedOccupations = this.verifiedOccupations
-        .filter(c => request.verifiedOccupationIds.indexOf(c.id) !== -1);
-    }
-    this.searchForm.controls['verifiedOccupations'].patchValue(verifiedOccupations);
-
     /* ENGLISH PROFICIENCY */
     this.englishLanguagePicker.patchModel({
       writtenLevel: request.englishMinWrittenLevel,
       spokenLevel: request.englishMinSpokenLevel
     });
 
-    /* UNVERIFIED OCCUPATIONS */
+    /* OCCUPATIONS */
     let occupations = [];
     if (request.occupationIds && this.candidateOccupations) {
       occupations = this.candidateOccupations

@@ -61,6 +61,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
+import org.tbbtalent.server.configuration.SalesforceConfig;
 import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
@@ -228,6 +229,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateEsRepository candidateEsRepository;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
+    private final SalesforceConfig salesforceConfig;
     private final SalesforceService salesforceService;
     private final CountryRepository countryRepository;
     private final CountryService countryService;
@@ -256,37 +258,38 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
-        UserService userService,
-        CandidateRepository candidateRepository,
-        CandidateEsRepository candidateEsRepository,
-        FileSystemService fileSystemService,
-        GoogleDriveConfig googleDriveConfig,
-        SalesforceService salesforceService,
-        CountryRepository countryRepository,
-        CountryService countryService,
-        EducationLevelRepository educationLevelRepository,
-        PasswordHelper passwordHelper,
-        AuthService authService,
-        CandidateNoteService candidateNoteService,
-        CandidateCitizenshipService candidateCitizenshipService,
-        CandidateDependantService candidateDependantService,
-        CandidateDestinationService candidateDestinationService,
-        CandidateVisaService candidateVisaService,
-        CandidateVisaJobCheckService candidateVisaJobCheckService,
-        CandidatePropertyService candidatePropertyService,
-        SurveyTypeRepository surveyTypeRepository,
-        OccupationRepository occupationRepository,
-        PartnerService partnerService,
-        LanguageLevelRepository languageLevelRepository,
-        CandidateExamRepository candidateExamRepository,
-        RootRequestService rootRequestService, TaskAssignmentRepository taskAssignmentRepository,
-        TaskService taskService, EmailHelper emailHelper,
-        PdfHelper pdfHelper, TextExtracter textExtracter) {
+                                UserService userService,
+                                CandidateRepository candidateRepository,
+                                CandidateEsRepository candidateEsRepository,
+                                FileSystemService fileSystemService,
+                                GoogleDriveConfig googleDriveConfig,
+                                SalesforceConfig salesforceConfig, SalesforceService salesforceService,
+                                CountryRepository countryRepository,
+                                CountryService countryService,
+                                EducationLevelRepository educationLevelRepository,
+                                PasswordHelper passwordHelper,
+                                AuthService authService,
+                                CandidateNoteService candidateNoteService,
+                                CandidateCitizenshipService candidateCitizenshipService,
+                                CandidateDependantService candidateDependantService,
+                                CandidateDestinationService candidateDestinationService,
+                                CandidateVisaService candidateVisaService,
+                                CandidateVisaJobCheckService candidateVisaJobCheckService,
+                                CandidatePropertyService candidatePropertyService,
+                                SurveyTypeRepository surveyTypeRepository,
+                                OccupationRepository occupationRepository,
+                                PartnerService partnerService,
+                                LanguageLevelRepository languageLevelRepository,
+                                CandidateExamRepository candidateExamRepository,
+                                RootRequestService rootRequestService, TaskAssignmentRepository taskAssignmentRepository,
+                                TaskService taskService, EmailHelper emailHelper,
+                                PdfHelper pdfHelper, TextExtracter textExtracter) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.candidateRepository = candidateRepository;
         this.candidateEsRepository = candidateEsRepository;
         this.googleDriveConfig = googleDriveConfig;
+        this.salesforceConfig = salesforceConfig;
         this.countryRepository = countryRepository;
         this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
@@ -426,8 +429,6 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setOccupationIds(getIdsFromString(savedSearch.getOccupationIds()));
         searchCandidateRequest.setMinYrs(savedSearch.getMinYrs());
         searchCandidateRequest.setMaxYrs(savedSearch.getMaxYrs());
-        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(savedSearch.getVerifiedOccupationIds()));
-        searchCandidateRequest.setVerifiedOccupationSearchType(savedSearch.getVerifiedOccupationSearchType());
         searchCandidateRequest.setPartnerIds(getIdsFromString(savedSearch.getPartnerIds()));
         searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(savedSearch.getNationalitySearchType());
@@ -517,7 +518,7 @@ public class CandidateServiceImpl implements CandidateService {
 //                    s +'%', sourceCountries,
 //                    request.getPageRequestWithoutSort());
 //        } else {
-//            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+//            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.partneradmin) {
 //                candidates = candidateRepository.searchCandidateName(
 //                        '%' + s + '%', sourceCountries,
 //                        request.getPageRequestWithoutSort());
@@ -2263,7 +2264,7 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getCandidate(id);
 
         Contact candidateSf = salesforceService.createOrUpdateContact(candidate);
-        candidate.setSflink(candidateSf.getUrl());
+        candidate.setSflink(candidateSf.getUrl(salesforceConfig.getBaseLightningUrl()));
 
         save(candidate, false);
         return candidate;
@@ -2296,22 +2297,6 @@ public class CandidateServiceImpl implements CandidateService {
         if (destinationCountryId != null) {
             candidateDestinationService
                     .updateIntakeData(destinationCountryId, candidate, data);
-        }
-
-        //If there is a non null visa id, that means that this
-        //is a visa check update.
-        final Long visaId = data.getVisaId();
-        if (visaId != null) {
-            candidateVisaService
-                    .updateIntakeData(visaId, candidate, data);
-        }
-
-        //If there is a non null visa job id, that means that this
-        //is a visa job check update.
-        final Long visaJobId = data.getVisaJobId();
-        if (visaJobId != null) {
-            candidateVisaJobCheckService
-                    .updateIntakeData(visaJobId, candidate, data);
         }
 
         //If there is a non null exam type, that means that this

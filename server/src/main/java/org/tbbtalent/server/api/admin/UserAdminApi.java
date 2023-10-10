@@ -73,7 +73,7 @@ public class UserAdminApi {
         switch (loggedInUser.getRole()) {
             case systemadmin:
             case admin:
-            case sourcepartneradmin:
+            case partneradmin:
                 return userDto().build(user);
             default:
                 return userDtoSemiLimited().build(user);
@@ -119,6 +119,7 @@ public class UserAdminApi {
                 .add("lastName")
                 .add("email")
                 .add("role")
+                .add("jobCreator")
                 .add("approver", userDtoApprover())
                 .add("purpose")
                 .add("sourceCountries", countryDto())

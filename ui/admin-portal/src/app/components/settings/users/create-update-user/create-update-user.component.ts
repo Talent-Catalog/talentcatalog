@@ -62,6 +62,7 @@ export class CreateUpdateUserComponent implements OnInit {
       partnerId: [this.user?.partner.id],
       status: [this.user? this.user.status : Status.active],
       role: [this.user?.role, Validators.required],
+      jobCreator: [this.user ? this.user.jobCreator : false],
       approverId: [this.user?.approver?.id],
       purpose: [this.user?.purpose],
       sourceCountries: [this.user?.sourceCountries],
@@ -110,7 +111,7 @@ export class CreateUpdateUserComponent implements OnInit {
         r => ![Role.systemadmin].includes(Role[r.key]));
     }
 
-    if (role === Role.sourcepartneradmin) {
+    if (role === Role.partneradmin) {
       this.roleOptions = this.roleOptions.filter(
         r => ![Role.systemadmin, Role.admin].includes(Role[r.key]));
     }
@@ -136,6 +137,7 @@ export class CreateUpdateUserComponent implements OnInit {
       partnerId: this.userForm.value.partnerId,
       readOnly: this.userForm.value.readOnly,
       role: this.userForm.value.role,
+      jobCreator: this.userForm.value.jobCreator,
       approverId: this.userForm.value.approverId,
       purpose: this.userForm.value.purpose,
       sourceCountries: this.userForm.value.sourceCountries,

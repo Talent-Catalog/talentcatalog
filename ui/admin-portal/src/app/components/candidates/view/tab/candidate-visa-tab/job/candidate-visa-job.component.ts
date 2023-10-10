@@ -1,12 +1,19 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ShortJob} from "../../../../../../model/job";
-import {HasNameSelectorComponent} from "../../../../../util/has-name-selector/has-name-selector.component";
+import {
+  HasNameSelectorComponent
+} from "../../../../../util/has-name-selector/has-name-selector.component";
 import {
   CandidateVisaJobService,
   CreateCandidateVisaJobRequest
 } from "../../../../../../services/candidate-visa-job.service";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
-import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
+import {
+  Candidate,
+  CandidateIntakeData,
+  CandidateVisa,
+  CandidateVisaJobCheck
+} from "../../../../../../model/candidate";
 import {CandidateVisaCheckService} from "../../../../../../services/candidate-visa-check.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -21,7 +28,15 @@ export class CandidateVisaJobComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
-  @Output() selectedJobIndex = new EventEmitter<number>();
+
+  /**
+   * Two way data binding to keep logic contained in this reusable component. Handle the selection of the visa job check
+   * and also fetching the updated version of the visa job to be passed back to display.
+   * This allows us to keep the form data updated when switching between visa jobs.
+   */
+  @Input() selectedJob: CandidateVisaJobCheck;
+  @Output() selectedJobChange = new EventEmitter<CandidateVisaJobCheck>();
+
   selectedIndex: number;
   loading: boolean;
   error: string;
@@ -34,19 +49,10 @@ export class CandidateVisaJobComponent implements OnInit {
               private fb: FormBuilder) { }
 
   ngOnInit(): void {
-    if (this.hasJobChecks) {
-      //If exists, get the last selected visa check from local storage. If nothing there, get the first one.
-      const memoryIndex: number = this.localStorageService.get('VisaJobCheckIndex');
-      if (memoryIndex) {
-        this.selectedIndex = memoryIndex;
-      } else {
-        this.selectedIndex = 0;
-      }
-    }
     this.form = this.fb.group({
-      jobIndex: [this.selectedIndex]
+      jobIndex: [0]
     });
-    this.selectedJobIndex.emit(this.selectedIndex);
+    this.selectedJobChange.emit(this.visaCheckRecord.candidateVisaJobChecks[0]);
   }
 
   private get filteredSfJobs(): ShortJob[] {
@@ -103,7 +109,7 @@ export class CandidateVisaJobComponent implements OnInit {
       (jobCheck) => {
         this.visaCheckRecord?.candidateVisaJobChecks?.push(jobCheck);
         this.form.controls['jobIndex'].patchValue(this.visaCheckRecord?.candidateVisaJobChecks?.lastIndexOf(jobCheck));
-        this.setSelectedIndex()
+        this.selectedJobChange.emit(jobCheck);
         this.loading = false;
       },
       (error) => {
@@ -135,7 +141,7 @@ export class CandidateVisaJobComponent implements OnInit {
         this.loading = false;
         this.visaCheckRecord.candidateVisaJobChecks.splice(i, 1);
         this.form.controls.jobIndex.patchValue(0);
-        this.setSelectedIndex();
+        this.fetchUpdatedSelectedJob(this.visaCheckRecord.candidateVisaJobChecks[0]);
       },
       (error) => {
         this.error = error;
@@ -144,11 +150,16 @@ export class CandidateVisaJobComponent implements OnInit {
   }
 
   /**
-   * This emits the selected job index to the outer component to display AND stores the selected index in the local storage.
+   * Takes in the selected visa job and gets the updated object from the database. This updated visa job check
+   * object is emitted back to parent and the visa check record is updated.
+   * This allows us to retain the changed form data when switching between visa jobs.
    */
-  setSelectedIndex() {
-    this.selectedIndex = this.form.controls.jobIndex.value;
-    this.selectedJobIndex.emit(this.selectedIndex);
-    this.localStorageService.set('VisaJobCheckIndex', this.selectedIndex)
+  fetchUpdatedSelectedJob(visaJob: CandidateVisaJobCheck) {
+    this.candidateVisaJobService.get(visaJob.id).subscribe(
+      (result) => {
+        this.visaCheckRecord.candidateVisaJobChecks[this.form.controls.jobIndex.value] = result;
+        this.selectedJobChange.emit(result);
+      }
+    )
   }
 }

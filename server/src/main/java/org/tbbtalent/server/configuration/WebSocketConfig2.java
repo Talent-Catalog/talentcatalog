@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.tbbtalent.server.security.JwtTokenProvider;
-import org.tbbtalent.server.security.TbbUserDetailsService;
+import org.tbbtalent.server.security.TcUserDetailsService;
 
 /**
  * Additional WebSocket configuration.
@@ -59,7 +59,7 @@ public class WebSocketConfig2 implements WebSocketMessageBrokerConfigurer {
     private JwtTokenProvider tokenProvider;
 
     @Autowired
-    private TbbUserDetailsService userDetailsService;
+    private TcUserDetailsService userDetailsService;
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {

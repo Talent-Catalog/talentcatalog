@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
 import org.tbbtalent.server.model.db.CandidateVisaJobCheck;
 import org.tbbtalent.server.model.db.Occupation;
@@ -31,7 +30,7 @@ import org.tbbtalent.server.repository.db.CandidateVisaJobRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaRepository;
 import org.tbbtalent.server.repository.db.OccupationRepository;
 import org.tbbtalent.server.repository.db.SalesforceJobOppRepository;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tbbtalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
 
@@ -56,6 +55,14 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
         this.candidateVisaRepository = candidateVisaRepository;
         this.occupationRepository = occupationRepository;
         this.salesforceJobOppRepository = salesforceJobOppRepository;
+    }
+
+    @Override
+    public CandidateVisaJobCheck getVisaJobCheck(long visaJobId)
+            throws NoSuchObjectException {
+
+        return candidateVisaJobRepository.findById(visaJobId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateVisaJobCheck.class, visaJobId));
     }
 
     @Override
@@ -85,10 +92,9 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
 
     @Override
     public void updateIntakeData(
-            Long visaJobId, @NonNull Candidate candidate,
-            CandidateIntakeDataUpdate data) throws NoSuchObjectException {
-        CandidateVisaJobCheck cv;
-        cv = candidateVisaJobRepository.findById(visaJobId)
+            Long visaJobId, @NonNull CandidateVisaCheckData data) throws NoSuchObjectException {
+        CandidateVisaJobCheck cvj;
+        cvj = candidateVisaJobRepository.findById(visaJobId)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateVisaJobCheck.class, visaJobId));
 
         Occupation occupation = null;
@@ -96,8 +102,8 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
             occupation = occupationRepository.findById(data.getVisaJobOccupationId())
                     .orElseThrow(() -> new NoSuchObjectException(Occupation.class, data.getVisaJobOccupationId()));
         }
-        cv.populateIntakeData(occupation, data);
-        candidateVisaJobRepository.save(cv);
+        cvj.populateIntakeData(occupation, data);
+        candidateVisaJobRepository.save(cvj);
 
     }
 }

@@ -162,7 +162,7 @@ Use `psql` to import that dump file into your newly created database.
 
 ### Download and edit the code ###
 
-- Clone [the repository](https://github.com/talentbeyondboundaries/tbbtalentv2.git) to your local system
+- Clone [the repository](https://github.com/Talent-Catalog/talentcatalog.git) to your local system
 - Open the root folder in IntelliJ IDEA (it should auto detect gradle and self-configure)
 
 ### Run Elasticsearch ###
@@ -192,18 +192,18 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
 - Some secret information such as passwords and private keys are set in 
   environment variables - including programmatic access to Talent Catalog's Amazon AWS, 
   Google and Salesforce accounts. If these environment variables are not set
-  the application will fail at start up. Contact TBB if you need access to these
-  "secrets". On development computers they can be stored in a tbb_secrets.txt file which you can 
+  the application will fail at start up. Contact Talent Catalog if you need access to these
+  "secrets". On development computers they can be stored in a tc_secrets.txt file which you can 
   hook into your computer's start up to set the relevant environment variables. 
-  For example add "source ~/tbb_secrets.txt" to .bash_profile or .zshenv
+  For example add "source ~/tc_secrets.txt" to .bash_profile or .zshenv
   depending on whether you are running bash or zsh.
 
-- Create a new Run Profile for `org.tbbtalent.server.TbbTalentApplication`. 
+- Create a new Run Profile for `org.tbbtalent.server.TcTalentApplication`. 
   In the Environment Variables section of Intellij, check the 
   "Include system environment variables" checkbox.
 - Run the new profile, you should see something similar to this in the logs: 
 ```
-Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
+Started TcTalentApplication in 2.217 seconds (JVM running for 2.99)
 ```
 - your server will be running on port 8080 (default for Spring Boot) 
 (can be overridden by setting server.port in application.yml, or Intellij Run 
@@ -374,10 +374,10 @@ See https://stackoverflow.com/questions/11284634/upgrade-node-js-to-the-latest-v
 
 ## Version Control ##
 
-We use GitHub. Our repository is called tbbtalentv2 - 
-[https://github.com/talentbeyondboundaries/tbbtalentv2](https://github.com/talentbeyondboundaries/tbbtalentv2)
+We use GitHub. Our repository is called talentcatalog - 
+[https://github.com/Talent-Catalog/talentcatalog](https://github.com/Talent-Catalog/talentcatalog)
 
-See the [GitHub wiki](https://github.com/talentbeyondboundaries/tbbtalentv2/wiki) 
+See the [GitHub wiki](https://github.com/Talent-Catalog/talentcatalog/wiki) 
 for additional documentation.
 
 ### Master branch ###
@@ -433,7 +433,7 @@ rather having changes just saved on your computer.
 ## Deployment and Monitoring ##
 
 See the Deployment and Monitoring pages on the 
-[GitHub wiki](https://github.com/talentbeyondboundaries/tbbtalentv2/wiki).
+[GitHub wiki](https://github.com/Talent-Catalog/talentcatalog/wiki).
 
 ## License
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)

@@ -1,29 +1,27 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {CandidateVisaJobCheck, TBBEligibilityAssessment} from '../../../../../model/candidate';
+import {TBBEligibilityAssessment} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
-import {CandidateService} from '../../../../../services/candidate.service';
-import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
+import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
+import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-job-eligibility-assessment',
   templateUrl: './job-eligibility-assessment.component.html',
   styleUrls: ['./job-eligibility-assessment.component.scss']
 })
-export class JobEligibilityAssessmentComponent extends IntakeComponentBase implements OnInit {
+export class JobEligibilityAssessmentComponent extends VisaCheckComponentBase implements OnInit {
 
-  @Input() selectedIndex: number;
-  @Input() selectedJobCheck: CandidateVisaJobCheck;
   public jobEligibilityAssessOptions: EnumOption[] = enumOptions(TBBEligibilityAssessment);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
+  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+    super(fb, candidateVisaCheckService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaJobId: [this.selectedJobCheck?.id],
-      visaJobTbbEligibility: [this.selectedJobCheck?.tbbEligibility],
+      visaJobId: [this.visaJobCheck?.id],
+      visaJobTbbEligibility: [this.visaJobCheck?.tbbEligibility],
     });
   }
 

@@ -30,7 +30,7 @@ import {CandidateAttachment} from "./candidate-attachment";
 import {TaskAssignment} from "./task-assignment";
 import {CandidateOpportunity} from "./candidate-opportunity";
 import {OpportunityProgressParams} from "./opportunity";
-import {ShortJob} from "./job";
+import {Job} from "./job";
 
 export interface ShortCandidate {
   candidateNumber: string;
@@ -99,6 +99,7 @@ export interface Candidate extends HasId {
   candidateOpportunities: CandidateOpportunity[];
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
+  intaked: string;
 }
 
 export interface CandidateProperty {
@@ -306,20 +307,20 @@ export interface CandidateVisa {
   updatedBy?: User;
   updatedDate?: number;
   visaEligibilityAssessment?: YesNo;
-  pathwayAssessment?: YesNo;
+  pathwayAssessment?: YesNoUnsure;
   pathwayAssessmentNotes?: string;
   candidateVisaJobChecks?: CandidateVisaJobCheck[];
 
 }
 
 export interface CandidateVisaJobCheck {
-  jobOpp: ShortJob;
+  jobOpp?: Job;
   id?: number;
   name?: string;
   sfJobLink?: string;
   occupation?: Occupation;
   occupationNotes?: string;
-  qualification?: EducationType;
+  qualification?: YesNo;
   qualificationNotes?: string;
   salaryTsmit?: YesNo;
   regional?: YesNo;
@@ -335,14 +336,15 @@ export interface CandidateVisaJobCheck {
   putForward?: VisaEligibility;
   tbbEligibility?: TBBEligibilityAssessment;
   notes?: String;
-  // TODO: NEW FIELDS FROM CANADA VISA CHECK TO BE ENTERED INTO BACKEND
-  workExp?: String;
+  relevantWorkExp?: string;
   ageRequirement?: YesNo;
   preferredPathways?: string;
   ineligiblePathways?: string;
   eligiblePathways?: string;
   occupationCategory?: string;
-  occupationSubcategory?: string;
+  occupationSubCategory?: string;
+  englishThreshold?: YesNo;
+  englishThresholdNotes?: string;
 }
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)

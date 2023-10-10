@@ -5,31 +5,34 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
+import org.tbbtalent.server.model.db.CandidateVisaJobCheck;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaRepository;
 import org.tbbtalent.server.repository.db.CountryRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
+import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
 import org.tbbtalent.server.service.db.CandidateVisaService;
 
 /**
@@ -42,63 +45,83 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
     private final CandidateVisaRepository candidateVisaRepository;
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
-    private final UserRepository userRepository;
+
+    private final CandidateVisaJobCheckService candidateVisaJobCheckService;
 
     public CandidateVisaServiceImpl(
             CandidateVisaRepository candidateVisaRepository,
             CandidateRepository candidateRepository,
-            CountryRepository countryRepository, UserRepository userRepository) {
+            CountryRepository countryRepository,
+            CandidateVisaJobCheckService candidateVisaJobCheckService) {
         this.candidateVisaRepository = candidateVisaRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
-        this.userRepository = userRepository;
+        this.candidateVisaJobCheckService = candidateVisaJobCheckService;
+    }
+
+    @Override
+    public CandidateVisaCheck getVisaCheck(long visaId)
+            throws NoSuchObjectException {
+
+        return candidateVisaRepository.findById(visaId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateVisaJobCheck.class, visaId));
+    }
+
+    @Override
+    public List<CandidateVisaCheck> listCandidateVisaChecks(long candidateId) {
+        return candidateVisaRepository.findByCandidateId(candidateId);
     }
 
     @Override
     public CandidateVisaCheck createVisaCheck(
-            long candidateId, CreateCandidateVisaCheckRequest request) 
-            throws NoSuchObjectException {
+            long candidateId, CreateCandidateVisaCheckRequest request)
+            throws NoSuchObjectException, EntityExistsException {
 
         Candidate candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
 
+        final Long countryId = request.getCountryId();
+        CandidateVisaCheck existing = candidateVisaRepository.findByCandidateIdCountryId(candidateId, countryId).orElse(null);
+
+        if (existing != null) {
+            throw new EntityExistsException("Visa Check", "There is already a visa check associated with this country.");
+        }
+
         CandidateVisaCheck cv = new CandidateVisaCheck();
         cv.setCandidate(candidate);
-
-        final Long countryId = request.getCountryId();
-        if (countryId != null) {
-            Country country = countryRepository.findById(countryId)
-                    .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
-            cv.setCountry(country);
-        }
-        //cv.setEligibility(request.getEligibility());
-        cv.setAssessmentNotes(request.getAssessmentNotes());
-
+        Country country = countryRepository.findById(countryId)
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
+        cv.setCountry(country);
         return candidateVisaRepository.save(cv);
     }
 
     @Override
-    public boolean deleteVisaCheck(long visaId) 
+    public boolean deleteVisaCheck(long visaId)
             throws EntityReferencedException, InvalidRequestException {
-        candidateVisaRepository.deleteById(visaId);
+        try {
+            candidateVisaRepository.deleteById(visaId);
+        } catch (Exception e) {
+            throw new InvalidRequestException("There are job specific visa checks associated with this country's visa check, " +
+                    "cannot delete unless this country's job specific visa checks are deleted first.");
+        }
         return true;
     }
 
     @Override
     public void updateIntakeData(
-            Long visaId, @NonNull Candidate candidate,
-            CandidateIntakeDataUpdate data) throws NoSuchObjectException {
-            CandidateVisaCheck cv;
-            cv = candidateVisaRepository.findById(visaId)
-                    .orElseThrow(() -> new NoSuchObjectException(CandidateVisaCheck.class, visaId));
+        Long visaId, @NonNull CandidateVisaCheckData data) throws NoSuchObjectException {
+        CandidateVisaCheck cv;
+        cv = candidateVisaRepository.findById(visaId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateVisaCheck.class, visaId));
 
-            Country country = null;
-            if (data.getVisaCountryId() != null) {
-                country = countryRepository.findById(data.getVisaCountryId())
-                        .orElseThrow(() -> new NoSuchObjectException(Country.class, data.getVisaCountryId()));
-            }
-            cv.populateIntakeData(candidate, country, data);
-            candidateVisaRepository.save(cv);
+        // If there is a non null visa job id, this is a visa job update.
+        final Long visaJobId = data.getVisaJobId();
+        if (visaJobId != null) {
+            candidateVisaJobCheckService.updateIntakeData(visaJobId, data);
+        }
+
+        cv.populateIntakeData(data);
+        candidateVisaRepository.save(cv);
 
     }
 }

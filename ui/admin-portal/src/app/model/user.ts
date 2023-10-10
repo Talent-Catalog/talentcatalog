@@ -24,6 +24,7 @@ export class User {
   lastName: string;
   email: string;
   role: string;
+  jobCreator: boolean;
   approver: User;
   purpose: string;
   readOnly: boolean;
@@ -52,6 +53,7 @@ export interface ShortUser {
 export interface UpdateUserRequest {
   email: string;
   firstName: string;
+  jobCreator: boolean;
   lastName: string;
   partnerId: number;
   password?: string;
@@ -68,7 +70,7 @@ export interface UpdateUserRequest {
 export enum Role {
   systemadmin = "System Admin",
   admin = "Full Admin",
-  sourcepartneradmin = "Source Partner Admin",
+  partneradmin = "Partner Admin",
   semilimited = "Semi Limited",
   limited = "Limited"
 }
@@ -86,16 +88,16 @@ export function roleGreaterThan(role1: Role, role2: Role): boolean {
       greaterRoles = [Role.systemadmin]
       break;
 
-    case Role.sourcepartneradmin:
+    case Role.partneradmin:
       greaterRoles = [Role.admin, Role.systemadmin]
       break;
 
     case Role.semilimited:
-      greaterRoles = [Role.sourcepartneradmin, Role.admin, Role.systemadmin]
+      greaterRoles = [Role.partneradmin, Role.admin, Role.systemadmin]
       break;
 
     case Role.limited:
-      greaterRoles = [Role.semilimited, Role.sourcepartneradmin, Role.admin, Role.systemadmin]
+      greaterRoles = [Role.semilimited, Role.partneradmin, Role.admin, Role.systemadmin]
       break;
   }
 

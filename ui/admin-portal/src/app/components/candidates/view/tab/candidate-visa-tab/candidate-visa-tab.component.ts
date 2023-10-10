@@ -23,7 +23,9 @@ import {
   CreateCandidateVisaCheckRequest
 } from '../../../../../services/candidate-visa-check.service';
 import {Country} from '../../../../../model/country';
-import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
+import {
+  HasNameSelectorComponent
+} from '../../../../util/has-name-selector/has-name-selector.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../model/candidate';
@@ -37,10 +39,12 @@ import {LocalStorageService} from "angular-2-local-storage";
 export class CandidateVisaTabComponent implements OnInit {
   @Input() candidate: Candidate;
   candidateIntakeData: CandidateIntakeData;
+  visaChecks: CandidateVisa[];
   tbbDestinations: Country[];
   form: FormGroup;
   selectedIndex: number;
   selectedCountry: string;
+  selectedVisaCheck: CandidateVisa;
 
   loading: boolean;
   error: boolean;
@@ -55,35 +59,28 @@ export class CandidateVisaTabComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading = true;
+
     // FETCH INTAKE DATA
     this.candidateService.getIntakeData(this.candidate.id).subscribe((results) => {
       this.candidateIntakeData = results;
-      this.setSelectedCountry()
+      this.loading = false;
+
     })
     // FETCH TBB DESTINATIONS
     this.countryService.listTBBDestinations().subscribe((results) => {
-      this.tbbDestinations = results;
+      /**
+       * todo: Remove/alter this filter once no longer needed or find other solution.
+       * It is a temporary filter to only display the TBB destinations (Australia & Canada) that have functioning visa checks.
+       */
+      this.tbbDestinations = results.filter(c => c.id == 6191 || c.id == 6216);
     })
 
+    this.reloadAndSelectVisaCheck(0)
+
     this.form = this.fb.group({
-      visaCountry: [null]
+      visaCountry: [0]
     });
-  }
-
-  setSelectedCountry() {
-    // If exists, get the last selected visa check from local storage. If nothing there, get the first one.
-    if (this.candidateIntakeData?.candidateVisaChecks.length > 0) {
-      const index: number = this.localStorageService.get('VisaCheckIndex');
-      if (index) {
-        this.selectedIndex = index;
-      } else {
-        this.selectedIndex = 0;
-      }
-    }
-
-    this.form.controls.visaCountry.patchValue(this.selectedIndex);
-
-    this.changeVisaCountry(null);
   }
 
   /**
@@ -92,12 +89,11 @@ export class CandidateVisaTabComponent implements OnInit {
   private get filteredDestinations(): Country[] {
     if (!this.tbbDestinations) {
       return [];
-    } else if (!this.candidateIntakeData.candidateCitizenships) {
+    } else if (this.visaChecks?.length <= 0) {
       return this.tbbDestinations;
     } else {
       //Extract currently used ids
-      const existingIds: number[] = this.candidateIntakeData.candidateVisaChecks
-        .map(record => record.country?.id);
+      const existingIds: number[] = this.visaChecks?.map(record => record.country?.id);
       return this.tbbDestinations.filter(
         //Exclude already used ids
         record => !existingIds.includes(record.id)
@@ -114,6 +110,7 @@ export class CandidateVisaTabComponent implements OnInit {
       .then((selection: Country) => {
         if (selection) {
           this.createRecord(selection);
+          this.filteredDestinations;
         }
       })
       .catch(() => {
@@ -129,9 +126,9 @@ export class CandidateVisaTabComponent implements OnInit {
     this.candidateVisaCheckService.create(this.candidate.id, request)
       .subscribe(
       (visaCheck) => {
-        this.candidateIntakeData.candidateVisaChecks.push(visaCheck);
-        this.form.controls['visaCountry'].patchValue(this.candidateIntakeData.candidateVisaChecks.lastIndexOf(visaCheck));
-        this.changeVisaCountry(null)
+        this.visaChecks.push(visaCheck);
+        this.form.controls['visaCountry'].patchValue(this.visaChecks.lastIndexOf(visaCheck));
+        this.reloadAndSelectVisaCheck(this.visaChecks.indexOf(visaCheck));
         this.loading = false;
       },
       (error) => {
@@ -143,7 +140,7 @@ export class CandidateVisaTabComponent implements OnInit {
 
   deleteRecord(i: number) {
     const confirmationModal = this.modalService.open(ConfirmationComponent);
-    const visaCheck: CandidateVisa = this.candidateIntakeData.candidateVisaChecks[i];
+    const visaCheck: CandidateVisa = this.visaChecks[i];
 
     confirmationModal.componentInstance.message =
       "Are you sure you want to delete the visa check for " + visaCheck.country.name;
@@ -161,8 +158,13 @@ export class CandidateVisaTabComponent implements OnInit {
     this.candidateVisaCheckService.delete(visaCheck.id).subscribe(
       (done) => {
         this.loading = false;
-        this.candidateIntakeData.candidateVisaChecks.splice(i, 1);
-        this.changeVisaCountry(null);
+        this.visaChecks.splice(i, 1);
+        if (this.visaChecks.length > 0) {
+          this.form.controls['visaCountry'].patchValue(0);
+          this.reloadAndSelectVisaCheck(0);
+        } else {
+          this.selectedVisaCheck = null;
+        }
       },
       (error) => {
         this.error = error;
@@ -170,13 +172,17 @@ export class CandidateVisaTabComponent implements OnInit {
       });
   }
 
-  changeVisaCountry(event: Event) {
-    this.selectedIndex = this.form.controls.visaCountry.value;
-    this.selectedCountry = this.candidateIntakeData?.candidateVisaChecks[this.selectedIndex]?.country?.name;
+  /**
+   * Reloads the visa checks and then sets the updated selected visa check.
+   */
+  reloadAndSelectVisaCheck(index: number) {
+    this.candidateVisaCheckService.list(this.candidate.id).subscribe(
+      (results) => {
+        this.visaChecks = results;
+        this.selectedVisaCheck = this.visaChecks[index];
+        this.selectedCountry = this.selectedVisaCheck?.country?.name;
+      })
   }
 
-  getVisaCheckCountryRecord(){
-    return this.candidateIntakeData.candidateVisaChecks.find(v => v.country.name == this.selectedCountry)
-  }
 
 }
