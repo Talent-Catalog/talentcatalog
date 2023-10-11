@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * TODO JC Doc
+ * This is the api where new chats can be created and updated.
  *
  * @author John Cameron
  */

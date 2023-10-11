@@ -47,7 +47,7 @@ public class ChatPublishApi {
      * created timestamp, posting user etc) to clients who are subscribed to that chat.
      * @param post User's post
      * @param chatId ID of chat where the post has been made
-     * @return Recorded post which is sent to all current subscribers of the chat
+     * @return Recorded post which is sent to all current subscribers of the chat with that id
      */
     @MessageMapping("/chat/{chatId}")
     @SendTo("/topic/chat/{chatId}")

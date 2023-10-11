@@ -90,7 +90,7 @@ import org.tbbtalent.server.security.TcUserDetailsService;
  * </ul>
  */
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity(debug = false)
 @EnableGlobalMethodSecurity(
         securedEnabled = true,
         jsr250Enabled = true,

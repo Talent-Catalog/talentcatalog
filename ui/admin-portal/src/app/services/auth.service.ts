@@ -28,7 +28,7 @@ import {EncodedQrImage} from "../util/qr";
 import {Candidate, ShortCandidate} from "../model/candidate";
 import {Job, ShortJob} from "../model/job";
 import {CandidateOpportunity} from "../model/candidate-opportunity";
-import {RxStomp, RxStompConfig} from "@stomp/rx-stomp";
+import {RxStompConfig} from "@stomp/rx-stomp";
 
 @Injectable({
   providedIn: 'root'
@@ -41,8 +41,7 @@ export class AuthService {
 
   constructor(private router: Router,
               private http: HttpClient,
-              private localStorageService: LocalStorageService,
-              private rxStomp: RxStomp) {
+              private localStorageService: LocalStorageService ) {
   }
 
   login(credentials: LoginRequest) {
@@ -341,9 +340,9 @@ export class AuthService {
 
     const config: RxStompConfig = {
       // Which server?
-      //todo 9090
-      //todo websocket twice?
-      brokerURL: 'ws://localhost:9090/websocket/websocket',
+      //todo 9090 is john's lap top only
+      //todo Not sure why need websocket on end?
+      brokerURL: 'ws://localhost:9090/jobchat/websocket',
 
       // Headers
       connectHeaders: {
@@ -357,7 +356,7 @@ export class AuthService {
       // Wait in milliseconds before attempting auto reconnect
       // Set to 0 to disable
       // Typical value 500 (500 milli seconds)
-      reconnectDelay: 10000,
+      reconnectDelay: 5000,
 
       // Will log diagnostics on console
       // It can be quite verbose, not recommended in production

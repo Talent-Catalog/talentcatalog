@@ -44,7 +44,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/websocket").withSockJS();
+        registry.addEndpoint("/jobchat")
+            //Add urls for dev admin and candidate portal localhost ports
+            .setAllowedOrigins("http://localhost:4201","http://localhost:4200")
+            .withSockJS();
     }
 
 }

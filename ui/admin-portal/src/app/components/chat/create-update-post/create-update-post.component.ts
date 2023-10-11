@@ -12,7 +12,6 @@ import {AuthService} from "../../../services/auth.service";
   styleUrls: ['./create-update-post.component.scss']
 })
 export class CreateUpdatePostComponent implements OnInit, OnDestroy {
-
   error: any;
   postForm: FormGroup;
   response: string;
@@ -31,6 +30,9 @@ export class CreateUpdatePostComponent implements OnInit, OnDestroy {
     this.postForm = this.fb.group({
       post: []
     });
+
+    this.rxStompService.configure(this.authService.getRxStompConfig());
+    this.rxStompService.activate();
 
     this.topicSubscription = this.rxStompService
     .watch('/topic/chat/1')

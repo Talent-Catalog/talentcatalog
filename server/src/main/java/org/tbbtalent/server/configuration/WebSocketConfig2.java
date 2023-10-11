@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -37,12 +38,12 @@ import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.TcUserDetailsService;
 
 /**
- * Additional WebSocket configuration.
+ * Additional WebSocket configuration which checks authentication using the user's logged on
+ * JWT token. In the browser code, the JWT token is added to the STOMP CONNECT message.
+ * This code extracts the token and checks it.
  * <p/>
  * Used to support our chats.
  * <p/>
- * This is needed to allow token authentication in STOMP.
- *
  * Based on guidance
  * <a href=
  * "https://docs.spring.io/spring-framework/reference/web/websocket/stomp/authentication-token-based.html">
@@ -50,7 +51,6 @@ import org.tbbtalent.server.security.TcUserDetailsService;
  * @see WebSocketConfig
  * @author John Cameron
  */
-
 @Configuration
 @EnableWebSocketMessageBroker
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
@@ -61,6 +61,10 @@ public class WebSocketConfig2 implements WebSocketMessageBrokerConfigurer {
     @Autowired
     private TcUserDetailsService userDetailsService;
 
+    /**
+     * Intercept STOMP CONNECT message coming in over the web socket and extract and check the
+     * JWT token.
+     */
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
@@ -82,14 +86,22 @@ public class WebSocketConfig2 implements WebSocketMessageBrokerConfigurer {
         });
     }
 
-    private String getAuthorizationToken(MessageHeaderAccessor accessor) {
-        final String header = (String) accessor.getHeader("Authorization");
-        final String bearerLabel = "Bearer ";
-        if (StringUtils.hasText(header) && header.startsWith(bearerLabel)) {
-            return header.substring(bearerLabel.length());
+    /**
+     * Authorization is a header on the STOMP CONNECT message (not an HTTP header).
+     * Spring stores STOMP headers in the native headers.
+     * @see StompHeaderAccessor
+     * @param accessor Stomp header accessor
+     * @return JWT authorization token, or null if none found
+     */
+    @Nullable
+    private String getAuthorizationToken(StompHeaderAccessor accessor) {
+        final String header = accessor.getFirstNativeHeader("Authorization");
+        if (header != null) {
+            final String bearerLabel = "Bearer ";
+            if (StringUtils.hasText(header) && header.startsWith(bearerLabel)) {
+                return header.substring(bearerLabel.length());
+            }
         }
         return null;
     }
-
-
 }
