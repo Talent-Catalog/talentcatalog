@@ -171,8 +171,6 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private void copyOpportunityToJobOpp(@NonNull Opportunity op, SalesforceJobOpp salesforceJobOpp) {
         //Update DB with data from op
         salesforceJobOpp.setName(op.getName());
-        final String sfCountryName = op.getAccountCountry();
-        salesforceJobOpp.setCountry(sfCountryName);
         salesforceJobOpp.setEmployer(op.getAccountName());
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
@@ -231,13 +229,15 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             }
         }
 
-        //Post processing
+        //Post-processing
 
         // Match a country object with the country name from Salesforce.
+        final String sfCountryName = op.getAccountCountry();
         Country country = this.countryRepository.findByNameIgnoreCase(sfCountryName);
-        salesforceJobOpp.setCountryObject(country);
+        salesforceJobOpp.setCountry(country);
         if (country == null ){
-             emailHelper.sendAlert("Salesforce country " + sfCountryName + "not found in database.");
+             emailHelper.sendAlert("Salesforce country " + sfCountryName +
+                 " in Job Opp " + op.getName() + " not found in database.");
         }
     }
 }
