@@ -37,6 +37,7 @@ export class CreateUpdatePostComponent implements OnInit, OnDestroy {
     this.topicSubscription = this.rxStompService
     .watch('/topic/chat/1')
     .subscribe((message: Message) => {
+      const payload = JSON.parse(message.body)
       this.response = message.body;
     });
   }

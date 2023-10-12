@@ -16,11 +16,14 @@
 
 package org.tbbtalent.server.api.chat;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.tbbtalent.server.model.db.ChatPost;
 import org.tbbtalent.server.model.db.chat.Post;
+import org.tbbtalent.server.service.db.JobChatService;
 
 /**
  * This is where websocket connections are handled.
@@ -39,7 +42,9 @@ import org.tbbtalent.server.model.db.chat.Post;
  * @author John Cameron
  */
 @Controller
+@RequiredArgsConstructor
 public class ChatPublishApi {
+    private final JobChatService jobChatService;
 
     /**
      * Receives a post on the given chat from the currently logged in user,
@@ -54,6 +59,9 @@ public class ChatPublishApi {
     public Post sendPost(Post post, @DestinationVariable String chatId) {
         //TODO create post on database, then return updated version of it containing created date,
         //user etc
+        ChatPost chatPost = jobChatService.createPost(post, chatId);
+
+        //TODO JC Convert to use normal builders
         return post;
     }
 }
