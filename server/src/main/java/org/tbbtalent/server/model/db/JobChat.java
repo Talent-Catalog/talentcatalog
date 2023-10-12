@@ -16,19 +16,41 @@
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 /**
- * TODO JC Doc
+ * Represents a JobChat - which is like a Slack Channel associated with a particular job opportunity
  *
  * @author John Cameron
  */
 @Getter
 @Setter
+@Entity
+@Table(name = "job_chat")
+@SequenceGenerator(name = "seq_gen", sequenceName = "job_chat_id_seq", allocationSize = 1)
 public class JobChat extends AbstractAuditableDomainObject<Long> implements JobChatDto {
+
+  /**
+   * Job opportunity associated with chat
+   */
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "job_id")
   private SalesforceJobOpp jobOpp;
+
+  /**
+   * Optional candidate opportunity associated with chat. This will be required for job chats
+   * related to a particular candidate going for that job.
+   */
   @Nullable
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "candidate_opp_id")
   private CandidateOpportunity candidateOpp;
 }

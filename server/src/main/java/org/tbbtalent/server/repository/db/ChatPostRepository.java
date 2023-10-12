@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2022 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,20 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.service.db;
+package org.tbbtalent.server.repository.db;
 
-import org.springframework.lang.NonNull;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.JobChat;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.tbbtalent.server.model.db.ChatPost;
 
-public interface JobChatService {
-
-    /**
-     * Get the JobChat with the given id.
-     * @param id Id of job chat to get
-     * @return JobChat
-     * @throws NoSuchObjectException if there is no JobChat with this id.
-     */
-    @NonNull
-    JobChat getJobChat(long id) throws NoSuchObjectException;
+public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
+    JpaSpecificationExecutor<ChatPost> {
 }

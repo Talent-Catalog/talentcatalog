@@ -16,17 +16,28 @@
 
 package org.tbbtalent.server.model.db;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * TODO JC Doc
+ * Represents a post in a JobChat.
  *
  * @author John Cameron
  */
 @Getter
 @Setter
+@Entity
+@Table(name = "chat_post")
+@SequenceGenerator(name = "seq_gen", sequenceName = "chat_post_id_seq", allocationSize = 1)
 public class ChatPost extends AbstractAuditableDomainObject<Long> implements ChatPostDto {
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_chat_id")
     private JobChat jobChat;
     private String content;
 

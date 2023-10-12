@@ -18,16 +18,21 @@ package org.tbbtalent.server.service.db;
 
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.ChatPost;
 import org.tbbtalent.server.model.db.JobChat;
+import org.tbbtalent.server.model.db.chat.Post;
 
-public interface JobChatService {
+public interface ChatPostService {
+
+    ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat);
 
     /**
-     * Get the JobChat with the given id.
-     * @param id Id of job chat to get
-     * @return JobChat
-     * @throws NoSuchObjectException if there is no JobChat with this id.
+     * Get the ChatPost with the given id.
+     * @param id Id of post to get
+     * @return ChatPost
+     * @throws NoSuchObjectException if there is no post with this id.
      */
     @NonNull
-    JobChat getJobChat(long id) throws NoSuchObjectException;
+    ChatPost getChatPost(long id) throws NoSuchObjectException;
+
 }

@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {Subscription} from "rxjs";
 import {Message} from '@stomp/stompjs';
-import {Post} from "../../../model/chat";
+import {ChatPost, Post} from "../../../model/chat";
 import {AuthService} from "../../../services/auth.service";
 
 @Component({
@@ -37,8 +37,9 @@ export class CreateUpdatePostComponent implements OnInit, OnDestroy {
     this.topicSubscription = this.rxStompService
     .watch('/topic/chat/1')
     .subscribe((message: Message) => {
-      const payload = JSON.parse(message.body)
-      this.response = message.body;
+      const payload: ChatPost = JSON.parse(message.body)
+      this.response = payload.content
+          + '(' + message.body + ')';
     });
   }
 

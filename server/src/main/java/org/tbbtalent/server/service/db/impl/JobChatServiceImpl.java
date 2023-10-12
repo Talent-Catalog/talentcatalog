@@ -16,45 +16,24 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.model.db.ChatPost;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.JobChat;
-import org.tbbtalent.server.model.db.chat.Post;
+import org.tbbtalent.server.repository.db.JobChatRepository;
 import org.tbbtalent.server.service.db.JobChatService;
-import org.tbbtalent.server.service.db.UserService;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Service
 @RequiredArgsConstructor
 public class JobChatServiceImpl implements JobChatService {
 
-    private final UserService userService;
+    private final JobChatRepository jobChatRepository;
 
     @Override
-    public ChatPost createPost(Post post, String chatId) {
-        Long id = Long.parseLong(chatId);
-        JobChat jobChat = getJobChat(id);
-        ChatPost chatPost = new ChatPost();
-        chatPost.setJobChat(jobChat);
-        chatPost.setContent(post.getContent());
-        chatPost.setCreatedDate(OffsetDateTime.now());
-        chatPost.setCreatedBy(userService.getLoggedInUser());
-
-        //TODO JC This should be stored on the DB
-        chatPost.setId(1L);
-        return chatPost;
-    }
-
-    private JobChat getJobChat(Long chatId) {
-        JobChat jobChat = new JobChat();
-        jobChat.setId(chatId);
-        //TODO JC Implement getJobChat by looking up DB
-        return jobChat;
+    @NonNull
+    public JobChat getJobChat(long id) throws NoSuchObjectException {
+        return jobChatRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(JobChat.class, id));
     }
 }

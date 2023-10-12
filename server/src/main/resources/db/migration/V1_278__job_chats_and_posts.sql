@@ -33,9 +33,9 @@ create table chat_post
     job_chat_id  bigint      not null references job_chat,
     created_by   bigint      not null references users,
     created_date timestamptz not null,
-    update_by    bigint      not null references users,
-    updated_date timestamptz not null
+    updated_by   bigint references users,
+    updated_date timestamptz
 );
 
 -- To speed up look up of posts in a chat
-create index job_chat_id_idx on chat_post(job_chat_id);
+create index job_chat_id_idx on chat_post (job_chat_id);

@@ -16,14 +16,18 @@
 
 package org.tbbtalent.server.api.chat;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.tbbtalent.server.model.db.ChatPost;
+import org.tbbtalent.server.model.db.JobChat;
 import org.tbbtalent.server.model.db.chat.Post;
+import org.tbbtalent.server.service.db.ChatPostService;
 import org.tbbtalent.server.service.db.JobChatService;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
  * This is where websocket connections are handled.
@@ -44,6 +48,7 @@ import org.tbbtalent.server.service.db.JobChatService;
 @Controller
 @RequiredArgsConstructor
 public class ChatPublishApi {
+    private final ChatPostService chatPostService;
     private final JobChatService jobChatService;
 
     /**
@@ -56,12 +61,34 @@ public class ChatPublishApi {
      */
     @MessageMapping("/chat/{chatId}")
     @SendTo("/topic/chat/{chatId}")
-    public Post sendPost(Post post, @DestinationVariable String chatId) {
-        //TODO create post on database, then return updated version of it containing created date,
-        //user etc
-        ChatPost chatPost = jobChatService.createPost(post, chatId);
-
-        //TODO JC Convert to use normal builders
-        return post;
+    public Map<String, Object> sendPost(Post post, @DestinationVariable Long chatId) {
+        JobChat jobChat = jobChatService.getJobChat(chatId);
+        ChatPost chatPost = chatPostService.createPost(post, jobChat);
+        return chatPostDto().build(chatPost);
     }
+
+    private DtoBuilder chatPostDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("content")
+            .add("createdDate")
+            .add("createdBy", userDto())
+            .add("jobChat", jobChatDto())
+            .add("updatedDate")
+            .add("updatedBy", userDto())
+            ;
+    }
+    private DtoBuilder jobChatDto() {
+        return new DtoBuilder()
+            .add("id")
+            ;
+    }
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("firstName")
+            .add("lastName")
+            ;
+    }
+
 }
