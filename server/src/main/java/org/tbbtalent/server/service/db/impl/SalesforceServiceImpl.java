@@ -63,6 +63,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.JobOpportunityStage;
 import org.tbbtalent.server.model.db.SalesforceJobOpp;
@@ -741,9 +742,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     private String getCandidateOpportunityRecordType(SalesforceJobOpp opportunity) {
-        String country = opportunity.getCountry();
+        Country country = opportunity.getCountry();
         String recordType = "Candidate recruitment";
-        if ("Canada".equals(country)) {
+        if (country != null && "Canada".equals(country.getName())) {
             recordType = "Candidate recruitment (CAN)";
         }
         return recordType;

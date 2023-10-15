@@ -76,18 +76,11 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private User contactUser;
 
     /**
-     * todo Remove this field when we moved across to using countryObject everywhere
-     * FROM SALESFORCE: Name of country where job is located
-     */
-    private String country;
-
-    /**
-     * todo: Once above country field removed, rename countryObject to country
-     * References country object on database (set using the country name above that comes from SF)
+     * References country object on database (set using the country name that comes from SF)
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_object_id")
-    private Country countryObject;
+    private Country country;
 
     /**
      * Description given to job in job intake.

@@ -5,12 +5,12 @@
   ~ the terms of the GNU Affero General Public License as published by the Free
   ~ Software Foundation, either version 3 of the License, or any later version.
   ~
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT 
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
   ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
   ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
   ~ for more details.
   ~
-  ~ You should have received a copy of the GNU Affero General Public License 
+  ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
@@ -29,7 +29,7 @@
 
 <div class="center">
     <h1 th:if="${showName}"><span th:text="${candidate.user.firstName}"></span> <span th:text="${candidate.user.lastName}"></span></h1>
-    <strong class="subheader">User ID #TBB-<span th:text="${candidate.candidateNumber}"></span></strong>
+    <strong class="subheader">User ID <span th:text="${candidate.candidateNumber}"></span></strong>
     <div th:if="${!showContact and candidate.country}">
         <strong>Current Location: </strong>
         <span th:text="${candidate.country.name}"></span>
