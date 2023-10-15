@@ -11,6 +11,7 @@ import {CandidateVisaCheckService} from "../../../../../../services/candidate-vi
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {LocalStorageService} from "angular-2-local-storage";
+import {AuthService} from "../../../../../../services/auth.service";
 
 @Component({
   selector: 'app-candidate-visa-job',
@@ -39,7 +40,8 @@ export class CandidateVisaJobComponent implements OnInit {
               private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
-              private fb: FormBuilder) { }
+              private fb: FormBuilder,
+              private authService: AuthService) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -154,5 +156,9 @@ export class CandidateVisaJobComponent implements OnInit {
         this.selectedJobChange.emit(result);
       }
     )
+  }
+
+  canDeleteVisaJob() : boolean {
+    return this.authService.isSystemAdminOnly();
   }
 }
