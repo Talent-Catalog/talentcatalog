@@ -28,6 +28,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../model/candidate';
 import {LocalStorageService} from "angular-2-local-storage";
+import {AuthService} from "../../../../../services/auth.service";
 
 @Component({
   selector: 'app-candidate-visa-tab',
@@ -53,7 +54,8 @@ export class CandidateVisaTabComponent implements OnInit {
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
               private fb: FormBuilder,
-              private localStorageService: LocalStorageService) {
+              private localStorageService: LocalStorageService,
+              private authService: AuthService) {
   }
 
   ngOnInit(): void {
@@ -180,6 +182,10 @@ export class CandidateVisaTabComponent implements OnInit {
         this.selectedVisaCheck = this.visaChecks[index];
         this.selectedCountry = this.selectedVisaCheck?.country?.name;
       })
+  }
+
+  canDeleteVisa() : boolean {
+    return this.authService.isSystemAdminOnly();
   }
 
 
