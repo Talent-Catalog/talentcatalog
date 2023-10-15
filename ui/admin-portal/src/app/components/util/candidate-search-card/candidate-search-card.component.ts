@@ -124,7 +124,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     // THEN we need to set the saved context tab to null
     // SO THAT it selects the default 'context notes' tab otherwise it won't select anything
     // as the progress tab only exists on submission lists.
-    if (defaultActiveContextTabID == "progress" && !this.isSubmissionList) {
+    if (defaultActiveContextTabID == "progress" && !this.isSubmissionList()) {
       defaultActiveContextTabID = null;
     }
     this.setActiveContextTabId(defaultActiveContextTabID == null ? "contextNotes" : defaultActiveContextTabID);
