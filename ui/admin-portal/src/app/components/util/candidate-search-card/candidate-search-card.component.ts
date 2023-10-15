@@ -82,7 +82,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     return this.candidate.selected;
   }
 
-  get isSubmissionList(): boolean {
+  isSubmissionList(): boolean {
     return this.isList && this.candidateSource.sfJobOpp != null
   }
 

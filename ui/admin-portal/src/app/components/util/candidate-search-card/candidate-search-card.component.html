@@ -59,7 +59,7 @@
         </ng-container>
 
         <!-- PROGRESS -->
-        <ng-container *ngIf="isSubmissionList" ngbNavItem="progress">
+        <ng-container *ngIf="isSubmissionList()" ngbNavItem="progress">
           <a ngbNavLink>Progress</a>
           <ng-template ngbNavContent>
             <app-opportunity-stage-next-step
