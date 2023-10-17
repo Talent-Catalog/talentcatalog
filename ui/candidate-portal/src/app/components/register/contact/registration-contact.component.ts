@@ -49,6 +49,8 @@ export class RegistrationContactComponent implements OnInit {
 
   usAfghan: boolean;
 
+  partnerName: string;
+
   constructor(private fb: FormBuilder,
               private router: Router,
               private route: ActivatedRoute,
@@ -97,9 +99,16 @@ export class RegistrationContactComponent implements OnInit {
       this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
       this.languageService.setUsAfghan(this.usAfghan);
 
+      this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
+
       // The user has not registered - add the password fields to the reactive form
       this.form.addControl('password', new FormControl('', [Validators.required, Validators.minLength(8)]));
       this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
+
+      // The user has not registered - add the email consent fields
+      this.form.addControl('consentPartner', new FormControl(true, Validators.required));
+      this.form.addControl('consentAllPartners', new FormControl(true, Validators.required));
+
       this.loading = false;
     }
   }
