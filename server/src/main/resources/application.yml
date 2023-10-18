@@ -1,6 +1,6 @@
 tbb:
   cors:
-    urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202,https://tbbtalent-staging.herokuapp.com}
+    urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202,https://tctalent-test.org}
 
   destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
   partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
