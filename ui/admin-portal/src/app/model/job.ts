@@ -23,6 +23,7 @@ import {getExternalHref} from "../util/url";
 import {JobOppIntake} from "./job-opp-intake";
 import {isCandidateOpportunity, SearchOpportunityRequest} from "./candidate-opportunity";
 import {Opportunity, OpportunityProgressParams} from "./opportunity";
+import {Country} from "./country";
 
 export function isJob(opp: Opportunity): opp is Job {
   return !isCandidateOpportunity(opp);
@@ -44,7 +45,7 @@ export interface Job extends Opportunity {
   employerDescription: string;
   contactUser: User;
   // Note: this country field comes from Salesforce, why it is a string and not a country object.
-  country: string;
+  country: Country;
   employer: string;
   exclusionList: SavedList;
   jobSummary: string;

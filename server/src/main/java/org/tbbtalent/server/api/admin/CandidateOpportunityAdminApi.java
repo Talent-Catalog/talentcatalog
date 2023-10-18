@@ -19,7 +19,6 @@ package org.tbbtalent.server.api.admin;
 import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -120,8 +119,15 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
         return new DtoBuilder()
             .add("id")
             .add("name")
-            .add("country")
+            .add("country", countryDto())
             .add("submissionList", shortSavedListDto())
+            ;
+    }
+
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
             ;
     }
 
