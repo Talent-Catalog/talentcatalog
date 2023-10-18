@@ -41,4 +41,10 @@ public class RegisterCandidateRequest extends BaseCandidateContactRequest
     private String utmSource;
     private String utmTerm;
 
+    /**
+     * Email consent fields
+     */
+    private boolean consentPartner;
+    private boolean consentAllPartners;
+
 }
