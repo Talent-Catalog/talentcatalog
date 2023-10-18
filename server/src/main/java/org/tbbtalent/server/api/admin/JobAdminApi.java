@@ -167,7 +167,7 @@ public class JobAdminApi implements
             .add("id")
             .add("sfId")
             .add("contactUser", shortUserDto())
-            .add("country")
+            .add("country", countryDto())
             .add("createdBy", shortUserDto())
             .add("createdDate")
             .add("employer")
@@ -194,6 +194,13 @@ public class JobAdminApi implements
             .add("updatedBy", shortUserDto())
             .add("updatedDate")
             .add("jobOppIntake", joiDto())
+            ;
+    }
+
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
             ;
     }
 

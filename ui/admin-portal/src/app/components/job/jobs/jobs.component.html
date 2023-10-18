@@ -85,7 +85,7 @@
         <!--        Opp records    -->
         <tr *ngFor="let opp of results?.content" (click)="selectCurrent(opp)"
             [ngClass]="{'current': currentOpp?.id == opp.id}">
-          <td title="{{opp.country}}">
+          <td title="{{opp.country?.name}}">
             {{opp.name| truncate: 36}}
             <a [routerLink]="['/job',opp.id]">
               <i class="fa-solid fa-briefcase" title="Job"></i>
