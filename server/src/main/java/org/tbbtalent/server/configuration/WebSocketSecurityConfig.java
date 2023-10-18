@@ -24,7 +24,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 /**
- * TODO JC Doc
+ * Websocket security set up.
+ * <p/>
  * Taken from: <a href="https://developer.okta.com/blog/2019/10/09/java-spring-websocket-tutorial">here</a>
  * and <a href="https://docs.spring.io/spring-security/reference/5.7/servlet/integrations/websocket.html">
  *     here</a>
