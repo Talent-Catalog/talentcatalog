@@ -16,7 +16,11 @@
 
 package org.tbbtalent.server.configuration;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -36,6 +40,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Autowired
+    private Environment env;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
@@ -43,10 +50,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
+    public void registerStompEndpoints(@NotNull StompEndpointRegistry registry) {
+        String urls = env.getProperty("tbb.cors.urls");
+        String[] corsUrls;
+        if (StringUtils.isNotBlank(urls)) {
+            corsUrls = urls.split(",");
+        } else {
+            corsUrls = new String[]{};
+        }
+
         registry.addEndpoint("/jobchat")
-            //Add urls for dev admin and candidate portal localhost ports
-            .setAllowedOrigins("http://localhost:4201","http://localhost:4200")
+            .setAllowedOrigins(corsUrls)
             .withSockJS();
     }
 
