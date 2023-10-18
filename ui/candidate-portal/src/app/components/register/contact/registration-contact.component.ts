@@ -99,6 +99,7 @@ export class RegistrationContactComponent implements OnInit {
       this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
       this.languageService.setUsAfghan(this.usAfghan);
 
+      // Get the partner name from the branding info object.
       this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
 
       // The user has not registered - add the password fields to the reactive form
@@ -208,6 +209,9 @@ export class RegistrationContactComponent implements OnInit {
     if (params.has('utm_term')) {
       req.utmContent = params.get('utm_term');
     }
+    //Populate email consent
+    req.consentPartner = this.form.value.consentPartner;
+    req.consentAllPartners = this.form.value.consentAllPartners;
 
     this.authService.register(req).subscribe(
       (response) => {

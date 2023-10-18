@@ -221,6 +221,8 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
   utmMedium?: string;
   utmSource?: string;
   utmTerm?: string;
+  consentPartner?: string;
+  consentAllPartners?: string;
 }
 
 export class LoginRequest {
