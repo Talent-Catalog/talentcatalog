@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {ChatPost} from "../../../model/chat";
 
 @Component({
   selector: 'app-view-post',
@@ -6,6 +7,8 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./view-post.component.scss']
 })
 export class ViewPostComponent implements OnInit {
+
+  @Input() post: ChatPost;
 
   constructor() { }
 

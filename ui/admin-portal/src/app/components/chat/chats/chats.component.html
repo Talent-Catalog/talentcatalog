@@ -1,1 +1,10 @@
-<p>chats works!</p>
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+
+<div *ngFor="let chat of chats" (click)="selectCurrent(chat)"
+     [ngClass]="{'current': currentChat?.id == chat.id}">
+</div>
