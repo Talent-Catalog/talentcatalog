@@ -744,6 +744,16 @@ import {ExportPdfComponent} from './components/util/export-pdf/export-pdf.compon
 import {
   JobEnglishThresholdComponent
 } from './components/candidates/visa/visa-job-assessments/job-english-threshold/job-english-threshold.component';
+import {ChatsComponent} from './components/chat/chats/chats.component';
+import {
+  ChatsWithPostsComponent
+} from './components/chat/chats-with-posts/chats-with-posts.component';
+import {ViewChatComponent} from './components/chat/view-chat/view-chat.component';
+import {
+  CreateUpdateChatComponent
+} from './components/chat/create-update-chat/create-update-chat.component';
+import {PostsComponent} from './components/chat/posts/posts.component';
+import {ViewPostComponent} from './components/chat/view-post/view-post.component';
 
 @NgModule({
   declarations: [
@@ -1040,7 +1050,13 @@ import {
     OccupationSubcategoryComponent,
     CreateUpdatePostComponent,
     ExportPdfComponent,
-    JobEnglishThresholdComponent
+    JobEnglishThresholdComponent,
+    ChatsComponent,
+    ChatsWithPostsComponent,
+    ViewChatComponent,
+    CreateUpdateChatComponent,
+    PostsComponent,
+    ViewPostComponent
   ],
   imports: [
     BrowserModule,
