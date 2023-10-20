@@ -754,6 +754,7 @@ import {
 } from './components/chat/create-update-chat/create-update-chat.component';
 import {PostsComponent} from './components/chat/posts/posts.component';
 import {ViewPostComponent} from './components/chat/view-post/view-post.component';
+import {ManageChatsComponent} from './components/chat/manage-chats/manage-chats.component';
 
 @NgModule({
   declarations: [
@@ -1056,7 +1057,8 @@ import {ViewPostComponent} from './components/chat/view-post/view-post.component
     ViewChatComponent,
     CreateUpdateChatComponent,
     PostsComponent,
-    ViewPostComponent
+    ViewPostComponent,
+    ManageChatsComponent
   ],
   imports: [
     BrowserModule,
