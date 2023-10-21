@@ -3,7 +3,7 @@ import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Router} from "@angular/router";
 import {AuthService} from "../../../services/auth.service";
 import {JobService} from "../../../services/job.service";
-import {ChatPost, JobChat} from "../../../model/chat";
+import {JobChat} from "../../../model/chat";
 
 @Component({
   selector: 'app-chats-with-posts',
@@ -31,9 +31,5 @@ export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit
   onChatSelected(chat: JobChat) {
     this.selectedChat = chat;
     this.chatSelection.emit(chat);
-  }
-
-  onNewPost(post: ChatPost) {
-
   }
 }

@@ -1,13 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {ChatPost, JobChat} from "../../../model/chat";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {Message} from "@stomp/stompjs";
@@ -23,7 +14,6 @@ import {Subscription} from "rxjs";
 export class PostsComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() chat: JobChat;
-  @Output() newPost = new EventEmitter<ChatPost>();
 
   currentPost: ChatPost;
   posts: ChatPost[];
@@ -43,14 +33,14 @@ export class PostsComponent implements OnInit, OnChanges, OnDestroy {
     this.rxStompService.configure(this.authService.getRxStompConfig());
     this.rxStompService.activate();
 
-    //todo check for empty chat
-    this.topicSubscription = this.rxStompService
-    .watch('/topic/chat/' + this.chat.id)
-    .subscribe((message: Message) => {
-      const payload: ChatPost = JSON.parse(message.body);
-      this.addNewPost(payload);
-    });
-
+    if (this.chat) {
+      this.topicSubscription = this.rxStompService
+      .watch('/topic/chat/' + this.chat.id)
+      .subscribe((message: Message) => {
+        const payload: ChatPost = JSON.parse(message.body);
+        this.addNewPost(payload);
+      });
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -83,7 +73,6 @@ export class PostsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private addNewPost(post: ChatPost) {
-    this.newPost.emit(post);
     this.posts.push(post);
   }
 }
