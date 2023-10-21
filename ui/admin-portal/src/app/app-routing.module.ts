@@ -41,9 +41,7 @@ import {
 import {
   ViewCandidateOppFromUrlComponent
 } from "./components/candidate-opp/view-candidate-opp-from-url/view-candidate-opp-from-url.component";
-import {
-  CreateUpdatePostComponent
-} from "./components/chat/create-update-post/create-update-post.component";
+import {ManageChatsComponent} from "./components/chat/manage-chats/manage-chats.component";
 
 const routes: Routes = [
   {
@@ -175,7 +173,7 @@ const routes: Routes = [
           {
             path: '',
             pathMatch: 'full',
-            component: CreateUpdatePostComponent,
+            component: ManageChatsComponent,
             data: {title: 'Chat'}
           },
         ]

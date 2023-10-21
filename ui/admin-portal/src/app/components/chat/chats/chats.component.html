@@ -5,6 +5,11 @@
   {{error}}
 </div>
 
+<!--todo Maybe use tr to pick scss style-->
 <div *ngFor="let chat of chats" (click)="selectCurrent(chat)"
      [ngClass]="{'current': currentChat?.id == chat.id}">
+  <app-view-chat
+      [chat]="chat"
+  >
+  </app-view-chat>
 </div>

@@ -20,7 +20,7 @@ create table job_chat
     candidate_opp_id bigint references candidate_opportunity,
     created_by       bigint      not null references users,
     created_date     timestamptz not null,
-    job_id           bigint      not null references salesforce_job_opp,
+    job_id           bigint      references salesforce_job_opp,
     updated_by       bigint references users,
     updated_date     timestamptz
 

@@ -1,1 +1,22 @@
-<p>manage-chats works!</p>
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+<div>
+  <button class="btn" (click)="doEditChat()">
+    <i class="fas fa-edit" title="Edit"></i>
+  </button>
+  <button class="btn" (click)="doNewChat()">
+    <i class="fas fa-expand" title="Create chat"></i>
+  </button>
+
+</div>
+<div>
+  <app-chats-with-posts
+    [chats]="chats"
+    (chatSelection)="onChatSelected($event)"
+  >
+  </app-chats-with-posts>
+</div>

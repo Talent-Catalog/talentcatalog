@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {JobChat} from "../../../model/chat";
 
 @Component({
@@ -7,7 +7,7 @@ import {JobChat} from "../../../model/chat";
   styleUrls: ['./chats.component.scss']
 })
 export class ChatsComponent implements OnInit {
-  chats: JobChat[];
+  @Input() chats: JobChat[];
   @Output() chatSelection = new EventEmitter();
 
   loading: boolean;

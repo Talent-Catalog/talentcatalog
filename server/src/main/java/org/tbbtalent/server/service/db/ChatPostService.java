@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.ChatPost;
@@ -35,4 +36,5 @@ public interface ChatPostService {
     @NonNull
     ChatPost getChatPost(long id) throws NoSuchObjectException;
 
+    List<ChatPost> listChatPosts(long chatId);
 }

@@ -16,46 +16,46 @@
 
 package org.tbbtalent.server.api.chat;
 
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.api.admin.ITableApi;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.model.db.JobChat;
+import org.tbbtalent.server.api.admin.IJoinedTableApi;
+import org.tbbtalent.server.model.db.ChatPost;
 import org.tbbtalent.server.request.chat.SearchChatRequest;
 import org.tbbtalent.server.request.chat.UpdateChatRequest;
-import org.tbbtalent.server.service.db.JobChatService;
+import org.tbbtalent.server.service.db.ChatPostService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
  * TODO JC Doc
- * This is the api where new chats can be created and updated.
  *
  * @author John Cameron
  */
 @RestController()
-@RequestMapping("/api/admin/chat")
+@RequestMapping("/api/admin/chat-post")
 @Slf4j
 @RequiredArgsConstructor
-public class ChatAdminApi implements
-    ITableApi<SearchChatRequest, UpdateChatRequest, UpdateChatRequest> {
+public class ChatPostAdminApi implements
+    IJoinedTableApi<SearchChatRequest, UpdateChatRequest, UpdateChatRequest> {
 
-    private final JobChatService chatService;
+    private final ChatPostService chatPostService;
 
     @Override
-    @PostMapping
-    public @NonNull Map<String, Object> create(UpdateChatRequest request) throws EntityExistsException {
-        JobChat chat = chatService.createJobChat(request);
-        return chatDto().build(chat);
+    @GetMapping("{id}/list")
+    public List<Map<String, Object>> list(long chatId) {
+        List<ChatPost> posts = chatPostService.listChatPosts(chatId);
+        return postDto().buildList(posts);
     }
 
-    private DtoBuilder chatDto() {
+    private DtoBuilder postDto() {
         return new DtoBuilder()
             .add("id")
-        ;
+            .add("content")
+            ;
     }
+
 }

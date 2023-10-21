@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Router} from "@angular/router";
 import {AuthService} from "../../../services/auth.service";
 import {JobService} from "../../../services/job.service";
-import {JobChat} from "../../../model/chat";
+import {ChatPost, JobChat} from "../../../model/chat";
 
 @Component({
   selector: 'app-chats-with-posts',
@@ -11,6 +11,9 @@ import {JobChat} from "../../../model/chat";
   styleUrls: ['./chats-with-posts.component.scss']
 })
 export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit {
+  @Input() chats: JobChat[];
+  @Output() chatSelection = new EventEmitter();
+
   error: any;
   selectedChat: JobChat;
 
@@ -27,6 +30,10 @@ export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit
 
   onChatSelected(chat: JobChat) {
     this.selectedChat = chat;
+    this.chatSelection.emit(chat);
   }
 
+  onNewPost(post: ChatPost) {
+
+  }
 }

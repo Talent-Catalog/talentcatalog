@@ -13,12 +13,8 @@
 
   <div class="modal-footer">
     <button type="button" class="btn btn-primary" (click)="onSend()"
-            [disabled]="postForm.invalid || saving">
-      <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+            [disabled]="postForm.invalid">
       Send
     </button>
   </div>
 </form>
-<div>
-  Response: {{response}}
-</div>

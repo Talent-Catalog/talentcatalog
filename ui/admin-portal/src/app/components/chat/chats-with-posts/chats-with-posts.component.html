@@ -1,6 +1,7 @@
 <div class="row">
   <div class="col-sm-{{mainPanelColWidth}}">
     <app-chats
+      [chats]="chats"
       (chatSelection)="onChatSelected($event)"
     >
     </app-chats>
@@ -22,6 +23,7 @@
 
         <app-posts
           [chat]="selectedChat"
+          (newPost)="onNewPost($event)"
         >
         </app-posts>
       </div>

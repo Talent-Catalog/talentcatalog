@@ -17,10 +17,20 @@
 package org.tbbtalent.server.service.db;
 
 import org.springframework.lang.NonNull;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.JobChat;
+import org.tbbtalent.server.request.chat.UpdateChatRequest;
 
 public interface JobChatService {
+
+    /**
+     * Creates a new job chat
+     * @param request Request defining the chat to be created
+     * @return Created job chat
+     * @throws EntityExistsException if there is already a job chat matching the given request.
+     */
+    @NonNull JobChat createJobChat(UpdateChatRequest request) throws EntityExistsException;
 
     /**
      * Get the JobChat with the given id.

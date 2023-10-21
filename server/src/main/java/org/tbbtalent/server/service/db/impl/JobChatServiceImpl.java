@@ -16,19 +16,34 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.JobChat;
 import org.tbbtalent.server.repository.db.JobChatRepository;
+import org.tbbtalent.server.request.chat.UpdateChatRequest;
 import org.tbbtalent.server.service.db.JobChatService;
+import org.tbbtalent.server.service.db.UserService;
 
 @Service
 @RequiredArgsConstructor
 public class JobChatServiceImpl implements JobChatService {
 
+    private final UserService userService;
     private final JobChatRepository jobChatRepository;
+
+    @Override
+    @NonNull
+    public JobChat createJobChat(UpdateChatRequest request) throws EntityExistsException {
+        JobChat chat = new JobChat();
+        chat.setCreatedBy(userService.getLoggedInUser());
+        chat.setCreatedDate(OffsetDateTime.now());
+
+        return jobChatRepository.save(chat);
+    }
 
     @Override
     @NonNull

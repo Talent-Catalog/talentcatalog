@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,16 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.repository.db;
+package org.tbbtalent.server.request.chat;
 
-import java.util.List;
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.tbbtalent.server.model.db.ChatPost;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
-    JpaSpecificationExecutor<ChatPost> {
+@Getter
+@Setter
+@ToString
+public class UpdateChatRequest {
 
-    Optional<List<ChatPost>> findByJobChatId(Long chatId);
 }

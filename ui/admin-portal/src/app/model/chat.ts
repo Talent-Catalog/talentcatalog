@@ -33,3 +33,6 @@ export interface ChatPost {
   updatedDate: Date;
 
 }
+
+export interface UpdateChatRequest {
+}

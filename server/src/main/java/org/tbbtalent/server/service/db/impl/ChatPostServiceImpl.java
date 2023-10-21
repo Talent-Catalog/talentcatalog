@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -52,5 +53,11 @@ public class ChatPostServiceImpl implements ChatPostService {
     public ChatPost getChatPost(long id) throws NoSuchObjectException {
        return chatPostRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(ChatPost.class, id));
+    }
+
+    @Override
+    public List<ChatPost> listChatPosts(long chatId) {
+        return chatPostRepository.findByJobChatId(chatId)
+            .orElseThrow(() -> new NoSuchObjectException(JobChat.class, chatId));
     }
 }

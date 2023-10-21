@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {JobChat} from "../../../model/chat";
 
 @Component({
   selector: 'app-view-chat',
@@ -7,6 +8,7 @@ import {Component, OnInit} from '@angular/core';
 })
 export class ViewChatComponent implements OnInit {
 
+  @Input() chat: JobChat
   constructor() { }
 
   ngOnInit(): void {
