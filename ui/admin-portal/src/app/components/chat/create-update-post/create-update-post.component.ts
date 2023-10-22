@@ -33,6 +33,9 @@ export class CreateUpdatePostComponent implements OnInit {
       const body = JSON.stringify(post);
       //todo See retryIfDisconnected in publish doc
       this.rxStompService.publish({ destination: '/app/chat/' + this.chat.id, body: body });
+
+      //todo Clear content.
+      //todo get control for content, then patchValue()
     }
   }
 }

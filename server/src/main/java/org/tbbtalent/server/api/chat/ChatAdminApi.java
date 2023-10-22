@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.chat;
 
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,6 @@ import org.tbbtalent.server.service.db.JobChatService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**
- * TODO JC Doc
  * This is the api where new chats can be created and updated.
  *
  * @author John Cameron
@@ -51,6 +51,13 @@ public class ChatAdminApi implements
     public @NonNull Map<String, Object> create(UpdateChatRequest request) throws EntityExistsException {
         JobChat chat = chatService.createJobChat(request);
         return chatDto().build(chat);
+    }
+
+    @Override
+    @NonNull
+    public List<Map<String, Object>> list() {
+        List<JobChat> chats = chatService.listJobChats();
+        return chatDto().buildList(chats);
     }
 
     private DtoBuilder chatDto() {

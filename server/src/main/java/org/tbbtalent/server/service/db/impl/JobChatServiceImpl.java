@@ -17,7 +17,10 @@
 package org.tbbtalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -50,5 +53,12 @@ public class JobChatServiceImpl implements JobChatService {
     public JobChat getJobChat(long id) throws NoSuchObjectException {
         return jobChatRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(JobChat.class, id));
+    }
+
+    @Override
+    @NonNull
+    public List<JobChat> listJobChats() {
+        final List<JobChat> chats = jobChatRepository.findAll(Sort.by(Direction.ASC, "id"));
+        return chats;
     }
 }

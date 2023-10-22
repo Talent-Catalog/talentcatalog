@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -40,4 +41,11 @@ public interface JobChatService {
      */
     @NonNull
     JobChat getJobChat(long id) throws NoSuchObjectException;
+
+    /**
+     * Return all JobChats.
+     * @return JobChats
+     */
+    @NonNull
+    List<JobChat> listJobChats();
 }

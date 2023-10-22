@@ -18,6 +18,17 @@ export class ManageChatsComponent implements OnInit {
   constructor(private chatService: ChatService) { }
 
   ngOnInit(): void {
+    this.loading = false;
+    this.error = null;
+    this.chatService.list().subscribe(
+        chats => {
+          this.chats = chats;
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        });
   }
 
   doEditChat() {
@@ -25,7 +36,6 @@ export class ManageChatsComponent implements OnInit {
   }
 
   doNewChat() {
-    //todo create/update chat
     let request: UpdateChatRequest = {};
     this.loading = false;
     this.error = null;
