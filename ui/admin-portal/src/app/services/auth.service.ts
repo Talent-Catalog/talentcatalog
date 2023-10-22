@@ -340,9 +340,9 @@ export class AuthService {
 
     const config: RxStompConfig = {
       // Which server?
-      //todo 9090 is john's lap top only
+      //todo 8080 is dev john's lap top only
       //todo Not sure why need websocket on end?
-      brokerURL: 'ws://localhost:9090/jobchat/websocket',
+      brokerURL: 'ws://localhost:8080/jobchat/websocket',
 
       // Headers
       connectHeaders: {
