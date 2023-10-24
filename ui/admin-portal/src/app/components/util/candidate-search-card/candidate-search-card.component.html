@@ -57,6 +57,17 @@
             </app-cv-preview>
           </ng-template>
         </ng-container>
+
+        <!-- PROGRESS -->
+        <ng-container *ngIf="isSubmissionList()" ngbNavItem="progress">
+          <a ngbNavLink>Progress</a>
+          <ng-template ngbNavContent>
+            <app-opportunity-stage-next-step
+              [opp]="getCandidateOppForJobSource()"
+              [notEditable]="true">
+            </app-opportunity-stage-next-step>
+          </ng-template>
+        </ng-container>
       </nav>
       <div [ngbNavOutlet]="navContext" class="mt-2"></div>
     </div>
