@@ -4,15 +4,6 @@ sass:
   style: compressed
 ---
 
-## Version 2.2.0 (???)
-
-Check out the newest features and enhancements.
-
-## Other UI / UX Enhancements
-
-- Renamed user role "Source Partner Admin" to "Partner Admin".
-
-
 ## Version 2.1.0 (September 29, 2023)
 
 Check out the newest features and enhancements.
@@ -85,6 +76,8 @@ Check out the newest features and enhancements.
 
 ## Other UI / UX Enhancements 
 
+- The candidate work experience sections now support rich text formatting, providing a more dynamic and expressive
+way to document professional background and accomplishments.
 - Revamped job icons and introduced the term 'Cases' to refer to Candidate Opportunities, making the terminology more 
 intuitive and aligned with admin user expectations.
 - Fixed side column overlap issues in specific screens, ensuring a consistent and visually appealing user experience.
