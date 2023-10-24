@@ -16,6 +16,7 @@ import {JobService} from "../../../services/job.service";
 export class OpportunityStageNextStepComponent implements OnInit {
   @Input() opp: Opportunity;
   @Output() oppProgressUpdated = new EventEmitter<Opportunity>();
+  @Input() notEditable: boolean;
 
   error: string;
   updating: boolean;
@@ -38,6 +39,9 @@ export class OpportunityStageNextStepComponent implements OnInit {
     }
     if (isJob(this.opp)) {
       canEdit = this.authService.canChangeJobStage(this.opp);
+    }
+    if (this.notEditable) {
+      canEdit = false;
     }
     return canEdit;
   }
