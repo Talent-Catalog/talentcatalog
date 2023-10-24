@@ -54,6 +54,16 @@ more streamlined search experience.
 </div>
 
 
+# Intake Status
+
+You'll now find an extra column in your search results, displaying the intake status of each candidate. This enhancement 
+provides quick visibility into the current status of candidates in the intake process.
+
+<div class="card-image-container">
+  <img src="./../assets/images/v210/mini_full_intake_status_column.png" alt="Keyword Search and Tooltip" class="card-image">
+</div>
+
+
 # Last but Not Least. . .
 
 Last but not least, we've enhanced the visibility of the search button on the New Search screen, taking into account 
