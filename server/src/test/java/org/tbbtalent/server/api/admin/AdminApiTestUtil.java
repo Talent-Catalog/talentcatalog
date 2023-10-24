@@ -226,4 +226,11 @@ public class AdminApiTestUtil {
         reviewStatusItem.setReviewStatus(ReviewStatus.verified);
         return reviewStatusItem;
     }
+
+    static CandidateVisaCheck getCandidateVisaCheck() {
+        CandidateVisaCheck candidateVisaCheck = new CandidateVisaCheck();
+        candidateVisaCheck.setCandidate(getCandidate());
+        candidateVisaCheck.setCountry((new Country("Australia", Status.active)));
+        return candidateVisaCheck;
+    }
 }
