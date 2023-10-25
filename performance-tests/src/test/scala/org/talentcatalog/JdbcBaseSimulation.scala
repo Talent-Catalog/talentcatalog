@@ -28,13 +28,16 @@ class JdbcBaseSimulation extends Simulation {
 
   val config: Config = ConfigFactory.load()
 
+  val url: String = sys.env.getOrElse("DB_URL", config.getString("db.url"))
+  val password: String = sys.env.getOrElse("DB_PASSWORD", config.getString("db.password"))
+
   val connectionTimeout: FiniteDuration =
     config.getDuration("db.connectionTimeout").toSeconds.seconds
 
   val dataBase: JdbcProtocolBuilder = DB
-    .url(config.getString("db.url"))
+    .url("jdbc:postgresql://" + url)
     .username(config.getString("db.username"))
-    .password(config.getString("db.password"))
+    .password(password)
     .maximumPoolSize(config.getInt("db.maximumPoolSize"))
     .connectionTimeout(connectionTimeout)
 
