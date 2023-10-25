@@ -31,7 +31,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
 
       - name: Archive Gatling Reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Gatling Reports
           path: build/reports/gatling
