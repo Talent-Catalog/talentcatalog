@@ -29,7 +29,7 @@ object EsLoadScenario {
 
   val esLoadScenario: ScenarioBuilder =
     scenario(scenarioName)
-      .during(1 minutes) {
+      .during(5 minutes) {
         exec(esLoadPagedQuery())
           .exec(esLoadCountQuery())
       }

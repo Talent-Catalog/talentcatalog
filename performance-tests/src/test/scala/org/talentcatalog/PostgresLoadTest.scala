@@ -20,6 +20,7 @@ import io.gatling.core.Predef._
 import org.talentcatalog.queries.EsLoadQuery.{esLoadCountQueryName, esLoadPagedQueryName}
 import org.talentcatalog.queries.NewSearchScreenQuery.newSearchScreenQueryName
 import org.talentcatalog.scenarios.EsLoadScenario.esLoadScenario
+import org.talentcatalog.scenarios.NewSearchScreenScenario.newSearchScreenScenario
 import ru.tinkoff.load.jdbc.Predef._
 
 import scala.concurrent.duration._
@@ -28,17 +29,17 @@ import scala.language.postfixOps
 class PostgresLoadTest extends JdbcBaseSimulation {
 
   setUp(
-//    newSearchScreenScenario.inject(
-//      nothingFor(1 second),
-//      atOnceUsers(1),
-//      nothingFor(1 minutes),
-//      rampUsers(20) during (5 minutes)
-//    ).andThen(
+    newSearchScreenScenario.inject(
+      nothingFor(1 second),
+      atOnceUsers(1),
+      nothingFor(1 minutes),
+      rampUsers(20) during (5 minutes)
+    ).andThen(
       esLoadScenario.inject(
         nothingFor(1 second),
         atOnceUsers(1)
       )
-//    )
+    )
   ).protocols(dataBase)
     .maxDuration(35 minutes) // Set a maximum duration
     .assertions(
