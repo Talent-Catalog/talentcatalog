@@ -38,7 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 @Entity
 @Table(name = "users")
 @SequenceGenerator(name = "seq_gen", sequenceName = "users_id_seq", allocationSize = 1)
-public class User extends AbstractAuditableDomainObject<Long> implements UserDto {
+public class User extends AbstractAuditableDomainObject<Long> {
     /**
      * username must be unique - at May '23 this is usually set up by admin as first name initial followed by surname
      */

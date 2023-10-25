@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.service.db.impl;
+package org.tctalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -23,13 +23,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.JobChat;
-import org.tbbtalent.server.repository.db.JobChatRepository;
-import org.tbbtalent.server.request.chat.UpdateChatRequest;
-import org.tbbtalent.server.service.db.JobChatService;
-import org.tbbtalent.server.service.db.UserService;
+import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.repository.db.JobChatRepository;
+import org.tctalent.server.request.chat.UpdateChatRequest;
+import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.service.db.UserService;
 
 @Service
 @RequiredArgsConstructor

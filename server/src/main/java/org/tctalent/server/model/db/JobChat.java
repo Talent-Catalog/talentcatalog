@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
+package org.tctalent.server.model.db;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,7 +36,7 @@ import org.springframework.lang.Nullable;
 @Entity
 @Table(name = "job_chat")
 @SequenceGenerator(name = "seq_gen", sequenceName = "job_chat_id_seq", allocationSize = 1)
-public class JobChat extends AbstractAuditableDomainObject<Long> implements JobChatDto {
+public class JobChat extends AbstractAuditableDomainObject<Long> {
 
   /**
    * Job opportunity associated with chat

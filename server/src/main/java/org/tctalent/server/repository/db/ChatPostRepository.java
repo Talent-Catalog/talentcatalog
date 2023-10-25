@@ -14,13 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.repository.db;
+package org.tctalent.server.repository.db;
 
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.tbbtalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.ChatPost;
 
 public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
     JpaSpecificationExecutor<ChatPost> {

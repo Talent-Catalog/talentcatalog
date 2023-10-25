@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.api.chat;
+package org.tctalent.server.api.chat;
 
 import java.util.List;
 import java.util.Map;
@@ -24,13 +24,13 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.api.admin.ITableApi;
-import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.model.db.JobChat;
-import org.tbbtalent.server.request.chat.SearchChatRequest;
-import org.tbbtalent.server.request.chat.UpdateChatRequest;
-import org.tbbtalent.server.service.db.JobChatService;
-import org.tbbtalent.server.util.dto.DtoBuilder;
+import org.tctalent.server.api.admin.ITableApi;
+import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.request.chat.SearchChatRequest;
+import org.tctalent.server.request.chat.UpdateChatRequest;
+import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * This is the api where new chats can be created and updated.

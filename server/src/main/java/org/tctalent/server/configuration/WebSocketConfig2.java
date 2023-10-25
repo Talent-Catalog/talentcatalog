@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.configuration;
+package org.tctalent.server.configuration;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +34,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.tbbtalent.server.security.JwtTokenProvider;
-import org.tbbtalent.server.security.TcUserDetailsService;
+import org.tctalent.server.security.JwtTokenProvider;
+import org.tctalent.server.security.TcUserDetailsService;
 
 /**
  * Additional WebSocket configuration which checks authentication using the user's logged on

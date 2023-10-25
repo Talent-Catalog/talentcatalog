@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
+package org.tctalent.server.model.db;
 
 import java.time.OffsetDateTime;
 

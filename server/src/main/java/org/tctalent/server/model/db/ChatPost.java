@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
+package org.tctalent.server.model.db;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,7 +35,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "chat_post")
 @SequenceGenerator(name = "seq_gen", sequenceName = "chat_post_id_seq", allocationSize = 1)
-public class ChatPost extends AbstractAuditableDomainObject<Long> implements ChatPostDto {
+public class ChatPost extends AbstractAuditableDomainObject<Long> {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_chat_id")
     private JobChat jobChat;

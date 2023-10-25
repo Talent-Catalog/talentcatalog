@@ -14,14 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.service.db;
+package org.tctalent.server.service.db;
 
 import java.util.List;
 import org.springframework.lang.NonNull;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.ChatPost;
-import org.tbbtalent.server.model.db.JobChat;
-import org.tbbtalent.server.model.db.chat.Post;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.chat.Post;
 
 public interface ChatPostService {
 

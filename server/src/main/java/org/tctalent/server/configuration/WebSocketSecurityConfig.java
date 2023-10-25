@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.configuration;
+package org.tctalent.server.configuration;
 
 import static org.springframework.messaging.simp.SimpMessageType.CONNECT;
 import static org.springframework.messaging.simp.SimpMessageType.DISCONNECT;

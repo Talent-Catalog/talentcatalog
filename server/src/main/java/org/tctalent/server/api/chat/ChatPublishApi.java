@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.api.chat;
+package org.tctalent.server.api.chat;
 
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -22,18 +22,18 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import org.tbbtalent.server.model.db.ChatPost;
-import org.tbbtalent.server.model.db.JobChat;
-import org.tbbtalent.server.model.db.chat.Post;
-import org.tbbtalent.server.service.db.ChatPostService;
-import org.tbbtalent.server.service.db.JobChatService;
-import org.tbbtalent.server.util.dto.DtoBuilder;
+import org.tctalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.chat.Post;
+import org.tctalent.server.service.db.ChatPostService;
+import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * This is where websocket connections are handled.
  * <p/>
  * Websocket urls with the /app prefix are directed here.
- * This is configured in {@link org.tbbtalent.server.configuration.WebSocketConfig}.
+ * This is configured in {@link org.tctalent.server.configuration.WebSocketConfig}.
  * <p/>
  * So, for example, {@link #sendPost} below would be executed in response to the url ending in
  * /app/chat/{chatId}.

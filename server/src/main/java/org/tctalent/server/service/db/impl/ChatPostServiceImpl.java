@@ -14,20 +14,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.service.db.impl;
+package org.tctalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.ChatPost;
-import org.tbbtalent.server.model.db.JobChat;
-import org.tbbtalent.server.model.db.chat.Post;
-import org.tbbtalent.server.repository.db.ChatPostRepository;
-import org.tbbtalent.server.service.db.ChatPostService;
-import org.tbbtalent.server.service.db.UserService;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.chat.Post;
+import org.tctalent.server.repository.db.ChatPostRepository;
+import org.tctalent.server.service.db.ChatPostService;
+import org.tctalent.server.service.db.UserService;
 
 @Service
 @RequiredArgsConstructor
