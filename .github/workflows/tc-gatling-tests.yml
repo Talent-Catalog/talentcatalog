@@ -34,4 +34,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Gatling Reports
-          path: ./performance-tests/build/reports/gatling
+          path: performance-tests/build/reports/gatling
+          if-no-files-found: error
