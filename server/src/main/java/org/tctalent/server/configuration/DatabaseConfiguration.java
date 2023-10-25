@@ -44,7 +44,7 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 @Configuration
 @EnableJpaRepositories(
-        basePackages = "org.tbbtalent.server.repository.db",
+        basePackages = "org.tctalent.server.repository.db",
         entityManagerFactoryRef = "dbEntityManagerFactory",
         transactionManagerRef= "dbTransactionManager"
 )
@@ -81,8 +81,8 @@ public class DatabaseConfiguration {
         return builder
                 .dataSource(dbDataSource())
                 .packages(
-                        "org.tbbtalent.server.service.db",
-                        "org.tbbtalent.server.model.db"
+                        "org.tctalent.server.service.db",
+                        "org.tctalent.server.model.db"
                 )
                 .properties(jpaProperties)
                 .build();

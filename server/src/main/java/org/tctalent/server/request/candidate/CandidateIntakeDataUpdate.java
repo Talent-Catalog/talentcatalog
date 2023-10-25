@@ -19,7 +19,6 @@ package org.tctalent.server.request.candidate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tbbtalent.server.model.db.*;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -41,7 +41,7 @@ import org.springframework.lang.NonNull;
  * @author John Cameron
  */
 @Configuration
-@EnableElasticsearchRepositories(basePackages = "org.tbbtalent.server.repository.es")
+@EnableElasticsearchRepositories(basePackages = "org.tctalent.server.repository.es")
 public class ElasticsearchConfiguration extends AbstractElasticsearchConfiguration {
 
     @Value("${spring.elasticsearch.uris}")

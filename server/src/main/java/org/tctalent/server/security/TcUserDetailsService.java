@@ -26,7 +26,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.UserRepository;
 
 /**
- * TBB's implementation of Spring's {@link UserDetailsService}, returning {@link TcUserDetails}
+ * Implementation of Spring's {@link UserDetailsService}, returning {@link TcUserDetails}
  * objects.
  */
 @Component

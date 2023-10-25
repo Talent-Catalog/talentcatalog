@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;

@@ -21,8 +21,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
-import org.tbbtalent.server.model.db.task.*;
 import org.tctalent.server.repository.db.TaskAssignmentRepository;
 import org.tctalent.server.request.task.TaskListRequest;
 import org.tctalent.server.service.db.CandidateAttachmentService;

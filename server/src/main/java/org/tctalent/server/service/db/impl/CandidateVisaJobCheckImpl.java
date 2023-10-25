@@ -25,7 +25,6 @@ import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.SalesforceJobOpp;
-import org.tbbtalent.server.repository.db.*;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaJobCheckService;

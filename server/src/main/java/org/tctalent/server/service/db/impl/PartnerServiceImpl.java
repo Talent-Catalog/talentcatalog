@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.PartnerJobRelationRepository;
 import org.tctalent.server.repository.db.PartnerRepository;

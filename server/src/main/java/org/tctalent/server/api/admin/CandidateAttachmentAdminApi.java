@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.request.attachment.*;
 import org.tctalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tctalent.server.request.attachment.ListByUploadTypeRequest;
 import org.tctalent.server.request.attachment.SearchByIdCandidateAttachmentRequest;

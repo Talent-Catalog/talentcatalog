@@ -16,7 +16,22 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.Stream;
+import javax.security.auth.login.AccountLockedException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,33 +47,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.tbbtalent.server.exception.*;
-import org.tctalent.server.request.LoginRequest;
-import org.tctalent.server.response.JwtAuthenticationResponse;
-import org.tctalent.server.service.db.CaptchaService;
-import org.tctalent.server.service.db.UserService;
-import org.tctalent.server.util.qr.EncodedQrImage;
-
-import javax.security.auth.login.AccountLockedException;
-
-import java.util.stream.Stream;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.PasswordExpiredException;
 import org.tctalent.server.exception.ReCaptchaInvalidException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.tctalent.server.request.LoginRequest;
+import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.service.db.CaptchaService;
+import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.qr.EncodedQrImage;
 
 /**
  * @author smalik

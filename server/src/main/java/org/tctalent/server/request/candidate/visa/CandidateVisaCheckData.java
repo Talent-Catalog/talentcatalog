@@ -19,7 +19,6 @@ package org.tctalent.server.request.candidate.visa;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tbbtalent.server.model.db.*;
 import org.tctalent.server.model.db.DocumentStatus;
 import org.tctalent.server.model.db.OtherVisas;
 import org.tctalent.server.model.db.RiskLevel;
