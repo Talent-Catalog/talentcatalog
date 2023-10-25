@@ -21,10 +21,10 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Set Up Gatling
+      - name: Set Up Database Credentials
         run: |
-          # Add script to download and install Gatling
-          # You can find the appropriate script in Gatling's documentation
+          echo "::set-env name=DB_URL::${{ secrets.STAGING_DB_URL }}"
+          echo "::set-env name=DB_PASSWORD::${{ secrets.STAGING_DB_PASSWORD }}"          
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
