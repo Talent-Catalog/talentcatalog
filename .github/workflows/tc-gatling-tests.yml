@@ -32,6 +32,7 @@ jobs:
 
       - name: Archive Gatling Reports
         uses: actions/upload-artifact@v3
+        if: failure()
         with:
           name: Gatling Reports
           path: performance-tests/build/reports/gatling
