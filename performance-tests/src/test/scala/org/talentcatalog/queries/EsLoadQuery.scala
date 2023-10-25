@@ -22,6 +22,10 @@ import ru.tinkoff.load.jdbc.actions.actions._
 
 object EsLoadQuery {
 
+  val esLoadPagedQueryName: String = "ES Load Paged Query"
+
+  val esLoadCountQueryName: String = "ES Load Count Query"
+
   val esLoadPaged: String =
     """
       |select
@@ -203,11 +207,11 @@ object EsLoadQuery {
       |""".stripMargin
 
   def esLoadPagedQuery(): RawSqlActionBuilder =
-    jdbc("Esload Paged Query")
+    jdbc(esLoadPagedQueryName)
       .rawSql(esLoadPaged)
 
   def esLoadCountQuery(): RawSqlActionBuilder =
-    jdbc("Esload Count Query")
+    jdbc(esLoadCountQueryName)
       .rawSql(esLoadCount)
 
 }
