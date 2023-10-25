@@ -198,7 +198,7 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
   For example add "source ~/tc_secrets.txt" to .bash_profile or .zshenv
   depending on whether you are running bash or zsh.
 
-- Create a new Run Profile for `org.tbbtalent.server.TcTalentApplication`. 
+- Create a new Run Profile for `org.tctalent.server.TcTalentApplication`. 
   In the Environment Variables section of Intellij, check the 
   "Include system environment variables" checkbox.
 - Run the new profile, you should see something similar to this in the logs: 
