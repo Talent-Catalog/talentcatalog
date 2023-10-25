@@ -1,0 +1,39 @@
+name: TC Gatling Tests
+
+on:
+  push:
+    branches:
+      - 350-performance-test-harness
+
+  workflow_dispatch: # this attribute enables manual runs of this workflow
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set Up Gatling
+        run: |
+          # Add script to download and install Gatling
+          # You can find the appropriate script in Gatling's documentation
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Gatling Tests
+        run: ./gradlew performance-test:build
+
+      - name: Archive Gatling Reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: Gatling Reports
+          path: build/reports/gatling
