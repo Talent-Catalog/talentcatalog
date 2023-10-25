@@ -3,7 +3,7 @@ name: TC Gatling Tests
 on:
   push:
     branches:
-      - 350-performance-test-harness
+      - staging
 
   workflow_dispatch: # this attribute enables manual runs of this workflow
 
