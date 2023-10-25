@@ -14,8 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {User} from "./user";
+import {Auditable} from "./base";
 
-export interface Post {
+export interface Post extends Auditable {
   content: string;
 }
 

@@ -55,6 +55,16 @@ public class ChatPostAdminApi implements
         return new DtoBuilder()
             .add("id")
             .add("content")
+            .add("createdDate")
+            .add("createdBy", userDto())
+            ;
+    }
+
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("firstName")
+            .add("lastName")
             ;
     }
 

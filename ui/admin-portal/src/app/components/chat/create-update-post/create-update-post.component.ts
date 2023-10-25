@@ -21,21 +21,23 @@ export class CreateUpdatePostComponent implements OnInit {
 
   ngOnInit() {
     this.postForm = this.fb.group({
-      post: []
+      content: []
     });
   }
+
+  get contentControl() { return this.postForm.get('content'); }
 
   onSend() {
     if (this.chat) {
       const post: Post = {
-        content: this.postForm.value.post
+        content: this.contentControl.value
       }
       const body = JSON.stringify(post);
       //todo See retryIfDisconnected in publish doc
       this.rxStompService.publish({ destination: '/app/chat/' + this.chat.id, body: body });
 
-      //todo Clear content.
-      //todo get control for content, then patchValue()
+      //Clear content.
+      this.contentControl.patchValue(null);
     }
   }
 }

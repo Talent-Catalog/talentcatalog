@@ -332,6 +332,7 @@ export class AuthService {
     }
   }
 
+  //todo Maybe this should be in chat.service
   /**
    * Returns an RxStompConfig, populated with the current Authorization header token in
    * currentHeaders.
@@ -340,7 +341,8 @@ export class AuthService {
 
     const config: RxStompConfig = {
       // Which server?
-      //todo 8080 is dev john's lap top only
+      //todo 8080 is dev john's lap top only.
+      //todo Could construct this from "ws://" + window.location.host + "/jobchat/websocket" - in chat.service?
       //todo Not sure why need websocket on end?
       brokerURL: 'ws://localhost:8080/jobchat/websocket',
 
@@ -376,6 +378,7 @@ export class AuthService {
 
   getToken(): string {
       //Automatically reconfigure RxStomp with the current token
+    //todo Following comment does not make sense.
       // like this.rxStomp.configure(this.getRxStompConfig()); - but currently is recursive
       return this.localStorageService.get('access-token');
   }
