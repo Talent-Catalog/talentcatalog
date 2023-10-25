@@ -14,15 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  AfterViewChecked,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {AfterViewChecked, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
 import {CandidateSource} from '../../../model/base';
@@ -31,6 +23,7 @@ import {isSavedList} from "../../../model/saved-list";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthService} from "../../../services/auth.service";
+import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -89,6 +82,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     return this.candidate.selected;
   }
 
+  isSubmissionList(): boolean {
+    return this.isList && this.candidateSource.sfJobOpp != null
+  }
+
   isContextNoteDisplayed() {
     let display: boolean = true;
     if (isSavedSearch(this.candidateSource)) {
@@ -121,12 +118,27 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
     this.setActiveTabId(defaultActiveTabID == null ? "general" : defaultActiveTabID);
 
-    const defaultActiveContextTabID: string = this.localStorageService.get(this.lastContextTabKey);
+    let defaultActiveContextTabID: string = this.localStorageService.get(this.lastContextTabKey);
+
+    // IF the saved context tab is 'progress' but the source isn't a submission list
+    // THEN we need to set the saved context tab to null
+    // SO THAT it selects the default 'context notes' tab otherwise it won't select anything
+    // as the progress tab only exists on submission lists.
+    if (defaultActiveContextTabID == "progress" && !this.isSubmissionList()) {
+      defaultActiveContextTabID = null;
+    }
     this.setActiveContextTabId(defaultActiveContextTabID == null ? "contextNotes" : defaultActiveContextTabID);
   }
 
   canViewPrivateInfo() {
     return this.authService.canViewPrivateCandidateInfo(this.candidate);
+  }
+
+  /**
+   * Get candidate opportunity matching current job (if it is a job submission list)
+   */
+  getCandidateOppForJobSource(): CandidateOpportunity {
+    return this.candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
   }
 
 }
