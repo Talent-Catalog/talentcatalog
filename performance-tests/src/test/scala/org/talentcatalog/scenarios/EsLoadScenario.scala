@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,10 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-rootProject.name = 'tbbtalentv2'
+package org.talentcatalog.scenarios
 
-include ':ui:admin-portal'
-include ':ui:candidate-portal'
-include ':ui:public-portal'
-include ':server'
-include ':performance-tests'
+import io.gatling.core.Predef._
+import io.gatling.core.structure.ScenarioBuilder
+import org.talentcatalog.queries.EsLoadQuery.{esLoadCountQuery, esLoadPagedQuery}
+
+import scala.concurrent.duration._
+import scala.language.postfixOps
+
+object EsLoadScenario {
+
+  val scenarioName: String = "EsLoadSystemApi"
+
+  val esLoadScenario: ScenarioBuilder =
+    scenario(scenarioName)
+      .during(5 minutes) {
+        exec(esLoadPagedQuery())
+          .exec(esLoadCountQuery())
+      }
+
+}
