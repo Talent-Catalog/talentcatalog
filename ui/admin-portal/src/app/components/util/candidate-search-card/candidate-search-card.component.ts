@@ -92,7 +92,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   isContextNoteDisplayed() {
     let display: boolean = true;
     if (isSavedSearch(this.candidateSource)) {
-      if (this.candidateSource.defaultSearch || !this.isCandidateSelected) {
+      if (this.candidateSource.defaultSearch) {
         display = false;
       }
     }
