@@ -27,6 +27,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
+import org.tbbtalent.server.request.candidate.visa.CandidateVisaCheckData;
+import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaService;
 
 import java.util.List;
@@ -34,10 +36,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.tbbtalent.server.api.admin.AdminApiTestUtil.getCandidateVisaCheck;
@@ -55,7 +58,8 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
     private static final String LIST_PATH = "/{id}/list";
     private static final String UPDATE_INTAKE_PATH = "/{id}/intake";
 
-    private static final CandidateVisaCheck candidateVisaCheck = getCandidateVisaCheck();
+    private static final CandidateVisaCheck candidateVisaCheck = getCandidateVisaCheck(false);
+    private static final CandidateVisaCheck candidateVisaCheckComplete = getCandidateVisaCheck(true);
 
     @MockBean CandidateVisaService candidateVisaService;
 
@@ -113,5 +117,46 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.[0].country.name", is("Australia")));
 
         verify(candidateVisaService).listCandidateVisaChecks(CANDIDATE_ID);
+    }
+
+    @Test
+    @DisplayName("update intake data succeeds")
+    void updateIntakeDataSucceeds() throws Exception {
+        CandidateVisaCheckData request = new CandidateVisaCheckData();
+        String visaId = "99";
+
+        mockMvc.perform(put(BASE_PATH + UPDATE_INTAKE_PATH.replace("{id}", visaId))
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(candidateVisaService).updateIntakeData(anyLong(), any(CandidateVisaCheckData.class));
+    }
+
+    @Test
+    @DisplayName("create visa check succeeds")
+    void createVisaCheckSucceeds() throws Exception {
+        CreateCandidateVisaCheckRequest request = new CreateCandidateVisaCheckRequest();
+
+        given(candidateVisaService
+                .createVisaCheck(CANDIDATE_ID, any(CreateCandidateVisaCheckRequest.class)))
+                .willReturn(candidateVisaCheck);
+
+        mockMvc.perform(post(BASE_PATH)
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.cv", is(false)));
+
+        verify(candidateVisaService).createVisaCheck(CANDIDATE_ID, any(CreateCandidateVisaCheckRequest.class));
     }
 }

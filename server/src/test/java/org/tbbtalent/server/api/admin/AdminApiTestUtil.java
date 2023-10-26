@@ -227,10 +227,13 @@ public class AdminApiTestUtil {
         return reviewStatusItem;
     }
 
-    static CandidateVisaCheck getCandidateVisaCheck() {
+    static CandidateVisaCheck getCandidateVisaCheck(boolean completed) {
         CandidateVisaCheck candidateVisaCheck = new CandidateVisaCheck();
         candidateVisaCheck.setCandidate(getCandidate());
         candidateVisaCheck.setCountry((new Country("Australia", Status.active)));
+        if (completed) {
+            candidateVisaCheck.setAssessmentNotes("");
+        }
         return candidateVisaCheck;
     }
 }
