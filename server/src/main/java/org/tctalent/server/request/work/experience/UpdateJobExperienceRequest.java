@@ -53,10 +53,6 @@ public class UpdateJobExperienceRequest {
     }
 
     public void setDescription(String description) {
-        if (description != null) {
-            this.description = HtmlSanitizer.sanitize(description);
-        } else {
-            this.description = description;
-        }
+        this.description = description != null ? HtmlSanitizer.sanitize(description) : null;
     }
 }
