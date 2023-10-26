@@ -16,13 +16,13 @@
 
 package org.tctalent.server.request.work.experience;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.util.html.HtmlSanitizer;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -53,6 +53,10 @@ public class UpdateJobExperienceRequest {
     }
 
     public void setDescription(String description) {
-        this.description = HtmlSanitizer.sanitize(description);
+        if (description != null) {
+            this.description = HtmlSanitizer.sanitize(description);
+        } else {
+            this.description = description;
+        }
     }
 }
