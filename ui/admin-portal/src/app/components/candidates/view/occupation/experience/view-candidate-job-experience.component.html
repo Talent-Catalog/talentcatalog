@@ -63,10 +63,10 @@
           <small class="text-muted">
             {{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}
           </small>
-          <small class="text-muted">
-            {{experience.fullTime ? 'Full Time' : 'Part Time'}}
-            {{experience.paid ? 'Paid' : 'Voluntary'}}
-          </small>
+          <div>
+            <small *ngIf="experience.fullTime != null" class="text-muted"> {{experience.fullTime ? 'Full Time' : 'Part Time'}} </small>
+            <small *ngIf="experience.paid != null" class="text-muted">{{experience.paid ? 'Paid' : 'Voluntary'}}</small>
+          </div>
         </div>
 
         <div class="col-2" *ngIf="editable">
