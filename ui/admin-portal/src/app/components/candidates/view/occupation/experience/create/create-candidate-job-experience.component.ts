@@ -82,7 +82,7 @@ export class CreateCandidateJobExperienceComponent implements OnInit {
       endDate: [null],
       fullTime: [null],
       paid: [null],
-      description: [null],
+      description: [null, [Validators.required]],
     });
     this.loading = false;
   }
