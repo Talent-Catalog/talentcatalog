@@ -78,7 +78,7 @@ export class EditCandidateJobExperienceComponent implements OnInit {
       endDate: [this.candidateJobExperience.endDate],
       fullTime: [this.candidateJobExperience.fullTime],
       paid: [this.candidateJobExperience.paid],
-      description: [this.candidateJobExperience.description],
+      description: [this.candidateJobExperience.description, Validators.required],
     });
     this.loading = false;
   }
