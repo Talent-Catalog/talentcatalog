@@ -29,6 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getGenderStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
@@ -129,6 +131,80 @@ class CandidateStatAdminApiTest extends ApiTestBase {
 
     verify(authService).getLoggedInUser();
     verify(candidateService).computeGenderStats(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("get all stats - registration report succeeds")
+  void getAllStatsRegistrationReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeRegistrationStats(any(), any(), any()))
+        .willReturn(getRegistrationStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // Registrations
+        .andExpect(jsonPath("$[0].name", is("Gender")))
+        .andExpect(jsonPath("$[0].chartType", is("bar")))
+        .andExpect(jsonPath("$[1].rows", notNullValue()))
+        .andExpect(jsonPath("$[1].rows", hasSize(3)))
+        .andExpect(jsonPath("$[1].rows[0].label", is("2016-06-04")))
+        .andExpect(jsonPath("$[1].rows[0].value", is(4)))
+        .andExpect(jsonPath("$[1].rows[1].label", is("2016-06-10")))
+        .andExpect(jsonPath("$[1].rows[1].value", is(1)))
+        .andExpect(jsonPath("$[1].rows[2].label", is("2016-06-14")))
+        .andExpect(jsonPath("$[1].rows[2].value", is(1)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService).computeRegistrationStats(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("get all stats - registration by occupation report succeeds")
+  void getAllStatsRegistrationByOccupationReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeRegistrationOccupationStats(any(), any(), any()))
+        .willReturn(getRegistrationByOccupationStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // Registrations by Occupation
+        .andExpect(jsonPath("$[0].name", is("Gender")))
+        .andExpect(jsonPath("$[0].chartType", is("bar")))
+        .andExpect(jsonPath("$[2].rows", notNullValue()))
+        .andExpect(jsonPath("$[2].rows", hasSize(3)))
+        .andExpect(jsonPath("$[2].rows[0].label", is("undefined")))
+        .andExpect(jsonPath("$[2].rows[0].value", is(11414)))
+        .andExpect(jsonPath("$[2].rows[1].label", is("Unknown")))
+        .andExpect(jsonPath("$[2].rows[1].value", is(1652)))
+        .andExpect(jsonPath("$[2].rows[2].label", is("Teacher")))
+        .andExpect(jsonPath("$[2].rows[2].value", is(777)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService).computeRegistrationOccupationStats(any(), any(), any());
   }
 
 }

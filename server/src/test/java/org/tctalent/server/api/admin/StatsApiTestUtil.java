@@ -28,4 +28,21 @@ public class StatsApiTestUtil {
         new DataRow("female", 2588L)
     );
   }
+
+  static List<DataRow> getRegistrationStats() {
+    return List.of(
+        new DataRow("2016-06-04", 4L),
+        new DataRow("2016-06-10", 1L),
+        new DataRow("2016-06-14", 1L)
+    );
+  }
+
+  static List<DataRow> getRegistrationByOccupationStats() {
+    return List.of(
+        new DataRow("undefined", 11414L),
+        new DataRow("Unknown", 1652L),
+        new DataRow("Teacher", 777L)
+    );
+  }
+
 }
