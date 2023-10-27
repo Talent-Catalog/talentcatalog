@@ -33,6 +33,7 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getBirthYearStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getGenderStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInByRegistrationDateStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInExistsStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getMaxEducationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getNationalityStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
@@ -551,7 +552,42 @@ class CandidateStatAdminApiTest extends ApiTestBase {
     verify(candidateService, times(3)).computeMostCommonOccupationStats(any(), any(), any(), any());
   }
 
-  // max education level
+  @Test
+  @DisplayName("get all stats - most max education level report succeeds")
+  void getAllStatsMaxEducationLevelReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeMaxEducationStats(any(), any(), any(), any()))
+        .willReturn(getMaxEducationStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // max education level
+        .andExpect(jsonPath("$[26].name", is("Max Education Level")))
+        .andExpect(jsonPath("$[26].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[26].rows", notNullValue()))
+        .andExpect(jsonPath("$[26].rows", hasSize(3)))
+        .andExpect(jsonPath("$[26].rows[0].label", is("Bachelor's Degree")))
+        .andExpect(jsonPath("$[26].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[26].rows[1].label", is("Primary School")))
+        .andExpect(jsonPath("$[26].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[26].rows[2].label", is("Doctoral Degree")))
+        .andExpect(jsonPath("$[26].rows[2].value", is(3000)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(3)).computeMaxEducationStats(any(), any(), any(), any());
+  }
 
   // languages
 

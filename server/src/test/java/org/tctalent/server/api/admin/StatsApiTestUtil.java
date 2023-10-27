@@ -108,4 +108,12 @@ public class StatsApiTestUtil {
     );
   }
 
+  static List<DataRow> getMaxEducationStats() {
+    return List.of(
+        new DataRow("Bachelor's Degree", 1000L),
+        new DataRow("Primary School", 2000L),
+        new DataRow("Doctoral Degree", 3000L)
+    );
+  }
+
 }
