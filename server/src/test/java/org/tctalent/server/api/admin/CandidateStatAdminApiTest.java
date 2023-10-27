@@ -41,6 +41,7 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getReferrerStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getStatusStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getSurveyStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrRegistrationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrStatusStats;
 
@@ -663,7 +664,42 @@ class CandidateStatAdminApiTest extends ApiTestBase {
     verify(candidateService, times(3)).computeReferrerStats(any(), any(), any(), any(), any());
   }
 
-  // survey
+  @Test
+  @DisplayName("get all stats - survey report succeeds")
+  void getAllStatsSurveyReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeSurveyStats(any(), any(), any(), any(), any()))
+        .willReturn(getSurveyStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // survey
+        .andExpect(jsonPath("$[35].name", is("Survey")))
+        .andExpect(jsonPath("$[35].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[35].rows", notNullValue()))
+        .andExpect(jsonPath("$[35].rows", hasSize(3)))
+        .andExpect(jsonPath("$[35].rows[0].label", is("Facebook")))
+        .andExpect(jsonPath("$[35].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[35].rows[1].label", is("From a friend")))
+        .andExpect(jsonPath("$[35].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[35].rows[2].label", is("NGO")))
+        .andExpect(jsonPath("$[35].rows[2].value", is(3000)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(5)).computeSurveyStats(any(), any(), any(), any(), any());
+  }
 
   // english
 

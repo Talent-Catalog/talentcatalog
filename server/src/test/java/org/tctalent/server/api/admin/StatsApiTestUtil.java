@@ -131,4 +131,12 @@ public class StatsApiTestUtil {
     );
   }
 
+  static List<DataRow> getSurveyStats() {
+    return List.of(
+        new DataRow("Facebook", 1000L),
+        new DataRow("From a friend", 2000L),
+        new DataRow("NGO", 3000L)
+    );
+  }
+
 }
