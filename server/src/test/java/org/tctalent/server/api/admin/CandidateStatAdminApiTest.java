@@ -37,6 +37,7 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInExistsSt
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getMaxEducationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getNationalityStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getOccupationStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getReferrerStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getStatusStats;
@@ -590,9 +591,8 @@ class CandidateStatAdminApiTest extends ApiTestBase {
     verify(candidateService, times(3)).computeMaxEducationStats(any(), any(), any(), any());
   }
 
-  // languages
   @Test
-  @DisplayName("get all stats - most languages report succeeds")
+  @DisplayName("get all stats - languages report succeeds")
   void getAllStatsLanguagesReportSucceeds() throws Exception {
     CandidateStatsRequest request = new CandidateStatsRequest();
 
@@ -612,7 +612,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$", hasSize(46)))
 
-        // max education level
+        // languages
         .andExpect(jsonPath("$[29].name", is("Languages")))
         .andExpect(jsonPath("$[29].chartType", is("doughnut")))
         .andExpect(jsonPath("$[29].rows", notNullValue()))
@@ -628,7 +628,40 @@ class CandidateStatAdminApiTest extends ApiTestBase {
     verify(candidateService, times(3)).computeLanguageStats(any(), any(), any(), any());
   }
 
-  // referrers
+  @Test
+  @DisplayName("get all stats - referrers report succeeds")
+  void getAllStatsReferrersReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeReferrerStats(any(), any(), any(), any(), any()))
+        .willReturn(getReferrerStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // referrers
+        .andExpect(jsonPath("$[32].name", is("Referrers")))
+        .andExpect(jsonPath("$[32].chartType", is("bar")))
+        .andExpect(jsonPath("$[32].rows", notNullValue()))
+        .andExpect(jsonPath("$[32].rows", hasSize(2)))
+        .andExpect(jsonPath("$[32].rows[0].label", is("auntie rene")))
+        .andExpect(jsonPath("$[32].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[32].rows[1].label", is("uncle fred")))
+        .andExpect(jsonPath("$[32].rows[1].value", is(2000)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(3)).computeReferrerStats(any(), any(), any(), any(), any());
+  }
 
   // survey
 

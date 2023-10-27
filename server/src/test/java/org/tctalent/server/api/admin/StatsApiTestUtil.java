@@ -124,4 +124,11 @@ public class StatsApiTestUtil {
     );
   }
 
+  static List<DataRow> getReferrerStats() {
+    return List.of(
+        new DataRow("auntie rene", 1000L),
+        new DataRow("uncle fred", 2000L)
+    );
+  }
+
 }
