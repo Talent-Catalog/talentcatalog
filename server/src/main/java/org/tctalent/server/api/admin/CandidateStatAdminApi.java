@@ -125,7 +125,6 @@ public class CandidateStatAdminApi {
             LocalDate dateFrom,
             LocalDate dateTo,
             List<Long> sourceCountryIds ) {
-        String language;
         String title;
         String chartType;
 
@@ -260,14 +259,12 @@ public class CandidateStatAdminApi {
             candidateService.computeSpokenLanguageLevelStats(Gender.female, language, dateFrom, dateTo, sourceCountryIds)));
     }
 
-
     private List<StatReport> createReports(
         LocalDate dateFrom,
         LocalDate dateTo,
         Set<Long> candidateIds,
         List<Long> sourceCountryIds) {
 
-        String language;
         String title;
         String chartType;
 
@@ -383,30 +380,25 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (female)",
             candidateService.computeSurveyStats(Gender.female, null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
 
-
-        language = "English";
-        title = "Spoken " + language + " Language Level";
-        statReports.add(new StatReport(title,
-            candidateService.computeSpokenLanguageLevelStats(null, language, dateFrom, dateTo, candidateIds, sourceCountryIds)));
-        statReports.add(new StatReport(title + " (male)",
-            candidateService.computeSpokenLanguageLevelStats(Gender.male, language, dateFrom, dateTo, candidateIds, sourceCountryIds)));
-        statReports.add(new StatReport(title + " (female)",
-            candidateService.computeSpokenLanguageLevelStats(Gender.female, language, dateFrom, dateTo, candidateIds, sourceCountryIds)));
-
-        language = "French";
-        title = "Spoken " + language + " Language Level";
-        statReports.add(new StatReport(title,
-            candidateService.computeSpokenLanguageLevelStats(null, language, dateFrom, dateTo, candidateIds, sourceCountryIds)));
-        statReports.add(new StatReport(title + " (male)",
-            candidateService.computeSpokenLanguageLevelStats(Gender.male, language, dateFrom, dateTo, candidateIds, sourceCountryIds)));
-        statReports.add(new StatReport(title + " (female)",
-            candidateService.computeSpokenLanguageLevelStats(Gender.female, language, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        addSpokenLanguageStatsReport("English", dateFrom, dateTo, candidateIds, sourceCountryIds, statReports);
+        addSpokenLanguageStatsReport("French", dateFrom, dateTo, candidateIds, sourceCountryIds, statReports);
 
         return statReports;
     }
 
+    private void addSpokenLanguageStatsReport(String language, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds,
+        List<StatReport> statReports) {
+        String title = "Spoken " + language + " Language Level";
+        statReports.add(new StatReport(title,
+            candidateService.computeSpokenLanguageLevelStats(null, language, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (male)",
+            candidateService.computeSpokenLanguageLevelStats(Gender.male, language, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (female)",
+            candidateService.computeSpokenLanguageLevelStats(Gender.female, language, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+    }
+
     /**
-     * Get logged in user’s source country Ids, defaulting to all countries if empty
+     * Get logged-in user’s source country Ids, defaulting to all countries if empty
      */
     private List<Long> getDefaultSourceCountryIds(){
         User user = authService.getLoggedInUser()
