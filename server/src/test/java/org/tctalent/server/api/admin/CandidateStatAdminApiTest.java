@@ -34,6 +34,7 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getGenderStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInByRegistrationDateStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInExistsStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getNationalityStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getStatusStats;
@@ -475,4 +476,42 @@ class CandidateStatAdminApiTest extends ApiTestBase {
     verify(authService).getLoggedInUser();
     verify(candidateService, times(5)).computeStatusStats(any(), any(), any(), any(), any());
   }
+
+  @Test
+  @DisplayName("get all stats - occupations report succeeds")
+  void getAllStatsOccupationsReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeOccupationStats(any(), any(), any(), any()))
+        .willReturn(getOccupationStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // Occupations
+        .andExpect(jsonPath("$[20].name", is("Occupations")))
+        .andExpect(jsonPath("$[20].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[20].rows", notNullValue()))
+        .andExpect(jsonPath("$[20].rows", hasSize(3)))
+        .andExpect(jsonPath("$[20].rows[0].label", is("undefined")))
+        .andExpect(jsonPath("$[20].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[20].rows[1].label", is("Teacher")))
+        .andExpect(jsonPath("$[20].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[20].rows[2].label", is("Accountant")))
+        .andExpect(jsonPath("$[20].rows[2].value", is(3000)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(3)).computeOccupationStats(any(), any(), any(), any());
+  }
+
 }

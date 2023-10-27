@@ -100,4 +100,12 @@ public class StatsApiTestUtil {
     );
   }
 
+  static List<DataRow> getOccupationStats() {
+    return List.of(
+        new DataRow("undefined", 1000L),
+        new DataRow("Teacher", 2000L),
+        new DataRow("Accountant", 3000L)
+    );
+  }
+
 }
