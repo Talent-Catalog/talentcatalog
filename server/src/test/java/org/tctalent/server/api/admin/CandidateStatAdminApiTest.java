@@ -514,4 +514,52 @@ class CandidateStatAdminApiTest extends ApiTestBase {
     verify(candidateService, times(3)).computeOccupationStats(any(), any(), any(), any());
   }
 
+  @Test
+  @DisplayName("get all stats - most common occupations report succeeds")
+  void getAllStatsMostCommonOccupationsReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeMostCommonOccupationStats(any(), any(), any(), any()))
+        .willReturn(getOccupationStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // most common occupation
+        .andExpect(jsonPath("$[23].name", is("Most Common Occupations")))
+        .andExpect(jsonPath("$[23].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[23].rows", notNullValue()))
+        .andExpect(jsonPath("$[23].rows", hasSize(3)))
+        .andExpect(jsonPath("$[23].rows[0].label", is("undefined")))
+        .andExpect(jsonPath("$[23].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[23].rows[1].label", is("Teacher")))
+        .andExpect(jsonPath("$[23].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[23].rows[2].label", is("Accountant")))
+        .andExpect(jsonPath("$[23].rows[2].value", is(3000)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(3)).computeMostCommonOccupationStats(any(), any(), any(), any());
+  }
+
+  // max education level
+
+  // languages
+
+  // referrers
+
+  // survey
+
+  // english
+
+  // french
 }
