@@ -116,4 +116,12 @@ public class StatsApiTestUtil {
     );
   }
 
+  static List<DataRow> getLanguageStats() {
+    return List.of(
+        new DataRow("English", 1000L),
+        new DataRow("Arabic", 2000L),
+        new DataRow("French", 3000L)
+    );
+  }
+
 }

@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getBirthYearStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getGenderStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getLanguageStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInByRegistrationDateStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInExistsStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getMaxEducationStats;
@@ -590,6 +591,42 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   }
 
   // languages
+  @Test
+  @DisplayName("get all stats - most languages report succeeds")
+  void getAllStatsLanguagesReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeLanguageStats(any(), any(), any(), any()))
+        .willReturn(getLanguageStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // max education level
+        .andExpect(jsonPath("$[29].name", is("Languages")))
+        .andExpect(jsonPath("$[29].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[29].rows", notNullValue()))
+        .andExpect(jsonPath("$[29].rows", hasSize(3)))
+        .andExpect(jsonPath("$[29].rows[0].label", is("English")))
+        .andExpect(jsonPath("$[29].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[29].rows[1].label", is("Arabic")))
+        .andExpect(jsonPath("$[29].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[29].rows[2].label", is("French")))
+        .andExpect(jsonPath("$[29].rows[2].value", is(3000)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(3)).computeLanguageStats(any(), any(), any(), any());
+  }
 
   // referrers
 
