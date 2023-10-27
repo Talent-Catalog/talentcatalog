@@ -243,25 +243,21 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (female)",
             candidateService.computeSurveyStats(Gender.female, null, dateFrom, dateTo, sourceCountryIds)));
 
-        language = "English";
-        title = "Spoken " + language + " Language Level";
-        statReports.add(new StatReport(title,
-            candidateService.computeSpokenLanguageLevelStats(null, language, dateFrom, dateTo, sourceCountryIds)));
-        statReports.add(new StatReport(title + " (male)",
-            candidateService.computeSpokenLanguageLevelStats(Gender.male, language, dateFrom, dateTo, sourceCountryIds)));
-        statReports.add(new StatReport(title + " (female)",
-            candidateService.computeSpokenLanguageLevelStats(Gender.female, language, dateFrom, dateTo, sourceCountryIds)));
-
-        language = "French";
-        title = "Spoken " + language + " Language Level";
-        statReports.add(new StatReport(title,
-            candidateService.computeSpokenLanguageLevelStats(null, language, dateFrom, dateTo, sourceCountryIds)));
-        statReports.add(new StatReport(title + " (male)",
-            candidateService.computeSpokenLanguageLevelStats(Gender.male, language, dateFrom, dateTo, sourceCountryIds)));
-        statReports.add(new StatReport(title + " (female)",
-            candidateService.computeSpokenLanguageLevelStats(Gender.female, language, dateFrom, dateTo, sourceCountryIds)));
+        addSpokenLanguageStatsReport("English", dateFrom, dateTo, sourceCountryIds, statReports);
+        addSpokenLanguageStatsReport("French", dateFrom, dateTo, sourceCountryIds, statReports);
 
         return statReports;
+    }
+
+    private void addSpokenLanguageStatsReport(String language, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds,
+        List<StatReport> statReports) {
+        String title = "Spoken " + language + " Language Level";
+        statReports.add(new StatReport(title,
+            candidateService.computeSpokenLanguageLevelStats(null, language, dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (male)",
+            candidateService.computeSpokenLanguageLevelStats(Gender.male, language, dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (female)",
+            candidateService.computeSpokenLanguageLevelStats(Gender.female, language, dateFrom, dateTo, sourceCountryIds)));
     }
 
 
