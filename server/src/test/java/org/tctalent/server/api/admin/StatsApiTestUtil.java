@@ -21,7 +21,7 @@ import org.tctalent.server.model.db.DataRow;
 
 public class StatsApiTestUtil {
 
-  private static List<DataRow> dateRows = List.of(
+  private static final List<DataRow> dateRows = List.of(
       new DataRow("2016-06-04", 3L),
       new DataRow("2016-06-10", 2L),
       new DataRow("2016-06-14", 1L)

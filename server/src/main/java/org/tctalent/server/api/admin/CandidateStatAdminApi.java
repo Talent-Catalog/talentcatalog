@@ -191,7 +191,7 @@ public class CandidateStatAdminApi {
             candidateService.computeStatusStats(null, "lebanon", dateFrom, dateTo, sourceCountryIds)));
 
         title = "Occupations";
-        statReports.add(new StatReport(title + "",
+        statReports.add(new StatReport(title,
             candidateService.computeOccupationStats(null, dateFrom, dateTo, sourceCountryIds)));
         statReports.add(new StatReport(title + " (male)",
             candidateService.computeOccupationStats(Gender.male, dateFrom, dateTo, sourceCountryIds)));
@@ -199,7 +199,7 @@ public class CandidateStatAdminApi {
             candidateService.computeOccupationStats(Gender.female, dateFrom, dateTo, sourceCountryIds)));
 
         title = "Most Common Occupations";
-        statReports.add(new StatReport(title + "",
+        statReports.add(new StatReport(title,
             candidateService.computeMostCommonOccupationStats(null, dateFrom, dateTo, sourceCountryIds)));
         statReports.add(new StatReport(title + " (male)",
             candidateService.computeMostCommonOccupationStats(Gender.male, dateFrom, dateTo, sourceCountryIds)));
@@ -344,7 +344,7 @@ public class CandidateStatAdminApi {
             candidateService.computeStatusStats(null, "lebanon", dateFrom, dateTo, candidateIds, sourceCountryIds)));
 
         title = "Occupations";
-        statReports.add(new StatReport(title + "",
+        statReports.add(new StatReport(title,
             candidateService.computeOccupationStats(null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
         statReports.add(new StatReport(title + " (male)",
             candidateService.computeOccupationStats(Gender.male, dateFrom, dateTo, candidateIds, sourceCountryIds)));
@@ -352,7 +352,7 @@ public class CandidateStatAdminApi {
             candidateService.computeOccupationStats(Gender.female, dateFrom, dateTo, candidateIds, sourceCountryIds)));
 
         title = "Most Common Occupations";
-        statReports.add(new StatReport(title + "",
+        statReports.add(new StatReport(title,
             candidateService.computeMostCommonOccupationStats(null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
         statReports.add(new StatReport(title + " (male)",
             candidateService.computeMostCommonOccupationStats(Gender.male, dateFrom, dateTo, candidateIds, sourceCountryIds)));
