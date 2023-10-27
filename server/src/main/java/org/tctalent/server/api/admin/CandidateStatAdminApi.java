@@ -242,13 +242,13 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (female)",
             candidateService.computeSurveyStats(Gender.female, null, dateFrom, dateTo, sourceCountryIds)));
 
-        addSpokenLanguageStatsReport("English", dateFrom, dateTo, sourceCountryIds, statReports);
-        addSpokenLanguageStatsReport("French", dateFrom, dateTo, sourceCountryIds, statReports);
+        addSpokenLanguageStatReports("English", dateFrom, dateTo, sourceCountryIds, statReports);
+        addSpokenLanguageStatReports("French", dateFrom, dateTo, sourceCountryIds, statReports);
 
         return statReports;
     }
 
-    private void addSpokenLanguageStatsReport(String language, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds,
+    private void addSpokenLanguageStatReports(String language, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds,
         List<StatReport> statReports) {
         String title = "Spoken " + language + " Language Level";
         statReports.add(new StatReport(title,
@@ -380,13 +380,13 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (female)",
             candidateService.computeSurveyStats(Gender.female, null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
 
-        addSpokenLanguageStatsReport("English", dateFrom, dateTo, candidateIds, sourceCountryIds, statReports);
-        addSpokenLanguageStatsReport("French", dateFrom, dateTo, candidateIds, sourceCountryIds, statReports);
+        addSpokenLanguageStatReports("English", dateFrom, dateTo, candidateIds, sourceCountryIds, statReports);
+        addSpokenLanguageStatReports("French", dateFrom, dateTo, candidateIds, sourceCountryIds, statReports);
 
         return statReports;
     }
 
-    private void addSpokenLanguageStatsReport(String language, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds,
+    private void addSpokenLanguageStatReports(String language, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds,
         List<StatReport> statReports) {
         String title = "Spoken " + language + " Language Level";
         statReports.add(new StatReport(title,
