@@ -66,4 +66,21 @@ public class StatsApiTestUtil {
     return dateRows;
   }
 
+  static List<DataRow> getUnhcrRegistrationStats() {
+    return List.of(
+        new DataRow("NoResponse", 3L),
+        new DataRow("Yes", 2L),
+        new DataRow("No", 1L)
+    );
+  }
+
+  static List<DataRow> getUnhcrStatusStats() {
+    return List.of(
+        new DataRow("NoResponse", 4L),
+        new DataRow("RegisteredAsylum", 3L),
+        new DataRow("NotRegistered", 2L),
+        new DataRow("RegisteredStatusUnknown", 1L)
+    );
+  }
+
 }

@@ -35,6 +35,8 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInByRegist
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInExistsStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrRegistrationStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrStatusStats;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
@@ -318,5 +320,81 @@ class CandidateStatAdminApiTest extends ApiTestBase {
 
     verify(authService).getLoggedInUser();
     verify(candidateService).computeLinkedInStats(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("get all stats - Unhcr registration date report succeeds")
+  void getAllStatsUnhcrRegistrationReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeUnhcrRegisteredStats(any(), any(), any()))
+        .willReturn(getUnhcrRegistrationStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // Unhcr registration date
+        .andExpect(jsonPath("$[8].name", is("UNHCR Registered")))
+        .andExpect(jsonPath("$[8].chartType", is("bar")))
+        .andExpect(jsonPath("$[8].rows", notNullValue()))
+        .andExpect(jsonPath("$[8].rows", hasSize(3)))
+        .andExpect(jsonPath("$[8].rows[0].label", is("NoResponse")))
+        .andExpect(jsonPath("$[8].rows[0].value", is(3)))
+        .andExpect(jsonPath("$[8].rows[1].label", is("Yes")))
+        .andExpect(jsonPath("$[8].rows[1].value", is(2)))
+        .andExpect(jsonPath("$[8].rows[2].label", is("No")))
+        .andExpect(jsonPath("$[8].rows[2].value", is(1)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService).computeUnhcrRegisteredStats(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("get all stats - Unhcr status report succeeds")
+  void getAllStatsUnhcrStatusReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeUnhcrStatusStats(any(), any(), any()))
+        .willReturn(getUnhcrStatusStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // Unhcr status
+        .andExpect(jsonPath("$[9].name", is("UNHCR Status")))
+        .andExpect(jsonPath("$[9].chartType", is("bar")))
+        .andExpect(jsonPath("$[9].rows", notNullValue()))
+        .andExpect(jsonPath("$[9].rows", hasSize(4)))
+        .andExpect(jsonPath("$[9].rows[0].label", is("NoResponse")))
+        .andExpect(jsonPath("$[9].rows[0].value", is(4)))
+        .andExpect(jsonPath("$[9].rows[1].label", is("RegisteredAsylum")))
+        .andExpect(jsonPath("$[9].rows[1].value", is(3)))
+        .andExpect(jsonPath("$[9].rows[2].label", is("NotRegistered")))
+        .andExpect(jsonPath("$[9].rows[2].value", is(2)))
+        .andExpect(jsonPath("$[9].rows[3].label", is("RegisteredStatusUnknown")))
+        .andExpect(jsonPath("$[9].rows[3].value", is(1)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService).computeUnhcrStatusStats(any(), any(), any());
   }
 }
