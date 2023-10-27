@@ -1,0 +1,117 @@
+/*
+ * Copyright (c) 2023 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+package org.tctalent.server.service.db;
+
+import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
+import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
+
+public interface CandidateOpportunityService {
+
+    /**
+     * Creates or updates Contact records on Salesforce for the given candidates and, if sfJobOpp
+     * is not null, indicating that these candidates are associated with a job opportunity,
+     * this will also create/update the associated candidate opportunities associated with that
+     * job on both Salesforce and on the local database.
+     *
+     * @param candidates Candidates to update
+     * @param sfJobOpp If not null candidate opportunities are created/updated
+     * @param candidateOppParams Used to create/update candidate opportunities.
+     *                           Can be null in which case no changes are made to existing opps,
+     *                           but new opps will be created if needed with the stage defaulting
+     *                           to "prospect".
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    void createUpdateCandidateOpportunities(Collection<Candidate> candidates,
+        @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
+        throws SalesforceException, WebClientException;
+
+    /**
+     * See {@link #createUpdateCandidateOpportunities(Collection, SalesforceJobOpp, CandidateOpportunityParams)}
+     * <p/>
+     * This method extracts the appropriate data from the given request and then calls the
+     * above method.
+     *
+     * @param request Identifies candidates as well as optional Salesforce fields to set on
+     *                candidate opportunities
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
+        throws SalesforceException, WebClientException;
+
+    CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp);
+
+    /**
+     * Get the CandidateOpportunity with the given id.
+     * @param id Id of opportunity to get
+     * @return CandidateOpportunity
+     * @throws NoSuchObjectException if there is no opportunity with this id.
+     */
+    @NonNull
+    CandidateOpportunity getCandidateOpportunity(long id) throws NoSuchObjectException;
+
+    /**
+     * Creates or updates CandidateOpportunities associated with given jobs from Salesforce.
+     * @param jobOpportunityIds IDs of Jobs whose associated CandidateOpportunities should be
+     *                          updated from Salesforce
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    void loadCandidateOpportunities(String... jobOpportunityIds) throws SalesforceException;
+
+    /**
+     * Creates or updates a CandidateOpportunity on the TC associated with given opportunity
+     * retrieved from Salesforce.
+     * <p/>
+     * This will also create the associated job opportunity on the TC if it is not already present.
+     * @param op Candidate opportunity data retrieved from Salesforce
+     * @return Updated or created CandidateOpportunity
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    @NonNull
+    CandidateOpportunity loadCandidateOpportunity(Opportunity op) throws SalesforceException;
+
+
+    /**
+     * Get candidate opportunities from a paged search request
+     * @param request - Paged Search Request
+     * @return Page of candidate opportunities
+     */
+    Page<CandidateOpportunity> searchCandidateOpportunities(SearchCandidateOpportunityRequest request);
+
+    /**
+     * Updates the CandidateOpportunity with the given id with the data contained in the request
+     * @param id Id of opportunity to get
+     * @param request Candidate opportunity data
+     * @return CandidateOpportunity
+     * @throws NoSuchObjectException if there is no opportunity with this id.
+     */
+    CandidateOpportunity updateCandidateOpportunity(long id, CandidateOpportunityParams request)
+        throws NoSuchObjectException;
+}
