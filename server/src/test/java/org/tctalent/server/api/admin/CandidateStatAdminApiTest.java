@@ -22,12 +22,14 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getBirthYearStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getGenderStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
@@ -207,4 +209,40 @@ class CandidateStatAdminApiTest extends ApiTestBase {
     verify(candidateService).computeRegistrationOccupationStats(any(), any(), any());
   }
 
+  @Test
+  @DisplayName("get all stats - birth year report succeeds")
+  void getAllStatsBirthYearReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeBirthYearStats(any(), any(), any(), any()))
+        .willReturn(getBirthYearStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // Registrations by Occupation
+        .andExpect(jsonPath("$[3].name", is("Birth years")))
+        .andExpect(jsonPath("$[3].chartType", is("bar")))
+        .andExpect(jsonPath("$[3].rows", notNullValue()))
+        .andExpect(jsonPath("$[3].rows", hasSize(3)))
+        .andExpect(jsonPath("$[3].rows[0].label", is("1948")))
+        .andExpect(jsonPath("$[3].rows[0].value", is(1)))
+        .andExpect(jsonPath("$[3].rows[1].label", is("1950")))
+        .andExpect(jsonPath("$[3].rows[1].value", is(2)))
+        .andExpect(jsonPath("$[3].rows[2].label", is("1951")))
+        .andExpect(jsonPath("$[3].rows[2].value", is(2)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(3)).computeBirthYearStats(any(), any(), any(), any());
+  }
 }

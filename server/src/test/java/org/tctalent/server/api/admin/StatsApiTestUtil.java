@@ -45,4 +45,12 @@ public class StatsApiTestUtil {
     );
   }
 
+  static List<DataRow> getBirthYearStats() {
+    return List.of(
+        new DataRow("1948", 1L),
+        new DataRow("1950", 2L),
+        new DataRow("1951", 2L)
+    );
+  }
+
 }
