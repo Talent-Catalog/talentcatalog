@@ -36,6 +36,7 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInExistsSt
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getNationalityStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getStatusStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrRegistrationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrStatusStats;
 
@@ -432,5 +433,46 @@ class CandidateStatAdminApiTest extends ApiTestBase {
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(5)).computeNationalityStats(any(), any(), any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("get all stats - status report succeeds")
+  void getAllStatsStatusReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeStatusStats(any(), any(), any(), any(), any()))
+        .willReturn(getStatusStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // Statuses
+        .andExpect(jsonPath("$[15].name", is("Statuses")))
+        .andExpect(jsonPath("$[15].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[15].rows", notNullValue()))
+        .andExpect(jsonPath("$[15].rows", hasSize(5)))
+        .andExpect(jsonPath("$[15].rows[0].label", is("pending")))
+        .andExpect(jsonPath("$[15].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[15].rows[1].label", is("incomplete")))
+        .andExpect(jsonPath("$[15].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[15].rows[2].label", is("active")))
+        .andExpect(jsonPath("$[15].rows[2].value", is(3000)))
+        .andExpect(jsonPath("$[15].rows[3].label", is("employed")))
+        .andExpect(jsonPath("$[15].rows[3].value", is(4000)))
+        .andExpect(jsonPath("$[15].rows[4].label", is("autonomousEmployment")))
+        .andExpect(jsonPath("$[15].rows[4].value", is(5000)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(5)).computeStatusStats(any(), any(), any(), any(), any());
   }
 }

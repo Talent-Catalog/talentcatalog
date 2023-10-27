@@ -90,4 +90,14 @@ public class StatsApiTestUtil {
     );
   }
 
+  static List<DataRow> getStatusStats() {
+    return List.of(
+        new DataRow("pending", 1000L),
+        new DataRow("incomplete", 2000L),
+        new DataRow("active", 3000L),
+        new DataRow("employed", 4000L),
+        new DataRow("autonomousEmployment", 5000L)
+    );
+  }
+
 }
