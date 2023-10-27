@@ -33,6 +33,7 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getBirthYearStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getGenderStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInByRegistrationDateStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInExistsStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getNationalityStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrRegistrationStats;
@@ -396,5 +397,40 @@ class CandidateStatAdminApiTest extends ApiTestBase {
 
     verify(authService).getLoggedInUser();
     verify(candidateService).computeUnhcrStatusStats(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("get all stats - nationalities report succeeds")
+  void getAllStatsNationalityReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeNationalityStats(any(), any(), any(), any(), any()))
+        .willReturn(getNationalityStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // Nationality
+        .andExpect(jsonPath("$[10].name", is("Nationalities by Country")))
+        .andExpect(jsonPath("$[10].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[10].rows", notNullValue()))
+        .andExpect(jsonPath("$[10].rows", hasSize(2)))
+        .andExpect(jsonPath("$[10].rows[0].label", is("Palestinian Territories")))
+        .andExpect(jsonPath("$[10].rows[0].value", is(1073)))
+        .andExpect(jsonPath("$[10].rows[1].label", is("Syria")))
+        .andExpect(jsonPath("$[10].rows[1].value", is(14852)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(5)).computeNationalityStats(any(), any(), any(), any(), any());
   }
 }

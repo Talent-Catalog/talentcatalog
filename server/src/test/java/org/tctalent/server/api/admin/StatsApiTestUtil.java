@@ -83,4 +83,11 @@ public class StatsApiTestUtil {
     );
   }
 
+  static List<DataRow> getNationalityStats() {
+    return List.of(
+        new DataRow("Palestinian Territories", 1073L),
+        new DataRow("Syria", 14852L)
+    );
+  }
+
 }
