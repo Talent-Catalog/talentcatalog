@@ -17,6 +17,7 @@
 package org.tctalent.server.request.candidate;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class CreateCandidateRequest extends BaseCandidateContactRequest {
 
@@ -25,6 +26,10 @@ public class CreateCandidateRequest extends BaseCandidateContactRequest {
     @NotBlank
     private String lastName;
     private String username;
+    @NotNull
+    private Boolean emailConsentRegistration;
+    @NotNull
+    private Boolean emailConsentPartners;
 
     public String getFirstName() {
         return firstName;
@@ -48,5 +53,21 @@ public class CreateCandidateRequest extends BaseCandidateContactRequest {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Boolean getEmailConsentRegistration() {
+        return emailConsentRegistration;
+    }
+
+    public void setEmailConsentRegistration(Boolean emailConsentRegistration) {
+        this.emailConsentRegistration = emailConsentRegistration;
+    }
+
+    public Boolean getEmailConsentPartners() {
+        return emailConsentPartners;
+    }
+
+    public void setEmailConsentPartners(Boolean emailConsentPartners) {
+        this.emailConsentPartners = emailConsentPartners;
     }
 }

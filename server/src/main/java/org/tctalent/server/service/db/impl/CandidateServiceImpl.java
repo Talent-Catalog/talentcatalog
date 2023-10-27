@@ -17,33 +17,6 @@
 package org.tctalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -174,6 +147,34 @@ import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
+
+import javax.servlet.http.HttpServletRequest;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -754,6 +755,10 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
+        /* Set the email consent fields */
+        candidate.setEmailConsentRegistration(request.getEmailConsentRegistration());
+        candidate.setEmailConsentPartners(request.getEmailConsentPartners());
+
         candidate.setRegoIp(ipAddress);
         if (queryParameters != null) {
             candidate.setRegoPartnerParam(queryParameters.getPartnerAbbreviation());
@@ -1116,12 +1121,19 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
 
+        /* Validate that the candidate has marked email consent partners as true in order to continue registration */
+        if (!request.getEmailConsentPartners()) {
+            throw new InvalidRequestException("Consent required to register.");
+        }
+
         /* Create the candidate */
         CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();
         createCandidateRequest.setUsername(request.getUsername());
         createCandidateRequest.setEmail(request.getEmail());
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
+        createCandidateRequest.setEmailConsentRegistration(request.getEmailConsentRegistration());
+        createCandidateRequest.setEmailConsentPartners(request.getEmailConsentPartners());
 
         Candidate candidate = createCandidate(createCandidateRequest, sourcePartner, ipAddress,
             queryParameters, passwordEncrypted);
