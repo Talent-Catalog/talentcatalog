@@ -139,4 +139,12 @@ public class StatsApiTestUtil {
     );
   }
 
+  static List<DataRow> getSpokenLanguageLevelStats() {
+    return List.of(
+        new DataRow("Intermediate Proficiency", 1000L),
+        new DataRow("Full Professional Proficiency", 2000L),
+        new DataRow("Elementary Proficiency", 3000L)
+    );
+  }
+
 }

@@ -40,6 +40,7 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getReferrerStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getSpokenLanguageLevelStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getStatusStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getSurveyStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrRegistrationStats;
@@ -701,7 +702,41 @@ class CandidateStatAdminApiTest extends ApiTestBase {
     verify(candidateService, times(5)).computeSurveyStats(any(), any(), any(), any(), any());
   }
 
-  // english
+  @Test
+  @DisplayName("get all stats - spoken language report succeeds")
+  void getAllStatsSpokenLanguageReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
 
-  // french
+    given(candidateService
+        .computeSpokenLanguageLevelStats(any(), any(), any(), any(), any()))
+        .willReturn(getSpokenLanguageLevelStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // spoken language
+        .andExpect(jsonPath("$[40].name", is("Spoken English Language Level")))
+        .andExpect(jsonPath("$[40].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[40].rows", notNullValue()))
+        .andExpect(jsonPath("$[40].rows", hasSize(3)))
+        .andExpect(jsonPath("$[40].rows[0].label", is("Intermediate Proficiency")))
+        .andExpect(jsonPath("$[40].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[40].rows[1].label", is("Full Professional Proficiency")))
+        .andExpect(jsonPath("$[40].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[40].rows[2].label", is("Elementary Proficiency")))
+        .andExpect(jsonPath("$[40].rows[2].value", is(3000)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(6)).computeSpokenLanguageLevelStats(any(), any(), any(), any(), any());
+  }
+
 }
