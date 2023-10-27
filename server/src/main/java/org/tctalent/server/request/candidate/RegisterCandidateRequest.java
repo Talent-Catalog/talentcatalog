@@ -44,7 +44,7 @@ public class RegisterCandidateRequest extends BaseCandidateContactRequest
     /**
      * Email consent fields
      */
-    private boolean consentPartner;
-    private boolean consentAllPartners;
+    private boolean emailConsentRegistration;
+    private boolean emailConsentPartners;
 
 }

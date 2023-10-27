@@ -107,8 +107,8 @@ export class RegistrationContactComponent implements OnInit {
       this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
 
       // The user has not registered - add the email consent fields
-      this.form.addControl('consentPartner', new FormControl(true, Validators.required));
-      this.form.addControl('consentAllPartners', new FormControl(true, Validators.required));
+      this.form.addControl('emailConsentRegistration', new FormControl(false, Validators.required));
+      this.form.addControl('emailConsentPartners', new FormControl(false));
 
       this.loading = false;
     }
@@ -210,8 +210,8 @@ export class RegistrationContactComponent implements OnInit {
       req.utmContent = params.get('utm_term');
     }
     //Populate email consent
-    req.consentPartner = this.form.value.consentPartner;
-    req.consentAllPartners = this.form.value.consentAllPartners;
+    req.emailConsentRegistration = this.form.value.emailConsentRegistration;
+    req.emailConsentPartners = this.form.value.emailConsentPartners;
 
     this.authService.register(req).subscribe(
       (response) => {
