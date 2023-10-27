@@ -31,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getBirthYearStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getGenderStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInByRegistrationDateStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getLinkedInExistsStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
 
@@ -162,9 +164,9 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[1].rows", notNullValue()))
         .andExpect(jsonPath("$[1].rows", hasSize(3)))
         .andExpect(jsonPath("$[1].rows[0].label", is("2016-06-04")))
-        .andExpect(jsonPath("$[1].rows[0].value", is(4)))
+        .andExpect(jsonPath("$[1].rows[0].value", is(3)))
         .andExpect(jsonPath("$[1].rows[1].label", is("2016-06-10")))
-        .andExpect(jsonPath("$[1].rows[1].value", is(1)))
+        .andExpect(jsonPath("$[1].rows[1].value", is(2)))
         .andExpect(jsonPath("$[1].rows[2].label", is("2016-06-14")))
         .andExpect(jsonPath("$[1].rows[2].value", is(1)));
 
@@ -230,19 +232,91 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$", hasSize(46)))
 
-        // Registrations by Occupation
+        // Birth year
         .andExpect(jsonPath("$[3].name", is("Birth years")))
         .andExpect(jsonPath("$[3].chartType", is("bar")))
         .andExpect(jsonPath("$[3].rows", notNullValue()))
         .andExpect(jsonPath("$[3].rows", hasSize(3)))
         .andExpect(jsonPath("$[3].rows[0].label", is("1948")))
-        .andExpect(jsonPath("$[3].rows[0].value", is(1)))
+        .andExpect(jsonPath("$[3].rows[0].value", is(3)))
         .andExpect(jsonPath("$[3].rows[1].label", is("1950")))
         .andExpect(jsonPath("$[3].rows[1].value", is(2)))
         .andExpect(jsonPath("$[3].rows[2].label", is("1951")))
-        .andExpect(jsonPath("$[3].rows[2].value", is(2)));
+        .andExpect(jsonPath("$[3].rows[2].value", is(1)));
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(3)).computeBirthYearStats(any(), any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("get all stats - linked in links report succeeds")
+  void getAllStatsLinkedInLinksReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeLinkedInExistsStats(any(), any(), any()))
+        .willReturn(getLinkedInExistsStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // Linkedin links
+        .andExpect(jsonPath("$[6].name", is("LinkedIn links")))
+        .andExpect(jsonPath("$[6].chartType", is("bar")))
+        .andExpect(jsonPath("$[6].rows", notNullValue()))
+        .andExpect(jsonPath("$[6].rows", hasSize(2)))
+        .andExpect(jsonPath("$[6].rows[0].label", is("No link")))
+        .andExpect(jsonPath("$[6].rows[0].value", is(2)))
+        .andExpect(jsonPath("$[6].rows[1].label", is("Has link")))
+        .andExpect(jsonPath("$[6].rows[1].value", is(10)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService).computeLinkedInExistsStats(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("get all stats - linked in links by registration date report succeeds")
+  void getAllStatsLinkedInLinksByRegistrationDateReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeLinkedInStats(any(), any(), any()))
+        .willReturn(getLinkedInByRegistrationDateStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(46)))
+
+        // Linkedin links by registration date
+        .andExpect(jsonPath("$[7].name", is("LinkedIn links by candidate registration date")))
+        .andExpect(jsonPath("$[7].chartType", is("bar")))
+        .andExpect(jsonPath("$[7].rows", notNullValue()))
+        .andExpect(jsonPath("$[7].rows", hasSize(3)))
+        .andExpect(jsonPath("$[7].rows[0].label", is("2016-06-04")))
+        .andExpect(jsonPath("$[7].rows[0].value", is(3)))
+        .andExpect(jsonPath("$[7].rows[1].label", is("2016-06-10")))
+        .andExpect(jsonPath("$[7].rows[1].value", is(2)))
+        .andExpect(jsonPath("$[7].rows[2].label", is("2016-06-14")))
+        .andExpect(jsonPath("$[7].rows[2].value", is(1)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService).computeLinkedInStats(any(), any(), any());
   }
 }

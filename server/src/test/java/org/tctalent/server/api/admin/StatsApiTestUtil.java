@@ -21,6 +21,12 @@ import org.tctalent.server.model.db.DataRow;
 
 public class StatsApiTestUtil {
 
+  private static List<DataRow> dateRows = List.of(
+      new DataRow("2016-06-04", 3L),
+      new DataRow("2016-06-10", 2L),
+      new DataRow("2016-06-14", 1L)
+  );
+
   static List<DataRow> getGenderStats() {
     return List.of(
         new DataRow("male", 15111L),
@@ -30,11 +36,7 @@ public class StatsApiTestUtil {
   }
 
   static List<DataRow> getRegistrationStats() {
-    return List.of(
-        new DataRow("2016-06-04", 4L),
-        new DataRow("2016-06-10", 1L),
-        new DataRow("2016-06-14", 1L)
-    );
+    return dateRows;
   }
 
   static List<DataRow> getRegistrationByOccupationStats() {
@@ -47,10 +49,21 @@ public class StatsApiTestUtil {
 
   static List<DataRow> getBirthYearStats() {
     return List.of(
-        new DataRow("1948", 1L),
+        new DataRow("1948", 3L),
         new DataRow("1950", 2L),
-        new DataRow("1951", 2L)
+        new DataRow("1951", 1L)
     );
+  }
+
+  static List<DataRow> getLinkedInExistsStats() {
+    return List.of(
+        new DataRow("No link", 2L),
+        new DataRow("Has link", 10L)
+    );
+  }
+
+  static List<DataRow> getLinkedInByRegistrationDateStats() {
+    return dateRows;
   }
 
 }
