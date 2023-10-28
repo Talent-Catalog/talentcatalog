@@ -111,6 +111,8 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     return CandidateSourceType;
   }
 
+  //MODEL: Exposing an Enum to the html. This can also be used to expose external functions
+  //For example see how isHtml is exposed.
   get SearchBy() {
     return SearchBy;
   }

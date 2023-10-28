@@ -18,9 +18,10 @@ package org.tctalent.server.model.db.chat;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.util.html.HtmlSanitizer;
 
 /**
- * TODO JC Doc
+ * A post received from a user.
  *
  * @author John Cameron
  */
@@ -28,4 +29,8 @@ import lombok.Setter;
 @Setter
 public class Post {
     private String content;
+
+    public void setContent(String content) {
+        this.content = HtmlSanitizer.sanitize(content);
+    }
 }

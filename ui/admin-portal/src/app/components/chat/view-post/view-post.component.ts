@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import { isHtml } from 'src/app/util/string';
 import {ChatPost} from "../../../model/chat";
 
 @Component({
@@ -13,6 +14,10 @@ export class ViewPostComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  get isHtml() {
+    return isHtml;
   }
 
 }
