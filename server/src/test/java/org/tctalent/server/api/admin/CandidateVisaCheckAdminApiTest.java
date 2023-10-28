@@ -127,7 +127,7 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
     void listByCandidateIdSucceeds() throws Exception {
         given(candidateVisaService
                 .listCandidateVisaChecks(CANDIDATE_ID))
-                .willReturn(List.of(candidateVisaCheck));
+                .willReturn(List.of(candidateVisaCheckComplete));
 
         mockMvc.perform(get(BASE_PATH + LIST_PATH.replace("{id}", Long.toString(CANDIDATE_ID)))
                         .header("Authorization", "Bearer " + "jwt-token")
@@ -138,7 +138,26 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.[0].country.name", is("Australia")));
+                .andExpect(jsonPath("$.[0].id", notNullValue()))
+                .andExpect(jsonPath("$.[0].candidateVisaJobChecks").isArray())
+                .andExpect(jsonPath("$.[0].country.name", is("Australia")))
+                .andExpect(jsonPath("$.[0].protection", is("Yes")))
+                .andExpect(jsonPath("$.[0].protectionGrounds", is("These are some protection grounds.")))
+                .andExpect(jsonPath("$.[0].englishThreshold", is("No")))
+                .andExpect(jsonPath("$.[0].englishThresholdNotes", is("These are some english threshold notes.")))
+                .andExpect(jsonPath("$.[0].healthAssessment", is("Yes")))
+                .andExpect(jsonPath("$.[0].healthAssessmentNotes", is("These are some health assessment notes.")))
+                .andExpect(jsonPath("$.[0].characterAssessment", is("No")))
+                .andExpect(jsonPath("$.[0].characterAssessmentNotes", is("These are some character assessment notes.")))
+                .andExpect(jsonPath("$.[0].securityRisk", is("Yes")))
+                .andExpect(jsonPath("$.[0].securityRiskNotes", is("These are some security risk notes.")))
+                .andExpect(jsonPath("$.[0].overallRisk", is("Medium")))
+                .andExpect(jsonPath("$.[0].overallRiskNotes", is("These are some overall risk notes.")))
+                .andExpect(jsonPath("$.[0].validTravelDocs", is("Valid")))
+                .andExpect(jsonPath("$.[0].validTravelDocsNotes", is("These are some travel docs notes.")))
+                .andExpect(jsonPath("$.[0].assessmentNotes", is("These are some assessment notes.")))
+                .andExpect(jsonPath("$.[0].pathwayAssessment", is("No")))
+                .andExpect(jsonPath("$.[0].pathwayAssessmentNotes", is("These are some pathway assessment notes.")));
 
         verify(candidateVisaService).listCandidateVisaChecks(CANDIDATE_ID);
     }
