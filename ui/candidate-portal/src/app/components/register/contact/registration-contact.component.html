@@ -71,8 +71,9 @@
       <div class="mb-3 form-check">
         <input class="form-check-input" type="checkbox" id="emailConsentRegistration" [value]="false" [formControlName]="'emailConsentRegistration'">
         <label class="form-check-label" for="emailConsentRegistration">
-          Check this box if you consent to being contacted by {{partnerName}} by email regarding your registration and employment opportunities.
+          Check this box if you consent to being contacted by {{partnerName}} by email regarding your registration and employment opportunities. *
         </label>
+        <app-form-control-error [control]="form.controls.emailConsentRegistration"></app-form-control-error>
       </div>
 
       <div class="mb-3 form-check">

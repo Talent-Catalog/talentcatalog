@@ -107,7 +107,7 @@ export class RegistrationContactComponent implements OnInit {
       this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
 
       // The user has not registered - add the email consent fields
-      this.form.addControl('emailConsentRegistration', new FormControl(false, Validators.required));
+      this.form.addControl('emailConsentRegistration', new FormControl(false, [Validators.requiredTrue]));
       this.form.addControl('emailConsentPartners', new FormControl(false));
 
       this.loading = false;
