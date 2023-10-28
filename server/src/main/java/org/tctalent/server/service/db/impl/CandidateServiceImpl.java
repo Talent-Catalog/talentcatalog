@@ -1122,7 +1122,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         /* Validate that the candidate has marked email consent partners as true in order to continue registration */
-        if (!request.getEmailConsentPartners()) {
+        if (!request.getEmailConsentRegistration()) {
             throw new InvalidRequestException("Consent required to register.");
         }
 
