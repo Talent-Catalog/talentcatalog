@@ -17,8 +17,6 @@
 package org.tctalent.server.api.admin;
 
 
-import java.time.LocalDate;
-import java.util.List;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateCitizenship;
@@ -33,8 +31,10 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
+import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
+import org.tctalent.server.model.db.DocumentStatus;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Exam;
@@ -47,6 +47,7 @@ import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.Registration;
 import org.tctalent.server.model.db.ReviewStatus;
+import org.tctalent.server.model.db.RiskLevel;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedSearch;
@@ -54,6 +55,9 @@ import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @author sadatmalik
@@ -259,5 +263,32 @@ public class AdminApiTestUtil {
         reviewStatusItem.setComment("A review comment");
         reviewStatusItem.setReviewStatus(ReviewStatus.verified);
         return reviewStatusItem;
+    }
+
+    static CandidateVisaCheck getCandidateVisaCheck(boolean completed) {
+        CandidateVisaCheck candidateVisaCheck = new CandidateVisaCheck();
+        candidateVisaCheck.setCandidate(getCandidate());
+        candidateVisaCheck.setCountry((new Country("Australia", Status.active)));
+        if (completed) {
+            candidateVisaCheck.setId(1L);
+            candidateVisaCheck.setProtection(YesNo.Yes);
+            candidateVisaCheck.setProtectionGrounds("These are some protection grounds.");
+            candidateVisaCheck.setEnglishThreshold(YesNo.No);
+            candidateVisaCheck.setEnglishThresholdNotes("These are some english threshold notes.");
+            candidateVisaCheck.setHealthAssessment(YesNo.Yes);
+            candidateVisaCheck.setHealthAssessmentNotes("These are some health assessment notes.");
+            candidateVisaCheck.setCharacterAssessment(YesNo.No);
+            candidateVisaCheck.setCharacterAssessmentNotes( "These are some character assessment notes.");
+            candidateVisaCheck.setSecurityRisk(YesNo.Yes);
+            candidateVisaCheck.setSecurityRiskNotes( "These are some security risk notes.");
+            candidateVisaCheck.setOverallRisk(RiskLevel.Medium);
+            candidateVisaCheck.setOverallRiskNotes( "These are some overall risk notes.");
+            candidateVisaCheck.setValidTravelDocs(DocumentStatus.Valid);
+            candidateVisaCheck.setValidTravelDocsNotes( "These are some travel docs notes.");
+            candidateVisaCheck.setPathwayAssessment(YesNoUnsure.No);
+            candidateVisaCheck.setPathwayAssessmentNotes( "These are some pathway assessment notes.");
+            candidateVisaCheck.setAssessmentNotes( "These are some assessment notes.");
+        }
+        return candidateVisaCheck;
     }
 }
