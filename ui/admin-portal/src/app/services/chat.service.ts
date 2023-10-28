@@ -16,6 +16,7 @@ export class ChatService implements OnDestroy {
   private apiUrl: string = environment.apiUrl + '/chat';
   private stompServiceConfigured = false;
   private destroyStompSubscriptions$ = new Subject<void>();
+  private observables: Map<number, Observable<Message>> = new Map<number, Observable<Message>>();
 
   constructor(
       private authService: AuthService,
@@ -38,12 +39,24 @@ export class ChatService implements OnDestroy {
   }
 
   subscribe(chat: JobChat): Observable<Message> {
-    this.configureStompService();
 
-    return this.rxStompService.watch('/topic/chat/' + chat.id)
+    //Check if we already have an observable for this chat.
+    let observable = this.observables.get(chat.id);
+    if (observable == null) {
+
+      //Not yet subscribed to this chat - subscribe and save the observable.
+      this.configureStompService();
+
+      observable = this.rxStompService.watch('/topic/chat/' + chat.id)
       //This pipe allows us to keep track of subscriptions so that we can unsubscribe on destroy
       //See https://www.learnrxjs.io/learn-rxjs/operators/filtering/takeuntil
       .pipe(takeUntil(this.destroyStompSubscriptions$));
+
+      //Save observable for this chat.
+      this.observables.set(chat.id, observable);
+    }
+
+    return observable;
   }
 
   unsubscribeAll() {

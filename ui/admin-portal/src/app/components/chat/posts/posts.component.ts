@@ -3,6 +3,7 @@ import {ChatPost, JobChat} from "../../../model/chat";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {Message} from "@stomp/stompjs";
 import {ChatService} from "../../../services/chat.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-posts',
@@ -17,6 +18,7 @@ export class PostsComponent implements OnInit, OnChanges {
   posts: ChatPost[];
   loading: boolean;
   error;
+  private chatSubscription: Subscription;
 
   constructor(
       private chatService: ChatService,
@@ -28,14 +30,23 @@ export class PostsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.chat) {
-      this.loadPosts();
+      //Get rid of any existing subscription to previous chat
+      if (this.chatSubscription) {
+        this.chatSubscription.unsubscribe();
+      }
 
-      //Subscribe for updates
-      this.chatService.subscribe(this.chat)
+      //Clear existing posts
+      this.posts = [];
+
+      //Subscribe for updates on new chat
+      this.chatSubscription = this.chatService.subscribe(this.chat)
       .subscribe((message: Message) => {
         const payload: ChatPost = JSON.parse(message.body);
         this.addNewPost(payload);
       });
+
+      //Fetch all existing posts for this chat
+      this.loadPosts();
     }
   }
 
@@ -45,7 +56,7 @@ export class PostsComponent implements OnInit, OnChanges {
       this.error = null;
       this.chatPostService.listPosts(this.chat.id).subscribe(
           posts => {
-            this.posts = posts;
+            this.updatePosts(posts);
             this.loading = false;
           },
           error => {
@@ -62,5 +73,19 @@ export class PostsComponent implements OnInit, OnChanges {
 
   private addNewPost(post: ChatPost) {
     this.posts.push(post);
+  }
+
+  private updatePosts(posts: ChatPost[]) {
+    if (this.posts.length > 0) {
+      //We must have received a new post(s) as we were loading existing posts
+      //The new posts may or may not be in the posts we have just received.
+      //Go through newPosts adding any that are not already present (by checking the post unique id's)
+      for (const newPost of this.posts) {
+        if (!posts.find(p => p.id = newPost.id)) {
+          posts.push(newPost);
+        }
+      }
+    }
+    this.posts = posts;
   }
 }
