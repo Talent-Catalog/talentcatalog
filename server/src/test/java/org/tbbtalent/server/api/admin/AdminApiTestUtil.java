@@ -16,7 +16,44 @@
 
 package org.tbbtalent.server.api.admin;
 
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateCertification;
+import org.tbbtalent.server.model.db.CandidateCitizenship;
+import org.tbbtalent.server.model.db.CandidateDependant;
+import org.tbbtalent.server.model.db.CandidateDestination;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateExam;
+import org.tbbtalent.server.model.db.CandidateJobExperience;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.CandidateNote;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateOpportunity;
+import org.tbbtalent.server.model.db.CandidateOpportunityStage;
+import org.tbbtalent.server.model.db.CandidateReviewStatusItem;
+import org.tbbtalent.server.model.db.CandidateVisaCheck;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.DependantRelations;
+import org.tbbtalent.server.model.db.DocumentStatus;
+import org.tbbtalent.server.model.db.EducationMajor;
+import org.tbbtalent.server.model.db.EducationType;
+import org.tbbtalent.server.model.db.Exam;
+import org.tbbtalent.server.model.db.FamilyRelations;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.HasPassport;
+import org.tbbtalent.server.model.db.Language;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.Registration;
+import org.tbbtalent.server.model.db.ReviewStatus;
+import org.tbbtalent.server.model.db.RiskLevel;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.SalesforceJobOpp;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.YesNo;
+import org.tbbtalent.server.model.db.YesNoUnsure;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -232,7 +269,23 @@ public class AdminApiTestUtil {
         candidateVisaCheck.setCandidate(getCandidate());
         candidateVisaCheck.setCountry((new Country("Australia", Status.active)));
         if (completed) {
-            candidateVisaCheck.setAssessmentNotes("");
+            candidateVisaCheck.setProtection(YesNo.Yes);
+            candidateVisaCheck.setProtectionGrounds("These are some protection grounds.");
+            candidateVisaCheck.setEnglishThreshold(YesNo.No);
+            candidateVisaCheck.setEnglishThresholdNotes("These are some english threshold notes.");
+            candidateVisaCheck.setHealthAssessment(YesNo.Yes);
+            candidateVisaCheck.setHealthAssessmentNotes("These are some health assessment notes.");
+            candidateVisaCheck.setCharacterAssessment(YesNo.No);
+            candidateVisaCheck.setCharacterAssessmentNotes( "These are some character assessment notes.");
+            candidateVisaCheck.setSecurityRisk(YesNo.Yes);
+            candidateVisaCheck.setSecurityRiskNotes( "These are some security risk notes.");
+            candidateVisaCheck.setOverallRisk(RiskLevel.Medium);
+            candidateVisaCheck.setOverallRiskNotes( "These are some overall risk notes.");
+            candidateVisaCheck.setValidTravelDocs(DocumentStatus.Valid);
+            candidateVisaCheck.setValidTravelDocsNotes( "These are some overall risk notes.");
+            candidateVisaCheck.setPathwayAssessment(YesNoUnsure.No);
+            candidateVisaCheck.setPathwayAssessmentNotes( "These are some pathway assessment notes.");
+            candidateVisaCheck.setAssessmentNotes( "These are some assessment notes.");
         }
         return candidateVisaCheck;
     }

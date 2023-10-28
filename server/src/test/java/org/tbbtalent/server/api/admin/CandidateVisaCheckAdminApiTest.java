@@ -40,9 +40,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tbbtalent.server.api.admin.AdminApiTestUtil.getCandidateVisaCheck;
 
 /**
@@ -141,9 +146,10 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
     @DisplayName("create visa check succeeds")
     void createVisaCheckSucceeds() throws Exception {
         CreateCandidateVisaCheckRequest request = new CreateCandidateVisaCheckRequest();
+        request.setCountryId(anyLong());
 
         given(candidateVisaService
-                .createVisaCheck(CANDIDATE_ID, any(CreateCandidateVisaCheckRequest.class)))
+                .createVisaCheck(anyLong(), any(CreateCandidateVisaCheckRequest.class)))
                 .willReturn(candidateVisaCheck);
 
         mockMvc.perform(post(BASE_PATH)
@@ -155,8 +161,22 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.cv", is(false)));
+                .andExpect(jsonPath("$.country.name", is("Australia")))
+                .andExpect(jsonPath("$.candidateVisaJobChecks").isArray());
 
-        verify(candidateVisaService).createVisaCheck(CANDIDATE_ID, any(CreateCandidateVisaCheckRequest.class));
+        verify(candidateVisaService).createVisaCheck(anyLong(), any(CreateCandidateVisaCheckRequest.class));
+    }
+
+    @Test
+    @DisplayName("delete visa check by id succeeds")
+    void deleteByIdSucceeds() throws Exception {
+        String visaId = "99";
+        mockMvc.perform(delete(BASE_PATH + "/" + visaId)
+                        .header("Authorization", "Bearer " + "jwt-token"))
+
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(candidateVisaService).deleteVisaCheck(anyLong());
     }
 }
