@@ -32,6 +32,7 @@ import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
 import org.tctalent.server.model.db.CandidateVisaCheck;
+import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
@@ -45,6 +46,7 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.OtherVisas;
 import org.tctalent.server.model.db.Registration;
 import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.RiskLevel;
@@ -52,7 +54,9 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.TBBEligibilityAssessment;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
 
@@ -290,5 +294,45 @@ public class AdminApiTestUtil {
             candidateVisaCheck.setAssessmentNotes( "These are some assessment notes.");
         }
         return candidateVisaCheck;
+    }
+
+    static CandidateVisaJobCheck getCandidateVisaJobCheck(boolean completed) {
+        CandidateVisaJobCheck candidateVisaJobCheck = new CandidateVisaJobCheck();
+        candidateVisaJobCheck.setCandidateVisaCheck(getCandidateVisaCheck(true));
+
+        SalesforceJobOpp jobOpp = new SalesforceJobOpp();
+        jobOpp.setId(99L);
+        candidateVisaJobCheck.setJobOpp(jobOpp);
+
+        if (completed) {
+            candidateVisaJobCheck.setId(1L);
+            candidateVisaJobCheck.setInterest(YesNo.Yes);
+            candidateVisaJobCheck.setInterestNotes("These are some interest notes.");
+            candidateVisaJobCheck.setRegional(YesNo.No);
+            candidateVisaJobCheck.setSalaryTsmit(YesNo.Yes);
+            candidateVisaJobCheck.setQualification(YesNo.Yes);
+            candidateVisaJobCheck.setEligible_494(YesNo.No);
+            candidateVisaJobCheck.setEligible_494_Notes("These are some eligible for visa 494 notes.");
+            candidateVisaJobCheck.setEligible_186(YesNo.Yes);
+            candidateVisaJobCheck.setEligible_186_Notes("These are some eligible for visa 186 notes.");
+            candidateVisaJobCheck.setEligibleOther(OtherVisas.SpecialHum);
+            candidateVisaJobCheck.setEligibleOtherNotes("These are some eligible for other visa notes.");
+            candidateVisaJobCheck.setPutForward(VisaEligibility.DiscussFurther);
+            candidateVisaJobCheck.setTbbEligibility(TBBEligibilityAssessment.Discuss);
+            candidateVisaJobCheck.setNotes("These are some notes.");
+            candidateVisaJobCheck.setOccupation((new Occupation("Accountant", Status.active)));
+            candidateVisaJobCheck.setOccupationNotes("These are some occupation notes.");
+            candidateVisaJobCheck.setQualificationNotes("These are some qualification notes.");
+            candidateVisaJobCheck.setRelevantWorkExp("These are some relevant work experience notes.");
+            candidateVisaJobCheck.setAgeRequirement("There are some age requirements.");
+            candidateVisaJobCheck.setPreferredPathways("These are some preferred pathways.");
+            candidateVisaJobCheck.setIneligiblePathways("These are some ineligible pathways.");
+            candidateVisaJobCheck.setEligiblePathways("These are some eligible pathways.");
+            candidateVisaJobCheck.setOccupationCategory("This is the occupation category.");
+            candidateVisaJobCheck.setOccupationSubCategory("This is the occupation subcategory.");
+            candidateVisaJobCheck.setEnglishThreshold(YesNo.Yes);
+            candidateVisaJobCheck.setEnglishThresholdNotes("These are some english threshold notes.");
+        }
+        return candidateVisaJobCheck;
     }
 }
