@@ -31,6 +31,7 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
+import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
@@ -334,5 +335,14 @@ public class AdminApiTestUtil {
             candidateVisaJobCheck.setEnglishThresholdNotes("These are some english threshold notes.");
         }
         return candidateVisaJobCheck;
+    }
+
+    static CandidateSkill getCandidateSkill() {
+        CandidateSkill candidateSkill = new CandidateSkill();
+        candidateSkill.setCandidate(getCandidate());
+        candidateSkill.setId(1L);
+        candidateSkill.setSkill("Adobe Photoshop");
+        candidateSkill.setTimePeriod("3-5 years");
+        return candidateSkill;
     }
 }
