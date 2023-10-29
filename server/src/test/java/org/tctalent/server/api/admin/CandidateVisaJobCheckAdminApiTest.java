@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateVisaJobCheck;
 
 /**
- * Unit tests for Candidate View Job Check Admin Api endpoints.
+ * Unit tests for Candidate Visa Job Check Admin Api endpoints.
  *
  * @author Caroline Cameron
  */
