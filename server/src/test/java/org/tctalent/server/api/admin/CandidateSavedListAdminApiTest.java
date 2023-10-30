@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,6 +36,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.request.candidate.HasSetOfSavedListsImpl;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.SavedListService;
@@ -83,9 +85,25 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
 
   // merge
 
-  // remove
+  @Test
+  @DisplayName("remove fails - not implemented")
+  void removeFailsNotImplemented() throws Exception {
+    HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
 
-  // search-paged
+    mockMvc.perform(put(BASE_PATH + REMOVE_PATH.replace("{id}", "1"))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.code", is("not_implemented")))
+        .andExpect(jsonPath("$.message", is("Method 'remove' of CandidateSavedListAdminApi is not implemented.")));
+  }
+
   @Test
   @DisplayName("search paged fails - not implemented")
   void searchPagedFailsNotImplemented() throws Exception {
