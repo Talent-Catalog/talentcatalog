@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -65,6 +66,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
   private static final String REMOVE_PATH = "/{id}/remove";
   private static final String SEARCH_PAGED_PATH = "/{id}/search-paged";
 
+  private static final long CANDIDATE_ID = 99L;
 
   @MockBean CandidateSavedListService candidateSavedListService;
   @MockBean SavedListService savedListService;
@@ -82,8 +84,6 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
   public void testWebOnlyContextLoads() {
     assertThat(candidateSavedListAdminApi).isNotNull();
   }
-
-  // replace
 
   @Test
   @DisplayName("search succeeds")
@@ -146,6 +146,24 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.[0].tasks[0].description", is("a test task description")))
         .andExpect(jsonPath("$.[0].tasks[0].optional", is(false)))
         .andExpect(jsonPath("$.[0].tasks[0].daysToComplete", is(7)));
+  }
+
+  @Test
+  @DisplayName("replace succeeds")
+  void replaceSucceeds() throws Exception {
+    HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
+
+    mockMvc.perform(put(BASE_PATH + REPLACE_PATH.replace("{id}", String.valueOf(CANDIDATE_ID)))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    verify(candidateSavedListService).clearCandidateSavedLists(CANDIDATE_ID);
+    verify(candidateSavedListService).mergeCandidateSavedLists(anyLong(), any(HasSetOfSavedListsImpl.class));
   }
 
   @Test
