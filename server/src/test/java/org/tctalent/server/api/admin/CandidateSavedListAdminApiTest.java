@@ -83,7 +83,24 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
 
   // list
 
-  // merge
+  @Test
+  @DisplayName("merge fails - not implemented")
+  void mergeFailsNotImplemented() throws Exception {
+    HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
+
+    mockMvc.perform(put(BASE_PATH + MERGE_PATH.replace("{id}", "1"))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.code", is("not_implemented")))
+        .andExpect(jsonPath("$.message", is("Method 'merge' of CandidateSavedListAdminApi is not implemented.")));
+  }
 
   @Test
   @DisplayName("remove fails - not implemented")
