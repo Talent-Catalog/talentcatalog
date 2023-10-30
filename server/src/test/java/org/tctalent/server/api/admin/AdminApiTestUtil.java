@@ -17,8 +17,6 @@
 package org.tctalent.server.api.admin;
 
 
-import java.time.LocalDate;
-import java.util.List;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateCitizenship;
@@ -33,8 +31,12 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
+import org.tctalent.server.model.db.CandidateSkill;
+import org.tctalent.server.model.db.CandidateVisaCheck;
+import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
+import org.tctalent.server.model.db.DocumentStatus;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Exam;
@@ -45,15 +47,22 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.OtherVisas;
 import org.tctalent.server.model.db.Registration;
 import org.tctalent.server.model.db.ReviewStatus;
+import org.tctalent.server.model.db.RiskLevel;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.TBBEligibilityAssessment;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @author sadatmalik
@@ -259,5 +268,81 @@ public class AdminApiTestUtil {
         reviewStatusItem.setComment("A review comment");
         reviewStatusItem.setReviewStatus(ReviewStatus.verified);
         return reviewStatusItem;
+    }
+
+    static CandidateVisaCheck getCandidateVisaCheck(boolean completed) {
+        CandidateVisaCheck candidateVisaCheck = new CandidateVisaCheck();
+        candidateVisaCheck.setCandidate(getCandidate());
+        candidateVisaCheck.setCountry((new Country("Australia", Status.active)));
+        if (completed) {
+            candidateVisaCheck.setId(1L);
+            candidateVisaCheck.setProtection(YesNo.Yes);
+            candidateVisaCheck.setProtectionGrounds("These are some protection grounds.");
+            candidateVisaCheck.setEnglishThreshold(YesNo.No);
+            candidateVisaCheck.setEnglishThresholdNotes("These are some english threshold notes.");
+            candidateVisaCheck.setHealthAssessment(YesNo.Yes);
+            candidateVisaCheck.setHealthAssessmentNotes("These are some health assessment notes.");
+            candidateVisaCheck.setCharacterAssessment(YesNo.No);
+            candidateVisaCheck.setCharacterAssessmentNotes( "These are some character assessment notes.");
+            candidateVisaCheck.setSecurityRisk(YesNo.Yes);
+            candidateVisaCheck.setSecurityRiskNotes( "These are some security risk notes.");
+            candidateVisaCheck.setOverallRisk(RiskLevel.Medium);
+            candidateVisaCheck.setOverallRiskNotes( "These are some overall risk notes.");
+            candidateVisaCheck.setValidTravelDocs(DocumentStatus.Valid);
+            candidateVisaCheck.setValidTravelDocsNotes( "These are some travel docs notes.");
+            candidateVisaCheck.setPathwayAssessment(YesNoUnsure.No);
+            candidateVisaCheck.setPathwayAssessmentNotes( "These are some pathway assessment notes.");
+            candidateVisaCheck.setAssessmentNotes( "These are some assessment notes.");
+        }
+        return candidateVisaCheck;
+    }
+
+    static CandidateVisaJobCheck getCandidateVisaJobCheck(boolean completed) {
+        CandidateVisaJobCheck candidateVisaJobCheck = new CandidateVisaJobCheck();
+        candidateVisaJobCheck.setCandidateVisaCheck(getCandidateVisaCheck(true));
+
+        SalesforceJobOpp jobOpp = new SalesforceJobOpp();
+        jobOpp.setId(99L);
+        candidateVisaJobCheck.setJobOpp(jobOpp);
+
+        if (completed) {
+            candidateVisaJobCheck.setId(1L);
+            candidateVisaJobCheck.setInterest(YesNo.Yes);
+            candidateVisaJobCheck.setInterestNotes("These are some interest notes.");
+            candidateVisaJobCheck.setRegional(YesNo.No);
+            candidateVisaJobCheck.setSalaryTsmit(YesNo.Yes);
+            candidateVisaJobCheck.setQualification(YesNo.Yes);
+            candidateVisaJobCheck.setEligible_494(YesNo.No);
+            candidateVisaJobCheck.setEligible_494_Notes("These are some eligible for visa 494 notes.");
+            candidateVisaJobCheck.setEligible_186(YesNo.Yes);
+            candidateVisaJobCheck.setEligible_186_Notes("These are some eligible for visa 186 notes.");
+            candidateVisaJobCheck.setEligibleOther(OtherVisas.SpecialHum);
+            candidateVisaJobCheck.setEligibleOtherNotes("These are some eligible for other visa notes.");
+            candidateVisaJobCheck.setPutForward(VisaEligibility.DiscussFurther);
+            candidateVisaJobCheck.setTbbEligibility(TBBEligibilityAssessment.Discuss);
+            candidateVisaJobCheck.setNotes("These are some notes.");
+            candidateVisaJobCheck.setOccupation((new Occupation("Accountant", Status.active)));
+            candidateVisaJobCheck.setOccupationNotes("These are some occupation notes.");
+            candidateVisaJobCheck.setQualificationNotes("These are some qualification notes.");
+            candidateVisaJobCheck.setRelevantWorkExp("These are some relevant work experience notes.");
+            candidateVisaJobCheck.setAgeRequirement("There are some age requirements.");
+            candidateVisaJobCheck.setPreferredPathways("These are some preferred pathways.");
+            candidateVisaJobCheck.setIneligiblePathways("These are some ineligible pathways.");
+            candidateVisaJobCheck.setEligiblePathways("These are some eligible pathways.");
+            candidateVisaJobCheck.setOccupationCategory("This is the occupation category.");
+            candidateVisaJobCheck.setOccupationSubCategory("This is the occupation subcategory.");
+            candidateVisaJobCheck.setEnglishThreshold(YesNo.Yes);
+            candidateVisaJobCheck.setEnglishThresholdNotes("These are some english threshold notes.");
+        }
+        return candidateVisaJobCheck;
+    }
+
+    static CandidateSkill getCandidateSkill() {
+        CandidateSkill candidateSkill = new CandidateSkill();
+        candidateSkill.setCandidate(getCandidate());
+        candidateSkill.setId(1L);
+        candidateSkill.setSkill("Adobe Photoshop");
+        candidateSkill.setTimePeriod("3-5 years");
+        return candidateSkill;
     }
 }
