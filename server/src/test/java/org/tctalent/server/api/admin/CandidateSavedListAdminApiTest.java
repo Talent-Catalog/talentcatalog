@@ -19,6 +19,7 @@ package org.tctalent.server.api.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -81,7 +82,22 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
 
   // search
 
-  // list
+  @Test
+  @DisplayName("list fails - not implemented")
+  void listFailsNotImplemented() throws Exception {
+    HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
+
+    mockMvc.perform(get(BASE_PATH + LIST_PATH.replace("{id}", "1"))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.code", is("not_implemented")))
+        .andExpect(jsonPath("$.message", is("Method 'list' of CandidateSavedListAdminApi is not implemented.")));
+  }
 
   @Test
   @DisplayName("merge fails - not implemented")
