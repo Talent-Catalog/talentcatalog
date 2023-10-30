@@ -31,8 +31,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.service.db.CandidateSavedListService;
@@ -59,8 +58,8 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 @Entity
 @Table(name = "saved_list")
 @SequenceGenerator(name = "seq_gen", sequenceName = "saved_list_id_seq", allocationSize = 1)
+@Slf4j
 public class SavedList extends AbstractCandidateSource {
-    private static final Logger log = LoggerFactory.getLogger(SavedList.class);
 
     /**
      * Tasks associated with this list.
