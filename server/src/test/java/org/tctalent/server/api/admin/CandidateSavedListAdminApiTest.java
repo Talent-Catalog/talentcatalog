@@ -169,7 +169,6 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("list fails - not implemented")
   void listFailsNotImplemented() throws Exception {
-    HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
 
     mockMvc.perform(get(BASE_PATH + LIST_PATH.replace("{id}", "1"))
             .header("Authorization", "Bearer " + "jwt-token")
