@@ -17,8 +17,12 @@
 package org.tctalent.server.api.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -26,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.api.admin.AdminApiTestUtil.getSavedLists;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,7 +85,68 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
 
   // replace
 
-  // search
+  @Test
+  @DisplayName("search succeeds")
+  void searchSucceeds() throws Exception {
+    SearchSavedListRequest request = new SearchSavedListRequest();
+
+    given(savedListService
+        .search(anyLong(), any(SearchSavedListRequest.class)))
+        .willReturn(getSavedLists());
+
+    mockMvc.perform(post(BASE_PATH + SEARCH_PATH.replace("{id}", "1"))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].id", is(1)))
+        .andExpect(jsonPath("$.[0].description", is("Saved list description")))
+        .andExpect(jsonPath("$.[0].displayedFieldsLong[0]", is("user.firstName")))
+        .andExpect(jsonPath("$.[0].displayedFieldsLong[1]", is("user.lastName")))
+        .andExpect(jsonPath("$.[0].exportColumns").isArray())
+        .andExpect(jsonPath("$.[0].exportColumns[0].key", is("key")))
+        .andExpect(jsonPath("$.[0].exportColumns[0].properties.constant", is("non default constant column value")))
+        .andExpect(jsonPath("$.[0].exportColumns[0].properties.header", is("non default column header")))
+        .andExpect(jsonPath("$.[0].status", is("active")))
+        .andExpect(jsonPath("$.[0].name", is("Saved list name")))
+        .andExpect(jsonPath("$.[0].fixed", is(true)))
+        .andExpect(jsonPath("$.[0].global", is(false)))
+        .andExpect(jsonPath("$.[0].savedSearchSource.id", is(123)))
+        .andExpect(jsonPath("$.[0].sfJobOpp.id", is(135)))
+        .andExpect(jsonPath("$.[0].sfJobOpp.sfId", is("sales-force-job-opp-id")))
+        .andExpect(jsonPath("$.[0].fileJdLink", is("http://file.jd.link")))
+        .andExpect(jsonPath("$.[0].fileJdName", is("JobDescriptionFileName")))
+        .andExpect(jsonPath("$.[0].fileJoiLink", is("http://file.joi.link")))
+        .andExpect(jsonPath("$.[0].fileJoiName", is("JoiFileName")))
+        .andExpect(jsonPath("$.[0].folderlink", is("http://folder.link")))
+        .andExpect(jsonPath("$.[0].folderjdlink", is("http://folder.jd.link")))
+        .andExpect(jsonPath("$.[0].publishedDocLink", is("http://published.doc.link")))
+        .andExpect(jsonPath("$.[0].registeredJob", is(true)))
+        .andExpect(jsonPath("$.[0].tbbShortName", is("Saved list Tbb short name")))
+        .andExpect(jsonPath("$.[0].createdBy.firstName", is("test")))
+        .andExpect(jsonPath("$.[0].createdBy.lastName", is("user")))
+        .andExpect(jsonPath("$.[0].createdDate", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.[0].updatedBy.firstName", is("test")))
+        .andExpect(jsonPath("$.[0].updatedBy.lastName", is("user")))
+        .andExpect(jsonPath("$.[0].updatedDate", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.[0].users[0].firstName", is("test")))
+        .andExpect(jsonPath("$.[0].users[0].lastName", is("user")))
+        .andExpect(jsonPath("$.[0].tasks[0].id", is(148)))
+        .andExpect(jsonPath("$.[0].tasks[0].helpLink", is("http://help.link")))
+        .andExpect(jsonPath("$.[0].tasks[0].taskType", is("Simple")))
+        .andExpect(jsonPath("$.[0].tasks[0].displayName", is("task display name")))
+        .andExpect(jsonPath("$.[0].tasks[0].name", is("a test task")))
+        .andExpect(jsonPath("$.[0].tasks[0].description", is("a test task description")))
+        .andExpect(jsonPath("$.[0].tasks[0].optional", is(false)))
+        .andExpect(jsonPath("$.[0].tasks[0].daysToComplete", is(7)));
+  }
 
   @Test
   @DisplayName("list fails - not implemented")
