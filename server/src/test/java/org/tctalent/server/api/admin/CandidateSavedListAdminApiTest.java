@@ -27,7 +27,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 
 /**
@@ -39,7 +38,6 @@ import org.tctalent.server.service.db.SavedListService;
 @AutoConfigureMockMvc
 class CandidateSavedListAdminApiTest extends ApiTestBase {
 
-  @MockBean CandidateService candidateService;
   @MockBean CandidateSavedListService candidateSavedListService;
   @MockBean SavedListService savedListService;
 
