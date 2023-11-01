@@ -28,6 +28,7 @@ import {EncodedQrImage} from "../util/qr";
 import {Candidate, ShortCandidate} from "../model/candidate";
 import {Job, ShortJob} from "../model/job";
 import {CandidateOpportunity} from "../model/candidate-opportunity";
+import {RxStompConfig} from "@stomp/rx-stomp";
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +41,7 @@ export class AuthService {
 
   constructor(private router: Router,
               private http: HttpClient,
-              private localStorageService: LocalStorageService) {
+              private localStorageService: LocalStorageService ) {
   }
 
   login(credentials: LoginRequest) {
@@ -332,7 +333,10 @@ export class AuthService {
   }
 
   getToken(): string {
-    return this.localStorageService.get('access-token');
+      //Automatically reconfigure RxStomp with the current token
+    //todo Following comment does not make sense.
+      // like this.rxStomp.configure(this.getRxStompConfig()); - but currently is recursive
+      return this.localStorageService.get('access-token');
   }
 
   logout() {

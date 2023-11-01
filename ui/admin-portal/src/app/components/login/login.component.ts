@@ -86,10 +86,6 @@ export class LoginComponent implements OnInit {
     );
   }
 
-  logout() {
-    this.authService.logout();
-  }
-
   private loginWithToken(token: string) {
     const req: LoginRequest = new LoginRequest();
     req.username = this.username;

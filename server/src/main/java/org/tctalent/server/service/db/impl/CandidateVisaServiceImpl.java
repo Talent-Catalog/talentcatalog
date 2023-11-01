@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityExistsException;
@@ -33,8 +34,6 @@ import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaJobCheckService;
 import org.tctalent.server.service.db.CandidateVisaService;
-
-import java.util.List;
 
 /**
  * Manage candidate visa checks

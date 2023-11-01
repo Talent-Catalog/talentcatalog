@@ -18,6 +18,7 @@ package org.tctalent.server.util.html;
 
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,9 +33,11 @@ public class HtmlSanitizer {
      * Ref: https://owasp.org/www-community/attacks/xss/
      *
      * @param html an untrusted HTML string
-     * @return an HTML string with any potentially Cross Site Scripting tags removed
+     * @return an HTML string with any potentially Cross Site Scripting tags removed, null if html
+     * was null.
      */
-    public static String sanitize(String html) {
-        return Jsoup.clean(html, Safelist.relaxed());
+    @Nullable
+    public static String sanitize(@Nullable String html) {
+        return html == null ? null : Jsoup.clean(html, Safelist.relaxed());
     }
 }

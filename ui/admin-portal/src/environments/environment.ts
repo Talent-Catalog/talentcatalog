@@ -20,6 +20,7 @@
 
 export const environment = {
   production: false,
+  host: 'localhost:8080',
   publishUrl: 'http://localhost:8080/published',
   apiUrl: 'http://localhost:8080/api/admin',
   systemApiUrl: 'http://localhost:8080/api/system',

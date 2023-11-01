@@ -23,6 +23,7 @@ import {Observable, of} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {User} from "../../model/user";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
+import {ChatService} from "../../services/chat.service";
 
 @Component({
   selector: 'app-header',
@@ -48,6 +49,7 @@ export class HeaderComponent implements OnInit {
   constructor(private authService: AuthService,
               private brandingService: BrandingService,
               private candidateService: CandidateService,
+              private chatService: ChatService,
               private router: Router) { }
 
   ngOnInit() {
@@ -154,6 +156,7 @@ export class HeaderComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['login']);
     localStorage.clear();
+    this.chatService.unsubscribeAll();
   }
 
   selectSearchResult ($event, input) {
@@ -173,6 +176,10 @@ export class HeaderComponent implements OnInit {
 
   isAnAdmin(): boolean {
     return this.authService.isAnAdmin();
+  }
+
+  isSystemAdminOnly(): boolean {
+    return this.authService.isSystemAdminOnly();
   }
 
   isStagingEnv(): boolean {

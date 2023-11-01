@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="col-sm-{{mainPanelColWidth}}">
+    <app-chats
+      [chats]="chats"
+      (chatSelection)="onChatSelected($event)"
+    >
+    </app-chats>
+  </div>
+
+  <div class="col-sm-{{sidePanelColWidth}} admin-panel detail-panel">
+    <div class="w-100">
+      <div *ngIf="canToggleSizes()" class="float-end">
+        <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+          class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
+      </div>
+
+      <div *ngIf="selectedChat">
+        <strong>Chat {{selectedChat.id}}</strong>
+
+        <div class="alert alert-danger" *ngIf="error">
+          {{error}}
+        </div>
+
+        <app-posts
+          [chat]="selectedChat"
+        >
+        </app-posts>
+      </div>
+    </div>
+  </div>
+</div>
