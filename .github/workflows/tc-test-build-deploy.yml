@@ -2,7 +2,7 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 # And https://github.com/marketplace/actions/beanstalk-deploy
 
-name: tbb-test-build-deploy
+name: tc-test-build-deploy
 
 on:
   push:
