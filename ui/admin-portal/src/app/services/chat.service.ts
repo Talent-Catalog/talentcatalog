@@ -84,10 +84,11 @@ export class ChatService implements OnDestroy {
    */
   private getRxStompConfig(): RxStompConfig {
 
+    const protocol = environment.production ? 'wss' : 'ws';
     const config: RxStompConfig = {
       // Which server?
-      //todo Not sure why need websocket on end?
-      brokerURL: 'ws://' + environment.host + '/jobchat/websocket',
+      //todo Not sure why need websocket on end but you do?
+      brokerURL: protocol + '://' + environment.host + '/jobchat/websocket',
 
       // Headers
       connectHeaders: {
