@@ -49,10 +49,6 @@
         <li *ngIf="isAnAdmin()" class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/settings'">Settings</a>
         </li>
-        <li *ngIf="isSystemAdminOnly()" class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/chat'">Chat</a>
-        </li>
-
       </ul>
 
       <div class="me-3" *ngIf="canViewCandidateName()">
@@ -95,6 +91,10 @@
         <div ngbDropdownMenu class="dropdown-menu-end">
           <div ngbDropdownItem disabled>{{loggedInUserInfo()}}</div>
           <div class="dropdown-divider"></div>
+          <div *ngIf="isSystemAdminOnly()">
+            <a ngbDropdownItem [routerLink]="'/chat'">Manage Chats</a>
+            <div class="dropdown-divider"></div>
+          </div>
           <button ngbDropdownItem (click)="logout()">Logout</button>
         </div>
       </li>
