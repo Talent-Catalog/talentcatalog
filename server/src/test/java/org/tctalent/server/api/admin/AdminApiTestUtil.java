@@ -17,6 +17,10 @@
 package org.tctalent.server.api.admin;
 
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Set;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateCitizenship;
@@ -40,6 +44,7 @@ import org.tctalent.server.model.db.DocumentStatus;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Exam;
+import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
@@ -53,16 +58,16 @@ import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.RiskLevel;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.TBBEligibilityAssessment;
+import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
-
-import java.time.LocalDate;
-import java.util.List;
+import org.tctalent.server.request.candidate.PublishedDocColumnProps;
 
 /**
  * @author sadatmalik
@@ -258,7 +263,10 @@ public class AdminApiTestUtil {
     }
 
     static SalesforceJobOpp getSalesforceJobOpp() {
-        return new SalesforceJobOpp();
+        SalesforceJobOpp salesforceJobOpp = new SalesforceJobOpp();
+        salesforceJobOpp.setId(135L);
+        salesforceJobOpp.setSfId("sales-force-job-opp-id");
+        return salesforceJobOpp;
     }
 
     static CandidateReviewStatusItem getCandidateReviewStatusItem() {
@@ -344,5 +352,74 @@ public class AdminApiTestUtil {
         candidateSkill.setSkill("Adobe Photoshop");
         candidateSkill.setTimePeriod("3-5 years");
         return candidateSkill;
+    }
+
+    static PublishedDocColumnProps getPublishedDocColumnProps() {
+        PublishedDocColumnProps publishedDocColumnProps = new PublishedDocColumnProps();
+        publishedDocColumnProps.setHeader("non default column header");
+        publishedDocColumnProps.setConstant("non default constant column value");
+        return publishedDocColumnProps;
+    }
+
+    static ExportColumn getExportColumn() {
+        ExportColumn exportColumn = new ExportColumn();
+        exportColumn.setKey("key");
+        exportColumn.setProperties(getPublishedDocColumnProps());
+        return exportColumn;
+    }
+
+    static SavedSearch getSavedSearch() {
+        SavedSearch savedSearch = new SavedSearch();
+        savedSearch.setId(123L);
+        return savedSearch;
+    }
+
+    static TaskImpl getTask() {
+        TaskImpl task = new TaskImpl();
+        task.setId(148L);
+        task.setName("a test task");
+        task.setDaysToComplete(7);
+        task.setDescription("a test task description");
+        task.setDisplayName("task display name");
+        task.setOptional(false);
+        task.setHelpLink("http://help.link");
+        return task;
+    }
+
+    static SavedList getSavedList() {
+        SavedList savedList = new SavedList();
+        savedList.setId(1L);
+        savedList.setDescription("Saved list description");
+        savedList.setDisplayedFieldsLong(List.of("user.firstName", "user.lastName"));
+        savedList.setExportColumns(List.of(getExportColumn()));
+        savedList.setStatus(Status.active);
+        savedList.setName("Saved list name");
+        savedList.setFixed(true);
+        savedList.setGlobal(false);
+        savedList.setSavedSearchSource(getSavedSearch());
+        savedList.setSfJobOpp(getSalesforceJobOpp());
+        savedList.setFileJdLink("http://file.jd.link");
+        savedList.setFileJdName("JobDescriptionFileName");
+        savedList.setFileJoiLink("http://file.joi.link");
+        savedList.setFileJoiName("JoiFileName");
+        savedList.setFolderlink("http://folder.link");
+        savedList.setFolderjdlink("http://folder.jd.link");
+        savedList.setPublishedDocLink("http://published.doc.link");
+        savedList.setRegisteredJob(true);
+        savedList.setTbbShortName("Saved list Tbb short name");
+        savedList.setCreatedBy(caller);
+        savedList.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        savedList.setUpdatedBy(caller);
+        savedList.setUpdatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        savedList.setUsers(Set.of(caller));
+        savedList.setTasks(Set.of(getTask()));
+
+        return savedList;
+    }
+
+    static List<SavedList> getSavedLists() {
+        return List.of(
+            getSavedList()
+        );
     }
 }
