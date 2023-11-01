@@ -7,6 +7,7 @@ import {AuthService} from "./auth.service";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
 import {takeUntil} from "rxjs/operators";
+import {RxStompConfig} from "@stomp/rx-stomp";
 
 @Injectable({
   providedIn: 'root'
@@ -69,9 +70,55 @@ export class ChatService implements OnDestroy {
   private configureStompService() {
     //Check if already configured
     if (!this.stompServiceConfigured) {
-      this.rxStompService.configure(this.authService.getRxStompConfig());
+      let stompConfig = this.getRxStompConfig();
+      this.rxStompService.configure(stompConfig);
+      console.log(Date(), 'Connecting to ' + stompConfig.brokerURL)
       this.rxStompService.activate();
       this.stompServiceConfigured = true;
     }
   }
+
+  /**
+   * Returns an RxStompConfig, populated with the current Authorization header token in
+   * currentHeaders.
+   */
+  private getRxStompConfig(): RxStompConfig {
+
+    const config: RxStompConfig = {
+      // Which server?
+      //todo Not sure why need websocket on end?
+      brokerURL: 'ws://' + environment.host + '/jobchat/websocket',
+
+      // Headers
+      connectHeaders: {
+      },
+
+      // How often to heartbeat?
+      // Interval in milliseconds, set to 0 to disable
+      heartbeatIncoming: 0, // Typical value 0 - disabled
+      heartbeatOutgoing: 20000, // Typical value 20000 - every 20 seconds
+
+      // Wait in milliseconds before attempting auto reconnect
+      // Set to 0 to disable
+      // Typical value 500 (500 milli seconds)
+      reconnectDelay: 5000,
+
+      // Will log diagnostics on console
+      // It can be quite verbose, not recommended in production
+      // Skip this key to stop logging to console
+      debug: (msg: string): void => {
+        console.log(new Date(), msg);
+      },
+    }
+
+    let host = document.location.host;
+
+    const token = this.authService.getToken();
+    if (token) {
+      config.connectHeaders.Authorization = `Bearer ${token}`
+    }
+
+    return config;
+  }
+
 }

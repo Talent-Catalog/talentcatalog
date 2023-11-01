@@ -332,50 +332,6 @@ export class AuthService {
     }
   }
 
-  //todo Maybe this should be in chat.service
-  /**
-   * Returns an RxStompConfig, populated with the current Authorization header token in
-   * currentHeaders.
-   */
-  getRxStompConfig(): RxStompConfig {
-
-    const config: RxStompConfig = {
-      // Which server?
-      //todo 8080 is dev john's lap top only.
-      //todo Could construct this from "ws://" + window.location.host + "/jobchat/websocket" - in chat.service?
-      //todo Not sure why need websocket on end?
-      brokerURL: 'ws://localhost:8080/jobchat/websocket',
-
-      // Headers
-      connectHeaders: {
-      },
-
-      // How often to heartbeat?
-      // Interval in milliseconds, set to 0 to disable
-      heartbeatIncoming: 0, // Typical value 0 - disabled
-      heartbeatOutgoing: 20000, // Typical value 20000 - every 20 seconds
-
-      // Wait in milliseconds before attempting auto reconnect
-      // Set to 0 to disable
-      // Typical value 500 (500 milli seconds)
-      reconnectDelay: 5000,
-
-      // Will log diagnostics on console
-      // It can be quite verbose, not recommended in production
-      // Skip this key to stop logging to console
-      debug: (msg: string): void => {
-        console.log(new Date(), msg);
-      },
-    }
-
-    const token = this.getToken();
-    if (token) {
-      config.connectHeaders.Authorization = `Bearer ${token}`
-    }
-
-    return config;
-  }
-
   getToken(): string {
       //Automatically reconfigure RxStomp with the current token
     //todo Following comment does not make sense.
