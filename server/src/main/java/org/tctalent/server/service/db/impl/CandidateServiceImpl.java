@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -95,8 +94,6 @@ import org.tctalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.RootRequest;
 import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.model.db.SavedSearch;
-import org.tctalent.server.model.db.SearchJoin;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
@@ -133,8 +130,6 @@ import org.tctalent.server.request.candidate.CreateCandidateRequest;
 import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
-import org.tctalent.server.request.candidate.SearchCandidateRequest;
-import org.tctalent.server.request.candidate.SearchJoinRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -352,70 +347,6 @@ public class CandidateServiceImpl implements CandidateService {
     public void saveIt(Candidate candidate) {
         candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
         save(candidate, true);
-    }
-
-    //todo this is horrible cloned code duplicated from SavedSearchServiceImpl.convertToSearchCandidateRequest - factor it out.
-    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch savedSearch) {
-        SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
-        searchCandidateRequest.setSavedSearchId(savedSearch.getId());
-        searchCandidateRequest.setSimpleQueryString(savedSearch.getSimpleQueryString());
-        searchCandidateRequest.setKeyword(savedSearch.getKeyword());
-        searchCandidateRequest.setStatuses(getStatusListFromString(savedSearch.getStatuses()));
-        searchCandidateRequest.setGender(savedSearch.getGender());
-        searchCandidateRequest.setOccupationIds(getIdsFromString(savedSearch.getOccupationIds()));
-        searchCandidateRequest.setMinYrs(savedSearch.getMinYrs());
-        searchCandidateRequest.setMaxYrs(savedSearch.getMaxYrs());
-        searchCandidateRequest.setPartnerIds(getIdsFromString(savedSearch.getPartnerIds()));
-        searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
-        searchCandidateRequest.setNationalitySearchType(savedSearch.getNationalitySearchType());
-        searchCandidateRequest.setCountryIds(getIdsFromString(savedSearch.getCountryIds()));
-        searchCandidateRequest.setCountrySearchType(savedSearch.getCountrySearchType());
-        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(savedSearch.getSurveyTypeIds()));
-        searchCandidateRequest.setEnglishMinSpokenLevel(savedSearch.getEnglishMinSpokenLevel());
-        searchCandidateRequest.setEnglishMinWrittenLevel(savedSearch.getEnglishMinWrittenLevel());
-        searchCandidateRequest.setOtherLanguageId(savedSearch.getOtherLanguage() != null ? savedSearch.getOtherLanguage().getId() : null);
-        searchCandidateRequest.setOtherMinSpokenLevel(savedSearch.getOtherMinSpokenLevel());
-        searchCandidateRequest.setOtherMinWrittenLevel(savedSearch.getOtherMinWrittenLevel());
-        searchCandidateRequest.setLastModifiedFrom(savedSearch.getLastModifiedFrom());
-        searchCandidateRequest.setLastModifiedTo(savedSearch.getLastModifiedTo());
-//        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
-//        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
-        searchCandidateRequest.setMinAge(savedSearch.getMinAge());
-        searchCandidateRequest.setMaxAge(savedSearch.getMaxAge());
-        searchCandidateRequest.setMinEducationLevel(savedSearch.getMinEducationLevel());
-        searchCandidateRequest.setEducationMajorIds(getIdsFromString(savedSearch.getEducationMajorIds()));
-
-        List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
-        for (SearchJoin searchJoin : savedSearch.getSearchJoins()) {
-            searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getChildSavedSearch().getName(), searchJoin.getSearchType()));
-        }
-        searchCandidateRequest.setSearchJoinRequests(searchJoinRequests);
-
-        return searchCandidateRequest;
-
-    }
-
-
-    String getListAsString(List<Long> ids){
-        return !org.springframework.util.CollectionUtils.isEmpty(ids) ? ids.stream().map(String::valueOf)
-                .collect(Collectors.joining(",")) : null;
-    }
-
-    List<Long> getIdsFromString(String listIds){
-        return listIds != null ? Stream.of(listIds.split(","))
-                .map(Long::parseLong)
-                .collect(Collectors.toList()) : null;
-    }
-
-    String getStatusListAsString(List<CandidateStatus> statuses){
-        return !org.springframework.util.CollectionUtils.isEmpty(statuses) ? statuses.stream().map(String::valueOf)
-                .collect(Collectors.joining(",")) : null;
-    }
-
-    List<CandidateStatus> getStatusListFromString(String statusList){
-        return statusList != null ? Stream.of(statusList.split(","))
-                .map(s -> CandidateStatus.valueOf(s))
-                .collect(Collectors.toList()) : null;
     }
 
     @Override
