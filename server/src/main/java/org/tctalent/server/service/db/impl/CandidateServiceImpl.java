@@ -44,13 +44,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
@@ -197,6 +197,7 @@ import org.tctalent.server.util.html.TextExtracter;
  * SavedListService depends on CandidateService
  */
 @Service
+@RequiredArgsConstructor
 public class CandidateServiceImpl implements CandidateService {
 
     private static final int afghanistanCountryId = 6180;
@@ -255,67 +256,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
-
-    @Autowired
-    public CandidateServiceImpl(UserRepository userRepository,
-                                UserService userService,
-                                CandidateRepository candidateRepository,
-                                CandidateEsRepository candidateEsRepository,
-                                FileSystemService fileSystemService,
-                                GoogleDriveConfig googleDriveConfig,
-                                SalesforceConfig salesforceConfig, SalesforceService salesforceService,
-                                CountryRepository countryRepository,
-                                CountryService countryService,
-                                EducationLevelRepository educationLevelRepository,
-                                PasswordHelper passwordHelper,
-                                AuthService authService,
-                                CandidateNoteService candidateNoteService,
-                                CandidateCitizenshipService candidateCitizenshipService,
-                                CandidateDependantService candidateDependantService,
-                                CandidateDestinationService candidateDestinationService,
-                                CandidateVisaService candidateVisaService,
-                                CandidateVisaJobCheckService candidateVisaJobCheckService,
-                                CandidatePropertyService candidatePropertyService,
-                                SurveyTypeRepository surveyTypeRepository,
-                                OccupationRepository occupationRepository,
-                                PartnerService partnerService,
-                                LanguageLevelRepository languageLevelRepository,
-                                CandidateExamRepository candidateExamRepository,
-                                RootRequestService rootRequestService, TaskAssignmentRepository taskAssignmentRepository,
-                                TaskService taskService, EmailHelper emailHelper,
-                                PdfHelper pdfHelper, TextExtracter textExtracter) {
-        this.userRepository = userRepository;
-        this.userService = userService;
-        this.candidateRepository = candidateRepository;
-        this.candidateEsRepository = candidateEsRepository;
-        this.googleDriveConfig = googleDriveConfig;
-        this.salesforceConfig = salesforceConfig;
-        this.countryRepository = countryRepository;
-        this.countryService = countryService;
-        this.educationLevelRepository = educationLevelRepository;
-        this.passwordHelper = passwordHelper;
-        this.authService = authService;
-        this.candidateNoteService = candidateNoteService;
-        this.candidateCitizenshipService = candidateCitizenshipService;
-        this.candidateDependantService = candidateDependantService;
-        this.candidateDestinationService = candidateDestinationService;
-        this.candidateVisaService = candidateVisaService;
-        this.candidateVisaJobCheckService = candidateVisaJobCheckService;
-        this.candidatePropertyService = candidatePropertyService;
-        this.surveyTypeRepository = surveyTypeRepository;
-        this.occupationRepository = occupationRepository;
-        this.partnerService = partnerService;
-        this.languageLevelRepository = languageLevelRepository;
-        this.candidateExamRepository = candidateExamRepository;
-        this.rootRequestService = rootRequestService;
-        this.taskAssignmentRepository = taskAssignmentRepository;
-        this.taskService = taskService;
-        this.emailHelper = emailHelper;
-        this.pdfHelper = pdfHelper;
-        this.fileSystemService = fileSystemService;
-        this.salesforceService = salesforceService;
-        this.textExtracter = textExtracter;
-    }
 
     @Transactional
     @Override
