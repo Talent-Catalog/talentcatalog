@@ -157,8 +157,6 @@ import org.tctalent.server.service.db.CandidateNoteService;
 import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CandidateVisaJobCheckService;
-import org.tctalent.server.service.db.CandidateVisaService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.PartnerService;
@@ -239,8 +237,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final AuthService authService;
     private final CandidateNoteService candidateNoteService;
     private final CandidateCitizenshipService candidateCitizenshipService;
-    private final CandidateVisaService candidateVisaService;
-    private final CandidateVisaJobCheckService candidateVisaJobCheckService;
     private final CandidateDependantService candidateDependantService;
     private final CandidateDestinationService candidateDestinationService;
     private final CandidatePropertyService candidatePropertyService;
