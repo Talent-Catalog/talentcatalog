@@ -2560,11 +2560,6 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateExam ce = candidateExamRepository.findByIdLoadCandidate(examId)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, examId));
 
-        boolean ieltsExamGen = false;
-        if (ce.getExam() != null) {
-            ieltsExamGen = ce.getExam().equals(Exam.IELTSGen);
-        }
-
         Candidate candidate = ce.getCandidate();
 
         candidateExamRepository.deleteById(examId);
