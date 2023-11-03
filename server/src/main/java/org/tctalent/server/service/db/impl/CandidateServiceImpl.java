@@ -2356,11 +2356,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         if (data.getLangAssessmentScore() != null) {
-            BigDecimal score;
             // If the LangAssessmentScore is NoResponse set to null in database.
             if (data.getLangAssessmentScore().equals("NoResponse")) {
                 candidate.setLangAssessmentScore(null);
-                score = null;
             } else {
                 candidate.setLangAssessmentScore(data.getLangAssessmentScore());
             }
