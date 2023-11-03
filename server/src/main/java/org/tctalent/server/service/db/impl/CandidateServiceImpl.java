@@ -755,8 +755,8 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
         /* Set the email consent fields */
-        candidate.setEmailConsentRegistration(request.getEmailConsentRegistration());
-        candidate.setEmailConsentPartners(request.getEmailConsentPartners());
+        candidate.setContactConsentRegistration(request.getContactConsentRegistration());
+        candidate.setContactConsentPartners(request.getContactConsentPartners());
 
         candidate.setRegoIp(ipAddress);
         if (queryParameters != null) {
