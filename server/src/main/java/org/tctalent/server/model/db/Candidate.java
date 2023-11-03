@@ -16,17 +16,15 @@
 
 package org.tctalent.server.model.db;
 
-import org.apache.commons.beanutils.NestedNullException;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.annotations.Formula;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
-import org.tctalent.server.api.admin.SavedSearchAdminApi;
-import org.tctalent.server.model.es.CandidateEs;
-import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.util.SalesforceHelper;
-
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -42,15 +40,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.annotations.Formula;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.api.admin.SavedSearchAdminApi;
+import org.tctalent.server.model.es.CandidateEs;
+import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.util.SalesforceHelper;
 
 @Entity
 @Table(name = "candidate")
@@ -708,10 +707,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String mediaWillingness;
 
     @NotNull
-    private Boolean emailConsentRegistration;
+    private Boolean contactConsentRegistration;
 
     @NotNull
-    private Boolean emailConsentPartners;
+    private Boolean contactConsentPartners;
 
     public Candidate() {
     }
@@ -2016,20 +2015,20 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.mediaWillingness = mediaWillingness;
     }
 
-    public Boolean getEmailConsentRegistration() {
-        return emailConsentRegistration;
+    public Boolean getContactConsentRegistration() {
+        return contactConsentRegistration;
     }
 
-    public void setEmailConsentRegistration(Boolean emailConsentRegistration) {
-        this.emailConsentRegistration = emailConsentRegistration;
+    public void setContactConsentRegistration(Boolean emailConsentRegistration) {
+        this.contactConsentRegistration = emailConsentRegistration;
     }
 
-    public Boolean getEmailConsentPartners() {
-        return emailConsentPartners;
+    public Boolean getContactConsentPartners() {
+        return contactConsentPartners;
     }
 
-    public void setEmailConsentPartners(Boolean emailConsentPartners) {
-        this.emailConsentPartners = emailConsentPartners;
+    public void setContactConsentPartners(Boolean emailConsentPartners) {
+        this.contactConsentPartners = emailConsentPartners;
     }
 
     public boolean isSelected() {

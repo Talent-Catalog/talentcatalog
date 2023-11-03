@@ -27,9 +27,9 @@ public class CreateCandidateRequest extends BaseCandidateContactRequest {
     private String lastName;
     private String username;
     @NotNull
-    private Boolean emailConsentRegistration;
+    private Boolean contactConsentRegistration;
     @NotNull
-    private Boolean emailConsentPartners;
+    private Boolean contactConsentPartners;
 
     public String getFirstName() {
         return firstName;
@@ -55,19 +55,19 @@ public class CreateCandidateRequest extends BaseCandidateContactRequest {
         this.username = username;
     }
 
-    public Boolean getEmailConsentRegistration() {
-        return emailConsentRegistration;
+    public Boolean getContactConsentRegistration() {
+        return contactConsentRegistration;
     }
 
-    public void setEmailConsentRegistration(Boolean emailConsentRegistration) {
-        this.emailConsentRegistration = emailConsentRegistration;
+    public void setContactConsentRegistration(Boolean contactConsentRegistration) {
+        this.contactConsentRegistration = contactConsentRegistration;
     }
 
-    public Boolean getEmailConsentPartners() {
-        return emailConsentPartners;
+    public Boolean getContactConsentPartners() {
+        return contactConsentPartners;
     }
 
-    public void setEmailConsentPartners(Boolean emailConsentPartners) {
-        this.emailConsentPartners = emailConsentPartners;
+    public void setContactConsentPartners(Boolean contactConsentPartners) {
+        this.contactConsentPartners = contactConsentPartners;
     }
 }

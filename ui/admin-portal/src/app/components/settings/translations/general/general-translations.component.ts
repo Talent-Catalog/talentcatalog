@@ -305,8 +305,8 @@ const ALL_FIELDS = {
           "USERNAME": null,
           "PASSWORD": null,
           "PASSWORDCONFIRMATION": null,
-          "EMAILCONSENTREGISTRATION": null,
-          "EMAILCONSENTPARTNERS": null
+          "CONTACTCONSENTREGISTRATION": null,
+          "CONTACTCONSENTPARTNERS": null
         }
       },
       "PERSONAL": {

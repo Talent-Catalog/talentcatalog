@@ -69,18 +69,18 @@
       <h5 class="mb-3 fw-bold">Email Communication Consent</h5>
 
       <div class="mb-3 form-check">
-        <input class="form-check-input" type="checkbox" id="emailConsentRegistration" [value]="false" [formControlName]="'emailConsentRegistration'">
-        <label class="form-check-label" for="emailConsentRegistration">
-          {{ 'REGISTRATION.CONTACT.LABEL.EMAILCONSENTREGISTRATION' | translate }}
+        <input class="form-check-input" type="checkbox" id="contactConsentRegistration" [value]="false" [formControlName]="'contactConsentRegistration'">
+        <label class="form-check-label" for="contactConsentRegistration">
+          {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTREGISTRATION' | translate }}
           <sup>*</sup>
         </label>
-        <app-form-control-error [control]="form.controls.emailConsentRegistration"></app-form-control-error>
+        <app-form-control-error [control]="form.controls.contactConsentRegistration"></app-form-control-error>
       </div>
 
       <div class="mb-3 form-check">
-        <input class="form-check-input" type="checkbox" id="emailConsentPartners" [value]="false" [formControlName]="'emailConsentPartners'">
-        <label class="form-check-label" for="emailConsentPartners">
-          {{ 'REGISTRATION.CONTACT.LABEL.EMAILCONSENTPARTNERS' | translate }}
+        <input class="form-check-input" type="checkbox" id="contactConsentPartners" [value]="false" [formControlName]="'contactConsentPartners'">
+        <label class="form-check-label" for="contactConsentPartners">
+          {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTPARTNERS' | translate }}
         </label>
       </div>
 
