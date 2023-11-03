@@ -1979,90 +1979,41 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Nullable
     public String getCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type) {
-        String link = null;
-        switch (type) {
-            case address:
-                link = candidate.getFolderlinkAddress();
-                break;
-            case character:
-                link = candidate.getFolderlinkCharacter();
-                break;
-            case employer:
-                link = candidate.getFolderlinkEmployer();
-                break;
-            case engagement:
-                link = candidate.getFolderlinkEngagement();
-                break;
-            case experience:
-                link = candidate.getFolderlinkExperience();
-                break;
-            case family:
-                link = candidate.getFolderlinkFamily();
-                break;
-            case identity:
-                link = candidate.getFolderlinkIdentity();
-                break;
-            case immigration:
-                link = candidate.getFolderlinkImmigration();
-                break;
-            case language:
-                link = candidate.getFolderlinkLanguage();
-                break;
-            case medical:
-                link = candidate.getFolderlinkMedical();
-                break;
-            case qualification:
-                link = candidate.getFolderlinkQualification();
-                break;
-            case registration:
-                link = candidate.getFolderlinkRegistration();
-                break;
-        }
-        return link;
+        String link = switch (type) {
+          case address -> candidate.getFolderlinkAddress();
+          case character -> candidate.getFolderlinkCharacter();
+          case employer -> candidate.getFolderlinkEmployer();
+          case engagement -> candidate.getFolderlinkEngagement();
+          case experience -> candidate.getFolderlinkExperience();
+          case family -> candidate.getFolderlinkFamily();
+          case identity -> candidate.getFolderlinkIdentity();
+          case immigration -> candidate.getFolderlinkImmigration();
+          case language -> candidate.getFolderlinkLanguage();
+          case medical -> candidate.getFolderlinkMedical();
+          case qualification -> candidate.getFolderlinkQualification();
+          case registration -> candidate.getFolderlinkRegistration();
+        };
+      return link;
     }
 
     @Override
     public void setCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type,
         @Nullable String link) {
 
-        switch (type) {
-            case address:
-                candidate.setFolderlinkAddress(link);
-                break;
-            case character:
-                candidate.setFolderlinkCharacter(link);
-                break;
-            case employer:
-                candidate.setFolderlinkEmployer(link);
-                break;
-            case engagement:
-                candidate.setFolderlinkEngagement(link);
-                break;
-            case experience:
-                candidate.setFolderlinkExperience(link);
-                break;
-            case family:
-                candidate.setFolderlinkFamily(link);
-                break;
-            case identity:
-                candidate.setFolderlinkIdentity(link);
-                break;
-            case immigration:
-                candidate.setFolderlinkImmigration(link);
-                break;
-            case language:
-                candidate.setFolderlinkLanguage(link);
-                break;
-            case medical:
-                candidate.setFolderlinkMedical(link);
-                break;
-            case qualification:
-                candidate.setFolderlinkQualification(link);
-                break;
-            case registration:
-                candidate.setFolderlinkRegistration(link);
-                break;
-        }
+      switch (type) {
+        case address -> candidate.setFolderlinkAddress(link);
+        case character -> candidate.setFolderlinkCharacter(link);
+        case employer -> candidate.setFolderlinkEmployer(link);
+        case engagement -> candidate.setFolderlinkEngagement(link);
+        case experience -> candidate.setFolderlinkExperience(link);
+        case family -> candidate.setFolderlinkFamily(link);
+        case identity -> candidate.setFolderlinkIdentity(link);
+        case immigration -> candidate.setFolderlinkImmigration(link);
+        case language -> candidate.setFolderlinkLanguage(link);
+        case medical -> candidate.setFolderlinkMedical(link);
+        case qualification -> candidate.setFolderlinkQualification(link);
+        case registration -> candidate.setFolderlinkRegistration(link);
+      }
     }
 
     @Override
