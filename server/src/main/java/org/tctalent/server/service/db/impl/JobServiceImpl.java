@@ -86,6 +86,7 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -108,6 +109,7 @@ public class JobServiceImpl implements JobService {
     private final AuthService authService;
     private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
+    private final EmailHelper emailHelper;
     private final UserService userService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
@@ -124,13 +126,15 @@ public class JobServiceImpl implements JobService {
 
     public JobServiceImpl(
             AuthService authService, CandidateOpportunityService candidateOpportunityService,
-            CandidateSavedListService candidateSavedListService, UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
+            CandidateSavedListService candidateSavedListService, EmailHelper emailHelper,
+        UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
             SalesforceBridgeService salesforceBridgeService, SalesforceConfig salesforceConfig, SalesforceService salesforceService,
             SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
             SavedSearchService savedSearchService, JobOppIntakeService jobOppIntakeService) {
         this.authService = authService;
         this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
+        this.emailHelper = emailHelper;
         this.userService = userService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
@@ -590,36 +594,47 @@ public class JobServiceImpl implements JobService {
             final EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>
                 currentToClosingStageMap = closingStageLogic.get(jobCloseStage);
 
-            for (CandidateOpportunity activeOpp : activeOpps) {
-                CandidateOpportunityStage closingStage = currentToClosingStageMap.get(activeOpp.getStage());
-                if (closingStage == null) {
-                    //Missing logic
-                    log.warn("Closing logic missing case for job closing stage " + jobCloseStage +
-                        " and candidate in stage " + activeOpp.getStage());
-                    //Default to closing candidate opp as notFitForRole
-                    closingStage = CandidateOpportunityStage.notFitForRole;
+            if (currentToClosingStageMap == null) {
+                //Log no closing logic
+                String errorMessage = "No closing logic for job stage " + jobCloseStage +
+                    " of opportunity " + job.getName() + " (" + job.getId() + ")";
+                log.error(errorMessage);
+                emailHelper.sendAlert(errorMessage);
+            } else {
+                for (CandidateOpportunity activeOpp : activeOpps) {
+                    CandidateOpportunityStage closingStage = currentToClosingStageMap.get(
+                        activeOpp.getStage());
+                    if (closingStage == null) {
+                        //Missing logic
+                        log.warn(
+                            "Closing logic missing case for job closing stage " + jobCloseStage +
+                                " and candidate in stage " + activeOpp.getStage());
+                        //Default to closing candidate opp as notFitForRole
+                        closingStage = CandidateOpportunityStage.notFitForRole;
+                    }
+                    List<Candidate> candidates = closingStageCandidatesMap.computeIfAbsent(
+                        closingStage, k -> new ArrayList<>());
+                    candidates.add(activeOpp.getCandidate());
                 }
-                List<Candidate> candidates = closingStageCandidatesMap.computeIfAbsent(
-                    closingStage, k -> new ArrayList<>());
-                candidates.add(activeOpp.getCandidate());
+
+                for (Entry<CandidateOpportunityStage, List<Candidate>> stageListEntry :
+                    closingStageCandidatesMap.entrySet()) {
+
+                    CandidateOpportunityParams params = new CandidateOpportunityParams();
+                    final CandidateOpportunityStage candidateOppClosedStage = stageListEntry.getKey();
+                    params.setStage(candidateOppClosedStage);
+                    params.setClosingComments(
+                        "Job opportunity closed: " + jobCloseStage.toString());
+
+                    candidateOpportunityService.createUpdateCandidateOpportunities(
+                        stageListEntry.getValue(), job, params);
+                }
+
+                log.info("Closed opps for candidates going for job  " + job.getId() + ": "
+                    + activeOpps.stream().map(opp -> opp.getCandidate().getCandidateNumber())
+                    .collect(Collectors.joining(",")));
+
             }
-
-            for (Entry<CandidateOpportunityStage, List<Candidate>> stageListEntry :
-                closingStageCandidatesMap.entrySet()) {
-
-                CandidateOpportunityParams params = new CandidateOpportunityParams();
-                final CandidateOpportunityStage candidateOppClosedStage = stageListEntry.getKey();
-                params.setStage(candidateOppClosedStage);
-                params.setClosingComments("Job opportunity closed: " + jobCloseStage.toString());
-
-                candidateOpportunityService.createUpdateCandidateOpportunities(
-                    stageListEntry.getValue(), job, params);
-            }
-
-            log.info("Closed opps for candidates going for job  " + job.getId() + ": "
-                + activeOpps.stream().map(opp -> opp.getCandidate().getCandidateNumber())
-                .collect(Collectors.joining(",")));
-
         }
     }
 
