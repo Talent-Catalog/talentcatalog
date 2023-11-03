@@ -2540,7 +2540,7 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate getCandidateFromRequest(@Nullable Long requestCandidateId) {
         User loggedInUser = authService.getLoggedInUser().orElse(null);
         Candidate candidate;
-        if (requestCandidateId != null && loggedInUser.getRole() != Role.user) {
+        if (requestCandidateId != null && loggedInUser != null && loggedInUser.getRole() != Role.user) {
             // Coming from Admin Portal
             candidate = candidateRepository.findById(requestCandidateId)
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, requestCandidateId));
