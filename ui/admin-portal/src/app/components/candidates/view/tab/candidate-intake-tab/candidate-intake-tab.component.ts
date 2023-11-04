@@ -34,6 +34,7 @@ import {
   CandidateDependantService,
   CreateCandidateDependantRequest
 } from "../../../../../services/candidate-dependant.service";
+import {AuthenticationService} from "../../../../../services/authentication.service";
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -49,12 +50,12 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
               occupationService: OccupationService,
               languageLevelService: LanguageLevelService,
               noteService: CandidateNoteService,
-              authService: AuthService,
+              authenticationService: AuthenticationService,
               private candidateCitizenshipService: CandidateCitizenshipService,
               private candidateExamService: CandidateExamService,
               private candidateDependantService: CandidateDependantService,
               private modalService: NgbModal) {
-    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
+    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authenticationService)
   }
 
   public inputOldIntakeNote(formName: string, button) {

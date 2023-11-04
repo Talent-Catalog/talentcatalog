@@ -43,6 +43,7 @@ import {ConfirmationComponent} from "../confirm/confirmation.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedListService} from "../../../services/saved-list.service";
 import {SalesforceService} from "../../../services/salesforce.service";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 
 /**
@@ -101,12 +102,13 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     private location: Location,
     private modalService: NgbModal,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private authenticationService: AuthenticationService
   ) {
   }
 
   ngOnInit() {
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
   }
 
   ngOnChanges (changes: SimpleChanges){
@@ -179,7 +181,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource?.users, this.authService);
+    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
   }
 
   doToggleWatch() {
@@ -201,11 +203,11 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   isShared() {
-    return !isMine(this.candidateSource, this.authService);
+    return !isMine(this.candidateSource, this.authenticationService);
   }
 
   isEditable() {
-    return canEditSource(this.candidateSource, this.authService);
+    return canEditSource(this.candidateSource, this.authenticationService);
   }
 
   isRemovable() {

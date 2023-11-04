@@ -18,6 +18,7 @@ import {Role, User} from './user';
 import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
 import {OpportunityIds} from "./opportunity";
+import {AuthenticationService} from "../services/authentication.service";
 
 export interface HasName {
   name?: string;
@@ -258,28 +259,28 @@ export class LoginRequest {
   totpToken: string;
 }
 
-export function isMine(source: CandidateSource, auth: AuthService) {
+export function isMine(source: CandidateSource, authenticationService: AuthenticationService) {
   let mine: boolean = false;
-  const me: User = auth.getLoggedInUser();
+  const me: User = authenticationService.getLoggedInUser();
   if (source && source.createdBy && me) {
     mine = source.createdBy.id === me.id;
   }
   return mine;
 }
 
-export function isStarredByMe(users: User[], auth: AuthService) {
+export function isStarredByMe(users: User[], authenticationService: AuthenticationService) {
   let starredByMe: boolean = false;
-  const me: User = auth.getLoggedInUser();
+  const me: User = authenticationService.getLoggedInUser();
   if (users && me) {
     starredByMe = users.find(u => u.id === me.id ) !== undefined;
   }
   return starredByMe;
 }
 
-export function canEditSource(source: CandidateSource, auth: AuthService) {
+export function canEditSource(source: CandidateSource, authenticationService: AuthenticationService) {
   //We can change the source if we own the savedSearch or if it not fixed.
   let changeable: boolean = false;
-  const me: User = auth.getLoggedInUser();
+  const me: User = authenticationService.getLoggedInUser();
   if (source) {
     // If source is NOT FIXED anyone can edit it
     if (!source.fixed) {
@@ -287,7 +288,7 @@ export function canEditSource(source: CandidateSource, auth: AuthService) {
       // If source is FIXED but it belongs to me, I can change it. If it doesn't belong to me I can't.
     } else {
       //Only can edit source if we own that source.
-      changeable = isMine(source, auth);
+      changeable = isMine(source, authenticationService);
     }
   }
   return changeable;

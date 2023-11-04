@@ -23,7 +23,7 @@ import {Observable, of} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {User} from "../../model/user";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
-import {ChatService} from "../../services/chat.service";
+import {AuthenticationService} from "../../services/authentication.service";
 
 @Component({
   selector: 'app-header',
@@ -46,10 +46,11 @@ export class HeaderComponent implements OnInit {
   stagingEnv: boolean = false;
 
 
-  constructor(private authService: AuthService,
+  constructor(
+    private authService: AuthService,
+    private authenticationService: AuthenticationService,
               private brandingService: BrandingService,
               private candidateService: CandidateService,
-              private chatService: ChatService,
               private router: Router) { }
 
   ngOnInit() {
@@ -122,7 +123,7 @@ export class HeaderComponent implements OnInit {
         ),
         tap(() => this.searching = false)
       );
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
     if (this.loggedInUser == null) {
       this.logout();
     }
@@ -153,10 +154,7 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout();
-    this.router.navigate(['login']);
-    localStorage.clear();
-    this.chatService.unsubscribeAll();
+    this.authenticationService.logout();
   }
 
   selectSearchResult ($event, input) {

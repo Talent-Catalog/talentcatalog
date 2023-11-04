@@ -3,11 +3,11 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable, Subject} from "rxjs";
 import {JobChat, UpdateChatRequest} from "../model/chat";
-import {AuthService} from "./auth.service";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
 import {takeUntil} from "rxjs/operators";
 import {RxStompConfig} from "@stomp/rx-stomp";
+import {AuthenticationService} from "./authentication.service";
 
 @Injectable({
   providedIn: 'root'
@@ -20,14 +20,14 @@ export class ChatService implements OnDestroy {
   private observables: Map<number, Observable<Message>> = new Map<number, Observable<Message>>();
 
   constructor(
-      private authService: AuthService,
+      private authenticationService: AuthenticationService,
       private http: HttpClient,
       private rxStompService: RxStompService
   ) {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeAll();
+    this.disconnect();
   }
 
   create(request: UpdateChatRequest): Observable<JobChat> {
@@ -60,6 +60,12 @@ export class ChatService implements OnDestroy {
     return observable;
   }
 
+  disconnect() {
+    this.unsubscribeAll();
+
+    this.rxStompService.deactivate();
+    this.stompServiceConfigured = false;
+  }
   unsubscribeAll() {
     //Unsubscribe all stomp subscriptions
     //See https://www.learnrxjs.io/learn-rxjs/operators/filtering/takeuntil
@@ -87,7 +93,7 @@ export class ChatService implements OnDestroy {
     const protocol = environment.production ? 'wss' : 'ws';
     const config: RxStompConfig = {
       // Which server?
-      //todo Not sure why need websocket on end but you do?
+      //todo Not sure why need websocket on end but you do
       brokerURL: protocol + '://' + environment.host + '/jobchat/websocket',
 
       // Headers
@@ -114,7 +120,7 @@ export class ChatService implements OnDestroy {
 
     let host = document.location.host;
 
-    const token = this.authService.getToken();
+    const token = this.authenticationService.getToken();
     if (token) {
       config.connectHeaders.Authorization = `Bearer ${token}`
     }

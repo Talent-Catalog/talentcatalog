@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {JobIntakeComponentTabBase} from "../../../../util/intake/JobIntakeComponentTabBase";
 import {JobService} from "../../../../../services/job.service";
 import {AuthService} from "../../../../../services/auth.service";
+import {AuthenticationService} from "../../../../../services/authentication.service";
 
 @Component({
   selector: 'app-job-intake-tab',
@@ -11,10 +12,10 @@ import {AuthService} from "../../../../../services/auth.service";
 export class JobIntakeTabComponent extends JobIntakeComponentTabBase {
 
   constructor(
-    authService: AuthService,
+    authenticationService: AuthenticationService,
     jobService: JobService
   ) {
-    super(authService, jobService);
+    super(authenticationService, jobService);
   }
 
 

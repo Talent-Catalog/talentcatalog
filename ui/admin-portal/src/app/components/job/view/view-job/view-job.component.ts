@@ -33,6 +33,7 @@ import {
   CandidateSourceCandidateService
 } from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
+import {AuthenticationService} from "../../../../services/authentication.service";
 
 /**
  * Display details of a job object passed in as an @Input.
@@ -72,6 +73,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   constructor(
     private authService: AuthService,
+    private authenticationService: AuthenticationService,
     private candidateSourceService: CandidateSourceCandidateService,
     private localStorageService: LocalStorageService,
     private jobService: JobService,
@@ -85,7 +87,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   }
 
   ngOnInit(): void {
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
   }
 
@@ -200,7 +202,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.job?.starringUsers, this.authService);
+    return isStarredByMe(this.job?.starringUsers, this.authenticationService);
   }
 
   onPrepItemSelected(item: JobPrepItem) {

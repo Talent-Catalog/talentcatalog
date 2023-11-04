@@ -68,6 +68,7 @@ import {ConfirmationComponent} from '../../../util/confirm/confirmation.componen
 import {JobOpportunityStage} from "../../../../model/job";
 import {enumOptions} from "../../../../util/enum";
 import {SalesforceService} from "../../../../services/salesforce.service";
+import {AuthenticationService} from "../../../../services/authentication.service";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -101,6 +102,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
               private localStorageService: LocalStorageService,
               private router: Router,
               private authService: AuthService,
+              private authenticationService: AuthenticationService,
               private modalService: NgbModal,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateSourceService: CandidateSourceService,
@@ -110,7 +112,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   ngOnInit() {
 
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
 
     //Pick up any previous keyword filter
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
@@ -366,7 +368,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   onDeleteSource(source: CandidateSource) {
     this.loading = true;
-    if (isMine(source, this.authService)) {
+    if (isMine(source, this.authenticationService)) {
       this.deleteOwnedSource(source)
       // If it's not mine I can't delete it.
     } else {
@@ -407,7 +409,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   onToggleStarred(source: CandidateSource) {
     this.loading = true;
     this.error = null
-    if (isStarredByMe(source?.users, this.authService)) {
+    if (isStarredByMe(source?.users, this.authenticationService)) {
       this.candidateSourceService.unstarSourceForUser(
         source, {userId: this.loggedInUser.id}).subscribe(
         result => {

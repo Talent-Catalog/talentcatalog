@@ -30,6 +30,7 @@ import {AuthService} from '../../../services/auth.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {SearchUserRequest} from "../../../model/base";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 
 @Component({
@@ -52,7 +53,9 @@ export class SearchUsersComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private userService: UserService,
               private modalService: NgbModal,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private authenticationService: AuthenticationService
+              ) { }
 
   ngOnInit() {
 
@@ -86,7 +89,7 @@ export class SearchUsersComponent implements OnInit {
 
   getLoggedInUser(){
     /* GET LOGGED IN USER ROLE FROM LOCAL STORAGE */
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.search();
   }
 
@@ -132,7 +135,7 @@ export class SearchUsersComponent implements OnInit {
         this.search()
         // UPDATES VIEW IF LOGGED IN ADMIN USER CHANGES ROLE THEMSELVES
         if (this.loggedInUser.id === updatedUser.id){
-          this.authService.setNewLoggedInUser(updatedUser);
+          this.authenticationService.setNewLoggedInUser(updatedUser);
           this.getLoggedInUser();
         }
       })

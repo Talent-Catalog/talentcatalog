@@ -44,6 +44,7 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {TailoredCvComponent} from 'src/app/components/candidates/view/tailored-cv.component';
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-view-candidate',
@@ -82,6 +83,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
               private modalService: NgbModal,
               private titleService: Title,
               private authService: AuthService,
+              private authenticationService: AuthenticationService,
               private candidateFieldService: CandidateFieldService,
               private fb: FormBuilder) {
     super(2, 4);
@@ -89,7 +91,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
 
   ngOnInit() {
     this.refreshCandidateInfo();
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
   }
 

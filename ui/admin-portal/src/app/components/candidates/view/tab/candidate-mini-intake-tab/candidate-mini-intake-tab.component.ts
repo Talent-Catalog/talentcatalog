@@ -30,6 +30,7 @@ import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
+import {AuthenticationService} from "../../../../../services/authentication.service";
 
 @Component({
   selector: 'app-candidate-mini-intake-tab',
@@ -45,11 +46,11 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
               occupationService: OccupationService,
               languageLevelService: LanguageLevelService,
               noteService: CandidateNoteService,
-              authService: AuthService,
+              authenticationService: AuthenticationService,
               private candidateCitizenshipService: CandidateCitizenshipService,
               private candidateExamService: CandidateExamService,
               private modalService: NgbModal) {
-    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
+    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authenticationService)
   }
 
   public inputOldIntakeNote(formName: string, button) {

@@ -80,6 +80,7 @@ import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
 import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-define-search',
@@ -152,7 +153,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
               private route: ActivatedRoute,
               private router: Router,
               private savedListService: SavedListService,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private authenticationService: AuthenticationService,
+              ) {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
       savedSearchId: [null],
@@ -200,7 +203,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     this.selectedCandidate = null;
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.storedBaseJoin = null;
     this.notElastic = {
       readonly: this.elastic()
@@ -672,7 +675,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canChangeSearchRequest(): boolean {
-    return canEditSource(this.savedSearch, this.authService)
+    return canEditSource(this.savedSearch, this.authenticationService)
   }
 
   public onSelectAll(options: any, formControl: any) {

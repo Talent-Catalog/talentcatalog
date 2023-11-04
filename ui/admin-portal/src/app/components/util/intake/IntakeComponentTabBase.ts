@@ -36,6 +36,7 @@ import {
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {dateString} from '../../../util/date-adapter/date-adapter';
+import {AuthenticationService} from "../../../services/authentication.service";
 
 /**
  * Base class for all candidate intake tab components.
@@ -126,7 +127,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
     protected occupationService: OccupationService,
     protected languageLevelService: LanguageLevelService,
     protected noteService: CandidateNoteService,
-    protected authService: AuthService,
+    protected authenticationService: AuthenticationService,
   ) { }
 
   ngOnInit(): void {
@@ -223,7 +224,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
    * @param button is the button that's clicked, used to change the button text on click.
    */
   public createIntakeNote(formName: string, btnType: string, button) {
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
     let btnText: string;
     if (btnType === "update") {
        this.noteRequest = {

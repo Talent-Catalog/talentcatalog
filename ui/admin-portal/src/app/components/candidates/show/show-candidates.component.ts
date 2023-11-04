@@ -122,6 +122,7 @@ import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 interface CachedTargetList {
   sourceID: number;
@@ -213,6 +214,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateFieldService: CandidateFieldService,
               private authService: AuthService,
+              private authenticationService: AuthenticationService,
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService,
               private offcanvasService: NgbOffcanvas
@@ -222,7 +224,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
 
     this.setCurrentCandidate(null);
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectedCandidates = [];
 
     this.statuses = [ReviewStatus[ReviewStatus.rejected], ReviewStatus[ReviewStatus.verified]];
@@ -828,7 +830,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Is shareable with me if it is not created by me.
     if (this.candidateSource) {
         //was it created by me?
-        if (!isMine(this.candidateSource, this.authService)) {
+        if (!isMine(this.candidateSource, this.authenticationService)) {
           shareable = true;
         }
     }
@@ -848,7 +850,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource?.users, this.authService);
+    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
   }
 
   isJobList(): boolean {
@@ -860,7 +862,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isEditable(): boolean {
-    return canEditSource(this.candidateSource, this.authService);
+    return canEditSource(this.candidateSource, this.authenticationService);
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
