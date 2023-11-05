@@ -194,6 +194,7 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
     //Stop subscribing by emitting a value from the Unsubscribe Observable
     //See takeUntil in the above pipe.
     this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 
 
