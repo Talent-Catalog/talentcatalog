@@ -19,7 +19,6 @@ import {
   ElementRef,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild
@@ -38,7 +37,7 @@ import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
-import {forkJoin, Subscription} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {JoinSavedSearchComponent} from '../join-search/join-saved-search.component';
 import {EducationLevel} from '../../../model/education-level';
 import {EducationLevelService} from '../../../services/education-level.service';
@@ -87,7 +86,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
+export class DefineSearchComponent implements OnInit, OnChanges {
 
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
@@ -107,8 +106,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   savedSearchId;
 
   searchRequest: SearchCandidateRequestPaged;
-
-  subscription: Subscription;
   sortField = 'id';
   sortDirection = 'DESC';
 
@@ -276,12 +273,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
           }
         }
       }
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
     }
   }
 
