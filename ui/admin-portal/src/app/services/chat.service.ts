@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Observable, Subject} from "rxjs";
+import {Observable, Subject, Subscription} from "rxjs";
 import {JobChat, UpdateChatRequest} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
@@ -19,15 +19,30 @@ export class ChatService implements OnDestroy {
   private destroyStompSubscriptions$ = new Subject<void>();
   private observables: Map<number, Observable<Message>> = new Map<number, Observable<Message>>();
 
+  private authenticationServiceSubscription: Subscription = null;
+
   constructor(
       private authenticationService: AuthenticationService,
       private http: HttpClient,
       private rxStompService: RxStompService
   ) {
+
+    //Subscribe to authentication service so that we can detect logouts and disconnect on a logout.
+    this.authenticationServiceSubscription = this.authenticationService.loggedInUser$.subscribe(
+      (user) => {
+        if (user == null) {
+          //Disconnect chat on logout - ie when loggedInUser becomes null.
+          this.disconnect();
+        }
+      }
+    )
   }
 
   ngOnDestroy(): void {
     this.disconnect();
+    if (this.authenticationServiceSubscription) {
+      this.authenticationServiceSubscription.unsubscribe();
+    }
   }
 
   create(request: UpdateChatRequest): Observable<JobChat> {

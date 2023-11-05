@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 import {LoginRequest} from "../model/base";
 import {catchError, map} from "rxjs/operators";
 import {JwtResponse} from "../model/jwt-response";
-import {Observable, throwError} from "rxjs";
+import {Observable, throwError, Subject} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
 import {Router} from "@angular/router";
 import {EncodedQrImage} from "../util/qr";
-// import {ChatService} from "./chat.service";
 
 /**
  * Manages authentication - ie login/logout.
@@ -22,24 +21,34 @@ import {EncodedQrImage} from "../util/qr";
 export class AuthenticationService {
   apiUrl = environment.apiUrl + '/auth';
 
-  private loggedInUser: User;
+  /**
+   * Stores current logged in state
+   * @private
+   */
+  private loggedInUser: User = null;
+
+  /**
+   * Can be used to subscribe to logged in state changes - ie logins and logouts
+   */
+  loggedInUser$ = new Subject<User>();
 
   constructor(
-    // private chatService: ChatService,
     private router: Router,
     private http: HttpClient,
     private localStorageService: LocalStorageService
-  ) { }
-
+  ) {}
 
   getLoggedInUser(): User {
     if (!this.loggedInUser) {
-      this.loggedInUser = this.localStorageService.get('user');
-    }
-
-    if (!AuthenticationService.isValidUserInfo(this.loggedInUser)) {
-      console.log("invalid user");
-      this.logout();
+      //We don't have a loggedInUser stored - can we pick it up from storage?
+      const user: User = this.localStorageService.get('user');
+      if (!AuthenticationService.isValidUserInfo(user)) {
+        console.log("invalid user");
+        this.logout();
+      } else {
+        //Update logged-in user retrieved from storage
+        this.setLoggedInUser(user);
+      }
     }
 
     return this.loggedInUser;
@@ -85,28 +94,33 @@ export class AuthenticationService {
 
   logout() {
     this.http.post(`${this.apiUrl}/logout`, null);
+    this.router.navigate(['login']);
     this.localStorageService.remove('user');
     this.localStorageService.remove('access-token');
-    this.router.navigate(['login']);
     localStorage.clear();
-    // this.chatService.disconnect();
-    this.loggedInUser = null;
+
+    this.setLoggedInUser(null)
   }
 
   mfaSetup(): Observable<EncodedQrImage> {
     return this.http.post<EncodedQrImage>(`${this.apiUrl}/mfa-setup`, null);
   }
 
-  setNewLoggedInUser(new_user) {
-    this.localStorageService.set('user', new_user);
+  setLoggedInUser(loggedInUser: User) {
+    this.loggedInUser = loggedInUser;
+    this.localStorageService.set('user', this.loggedInUser);
+    this.loggedInUser$.next(this.loggedInUser);
   }
 
   private storeCredentials(response: JwtResponse) {
+    //Remove any old credentials from storage
     this.localStorageService.remove('access-token');
     this.localStorageService.remove('user');
+
+    //Update new credentials in storage
     this.localStorageService.set('access-token', response.accessToken);
-    this.localStorageService.set('user', response.user);
-    this.loggedInUser = response.user;
+
+    this.setLoggedInUser(response.user);
   }
 
 }

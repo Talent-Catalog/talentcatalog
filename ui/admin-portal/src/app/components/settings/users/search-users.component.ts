@@ -135,7 +135,7 @@ export class SearchUsersComponent implements OnInit {
         this.search()
         // UPDATES VIEW IF LOGGED IN ADMIN USER CHANGES ROLE THEMSELVES
         if (this.loggedInUser.id === updatedUser.id){
-          this.authenticationService.setNewLoggedInUser(updatedUser);
+          this.authenticationService.setLoggedInUser(updatedUser);
           this.getLoggedInUser();
         }
       })
