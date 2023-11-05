@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {LoginRequest} from "../model/base";
 import {catchError, map} from "rxjs/operators";
 import {JwtResponse} from "../model/jwt-response";
@@ -18,7 +18,7 @@ import {EncodedQrImage} from "../util/qr";
 @Injectable({
   providedIn: 'root'
 })
-export class AuthenticationService {
+export class AuthenticationService implements OnDestroy {
   apiUrl = environment.apiUrl + '/auth';
 
   /**
@@ -37,6 +37,12 @@ export class AuthenticationService {
     private http: HttpClient,
     private localStorageService: LocalStorageService
   ) {}
+
+  ngOnDestroy(): void {
+    //This will close any subscriptions - freeing resources.
+    //See https://stackoverflow.com/a/77426261/929968
+    this.loggedInUser$.complete();
+  }
 
   getLoggedInUser(): User {
     if (!this.loggedInUser) {
