@@ -21,6 +21,6 @@ package org.tctalent.server.model.db.partner;
  *
  * @author John Cameron
  */
-public interface JobCreator extends Partner {
+public interface JobCreator extends BasePartner {
 
 }
