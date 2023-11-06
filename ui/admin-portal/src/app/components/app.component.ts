@@ -48,20 +48,6 @@ export class AppComponent implements OnInit {
       }
     )
 
-    // /*
-    //  * Don't show the standard header if we are logging in or changing password.
-    //  * todo This could be driven off logged in state
-    //  */
-    // this.router.events.forEach((event) => {
-    //   if (event instanceof NavigationEnd) {
-    //     if (event['url'] === '/login' || event['url'].indexOf('/reset-password') !== -1) {
-    //       this.showHeader = false;
-    //     } else {
-    //       this.showHeader = true;
-    //     }
-    //   }
-    // });
-
     this.subscribeForTitleChanges()
   }
 
