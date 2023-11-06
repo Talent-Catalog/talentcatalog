@@ -42,15 +42,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
@@ -95,8 +94,6 @@ import org.tctalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.RootRequest;
 import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.model.db.SavedSearch;
-import org.tctalent.server.model.db.SearchJoin;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
@@ -133,8 +130,6 @@ import org.tctalent.server.request.candidate.CreateCandidateRequest;
 import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
-import org.tctalent.server.request.candidate.SearchCandidateRequest;
-import org.tctalent.server.request.candidate.SearchJoinRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -157,8 +152,6 @@ import org.tctalent.server.service.db.CandidateNoteService;
 import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CandidateVisaJobCheckService;
-import org.tctalent.server.service.db.CandidateVisaService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.PartnerService;
@@ -197,6 +190,7 @@ import org.tctalent.server.util.html.TextExtracter;
  * SavedListService depends on CandidateService
  */
 @Service
+@RequiredArgsConstructor
 public class CandidateServiceImpl implements CandidateService {
 
     private static final int afghanistanCountryId = 6180;
@@ -238,8 +232,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final AuthService authService;
     private final CandidateNoteService candidateNoteService;
     private final CandidateCitizenshipService candidateCitizenshipService;
-    private final CandidateVisaService candidateVisaService;
-    private final CandidateVisaJobCheckService candidateVisaJobCheckService;
     private final CandidateDependantService candidateDependantService;
     private final CandidateDestinationService candidateDestinationService;
     private final CandidatePropertyService candidatePropertyService;
@@ -255,67 +247,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
-
-    @Autowired
-    public CandidateServiceImpl(UserRepository userRepository,
-                                UserService userService,
-                                CandidateRepository candidateRepository,
-                                CandidateEsRepository candidateEsRepository,
-                                FileSystemService fileSystemService,
-                                GoogleDriveConfig googleDriveConfig,
-                                SalesforceConfig salesforceConfig, SalesforceService salesforceService,
-                                CountryRepository countryRepository,
-                                CountryService countryService,
-                                EducationLevelRepository educationLevelRepository,
-                                PasswordHelper passwordHelper,
-                                AuthService authService,
-                                CandidateNoteService candidateNoteService,
-                                CandidateCitizenshipService candidateCitizenshipService,
-                                CandidateDependantService candidateDependantService,
-                                CandidateDestinationService candidateDestinationService,
-                                CandidateVisaService candidateVisaService,
-                                CandidateVisaJobCheckService candidateVisaJobCheckService,
-                                CandidatePropertyService candidatePropertyService,
-                                SurveyTypeRepository surveyTypeRepository,
-                                OccupationRepository occupationRepository,
-                                PartnerService partnerService,
-                                LanguageLevelRepository languageLevelRepository,
-                                CandidateExamRepository candidateExamRepository,
-                                RootRequestService rootRequestService, TaskAssignmentRepository taskAssignmentRepository,
-                                TaskService taskService, EmailHelper emailHelper,
-                                PdfHelper pdfHelper, TextExtracter textExtracter) {
-        this.userRepository = userRepository;
-        this.userService = userService;
-        this.candidateRepository = candidateRepository;
-        this.candidateEsRepository = candidateEsRepository;
-        this.googleDriveConfig = googleDriveConfig;
-        this.salesforceConfig = salesforceConfig;
-        this.countryRepository = countryRepository;
-        this.countryService = countryService;
-        this.educationLevelRepository = educationLevelRepository;
-        this.passwordHelper = passwordHelper;
-        this.authService = authService;
-        this.candidateNoteService = candidateNoteService;
-        this.candidateCitizenshipService = candidateCitizenshipService;
-        this.candidateDependantService = candidateDependantService;
-        this.candidateDestinationService = candidateDestinationService;
-        this.candidateVisaService = candidateVisaService;
-        this.candidateVisaJobCheckService = candidateVisaJobCheckService;
-        this.candidatePropertyService = candidatePropertyService;
-        this.surveyTypeRepository = surveyTypeRepository;
-        this.occupationRepository = occupationRepository;
-        this.partnerService = partnerService;
-        this.languageLevelRepository = languageLevelRepository;
-        this.candidateExamRepository = candidateExamRepository;
-        this.rootRequestService = rootRequestService;
-        this.taskAssignmentRepository = taskAssignmentRepository;
-        this.taskService = taskService;
-        this.emailHelper = emailHelper;
-        this.pdfHelper = pdfHelper;
-        this.fileSystemService = fileSystemService;
-        this.salesforceService = salesforceService;
-        this.textExtracter = textExtracter;
-    }
 
     @Transactional
     @Override
@@ -416,70 +347,6 @@ public class CandidateServiceImpl implements CandidateService {
     public void saveIt(Candidate candidate) {
         candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
         save(candidate, true);
-    }
-
-    //todo this is horrible cloned code duplicated from SavedSearchServiceImpl.convertToSearchCandidateRequest - factor it out.
-    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch savedSearch) {
-        SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
-        searchCandidateRequest.setSavedSearchId(savedSearch.getId());
-        searchCandidateRequest.setSimpleQueryString(savedSearch.getSimpleQueryString());
-        searchCandidateRequest.setKeyword(savedSearch.getKeyword());
-        searchCandidateRequest.setStatuses(getStatusListFromString(savedSearch.getStatuses()));
-        searchCandidateRequest.setGender(savedSearch.getGender());
-        searchCandidateRequest.setOccupationIds(getIdsFromString(savedSearch.getOccupationIds()));
-        searchCandidateRequest.setMinYrs(savedSearch.getMinYrs());
-        searchCandidateRequest.setMaxYrs(savedSearch.getMaxYrs());
-        searchCandidateRequest.setPartnerIds(getIdsFromString(savedSearch.getPartnerIds()));
-        searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
-        searchCandidateRequest.setNationalitySearchType(savedSearch.getNationalitySearchType());
-        searchCandidateRequest.setCountryIds(getIdsFromString(savedSearch.getCountryIds()));
-        searchCandidateRequest.setCountrySearchType(savedSearch.getCountrySearchType());
-        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(savedSearch.getSurveyTypeIds()));
-        searchCandidateRequest.setEnglishMinSpokenLevel(savedSearch.getEnglishMinSpokenLevel());
-        searchCandidateRequest.setEnglishMinWrittenLevel(savedSearch.getEnglishMinWrittenLevel());
-        searchCandidateRequest.setOtherLanguageId(savedSearch.getOtherLanguage() != null ? savedSearch.getOtherLanguage().getId() : null);
-        searchCandidateRequest.setOtherMinSpokenLevel(savedSearch.getOtherMinSpokenLevel());
-        searchCandidateRequest.setOtherMinWrittenLevel(savedSearch.getOtherMinWrittenLevel());
-        searchCandidateRequest.setLastModifiedFrom(savedSearch.getLastModifiedFrom());
-        searchCandidateRequest.setLastModifiedTo(savedSearch.getLastModifiedTo());
-//        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
-//        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
-        searchCandidateRequest.setMinAge(savedSearch.getMinAge());
-        searchCandidateRequest.setMaxAge(savedSearch.getMaxAge());
-        searchCandidateRequest.setMinEducationLevel(savedSearch.getMinEducationLevel());
-        searchCandidateRequest.setEducationMajorIds(getIdsFromString(savedSearch.getEducationMajorIds()));
-
-        List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
-        for (SearchJoin searchJoin : savedSearch.getSearchJoins()) {
-            searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getChildSavedSearch().getName(), searchJoin.getSearchType()));
-        }
-        searchCandidateRequest.setSearchJoinRequests(searchJoinRequests);
-
-        return searchCandidateRequest;
-
-    }
-
-
-    String getListAsString(List<Long> ids){
-        return !org.springframework.util.CollectionUtils.isEmpty(ids) ? ids.stream().map(String::valueOf)
-                .collect(Collectors.joining(",")) : null;
-    }
-
-    List<Long> getIdsFromString(String listIds){
-        return listIds != null ? Stream.of(listIds.split(","))
-                .map(Long::parseLong)
-                .collect(Collectors.toList()) : null;
-    }
-
-    String getStatusListAsString(List<CandidateStatus> statuses){
-        return !org.springframework.util.CollectionUtils.isEmpty(statuses) ? statuses.stream().map(String::valueOf)
-                .collect(Collectors.joining(",")) : null;
-    }
-
-    List<CandidateStatus> getStatusListFromString(String statusList){
-        return statusList != null ? Stream.of(statusList.split(","))
-                .map(s -> CandidateStatus.valueOf(s))
-                .collect(Collectors.toList()) : null;
     }
 
     @Override
@@ -753,6 +620,10 @@ public class CandidateServiceImpl implements CandidateService {
 
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
+
+        /* Set the email consent fields */
+        candidate.setContactConsentRegistration(request.getContactConsentRegistration());
+        candidate.setContactConsentPartners(request.getContactConsentPartners());
 
         candidate.setRegoIp(ipAddress);
         if (queryParameters != null) {
@@ -1116,12 +987,19 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
 
+        /* Validate that the candidate has marked email consent partners as true in order to continue registration */
+        if (!request.getContactConsentRegistration()) {
+            throw new InvalidRequestException("Consent required to register.");
+        }
+
         /* Create the candidate */
         CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();
         createCandidateRequest.setUsername(request.getUsername());
         createCandidateRequest.setEmail(request.getEmail());
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
+        createCandidateRequest.setContactConsentRegistration(request.getContactConsentRegistration());
+        createCandidateRequest.setContactConsentPartners(request.getContactConsentPartners());
 
         Candidate candidate = createCandidate(createCandidateRequest, sourcePartner, ipAddress,
             queryParameters, passwordEncrypted);
@@ -2101,90 +1979,41 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Nullable
     public String getCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type) {
-        String link = null;
-        switch (type) {
-            case address:
-                link = candidate.getFolderlinkAddress();
-                break;
-            case character:
-                link = candidate.getFolderlinkCharacter();
-                break;
-            case employer:
-                link = candidate.getFolderlinkEmployer();
-                break;
-            case engagement:
-                link = candidate.getFolderlinkEngagement();
-                break;
-            case experience:
-                link = candidate.getFolderlinkExperience();
-                break;
-            case family:
-                link = candidate.getFolderlinkFamily();
-                break;
-            case identity:
-                link = candidate.getFolderlinkIdentity();
-                break;
-            case immigration:
-                link = candidate.getFolderlinkImmigration();
-                break;
-            case language:
-                link = candidate.getFolderlinkLanguage();
-                break;
-            case medical:
-                link = candidate.getFolderlinkMedical();
-                break;
-            case qualification:
-                link = candidate.getFolderlinkQualification();
-                break;
-            case registration:
-                link = candidate.getFolderlinkRegistration();
-                break;
-        }
-        return link;
+        String link = switch (type) {
+          case address -> candidate.getFolderlinkAddress();
+          case character -> candidate.getFolderlinkCharacter();
+          case employer -> candidate.getFolderlinkEmployer();
+          case engagement -> candidate.getFolderlinkEngagement();
+          case experience -> candidate.getFolderlinkExperience();
+          case family -> candidate.getFolderlinkFamily();
+          case identity -> candidate.getFolderlinkIdentity();
+          case immigration -> candidate.getFolderlinkImmigration();
+          case language -> candidate.getFolderlinkLanguage();
+          case medical -> candidate.getFolderlinkMedical();
+          case qualification -> candidate.getFolderlinkQualification();
+          case registration -> candidate.getFolderlinkRegistration();
+        };
+      return link;
     }
 
     @Override
     public void setCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type,
         @Nullable String link) {
 
-        switch (type) {
-            case address:
-                candidate.setFolderlinkAddress(link);
-                break;
-            case character:
-                candidate.setFolderlinkCharacter(link);
-                break;
-            case employer:
-                candidate.setFolderlinkEmployer(link);
-                break;
-            case engagement:
-                candidate.setFolderlinkEngagement(link);
-                break;
-            case experience:
-                candidate.setFolderlinkExperience(link);
-                break;
-            case family:
-                candidate.setFolderlinkFamily(link);
-                break;
-            case identity:
-                candidate.setFolderlinkIdentity(link);
-                break;
-            case immigration:
-                candidate.setFolderlinkImmigration(link);
-                break;
-            case language:
-                candidate.setFolderlinkLanguage(link);
-                break;
-            case medical:
-                candidate.setFolderlinkMedical(link);
-                break;
-            case qualification:
-                candidate.setFolderlinkQualification(link);
-                break;
-            case registration:
-                candidate.setFolderlinkRegistration(link);
-                break;
-        }
+      switch (type) {
+        case address -> candidate.setFolderlinkAddress(link);
+        case character -> candidate.setFolderlinkCharacter(link);
+        case employer -> candidate.setFolderlinkEmployer(link);
+        case engagement -> candidate.setFolderlinkEngagement(link);
+        case experience -> candidate.setFolderlinkExperience(link);
+        case family -> candidate.setFolderlinkFamily(link);
+        case identity -> candidate.setFolderlinkIdentity(link);
+        case immigration -> candidate.setFolderlinkImmigration(link);
+        case language -> candidate.setFolderlinkLanguage(link);
+        case medical -> candidate.setFolderlinkMedical(link);
+        case qualification -> candidate.setFolderlinkQualification(link);
+        case registration -> candidate.setFolderlinkRegistration(link);
+      }
     }
 
     @Override
@@ -2527,11 +2356,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         if (data.getLangAssessmentScore() != null) {
-            BigDecimal score;
             // If the LangAssessmentScore is NoResponse set to null in database.
             if (data.getLangAssessmentScore().equals("NoResponse")) {
                 candidate.setLangAssessmentScore(null);
-                score = null;
             } else {
                 candidate.setLangAssessmentScore(data.getLangAssessmentScore());
             }
@@ -2713,7 +2540,7 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate getCandidateFromRequest(@Nullable Long requestCandidateId) {
         User loggedInUser = authService.getLoggedInUser().orElse(null);
         Candidate candidate;
-        if (requestCandidateId != null && loggedInUser.getRole() != Role.user) {
+        if (requestCandidateId != null && loggedInUser != null && loggedInUser.getRole() != Role.user) {
             // Coming from Admin Portal
             candidate = candidateRepository.findById(requestCandidateId)
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, requestCandidateId));
@@ -2732,11 +2559,6 @@ public class CandidateServiceImpl implements CandidateService {
             throws EntityReferencedException, InvalidRequestException {
         CandidateExam ce = candidateExamRepository.findByIdLoadCandidate(examId)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, examId));
-
-        boolean ieltsExamGen = false;
-        if (ce.getExam() != null) {
-            ieltsExamGen = ce.getExam().equals(Exam.IELTSGen);
-        }
 
         Candidate candidate = ce.getCandidate();
 
