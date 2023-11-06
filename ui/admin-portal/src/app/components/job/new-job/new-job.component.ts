@@ -12,7 +12,7 @@ import {Location} from "@angular/common";
 import {ActivatedRoute, Router} from "@angular/router";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {SlackService} from "../../../services/slack.service";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {Job, UpdateJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
 
@@ -38,7 +38,7 @@ export class NewJobComponent implements OnInit {
   errorPostingToSlack: string = null;
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private jobService: JobService,
     private route: ActivatedRoute,
     public salesforceService: SalesforceService,

@@ -31,7 +31,7 @@ import {CandidateOpportunity, SearchOpportunityRequest} from "../../../model/can
 import {SearchResults} from "../../../model/search-results";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption} from "../../../util/enum";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
@@ -90,7 +90,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private localStorageService: LocalStorageService,
     protected oppService: OpportunityService<T>,
     private salesforceService: SalesforceService,

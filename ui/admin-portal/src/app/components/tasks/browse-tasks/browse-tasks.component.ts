@@ -5,10 +5,10 @@ import {SearchTaskRequest} from "../../../model/base";
 import {User} from "../../../model/user";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Router} from "@angular/router";
-import {AuthService} from "../../../services/auth.service";
 import {indexOfHasId} from "../../../model/saved-search";
 import {TaskService} from "../../../services/task.service";
 import {Task} from "../../../model/task";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-browse-tasks',
@@ -32,12 +32,12 @@ export class BrowseTasksComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
-              private authService: AuthService,
+              private authenticationService: AuthenticationService,
               private taskService: TaskService) { }
 
   ngOnInit() {
 
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
 
     this.pageNumber = 1;
     this.pageSize = 50;

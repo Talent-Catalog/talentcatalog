@@ -23,7 +23,7 @@ import {PartnerService} from "../../../../../services/partner.service";
 import {SearchUserRequest} from "../../../../../model/base";
 import {UserService} from "../../../../../services/user.service";
 import {User} from "../../../../../model/user";
-import {AuthService} from "../../../../../services/auth.service";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-edit-job-info',
@@ -44,7 +44,7 @@ export class EditJobInfoComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
-              private authService: AuthService,
+              private authService: AuthorizationService,
               private jobService: JobService,
               private partnerService: PartnerService,
               private userService: UserService

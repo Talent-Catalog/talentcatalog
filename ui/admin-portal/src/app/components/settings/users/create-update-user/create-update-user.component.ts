@@ -19,7 +19,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Role, UpdateUserRequest, User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
-import {AuthService} from "../../../../services/auth.service";
+import {AuthorizationService} from "../../../../services/authorization.service";
 import {CountryService} from "../../../../services/country.service";
 import {Country} from "../../../../model/country";
 import {EnumOption, enumOptions} from "../../../../util/enum";
@@ -49,7 +49,7 @@ export class CreateUpdateUserComponent implements OnInit {
               private fb: FormBuilder,
               private partnerService: PartnerService,
               private userService: UserService,
-              private authService: AuthService,
+              private authService: AuthorizationService,
               private countryService: CountryService) {
   }
 

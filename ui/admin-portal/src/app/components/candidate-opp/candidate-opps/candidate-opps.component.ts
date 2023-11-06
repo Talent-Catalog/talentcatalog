@@ -8,7 +8,7 @@ import {CandidateOpportunityService} from "../../../services/candidate-opportuni
 import {LocalStorageService} from "angular-2-local-storage";
 import {FormBuilder} from "@angular/forms";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
 
@@ -48,7 +48,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
 
   constructor(
     fb: FormBuilder,
-    authService: AuthService,
+    authService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: CandidateOpportunityService,
     salesforceService: SalesforceService,

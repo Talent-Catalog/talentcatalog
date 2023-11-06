@@ -16,12 +16,12 @@
 
 import {Injectable} from "@angular/core";
 import {ActivatedRouteSnapshot, CanActivate, Router} from "@angular/router";
-import {AuthService} from "./auth.service";
+import {AuthorizationService} from "./authorization.service";
 
 @Injectable()
 export class RoleGuardService implements CanActivate {
 
-  constructor(public auth: AuthService,
+  constructor(public auth: AuthorizationService,
               public router: Router) {
   }
 

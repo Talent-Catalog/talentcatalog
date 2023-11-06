@@ -37,7 +37,7 @@ import {
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {ErrorInterceptor} from './services/error.interceptor';
-import {AuthService} from './services/auth.service';
+import {AuthorizationService} from './services/authorization.service';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import {LoginComponent} from './components/login/login.component';
 import {SettingsComponent} from './components/settings/settings.component';
@@ -1087,7 +1087,7 @@ import {ManageChatsComponent} from './components/chat/manage-chats/manage-chats.
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {provide: APP_INITIALIZER, useFactory: (envService: EnvService) => () => envService.init(), deps: [EnvService], multi: true},
     {provide: RxStompService},
-    AuthService,
+    AuthorizationService,
     RoleGuardService,
     Title,
     DatePipe, TitleCasePipe

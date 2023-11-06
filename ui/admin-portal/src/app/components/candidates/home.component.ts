@@ -25,8 +25,9 @@ import {
   SavedSearchTypeSubInfo
 } from "../../services/saved-search.service";
 import {FormBuilder} from "@angular/forms";
-import {AuthService} from "../../services/auth.service";
+import {AuthorizationService} from "../../services/authorization.service";
 import {Partner} from "../../model/partner";
+import {AuthenticationService} from "../../services/authentication.service";
 
 @Component({
   selector: 'app-home',
@@ -48,14 +49,15 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     private fb: FormBuilder,
     private localStorageService: LocalStorageService,
     private savedSearchService: SavedSearchService,
-    private authService: AuthService
+    private authService: AuthorizationService,
+    private authenticationService: AuthenticationService
   ) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
 
   ngOnInit() {
     this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[0].categories;
-    this.loggedInPartner = this.authService.getLoggedInUser()?.partner;
+    this.loggedInPartner = this.authenticationService.getLoggedInUser()?.partner;
   }
 
   ngAfterViewChecked(): void {
