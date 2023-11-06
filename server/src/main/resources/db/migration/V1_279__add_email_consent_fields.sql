@@ -14,27 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.candidate;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class CreateCandidateRequest extends BaseCandidateContactRequest {
-
-    @NotBlank
-    private String firstName;
-
-    @NotBlank
-    private String lastName;
-    private String username;
-
-    @NotNull
-    private Boolean contactConsentRegistration;
-
-    @NotNull
-    private Boolean contactConsentPartners;
-}
+alter table candidate add column contact_consent_registration boolean default false not null;
+alter table candidate add column contact_consent_partners boolean default false not null;

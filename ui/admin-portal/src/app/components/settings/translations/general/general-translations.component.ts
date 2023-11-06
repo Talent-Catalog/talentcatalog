@@ -304,7 +304,9 @@ const ALL_FIELDS = {
           "WHATSAPP": null,
           "USERNAME": null,
           "PASSWORD": null,
-          "PASSWORDCONFIRMATION": null
+          "PASSWORDCONFIRMATION": null,
+          "CONTACTCONSENTREGISTRATION": null,
+          "CONTACTCONSENTPARTNERS": null
         }
       },
       "PERSONAL": {
