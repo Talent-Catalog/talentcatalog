@@ -145,19 +145,19 @@ Then you can run `init` (only need to do this once), and then `plan` or `apply`,
    
 Now you will see the command line prompt =#
 
-    CREATE DATABASE tbbtalent;
-    CREATE USER tbbtalent WITH SUPERUSER PASSWORD 'tbbtalent';
+    CREATE DATABASE tctalent;
+    CREATE USER tctalent WITH SUPERUSER PASSWORD 'tctalent';
     \q
 
 Ask another developer for a recent `pg_dump` of their test database - 
 matching the latest version of the code.
     
-    pg_dump --file=path/to/file.sql --create --username=tbbtalent --host=localhost --port=5432
+    pg_dump --file=path/to/file.sql --create --username=tctalent --host=localhost --port=5432
 
 
 Use `psql` to import that dump file into your newly created database.
 
-    psql -h localhost -d tbbtalent -U tbbtalent -f path/to/file.sql
+    psql -h localhost -d tctalent -U tctalent -f path/to/file.sql
 
 ### Download and edit the code ###
 
