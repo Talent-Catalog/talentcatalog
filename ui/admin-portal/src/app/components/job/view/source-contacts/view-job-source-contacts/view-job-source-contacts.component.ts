@@ -13,7 +13,7 @@ import {SearchUserRequest} from "../../../../../model/base";
 import {
   HasNameSelectorComponent
 } from "../../../../util/has-name-selector/has-name-selector.component";
-import {AuthService} from "../../../../../services/auth.service";
+import {AuthenticationService} from "../../../../../services/authentication.service";
 
 /*
 MODEL: Modal popups.
@@ -33,14 +33,14 @@ export class ViewJobSourceContactsComponent implements OnInit {
   private loggedInUserPartnerId: number;
 
   constructor(
-    private authService: AuthService,
+    private authenticationService: AuthenticationService,
     private modalService: NgbModal,
     private partnerService: PartnerService,
     private userService: UserService
   ) { }
 
   ngOnInit(): void {
-    this.loggedInUserPartnerId = this.authService.getLoggedInUser()?.partner?.id;
+    this.loggedInUserPartnerId = this.authenticationService.getLoggedInUser()?.partner?.id;
 
     this.error = null;
     this.loading = true;

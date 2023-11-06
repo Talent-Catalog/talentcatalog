@@ -19,7 +19,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   Output,
   SimpleChanges
@@ -29,7 +28,6 @@ import {
   isSavedSearch,
   SavedSearchGetRequest
 } from '../../../../model/saved-search';
-import {Subscription} from 'rxjs';
 import {CandidateService} from '../../../../services/candidate.service';
 import {Candidate} from '../../../../model/candidate';
 import {SearchResults} from '../../../../model/search-results';
@@ -44,7 +42,7 @@ import {
   CandidateSourceCandidateService
 } from '../../../../services/candidate-source-candidate.service';
 import {SavedListGetRequest} from '../../../../model/saved-list';
-import {AuthService} from '../../../../services/auth.service';
+import {AuthorizationService} from '../../../../services/authorization.service';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {CandidateFieldInfo} from "../../../../model/candidate-field-info";
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
@@ -58,7 +56,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
   templateUrl: './candidate-source-results.component.html',
   styleUrls: ['./candidate-source-results.component.scss']
 })
-export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDestroy {
+export class CandidateSourceResultsComponent implements OnInit, OnChanges {
   error: null;
   pageNumber: number;
   pageSize: number;
@@ -73,11 +71,10 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
   selectedFields: CandidateFieldInfo[] = [];
   sortField: string;
   sortDirection: string;
-  subscription: Subscription;
   timestamp: number;
 
 constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private candidateService: CandidateService,
     private candidateFieldService: CandidateFieldService,
     private candidateSourceService: CandidateSourceService,
@@ -103,12 +100,6 @@ constructor(
   private loadSelectedFields() {
     this.selectedFields = this.candidateFieldService
       .getCandidateSourceFields(this.candidateSource, false);
-  }
-
-  ngOnDestroy(): void {
-    if (this.subscription){
-      this.subscription.unsubscribe();
-    }
   }
 
   onOpenSource() {
