@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
-import {AuthService} from "../../../../../services/auth.service";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-additional-info-tab',
@@ -30,7 +30,7 @@ export class CandidateAdditionalInfoTabComponent implements OnInit {
   @Input() canViewPrivateInfo: boolean = false;
   @Output() candidateChanged = new EventEmitter();
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthorizationService) { }
 
   ngOnInit() {
   }

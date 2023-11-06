@@ -19,7 +19,6 @@ import {
   ElementRef,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild
@@ -38,7 +37,7 @@ import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
-import {forkJoin, Subscription} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {JoinSavedSearchComponent} from '../join-search/join-saved-search.component';
 import {EducationLevel} from '../../../model/education-level';
 import {EducationLevelService} from '../../../services/education-level.service';
@@ -71,7 +70,7 @@ import {
 import {canEditSource, SearchPartnerRequest} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
-import {AuthService} from '../../../services/auth.service';
+import {AuthorizationService} from '../../../services/authorization.service';
 import {enumKeysToEnumOptions, EnumOption, enumOptions, isEnumOption} from "../../../util/enum";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {SurveyTypeService} from "../../../services/survey-type.service";
@@ -80,13 +79,14 @@ import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
 import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-define-search',
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
+export class DefineSearchComponent implements OnInit, OnChanges {
 
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
@@ -106,8 +106,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   savedSearchId;
 
   searchRequest: SearchCandidateRequestPaged;
-
-  subscription: Subscription;
   sortField = 'id';
   sortDirection = 'DESC';
 
@@ -152,7 +150,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
               private route: ActivatedRoute,
               private router: Router,
               private savedListService: SavedListService,
-              private authService: AuthService) {
+              private authService: AuthorizationService,
+              private authenticationService: AuthenticationService,
+              ) {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
       savedSearchId: [null],
@@ -200,7 +200,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     this.selectedCandidate = null;
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.storedBaseJoin = null;
     this.notElastic = {
       readonly: this.elastic()
@@ -273,12 +273,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
           }
         }
       }
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
     }
   }
 
@@ -672,7 +666,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canChangeSearchRequest(): boolean {
-    return canEditSource(this.savedSearch, this.authService)
+    return canEditSource(this.savedSearch, this.authenticationService)
   }
 
   public onSelectAll(options: any, formControl: any) {

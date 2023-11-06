@@ -18,7 +18,7 @@ import {CandidateVisaCheckService} from "../../../../../../services/candidate-vi
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {LocalStorageService} from "angular-2-local-storage";
-import {AuthService} from "../../../../../../services/auth.service";
+import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-visa-job',
@@ -48,7 +48,7 @@ export class CandidateVisaJobComponent implements OnInit {
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
               private fb: FormBuilder,
-              private authService: AuthService) { }
+              private authService: AuthorizationService) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({

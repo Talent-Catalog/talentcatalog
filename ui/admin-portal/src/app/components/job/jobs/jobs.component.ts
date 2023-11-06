@@ -1,5 +1,5 @@
 import {Component, Inject, LOCALE_ID} from '@angular/core';
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {FormBuilder} from "@angular/forms";
 import {Job, JobOpportunityStage, SearchJobRequest} from "../../../model/job";
@@ -27,7 +27,7 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
   constructor(
     fb: FormBuilder,
-    authService: AuthService,
+    authService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: JobService,
     salesforceService: SalesforceService,

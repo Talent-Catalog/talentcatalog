@@ -17,7 +17,7 @@
 import {Injectable} from '@angular/core';
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateFieldInfo} from "../model/candidate-field-info";
-import {AuthService} from "./auth.service";
+import {AuthorizationService} from "./authorization.service";
 import {CandidateSource, Status} from "../model/base";
 import {Candidate, checkIeltsScoreType, ResidenceStatus, UnhcrStatus} from "../model/candidate";
 import {
@@ -81,7 +81,7 @@ export class CandidateFieldService {
   ];
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private datePipe: DatePipe,
     private titleCasePipe: TitleCasePipe
   ) {

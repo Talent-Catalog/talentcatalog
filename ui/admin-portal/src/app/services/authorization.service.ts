@@ -15,46 +15,18 @@
  */
 
 import {Injectable} from '@angular/core';
-import {JwtResponse} from "../model/jwt-response";
-import {Observable, throwError} from "rxjs";
-import {catchError, map} from "rxjs/operators";
-import {environment} from "../../environments/environment";
-import {Router} from "@angular/router";
-import {HttpClient} from "@angular/common/http";
-import {LocalStorageService} from "angular-2-local-storage";
-import {Role, User} from "../model/user";
-import {LoginRequest} from "../model/base";
-import {EncodedQrImage} from "../util/qr";
+import {Role} from "../model/user";
 import {Candidate, ShortCandidate} from "../model/candidate";
 import {Job, ShortJob} from "../model/job";
 import {CandidateOpportunity} from "../model/candidate-opportunity";
-import {RxStompConfig} from "@stomp/rx-stomp";
+import {AuthenticationService} from "./authentication.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthorizationService {
 
-  apiUrl = environment.apiUrl + '/auth';
-
-  private loggedInUser: User;
-
-  constructor(private router: Router,
-              private http: HttpClient,
-              private localStorageService: LocalStorageService ) {
-  }
-
-  login(credentials: LoginRequest) {
-    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
-      map((response: JwtResponse) => {
-        this.storeCredentials(response);
-      }),
-      catchError(e => {
-          console.log('error', e);
-          return throwError(e);
-        }
-      )
-    );
+  constructor(private authenticationService: AuthenticationService) {
   }
 
   //Can be used when we switch to user providing Role enum
@@ -79,7 +51,7 @@ export class AuthService {
   }
 
   canAssignPartner(): boolean {
-    const loggedInUser = this.getLoggedInUser();
+    const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? false : Role[loggedInUser.role] === Role.systemadmin;
   }
 
@@ -141,7 +113,7 @@ export class AuthService {
 
   isCandidateOurs(candidate: ShortCandidate): boolean {
     let ours = false;
-    const loggedInUser = this.getLoggedInUser()
+    const loggedInUser = this.authenticationService.getLoggedInUser()
     //Must be logged in
     if (loggedInUser) {
       ours = candidate.user?.partner?.id === loggedInUser.partner.id;
@@ -157,7 +129,7 @@ export class AuthService {
     //todo Eventually when we have proper recruiter partner support, the code will look like this:
     /*
       let ours = false;
-      const loggedInUser = this.getLoggedInUser()
+      const loggedInUser = this.authenticationService.getLoggedInUser()
       //Must be logged in
       if (loggedInUser) {
         ours = job.recruiterPartner?.id === loggedInUser.partner.id;
@@ -173,7 +145,7 @@ export class AuthService {
    */
   canViewPrivateCandidateInfo(candidate: Candidate): boolean {
     let visible = false;
-    const loggedInUser = this.getLoggedInUser()
+    const loggedInUser = this.authenticationService.getLoggedInUser()
     //Must be logged in
     if (loggedInUser) {
 
@@ -203,7 +175,7 @@ export class AuthService {
    */
   private commonSeniorPartnerAuth(): boolean {
     let ok = false;
-    const loggedInUser = this.getLoggedInUser()
+    const loggedInUser = this.authenticationService.getLoggedInUser()
     //Must be logged in
     if (loggedInUser) {
       if (this.isDefaultSourcePartner()) {
@@ -257,11 +229,11 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.getLoggedInUser() != null;
+    return this.authenticationService.getLoggedInUser() != null;
   }
 
   isReadOnly(): boolean {
-    const loggedInUser = this.getLoggedInUser();
+    const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? true : loggedInUser.readOnly;
   }
 
@@ -278,92 +250,27 @@ export class AuthService {
   }
 
   getLoggedInRole(): Role {
-    const loggedInUser = this.getLoggedInUser();
+    const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? Role.limited : Role[loggedInUser.role];
   }
 
-  getLoggedInUser(): User {
-    if (!this.loggedInUser) {
-      this.loggedInUser = this.localStorageService.get('user');
-    }
-
-    if (!AuthService.isValidUserInfo(this.loggedInUser)) {
-      console.log("invalid user");
-      this.logout();
-      this.router.navigate(['login']);
-      this.loggedInUser = null;
-    }
-
-    return this.loggedInUser;
-  }
-
   isJobCreator(): boolean {
-    const loggedInUser = this.getLoggedInUser();
+    const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? false : loggedInUser.partner?.jobCreator;
   }
 
   isSourcePartner(): boolean {
-    const loggedInUser = this.getLoggedInUser();
+    const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? false : loggedInUser.partner?.sourcePartner;
   }
 
-  setNewLoggedInUser(new_user) {
-    this.localStorageService.set('user', new_user);
-  }
-
   /**
-   * Check that user - possibly retrieved from cache - is not junk
-   * @param user User object to check
-   */
-  private static isValidUserInfo(user: User){
-
-    //Null user is OK
-    if (user == null) {
-      return true;
-    }
-
-    //If user exists it should have a role
-    if (user.role) {
-      //It should also have a non null readOnly indicator (as an example of another field that
-      //should be there and not null
-      return user.readOnly != null;
-    } else {
-      return false;
-    }
-  }
-
-  getToken(): string {
-      //Automatically reconfigure RxStomp with the current token
-    //todo Following comment does not make sense.
-      // like this.rxStomp.configure(this.getRxStompConfig()); - but currently is recursive
-      return this.localStorageService.get('access-token');
-  }
-
-  logout() {
-    this.http.post(`${this.apiUrl}/logout`, null);
-    this.localStorageService.remove('user');
-    this.localStorageService.remove('access-token');
-  }
-
-  mfaSetup(): Observable<EncodedQrImage> {
-    return this.http.post<EncodedQrImage>(`${this.apiUrl}/mfa-setup`, null);
-  }
-
-  private storeCredentials(response: JwtResponse) {
-    this.localStorageService.remove('access-token');
-    this.localStorageService.remove('user');
-    this.localStorageService.set('access-token', response.accessToken);
-    this.localStorageService.set('user', response.user);
-    this.loggedInUser = response.user;
-  }
-
-  /**
-   * True if the currently logged in user is permitted to edit the given candidate's details
+   * True if the currently logged-in user is permitted to edit the given candidate's details
    * @param candidate Candidate to be checked
    */
   isEditableCandidate(candidate: Candidate): boolean {
     let editable = false;
-    const loggedInUser = this.getLoggedInUser()
+    const loggedInUser = this.authenticationService.getLoggedInUser()
     //Must be logged in
     if (loggedInUser) {
       //Cannot be a read only user
@@ -390,7 +297,7 @@ export class AuthService {
    */
   isDefaultJobCreator(): boolean {
     let defaultJobCreator = false;
-    const loggedInUser = this.getLoggedInUser();
+    const loggedInUser = this.authenticationService.getLoggedInUser();
     if (loggedInUser) {
       defaultJobCreator = loggedInUser.partner?.defaultJobCreator;
     }
@@ -402,7 +309,7 @@ export class AuthService {
    */
   isDefaultSourcePartner(): boolean {
     let defaultSourcePartner = false;
-    const loggedInUser = this.getLoggedInUser();
+    const loggedInUser = this.authenticationService.getLoggedInUser();
     if (loggedInUser) {
       defaultSourcePartner = loggedInUser.partner?.defaultSourcePartner;
     }
@@ -422,7 +329,7 @@ export class AuthService {
     //Source partners own candidate opportunities for the candidates they manage
     let result: boolean = false;
 
-    const loggedInUser = this.getLoggedInUser();
+    const loggedInUser = this.authenticationService.getLoggedInUser();
     if (loggedInUser) {
       result = this.isDefaultSourcePartner() || this.isSourcePartner();
     }
@@ -445,7 +352,7 @@ export class AuthService {
       //todo Temporary commented out
       //Current logic is that only a system admin or the contact user, defaulting to the creating user
       //of the job, can change the stage.
-      // const loggedInUser = this.getLoggedInUser();
+      // const loggedInUser = this.authenticationService.getLoggedInUser();
       // if (loggedInUser) {
       //   if (this.isSystemAdminOnly()) {
       //     result = true;

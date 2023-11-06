@@ -21,7 +21,7 @@ import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
 import {CandidateService} from '../../../services/candidate.service';
 import {Router} from '@angular/router';
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-name-num-search',
@@ -41,7 +41,7 @@ export class CandidateNameNumSearchComponent implements OnInit {
   loggedInUser: User;
   placeholder: string;
 
-  constructor(private authService: AuthService,
+  constructor(private authService: AuthorizationService,
     private candidateService: CandidateService,
               private router: Router) { }
 
