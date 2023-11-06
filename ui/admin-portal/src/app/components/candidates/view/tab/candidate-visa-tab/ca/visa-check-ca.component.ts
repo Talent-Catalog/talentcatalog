@@ -15,7 +15,12 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from '../../../../../../model/candidate';
+import {
+  Candidate,
+  CandidateIntakeData,
+  CandidateVisa,
+  CandidateVisaJobCheck
+} from '../../../../../../model/candidate';
 
 @Component({
   selector: 'app-visa-check-ca',

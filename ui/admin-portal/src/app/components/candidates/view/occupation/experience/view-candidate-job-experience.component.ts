@@ -26,6 +26,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {SearchResults} from '../../../../../model/search-results';
 import {EditCandidateOccupationComponent} from '../edit/edit-candidate-occupation.component';
 import {ConfirmationComponent} from "../../../../util/confirm/confirmation.component";
+import {isHtml} from "../../../../../util/string";
 
 @Component({
   selector: 'app-view-candidate-job-experience',
@@ -192,8 +193,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
       .catch(() => { /* Isn't possible */ });
   }
 
-  isHtml(text) {
-    // Very simple test for HTML tags - isn't not foolproof but probably good enough
-    return /<\/?[a-z][\s\S]*>/i.test(text);
+  get isHtml() {
+    return isHtml;
   }
 }
