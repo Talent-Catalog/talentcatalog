@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Router} from "@angular/router";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {JobService} from "../../../services/job.service";
 import {JobChat} from "../../../model/chat";
 
@@ -19,7 +19,7 @@ export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit
 
   constructor(
     private router: Router,
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private jobService: JobService
   ) {
     super(6);

@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
-import {AuthService} from "../../services/auth.service";
+import {AuthorizationService} from "../../services/authorization.service";
 import {CandidateService} from "../../services/candidate.service";
 import {Candidate} from "../../model/candidate";
 import {Observable, of} from "rxjs";
@@ -47,7 +47,7 @@ export class HeaderComponent implements OnInit {
 
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private authenticationService: AuthenticationService,
               private brandingService: BrandingService,
               private candidateService: CandidateService,

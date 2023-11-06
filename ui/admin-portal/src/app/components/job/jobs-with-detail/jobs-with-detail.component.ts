@@ -4,7 +4,6 @@ import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Router} from "@angular/router";
 import {isStarredByMe, SearchOppsBy} from "../../../model/base";
 import {JobService} from "../../../services/job.service";
-import {AuthService} from "../../../services/auth.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 
 /**

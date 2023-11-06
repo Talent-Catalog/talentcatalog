@@ -28,7 +28,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditIndustryComponent} from "./edit/edit-industry.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-search-industries',
@@ -50,7 +50,7 @@ export class SearchIndustriesComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private industryService: IndustryService,
               private modalService: NgbModal,
-              private authService: AuthService) {
+              private authService: AuthorizationService) {
   }
 
   ngOnInit() {

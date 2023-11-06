@@ -65,9 +65,6 @@ export class AppComponent implements OnInit {
     //Hook into router events in order to keep browser title updated based
     //on titles associated with various routes defined in app-routing.module.ts.
 
-    //Default to the currently set title.
-    const appTitle = this.titleService.getTitle();
-
     //Hook into router events
     this.router.events.pipe(
       //Just interested in NavigationEnd events
@@ -75,6 +72,9 @@ export class AppComponent implements OnInit {
 
       //Pass on the title string associated with the activated route.
       map(() => {
+          //Default to the currently set title.
+          const appTitle = this.titleService.getTitle();
+
           //Activated route is the path down through the Routes structure defined
           //in app-routing.module.ts
           let child = this.activatedRoute.firstChild;

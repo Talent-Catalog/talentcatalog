@@ -39,7 +39,7 @@ import {
 } from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {LocalStorageService} from 'angular-2-local-storage';
-import {AuthService} from '../../../../services/auth.service';
+import {AuthorizationService} from '../../../../services/authorization.service';
 import {User} from '../../../../model/user';
 import {
   CandidateSource,
@@ -101,7 +101,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
-              private authService: AuthService,
+              private authService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private modalService: NgbModal,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,

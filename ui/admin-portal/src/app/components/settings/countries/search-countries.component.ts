@@ -28,7 +28,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditCountryComponent} from "./edit/edit-country.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-search-countries',
@@ -50,7 +50,7 @@ export class SearchCountriesComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private countryService: CountryService,
               private modalService: NgbModal,
-              private authService: AuthService) {
+              private authService: AuthorizationService) {
   }
 
   ngOnInit() {

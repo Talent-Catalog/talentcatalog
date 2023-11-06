@@ -1,7 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {isCandidateOpportunity} from "../../../model/candidate-opportunity";
-import {getOpportunityStageName, Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
-import {AuthService} from "../../../services/auth.service";
+import {
+  getOpportunityStageName,
+  Opportunity,
+  OpportunityProgressParams
+} from "../../../model/opportunity";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {isJob} from "../../../model/job";
 import {EditOppComponent} from "../../opportunity/edit-opp/edit-opp.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -22,7 +26,7 @@ export class OpportunityStageNextStepComponent implements OnInit {
   updating: boolean;
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private candidateOpportunityService: CandidateOpportunityService,
     private jobService: JobService,
     private modalService: NgbModal,

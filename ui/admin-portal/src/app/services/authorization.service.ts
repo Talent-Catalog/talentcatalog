@@ -24,7 +24,7 @@ import {AuthenticationService} from "./authentication.service";
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthorizationService {
 
   constructor(private authenticationService: AuthenticationService) {
   }

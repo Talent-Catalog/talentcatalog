@@ -22,7 +22,7 @@ import {LanguageService} from "../../../services/language.service";
 import {CreateLanguageComponent} from "./create/create-language.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {User} from "../../../model/user";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-search-languages',
@@ -44,7 +44,7 @@ export class SearchLanguagesComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private languageService: LanguageService,
               private modalService: NgbModal,
-              private authService: AuthService) {
+              private authService: AuthorizationService) {
   }
 
   ngOnInit() {

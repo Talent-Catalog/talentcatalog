@@ -13,7 +13,6 @@ import {SearchUserRequest} from "../../../../../model/base";
 import {
   HasNameSelectorComponent
 } from "../../../../util/has-name-selector/has-name-selector.component";
-import {AuthService} from "../../../../../services/auth.service";
 import {AuthenticationService} from "../../../../../services/authentication.service";
 
 /*

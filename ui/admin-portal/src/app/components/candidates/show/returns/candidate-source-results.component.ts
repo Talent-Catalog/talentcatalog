@@ -42,7 +42,7 @@ import {
   CandidateSourceCandidateService
 } from '../../../../services/candidate-source-candidate.service';
 import {SavedListGetRequest} from '../../../../model/saved-list';
-import {AuthService} from '../../../../services/auth.service';
+import {AuthorizationService} from '../../../../services/authorization.service';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {CandidateFieldInfo} from "../../../../model/candidate-field-info";
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
@@ -74,7 +74,7 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges {
   timestamp: number;
 
 constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private candidateService: CandidateService,
     private candidateFieldService: CandidateFieldService,
     private candidateSourceService: CandidateSourceService,

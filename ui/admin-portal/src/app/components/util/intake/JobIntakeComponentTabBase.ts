@@ -18,7 +18,6 @@ import {Directive, Input, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {User} from '../../../model/user';
 import {Job} from "../../../model/job";
-import {AuthService} from "../../../services/auth.service";
 import {JobOppIntake} from "../../../model/job-opp-intake";
 import {JobService} from "../../../services/job.service";
 import {AuthenticationService} from "../../../services/authentication.service";

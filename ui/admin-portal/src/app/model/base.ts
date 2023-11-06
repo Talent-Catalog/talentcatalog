@@ -15,7 +15,6 @@
  */
 
 import {Role, User} from './user';
-import {AuthService} from '../services/auth.service';
 import {ExportColumn} from "./saved-list";
 import {OpportunityIds} from "./opportunity";
 import {AuthenticationService} from "../services/authentication.service";

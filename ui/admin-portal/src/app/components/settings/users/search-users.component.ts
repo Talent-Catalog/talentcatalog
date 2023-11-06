@@ -26,7 +26,7 @@ import {UserService} from "../../../services/user.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CreateUpdateUserComponent} from "./create-update-user/create-update-user.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
-import {AuthService} from '../../../services/auth.service';
+import {AuthorizationService} from '../../../services/authorization.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {SearchUserRequest} from "../../../model/base";
@@ -53,7 +53,7 @@ export class SearchUsersComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private userService: UserService,
               private modalService: NgbModal,
-              private authService: AuthService,
+              private authService: AuthorizationService,
               private authenticationService: AuthenticationService
               ) { }
 

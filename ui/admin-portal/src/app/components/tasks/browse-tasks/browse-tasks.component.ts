@@ -5,7 +5,6 @@ import {SearchTaskRequest} from "../../../model/base";
 import {User} from "../../../model/user";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Router} from "@angular/router";
-import {AuthService} from "../../../services/auth.service";
 import {indexOfHasId} from "../../../model/saved-search";
 import {TaskService} from "../../../services/task.service";
 import {Task} from "../../../model/task";

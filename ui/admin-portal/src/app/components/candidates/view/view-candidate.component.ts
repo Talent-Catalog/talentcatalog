@@ -26,7 +26,7 @@ import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
-import {AuthService} from '../../../services/auth.service';
+import {AuthorizationService} from '../../../services/authorization.service';
 import {User} from '../../../model/user';
 import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
@@ -82,7 +82,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
               private router: Router,
               private modalService: NgbModal,
               private titleService: Title,
-              private authService: AuthService,
+              private authService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private candidateFieldService: CandidateFieldService,
               private fb: FormBuilder) {

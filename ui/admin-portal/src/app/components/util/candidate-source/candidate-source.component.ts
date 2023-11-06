@@ -32,7 +32,7 @@ import {
   SavedSearchRef
 } from '../../../model/saved-search';
 import {SavedSearchService} from '../../../services/saved-search.service';
-import {AuthService} from '../../../services/auth.service';
+import {AuthorizationService} from '../../../services/authorization.service';
 import {User} from '../../../model/user';
 import {CandidateSource, canEditSource, isMine, isStarredByMe} from '../../../model/base';
 import {Router} from '@angular/router';
@@ -102,7 +102,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     private location: Location,
     private modalService: NgbModal,
     private router: Router,
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private authenticationService: AuthenticationService
   ) {
   }

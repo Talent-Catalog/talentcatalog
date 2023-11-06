@@ -70,7 +70,7 @@ import {
 import {canEditSource, SearchPartnerRequest} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
-import {AuthService} from '../../../services/auth.service';
+import {AuthorizationService} from '../../../services/authorization.service';
 import {enumKeysToEnumOptions, EnumOption, enumOptions, isEnumOption} from "../../../util/enum";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {SurveyTypeService} from "../../../services/survey-type.service";
@@ -150,7 +150,7 @@ export class DefineSearchComponent implements OnInit, OnChanges {
               private route: ActivatedRoute,
               private router: Router,
               private savedListService: SavedListService,
-              private authService: AuthService,
+              private authService: AuthorizationService,
               private authenticationService: AuthenticationService,
               ) {
     /* SET UP FORM */

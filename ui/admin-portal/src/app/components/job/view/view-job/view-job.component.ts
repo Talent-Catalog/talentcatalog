@@ -11,7 +11,7 @@ import {getJobExternalHref, isJob, Job} from "../../../../model/job";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
-import {AuthService} from "../../../../services/auth.service";
+import {AuthorizationService} from "../../../../services/authorization.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../../services/salesforce.service";
 import {JobService} from "../../../../services/job.service";
@@ -72,7 +72,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   private lastTabKey: string = 'JobLastTab';
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private authenticationService: AuthenticationService,
     private candidateSourceService: CandidateSourceCandidateService,
     private localStorageService: LocalStorageService,

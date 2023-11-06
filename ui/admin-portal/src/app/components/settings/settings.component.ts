@@ -16,7 +16,7 @@
 
 import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {User} from "../../model/user";
-import {AuthService} from "../../services/auth.service";
+import {AuthorizationService} from "../../services/authorization.service";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthenticationService} from "../../services/authentication.service";
@@ -38,7 +38,7 @@ export class SettingsComponent implements OnInit, AfterViewChecked {
   nav: NgbNav;
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private authenticationService: AuthenticationService,
     private localStorageService: LocalStorageService
   ) { }

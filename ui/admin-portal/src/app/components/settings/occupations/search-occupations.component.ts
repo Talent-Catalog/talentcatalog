@@ -27,7 +27,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditOccupationComponent} from "./edit/edit-occupation.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
 @Component({
@@ -51,7 +51,7 @@ export class SearchOccupationsComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private occupationService: OccupationService,
               private modalService: NgbModal,
-              private authService: AuthService) {
+              private authService: AuthorizationService) {
   }
 
   ngOnInit() {

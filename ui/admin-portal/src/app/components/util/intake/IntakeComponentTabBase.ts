@@ -34,7 +34,6 @@ import {
   CreateCandidateNoteRequest
 } from '../../../services/candidate-note.service';
 import {User} from '../../../model/user';
-import {AuthService} from '../../../services/auth.service';
 import {dateString} from '../../../util/date-adapter/date-adapter';
 import {AuthenticationService} from "../../../services/authentication.service";
 

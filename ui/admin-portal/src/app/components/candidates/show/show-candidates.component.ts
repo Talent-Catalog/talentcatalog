@@ -73,7 +73,7 @@ import {
 } from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {User} from '../../../model/user';
-import {AuthService} from '../../../services/auth.service';
+import {AuthorizationService} from '../../../services/authorization.service';
 import {UserService} from '../../../services/user.service';
 import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
 import {
@@ -213,7 +213,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private router: Router,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateFieldService: CandidateFieldService,
-              private authService: AuthService,
+              private authService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService,
