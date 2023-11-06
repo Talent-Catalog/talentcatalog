@@ -18,11 +18,9 @@ package org.tctalent.server.api.admin;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -30,7 +28,6 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.candidate.HasSetOfSavedListsImpl;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -55,22 +52,12 @@ import org.tctalent.server.util.dto.DtoBuilder;
  */
 @RestController()
 @RequestMapping("/api/admin/candidate-saved-list")
+@RequiredArgsConstructor
 public class CandidateSavedListAdminApi implements IManyToManyApi<SearchSavedListRequest, HasSetOfSavedListsImpl> {
 
-    private final CandidateService candidateService;
     private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
     private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
-
-    @Autowired
-    public CandidateSavedListAdminApi(
-        CandidateService candidateService,
-        CandidateSavedListService candidateSavedListService,
-        SavedListService savedListService) {
-        this.candidateService = candidateService;
-        this.candidateSavedListService = candidateSavedListService;
-        this.savedListService = savedListService;
-    }
 
     @Override
     public void replace(long candidateId, @Valid HasSetOfSavedListsImpl request)

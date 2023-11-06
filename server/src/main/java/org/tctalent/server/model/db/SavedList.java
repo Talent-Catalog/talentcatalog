@@ -31,8 +31,9 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.service.db.CandidateSavedListService;
@@ -59,8 +60,10 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 @Entity
 @Table(name = "saved_list")
 @SequenceGenerator(name = "seq_gen", sequenceName = "saved_list_id_seq", allocationSize = 1)
+@Getter
+@Setter
+@Slf4j
 public class SavedList extends AbstractCandidateSource {
-    private static final Logger log = LoggerFactory.getLogger(SavedList.class);
 
     /**
      * Tasks associated with this list.
@@ -141,6 +144,7 @@ public class SavedList extends AbstractCandidateSource {
      * item. A link to the job record on Salesforce is in {@link #getSfJobOpp()}.
      * There should only be one list registered to a particular job, as defined by its sfJobOpp.
      */
+    @NonNull
     private Boolean registeredJob = false;
 
     /**
@@ -204,89 +208,12 @@ public class SavedList extends AbstractCandidateSource {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedList", cascade = CascadeType.ALL)
     @OrderBy("index ASC")
-    private List<ExportColumn> exportColumns;
-
     @Nullable
-    public List<ExportColumn> getExportColumns() {
-        return exportColumns;
-    }
+    private List<ExportColumn> exportColumns;
 
     public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
         modifyColumnIndices(exportColumns);
         this.exportColumns = exportColumns;
-    }
-
-    @Nullable
-    public String getFileJdLink() {
-        return fileJdLink;
-    }
-
-    public void setFileJdLink(@Nullable String fileJdLink) {
-        this.fileJdLink = fileJdLink;
-    }
-
-    @Nullable
-    public String getFileJdName() {
-        return fileJdName;
-    }
-
-    public void setFileJdName(@Nullable String fileJdName) {
-        this.fileJdName = fileJdName;
-    }
-
-    @Nullable
-    public String getFileJoiLink() {
-        return fileJoiLink;
-    }
-
-    public void setFileJoiLink(@Nullable String fileJoiLink) {
-        this.fileJoiLink = fileJoiLink;
-    }
-
-    @Nullable
-    public String getFileJoiName() {
-        return fileJoiName;
-    }
-
-    public void setFileJoiName(@Nullable String fileJoiName) {
-        this.fileJoiName = fileJoiName;
-    }
-
-    @Nullable
-    public String getFolderlink() {
-        return folderlink;
-    }
-
-    public void setFolderlink(@Nullable String folderlink) {
-        this.folderlink = folderlink;
-    }
-
-    @Nullable
-    public String getFolderjdlink() {
-        return folderjdlink;
-    }
-
-    public void setFolderjdlink(@Nullable String folderjdlink) {
-        this.folderjdlink = folderjdlink;
-    }
-
-    @Nullable
-    public String getPublishedDocLink() {
-        return publishedDocLink;
-    }
-
-    public void setPublishedDocLink(@Nullable String publishedDocLink) {
-        this.publishedDocLink = publishedDocLink;
-    }
-
-    @Nullable
-    public String getTbbShortName() {return tbbShortName;}
-
-    public void setTbbShortName(@Nullable String tbbShortName) {this.tbbShortName = tbbShortName;}
-
-    @NonNull
-    public Boolean getRegisteredJob() {
-        return registeredJob;
     }
 
     public void setRegisteredJob(Boolean registeredJob) {
@@ -325,32 +252,6 @@ public class SavedList extends AbstractCandidateSource {
         return sfJobOpp == null ? false : sfJobOpp.isClosed();
     }
 
-    @Nullable
-    public SavedSearch getSavedSearch() {
-        return savedSearch;
-    }
-
-    public void setSavedSearch(@Nullable SavedSearch savedSearch) {
-        this.savedSearch = savedSearch;
-    }
-
-    @Nullable
-    public SavedSearch getSavedSearchSource() {
-        return savedSearchSource;
-    }
-
-    public void setSavedSearchSource(@Nullable SavedSearch savedSearchSource) {
-        this.savedSearchSource = savedSearchSource;
-    }
-
-    public Set<CandidateSavedList> getCandidateSavedLists() {
-        return candidateSavedLists;
-    }
-
-    public void setCandidateSavedLists(Set<CandidateSavedList> candidateSavedLists) {
-        this.candidateSavedLists = candidateSavedLists;
-    }
-
     /**
      * Get all candidates in this list.
      * @return Set of candidates in this list (a candidate cannot appear more
@@ -366,20 +267,7 @@ public class SavedList extends AbstractCandidateSource {
     }
 
     @Override
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    @Override
     public Set<SavedList> getUsersCollection(User user) {
         return user.getSharedLists();
-    }
-
-    public Set<TaskImpl> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(Set<TaskImpl> tasks) {
-        this.tasks = tasks;
     }
 }

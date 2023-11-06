@@ -18,7 +18,9 @@ package org.tctalent.server.api.admin;
 
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateCitizenship;
@@ -33,11 +35,16 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
+import org.tctalent.server.model.db.CandidateSkill;
+import org.tctalent.server.model.db.CandidateVisaCheck;
+import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
+import org.tctalent.server.model.db.DocumentStatus;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Exam;
+import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
@@ -45,15 +52,22 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.OtherVisas;
 import org.tctalent.server.model.db.Registration;
 import org.tctalent.server.model.db.ReviewStatus;
+import org.tctalent.server.model.db.RiskLevel;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.TBBEligibilityAssessment;
+import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.request.candidate.PublishedDocColumnProps;
 
 /**
  * @author sadatmalik
@@ -249,7 +263,10 @@ public class AdminApiTestUtil {
     }
 
     static SalesforceJobOpp getSalesforceJobOpp() {
-        return new SalesforceJobOpp();
+        SalesforceJobOpp salesforceJobOpp = new SalesforceJobOpp();
+        salesforceJobOpp.setId(135L);
+        salesforceJobOpp.setSfId("sales-force-job-opp-id");
+        return salesforceJobOpp;
     }
 
     static CandidateReviewStatusItem getCandidateReviewStatusItem() {
@@ -259,5 +276,150 @@ public class AdminApiTestUtil {
         reviewStatusItem.setComment("A review comment");
         reviewStatusItem.setReviewStatus(ReviewStatus.verified);
         return reviewStatusItem;
+    }
+
+    static CandidateVisaCheck getCandidateVisaCheck(boolean completed) {
+        CandidateVisaCheck candidateVisaCheck = new CandidateVisaCheck();
+        candidateVisaCheck.setCandidate(getCandidate());
+        candidateVisaCheck.setCountry((new Country("Australia", Status.active)));
+        if (completed) {
+            candidateVisaCheck.setId(1L);
+            candidateVisaCheck.setProtection(YesNo.Yes);
+            candidateVisaCheck.setProtectionGrounds("These are some protection grounds.");
+            candidateVisaCheck.setEnglishThreshold(YesNo.No);
+            candidateVisaCheck.setEnglishThresholdNotes("These are some english threshold notes.");
+            candidateVisaCheck.setHealthAssessment(YesNo.Yes);
+            candidateVisaCheck.setHealthAssessmentNotes("These are some health assessment notes.");
+            candidateVisaCheck.setCharacterAssessment(YesNo.No);
+            candidateVisaCheck.setCharacterAssessmentNotes( "These are some character assessment notes.");
+            candidateVisaCheck.setSecurityRisk(YesNo.Yes);
+            candidateVisaCheck.setSecurityRiskNotes( "These are some security risk notes.");
+            candidateVisaCheck.setOverallRisk(RiskLevel.Medium);
+            candidateVisaCheck.setOverallRiskNotes( "These are some overall risk notes.");
+            candidateVisaCheck.setValidTravelDocs(DocumentStatus.Valid);
+            candidateVisaCheck.setValidTravelDocsNotes( "These are some travel docs notes.");
+            candidateVisaCheck.setPathwayAssessment(YesNoUnsure.No);
+            candidateVisaCheck.setPathwayAssessmentNotes( "These are some pathway assessment notes.");
+            candidateVisaCheck.setAssessmentNotes( "These are some assessment notes.");
+        }
+        return candidateVisaCheck;
+    }
+
+    static CandidateVisaJobCheck getCandidateVisaJobCheck(boolean completed) {
+        CandidateVisaJobCheck candidateVisaJobCheck = new CandidateVisaJobCheck();
+        candidateVisaJobCheck.setCandidateVisaCheck(getCandidateVisaCheck(true));
+
+        SalesforceJobOpp jobOpp = new SalesforceJobOpp();
+        jobOpp.setId(99L);
+        candidateVisaJobCheck.setJobOpp(jobOpp);
+
+        if (completed) {
+            candidateVisaJobCheck.setId(1L);
+            candidateVisaJobCheck.setInterest(YesNo.Yes);
+            candidateVisaJobCheck.setInterestNotes("These are some interest notes.");
+            candidateVisaJobCheck.setRegional(YesNo.No);
+            candidateVisaJobCheck.setSalaryTsmit(YesNo.Yes);
+            candidateVisaJobCheck.setQualification(YesNo.Yes);
+            candidateVisaJobCheck.setEligible_494(YesNo.No);
+            candidateVisaJobCheck.setEligible_494_Notes("These are some eligible for visa 494 notes.");
+            candidateVisaJobCheck.setEligible_186(YesNo.Yes);
+            candidateVisaJobCheck.setEligible_186_Notes("These are some eligible for visa 186 notes.");
+            candidateVisaJobCheck.setEligibleOther(OtherVisas.SpecialHum);
+            candidateVisaJobCheck.setEligibleOtherNotes("These are some eligible for other visa notes.");
+            candidateVisaJobCheck.setPutForward(VisaEligibility.DiscussFurther);
+            candidateVisaJobCheck.setTbbEligibility(TBBEligibilityAssessment.Discuss);
+            candidateVisaJobCheck.setNotes("These are some notes.");
+            candidateVisaJobCheck.setOccupation((new Occupation("Accountant", Status.active)));
+            candidateVisaJobCheck.setOccupationNotes("These are some occupation notes.");
+            candidateVisaJobCheck.setQualificationNotes("These are some qualification notes.");
+            candidateVisaJobCheck.setRelevantWorkExp("These are some relevant work experience notes.");
+            candidateVisaJobCheck.setAgeRequirement("There are some age requirements.");
+            candidateVisaJobCheck.setPreferredPathways("These are some preferred pathways.");
+            candidateVisaJobCheck.setIneligiblePathways("These are some ineligible pathways.");
+            candidateVisaJobCheck.setEligiblePathways("These are some eligible pathways.");
+            candidateVisaJobCheck.setOccupationCategory("This is the occupation category.");
+            candidateVisaJobCheck.setOccupationSubCategory("This is the occupation subcategory.");
+            candidateVisaJobCheck.setEnglishThreshold(YesNo.Yes);
+            candidateVisaJobCheck.setEnglishThresholdNotes("These are some english threshold notes.");
+        }
+        return candidateVisaJobCheck;
+    }
+
+    static CandidateSkill getCandidateSkill() {
+        CandidateSkill candidateSkill = new CandidateSkill();
+        candidateSkill.setCandidate(getCandidate());
+        candidateSkill.setId(1L);
+        candidateSkill.setSkill("Adobe Photoshop");
+        candidateSkill.setTimePeriod("3-5 years");
+        return candidateSkill;
+    }
+
+    static PublishedDocColumnProps getPublishedDocColumnProps() {
+        PublishedDocColumnProps publishedDocColumnProps = new PublishedDocColumnProps();
+        publishedDocColumnProps.setHeader("non default column header");
+        publishedDocColumnProps.setConstant("non default constant column value");
+        return publishedDocColumnProps;
+    }
+
+    static ExportColumn getExportColumn() {
+        ExportColumn exportColumn = new ExportColumn();
+        exportColumn.setKey("key");
+        exportColumn.setProperties(getPublishedDocColumnProps());
+        return exportColumn;
+    }
+
+    static SavedSearch getSavedSearch() {
+        SavedSearch savedSearch = new SavedSearch();
+        savedSearch.setId(123L);
+        return savedSearch;
+    }
+
+    static TaskImpl getTask() {
+        TaskImpl task = new TaskImpl();
+        task.setId(148L);
+        task.setName("a test task");
+        task.setDaysToComplete(7);
+        task.setDescription("a test task description");
+        task.setDisplayName("task display name");
+        task.setOptional(false);
+        task.setHelpLink("http://help.link");
+        return task;
+    }
+
+    static SavedList getSavedList() {
+        SavedList savedList = new SavedList();
+        savedList.setId(1L);
+        savedList.setDescription("Saved list description");
+        savedList.setDisplayedFieldsLong(List.of("user.firstName", "user.lastName"));
+        savedList.setExportColumns(List.of(getExportColumn()));
+        savedList.setStatus(Status.active);
+        savedList.setName("Saved list name");
+        savedList.setFixed(true);
+        savedList.setGlobal(false);
+        savedList.setSavedSearchSource(getSavedSearch());
+        savedList.setSfJobOpp(getSalesforceJobOpp());
+        savedList.setFileJdLink("http://file.jd.link");
+        savedList.setFileJdName("JobDescriptionFileName");
+        savedList.setFileJoiLink("http://file.joi.link");
+        savedList.setFileJoiName("JoiFileName");
+        savedList.setFolderlink("http://folder.link");
+        savedList.setFolderjdlink("http://folder.jd.link");
+        savedList.setPublishedDocLink("http://published.doc.link");
+        savedList.setRegisteredJob(true);
+        savedList.setTbbShortName("Saved list Tbb short name");
+        savedList.setCreatedBy(caller);
+        savedList.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        savedList.setUpdatedBy(caller);
+        savedList.setUpdatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        savedList.setUsers(Set.of(caller));
+        savedList.setTasks(Set.of(getTask()));
+
+        return savedList;
+    }
+
+    static List<SavedList> getSavedLists() {
+        return List.of(
+            getSavedList()
+        );
     }
 }

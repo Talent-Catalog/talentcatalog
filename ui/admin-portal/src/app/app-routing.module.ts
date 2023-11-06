@@ -41,6 +41,7 @@ import {
 import {
   ViewCandidateOppFromUrlComponent
 } from "./components/candidate-opp/view-candidate-opp-from-url/view-candidate-opp-from-url.component";
+import {ManageChatsComponent} from "./components/chat/manage-chats/manage-chats.component";
 
 const routes: Routes = [
   {
@@ -163,6 +164,17 @@ const routes: Routes = [
             path: ':source/:id',
             component: InfographicComponent,
             data: {title: 'TC Stats'}
+          },
+        ]
+      },
+      {
+        path: 'chat',
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: ManageChatsComponent,
+            data: {title: 'Chat'}
           },
         ]
       },
