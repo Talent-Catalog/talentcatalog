@@ -17,36 +17,24 @@
 package org.tctalent.server.request.candidate;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class CreateCandidateRequest extends BaseCandidateContactRequest {
 
     @NotBlank
     private String firstName;
+
     @NotBlank
     private String lastName;
     private String username;
 
-    public String getFirstName() {
-        return firstName;
-    }
+    @NotNull
+    private Boolean contactConsentRegistration;
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    @NotNull
+    private Boolean contactConsentPartners;
 }

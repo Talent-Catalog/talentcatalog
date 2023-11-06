@@ -16,6 +16,7 @@
 
 package org.tctalent.server.request.candidate;
 
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.HasTcQueryParameters;
@@ -40,5 +41,13 @@ public class RegisterCandidateRequest extends BaseCandidateContactRequest
     private String utmMedium;
     private String utmSource;
     private String utmTerm;
+
+    /**
+     * Email consent fields - both not null as should be true/false from the front end checkbox.
+     */
+    @NotNull
+    private Boolean contactConsentRegistration;
+    @NotNull
+    private Boolean contactConsentPartners;
 
 }

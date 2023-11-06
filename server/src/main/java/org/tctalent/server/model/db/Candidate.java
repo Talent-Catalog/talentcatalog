@@ -39,6 +39,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.annotations.Formula;
@@ -704,6 +705,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private String mediaWillingness;
+
+    @NotNull
+    private Boolean contactConsentRegistration;
+
+    @NotNull
+    private Boolean contactConsentPartners;
 
     public Candidate() {
     }
@@ -2006,6 +2013,22 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setMediaWillingness(@Nullable String mediaWillingness) {
         this.mediaWillingness = mediaWillingness;
+    }
+
+    public Boolean getContactConsentRegistration() {
+        return contactConsentRegistration;
+    }
+
+    public void setContactConsentRegistration(Boolean emailConsentRegistration) {
+        this.contactConsentRegistration = emailConsentRegistration;
+    }
+
+    public Boolean getContactConsentPartners() {
+        return contactConsentPartners;
+    }
+
+    public void setContactConsentPartners(Boolean emailConsentPartners) {
+        this.contactConsentPartners = emailConsentPartners;
     }
 
     public boolean isSelected() {
