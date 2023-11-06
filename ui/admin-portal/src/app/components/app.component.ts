@@ -18,6 +18,9 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {Title} from "@angular/platform-browser";
 import {filter, map} from "rxjs/operators";
+import {AuthenticationService} from "../services/authentication.service";
+import {User} from "../model/user";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -27,9 +30,11 @@ import {filter, map} from "rxjs/operators";
 export class AppComponent implements OnInit {
 
   showHeader: boolean;
+  private loggedInUserSubcription: Subscription;
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private authenticationService: AuthenticationService,
     private router: Router,
     private titleService: Title
   ) {
@@ -37,16 +42,40 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.router.events.forEach((event) => {
-      if (event instanceof NavigationEnd) {
-        if (event['url'] === '/login' || event['url'].indexOf('/reset-password') !== -1) {
-          this.showHeader = false;
-        } else {
-          this.showHeader = true;
-        }
+    this.authenticationService.loggedInUser$.subscribe(
+      (user) => {
+        this.onChangedLogin(user);
       }
-    });
+    )
 
+    // /*
+    //  * Don't show the standard header if we are logging in or changing password.
+    //  * todo This could be driven off logged in state
+    //  */
+    // this.router.events.forEach((event) => {
+    //   if (event instanceof NavigationEnd) {
+    //     if (event['url'] === '/login' || event['url'].indexOf('/reset-password') !== -1) {
+    //       this.showHeader = false;
+    //     } else {
+    //       this.showHeader = true;
+    //     }
+    //   }
+    // });
+
+    this.subscribeForTitleChanges()
+  }
+
+  private onChangedLogin(user: User) {
+    //Only show standard header if logged on (ie loggedInUser is not null)
+    this.showHeader = user != null
+
+    //If logged out - show login screen
+    if (user == null) {
+      this.router.navigate(['login']);
+    }
+  }
+
+  private subscribeForTitleChanges() {
     //Hook into router events in order to keep browser title updated based
     //on titles associated with various routes defined in app-routing.module.ts.
 
@@ -60,17 +89,17 @@ export class AppComponent implements OnInit {
 
       //Pass on the title string associated with the activated route.
       map(() => {
-        //Activated route is the path down through the Routes structure defined
-        //in app-routing.module.ts
-        let child = this.activatedRoute.firstChild;
-        while (child.firstChild) {
-          child = child.firstChild;
-        }
-        if (child.snapshot.data['title']) {
-          return child.snapshot.data['title'];
-        }
-        //Return current title if we didn't find anything else.
-        return appTitle;
+          //Activated route is the path down through the Routes structure defined
+          //in app-routing.module.ts
+          let child = this.activatedRoute.firstChild;
+          while (child.firstChild) {
+            child = child.firstChild;
+          }
+          if (child.snapshot.data['title']) {
+            return child.snapshot.data['title'];
+          }
+          //Return current title if we didn't find anything else.
+          return appTitle;
         }
       )
     ).subscribe(

@@ -2,12 +2,11 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {LoginRequest} from "../model/base";
 import {catchError, map} from "rxjs/operators";
 import {JwtResponse} from "../model/jwt-response";
-import {Observable, throwError, Subject} from "rxjs";
+import {Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
-import {Router} from "@angular/router";
 import {EncodedQrImage} from "../util/qr";
 
 /**
@@ -28,12 +27,14 @@ export class AuthenticationService implements OnDestroy {
   private loggedInUser: User = null;
 
   /**
-   * Can be used to subscribe to logged in state changes - ie logins and logouts
+   * Can be used to subscribe to logged in state changes - ie logins and logouts.
+   * <p/>
+   * Note that this automatically completes when app is destroyed - which will clean up any
+   * subscriptions - so no need to manage clean of subscriptions in calling code.
    */
   loggedInUser$ = new Subject<User>();
 
   constructor(
-    private router: Router,
     private http: HttpClient,
     private localStorageService: LocalStorageService
   ) {}
@@ -100,7 +101,6 @@ export class AuthenticationService implements OnDestroy {
 
   logout() {
     this.http.post(`${this.apiUrl}/logout`, null);
-    this.router.navigate(['login']);
     this.localStorageService.remove('user');
     this.localStorageService.remove('access-token');
     localStorage.clear();
