@@ -1,11 +1,12 @@
-# This workflow will build a Java project with Gradle when a pull request is made
+# This workflow will build a Java project with Gradle when changes are pushed to any branch
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
 name: tc-build
 
 on:
-  pull_request:
-    branches: [ master ]
+  push:
+    branches:
+      - '*'
 
 jobs:
   build:
