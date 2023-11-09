@@ -85,15 +85,13 @@ Download and install the latest of the following tools.
     - Install Docker image. 
       See [Elastic search website](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
       Just pull the image to install. See later for how to run. 
-      Currently in dev we use version 7.12.0 rather than the latest because it doesn't require security 
-      enabled.
-    > docker pull docker.elastic.co/elasticsearch/elasticsearch:7.12.0
+    > docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.11
 
 - Kibana (for monitoring Elasticsearch)
     - Install Docker image.
       See [Elastic search website](https://www.elastic.co/guide/en/kibana/current/docker.html)
       Just pull the image to install. See later for how to run.
-    > docker pull docker.elastic.co/kibana/kibana:7.12.0
+    > docker pull docker.elastic.co/kibana/kibana:7.17.11
 
 - Git - [see Git website](https://git-scm.com/downloads) - Not really necessary now with Intellij 
  which will prompt you install Git if needed
@@ -129,7 +127,8 @@ Once installed, you can run Terraform from the directory containing your main Te
 file (main.tf).
 In order to populate "secret" configuration values that Terraform needs to set up as
 environment variables for the TC software, you need to copy a special file `terraform.tfvars`
-to that directory before running terraform. Contact TBB for a copy of that file.
+to that directory before running terraform. Contact support@talentcatalog.net for a copy of that 
+file.
 
 Then you can run `init` (only need to do this once), and then `plan` or `apply`, as needed.
 
@@ -146,23 +145,23 @@ Then you can run `init` (only need to do this once), and then `plan` or `apply`,
    
 Now you will see the command line prompt =#
 
-    CREATE DATABASE tbbtalent;
-    CREATE USER tbbtalent WITH SUPERUSER PASSWORD 'tbbtalent';
+    CREATE DATABASE tctalent;
+    CREATE USER tctalent WITH SUPERUSER PASSWORD 'tctalent';
     \q
 
 Ask another developer for a recent `pg_dump` of their test database - 
 matching the latest version of the code.
     
-    pg_dump --file=path/to/file.sql --create --username=tbbtalent --host=localhost --port=5432
+    pg_dump --file=path/to/file.sql --create --username=tctalent --host=localhost --port=5432
 
 
 Use `psql` to import that dump file into your newly created database.
 
-    psql -h localhost -d tbbtalent -U tbbtalent -f path/to/file.sql
+    psql -h localhost -d tctalent -U tctalent -f path/to/file.sql
 
 ### Download and edit the code ###
 
-- Clone [the repository](https://github.com/talentbeyondboundaries/tbbtalentv2.git) to your local system
+- Clone [the repository](https://github.com/Talent-Catalog/talentcatalog.git) to your local system
 - Open the root folder in IntelliJ IDEA (it should auto detect gradle and self-configure)
 
 ### Run Elasticsearch ###
@@ -171,7 +170,8 @@ Can run from Docker desktop for Mac, or (replacing appropriate version number)..
 
 > docker rm elasticsearch
 
-> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.12.0
+> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" 
+docker.elastic.co/elasticsearch/elasticsearch:7.17.11
 
 Elasticsearch will run listening on port 9200. 
 You can verify this by going to [localhost:9200](http://localhost:9200) in your browser
@@ -182,7 +182,7 @@ Can run from Docker desktop for Mac, or (replacing appropriate version number)..
 
 > docker rm kibana
 
-> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.12.0
+> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.17.11
 
 Kibana runs listening on port 5601. 
 You can verify this by going to [localhost:5601](http://localhost:5601) in your browser 
@@ -192,18 +192,18 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
 - Some secret information such as passwords and private keys are set in 
   environment variables - including programmatic access to Talent Catalog's Amazon AWS, 
   Google and Salesforce accounts. If these environment variables are not set
-  the application will fail at start up. Contact TBB if you need access to these
-  "secrets". On development computers they can be stored in a tbb_secrets.txt file which you can 
+  the application will fail at start up. Contact Talent Catalog if you need access to these
+  "secrets". On development computers they can be stored in a tc_secrets.txt file which you can 
   hook into your computer's start up to set the relevant environment variables. 
-  For example add "source ~/tbb_secrets.txt" to .bash_profile or .zshenv
+  For example add "source ~/tc_secrets.txt" to .bash_profile or .zshenv
   depending on whether you are running bash or zsh.
 
-- Create a new Run Profile for `org.tbbtalent.server.TbbTalentApplication`. 
+- Create a new Run Profile for `org.tctalent.server.TcTalentApplication`. 
   In the Environment Variables section of Intellij, check the 
   "Include system environment variables" checkbox.
 - Run the new profile, you should see something similar to this in the logs: 
 ```
-Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
+Started TcTalentApplication in 2.217 seconds (JVM running for 2.99)
 ```
 - your server will be running on port 8080 (default for Spring Boot) 
 (can be overridden by setting server.port in application.yml, or Intellij Run 
@@ -213,12 +213,13 @@ Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
 
 ### Run the Candidate Portal ###
 
-The "Candidate Portal" is an Angular Module and can be found in the directory `tbbtalentv2\ui\candidate-portal`.
+The "Candidate Portal" is an Angular Module and can be found in the directory 
+`talentcatalog\ui\candidate-portal`.
 
-Before running, make sure all the libraries have been downloaded locally by running `npm install` from the root 
-directory of the module (i.e. `tbbtalentv2\ui\candidate-portal`):
+Before running, make sure all the libraries have been downloaded locally by running `npm install` 
+from the root directory of the module (i.e. `talentcatalog\ui\candidate-portal`):
 
-> cd tbbtalentv2\ui\candidate-portal
+> cd talentcatalog\ui\candidate-portal
 >
 > npm install
 
@@ -257,7 +258,7 @@ into the server and serve through Apache Tomcat._
 ### Run the Public Portal ###
 
 
-The "Public Portal" is an Angular Module and can be found in the directory `tbbtalentv2\ui\public-portal`.
+The "Public Portal" is an Angular Module and can be found in the directory `talentcatalog\ui\public-portal`.
 
 As for the "Candidate Portal", make sure all libraries are installed locally.
 
@@ -288,7 +289,8 @@ into the server and serve through Apache Tomcat._
 ### Run the Admin Portal ###
 
 
-The "Admin Portal" is an Angular Module and can be found in the directory `tbbtalentv2\ui\admin-portal`.
+The "Admin Portal" is an Angular Module and can be found in the directory 
+`talentcatalog\ui\admin-portal`.
 
 As for the "Candidate Portal", make sure all libraries are installed locally.
 
@@ -319,7 +321,8 @@ into the server and serve through Apache Tomcat._
 
 - On startup, the server automatically creates a default user with username `SystemAdmin` 
 and password `password` that can be used to log in to the admin portal in development.
-- Details about this user can be found in `org/tbbtalent/server/configuration/SystemAdminConfiguration.java`
+- Details about this user can be found in 
+`org/talentcatalog/server/configuration/SystemAdminConfiguration.java`
 
 ### Populate ElasticSearch from Postgres Database ###
 
@@ -374,10 +377,10 @@ See https://stackoverflow.com/questions/11284634/upgrade-node-js-to-the-latest-v
 
 ## Version Control ##
 
-We use GitHub. Our repository is called tbbtalentv2 - 
-[https://github.com/talentbeyondboundaries/tbbtalentv2](https://github.com/talentbeyondboundaries/tbbtalentv2)
+We use GitHub. Our repository is called talentcatalog - 
+[https://github.com/Talent-Catalog/talentcatalog](https://github.com/Talent-Catalog/talentcatalog)
 
-See the [GitHub wiki](https://github.com/talentbeyondboundaries/tbbtalentv2/wiki) 
+See the [GitHub wiki](https://github.com/Talent-Catalog/talentcatalog/wiki) 
 for additional documentation.
 
 ### Master branch ###
@@ -433,7 +436,7 @@ rather having changes just saved on your computer.
 ## Deployment and Monitoring ##
 
 See the Deployment and Monitoring pages on the 
-[GitHub wiki](https://github.com/talentbeyondboundaries/tbbtalentv2/wiki).
+[GitHub wiki](https://github.com/Talent-Catalog/talentcatalog/wiki).
 
 ## License
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)

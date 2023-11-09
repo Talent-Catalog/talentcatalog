@@ -61,7 +61,7 @@ export class EnvService {
       this._sfLightningUrl = 'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/'
     } else if ((/^tctalent.org/.test(hostname))) {
       this._env = Environment.Prod
-      this._sfLightningUrl = 'https://talentbeyondboundarieslightning.force.com/'
+      this._sfLightningUrl = 'https://talentbeyondboundaries.lightning.force.com/'
     }
   }
 }

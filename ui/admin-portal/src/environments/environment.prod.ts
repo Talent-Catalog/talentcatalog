@@ -20,6 +20,7 @@
 
 export const environment = {
   production: true,
+  host: document.location.host,
   publishUrl: document.location.origin + '/published',
   apiUrl: '/api/admin',
   systemApiUrl: '/api/system',

@@ -1,0 +1,42 @@
+# This workflow builds a Java project with Gradle and deploys to the test Elastic beanstalk on a push to staging
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+# And https://github.com/marketplace/actions/beanstalk-deploy
+
+name: tc-test-build-deploy
+
+on:
+  push:
+    branches: [ staging ]
+
+#This should correspond to the AWS IAM user test-tc-deploy
+#The matching secret key is stored as a GitHub secret and is accessible
+#as ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST }}
+env:
+  AWS_ACCESS_KEY_ID: AKIATLUVZAGYXPBWDGF7
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Java 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Install credential helper - for jib
+        run: sudo apt update && sudo apt install amazon-ecr-credential-helper
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew server:build # We won't run the perf tests here
+      - name: Deploy with Jib
+        run: ./gradlew jib -Ptest-tc-system
+
+        # These env variables will be used by the jib stage of the gradle
+        # build which is configured to use the ecr credential helper.
+        env:
+          AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST }}

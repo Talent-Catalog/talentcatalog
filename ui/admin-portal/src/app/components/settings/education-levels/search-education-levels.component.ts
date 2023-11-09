@@ -28,7 +28,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditEducationLevelComponent} from "./edit/edit-education-level.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
 @Component({
@@ -52,7 +52,7 @@ export class SearchEducationLevelsComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private educationLevelService: EducationLevelService,
               private modalService: NgbModal,
-              private authService: AuthService) {
+              private authService: AuthorizationService) {
   }
 
   ngOnInit() {

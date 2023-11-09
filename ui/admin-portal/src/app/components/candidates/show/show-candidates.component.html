@@ -309,10 +309,17 @@
             <th>
               <i class="far fa-hand-pointer" title="Select candidates"></i>
             </th>
-            <th *ngFor="let field of selectedFields" (click)="toggleSort(field.fieldPath)">
-              <app-sorted-by [column]="field.fieldPath" [sortColumn]="sortField"
-                             [sortDirection]="sortDirection"></app-sorted-by>
-              {{field.displayName}}
+            <th *ngFor="let field of selectedFields">
+              <ng-container *ngIf="field.sortable; else nonSortableFields" (click)="toggleSort(field.fieldPath)">
+                <div (click)="toggleSort(field.fieldPath)">
+                  <app-sorted-by [column]="field.fieldPath" [sortColumn]="sortField"
+                                 [sortDirection]="sortDirection"></app-sorted-by>
+                  {{field.displayName}}
+                </div>
+              </ng-container>
+              <ng-template #nonSortableFields>
+                {{field.displayName}}
+              </ng-template>
             </th>
           </tr>
           </thead>

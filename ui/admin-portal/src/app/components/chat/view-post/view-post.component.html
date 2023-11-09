@@ -1,0 +1,3 @@
+{{post?.createdBy.firstName}} {{post?.createdBy.lastName}}
+{{post?.createdDate | date: 'customDateTime'}}
+<p *ngIf="post?.content" [ngClass]="isHtml(post.content)?'html':'text'" [innerHtml]="post.content"></p>

@@ -49,6 +49,8 @@ export class RegistrationContactComponent implements OnInit {
 
   usAfghan: boolean;
 
+  partnerName: string;
+
   constructor(private fb: FormBuilder,
               private router: Router,
               private route: ActivatedRoute,
@@ -97,9 +99,17 @@ export class RegistrationContactComponent implements OnInit {
       this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
       this.languageService.setUsAfghan(this.usAfghan);
 
+      // Get the partner name from the branding info object.
+      this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
+
       // The user has not registered - add the password fields to the reactive form
       this.form.addControl('password', new FormControl('', [Validators.required, Validators.minLength(8)]));
       this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
+
+      // The user has not registered - add the email consent fields
+      this.form.addControl('contactConsentRegistration', new FormControl(false, [Validators.requiredTrue]));
+      this.form.addControl('contactConsentPartners', new FormControl(false));
+
       this.loading = false;
     }
   }
@@ -199,6 +209,9 @@ export class RegistrationContactComponent implements OnInit {
     if (params.has('utm_term')) {
       req.utmContent = params.get('utm_term');
     }
+    //Populate email consent
+    req.contactConsentRegistration = this.form.value.contactConsentRegistration;
+    req.contactConsentPartners = this.form.value.contactConsentPartners;
 
     this.authService.register(req).subscribe(
       (response) => {

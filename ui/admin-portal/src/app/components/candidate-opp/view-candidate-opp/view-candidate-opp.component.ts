@@ -5,7 +5,7 @@ import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
 import {ShortSavedList} from "../../../model/saved-list";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -26,7 +26,7 @@ export class ViewCandidateOppComponent implements OnInit {
   updating: boolean;
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private candidateOpportunityService: CandidateOpportunityService,
     private localStorageService: LocalStorageService,
     private modalService: NgbModal,

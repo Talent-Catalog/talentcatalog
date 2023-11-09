@@ -3,7 +3,7 @@ import {User} from "../../../model/user";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {SavedListService} from "../../../services/saved-list.service";
@@ -37,7 +37,7 @@ export class SearchExternalLinksComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private savedListService: SavedListService,
               private modalService: NgbModal,
-              private authService: AuthService) {
+              private authService: AuthorizationService) {
   }
 
   ngOnInit() {

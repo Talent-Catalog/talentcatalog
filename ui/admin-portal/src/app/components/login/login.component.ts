@@ -16,7 +16,6 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../../services/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LoginRequest} from "../../model/base";
 import {ReCaptchaV3Service} from "ng-recaptcha";
@@ -24,6 +23,7 @@ import {User} from "../../model/user";
 import {EncodedQrImage} from "../../util/qr";
 import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {AuthenticationService} from "../../services/authentication.service";
 
 @Component({
   selector: 'app-login',
@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
   error;
 
   constructor(private builder: FormBuilder,
-              private authService: AuthService,
+              private authenticationService: AuthenticationService,
               private modalService: NgbModal,
               private reCaptchaV3Service: ReCaptchaV3Service,
               private route: ActivatedRoute,
@@ -86,10 +86,6 @@ export class LoginComponent implements OnInit {
     );
   }
 
-  logout() {
-    this.authService.logout();
-  }
-
   private loginWithToken(token: string) {
     const req: LoginRequest = new LoginRequest();
     req.username = this.username;
@@ -97,7 +93,7 @@ export class LoginComponent implements OnInit {
     req.totpToken = this.totpToken;
     req.reCaptchaV3Token = token;
 
-    this.authService.login(req)
+    this.authenticationService.login(req)
       .subscribe(() => {
         this.loading = false;
         this.checkMfaSetup();
@@ -110,7 +106,7 @@ export class LoginComponent implements OnInit {
   }
 
   private checkMfaSetup() {
-    const user: User = this.authService.getLoggedInUser();
+    const user: User = this.authenticationService.getLoggedInUser();
     if (!user.usingMfa || user.mfaConfigured) {
       this.router.navigateByUrl(this.returnUrl);
     } else {
@@ -120,7 +116,7 @@ export class LoginComponent implements OnInit {
   }
 
   mfaSetup() {
-    this.authService.mfaSetup().subscribe(
+    this.authenticationService.mfaSetup().subscribe(
       (qr: EncodedQrImage) => { this.showQrCode(qr)}
     )
   }

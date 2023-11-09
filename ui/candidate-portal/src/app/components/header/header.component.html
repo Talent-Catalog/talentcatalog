@@ -55,7 +55,7 @@
         <div class="nav-item dropdown" ngbDropdown>
 
           <a class="nav-link" ngbDropdownToggle>
-            {{ 'HEADER.NAV.ACCOUNT' | translate }} (TBB-{{this.candidateService?.getCandNumberStorage()}})
+            {{ 'HEADER.NAV.ACCOUNT' | translate }} {{this.candidateService?.getCandNumberStorage()}}
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <a class="dropdown-item" [routerLink]="['/profile']">

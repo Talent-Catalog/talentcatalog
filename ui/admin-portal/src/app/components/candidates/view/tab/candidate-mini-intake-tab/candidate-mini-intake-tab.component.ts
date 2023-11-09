@@ -17,19 +17,24 @@
 import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
+import {
+  OldIntakeInputComponent
+} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
 import {OccupationService} from "../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {CandidateNoteService} from "../../../../../services/candidate-note.service";
-import {AuthService} from "../../../../../services/auth.service";
-import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateExamService,
+  CreateCandidateExamRequest
+} from "../../../../../services/candidate-exam.service";
 import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
+import {AuthenticationService} from "../../../../../services/authentication.service";
 
 @Component({
   selector: 'app-candidate-mini-intake-tab',
@@ -45,11 +50,11 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
               occupationService: OccupationService,
               languageLevelService: LanguageLevelService,
               noteService: CandidateNoteService,
-              authService: AuthService,
+              authenticationService: AuthenticationService,
               private candidateCitizenshipService: CandidateCitizenshipService,
               private candidateExamService: CandidateExamService,
               private modalService: NgbModal) {
-    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
+    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authenticationService)
   }
 
   public inputOldIntakeNote(formName: string, button) {

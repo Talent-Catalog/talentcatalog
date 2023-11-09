@@ -21,7 +21,7 @@ import {
   SearchCandidateAttachmentsRequest
 } from '../../../services/candidate-attachment.service';
 import {Candidate} from '../../../model/candidate';
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-cv-icon',
@@ -43,7 +43,7 @@ export class CvIconComponent implements OnInit {
   error: string;
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private candidateAttachmentService: CandidateAttachmentService
   ) { }
 

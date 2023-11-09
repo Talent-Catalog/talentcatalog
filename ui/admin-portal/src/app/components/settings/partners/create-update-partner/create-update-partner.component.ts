@@ -3,7 +3,12 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
-import {salesforceUrlPattern, salesforceSandboxUrlPattern, SearchUserRequest, Status} from "../../../../model/base";
+import {
+  salesforceSandboxUrlPattern,
+  salesforceUrlPattern,
+  SearchUserRequest,
+  Status
+} from "../../../../model/base";
 import {Country} from "../../../../model/country";
 import {CountryService} from "../../../../services/country.service";
 import {enumOptions} from "../../../../util/enum";

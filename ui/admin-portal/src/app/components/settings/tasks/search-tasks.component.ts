@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {User} from "../../../model/user";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {AuthService} from "../../../services/auth.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SearchTaskRequest} from "../../../model/base";
 import {TaskService} from "../../../services/task.service";
@@ -30,7 +30,7 @@ export class SearchTasksComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private taskService: TaskService,
               private modalService: NgbModal,
-              private authService: AuthService) {
+              private authService: AuthorizationService) {
   }
 
   ngOnInit() {

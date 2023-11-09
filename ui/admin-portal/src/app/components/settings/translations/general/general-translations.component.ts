@@ -17,7 +17,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TranslationService} from '../../../../services/translation.service';
 import {User} from '../../../../model/user';
-import {AuthService} from "../../../../services/auth.service";
+import {AuthorizationService} from "../../../../services/authorization.service";
 import {LanguageService} from "../../../../services/language.service";
 import {SystemLanguage} from "../../../../model/language";
 import {CandidateOpportunityStage} from "../../../../model/candidate-opportunity";
@@ -70,7 +70,7 @@ export class GeneralTranslationsComponent implements OnInit {
 
   constructor(private translationService: TranslationService,
               private languageService: LanguageService,
-              private authService: AuthService) {
+              private authService: AuthorizationService) {
   }
 
   ngOnInit() {
@@ -304,7 +304,9 @@ const ALL_FIELDS = {
           "WHATSAPP": null,
           "USERNAME": null,
           "PASSWORD": null,
-          "PASSWORDCONFIRMATION": null
+          "PASSWORDCONFIRMATION": null,
+          "CONTACTCONSENTREGISTRATION": null,
+          "CONTACTCONSENTPARTNERS": null
         }
       },
       "PERSONAL": {

@@ -1,7 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {isCandidateOpportunity} from "../../../model/candidate-opportunity";
-import {getOpportunityStageName, Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
-import {AuthService} from "../../../services/auth.service";
+import {
+  getOpportunityStageName,
+  Opportunity,
+  OpportunityProgressParams
+} from "../../../model/opportunity";
+import {AuthorizationService} from "../../../services/authorization.service";
 import {isJob} from "../../../model/job";
 import {EditOppComponent} from "../../opportunity/edit-opp/edit-opp.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -16,12 +20,13 @@ import {JobService} from "../../../services/job.service";
 export class OpportunityStageNextStepComponent implements OnInit {
   @Input() opp: Opportunity;
   @Output() oppProgressUpdated = new EventEmitter<Opportunity>();
+  @Input() notEditable: boolean;
 
   error: string;
   updating: boolean;
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthorizationService,
     private candidateOpportunityService: CandidateOpportunityService,
     private jobService: JobService,
     private modalService: NgbModal,
@@ -38,6 +43,9 @@ export class OpportunityStageNextStepComponent implements OnInit {
     }
     if (isJob(this.opp)) {
       canEdit = this.authService.canChangeJobStage(this.opp);
+    }
+    if (this.notEditable) {
+      canEdit = false;
     }
     return canEdit;
   }

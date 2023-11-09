@@ -27,3 +27,8 @@ export function truncate(str: string, num: number): string {
   }
 }
 
+
+export function isHtml(text): boolean {
+  // Very simple test for HTML tags - isn't foolproof but probably good enough
+  return /<\/?[a-z][\s\S]*>/i.test(text);
+}

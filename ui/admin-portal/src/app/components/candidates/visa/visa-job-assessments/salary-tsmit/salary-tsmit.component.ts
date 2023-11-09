@@ -1,29 +1,26 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {CandidateVisaJobCheck, YesNo} from '../../../../../model/candidate';
+import {YesNo} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
-import {CandidateService} from '../../../../../services/candidate.service';
-import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
+import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
+import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-salary-tsmit',
   templateUrl: './salary-tsmit.component.html',
   styleUrls: ['./salary-tsmit.component.scss']
 })
-export class SalaryTsmitComponent extends IntakeComponentBase implements OnInit {
-
-  @Input() selectedIndex: number;
-  @Input() selectedJobCheck: CandidateVisaJobCheck;
+export class SalaryTsmitComponent extends VisaCheckComponentBase implements OnInit {
   public salaryRequirementOptions: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
+  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+    super(fb, candidateVisaCheckService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaJobId: [this.selectedJobCheck?.id],
-      visaJobSalaryTsmit: [this.selectedJobCheck?.salaryTsmit],
+      visaJobId: [this.visaJobCheck?.id],
+      visaJobSalaryTsmit: [this.visaJobCheck?.salaryTsmit],
     });
   }
 

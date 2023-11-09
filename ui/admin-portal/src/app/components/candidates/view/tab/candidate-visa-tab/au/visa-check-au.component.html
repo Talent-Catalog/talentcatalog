@@ -14,20 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div *ngIf="error">
-  {{this.error}}
-</div>
-<div *ngIf="!loading" id="VisaAustralia">
+<div id="VisaAustralia">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h5>Visa Australia</h5>
   </div>
 
-<!--  todo Why not put this formatting inside component?
-Downside == upside : standard appearance of same question
--->
   <div class="card">
     <div class="card-header">
       Confirmation Details
@@ -44,11 +35,11 @@ Downside == upside : standard appearance of same question
 
   <div class="card">
     <div class="card-header">
-      Assessing TBB Eligibility
+      Assessing TC Eligibility
     </div>
     <div class="card-body intake-data">
       <app-left-home-reason
-        [entity]="candidate"
+        [entity]="visaCheckRecord"
         [candidateIntakeData]="candidateIntakeData"
         [editable]="false">
       </app-left-home-reason>
@@ -65,9 +56,7 @@ Downside == upside : standard appearance of same question
     </div>
     <div class="card-body">
       <app-int-protection
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaCheckRecord">
+        [entity]="visaCheckRecord">
       </app-int-protection>
     </div>
   </div>
@@ -94,9 +83,7 @@ Downside == upside : standard appearance of same question
     </div>
     <div class="card-body">
       <app-english-threshold
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaCheckRecord">
+        [entity]="visaCheckRecord">
       </app-english-threshold>
     </div>
   </div>
@@ -126,9 +113,7 @@ Downside == upside : standard appearance of same question
     </div>
     <div class="card-body">
       <app-health-assessment
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaCheckRecord">
+        [entity]="visaCheckRecord">
       </app-health-assessment>
     </div>
   </div>
@@ -148,9 +133,7 @@ Downside == upside : standard appearance of same question
     </div>
     <div class="card-body">
       <app-character-assessment
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaCheckRecord">
+        [entity]="visaCheckRecord">
       </app-character-assessment>
     </div>
   </div>
@@ -180,9 +163,7 @@ Downside == upside : standard appearance of same question
     </div>
     <div class="card-body">
       <app-security-risk
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaCheckRecord">
+        [entity]="visaCheckRecord">
       </app-security-risk>
     </div>
   </div>
@@ -195,9 +176,7 @@ Downside == upside : standard appearance of same question
     </div>
     <div class="card-body">
       <app-risk-assessment
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaCheckRecord">
+        [entity]="visaCheckRecord">
       </app-risk-assessment>
     </div>
   </div>
@@ -220,9 +199,7 @@ Downside == upside : standard appearance of same question
     </div>
     <div class="card-body">
       <app-travel-document
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaCheckRecord">
+        [entity]="visaCheckRecord">
       </app-travel-document>
     </div>
   </div>
@@ -233,19 +210,19 @@ Downside == upside : standard appearance of same question
     <div class="card-header">
       Job Specific Assessment
     </div>
-    <div class="card-body" *ngIf="!loading">
+    <div class="card-body">
       <app-candidate-visa-job
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData"
         [visaCheckRecord]="visaCheckRecord"
-        (selectedJobIndex)="updateJobIndex($event)">
+        [(selectedJob)]="selectedJob">
       </app-candidate-visa-job>
 
       <hr/>
 
       <!--  Generate all job entries - but only one is enabled at a time-->
       <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;">
-        <app-visa-job-check-au *ngIf="i == selectedJobIndex"
+        <app-visa-job-check-au *ngIf="job.id == selectedJob.id"
                                [id]="i"
                                [selectedJobCheck]="job"
                                [candidate]="candidate"

@@ -2,29 +2,29 @@ import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from "../../../../util/enum";
 import {YesNo} from "../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../services/candidate.service";
-import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
+import {VisaCheckComponentBase} from "../../../util/intake/VisaCheckComponentBase";
+import {CandidateVisaCheckService} from "../../../../services/candidate-visa-check.service";
 
 @Component({
   selector: 'app-character-assessment',
   templateUrl: './character-assessment.component.html',
   styleUrls: ['./character-assessment.component.scss']
 })
-export class CharacterAssessmentComponent extends IntakeComponentBase implements OnInit {
+export class CharacterAssessmentComponent extends VisaCheckComponentBase implements OnInit {
 
 //Drop down values for enumeration
   characterAssessmentOptions: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
+  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+    super(fb, candidateVisaCheckService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaId: [this.visaCheckRecord?.id],
-      visaCountryId: [this.visaCheckRecord?.country?.id],
-      visaCharacterAssessment: [this.visaCheckRecord?.characterAssessment],
-      visaCharacterAssessmentNotes: [this.visaCheckRecord?.characterAssessmentNotes],
+      visaId: [this.visaCheck?.id],
+      visaCountryId: [this.visaCheck?.country?.id],
+      visaCharacterAssessment: [this.visaCheck?.characterAssessment],
+      visaCharacterAssessmentNotes: [this.visaCheck?.characterAssessmentNotes],
     });
   }
 

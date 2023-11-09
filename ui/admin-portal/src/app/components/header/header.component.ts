@@ -16,13 +16,14 @@
 
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
-import {AuthService} from "../../services/auth.service";
+import {AuthorizationService} from "../../services/authorization.service";
 import {CandidateService} from "../../services/candidate.service";
 import {Candidate} from "../../model/candidate";
 import {Observable, of} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {User} from "../../model/user";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
+import {AuthenticationService} from "../../services/authentication.service";
 
 @Component({
   selector: 'app-header',
@@ -45,7 +46,9 @@ export class HeaderComponent implements OnInit {
   stagingEnv: boolean = false;
 
 
-  constructor(private authService: AuthService,
+  constructor(
+    private authService: AuthorizationService,
+    private authenticationService: AuthenticationService,
               private brandingService: BrandingService,
               private candidateService: CandidateService,
               private router: Router) { }
@@ -120,7 +123,7 @@ export class HeaderComponent implements OnInit {
         ),
         tap(() => this.searching = false)
       );
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
     if (this.loggedInUser == null) {
       this.logout();
     }
@@ -151,9 +154,7 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout();
-    this.router.navigate(['login']);
-    localStorage.clear();
+    this.authenticationService.logout();
   }
 
   selectSearchResult ($event, input) {
@@ -173,6 +174,10 @@ export class HeaderComponent implements OnInit {
 
   isAnAdmin(): boolean {
     return this.authService.isAnAdmin();
+  }
+
+  isSystemAdminOnly(): boolean {
+    return this.authService.isSystemAdminOnly();
   }
 
   isStagingEnv(): boolean {

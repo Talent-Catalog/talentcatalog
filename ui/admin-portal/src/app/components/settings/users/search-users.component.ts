@@ -26,10 +26,11 @@ import {UserService} from "../../../services/user.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CreateUpdateUserComponent} from "./create-update-user/create-update-user.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
-import {AuthService} from '../../../services/auth.service';
+import {AuthorizationService} from '../../../services/authorization.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {SearchUserRequest} from "../../../model/base";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 
 @Component({
@@ -52,7 +53,9 @@ export class SearchUsersComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private userService: UserService,
               private modalService: NgbModal,
-              private authService: AuthService) { }
+              private authService: AuthorizationService,
+              private authenticationService: AuthenticationService
+              ) { }
 
   ngOnInit() {
 
@@ -66,8 +69,8 @@ export class SearchUsersComponent implements OnInit {
     this.pageSize = 50;
 
     this.onChanges();
-    if (this.authService.getLoggedInRole() === Role.sourcepartneradmin) {
-      this.roleOptions = this.roleOptions.filter(r => r.key !== "admin" && r.key !== "sourcepartneradmin" );
+    if (this.authService.getLoggedInRole() === Role.partneradmin) {
+      this.roleOptions = this.roleOptions.filter(r => r.key !== "admin" && r.key !== "partneradmin" );
     }
   }
 
@@ -86,7 +89,7 @@ export class SearchUsersComponent implements OnInit {
 
   getLoggedInUser(){
     /* GET LOGGED IN USER ROLE FROM LOCAL STORAGE */
-    this.loggedInUser = this.authService.getLoggedInUser();
+    this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.search();
   }
 
@@ -132,7 +135,7 @@ export class SearchUsersComponent implements OnInit {
         this.search()
         // UPDATES VIEW IF LOGGED IN ADMIN USER CHANGES ROLE THEMSELVES
         if (this.loggedInUser.id === updatedUser.id){
-          this.authService.setNewLoggedInUser(updatedUser);
+          this.authenticationService.setLoggedInUser(updatedUser);
           this.getLoggedInUser();
         }
       })
@@ -210,7 +213,7 @@ export class SearchUsersComponent implements OnInit {
         break;
 
       case Role.admin:
-      case Role.sourcepartneradmin:
+      case Role.partneradmin:
         if (user.partner?.id !== myUser.partner?.id) {
           //Can't edit another partner's user.
           editable = false;

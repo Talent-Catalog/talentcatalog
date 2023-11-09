@@ -12,11 +12,11 @@
       <div *ngFor="let visaJob of visaCheckRecord?.candidateVisaJobChecks; let i = index;">
         <div class="form-check">
           <input class="form-check-input" type="radio" [value]="i" name="jobIndex" [id]="'radio'+i"
-                 [formControlName]="'jobIndex'" (change)="setSelectedIndex()">
+                 [formControlName]="'jobIndex'" (change)="fetchUpdatedSelectedJob(visaJob)">
           <label class="form-check-label fw-light" [for]="'radio'+i">
             <a [routerLink]="visaJob?.jobOpp ? ['/job',visaJob.jobOpp.id] : null" target="_blank">{{visaJob?.jobOpp ? visaJob?.jobOpp?.name : visaJob.name}} <i *ngIf="visaJob?.jobOpp" class="fas fa-external-link-alt" title="Show in new tab"></i></a>
           </label>
-          <a class="link-secondary float-end" (click)="deleteJob(i)"><i class="fas fa-trash"></i></a>
+          <a *ngIf="canDeleteVisaJob()" class="link-secondary float-end" (click)="deleteJob(i)"><i class="fas fa-trash"></i></a>
         </div>
       </div>
     </form>
