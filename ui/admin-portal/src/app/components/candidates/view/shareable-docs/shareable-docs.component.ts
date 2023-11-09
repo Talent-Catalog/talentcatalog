@@ -31,10 +31,9 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   }
 
   ngOnInit() {
-    this.cvs = this.candidate.candidateAttachments?.filter(a => a.cv === true);
-    this.other = this.candidate.candidateAttachments?.filter(a => a.cv === false);
+    this.loadDropdowns();
 
-    // Only lists have listShareable attachments
+    // Initialise the form
     if (this.isList) {
       this.form = this.fb.group({
         shareableCvAttachmentId: [this.candidate?.listShareableCv?.id],
@@ -46,7 +45,29 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
         shareableDocAttachmentId: [this.candidate?.shareableDoc?.id],
       });
     }
+  }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    this.loadDropdowns();
+
+    //Replace the form value with the new candidates shareable docs when changing from one candidate
+    // to the next or when selection has changed.
+    if (this.form) {
+    // Only lists have listShareable attachments
+      if (this.isList) {
+        this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);
+        this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id);
+      } else {
+        this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.shareableCv?.id);
+        this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.shareableDoc?.id);
+      }
+    }
+  }
+
+  loadDropdowns() {
+    //Need to separate cvs & other for the ng select form dropdowns.
+    this.cvs = this.filterByCv(true);
+    this.other = this.filterByCv(false);
   }
 
   doSave(formValue: any): Observable<Candidate> {
@@ -77,7 +98,6 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
       }
       this.updatedShareableCV.emit(this.candidate.listShareableCv);
     }
-
   }
 
   get shareableCvId() {
@@ -92,20 +112,7 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
     return isSavedList(this.candidateSource);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    //Replace the form value with the new candidates context notes when
-    //changing from one candidate to the next or when selection has changed.
-    this.cvs = this.candidate.candidateAttachments?.filter(a => a.cv === true);
-    this.other = this.candidate.candidateAttachments?.filter(a => a.cv === false);
-    if (this.form) {
-      if (this.isList) {
-        this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);
-        this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id);
-      } else {
-        this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.shareableCv?.id);
-        this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.shareableDoc?.id);
-      }
-    }
+  filterByCv(isCV: boolean) {
+    return this.candidate.candidateAttachments.filter(a => a.cv === isCV);
   }
-
 }
