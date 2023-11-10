@@ -61,20 +61,11 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.loadDropdowns();
 
-    //this.loadShareableDocs();
-
-    // //Replace the form value with the new candidates shareable docs when changing from one candidate
-    // // to the next or when selection has changed.
-    // if (this.form) {
-    // // Only lists have listShareable attachments
-    //   if (this.isList) {
-    //     this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);
-    //     this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id);
-    //   } else {
-    //     this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.shareableCv?.id);
-    //     this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.shareableDoc?.id);
-    //   }
-    // }
+    //Replace form value with the new candidates shareable docs when changing from one candidate to the next in a list.
+    if (this.form && this.isList) {
+      this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);
+      this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id);
+    }
   }
 
   loadDropdowns() {
@@ -82,18 +73,6 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     this.cvs = this.filterByCv(true);
     this.other = this.filterByCv(false);
   }
-
-  // loadShareableDocs() {
-  //   const request: GetCandidateShareableDocsRequest = {
-  //     candidateId: this.candidate.id,
-  //     savedListId: this.isList ? this.candidateSource.id : null
-  //   }
-  //   this.candidateService.getShareableDocs(request).subscribe(
-  //     (result) => {
-  //       console.log(result);
-  //     }
-  //   )
-  // }
 
   doSave(formValue: any) {
     this.loading = true;
