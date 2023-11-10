@@ -25,6 +25,7 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
 
   error: boolean;
   loading: boolean;
+  saving: boolean;
 
   shareableCv: CandidateAttachment;
   shareableDoc: CandidateAttachment;
@@ -39,7 +40,6 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.loadDropdowns();
 
-    console.log('init')
     // Initialise the form
     if (this.isList) {
       this.form = this.fb.group({
@@ -75,7 +75,7 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
   }
 
   doSave(formValue: any) {
-    this.loading = true;
+    this.saving = true;
     const request: UpdateCandidateShareableDocsRequest = {
       shareableCvAttachmentId: formValue.shareableCvAttachmentId,
       shareableDocAttachmentId: formValue.shareableDocAttachmentId
@@ -86,32 +86,33 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     this.candidateService.updateShareableDocs(this.candidate.id, request).subscribe(
       (candidate) => {
         this.candidateChange.emit(candidate);
-        this.onSuccessfulSave();
-        this.loading = false;
+        if (this.isList) {
+          this.setCandidateListDocs();
+        }
+        this.saving = false;
       },
       (error) => {
         this.error = error;
+        this.saving = false;
       }
     )
   }
 
-  onSuccessfulSave() {
-    // How to set the value in the front end when changing?
-    // Have only the ID not the full value so can't set with form value.
-    // Answer - search attachments by id.
-    if (this.isList) {
-      if (this.shareableCvId != null) {
-        this.candidate.listShareableCv = this.cvs.find(att => att.id === this.shareableCvId);
-      } else {
-        this.candidate.listShareableCv = null;
-      }
-      if (this.shareableDocId != null) {
-        this.candidate.listShareableDoc = this.other.find(att => att.id === this.shareableDocId);
-      } else {
-        this.candidate.listShareableDoc = null;
-      }
-      this.updatedShareableCV.emit(this.candidate.listShareableCv);
+  setCandidateListDocs() {
+    // In a list, we need to set the updated value of the shareable docs to the candidate as we are switching between.
+    // Note: We don't need to do this for regular shareable docs in the view candidate component as
+    // the new candidate is loaded when changing tabs or refreshing.
+    if (this.shareableCvId != null) {
+      this.candidate.listShareableCv = this.cvs.find(att => att.id === this.shareableCvId);
+    } else {
+      this.candidate.listShareableCv = null;
     }
+    if (this.shareableDocId != null) {
+      this.candidate.listShareableDoc = this.other.find(att => att.id === this.shareableDocId);
+    } else {
+      this.candidate.listShareableDoc = null;
+    }
+    this.updatedShareableCV.emit(this.candidate.listShareableCv);
   }
 
   get shareableCvId() {

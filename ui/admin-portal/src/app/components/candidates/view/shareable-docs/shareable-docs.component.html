@@ -4,13 +4,13 @@
 
 <div class="d-flex h6 font-weight-normal mb-0">
   <div class="font-15 me-2 mb-2">Selected Shareable Attachments <span *ngIf="isList">(for list)</span></div>
-  <span *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i> loading...
+  <span *ngIf="saving">
+    <i class="fas fa-spinner fa-spin"></i> ...
   </span>
 </div>
 <div *ngIf="candidateSource" class="text-muted mb-3">If left blank, the candidate's default selected shareable documents will be used (if present).</div>
 
-<form [formGroup]="form">
+<form [formGroup]="form" *ngIf="!loading">
   <div  class="flex-wrap justify-content-around">
     <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start mb-2">
           <span class="me-4">
