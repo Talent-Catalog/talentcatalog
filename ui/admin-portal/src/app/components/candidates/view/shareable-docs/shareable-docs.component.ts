@@ -38,7 +38,6 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
               private candidateService: CandidateService) {}
 
   ngOnInit() {
-    this.loadDropdowns();
 
     // Initialise the form
     if (this.isList) {
