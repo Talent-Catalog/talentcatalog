@@ -4,7 +4,6 @@
 
 <div class="d-flex h6 font-weight-normal mb-0">
   <div class="font-15 me-2 mb-2">Selected Shareable Attachments <span *ngIf="isList">(for list)</span></div>
-  <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
 </div>
 <div *ngIf="candidateSource" class="text-muted mb-3">If left blank, the candidate's default selected shareable documents will be used (if present).</div>
 
@@ -14,7 +13,7 @@
           <span class="me-4">
             <i class="far fa-star fa-sm"></i>CV
           </span>
-      <ng-select id="shareableCvId" class="me-2" [formControlName]="'shareableCvAttachmentId'"
+      <ng-select id="shareableCvId" class="me-2" [formControlName]="'shareableCvAttachmentId'" (change)="doSave($event)"
                  [items]="cvs" placeholder="Select" bindValue="id" bindLabel="name">
         <ng-template ng-option-tmp let-item="item">
           <span [ngbTooltip]="item.name" container="body">{{item.name}}</span>

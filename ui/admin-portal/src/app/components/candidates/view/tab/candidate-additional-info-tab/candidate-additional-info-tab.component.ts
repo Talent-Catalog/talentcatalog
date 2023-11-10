@@ -14,28 +14,46 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {AuthorizationService} from "../../../../../services/authorization.service";
+import {CandidateService} from "../../../../../services/candidate.service";
 
 @Component({
   selector: 'app-candidate-additional-info-tab',
   templateUrl: './candidate-additional-info-tab.component.html',
   styleUrls: ['./candidate-additional-info-tab.component.scss']
 })
-export class CandidateAdditionalInfoTabComponent implements OnInit {
+export class CandidateAdditionalInfoTabComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean = false;
   @Input() canViewPrivateInfo: boolean = false;
   @Output() candidateChanged = new EventEmitter();
 
-  constructor(private authService: AuthorizationService) { }
+  loading: boolean;
+  error: boolean;
+
+  constructor(private authService: AuthorizationService,
+              private candidateService: CandidateService) { }
 
   ngOnInit() {
   }
 
-  onCandidateChanged() {
-    this.candidateChanged.emit();
+  // Fetch the updated candidate object when changing the tabs to refresh any changes in data from the tab components.
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
+      this.loading = true;
+      this.candidateService.get(this.candidate.id).subscribe(
+        candidate => {
+          this.candidate = candidate;
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        })
+    }
   }
+
 }

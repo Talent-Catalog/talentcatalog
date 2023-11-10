@@ -25,10 +25,10 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
 
   savedList: boolean;
 
+  form: FormGroup;
+
   constructor(private fb: FormBuilder,
-              private candidateService: CandidateService) {
-    super(candidateService);
-  }
+              private candidateService: CandidateService) {}
 
   ngOnInit() {
     this.loadDropdowns();
@@ -45,23 +45,29 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
         shareableDocAttachmentId: [this.candidate?.shareableDoc?.id],
       });
     }
+
+    this.form.valueChanges.subscribe((formValue) => {
+      this.doSave(formValue);
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.loadDropdowns();
 
-    //Replace the form value with the new candidates shareable docs when changing from one candidate
-    // to the next or when selection has changed.
-    if (this.form) {
-    // Only lists have listShareable attachments
-      if (this.isList) {
-        this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);
-        this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id);
-      } else {
-        this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.shareableCv?.id);
-        this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.shareableDoc?.id);
-      }
-    }
+    this.loadShareableDocs();
+
+    // //Replace the form value with the new candidates shareable docs when changing from one candidate
+    // // to the next or when selection has changed.
+    // if (this.form) {
+    // // Only lists have listShareable attachments
+    //   if (this.isList) {
+    //     this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);
+    //     this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id);
+    //   } else {
+    //     this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.shareableCv?.id);
+    //     this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.shareableDoc?.id);
+    //   }
+    // }
   }
 
   loadDropdowns() {
@@ -78,7 +84,11 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
     if (this.isList) {
       request.savedListId = this.candidateSource.id;
     }
-    return this.candidateService.updateShareableDocs(this.candidate.id, request);
+    this.candidateService.updateShareableDocs(this.candidate.id, request).subscribe(
+      (candidate) => {
+        this.candidateChange.emit(candidate);
+      }
+    )
   }
 
   onSuccessfulSave() {
