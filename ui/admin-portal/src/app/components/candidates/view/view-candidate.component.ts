@@ -16,11 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
-import {
-  Candidate,
-  UpdateCandidateStatusInfo,
-  UpdateCandidateStatusRequest
-} from '../../../model/candidate';
+import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
@@ -235,10 +231,6 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   private setActiveTabId(id: string) {
     this.activeTabId = id;
     this.localStorageService.set(this.lastTabKey, id);
-  }
-
-  onCandidateChanged() {
-    this.refreshCandidateInfo();
   }
 
   isCVViewable(): boolean {

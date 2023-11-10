@@ -1,8 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {AutoSaveComponentBase} from "../../../util/autosave/AutoSaveComponentBase";
 import {Candidate, UpdateCandidateShareableDocsRequest} from "../../../../model/candidate";
-import {FormBuilder} from "@angular/forms";
-import {Observable} from "rxjs";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {CandidateService} from "../../../../services/candidate.service";
 import {isSavedList} from "../../../../model/saved-list";
@@ -13,9 +11,11 @@ import {CandidateSource} from "../../../../model/base";
   templateUrl: './shareable-docs.component.html',
   styleUrls: ['./shareable-docs.component.scss']
 })
-export class ShareableDocsComponent extends AutoSaveComponentBase implements OnInit, OnChanges {
+export class ShareableDocsComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
+  @Output() candidateChange = new EventEmitter<Candidate>();
+
   @Input() candidateSource: CandidateSource;
 
   @Output() updatedShareableCV = new EventEmitter<CandidateAttachment>();
@@ -23,15 +23,24 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   cvs: CandidateAttachment[];
   other: CandidateAttachment[];
 
+  error: boolean;
+  loading: boolean;
+
+  shareableCv: CandidateAttachment;
+  shareableDoc: CandidateAttachment;
+
   savedList: boolean;
 
+  form: FormGroup;
+
   constructor(private fb: FormBuilder,
-              private candidateService: CandidateService) {
-    super(candidateService);
-  }
+              private candidateService: CandidateService) {}
 
   ngOnInit() {
-    // Only lists have listShareable attachments
+    this.loadDropdowns();
+
+    console.log('init')
+    // Initialise the form
     if (this.isList) {
       this.form = this.fb.group({
         shareableCvAttachmentId: [this.candidate?.listShareableCv?.id],
@@ -44,9 +53,29 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
       });
     }
 
+    this.form.valueChanges.subscribe((formValue) => {
+      this.doSave(formValue);
+    })
   }
 
-  doSave(formValue: any): Observable<Candidate> {
+  ngOnChanges(changes: SimpleChanges): void {
+    this.loadDropdowns();
+
+    //Replace form value with the new candidates shareable docs when changing from one candidate to the next in a list.
+    if (this.form && this.isList) {
+      this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);
+      this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id);
+    }
+  }
+
+  loadDropdowns() {
+    //Need to separate cvs & other for the ng select form dropdowns.
+    this.cvs = this.filterByCv(true);
+    this.other = this.filterByCv(false);
+  }
+
+  doSave(formValue: any) {
+    this.loading = true;
     const request: UpdateCandidateShareableDocsRequest = {
       shareableCvAttachmentId: formValue.shareableCvAttachmentId,
       shareableDocAttachmentId: formValue.shareableDocAttachmentId
@@ -54,14 +83,22 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
     if (this.isList) {
       request.savedListId = this.candidateSource.id;
     }
-    return this.candidateService.updateShareableDocs(this.candidate.id, request);
+    this.candidateService.updateShareableDocs(this.candidate.id, request).subscribe(
+      (candidate) => {
+        this.candidateChange.emit(candidate);
+        this.onSuccessfulSave();
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+      }
+    )
   }
 
   onSuccessfulSave() {
-    /**
-     * Update the candidate object once saved.
-     * If it's a list update the list shareable document otherwise update the default shareable object.
-     */
+    // How to set the value in the front end when changing?
+    // Have only the ID not the full value so can't set with form value.
+    // Answer - search attachments by id.
     if (this.isList) {
       if (this.shareableCvId != null) {
         this.candidate.listShareableCv = this.cvs.find(att => att.id === this.shareableCvId);
@@ -74,20 +111,7 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
         this.candidate.listShareableDoc = null;
       }
       this.updatedShareableCV.emit(this.candidate.listShareableCv);
-    } else {
-      if (this.shareableCvId != null) {
-        this.candidate.shareableCv = this.cvs.find(att => att.id === this.shareableCvId);
-      } else {
-        this.candidate.shareableCv = null;
-      }
-      if (this.shareableDocId != null) {
-        this.candidate.shareableDoc = this.other.find(att => att.id === this.shareableDocId);
-      } else {
-        this.candidate.shareableDoc = null;
-      }
-      this.updatedShareableCV.emit(this.candidate.shareableCv);
     }
-
   }
 
   get shareableCvId() {
@@ -102,21 +126,7 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
     return isSavedList(this.candidateSource);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log('changes')
-    //Replace the form value with the new candidates context notes when
-    //changing from one candidate to the next or when selection has changed.
-    this.cvs = this.candidate.candidateAttachments?.filter(a => a.cv === true);
-    this.other = this.candidate.candidateAttachments?.filter(a => a.cv === false);
-    if (this.form) {
-      if (this.isList) {
-        this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);
-        this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id);
-      } else {
-        this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.shareableCv?.id);
-        this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.shareableDoc?.id);
-      }
-    }
+  filterByCv(isCV: boolean) {
+    return this.candidate.candidateAttachments.filter(a => a.cv === isCV);
   }
-
 }
