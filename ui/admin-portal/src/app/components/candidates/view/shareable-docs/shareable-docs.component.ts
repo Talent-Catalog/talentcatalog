@@ -1,8 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {AutoSaveComponentBase} from "../../../util/autosave/AutoSaveComponentBase";
 import {Candidate, UpdateCandidateShareableDocsRequest} from "../../../../model/candidate";
-import {FormBuilder} from "@angular/forms";
-import {Observable} from "rxjs";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {CandidateService} from "../../../../services/candidate.service";
 import {isSavedList} from "../../../../model/saved-list";
@@ -13,15 +11,23 @@ import {CandidateSource} from "../../../../model/base";
   templateUrl: './shareable-docs.component.html',
   styleUrls: ['./shareable-docs.component.scss']
 })
-export class ShareableDocsComponent extends AutoSaveComponentBase implements OnInit, OnChanges {
+export class ShareableDocsComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
+  @Output() candidateChange = new EventEmitter<Candidate>();
+
   @Input() candidateSource: CandidateSource;
 
   @Output() updatedShareableCV = new EventEmitter<CandidateAttachment>();
 
   cvs: CandidateAttachment[];
   other: CandidateAttachment[];
+
+  error: boolean;
+  loading: boolean;
+
+  shareableCv: CandidateAttachment;
+  shareableDoc: CandidateAttachment;
 
   savedList: boolean;
 
@@ -33,6 +39,7 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   ngOnInit() {
     this.loadDropdowns();
 
+    console.log('init')
     // Initialise the form
     if (this.isList) {
       this.form = this.fb.group({
@@ -54,7 +61,7 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
   ngOnChanges(changes: SimpleChanges): void {
     this.loadDropdowns();
 
-    this.loadShareableDocs();
+    //this.loadShareableDocs();
 
     // //Replace the form value with the new candidates shareable docs when changing from one candidate
     // // to the next or when selection has changed.
@@ -76,7 +83,20 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
     this.other = this.filterByCv(false);
   }
 
-  doSave(formValue: any): Observable<Candidate> {
+  // loadShareableDocs() {
+  //   const request: GetCandidateShareableDocsRequest = {
+  //     candidateId: this.candidate.id,
+  //     savedListId: this.isList ? this.candidateSource.id : null
+  //   }
+  //   this.candidateService.getShareableDocs(request).subscribe(
+  //     (result) => {
+  //       console.log(result);
+  //     }
+  //   )
+  // }
+
+  doSave(formValue: any) {
+    this.loading = true;
     const request: UpdateCandidateShareableDocsRequest = {
       shareableCvAttachmentId: formValue.shareableCvAttachmentId,
       shareableDocAttachmentId: formValue.shareableDocAttachmentId
@@ -87,6 +107,11 @@ export class ShareableDocsComponent extends AutoSaveComponentBase implements OnI
     this.candidateService.updateShareableDocs(this.candidate.id, request).subscribe(
       (candidate) => {
         this.candidateChange.emit(candidate);
+        this.onSuccessfulSave();
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
       }
     )
   }
