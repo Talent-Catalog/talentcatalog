@@ -527,8 +527,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   setCurrentCandidate(candidate: Candidate) {
     this.currentCandidate = candidate;
-    console.log(this.currentCandidate);
-    console.log(this.results?.content);
     if (candidate && isSavedSearch(this.candidateSource)) {
       this.savedSearchSelectionChange = candidate.selected;
     }
