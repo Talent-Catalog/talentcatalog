@@ -24,8 +24,13 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatType;
+import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.JobChatRepository;
 import org.tctalent.server.request.chat.UpdateChatRequest;
 import org.tctalent.server.service.db.JobChatService;
@@ -41,11 +46,56 @@ public class JobChatServiceImpl implements JobChatService {
     @Override
     @NonNull
     public JobChat createJobChat(UpdateChatRequest request) throws EntityExistsException {
+        return createJobChat(null, null, null, null);
+    }
+
+    @NonNull JobChat createJobChat(
+        JobChatType type,  SalesforceJobOpp job, PartnerImpl sourcePartner, CandidateOpportunity candidateOpp) {
         JobChat chat = new JobChat();
         chat.setCreatedBy(userService.getLoggedInUser());
         chat.setCreatedDate(OffsetDateTime.now());
+        if (type != null) {
+            chat.setType(type);
+        }
+        if (job != null) {
+            chat.setJobOpp(job);
+        }
+        if (sourcePartner != null) {
+            chat.setSourcePartner(sourcePartner);
+        }
+        if (candidateOpp != null) {
+            chat.setCandidateOpp(candidateOpp);
+        }
 
         return jobChatRepository.save(chat);
+    }
+
+    @Override
+    public @NonNull JobChat createJobCreatorChat(
+        @NonNull JobChatType type, @NonNull SalesforceJobOpp job)
+        throws InvalidRequestException {
+        if (type != JobChatType.AllJobCandidates &&
+            type != JobChatType.JobCreatorAllSourcePartners) {
+            throw new InvalidRequestException("Unsupported type: " + type);
+        }
+        return createJobChat(type, job, null, null);
+    }
+
+    @Override
+    public @NonNull JobChat createJobCreatorSourcePartnerChat(
+        @NonNull SalesforceJobOpp job, @NonNull PartnerImpl sourcePartner) {
+        return createJobChat(
+            JobChatType.JobCreatorSourcePartner, job, sourcePartner, null);
+    }
+
+    @Override
+    public @NonNull JobChat createCandidateOppChat(
+        @NonNull JobChatType type, @NonNull CandidateOpportunity candidateOpp) {
+        if (type != JobChatType.CandidateProspect &&
+            type != JobChatType.CandidateRecruiting) {
+            throw new InvalidRequestException("Unsupported type: " + type);
+        }
+        return createJobChat(type, null, null, candidateOpp);
     }
 
     @Override

@@ -17,8 +17,11 @@
 package org.tctalent.server.model.db;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -41,7 +44,7 @@ public class JobChat extends AbstractAuditableDomainObject<Long> {
   /**
    * Job opportunity associated with chat
    */
-  @OneToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "job_id")
   private SalesforceJobOpp jobOpp;
 
@@ -50,7 +53,19 @@ public class JobChat extends AbstractAuditableDomainObject<Long> {
    * related to a particular candidate going for that job.
    */
   @Nullable
-  @OneToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "candidate_opp_id")
   private CandidateOpportunity candidateOpp;
+
+  /**
+   * Optional source partner associated with chat. This will be required for job chats
+   * involving a particular source partner working on the job.
+   */
+  @Nullable
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "source_partner_id")
+  private PartnerImpl sourcePartner;
+
+  @Enumerated(EnumType.STRING)
+  private JobChatType type;
 }

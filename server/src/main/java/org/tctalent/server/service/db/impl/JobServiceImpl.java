@@ -53,6 +53,7 @@ import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -78,8 +79,10 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.JobService;
+import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
@@ -113,6 +116,9 @@ public class JobServiceImpl implements JobService {
     private final UserService userService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
+
+    private final JobChatService jobChatService;
+    private final PartnerService partnerService;
     private final SalesforceBridgeService salesforceBridgeService;
     private final SalesforceConfig salesforceConfig;
     private final SalesforceService salesforceService;
@@ -128,7 +134,7 @@ public class JobServiceImpl implements JobService {
             AuthService authService, CandidateOpportunityService candidateOpportunityService,
             CandidateSavedListService candidateSavedListService, EmailHelper emailHelper,
         UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
-            SalesforceBridgeService salesforceBridgeService, SalesforceConfig salesforceConfig, SalesforceService salesforceService,
+        JobChatService jobChatService, PartnerService partnerService, SalesforceBridgeService salesforceBridgeService, SalesforceConfig salesforceConfig, SalesforceService salesforceService,
             SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
             SavedSearchService savedSearchService, JobOppIntakeService jobOppIntakeService) {
         this.authService = authService;
@@ -138,6 +144,8 @@ public class JobServiceImpl implements JobService {
         this.userService = userService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
+        this.jobChatService = jobChatService;
+        this.partnerService = partnerService;
         this.salesforceBridgeService = salesforceBridgeService;
         this.salesforceConfig = salesforceConfig;
         this.salesforceService = salesforceService;
@@ -285,7 +293,19 @@ public class JobServiceImpl implements JobService {
 
         job.setJobCreator(loggedInUserPartner);
 
-        return salesforceJobOppRepository.save(job);
+        job = salesforceJobOppRepository.save(job);
+
+        //Create the chats associated with this job
+        jobChatService.createJobCreatorChat(JobChatType.AllJobCandidates, job);
+        jobChatService.createJobCreatorChat(JobChatType.JobCreatorAllSourcePartners, job);
+
+        //Add chats with each source partner
+        List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+        for (PartnerImpl sourcePartner : sourcePartners) {
+            jobChatService.createJobCreatorSourcePartnerChat(job, sourcePartner);
+        }
+
+        return job;
     }
 
     private User getLoggedInUser(String operation) {
