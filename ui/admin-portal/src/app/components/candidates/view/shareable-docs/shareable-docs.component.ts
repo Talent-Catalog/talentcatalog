@@ -62,8 +62,8 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
 
     //Replace form value with the new candidates shareable docs when changing from one candidate to the next in a list.
     if (this.form && this.isList) {
-      this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id);
-      this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id);
+      this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id, {emitEvent: false});
+      this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id, {emitEvent: false});
     }
   }
 
