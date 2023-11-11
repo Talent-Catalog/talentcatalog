@@ -16,10 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
@@ -57,6 +53,11 @@ import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class CandidateSavedListServiceImpl implements CandidateSavedListService {
@@ -349,12 +350,16 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         if (request.getShareableCvAttachmentId() != null) {
             cv = candidateAttachmentRepository.findById(request.getShareableCvAttachmentId())
                 .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getShareableCvAttachmentId()));
+
+            validateDocBelongsToCandidate(candidate, cv);
         }
 
         CandidateAttachment doc = null;
         if (request.getShareableDocAttachmentId() != null) {
             doc = candidateAttachmentRepository.findById(request.getShareableDocAttachmentId())
                 .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getShareableDocAttachmentId()));
+
+            validateDocBelongsToCandidate(candidate, doc);
         }
 
         //Publish these docs (if not null) - ie make them viewable by anyone.
@@ -390,6 +395,18 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
             csl.setShareableCv(cv);
             csl.setShareableDoc(doc);
             candidateSavedListRepository.save(csl);
+        }
+    }
+
+    /**
+     * Validation to make sure a candidate's shareable doc belongs to the candidate.
+     * @param candidate Candidate that the request is associated to
+     * @param doc Candidate Attachment that is attempted to be set as a shareable doc of the candidate.
+     */
+    private void validateDocBelongsToCandidate(Candidate candidate, CandidateAttachment doc) {
+        if (doc.getCandidate() != candidate) {
+            throw new InvalidRequestException("The document '" + doc.getName()
+                    + "' does not belong to the candidate " + candidate.getCandidateNumber());
         }
     }
 }
