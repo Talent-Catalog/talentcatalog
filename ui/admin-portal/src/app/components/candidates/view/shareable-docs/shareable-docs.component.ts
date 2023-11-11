@@ -27,9 +27,6 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
   loading: boolean;
   saving: boolean;
 
-  shareableCv: CandidateAttachment;
-  shareableDoc: CandidateAttachment;
-
   savedList: boolean;
 
   form: FormGroup;
