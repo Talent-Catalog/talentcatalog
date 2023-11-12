@@ -1,0 +1,32 @@
+<div class="row">
+  <div class="col-sm-{{mainPanelColWidth}}">
+    <app-view-job-source-contacts
+        [job]="job"
+        [editable]="editable"
+        (sourcePartnerSelection)="onSourcePartnerSelected($event)"
+    >
+    </app-view-job-source-contacts>
+  </div>
+
+  <div class="col-sm-{{sidePanelColWidth}} admin-panel detail-panel">
+    <div class="w-100">
+      <div *ngIf="canToggleSizes()" class="float-end">
+        <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+            class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
+      </div>
+
+      <div *ngIf="selectedSourcePartner">
+        <strong>Chat {{selectedSourcePartner.name}}</strong>
+
+        <div class="alert alert-danger" *ngIf="error">
+          {{error}}
+        </div>
+
+        <app-posts
+            [chat]="selectedSourcePartnerChat"
+        >
+        </app-posts>
+      </div>
+    </div>
+  </div>
+</div>

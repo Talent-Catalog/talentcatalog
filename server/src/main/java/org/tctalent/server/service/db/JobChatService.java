@@ -18,6 +18,7 @@ package org.tctalent.server.service.db;
 
 import java.util.List;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -26,17 +27,38 @@ import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
-import org.tctalent.server.request.chat.UpdateChatRequest;
 
 public interface JobChatService {
 
     /**
-     * Creates a new job chat
-     * @param request Request defining the chat to be created
+     * Creates a new job chat.
+     * <p/>
+     * Parameters which are not needed for job type may be null.
+     * @param type Type of Job Chat
+     * @param job Job associated with chat
+     * @param sourcePartner Source partner associated with chat
+     * @param candidateOpp Candidate opportunity associated with chat
      * @return Created job chat
      * @throws EntityExistsException if there is already a job chat matching the given request.
      */
-    @NonNull JobChat createJobChat(UpdateChatRequest request) throws EntityExistsException;
+    @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
+        @Nullable PartnerImpl sourcePartner, @Nullable CandidateOpportunity candidateOpp)
+            throws EntityExistsException;
+
+    /**
+     * Finds a job chat matching the given type and paramteres, creating one if needed.
+     * <p/>
+     * Parameters which are not needed for job type may be null.
+     * @param type Type of Job Chat
+     * @param job Job associated with chat
+     * @param sourcePartner Source partner associated with chat
+     * @param candidateOpp Candidate opportunity associated with chat
+     * @return Found or created job chat
+     * @throws InvalidRequestException if required objects for this chat type are missing (null).
+     */
+    @NonNull JobChat getOrCreateJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
+        @Nullable PartnerImpl sourcePartner, @Nullable CandidateOpportunity candidateOpp)
+        throws InvalidRequestException;
 
     /**
      * Creates a job chat which is associated with the Job Creator, but not any particular source

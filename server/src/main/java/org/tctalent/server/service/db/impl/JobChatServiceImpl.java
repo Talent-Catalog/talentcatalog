@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateOpportunity;
@@ -32,7 +32,6 @@ import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.JobChatRepository;
-import org.tctalent.server.request.chat.UpdateChatRequest;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.UserService;
 
@@ -43,14 +42,8 @@ public class JobChatServiceImpl implements JobChatService {
     private final UserService userService;
     private final JobChatRepository jobChatRepository;
 
-    @Override
-    @NonNull
-    public JobChat createJobChat(UpdateChatRequest request) throws EntityExistsException {
-        return createJobChat(null, null, null, null);
-    }
-
-    @NonNull JobChat createJobChat(
-        JobChatType type,  SalesforceJobOpp job, PartnerImpl sourcePartner, CandidateOpportunity candidateOpp) {
+    public @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
+        @Nullable PartnerImpl sourcePartner, @Nullable CandidateOpportunity candidateOpp) {
         JobChat chat = new JobChat();
         chat.setCreatedBy(userService.getLoggedInUser());
         chat.setCreatedDate(OffsetDateTime.now());
@@ -96,6 +89,48 @@ public class JobChatServiceImpl implements JobChatService {
             throw new InvalidRequestException("Unsupported type: " + type);
         }
         return createJobChat(type, null, null, candidateOpp);
+    }
+
+    @Override
+    @NonNull
+    public JobChat getOrCreateJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
+        @Nullable PartnerImpl sourcePartner, @Nullable CandidateOpportunity candidateOpp)
+        throws InvalidRequestException {
+        if (type == null) {
+            throw new InvalidRequestException("Missing JobChatType");
+        }
+
+        JobChat jobChat =
+        switch (type) {
+            case JobCreatorAllSourcePartners, AllJobCandidates -> {
+                if (job == null) {
+                    throw new InvalidRequestException("Missing Job");
+                }
+                yield(jobChatRepository.findByTypeAndJob(type, job.getId()));
+            }
+
+            case JobCreatorSourcePartner -> {
+                if (job == null) {
+                    throw new InvalidRequestException("Missing Job");
+                }
+                if (sourcePartner == null) {
+                    throw new InvalidRequestException("Missing source partner");
+                }
+                yield(jobChatRepository.findByTypeAndJobAndPartner(type, job.getId(), sourcePartner.getId()));
+            }
+
+            case CandidateProspect, CandidateRecruiting -> {
+                if (candidateOpp == null) {
+                    throw new InvalidRequestException("Missing candidate opp");
+                }
+                yield(jobChatRepository.findByTypeAndCandidateOpp(type, candidateOpp.getId()));
+            }
+        };
+
+        if (jobChat == null) {
+            jobChat = createJobChat(type, job, sourcePartner, candidateOpp);
+        }
+        return jobChat;
     }
 
     @Override
