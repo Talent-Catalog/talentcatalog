@@ -19,7 +19,7 @@ logging:
         boot:
           internal:
             #Gets rid of DuplicateSeqGen errors at start up.
-            #Caused by Entity inheritance from org/tbbtalent/server/model/db/AbstractDomainObject.java
+            #Caused by Entity inheritance from org/tctalent/server/model/db/AbstractDomainObject.java
             #See notes in that class
             InFlightMetadataCollectorImpl: ERROR
       springframework:
@@ -60,9 +60,9 @@ spring:
 
   datasource:
     driverClassName: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tbbtalent}
-    username: tbbtalent
-    password: ${SPRING_DATASOURCE_PASSWORD:tbbtalent}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tctalent}
+    username: tctalent
+    password: ${SPRING_DATASOURCE_PASSWORD:tctalent}
     hikari:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}

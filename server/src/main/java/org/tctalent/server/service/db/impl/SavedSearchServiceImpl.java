@@ -1222,8 +1222,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
+    /**
+     * Sends emails to any users watching searches who had new results over night.
+     * <p/>
+     * Has to be annotated as Transactional in order to create the "persistence context" (what
+     * the underlying Hibernate calls a Session).
+     * This context is used to fetch lazily loaded attributes (by auto generating other
+     * SQL calls on the database).
+     * <p/>
+     * When running searches from requests through the REST API, Spring automatically
+     * creates this context - so you don't have to annotate all your REST API methods
+     * as Transactional.
+     * - JC
+     */
     //Midnight GMT
     @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
+    @Transactional
     public void notifySearchWatchers() {
         String currentSearch = "";
         try {
@@ -1242,7 +1256,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             for (SavedSearch savedSearch : searches) {
 
                 count++;
-                currentSearch = savedSearch.getName();
+                currentSearch = savedSearch.getName() + " (" + savedSearch.getId() + ")";
                 log.info("Running search " + count + ": " + currentSearch);
 
                 SearchCandidateRequest searchCandidateRequest =
