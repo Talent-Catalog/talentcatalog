@@ -445,4 +445,10 @@ public class AdminApiTestUtil {
         systemLanguage.setId(1L);
         return systemLanguage;
     }
+
+    static Occupation getOccupation() {
+        Occupation occupation = new Occupation("Nurse", Status.active);
+        occupation.setId(1L);
+        return occupation;
+    }
 }
