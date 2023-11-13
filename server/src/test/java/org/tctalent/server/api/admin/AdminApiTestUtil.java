@@ -17,10 +17,6 @@
 package org.tctalent.server.api.admin;
 
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Set;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateCitizenship;
@@ -61,6 +57,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.SystemLanguage;
 import org.tctalent.server.model.db.TBBEligibilityAssessment;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
@@ -68,6 +65,11 @@ import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.request.candidate.PublishedDocColumnProps;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author sadatmalik
@@ -421,5 +423,26 @@ public class AdminApiTestUtil {
         return List.of(
             getSavedList()
         );
+    }
+
+    static LanguageLevel getLanguageLevel() {
+        LanguageLevel languageLevel = new LanguageLevel(
+                "Excellent", Status.active, 1
+        );
+        return languageLevel;
+    }
+
+    static List<LanguageLevel> getLanguageLevelList() {
+        return List.of(
+                getLanguageLevel()
+        );
+    }
+
+    static SystemLanguage getSystemLanguage() {
+        SystemLanguage systemLanguage = new SystemLanguage(
+                "Spanish"
+        );
+        systemLanguage.setId(1L);
+        return systemLanguage;
     }
 }
