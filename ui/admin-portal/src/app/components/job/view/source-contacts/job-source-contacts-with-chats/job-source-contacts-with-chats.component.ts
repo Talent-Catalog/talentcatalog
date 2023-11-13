@@ -4,6 +4,7 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../../../model/chat
 import {Partner} from "../../../../../model/partner";
 import {Job} from "../../../../../model/job";
 import {ChatService} from "../../../../../services/chat.service";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-job-source-contacts-with-chats',
@@ -16,12 +17,14 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   @Input() job: Job;
   @Input() editable: boolean;
 
+  chatHeader: string = "";
   error: any;
   selectedSourcePartner: Partner;
   selectedSourcePartnerChat: JobChat;
 
   constructor(
-    private chatService: ChatService,
+      private authorizationService: AuthorizationService,
+      private chatService: ChatService,
   ) {
     super(6);
   }
@@ -32,6 +35,7 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   ngOnChanges(changes: SimpleChanges): void {
     if (this.job && this.selectedSourcePartner) {
       this.fetchJobChat();
+      this.computeChatHeader();
     }
   }
 
@@ -52,5 +56,21 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   onSourcePartnerSelected(sourcePartner: Partner) {
     this.selectedSourcePartner = sourcePartner;
     this.fetchJobChat();
+    this.computeChatHeader();
+  }
+
+  private computeChatHeader() {
+    let name: string = "";
+
+    if (this.authorizationService.isJobCreator()) {
+      if (this.selectedSourcePartner) {
+        name = this.selectedSourcePartner.name;
+      }
+    } else if (this.authorizationService.isSourcePartner()) {
+      if (this.job) {
+        name = this.job.jobCreator?.name;
+      }
+    }
+    this.chatHeader = "Chat " + name;
   }
 }
