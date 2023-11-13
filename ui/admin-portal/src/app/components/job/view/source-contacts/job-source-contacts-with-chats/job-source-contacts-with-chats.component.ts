@@ -5,6 +5,7 @@ import {Partner} from "../../../../../model/partner";
 import {Job} from "../../../../../model/job";
 import {ChatService} from "../../../../../services/chat.service";
 import {AuthorizationService} from "../../../../../services/authorization.service";
+import {AuthenticationService} from "../../../../../services/authentication.service";
 
 @Component({
   selector: 'app-job-source-contacts-with-chats',
@@ -17,26 +18,44 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   @Input() job: Job;
   @Input() editable: boolean;
 
-  chatHeader: string = "";
+  chatHeader: string;
   error: any;
+  selectable: boolean = true;
   selectedSourcePartner: Partner;
   selectedSourcePartnerChat: JobChat;
 
   constructor(
+      private authenticationService: AuthenticationService,
       private authorizationService: AuthorizationService,
       private chatService: ChatService,
   ) {
-    super(6);
+    super(5);
   }
 
   ngOnInit(): void {
+    this.computeChatHeader();
+
+    if (this.authorizationService.isSourcePartner()
+        && !this.authorizationService.isDefaultSourcePartner()) {
+      //Source partners (other than the default source partner) auto select and can only
+      //display their chat.
+      this.selectedSourcePartner = this.authenticationService.getLoggedInUser().partner;
+      this.displayChat();
+
+      //Selection can't change
+      this.selectable = false;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.job && this.selectedSourcePartner) {
-      this.fetchJobChat();
-      this.computeChatHeader();
+      this.displayChat();
     }
+  }
+
+  private displayChat() {
+    this.fetchJobChat();
+    this.computeChatHeader();
   }
 
   private fetchJobChat() {
@@ -65,6 +84,8 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
     if (this.authorizationService.isJobCreator()) {
       if (this.selectedSourcePartner) {
         name = this.selectedSourcePartner.name;
+      } else {
+        name = ": Select partner to display chat with them"
       }
     } else if (this.authorizationService.isSourcePartner()) {
       if (this.job) {

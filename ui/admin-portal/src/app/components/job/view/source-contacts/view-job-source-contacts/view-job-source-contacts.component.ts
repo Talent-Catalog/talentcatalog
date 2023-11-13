@@ -26,6 +26,7 @@ MODEL: Modal popups.
 export class ViewJobSourceContactsComponent implements OnInit {
   @Input() job: Job;
   @Input() editable: boolean;
+  @Input() selectable: boolean;
   @Output() sourcePartnerSelection = new EventEmitter();
 
   currentSourcePartner: Partner;
@@ -134,8 +135,10 @@ export class ViewJobSourceContactsComponent implements OnInit {
   }
 
   selectCurrent(partner: Partner) {
-    this.currentSourcePartner = partner;
+    if (this.selectable) {
+      this.currentSourcePartner = partner;
 
-    this.sourcePartnerSelection.emit(partner);
+      this.sourcePartnerSelection.emit(partner);
+    }
   }
 }

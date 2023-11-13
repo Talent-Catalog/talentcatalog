@@ -3,6 +3,7 @@
     <app-view-job-source-contacts
         [job]="job"
         [editable]="editable"
+        [selectable]="selectable"
         (sourcePartnerSelection)="onSourcePartnerSelected($event)"
     >
     </app-view-job-source-contacts>
@@ -15,8 +16,8 @@
             class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
       </div>
 
+      <strong>{{chatHeader}}</strong>
       <div *ngIf="selectedSourcePartner">
-        <strong>{{chatHeader}}</strong>
 
         <div class="alert alert-danger" *ngIf="error">
           {{error}}
