@@ -18,8 +18,26 @@ package org.tctalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatType;
 
 public interface JobChatRepository extends JpaRepository<JobChat, Long>,
     JpaSpecificationExecutor<JobChat> {
+
+    @Query("select c from JobChat c where c.type = :type "
+        + "and c.jobOpp is not null and c.jobOpp.id = :jobId")
+    JobChat findByTypeAndJob(@Param("type") JobChatType type, @Param("jobId") Long jobId);
+
+    @Query("select c from JobChat c where c.type = :type "
+        + "and c.candidateOpp is not null and c.candidateOpp.id = :oppId")
+    JobChat findByTypeAndCandidateOpp(@Param("type") JobChatType type, @Param("oppId") Long oppId);
+
+    @Query("select c from JobChat c where c.type = :type "
+        + "and c.jobOpp is not null and c.jobOpp.id = :jobId "
+        + "and c.sourcePartner is not null and c.sourcePartner.id = :partnerId")
+    JobChat findByTypeAndJobAndPartner(
+        @Param("type") JobChatType type, @Param("jobId") Long jobId,
+        @Param("partnerId") Long partnerId);
 }

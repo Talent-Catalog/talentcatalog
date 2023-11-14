@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {PartnerService} from "../../../../../services/partner.service";
 import {
@@ -26,7 +26,10 @@ MODEL: Modal popups.
 export class ViewJobSourceContactsComponent implements OnInit {
   @Input() job: Job;
   @Input() editable: boolean;
+  @Input() selectable: boolean;
+  @Output() sourcePartnerSelection = new EventEmitter();
 
+  currentSourcePartner: Partner;
   error: any;
   loading: boolean;
   sourcePartners: Partner[];
@@ -129,5 +132,13 @@ export class ViewJobSourceContactsComponent implements OnInit {
       ret = "(" + s + ")"
     }
     return ret;
+  }
+
+  selectCurrent(partner: Partner) {
+    if (this.selectable) {
+      this.currentSourcePartner = partner;
+
+      this.sourcePartnerSelection.emit(partner);
+    }
   }
 }

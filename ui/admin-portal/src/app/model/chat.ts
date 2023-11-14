@@ -35,5 +35,17 @@ export interface ChatPost {
 
 }
 
-export interface UpdateChatRequest {
+export enum JobChatType {
+  JobCreatorSourcePartner,
+  JobCreatorAllSourcePartners,
+  CandidateProspect,
+  CandidateRecruiting,
+  AllJobCandidates
+}
+
+export interface CreateChatRequest {
+  type?: JobChatType;
+  jobId?: number;
+  sourcePartnerId?: number;
+  candidateOppId?: number;
 }

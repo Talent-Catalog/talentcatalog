@@ -16,12 +16,11 @@
 
 package org.tctalent.server.model.db.partner;
 
+import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
-
-import java.util.Set;
 
 /**
  * A source partner works with displaced talent candidate users, encouraging them to register with
@@ -38,7 +37,7 @@ import java.util.Set;
  *
  * @author John Cameron
  */
-public interface SourcePartner {
+public interface SourcePartner extends BasePartner {
 
     /**
      * If true, candidates managed by this partner will use {@link Candidate#getCandidateNumber()}

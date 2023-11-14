@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {JobChat, UpdateChatRequest} from "../../../model/chat";
+import {CreateChatRequest, JobChat} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 
 @Component({
@@ -32,11 +32,11 @@ export class ManageChatsComponent implements OnInit {
   }
 
   doEditChat() {
-    //todo doEditChat
+    //Not supported yet
   }
 
   doNewChat() {
-    let request: UpdateChatRequest = {};
+    let request: CreateChatRequest = {};
     this.loading = false;
     this.error = null;
     this.chatService.create(request).subscribe(

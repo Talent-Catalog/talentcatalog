@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.partner;
+package org.tctalent.server.request.chat;
 
-/**
- * Destination partners that create jobs
- *
- * @author John Cameron
- */
-public interface JobCreator extends BasePartner {
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+public class SearchChatPostRequest {
 
 }

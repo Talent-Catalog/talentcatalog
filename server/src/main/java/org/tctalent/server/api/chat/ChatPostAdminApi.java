@@ -25,22 +25,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.api.admin.IJoinedTableApi;
 import org.tctalent.server.model.db.ChatPost;
-import org.tctalent.server.request.chat.SearchChatRequest;
-import org.tctalent.server.request.chat.UpdateChatRequest;
+import org.tctalent.server.request.chat.SearchChatPostRequest;
+import org.tctalent.server.request.chat.UpdateChatPostRequest;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @RestController()
 @RequestMapping("/api/admin/chat-post")
 @Slf4j
 @RequiredArgsConstructor
 public class ChatPostAdminApi implements
-    IJoinedTableApi<SearchChatRequest, UpdateChatRequest, UpdateChatRequest> {
+    IJoinedTableApi<SearchChatPostRequest, UpdateChatPostRequest, UpdateChatPostRequest> {
 
     private final ChatPostService chatPostService;
 
