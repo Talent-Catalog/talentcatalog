@@ -16,8 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.SalesforceHelper.extractIdFromSfUrl;
-
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import java.nio.charset.StandardCharsets;
@@ -62,6 +60,8 @@ import org.tctalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateLanguage;
+import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
@@ -1278,6 +1278,84 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
 
             setTBBid(Long.valueOf(candidate.getCandidateNumber()));
+
+            final String intaked = candidate.getIntaked();
+            setIntaked(intaked);
+
+            final String dateOfBirth = String.valueOf(candidate.getDob());
+            if (dateOfBirth != null) {
+            setDateOfBirth(dateOfBirth);
+            }
+
+            final String status = String.valueOf(candidate.getStatus());
+            setStatus(status);
+
+            final String tcAccountCreated = String.valueOf(candidate.getCreatedDate());
+            setTcAccountCreated(tcAccountCreated);
+
+            final String unhcrRegistered = String.valueOf(candidate.getUnhcrRegistered());
+            if (unhcrRegistered != null) {
+                setUnhcrRegistered(unhcrRegistered);
+            }
+
+            List<CandidateLanguage> candidateLanguagesList = candidate.getCandidateLanguages();
+            final String languagesSpoken = candidateLanguagesList.stream().map(candidateLanguage -> candidateLanguage.getLanguage().getName()).collect(Collectors.joining("; "));
+            if (languagesSpoken != null) {
+                setLanguagesSpoken(languagesSpoken);
+            }
+
+            CandidateLanguage english = candidateLanguagesList.stream()
+                .filter(candidateLanguage -> "English".equals(candidateLanguage.getLanguage().getName()))
+                .findAny()
+                .orElse(null);
+            if (english != null) {
+                final String englishSpeakingLevel = String.valueOf(english.getSpokenLevel().getName());
+                setEnglishSpeakingLevel(englishSpeakingLevel);
+            }
+
+            CandidateLanguage french = candidateLanguagesList.stream()
+                .filter(candidateLanguage -> "French".equals(candidateLanguage.getLanguage().getName()))
+                .findAny()
+                .orElse(null);
+            if (french != null) {
+                final String frenchSpeakingLevel = String.valueOf(french.getSpokenLevel().getName());
+                setFrenchSpeakingLevel(frenchSpeakingLevel);
+            }
+
+            CandidateLanguage german = candidateLanguagesList.stream()
+                .filter(candidateLanguage -> "German".equals(candidateLanguage.getLanguage().getName()))
+                .findAny()
+                .orElse(null);
+            if (german != null) {
+                final String germanSpeakingLevel = String.valueOf(german.getSpokenLevel().getName());
+                setGermanSpeakingLevel(germanSpeakingLevel);
+            }
+
+            CandidateLanguage spanish = candidateLanguagesList.stream()
+                .filter(candidateLanguage -> "Spanish".equals(candidateLanguage.getLanguage().getName()))
+                .findAny()
+                .orElse(null);
+            if (spanish != null) {
+                final String spanishSpeakingLevel = String.valueOf(spanish.getSpokenLevel().getName());
+                setSpanishSpeakingLevel(spanishSpeakingLevel);
+            }
+
+            final String maxEducationLevel = candidate.getMaxEducationLevel().getName();
+            if (maxEducationLevel != null) {
+                setMaxEducationLevel(maxEducationLevel);
+            }
+
+            List<CandidateOccupation> candidateOccupationsList = candidate.getCandidateOccupations();
+            final String occupations = candidateOccupationsList.stream().map(candidateOccupation -> candidateOccupation.getOccupation().getName()).collect(Collectors.joining("; "));
+            if (occupations != null) {
+                setOccupations(occupations);
+            }
+
+            final boolean tcContactConsent = candidate.getContactConsentRegistration();
+            setTcContactConsent(tcContactConsent);
+
+            final boolean partnerContactConsent = candidate.getContactConsentPartners();
+            setPartnerContactConsent(partnerContactConsent);
         }
 
         public void setAccountId(String accountId) {
@@ -1327,6 +1405,34 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public void setTBBid(Long tbbId) {
             super.put(candidateNumberSFFieldName, tbbId);
         }
+
+        public void setDateOfBirth(String dateOfBirth) { super.put("Date_of_Birth__c", dateOfBirth); }
+
+        public void setStatus(String status) { super.put("TC_Status__c", status); }
+
+        public void setTcAccountCreated(String tcAccountCreated) { super.put("TC_Account_Created__c", tcAccountCreated); }
+
+        public void setUnhcrRegistered(String unhcrRegistered) { super.put("UNHCR_Registered__c", unhcrRegistered); }
+
+        public void setLanguagesSpoken(String languagesSpoken) { super.put("Language_s_Spoken__c", languagesSpoken); }
+
+        public void setEnglishSpeakingLevel(String englishSpeakingLevel) { super.put("English_Speaking_Level__c", englishSpeakingLevel); }
+
+        public void setFrenchSpeakingLevel(String frenchSpeakingLevel) { super.put("French_Speaking_Level__c", frenchSpeakingLevel); }
+
+        public void setGermanSpeakingLevel(String germanSpeakingLevel) { super.put("German_Speaking_Level__c", germanSpeakingLevel); }
+
+        public void setSpanishSpeakingLevel(String spanishSpeakingLevel) { super.put("Spanish_Speaking_Level__c", spanishSpeakingLevel); }
+
+        public void setMaxEducationLevel(String maxEducationLevel) { super.put("Highest_Educational_Attainment__c", maxEducationLevel); }
+
+        public void setOccupations(String occupations) { super.put("Occupation_s__c", occupations); }
+
+        public void setIntaked(String intaked) { super.put("Intaked__c", intaked); }
+
+        public void setTcContactConsent(boolean tcContactConsent) { super.put("TC_Contact_Consent__c", tcContactConsent); }
+
+        public void setPartnerContactConsent(boolean partnerContactConsent) { super.put("Partner_Contact_Consent__c", partnerContactConsent); }
     }
 
     /**
