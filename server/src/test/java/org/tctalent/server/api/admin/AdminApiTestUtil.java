@@ -451,4 +451,24 @@ public class AdminApiTestUtil {
         occupation.setId(1L);
         return occupation;
     }
+
+    static Language getLanguage() {
+        Language language = new Language(
+                "Arabic", Status.active
+        );
+        language.setId(99L);
+        return language;
+    }
+
+    static List<Language> getLanguageList() {
+        return List.of(
+                getLanguage()
+        );
+    }
+
+    static List<SystemLanguage> getSystemLanguageList() {
+        return List.of(
+                getSystemLanguage()
+        );
+    }
 }
