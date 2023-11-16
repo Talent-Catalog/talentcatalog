@@ -44,11 +44,14 @@ import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
+import org.tctalent.server.model.db.JobOppIntake;
+import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.OtherVisas;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Registration;
 import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.RiskLevel;
@@ -373,6 +376,7 @@ public class AdminApiTestUtil {
     static SavedSearch getSavedSearch() {
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setId(123L);
+        savedSearch.setName("My Search");
         return savedSearch;
     }
 
@@ -470,5 +474,84 @@ public class AdminApiTestUtil {
         return List.of(
                 getSystemLanguage()
         );
+    }
+
+    static SalesforceJobOpp getJob() {
+        SalesforceJobOpp job = new SalesforceJobOpp();
+        job.setContactUser(new User("contact_user",
+                "contact",
+                "user",
+                "test.contact@tbb.org",
+                Role.admin));
+        job.setSfId("123456");
+        job.setStage(JobOpportunityStage.cvReview);
+        job.setSubmissionDueDate(LocalDate.parse("2020-01-01"));
+        job.setNextStep("This is the next step.");
+        job.setNextStepDueDate(LocalDate.parse("2020-01-01"));
+        job.setClosingComments("These are some closing comments.");
+        job.setId(99L);
+        job.setAccountId("789");
+        job.setCandidateOpportunities(Set.of(getCandidateOpportunity()));
+        job.setCountry(new Country("Australia", Status.active));
+        job.setDescription("This is a description.");
+        job.setEmployer("ABC Accounts");
+        job.setExclusionList(getSavedList());
+        job.setJobSummary("This is a job summary.");
+        job.setOwnerId("321");
+        job.setPublishedBy(caller);
+        job.setPublishedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        job.setJobCreator(getPartnerImpl());
+        job.setStage(JobOpportunityStage.cvReview);
+        job.setStarringUsers(Set.of(caller));
+        job.setSubmissionDueDate(LocalDate.parse("2020-01-01"));
+        job.setSubmissionList(getSavedList());
+        job.setSuggestedList(getSavedList());
+        job.setSuggestedSearches(Set.of(getSavedSearch()));
+        job.setJobOppIntake(getJobOppIntake());
+        job.setHiringCommitment(1L);
+        job.setEmployerWebsite("www.ABCAccounts.com");
+        job.setEmployerHiredInternationally("Yes");
+        job.setOpportunityScore("Opp Score");
+        job.setEmployerDescription("This is an employer description.");
+        job.setClosed(false);
+        job.setWon(false);
+        job.setClosingComments(null);
+        job.setName("Opp Name");
+        job.setNextStep("Next Step");
+        job.setNextStepDueDate(LocalDate.parse("2020-01-01"));
+        job.setStageOrder(1);
+        job.setCreatedBy(caller);
+        job.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        job.setUpdatedBy(caller);
+        job.setUpdatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        return job;
+    }
+
+    static PartnerImpl getPartnerImpl() {
+        PartnerImpl partnerImpl = new PartnerImpl();
+        partnerImpl.setId(99L);
+        partnerImpl.setName("Partner");
+        partnerImpl.setAbbreviation("prt");
+        partnerImpl.setWebsiteUrl("www.partner.com");
+        return partnerImpl;
+    }
+
+    static JobOppIntake getJobOppIntake() {
+        JobOppIntake joi = new JobOppIntake();
+        joi.setId(99L);
+        joi.setSalaryRange("80-90k");
+        joi.setRecruitmentProcess("The recruitment process.");
+        joi.setEmployerCostCommitment("Employer cost commitments.");
+        joi.setLocation("Melbourne");
+        joi.setLocationDetails("Western suburbs");
+        joi.setBenefits("These are the benefits.");
+        joi.setLanguageRequirements("These are the language reqs.");
+        joi.setEducationRequirements("These are the education reqs.");
+        joi.setSkillRequirements("These are the skill reqs.");
+        joi.setEmploymentExperience("This is the employment experience.");
+        joi.setOccupationCode("Occupation code");
+        joi.setMinSalary("80k");
+        joi.setVisaPathways("The visa pathways");
+        return joi;
     }
 }
