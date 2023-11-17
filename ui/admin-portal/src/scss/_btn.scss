@@ -19,87 +19,87 @@
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/buttons";
 
-.btn-primary {
-  @include button-variant(
-      // Regular button (background, border, color)
-      $color-primary, $color-primary, white,
-      // Hover
-      $color-primary-dark, $color-primary-dark, white,
-      // Active
-      $color-primary, $color-primary, white,
-      // Disabled
-      $color-secondary-lighter, $color-secondary-lighter, white);
-}
-
-.btn-outline-primary {
-  @include button-outline-variant($color-primary, white, $color-primary-dark, $color-primary-darker);
-
-  &:hover {
-    border-color: $color-primary;
-  }
-
-  &:not(:disabled):not(.disabled){
-    &:hover {
-      border-color: $color-primary-dark;
-      background: $color-primary-dark;
-    }
-
-    &:active {
-      background-color: $color-primary-darker;
-      border-color: $color-primary-darker;
-    }
-  }
-}
-
-.btn-link {
-  color: $color-primary;
-  background-color: transparent;
-
-  &:hover {
-    color: $color-primary-dark;
-    text-decoration: none;
-    background-color: transparent;
-    border-color: transparent;
-  }
-
-  &:active {
-    color: $color-primary-darker;
-  }
-
-  &:disabled,
-  &.disabled {
-    color: $color-text-light;
-  }
-}
-
-a {
-  color: $color-primary;
-  background-color: transparent;
-  text-decoration: none;
-
-  &:hover {
-    color: $color-primary-dark;
-    text-decoration: none;
-    background-color: transparent;
-    border-color: transparent;
-  }
-
-  &:active {
-    color: $color-primary-darker;
-  }
-
-  &:disabled,
-  &.disabled {
-    color: $color-text-light;
-    background-color: $color-secondary-light;
-  }
-}
-
-.link {
-  color: $color-primary;
-}
-
-button:focus {
-  box-shadow: none !important;
-  text-decoration: none !important;
-}
+//.btn-primary {
+//  @include button-variant(
+//      // Regular button (background, border, color)
+//      $color-primary, $color-primary, white,
+//      // Hover
+//      $color-primary-dark, $color-primary-dark, white,
+//      // Active
+//      $color-primary, $color-primary, white,
+//      // Disabled
+//      $color-secondary-lighter, $color-secondary-lighter, white);
+//}
+//
+//.btn-outline-primary {
+//  @include button-outline-variant($color-primary, white, $color-primary-dark, $color-primary-darker);
+//
+//  &:hover {
+//    border-color: $color-primary;
+//  }
+//
+//  &:not(:disabled):not(.disabled){
+//    &:hover {
+//      border-color: $color-primary-dark;
+//      background: $color-primary-dark;
+//    }
+//
+//    &:active {
+//      background-color: $color-primary-darker;
+//      border-color: $color-primary-darker;
+//    }
+//  }
+//}
+//
+//.btn-link {
+//  color: $color-primary;
+//  background-color: transparent;
+//
+//  &:hover {
+//    color: $color-primary-dark;
+//    text-decoration: none;
+//    background-color: transparent;
+//    border-color: transparent;
+//  }
+//
+//  &:active {
+//    color: $color-primary-darker;
+//  }
+//
+//  &:disabled,
+//  &.disabled {
+//    color: $color-text-light;
+//  }
+//}
+//
+//a {
+//  color: $color-primary;
+//  background-color: transparent;
+//  text-decoration: none;
+//
+//  &:hover {
+//    color: $color-primary-dark;
+//    text-decoration: none;
+//    background-color: transparent;
+//    border-color: transparent;
+//  }
+//
+//  &:active {
+//    color: $color-primary-darker;
+//  }
+//
+//  &:disabled,
+//  &.disabled {
+//    color: $color-text-light;
+//    background-color: $color-secondary-light;
+//  }
+//}
+//
+//.link {
+//  color: $color-primary;
+//}
+//
+//button:focus {
+//  box-shadow: none !important;
+//  text-decoration: none !important;
+//}

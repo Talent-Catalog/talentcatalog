@@ -33,26 +33,26 @@
 
 .link,
 .link:not([href]):not([tabindex]){
-  color: $color-primary-darker;
+  //color: $color-primary-darker;
   cursor: pointer;
-  text-decoration: $link-decoration;
+  //text-decoration: $link-decoration;
   &:hover {
-    color: $color-primary-dark;
-    text-decoration: $link-hover-decoration;
+    //color: $color-primary-dark;
+    //text-decoration: $link-hover-decoration;
   }
 }
 
 .page-link {
   position: relative;
   display: block;
-  color: $color-primary;
-  background-color: $pagination-bg;
+  //color: $color-primary;
+  //background-color: $pagination-bg;
 
   &:hover {
     z-index: 2;
     text-decoration: none;
-    background-color: $color-primary;
-    color: $color-background;
+    //background-color: $color-primary;
+    //color: $color-background;
   }
 
   &:focus {
@@ -65,21 +65,24 @@
 .page-item {
 
   &.active .page-link {
-    background-color: $color-primary;
-    border-color: $color-primary;
+    //background-color: $color-primary;
+    //border-color: $color-primary;
   }
 
   &.disabled .page-link {
-    color: $pagination-disabled-color;
+    //color: $pagination-disabled-color;
     pointer-events: none;
     // Opinionated: remove the "hand" cursor set previously for .page-link
     cursor: auto;
-    background-color: $pagination-disabled-bg;
-    border-color: $pagination-disabled-border-color;
+    //background-color: $pagination-disabled-bg;
+    //border-color: $pagination-disabled-border-color;
   }
 }
 
 table {
+  background-color: $white;
+  border: $white;
+  border-radius: 5px;
   td {
     white-space: nowrap;
   }
@@ -90,21 +93,22 @@ table {
 }
 
 .card-header {
-  background-color: $color-secondary-lighter !important;
+  background-color: $accent1 !important;
+  color: $light !important;
 }
 
 .custom-primary .multiselect-dropdown .dropdown-btn .selected-item {
-  background-color: $color-primary-dark !important;
-  border: 1px solid $color-primary-dark !important;
+  //background-color: $color-primary-dark !important;
+  //border: 1px solid $color-primary-dark !important;
 }
 
 .custom-primary .multiselect-item-checkbox input[type=checkbox]:checked + div:before {
-  background-color: $color-primary-dark !important;
-  border: 2px solid $color-primary-dark !important;
+  //background-color: $color-primary-dark !important;
+  //border: 2px solid $color-primary-dark !important;
 }
 
 .custom-primary .multiselect-item-checkbox input[type=checkbox] + div:before {
-  border: 2px solid $color-primary-dark !important;
+  //border: 2px solid $color-primary-dark !important;
 }
 
 .col-form-label i {
@@ -135,10 +139,10 @@ table {
   opacity: 1; /* Firefox */
 }
 
-.text-alert {
-  color: #ff8900;
-}
-
-.text-tbb-primary {
-  color: #13B1DD;
-}
+//.text-alert {
+//  color: #ff8900;
+//}
+//
+//.text-tbb-primary {
+//  color: #13B1DD;
+//}

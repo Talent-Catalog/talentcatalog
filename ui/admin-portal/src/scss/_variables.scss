@@ -14,27 +14,80 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-$color-primary-lightest: #e9f7fc;
-$color-primary-lighter: #a7e2f4;
-$color-primary-light: #0cd5e4;
-$color-primary: #13b1dd;
-$color-primary-dark: #0b81a6;
-$color-primary-darker: #075168;
+$white: #ffffff;
 
-$color-secondary: #272b2b;
-$color-secondary-light: #888888;
-$color-secondary-lighter: #dedede;
+//$light:      #dae2e4;
+//$dark:       #111317;
+//$primary:    #213f5a;
+//$secondary:  #4a679f;
+//$info:       #678ecf;
+//$accent1:    #dac700;
+//$accent2:    #c2a10e;
+//$accent3:    #a3bad9;
+//$success:    #00b764;
+//$warning:    #eacf00;
+//$danger:     #fe0000;
 
-$color-text-primary: #272b2b;
-$color-text-secondary: #5a6268;
-$color-text-light: #dedede;
+//$light:      #eee1cc;
+//$dark:       #16142b;
+//$primary:    #1545cc;
+//$secondary:  #3378fc;
+//$info:       #00b58b;
+//$accent1:    #424441;
+//$accent2:    #8a8c72;
+//$accent3:    #a2a4a7;
+//$success:    #00ab63;
+//$warning:    #e4cd00;
+//$danger:     #f41b00;
 
-$color-border: #d7d8d8;
-$color-background: #f2f2f2;
 
-$accordion-button-bg: $color-background;
-$accordion-button-active-bg: #cee2ea;
-$accordion-button-active-color: $color-secondary;
-$accordion-border-color: $color-border;
+// FAVOURITE SO FAR, PROFESSIONAL AND CLEAN. NOT ALOT OF VARIATION THOUGH (BLUES/GREYS)
+$light:      #e4e1d5;
+$dark:       #151f2d;
+$primary:    #437ad8;
+$secondary:  #43a7f5;
+$info:       #6cadfa;
+$accent1:    #383b48;
+$accent2:    #64656d;
+$accent3:    #b2b7bb;
+$success:    #14b166;
+$warning:    #e6ce13;
+$danger:     #f81907;
+
+//$light:      #dbdbdc;
+//$dark:       #101320;
+//$primary:    #37414d;
+//$secondary:  #61769a;
+//$info:       #5799cf;
+//$accent1:    #ce9133;
+//$accent2:    #af8a60;
+//$accent3:    #bdac9a;
+//$success:    #1eb265;
+//$warning:    #e8ce1c;
+//$danger:     #fa0d0f;
+
+
+//$color-primary-lightest: #e9f7fc;
+//$color-primary-lighter: #a7e2f4;
+//$color-primary-light: #0cd5e4;
+//$color-primary: #13b1dd;
+//$color-primary-dark: #0b81a6;
+//$color-primary-darker: #075168;
+//
+//$color-secondary: #272b2b;
+//$color-secondary-light: #888888;
+//$color-secondary-lighter: #dedede;
+//
+//$color-text-primary: #272b2b;
+//$color-text-secondary: #5a6268;
+//$color-text-light: #dedede;
+//
+//$color-border: #d7d8d8;
+//$color-background: #f2f2f2;
+//
+//$accordion-button-bg: $color-background;
+//$accordion-button-active-bg: #cee2ea;
+//$accordion-button-active-color: $color-secondary;
+//$accordion-border-color: $color-border;
 
 $offcanvas-horizontal-width: 40vw;

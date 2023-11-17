@@ -23,21 +23,21 @@
   cursor: pointer;
   position: relative;
   left: 0;
-  background-color: $color-secondary-lighter;
+  background-color: $accent3;
   margin: .5em;
   margin-left: 0;
   padding: 0.1em .4em;
   border-radius: 4px;
 }
 .searches li:hover {;
-  background-color: $color-primary-dark;
+  background-color: $accent1;
   left: .1em;
 }
 .searches li.selected {
-  background-color: $color-secondary-light;
+  background-color: $accent3;
   color: white;
 }
 .searches li.selected:hover {
-  background-color: $color-primary-darker;
+  background-color: $accent2;
   color: white;
 }

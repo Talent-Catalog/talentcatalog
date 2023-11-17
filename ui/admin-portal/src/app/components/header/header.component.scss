@@ -22,7 +22,7 @@
 }
 
 .navbar {
-  background-color: $color-primary-darker;
+  background-color: $dark;
   width: 100%;
 
   .logo {
@@ -38,14 +38,14 @@
   }
 }
 
-.navbar-staging {
-  background-color: #e16a0c;
-  height: 80px;
-  #logo {
-    visibility: hidden;
-  }
-}
-
-.navbar-local {
-  background-color: #4f3d77;
-}
+//.navbar-staging {
+//  background-color: #e16a0c;
+//  height: 80px;
+//  #logo {
+//    visibility: hidden;
+//  }
+//}
+//
+//.navbar-local {
+//  background-color: #4f3d77;
+//}
