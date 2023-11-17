@@ -45,14 +45,14 @@
 .page-link {
   position: relative;
   display: block;
-  //color: $color-primary;
-  //background-color: $pagination-bg;
+  color: $accent3;
+  background-color: $dark;
 
   &:hover {
     z-index: 2;
     text-decoration: none;
-    //background-color: $color-primary;
-    //color: $color-background;
+    background-color: $accent1;
+    color: $light;
   }
 
   &:focus {
@@ -65,17 +65,16 @@
 .page-item {
 
   &.active .page-link {
-    //background-color: $color-primary;
-    //border-color: $color-primary;
+    background-color: $primary;
+    border-color: $primary;
   }
 
   &.disabled .page-link {
-    //color: $pagination-disabled-color;
+    color: $accent2;
+    background-color: $accent3;
     pointer-events: none;
     // Opinionated: remove the "hand" cursor set previously for .page-link
     cursor: auto;
-    //background-color: $pagination-disabled-bg;
-    //border-color: $pagination-disabled-border-color;
   }
 }
 
@@ -93,7 +92,7 @@ table {
 }
 
 .card-header {
-  background-color: $accent1 !important;
+  background-color: $accent2 !important;
   color: $light !important;
 }
 

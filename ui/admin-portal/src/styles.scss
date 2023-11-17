@@ -38,6 +38,7 @@ body {
 
 .nav-link {
   cursor: pointer;
+  color: $light;
 }
 
 .nav-tabs {
@@ -48,12 +49,12 @@ body {
   }
 
   .nav-link {
-    color: $accent1;
+    color: $dark;
     background-color: $accent3;
     border-color: $light;
     &:hover {
       background-color: $accent2;
-      color: $accent3;
+      color: $light;
     }
 
     &.disabled {
@@ -65,8 +66,8 @@ body {
 
   .nav-link.active,
   .nav-item.show .nav-link {
-    color: $dark;
-    background-color: $secondary;
+    color: $light;
+    background-color: $accent1;
     border-color: $nav-tabs-link-active-border-color;
   }
 
@@ -100,13 +101,18 @@ tr.selected {
 /* FONT AWESOME */
 label,a > i.fas,i.fab,i.far {
   margin-right: 5px;
+  color: inherit;
+}
+
+a {
+  color: $info;
 }
 
 a.is-link, a > i.is-link {
-  color: $accent1;
+  color: $info;
   cursor: pointer;
   &:hover {
-    color: $accent3;
+    color: $accent1;
   }
 }
 

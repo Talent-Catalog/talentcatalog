@@ -14,22 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "variables";
+@import "~src/scss/variables";
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/buttons";
 
-//.btn-primary {
-//  @include button-variant(
-//      // Regular button (background, border, color)
-//      $color-primary, $color-primary, white,
-//      // Hover
-//      $color-primary-dark, $color-primary-dark, white,
-//      // Active
-//      $color-primary, $color-primary, white,
-//      // Disabled
-//      $color-secondary-lighter, $color-secondary-lighter, white);
-//}
+.btn-primary, .btn-secondary, .btn-danger, .btn-success {
+  color: $light;
+}
 //
 //.btn-outline-primary {
 //  @include button-outline-variant($color-primary, white, $color-primary-dark, $color-primary-darker);
@@ -72,28 +64,28 @@
 //  }
 //}
 //
-//a {
-//  color: $color-primary;
-//  background-color: transparent;
-//  text-decoration: none;
-//
-//  &:hover {
-//    color: $color-primary-dark;
-//    text-decoration: none;
-//    background-color: transparent;
-//    border-color: transparent;
-//  }
-//
-//  &:active {
-//    color: $color-primary-darker;
-//  }
-//
-//  &:disabled,
-//  &.disabled {
-//    color: $color-text-light;
-//    background-color: $color-secondary-light;
-//  }
-//}
+a {
+  color: $info;
+  background-color: transparent;
+  text-decoration: none;
+
+  &:hover {
+    color: $accent1;
+    text-decoration: none;
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  &:active {
+    color: $secondary;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: $light;
+    background-color: $accent2;
+  }
+}
 //
 //.link {
 //  color: $color-primary;
