@@ -19,10 +19,20 @@ package org.tctalent.server.request.chat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.JobChatType;
 
 @Getter
 @Setter
 @ToString
-public class UpdateChatRequest {
-
+public class CreateChatRequest {
+    @Nullable
+    private JobChatType type;
+    @Nullable
+    private Long jobId;
+    @Nullable
+    private Long sourcePartnerId;
+    @Nullable
+    private Long candidateOppId;
 }
+

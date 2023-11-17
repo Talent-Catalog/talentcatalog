@@ -16,10 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CandidateAttachment} from '../../../model/candidate-attachment';
-import {
-  CandidateAttachmentService,
-  SearchCandidateAttachmentsRequest
-} from '../../../services/candidate-attachment.service';
+import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
 import {Candidate} from '../../../model/candidate';
 import {AuthorizationService} from "../../../services/authorization.service";
 
@@ -57,21 +54,7 @@ export class CvIconComponent implements OnInit {
     if (this.attachment) {
       this.cvs.push(this.attachment)
     } else {
-      // Otherwise get all attachments
-      const request: SearchCandidateAttachmentsRequest = {
-        candidateId: this.candidate.id,
-        cvOnly: false
-      }
-
-      this.candidateAttachmentService.search(request).subscribe(
-        results => {
-          this.candidate.candidateAttachments = results;
-          this.cvs = results.filter(a => a.cv === true);
-        },
-        error => {
-          this.error = error;
-        })
-      ;
+      this.cvs = this.candidate.candidateAttachments;
     }
   }
 

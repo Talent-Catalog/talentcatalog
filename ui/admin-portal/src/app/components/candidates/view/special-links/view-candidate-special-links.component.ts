@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -26,7 +26,7 @@ import {AuthorizationService} from "../../../../services/authorization.service";
   templateUrl: './view-candidate-special-links.component.html',
   styleUrls: ['./view-candidate-special-links.component.scss']
 })
-export class ViewCandidateSpecialLinksComponent implements OnInit, OnChanges {
+export class ViewCandidateSpecialLinksComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
   loading: boolean;
@@ -38,21 +38,6 @@ export class ViewCandidateSpecialLinksComponent implements OnInit, OnChanges {
               private modalService: NgbModal) { }
 
   ngOnInit() {
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.candidateService.get(this.candidate.id).subscribe(
-        candidate => {
-          this.candidate = candidate;
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        });
-    }
   }
 
   editSpecialLinks() {

@@ -2,7 +2,7 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable, Subject, Subscription} from "rxjs";
-import {JobChat, UpdateChatRequest} from "../model/chat";
+import {CreateChatRequest, JobChat} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
 import {takeUntil} from "rxjs/operators";
@@ -45,8 +45,12 @@ export class ChatService implements OnDestroy {
     }
   }
 
-  create(request: UpdateChatRequest): Observable<JobChat> {
+  create(request: CreateChatRequest): Observable<JobChat> {
     return this.http.post<JobChat>(`${this.apiUrl}`, request);
+  }
+
+  getOrCreate(request: CreateChatRequest): Observable<JobChat> {
+    return this.http.post<JobChat>(`${this.apiUrl}/get-or-create`, request)
   }
 
   list(): Observable<JobChat[]> {
@@ -108,7 +112,7 @@ export class ChatService implements OnDestroy {
     const protocol = environment.production ? 'wss' : 'ws';
     const config: RxStompConfig = {
       // Which server?
-      //todo Not sure why need websocket on end but you do
+      //Not sure why need "websocket" on end of the url but you do
       brokerURL: protocol + '://' + environment.host + '/jobchat/websocket',
 
       // Headers
@@ -142,5 +146,4 @@ export class ChatService implements OnDestroy {
 
     return config;
   }
-
 }

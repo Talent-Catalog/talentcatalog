@@ -14,23 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {AttachmentType, CandidateAttachment} from '../../../../model/candidate-attachment';
-import {
-  CandidateAttachmentService,
-  SearchCandidateAttachmentsRequest
-} from '../../../../services/candidate-attachment.service';
+import {CandidateAttachmentService} from '../../../../services/candidate-attachment.service';
 import {environment} from '../../../../../environments/environment';
 import {CreateCandidateAttachmentComponent} from './create/create-candidate-attachment.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
@@ -84,37 +73,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.doPagedSearch();
-      // Need to get Cvs and Other docs separately as we need them in a list for the dropdown (can't be paged)
-      this.getAllCvs();
-      this.getAllOther();
     }
-
-  }
-
-  getAllCvs() {
-    let request: SearchCandidateAttachmentsRequest = {
-      candidateId: this.candidate.id,
-      cvOnly: true
-    }
-    this.candidateAttachmentService.search(request).subscribe(cvAttachments => {
-      this.cvs = cvAttachments;
-    },
-    (error) => {
-      this.error = error;
-    })
-  }
-
-  getAllOther() {
-    let request: SearchCandidateAttachmentsRequest = {
-      candidateId: this.candidate.id,
-      cvOnly: false
-    }
-    this.candidateAttachmentService.search(request).subscribe(otherAttachments => {
-        this.other = otherAttachments;
-      },
-      (error) => {
-        this.error = error;
-      })
   }
 
   doPagedSearch(refresh?: boolean) {

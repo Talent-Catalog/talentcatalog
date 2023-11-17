@@ -54,6 +54,17 @@ Download and install the latest of the following tools.
  fine except that it does not have library source code - so probably best to download a new SDK
      (which you can from inside Intellij - see Project Structure|Project|SDK).
     
+- Code Style
+  - Download the intellij-java-google-style.xml file from the google/styleguide repository 
+[here](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml).
+  - Launch IntelliJ and go to the **IntelliJ > Settings...** menu and expand the **Code Style** 
+sub-menu underneath Editor. Here, you will see a list of supported languages. Select **Java**.
+  - Next to the Scheme drop-down menu select the gear icon then **Import Scheme > IntelliJ IDEA code 
+style XML** then select the intellij-java-google-style.xml file you downloaded from GitHub. 
+  - Give the schema a name (or use the default GoogeStyle name from the import). Click **OK** or 
+**Apply** for the settings to take effect.
+
+
 
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
   > brew install gradle

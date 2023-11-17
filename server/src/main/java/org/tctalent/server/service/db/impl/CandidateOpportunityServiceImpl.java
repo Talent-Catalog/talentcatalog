@@ -40,6 +40,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Contact;
@@ -52,6 +53,7 @@ import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityPar
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
@@ -62,6 +64,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private final CandidateOpportunityRepository candidateOpportunityRepository;
     private final CandidateService candidateService;
+    private final JobChatService jobChatService;
     private final SalesforceConfig salesforceConfig;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
@@ -70,10 +73,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
     public CandidateOpportunityServiceImpl(
             CandidateOpportunityRepository candidateOpportunityRepository,
-            CandidateService candidateService, SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
+            CandidateService candidateService, JobChatService jobChatService, SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
             UserService userService) {
         this.candidateOpportunityRepository = candidateOpportunityRepository;
         this.candidateService = candidateService;
+        this.jobChatService = jobChatService;
         this.salesforceConfig = salesforceConfig;
         this.salesforceJobOppService = salesforceJobOppService;
         this.salesforceService = salesforceService;
@@ -123,7 +127,15 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         opp.setAuditFields(loggedInUser);
 
-        return updateCandidateOpportunity(opp, oppParams);
+        opp = updateCandidateOpportunity(opp, oppParams);
+
+        if (create) {
+            //Create the chats
+            jobChatService.createCandidateOppChat(JobChatType.CandidateProspect, opp);
+            jobChatService.createCandidateOppChat(JobChatType.CandidateRecruiting, opp);
+        }
+
+        return opp;
     }
 
     private String fetchSalesforceId(Candidate candidate, SalesforceJobOpp jobOpp) {

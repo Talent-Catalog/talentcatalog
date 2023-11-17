@@ -14,13 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.partner;
-
-/**
- * Destination partners that create jobs
- *
- * @author John Cameron
- */
-public interface JobCreator extends BasePartner {
-
-}
+alter table job_chat add column type text;
+alter table job_chat add column source_partner_id bigint references partner;
