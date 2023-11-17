@@ -121,6 +121,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
     private static final String candidateContactTypeSFFieldValue = "Candidate";
 
+    // TODO either needs to be environment-contingent or find a way of standardising between prod and sandbox 👇
+    private static final String contactRecordTypeId = "01256000003E44AAAS";
+
     private boolean alertedDuplicateSFRecord = false;
 
     private final Map<Class<?>, String> classSfPathMap = new HashMap<>();
@@ -1238,8 +1241,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setFirstName(user.getFirstName());
             setLastName(user.getLastName());
 
-            //Set Contact type = candidate
+            //Set Contact type = candidate - NB: this is a custom field and not related to SF record type
             setContactType(candidateContactTypeSFFieldValue);
+
+            //Set Record Type - this is the actual SF field that denotes picklist and page layout attribution
+            setRecordType(contactRecordTypeId);
 
             //Add partner account id
             Partner partner = user.getPartner();
@@ -1282,8 +1288,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             final String intaked = candidate.getIntaked();
             setIntaked(intaked);
 
+            if (candidate.getDob() != null) {
             final String dateOfBirth = String.valueOf(candidate.getDob());
-            if (dateOfBirth != null) {
             setDateOfBirth(dateOfBirth);
             }
 
@@ -1300,9 +1306,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             List<CandidateLanguage> candidateLanguagesList = candidate.getCandidateLanguages();
             final String languagesSpoken = candidateLanguagesList.stream().map(candidateLanguage -> candidateLanguage.getLanguage().getName()).collect(Collectors.joining("; "));
-            if (languagesSpoken != null) {
-                setLanguagesSpoken(languagesSpoken);
-            }
+            setLanguagesSpoken(languagesSpoken);
 
             CandidateLanguage english = candidateLanguagesList.stream()
                 .filter(candidateLanguage -> "English".equals(candidateLanguage.getLanguage().getName()))
@@ -1347,9 +1351,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             List<CandidateOccupation> candidateOccupationsList = candidate.getCandidateOccupations();
             final String occupations = candidateOccupationsList.stream().map(candidateOccupation -> candidateOccupation.getOccupation().getName()).collect(Collectors.joining("; "));
-            if (occupations != null) {
-                setOccupations(occupations);
-            }
+            setOccupations(occupations);
 
             final boolean tcContactConsent = candidate.getContactConsentRegistration();
             setTcContactConsent(tcContactConsent);
@@ -1368,6 +1370,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         public void setContactType(String contactType) {
             super.put("Contact_Type__c", contactType);
+        }
+
+        public void setRecordType(String contactRecordTypeId) {
+            super.put("RecordTypeId", contactRecordTypeId);
         }
 
         public void setEmail(String email) {
