@@ -20,7 +20,7 @@
   display: flex;
   justify-content: space-between;
   //align-items: flex-end;
-  background-color: #efefef;
+  background-color: fade-out($accent3, 0.7);
   padding: 1em;
   border-radius: 0.25rem;
 }
@@ -32,4 +32,8 @@
 #status {
   background-color: #ffffff;
   font-size: 13px;
+}
+
+.card-header {
+  font-size: 17px;
 }

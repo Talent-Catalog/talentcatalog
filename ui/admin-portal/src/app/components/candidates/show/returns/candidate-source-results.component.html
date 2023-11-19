@@ -79,7 +79,7 @@
 
       <tr *ngFor="let candidate of results?.content">
         <td>
-          <a class="fw-500" [routerLink]="['/candidate',candidate.candidateNumber]">
+          <a class="fw-bold" [routerLink]="['/candidate',candidate.candidateNumber]">
             {{candidate.candidateNumber}}
           </a>
           <a target="_blank" [href]="candidate.user.partner.websiteUrl">

@@ -84,8 +84,16 @@ table {
   border-radius: 5px;
   td {
     white-space: nowrap;
-    a > i {
-      color: $secondary;
+    a {
+      > i {
+        color: $info;
+        &:hover {
+          color: $accent1;
+        }
+      }
+      &:hover {
+        color: $accent1;
+      }
     }
   }
 }
@@ -97,6 +105,8 @@ table {
 .card-header {
   background-color: $accent2 !important;
   color: $light !important;
+  font-weight: 300;
+  margin-bottom: 0;
 }
 
 .custom-primary .multiselect-dropdown .dropdown-btn .selected-item {

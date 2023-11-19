@@ -14,6 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import "~src/scss/variables";
+
 :host {
   font-size: 0.80rem;
 }
@@ -25,6 +27,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  background-color: fade-out($accent2, 0.9);
 }
 
 .candidate-header {
