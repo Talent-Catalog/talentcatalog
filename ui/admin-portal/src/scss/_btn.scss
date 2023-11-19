@@ -19,53 +19,33 @@
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/buttons";
 
-.btn-primary, .btn-secondary, .btn-danger, .btn-success {
-  color: $light;
+.btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-info {
+  color: $white;
 }
-//
-//.btn-outline-primary {
-//  @include button-outline-variant($color-primary, white, $color-primary-dark, $color-primary-darker);
-//
-//  &:hover {
-//    border-color: $color-primary;
-//  }
-//
-//  &:not(:disabled):not(.disabled){
-//    &:hover {
-//      border-color: $color-primary-dark;
-//      background: $color-primary-dark;
-//    }
-//
-//    &:active {
-//      background-color: $color-primary-darker;
-//      border-color: $color-primary-darker;
-//    }
-//  }
-//}
-//
-//.btn-link {
-//  color: $color-primary;
-//  background-color: transparent;
-//
-//  &:hover {
-//    color: $color-primary-dark;
-//    text-decoration: none;
-//    background-color: transparent;
-//    border-color: transparent;
-//  }
-//
-//  &:active {
-//    color: $color-primary-darker;
-//  }
-//
-//  &:disabled,
-//  &.disabled {
-//    color: $color-text-light;
-//  }
-//}
-//
+
+.btn-link {
+  color: $primary;
+  background-color: transparent;
+
+  &:hover {
+    color: $secondary;
+    text-decoration: none;
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  &:active {
+    color: $primary;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: $accent3;
+  }
+}
+
 a {
-  color: $info;
+  color: $primary;
   background-color: transparent;
   text-decoration: none;
 
@@ -86,12 +66,12 @@ a {
     background-color: $accent2;
   }
 }
-//
-//.link {
-//  color: $color-primary;
-//}
-//
-//button:focus {
-//  box-shadow: none !important;
-//  text-decoration: none !important;
-//}
+
+.link {
+  color: $info;
+}
+
+button:focus {
+  box-shadow: none !important;
+  text-decoration: none !important;
+}

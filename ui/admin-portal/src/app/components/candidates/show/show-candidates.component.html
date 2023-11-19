@@ -293,7 +293,7 @@
         <table class="table table-hover">
 
 <!--          Header-->
-          <thead class="table-light">
+          <thead class="table-primary">
           <tr>
             <th></th>
             <th *ngIf="isReviewable()">
@@ -369,26 +369,26 @@
                 </div>
               </td>
               <td>
-                <a [routerLink]="['/candidate',candidate.candidateNumber]">
+                <a class="fw-bold" [routerLink]="['/candidate',candidate.candidateNumber]">
                   {{candidate.candidateNumber}}
                 </a>
                 <a target="_blank" [href]="candidate.user.partner.websiteUrl">
-                  <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
+                  <i class="fas fa-hands-helping is-link" [title]="'Partner: ' + candidate.user.partner.name"></i>
                 </a>
                 <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
-                  <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
+                  <i class="fas fa-external-link-alt is-link" title="Show candidate in new tab"></i>
                 </a>
                 <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
-                  <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
+                  <i class="fab fa-salesforce is-link" title="Show candidate in Salesforce"></i>
                 </a>
                 <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
-                  <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
+                  <i class="fab fa-google-drive is-link" title="Show candidate's Google Doc folder"></i>
                 </a>
                 <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
-                  <i class="fas fa-video" title="Show candidate's one way video"></i>
+                  <i class="fas fa-video is-link" title="Show candidate's one way video"></i>
                 </a>
                 <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
-                  <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
+                  <i class="fab fa-linkedin is-link" title="Show candidate's LinkedIn page"></i>
                 </a>
                 <app-cv-icon
                   *ngIf="isCandidateNameViewable()"
@@ -403,7 +403,7 @@
               </td>
               <td *ngIf="isShowStage()">
                 <a *ngIf="getStage(candidate)" [routerLink]="getCandidateOpportunityLink(candidate)"
-                   title="Stage that this candidate is at - linking to their candidate opportunity">
+                   title="Stage that this candidate is at - linking to their candidate opportunity" class="text-secondary">
                   {{getStage(candidate)}}
                 </a>
               </td>

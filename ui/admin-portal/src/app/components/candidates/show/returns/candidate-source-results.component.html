@@ -61,7 +61,7 @@
   <div class="table-responsive">
     <table class="table">
 
-      <thead>
+      <thead class="table-primary">
       <tr>
         <th class="candidate-number-row" (click)="toggleSort('id')">
           <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
@@ -79,7 +79,7 @@
 
       <tr *ngFor="let candidate of results?.content">
         <td>
-          <a [routerLink]="['/candidate',candidate.candidateNumber]">
+          <a class="fw-500" [routerLink]="['/candidate',candidate.candidateNumber]">
             {{candidate.candidateNumber}}
           </a>
           <a target="_blank" [href]="candidate.user.partner.websiteUrl">

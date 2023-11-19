@@ -43,32 +43,32 @@
       <h1>{{candidate.user.firstName}} {{candidate.user.lastName}}
         <span class="small text-muted">
         {{candidate.candidateNumber}} -
-          <a target="_blank" (click)="downloadCV()">
-              <i class="fas fa-file-download is-link" title="Download CV"></i>
+          <a target="_blank" (click)="downloadCV()" class="link-secondary">
+              <i class="fas fa-file-download" title="Download CV"></i>
           </a>
-          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]" class="link-secondary">
             <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
           </a>
-          <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
+          <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank" class="link-secondary">
             <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
           </a>
-          <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
+          <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank" class="link-secondary">
             <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
           </a>
-          <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
+          <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank" class="link-secondary">
             <i class="fas fa-video" title="Show candidate's one way video"></i>
           </a>
-          <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
+          <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank" class="link-secondary" >
             <i class="fab fa-linkedin" title="Show candidate's linkedIn"></i>
           </a>
           <app-cv-icon
             *ngIf="isCVViewable()"
             [candidate]="candidate">
           </app-cv-icon>
-          <a [href]="publicCvUrl()" target="_blank">
+          <a [href]="publicCvUrl()" target="_blank" class="link-secondary">
             <i class="fas fa-users" title="View candidate's public CV"></i>
           </a>
-          <a class="btn-link" (click)="createTailoredCv()">
+          <a (click)="createTailoredCv()" class="link-secondary">
             <i class="fas fa-users-gear"  title="View tailored candidate's public CV"></i>
           </a>
       </span>

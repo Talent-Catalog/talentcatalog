@@ -14,8 +14,8 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<a *ngIf="canOpen()" target="_blank" (click)="openCVs()">
-  <i class="fas fa-address-card is-link" title="Open candidate's CV(s)"></i>
+<a *ngIf="canOpen()" target="_blank" (click)="openCVs()" class="link-secondary">
+  <i class="fas fa-address-card" title="Open candidate's CV(s)"></i>
 </a>
 <span *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>

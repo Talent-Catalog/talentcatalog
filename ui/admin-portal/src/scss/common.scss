@@ -33,20 +33,20 @@
 
 .link,
 .link:not([href]):not([tabindex]){
-  //color: $color-primary-darker;
+  color: $primary;
   cursor: pointer;
-  //text-decoration: $link-decoration;
+  text-decoration: $link-decoration;
   &:hover {
-    //color: $color-primary-dark;
-    //text-decoration: $link-hover-decoration;
+    color: $secondary;
+    text-decoration: $link-hover-decoration;
   }
 }
 
 .page-link {
   position: relative;
   display: block;
-  color: $accent3;
-  background-color: $dark;
+  color: $light;
+  background-color: $accent2;
 
   &:hover {
     z-index: 2;
@@ -84,6 +84,9 @@ table {
   border-radius: 5px;
   td {
     white-space: nowrap;
+    a > i {
+      color: $secondary;
+    }
   }
 }
 

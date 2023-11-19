@@ -85,34 +85,30 @@ highlighting.table-hover> tbody> tr:hover{
 
 //Current item - the one whose detailed data is displayed
 tr.current {
-  background-color: $accent1
+  background-color: fade-out($accent2, 0.9)
 }
 
 //Selected item(s)- item is one of the selected ones (those with checked selection checkbox)
 tr.selected {
-  background-color: $accent2
+  background-color: fade-out($accent1, 0.7)
 }
 //end - Table row highlighting
 
 .dropdown-btn > span {
-  color: #6C757C;
+  color: $accent2;
 }
 
 /* FONT AWESOME */
 label,a > i.fas,i.fab,i.far {
   margin-right: 5px;
-  color: inherit;
+  //color: inherit;
 }
 
-a {
-  color: $info;
-}
-
-a.is-link, a > i.is-link {
-  color: $info;
+a.is-link {
+  color: $primary;
   cursor: pointer;
   &:hover {
-    color: $accent1;
+    color: $secondary;
   }
 }
 
@@ -151,4 +147,8 @@ ngx-wig {
 
 .custom-side-profile {
   overflow: scroll;
+}
+
+.fw-500 {
+  font-weight: 500;
 }
