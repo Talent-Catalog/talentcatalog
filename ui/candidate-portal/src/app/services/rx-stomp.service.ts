@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,15 +13,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import {Injectable} from '@angular/core';
+import {RxStomp} from '@stomp/rx-stomp';
 
-// This file replaces environment.ts during build by using the `fileReplacements` array.
-// `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+@Injectable({
+  providedIn: 'root',
+})
+export class RxStompService extends RxStomp {
+  constructor() {
+    super();
+  }
+}
 
-export const environment = {
-  production: true,
-  host: document.location.host,
-  apiUrl: '/api/portal',
-  systemApiUrl: '/api/system',
-  s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org'
-};
