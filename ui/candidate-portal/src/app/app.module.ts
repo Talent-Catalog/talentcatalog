@@ -173,6 +173,16 @@ import {
 import {NgxWigModule} from 'ngx-wig';
 import {TruncatePipe} from "./pipes/truncate.pipe";
 import {RxStompService} from "./services/rx-stomp.service";
+import {ViewPostComponent} from "./components/chat/view-post/view-post.component";
+import {PostsComponent} from "./components/chat/posts/posts.component";
+import {
+  CreateUpdateChatComponent
+} from "./components/chat/create-update-chat/create-update-chat.component";
+import {ViewChatComponent} from "./components/chat/view-chat/view-chat.component";
+import {ChatsComponent} from "./components/chat/chats/chats.component";
+import {
+  CreateUpdatePostComponent
+} from "./components/chat/create-update-post/create-update-post.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -233,6 +243,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     ViewUploadTaskComponent,
     CandidateOppsComponent,
     CandidateOppComponent,
+    ChatsComponent,
+    ViewChatComponent,
+    CreateUpdateChatComponent,
+    CreateUpdatePostComponent,
+    PostsComponent,
+    ViewPostComponent,
     TruncatePipe
   ],
   imports: [
