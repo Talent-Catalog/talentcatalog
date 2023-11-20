@@ -18,12 +18,12 @@
         </div>
 
         <div *ngIf="selectedJob">
-          <div class="d-flex align-items-center mb-3">
-            <span class="fs-5 fw-bold text-primary">{{selectedJob.name + ' (' + selectedJob.id + ')'}}</span>
-            <button class="btn" (click)="doOpenJob()"><i class="fa-solid fa-briefcase text-primary" title="Job"></i></button>
+          <div class="d-flex align-items-center mb-3 text-accent-1">
+            <span class="fs-5 fw-bold">{{selectedJob.name + ' (' + selectedJob.id + ')'}}</span>
+            <button class="btn" (click)="doOpenJob()"><i class="fa-solid fa-briefcase" title="Job"></i></button>
             <button class="btn" (click)="doToggleStarred()">
               <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
-              <i *ngIf="!isStarred()" class="far fa-star notstarred text-primary" title="Star"></i>
+              <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
             </button>
 
             <div class="alert alert-danger" *ngIf="error">

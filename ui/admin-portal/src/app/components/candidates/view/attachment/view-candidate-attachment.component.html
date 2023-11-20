@@ -67,7 +67,7 @@
           <!-- Non Google files - ie links and AWS files -
            we can just follow their urls-->
           <a *ngIf="attachment.type!==AttachmentType.googlefile"
-             target="_blank" [href]="attachment.url">
+             target="_blank" [href]="attachment.url" class="link-info">
             {{attachment.name}}
           </a>
           <!-- With Google files we can't link to the Google Shared Drive
@@ -76,7 +76,7 @@
            and show that-->
           <a *ngIf="attachment.type===AttachmentType.googlefile"
              (click)="downloadCandidateAttachment(attachment)"
-             target="_blank" class="is-link">
+             target="_blank" class="link-info">
             {{attachment.name}}
           </a>
           <span class="small text-dark"> - {{attachment.type}}</span>

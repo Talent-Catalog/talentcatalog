@@ -45,13 +45,14 @@
 .page-link {
   position: relative;
   display: block;
-  color: $light;
-  background-color: $accent2;
+  color: $accent1;
+  background-color: $accent3;
+  border-color: $light;
 
   &:hover {
     z-index: 2;
     text-decoration: none;
-    background-color: $accent1;
+    background-color: $accent2;
     color: $light;
   }
 
@@ -65,14 +66,15 @@
 .page-item {
 
   &.active .page-link {
-    background-color: $primary;
-    border-color: $primary;
+    background-color: $accent2;
+    border-color: $accent2;
   }
 
   &.disabled .page-link {
-    color: $accent2;
+    color: $light;
     background-color: $accent3;
     pointer-events: none;
+    border-color: $light;
     // Opinionated: remove the "hand" cursor set previously for .page-link
     cursor: auto;
   }
@@ -92,7 +94,7 @@ table {
         }
       }
       &:hover {
-        color: $accent1;
+        color: $secondary;
       }
     }
   }

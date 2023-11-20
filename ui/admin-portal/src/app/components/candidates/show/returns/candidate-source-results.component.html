@@ -82,11 +82,11 @@
           <a class="fw-bold" [routerLink]="['/candidate',candidate.candidateNumber]">
             {{candidate.candidateNumber}}
           </a>
+          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+            <i class="fas fa-external-link-alt link-primary me-2" title="Show candidate in new tab"></i>
+          </a>
           <a target="_blank" [href]="candidate.user.partner.websiteUrl">
             <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
-          </a>
-          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
-            <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
           </a>
           <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
             <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
