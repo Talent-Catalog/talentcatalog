@@ -26,7 +26,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class AuthorizeInContextTranslationRequest {
+public class AuthenticateInContextTranslationRequest {
 
     /**
      * Password supplied to be validated.

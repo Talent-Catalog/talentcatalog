@@ -25,7 +25,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {User} from "../model/user";
 import {LoginRequest, RegisterCandidateRequest} from "../model/candidate";
 
-export class AuthorizeInContextTranslationRequest {
+export class AuthenticateInContextTranslationRequest {
   password: string;
 }
 
@@ -57,13 +57,6 @@ export class AuthService {
         }
       )
     );
-  }
-
-  authorizeInContextTranslation(password: string): Observable<void> {
-    const request: AuthorizeInContextTranslationRequest = {
-      password: password
-    }
-    return this.http.post<void>(`${this.apiUrl}/xlate`, request);
   }
 
   private isAuthenticated(): boolean {

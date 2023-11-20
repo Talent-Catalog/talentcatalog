@@ -2,11 +2,12 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {LoginRequest} from "../model/candidate";
 import {catchError, map} from "rxjs/operators";
 import {JwtResponse} from "../model/jwt-response";
-import {Subject, throwError} from "rxjs";
+import {Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
+import {AuthenticateInContextTranslationRequest} from "./auth.service";
 
 /**
  * Manages authentication - ie login/logout.
@@ -42,6 +43,13 @@ export class AuthenticationService implements OnDestroy {
     //This will close any subscriptions - freeing resources.
     //See https://stackoverflow.com/a/77426261/929968
     this.loggedInUser$.complete();
+  }
+
+  authenticateInContextTranslation(password: string): Observable<void> {
+    const request: AuthenticateInContextTranslationRequest = {
+      password: password
+    }
+    return this.http.post<void>(`${this.apiUrl}/xlate`, request);
   }
 
   getLoggedInUser(): User {

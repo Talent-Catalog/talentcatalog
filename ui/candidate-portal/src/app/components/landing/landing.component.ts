@@ -15,7 +15,6 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LanguageService} from '../../services/language.service';
 import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
@@ -33,8 +32,7 @@ export class LandingComponent implements OnInit {
   private brandingInfo: BrandingInfo;
   showUSAfghanInfo:boolean = false;
 
-  constructor(private authService: AuthService,
-              private authenticationService: AuthenticationService,
+  constructor(private authenticationService: AuthenticationService,
               private brandingService: BrandingService,
               private router: Router,
               private route: ActivatedRoute,
@@ -69,7 +67,7 @@ export class LandingComponent implements OnInit {
       this.proceed();
     } else {
       //Validate supplied password
-      this.authService.authorizeInContextTranslation(xlate).subscribe(
+      this.authenticationService.authenticateInContextTranslation(xlate).subscribe(
         () => {
           //Password validated, initialize "in context" translation
           LandingComponent.intializeInContextTranslation();
