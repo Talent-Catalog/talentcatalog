@@ -12,22 +12,27 @@
     {{error}}
   </div>
 
-  <div class="d-flex justify-content-between align-items-center">
-    <h1>{{job.name}}
-      <span class="small text-muted">
-        <a *ngIf="job.sfId && canAccessSalesforce()" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
-          <i class="fab fa-salesforce" title="Show job in Salesforce"></i>
-        </a>
-        <a *ngIf="job.submissionList?.folderjdlink" [href]="job.submissionList.folderjdlink" target="_blank">
-          <i class="fab fa-google-drive" title="Show job's Google Doc folder"></i>
-        </a>
-        <div class="btn" (click)="doToggleStarred()">
-          <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
-          <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
-        </div>
+  <div class="d-flex justify-content-between align-items-end">
+    <div>
+      <h1 class="my-3">{{job.name}}
+        <span class="ms-2">
+          <a *ngIf="job.sfId && canAccessSalesforce()" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
+            <i class="fab fa-salesforce link-info" title="Show job in Salesforce"></i>
+          </a>
+          <a *ngIf="job.submissionList?.folderjdlink" [href]="job.submissionList.folderjdlink" target="_blank">
+            <i class="fab fa-google-drive link-info" title="Show job's Google Doc folder"></i>
+          </a>
+          <div class="btn btn-lg pt-0 ps-1" (click)="doToggleStarred()">
+            <i *ngIf="isStarred()" class="fas fa-star starred fa-lg" title="Unstar"></i>
+            <i *ngIf="!isStarred()" class="far fa-star notstarred fa-lg" title="Star"></i>
+          </div>
+        </span>
+      </h1>
+      <p class="text-accent-1 fst-italic fs-5">
+        Job Opportunity Number {{job.id}}
+      </p>
+    </div>
 
-      </span>
-    </h1>
 
     <div *ngIf="!job.publishedDate">
       <button type="button" class="btn btn-outline-dark me-2"
@@ -47,11 +52,6 @@
     </div>
 
   </div>
-
-  <div>
-    Job Opportunity Number {{job.id}}
-  </div>
-  <hr/>
 
   <app-view-job-preparation-items *ngIf="!job.publishedDate"
     [jobPrepItems]="jobPrepItems"
