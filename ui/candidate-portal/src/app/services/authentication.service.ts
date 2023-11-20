@@ -59,6 +59,10 @@ export class AuthenticationService implements OnDestroy {
     return this.localStorageService.get('access-token');
   }
 
+  isAuthenticated(): boolean {
+    return this.getLoggedInUser() != null;
+  }
+
   login(credentials: LoginRequest) {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       map((response: JwtResponse) => {

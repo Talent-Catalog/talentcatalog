@@ -20,6 +20,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {LanguageService} from '../../services/language.service';
 import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
+import {AuthenticationService} from "../../services/authentication.service";
 
 @Component({
   selector: 'app-landing',
@@ -33,6 +34,7 @@ export class LandingComponent implements OnInit {
   showUSAfghanInfo:boolean = false;
 
   constructor(private authService: AuthService,
+              private authenticationService: AuthenticationService,
               private brandingService: BrandingService,
               private router: Router,
               private route: ActivatedRoute,
@@ -90,7 +92,7 @@ export class LandingComponent implements OnInit {
   }
 
   private proceed() {
-    if (this.authService.isAuthenticated()) {
+    if (this.authenticationService.isAuthenticated()) {
       this.router.navigate(['/home']);
     } else {
       //Logging in or registering

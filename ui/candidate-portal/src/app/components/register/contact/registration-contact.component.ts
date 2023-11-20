@@ -25,6 +25,7 @@ import {ReCaptchaV3Service} from "ng-recaptcha";
 import {LanguageService} from "../../../services/language.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {BrandingService} from "../../../services/branding.service";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-registration-contact',
@@ -57,6 +58,7 @@ export class RegistrationContactComponent implements OnInit {
               private brandingService: BrandingService,
               private candidateService: CandidateService,
               private authService: AuthService,
+              private authenticationService: AuthenticationService,
               private reCaptchaV3Service: ReCaptchaV3Service,
               private registrationService: RegistrationService,
               private languageService: LanguageService) { }
@@ -72,7 +74,7 @@ export class RegistrationContactComponent implements OnInit {
       // username: ['']
     });
 
-    if (this.authService.isAuthenticated()) {
+    if (this.authenticationService.isAuthenticated()) {
       this.authenticated = true;
       this.candidateService.getCandidateContact().subscribe(
         (candidate) => {
@@ -141,7 +143,7 @@ export class RegistrationContactComponent implements OnInit {
   save() {
     this.saving = true;
     this.error = null;
-    if (this.authService.isAuthenticated()) {
+    if (this.authenticationService.isAuthenticated()) {
 
       // If the candidate hasn't changed anything, skip the update service call
       if (this.form.pristine) {

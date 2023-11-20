@@ -16,9 +16,9 @@
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {RegistrationService} from "../../services/registration.service";
-import {AuthService} from "../../services/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LanguageService} from "../../services/language.service";
+import {AuthenticationService} from "../../services/authentication.service";
 
 @Component({
   selector: 'app-register',
@@ -28,7 +28,7 @@ import {LanguageService} from "../../services/language.service";
 export class RegisterComponent implements OnInit, OnDestroy {
 
   constructor(public registrationService: RegistrationService,
-              public authService: AuthService,
+              public authenticationService: AuthenticationService,
               private route: ActivatedRoute,
               private languageService: LanguageService,
               public router: Router) { }
@@ -53,7 +53,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.authService.logout().subscribe(() => this.router.navigate(['']));
+    this.authenticationService.logout();
   }
 }
 
