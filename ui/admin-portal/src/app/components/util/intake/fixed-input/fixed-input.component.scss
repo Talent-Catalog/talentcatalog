@@ -17,8 +17,9 @@
 @import "~src/scss/variables";
 
 .answer {
-  color: $info;
+  color: $accent2;
   font-weight: 300;
+  margin-left: 5px;
 }
 
 .question {

@@ -112,9 +112,13 @@ $danger: #a91206;
 //$color-border: #d7d8d8;
 //$color-background: #f2f2f2;
 //
-//$accordion-button-bg: $color-background;
-//$accordion-button-active-bg: #cee2ea;
-//$accordion-button-active-color: $color-secondary;
-//$accordion-border-color: $color-border;
+$accordion-button-bg: fade-out($accent2, 0.4);
+
+$accordion-border-color: $light;
+
+$accordion-button-active-bg: $accent1;
+$accordion-button-active-color: $light;
+
+
 
 $offcanvas-horizontal-width: 40vw;

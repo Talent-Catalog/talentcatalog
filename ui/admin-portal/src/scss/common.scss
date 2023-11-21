@@ -150,6 +150,13 @@ table {
   overflow: initial;
 }
 
+.accordion-button {
+  font-size: 1.1rem;
+  color: $dark;
+  font-weight: 400;
+  background-image: var(--bs-gradient);
+}
+
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: #999 !important;
   opacity: 1; /* Firefox */

@@ -90,23 +90,32 @@
   <!--Loop through reports data, displaying each report-->
   <div *ngIf="statReports">
 
-    <nav class="navbar sticky-top navbar-expand-md navbar-light bg-light second-nav">
+    <nav class="navbar sticky-top navbar-expand-md second-nav">
       <span class="navbar-brand">Stats for {{statsName}}</span>
         <ul class="navbar-nav ms-auto">
-          <button class="btn btn-outline-secondary float-end" [disabled]="!dataLoaded" (click)="exportStats()">
-            <i class="fas fa-file-excel"></i> Export
-          </button>
-
-          <li class="nav-item" ngbDropdown display="dynamic" placement="bottom-right">
-            <a class="nav-link" tabindex="0" ngbDropdownToggle id="navbarDropdown3" role="button">
-              Jump to stats report
-            </a>
-            <div ngbDropdownMenu aria-labelledby="navbarDropdown3" class="dropdown-menu scroll-dropdown">
+          <div ngbDropdown display="dynamic" placement="bottom-end">
+            <button type="button" class="btn btn-info float-end" id="jumpToStats" ngbDropdownToggle>Go to stat <i class="fa-solid fa-hand-point-down"></i></button>
+            <div ngbDropdownMenu aria-labelledby="jumpToStats">
               <ng-container *ngFor="let statReport of statReports; let i = index">
                 <a ngbDropdownItem (click)="scroll(i)">{{statReport.name}}</a>
               </ng-container>
             </div>
-          </li>
+          </div>
+
+          <button class="btn btn-secondary float-end  ms-2" [disabled]="!dataLoaded" (click)="exportStats()">
+            Export <i class="fas fa-file-excel"></i>
+          </button>
+
+<!--          <div class="nav-item" ngbDropdown display="dynamic" placement="bottom-right">-->
+<!--            <a class="btn btn-info" tabindex="0" ngbDropdownToggle id="navbarDropdown3" role="button">-->
+<!--              Jump to stats report-->
+<!--            </a>-->
+<!--            <div ngbDropdownMenu aria-labelledby="navbarDropdown3" class="dropdown-menu scroll-dropdown">-->
+<!--              <ng-container *ngFor="let statReport of statReports; let i = index">-->
+<!--                <a ngbDropdownItem (click)="scroll(i)">{{statReport.name}}</a>-->
+<!--              </ng-container>-->
+<!--            </div>-->
+<!--          </div>-->
         </ul>
     </nav>
 
