@@ -99,9 +99,11 @@ tr.selected {
 }
 
 /* FONT AWESOME */
-label,a > i.fas,i.fab,i.far {
-  margin-right: 5px;
-  //color: inherit;
+label,a > {
+  i.fas,i.fab,i.far {
+    margin-right: 5px;
+    //color: inherit;
+  }
 }
 
 a.is-link {

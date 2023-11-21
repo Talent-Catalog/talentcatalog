@@ -22,8 +22,8 @@
           <a *ngIf="job.submissionList?.folderjdlink" [href]="job.submissionList.folderjdlink" target="_blank">
             <i class="fab fa-google-drive link-info" title="Show job's Google Doc folder"></i>
           </a>
-          <div class="btn btn-lg pt-0 ps-1" (click)="doToggleStarred()">
-            <i *ngIf="isStarred()" class="fas fa-star starred fa-lg" title="Unstar"></i>
+          <div class="btn btn-lg pt-0" (click)="doToggleStarred()">
+            <i *ngIf="isStarred()" class="fas fa-star starred text-warning fa-lg" title="Unstar"></i>
             <i *ngIf="!isStarred()" class="far fa-star notstarred fa-lg" title="Star"></i>
           </div>
         </span>

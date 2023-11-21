@@ -1,4 +1,4 @@
-<div *ngIf="opp">
+<div *ngIf="opp" [ngClass]="{'detail-panel' : !showBreadcrumb}">
 
   <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
     <ol class="breadcrumb align-items-center">
@@ -8,32 +8,31 @@
 
   </nav>
 
-  <div class="d-flex justify-content-between align-items-center">
-    <h1>{{opp.name}}
-      <span class="small text-muted">
+  <div class="py-2">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1 class="mb-4">{{opp.name}}
+        <span class="small text-muted">
         <a [routerLink]="['/opp',opp.id]">
           <i class="fas fa-expand" title="Open"></i>
         </a>
         <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
-          <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+          <i class="fab fa-salesforce link-info ms-2" title="Show opp in Salesforce"></i>
         </a>
         <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
-          <i class="fas fa-user" title="Candidate"></i>
+          <i class="fas fa-user link-info" title="Candidate"></i>
         </a>
         <a [routerLink]="['/job',opp.jobOpp.id]">
-          <i class="fa-solid fa-briefcase" title="Job"></i>
+          <i class="fa-solid fa-briefcase link-info" title="Job"></i>
         </a>
       </span>
-    </h1>
+      </h1>
+    </div>
+    <p class="text-accent-1 fst-italic" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6' : !showBreadcrumb}">
+      Candidate Opportunity Case Number {{opp.id}}
+    </p>
   </div>
 
-  <div>
-    Candidate Opportunity Case Number {{opp.id}}
-  </div>
-  <hr/>
-
-
-  <div>
+  <div class="pt-2">
     <!-- TABS -->
     <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
@@ -47,7 +46,7 @@
               Case details
               <div class="float-end" *ngIf="editable">
                 <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
-                <button class="btn btn-sm btn-outline-secondary" title="Update progress" (click)="editOppProgress()">
+                <button class="btn btn-sm btn-secondary" title="Update progress" (click)="editOppProgress()">
                   <i class="fas fa-edit"></i>
                 </button>
               </div>

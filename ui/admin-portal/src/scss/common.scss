@@ -106,8 +106,10 @@ table {
 
 .card-header {
   background-color: $accent2 !important;
+  background-image: var(--bs-gradient);
+  font-size: 1.1rem;
+  font-weight: 400;
   color: $light !important;
-  font-weight: 300;
   margin-bottom: 0;
 }
 

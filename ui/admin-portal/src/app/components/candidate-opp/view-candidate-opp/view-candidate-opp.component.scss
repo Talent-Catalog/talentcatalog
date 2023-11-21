@@ -1,0 +1,11 @@
+@import "~src/scss/variables";
+
+.detail-panel {
+  background-color: fade-out($accent3, 0.7);
+  border-radius: 5px;
+  padding: 1rem;
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
