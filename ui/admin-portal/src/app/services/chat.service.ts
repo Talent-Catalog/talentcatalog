@@ -14,7 +14,7 @@ import {AuthenticationService} from "./authentication.service";
 })
 export class ChatService implements OnDestroy {
 
-  private apiUrl: string = environment.apiUrl + '/chat';
+  private apiUrl: string = environment.chatApiUrl + '/chat';
   private stompServiceConfigured = false;
   private destroyStompSubscriptions$ = new Subject<void>();
   private observables: Map<number, Observable<Message>> = new Map<number, Observable<Message>>();

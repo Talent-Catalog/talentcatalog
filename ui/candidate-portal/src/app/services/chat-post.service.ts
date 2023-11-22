@@ -8,7 +8,7 @@ import {ChatPost} from "../model/chat";
   providedIn: 'root'
 })
 export class ChatPostService {
-  private apiUrl: string = environment.apiUrl + '/chat-post';
+  private apiUrl: string = environment.chatApiUrl + '/chat-post';
 
   constructor(private http: HttpClient) { }
 
