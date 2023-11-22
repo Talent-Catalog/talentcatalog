@@ -18,6 +18,7 @@
 
 :host {
   font-size: 0.80rem;
+  background-color: $light;
 }
 
 .candidate-card {
@@ -27,7 +28,6 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: fade-out($accent2, 0.9);
   height: 100%;
 }
 

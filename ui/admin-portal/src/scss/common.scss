@@ -162,6 +162,16 @@ table {
   opacity: 1; /* Firefox */
 }
 
+//// The right hand side panels showing more detail of selected item
+.detail-panel {
+  border-radius: 5px;
+  padding: 1rem;
+}
+
+.side-panel-color {
+  background-color: fade-out($accent3, 0.7);
+}
+
 //.text-alert {
 //  color: #ff8900;
 //}
