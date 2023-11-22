@@ -55,10 +55,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
-import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
@@ -2038,45 +2036,6 @@ public class SystemAdminApi {
 
     public void setTargetPwd(String targetPwd) {
         this.targetPwd = targetPwd;
-    }
-
-    @GetMapping("create-update-live-candidates")
-    public void createUpdateLiveCandidates()
-        throws SalesforceException, WebClientException {
-
-        // Gather all live candidates
-        List<CandidateStatus> statuses = new ArrayList<>(EnumSet.of(CandidateStatus.active, CandidateStatus.pending, CandidateStatus.incomplete));
-        List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
-
-        // Then split them into batches respecting SF API limit of 200 records per call
-        int batchSize = 200;
-        List<List<Candidate>> candidateBatches = new ArrayList<>();
-
-        for (int i = 0; i < candidates.size(); i += batchSize) {
-            candidateBatches.add(candidates.subList(i, Math.min(i + batchSize, candidates.size())));
-        }
-
-        // Iterate through batches to create/update candidate contact records
-        // for (int i = 0; i < candidateBatches.size(); i += 1) {
-        // TODO: testing on a smaller no. to begin with - replace 👇 with ☝️ once happy (notwithstanding that I have to find a way to do less on staging)
-        for (int i = 0; i < 3; i += 1) {
-            // Need ordered list so that can match with returned contacts
-            List<Candidate> orderedCandidates = new ArrayList<>(candidateBatches.get(i));
-
-            // Update Salesforce contacts
-            List<Contact> contacts =
-                salesforceService.createOrUpdateContacts(orderedCandidates);
-
-            // Update the sfLink in all candidate records
-            int nCandidates = orderedCandidates.size();
-            for (int x = 0; x < nCandidates; x++) {
-                Contact contact = contacts.get(x);
-                if (contact.getId() != null) {
-                    Candidate candidate = orderedCandidates.get(x);
-                    candidateService.updateCandidateSalesforceLink(candidate, contact.getUrl(salesforceConfig.getBaseLightningUrl()));
-                }
-            }
-        }
     }
 
 }

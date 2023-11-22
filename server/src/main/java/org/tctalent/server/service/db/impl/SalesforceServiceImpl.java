@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,6 +67,8 @@ import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobOpportunityStage;
+import org.tctalent.server.model.db.Language;
+import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -120,9 +123,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private static final String candidateNumberSFFieldName = "TBBid__c";
     private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
     private static final String candidateContactTypeSFFieldValue = "Candidate";
-
-    // TODO either needs to be environment-contingent or find a way of standardising between prod and sandbox 👇
-    private static final String contactRecordTypeId = "01256000003E44AAAS";
+//    TODO: replace 👇 with correct value for both prod and sandbox (which will need refreshing) before release
+    private static final String contactRecordTypeId = "012Uu0000000905IAA";
 
     private boolean alertedDuplicateSFRecord = false;
 
@@ -1305,7 +1307,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
 
             List<CandidateLanguage> candidateLanguagesList = candidate.getCandidateLanguages();
-            final String languagesSpoken = candidateLanguagesList.stream().map(candidateLanguage -> candidateLanguage.getLanguage().getName()).collect(Collectors.joining("; "));
+            final String languagesSpoken = candidateLanguagesList.stream()
+                .map(candidateLanguage -> Optional.ofNullable(candidateLanguage.getLanguage())
+                    .map(Language::getName)
+                    .orElse(""))
+                .collect(Collectors.joining("; "));
             setLanguagesSpoken(languagesSpoken);
 
             CandidateLanguage english = candidateLanguagesList.stream()
@@ -1350,7 +1356,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
 
             List<CandidateOccupation> candidateOccupationsList = candidate.getCandidateOccupations();
-            final String occupations = candidateOccupationsList.stream().map(candidateOccupation -> candidateOccupation.getOccupation().getName()).collect(Collectors.joining("; "));
+            final String occupations = candidateOccupationsList.stream()
+                .map(candidateOccupation -> Optional.ofNullable(candidateOccupation.getOccupation())
+                    .map(Occupation::getName)
+                    .orElse(""))
+                .collect(Collectors.joining("; "));
             setOccupations(occupations);
 
             final boolean tcContactConsent = candidate.getContactConsentRegistration();
