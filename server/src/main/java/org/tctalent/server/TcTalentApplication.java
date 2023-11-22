@@ -16,6 +16,7 @@
 
 package org.tctalent.server;
 
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.flywaydb.core.Flyway;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -38,6 +39,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableScheduling
+@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 @EnableAsync
 public class TcTalentApplication {
 
