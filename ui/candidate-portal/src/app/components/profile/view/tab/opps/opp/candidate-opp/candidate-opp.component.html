@@ -1,50 +1,93 @@
-<div class="d-sm-flex justify-content-between">
-  <div class="card-body">
-    <app-error [error]="error"></app-error>
+<div class="container">
 
-    <div class="row">
+  <app-error [error]="error"></app-error>
 
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
-          {{ 'CANDIDATE-OPPS.TABLE.NAME' | translate }}</label>
-        <div class="form-control-plaintext">
-          {{selectedOpp?.jobOpp.name}}
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading && selectedChat">
+
+    <div class="mt-4 mx-3 text-center flex-shrink-0">
+      <button class="btn btn-sm btn-secondary" (click)="unSelectChat()">
+        <fa-icon class="me-1" icon="arrow-left"></fa-icon>
+        {{ 'CANDIDATE-OPP.CHAT-RETURN' | translate }}
+      </button>
+    </div>
+
+    <div *ngIf="showingSourceChat">
+      {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
+    </div>
+    <div *ngIf="!showingSourceChat">
+      {{ 'CANDIDATE-OPPS.TABLE.DESTINATION-CHAT' | translate }}
+    </div>
+
+    <app-posts
+      [chat]="selectedChat"
+    >
+    </app-posts>
+
+    <div class="mt-4 mx-3 text-center flex-shrink-0">
+      <button class="btn btn-sm btn-secondary" (click)="unSelectChat()">
+        <fa-icon class="me-1" icon="arrow-left"></fa-icon>
+        {{ 'CANDIDATE-OPP.CHAT-RETURN' | translate }}
+      </button>
+    </div>
+
+  </ng-container>
+
+  <ng-container *ngIf="!loading && !selectedChat">
+    <div class="d-sm-flex justify-content-between">
+      <div class="card-body">
+        <app-error [error]="error"></app-error>
+
+        <div class="row">
+
+          <div class="mb-3 col-sm-12 col-md-4">
+            <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
+              {{ 'CANDIDATE-OPPS.TABLE.NAME' | translate }}</label>
+            <div class="form-control-plaintext">
+              {{selectedOpp?.jobOpp.name}}
+            </div>
+          </div>
+
+          <div class="mb-3 col-sm-12 col-md-4">
+            <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
+              {{ 'CANDIDATE-OPPS.TABLE.STAGE' | translate }}</label>
+            <div class="form-control-plaintext">
+              {{getCandidateOpportunityStageTranslationKey(selectedOpp?.stage) | translate}}
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label" for="closingComments">
+              {{ 'CANDIDATE-OPPS.TABLE.COMMENTS' | translate }}
+            </label>
+            <div class="col-12" id="closingComments"
+                 [innerHtml]="selectedOpp?.closingCommentsForCandidate">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label" for="chats">
+              {{ 'CANDIDATE-OPPS.TABLE.CHATS' | translate }}
+            </label>
+            <div id="chats">
+              <div (click)="setShowingSourceChat(true)">
+                # {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
+              </div>
+              <div (click)="setShowingSourceChat(false)">
+                # {{ 'CANDIDATE-OPPS.TABLE.DESTINATION-CHAT' | translate }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
-          {{ 'CANDIDATE-OPPS.TABLE.STAGE' | translate }}</label>
-        <div class="form-control-plaintext">
-          {{getCandidateOpportunityStageTranslationKey(selectedOpp?.stage) | translate}}
-        </div>
-      </div>
-
-      <div>
-        <label class="form-label" for="closingComments">
-          {{ 'CANDIDATE-OPPS.TABLE.COMMENTS' | translate }}
-        </label>
-        <div class="col-12" id="closingComments" [innerHtml]="selectedOpp?.closingCommentsForCandidate">
-        </div>
-      </div>
-
-      <div>
-        <label class="form-label" for="sourceChat">
-          {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
-        </label>
-        <div class="col-12" id="sourceChat">
-          <app-posts
-            [chat]="sourceChat"
-          >
-          </app-posts>
-        </div>
+      <div class="mt-4 mx-3 text-center flex-shrink-0">
+        <button class="btn btn-sm btn-secondary" (click)="goBack()">
+          <fa-icon class="me-1" icon="arrow-left"></fa-icon>
+          {{ 'CANDIDATE-OPPS.OPP.RETURN' | translate }}
+        </button>
       </div>
     </div>
-  </div>
-
-  <div class="mt-4 mx-3 text-center flex-shrink-0">
-    <button class="btn btn-sm btn-secondary" (click)="goBack()">
-      <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'CANDIDATE-OPPS.OPP.RETURN' | translate }}
-    </button>
-  </div>
+  </ng-container>
 </div>

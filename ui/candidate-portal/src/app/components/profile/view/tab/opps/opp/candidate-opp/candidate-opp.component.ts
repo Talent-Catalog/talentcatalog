@@ -11,6 +11,7 @@ import {Candidate} from "../../../../../../../model/candidate";
 import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../../../../../model/chat";
 import {ChatService} from "../../../../../../../services/chat.service";
+import {forkJoin} from "rxjs";
 
 const STAGE_TRANSLATION_KEY_ROOT = 'CASE-STAGE.';
 
@@ -24,7 +25,11 @@ export class CandidateOppComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Output() back = new EventEmitter();
   error: any;
+  loading: boolean;
+  destinationChat: JobChat;
   sourceChat: JobChat;
+  selectedChat: JobChat;
+  showingSourceChat: boolean;
 
   constructor(
     private chatService: ChatService
@@ -41,27 +46,33 @@ export class CandidateOppComponent implements OnInit, OnChanges {
 
 
   private displayChat() {
-    this.fetchJobChat();
-    this.computeChatHeader();
+    this.fetchJobChats();
   }
 
-
-  private computeChatHeader() {
-     //todo
-  }
-
-  private fetchJobChat() {
-    const request: CreateChatRequest = {
+  private fetchJobChats() {
+    const destinationChatRequest: CreateChatRequest = {
+      type: JobChatType.CandidateRecruiting,
+      candidateOppId: this.selectedOpp?.id
+    }
+    const sourceChatRequest: CreateChatRequest = {
       type: JobChatType.CandidateProspect,
       candidateOppId: this.selectedOpp?.id
     }
 
-    this.error = null;
-    this.chatService.getOrCreate(request).subscribe(
-      (chat) => {this.sourceChat = chat},
-      (error) => {this.error = error}
-    )
-
+    forkJoin( {
+      'sourceChat': this.chatService.getOrCreate(sourceChatRequest),
+      'destinationChat': this.chatService.getOrCreate(destinationChatRequest),
+    }).subscribe(
+      results => {
+        this.loading = false;
+        this.sourceChat = results['sourceChat'];
+        this.destinationChat = results['destinationChat'];
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
   }
 
 
@@ -78,5 +89,14 @@ export class CandidateOppComponent implements OnInit, OnChanges {
   goBack() {
     this.selectedOpp = null;
     this.back.emit();
+  }
+
+  setShowingSourceChat(showingSourceChat: boolean) {
+    this.showingSourceChat = showingSourceChat;
+    this.selectedChat = showingSourceChat ? this.sourceChat : this.destinationChat;
+  }
+
+  unSelectChat() {
+    this.selectedChat = null;
   }
 }

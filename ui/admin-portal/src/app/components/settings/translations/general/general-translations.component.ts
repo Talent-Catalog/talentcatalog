@@ -683,12 +683,16 @@ const ALL_FIELDS = {
     "HEADER": null,
     "NOTE": null,
     "TABLE": {
+      "CHATS": null,
       "COMMENTS": null,
+      "DESTINATION-CHAT": null,
       "NAME": null,
+      "SOURCE-CHAT": null,
       "STAGE": null,
       "NONE": null,
     },
     "OPP" : {
+      "CHAT-RETURN": null,
       "RETURN": null,
     },
   }
