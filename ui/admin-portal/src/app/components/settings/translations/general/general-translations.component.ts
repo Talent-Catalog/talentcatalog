@@ -683,6 +683,7 @@ const ALL_FIELDS = {
     "HEADER": null,
     "NOTE": null,
     "TABLE": {
+      "ALL-JOB-CANDIDATES-CHAT": null,
       "CHATS": null,
       "COMMENTS": null,
       "DESTINATION-CHAT": null,

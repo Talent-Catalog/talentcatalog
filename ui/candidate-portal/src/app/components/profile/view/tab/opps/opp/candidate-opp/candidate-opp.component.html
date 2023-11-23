@@ -13,11 +13,8 @@
       </button>
     </div>
 
-    <div *ngIf="showingSourceChat">
-      {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
-    </div>
-    <div *ngIf="!showingSourceChat">
-      {{ 'CANDIDATE-OPPS.TABLE.DESTINATION-CHAT' | translate }}
+    <div>
+      {{ getChatHeaderTranslationKey(selectedChatType) | translate }}
     </div>
 
     <app-posts
@@ -71,11 +68,14 @@
               {{ 'CANDIDATE-OPPS.TABLE.CHATS' | translate }}
             </label>
             <div id="chats">
-              <div (click)="setShowingSourceChat(true)">
-                # {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
+              <div (click)="setSelectedChatType(JobChatType.CandidateProspect)">
+                # {{ getChatHeaderTranslationKey(JobChatType.CandidateProspect) | translate }}
               </div>
-              <div (click)="setShowingSourceChat(false)">
-                # {{ 'CANDIDATE-OPPS.TABLE.DESTINATION-CHAT' | translate }}
+              <div (click)="setSelectedChatType(JobChatType.CandidateRecruiting)">
+                # {{ getChatHeaderTranslationKey(JobChatType.CandidateRecruiting) | translate }}
+              </div>
+              <div (click)="setSelectedChatType(JobChatType.AllJobCandidates)">
+                # {{ getChatHeaderTranslationKey(JobChatType.AllJobCandidates) | translate }}
               </div>
             </div>
           </div>
