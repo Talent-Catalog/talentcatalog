@@ -44,7 +44,7 @@
         <span class="small text-muted">
         {{candidate.candidateNumber}}
           <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]" class="link-primary">
-            <i class="fas fa-external-link-alt link-primary" title="Show candidate in new tab"></i>
+            <i class="fas fa-external-link-alt is-link" title="Show candidate in new tab"></i>
           </a>
            -
           <a target="_blank" (click)="downloadCV()" class="link-info">
