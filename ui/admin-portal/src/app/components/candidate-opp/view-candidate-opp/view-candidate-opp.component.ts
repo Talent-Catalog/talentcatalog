@@ -9,6 +9,7 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
 import {ShortSavedList} from "../../../model/saved-list";
 import {LocalStorageService} from "angular-2-local-storage";
+import {JobChatType} from "../../../model/chat";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -44,6 +45,10 @@ export class ViewCandidateOppComponent implements OnInit {
 
   get editable(): boolean {
     return this.authService.canEditCandidateOpp(this.opp);
+  }
+
+  get JobChatType() {
+    return JobChatType;
   }
 
   editOppProgress() {
