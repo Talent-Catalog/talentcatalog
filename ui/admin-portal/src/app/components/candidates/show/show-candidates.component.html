@@ -57,48 +57,47 @@
 
 <!--      Icons -->
       <div class="d-flex flex-grow-1 space-evenly">
-        <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()">
+        <button class="btn btn-link" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()">
           <i class="fas fa-link" title="Copy shareable link"></i>
         </button>
-        <button class="btn" (click)="doToggleStarred()">
+        <button class="btn btn-link" (click)="doToggleStarred()">
           <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
           <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
         </button>
-        <button class="btn" *ngIf="isSavedList()" (click)="doCopySource()">
+        <button class="btn btn-link" *ngIf="isSavedList()" (click)="doCopySource()">
           <i class="fas fa-clone" title="Copy"></i>
         </button>
-        <button class="btn" *ngIf="hasSavedSearchSource()" (click)="doShowSearch()">
+        <button class="btn btn-link" *ngIf="hasSavedSearchSource()" (click)="doShowSearch()">
           <i class="fas fa-search" title="Show Search"></i>
         </button>
-        <button class="btn" *ngIf="isEditable() && !isDefaultSavedSearch()" (click)="doEditSource()">
+        <button class="btn btn-link" *ngIf="isEditable() && !isDefaultSavedSearch()" (click)="doEditSource()">
           <i class="fas fa-edit" title="Rename"></i>
         </button>
-        <button class="btn" (click)="doSelectColumns()">
+        <button class="btn btn-link" (click)="doSelectColumns()">
           <i class="fas fa-columns" title="Select columns to display"></i>
         </button>
-        <button class="btn" *ngIf="canAssignTasks()" (click)="assignTasks()">
+        <button class="btn btn-link" *ngIf="canAssignTasks()" (click)="assignTasks()">
           <i class="fas fa-tasks" title="Assign/show tasks"></i>
         </button>
-        <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()">
+        <button class="btn btn-link" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()">
           <i class="fas fa-chart-bar" title="Run stats"></i>
         </button>
-        <button class="btn" *ngIf="candidateSource?.sfJobOpp"
+        <button class="btn btn-link" *ngIf="candidateSource?.sfJobOpp"
            [routerLink]="['/job',candidateSource.sfJobOpp.id]">
           <i class="fa-solid fa-briefcase" title="Associated Job"></i>
         </button>
-        <button class="btn" *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()">
-          <a target="_blank"
-             [href]="salesforceService.joblink(candidateSource)">
+        <button class="btn btn-link"
+                *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()"
+                (click)="doShowSalesforceLink()">
             <i class="fab fa-salesforce" title="Associated Job Opportunity on Salesforce"></i>
-          </a>
         </button>
-        <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">
+        <button class="btn btn-link" *ngIf="isSavedList()" (click)="doShowListFolder()">
           <i class="fab fa-google-drive" title="Create/show Google folder"></i>
         </button>
-        <button class="btn" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
+        <button class="btn btn-link" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
           <i class="fas fa-globe" title="Show published sheet"></i>
         </button>
-        <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
+        <button class="btn btn-link" *ngIf="timestamp" (click)="doSearch(true)">
           <i class="fas fa-sync" title="Refresh data"></i>
         </button>
       </div>
@@ -111,10 +110,10 @@
     </div>
 
 <!--    Buttons -->
-    <div class="d-flex">
+    <div class="d-flex justify-content-between">
 
-      <div class="d-flex flex-wrap buttons-spacing flex-fill">
-        <button class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
+      <div class="d-flex flex-wrap buttons-spacing flex-fill align-content-between">
+        <button class="btn btn-sm btn-success" [disabled]="!isSelection()"
                 (click)="saveSelection()" title="Save Selection">
           <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
           <i class="fas fa-user-check"></i> to
@@ -193,20 +192,7 @@
       </div>
 
       <div class="d-flex">
-        <div *ngIf="isSavedList()" class="flex-fill w-50 me-2">
-          <form [formGroup]="searchForm">
-            <div class="mb-3 mb-0 flex-fill">
-              <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
-                     id="keyword" autofocus>
-            </div>
-            <div *ngIf="isJobList()">
-              <label class="form-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</label>
-              <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps">
-            </div>
-          </form>
-        </div>
-
-        <div *ngIf="isContentModifiable()" class="flex-fill w-50 ms-2">
+        <div *ngIf="isContentModifiable()" class="flex-fill w-50 me-2">
           <input id="quickNumberOrNameSearch"
                  type="text" class="form-control" #input
                  [ngbTypeahead]="doNumberOrNameSearch"
@@ -218,6 +204,19 @@
           <ng-template #rt let-r="result" let-t="term">
             <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
           </ng-template>
+        </div>
+
+        <div *ngIf="isSavedList()" class="flex-fill w-50 mx-2">
+          <form [formGroup]="searchForm">
+            <div class="mb-3 mb-0 flex-fill">
+              <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
+                     id="keyword" autofocus>
+            </div>
+            <div *ngIf="isJobList()" class="form-check-reverse">
+              <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
+              <label class="form-check-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</label>
+            </div>
+          </form>
         </div>
       </div>
 

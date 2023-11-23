@@ -25,7 +25,7 @@
     </ol>
   </nav>
 
-  <div [hidden]="!showSearchRequest" >
+  <div [hidden]="!showSearchRequest">
     <div>
       <a class="link" (click)="showSearchRequest = false">
         <ng-container>
@@ -38,32 +38,35 @@
       <div class="d-flex justify-content-between mb-4">
 
         <h3 class="m-0">Candidate Search</h3>
+        <div class="d-flex">
+          <div>
+            <button type="button" class="btn btn-warning me-2"
+                    [disabled]="loading"
+                    (click)="clearForm()">Clear Search</button>
+          </div>
+          <div>
+            <button type="button" class="ms-2 btn btn-secondary"
+                    [hidden]="savedSearch?.defaultSearch"
+                    [disabled]="!canChangeSearchRequest()"
+                    (click)="updateSavedSearchModal()">
+              <i *ngIf="!canChangeSearchRequest()" title="Fixed - can't change"
+                 class="fas fa-lock"></i>
+              Update Search</button>
+            <button type="button" class="ms-2 btn btn-danger"
+                    [hidden]="savedSearch?.defaultSearch"
+                    [disabled]="!canChangeSearchRequest()"
+                    (click)="deleteSavedSearchModal()">
+              <i *ngIf="!canChangeSearchRequest()" title="Fixed - can't change"
+                 class="fas fa-lock"></i>
+              Delete Search</button>
+            <button type="button" class="ms-2 btn btn-primary"
+                    [hidden]="!savedSearch?.defaultSearch"
+                    (click)="createNewSavedSearchModal()">
+              Save Search</button>
+          </div>
+        </div>
 
-        <div>
-          <button type="button" class="btn btn-outline-dark me-2"
-                  [disabled]="loading"
-                  (click)="clearForm()">Clear Search</button>
-        </div>
-        <div>
-          <button type="button" class="ms-2 btn btn-outline-primary"
-                  [hidden]="savedSearch?.defaultSearch"
-                  [disabled]="!canChangeSearchRequest()"
-                  (click)="updateSavedSearchModal()">
-            <i *ngIf="!canChangeSearchRequest()" title="Fixed - can't change"
-               class="fas fa-lock"></i>
-            Update Search</button>
-          <button type="button" class="ms-2 btn btn-outline-primary"
-                  [hidden]="savedSearch?.defaultSearch"
-                  [disabled]="!canChangeSearchRequest()"
-                  (click)="deleteSavedSearchModal()">
-            <i *ngIf="!canChangeSearchRequest()" title="Fixed - can't change"
-               class="fas fa-lock"></i>
-            Delete Search</button>
-          <button type="button" class="ms-2 btn btn-outline-primary"
-                  [hidden]="!savedSearch?.defaultSearch"
-                  (click)="createNewSavedSearchModal()">
-            Save Search</button>
-        </div>
+
 
       </div>
 
@@ -71,7 +74,7 @@
         {{getError()}}
       </div>
 
-      <form class="filter-form" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
+      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
         <ng-template #keywordSearchTip>
           Search candidate CVs using these tips to create powerful queries:
           <ul id="keyword-search-tip-list">
@@ -493,17 +496,12 @@
         <hr class="w-100">
 
         <div class="container-fluid">
-          <div class="row">
-
-            <div class="col">
-              <app-join-saved-search
-                (addBaseSearch)="addBaseSearchJoin($event)"
-                (deleteBaseSearch)="deleteBaseSearchJoin()"
-                [baseSearch]= "selectedBaseJoin"
-                [readonly]="elastic()"
-              ></app-join-saved-search>
-            </div>
-          </div>
+          <app-join-saved-search
+            (addBaseSearch)="addBaseSearchJoin($event)"
+            (deleteBaseSearch)="deleteBaseSearchJoin()"
+            [baseSearch]= "selectedBaseJoin"
+            [readonly]="elastic()"
+          ></app-join-saved-search>
         </div>
 
 
@@ -534,7 +532,7 @@
                        (editSource)="updateSavedSearchModal()"
   >
     <!--Toggle search details-->
-    <div>
+    <div class="mb-3">
       <a class="link" (click)="showSearchRequest = !showSearchRequest">
         <ng-container *ngIf="!showSearchRequest">
           <i class="fas fa-caret-up"></i> Show search request

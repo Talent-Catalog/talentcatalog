@@ -19,16 +19,19 @@
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/buttons";
 
-.btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-info {
+.btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-info, .btn-warning {
   color: $white;
+  &:hover {
+    color: $light;
+  }
 }
 
 .btn-link {
-  color: $primary;
+  color: $accent1;
   background-color: transparent;
 
   &:hover {
-    color: $secondary;
+    color: $primary;
     text-decoration: none;
     background-color: transparent;
     border-color: transparent;
@@ -64,6 +67,17 @@ a {
   &.disabled {
     color: $light;
     background-color: $accent2;
+  }
+}
+
+button {
+  a {
+    i {
+      color: $primary;
+      &:hover {
+        color: $secondary;
+      }
+    }
   }
 }
 
