@@ -55,7 +55,7 @@ export class CreateUpdateUserComponent implements OnInit {
 
   ngOnInit() {
     let formControlsConfig = {
-      email: [this.user?.email, [Validators.required, Validators.email]],
+      email: [this.user?.email, Validators.required],
       username: [this.user?.username, Validators.required],
       firstName: [this.user?.firstName, Validators.required],
       lastName: [this.user?.lastName, Validators.required],
