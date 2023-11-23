@@ -15,38 +15,11 @@
  */
 
 $white: #ffffff;
-
-//$light:      #dae2e4;
-//$dark:       #111317;
-//$primary:    #213f5a;
-//$secondary:  #4a679f;
-//$info:       #678ecf;
-//$accent1:    #dac700;
-//$accent2:    #c2a10e;
-//$accent3:    #a3bad9;
-//$success:    #00b764;
-//$warning:    #eacf00;
-//$danger:     #fe0000;
-
-//$light:      #eee1cc;
-//$dark:       #16142b;
-//$primary:    #1545cc;
-//$secondary:  #3378fc;
-//$info:       #00b58b;
-//$accent1:    #424441;
-//$accent2:    #8a8c72;
-//$accent3:    #a2a4a7;
-//$success:    #00ab63;
-//$warning:    #e4cd00;
-//$danger:     #f41b00;
-
-
-// FAVOURITE SO FAR, PROFESSIONAL AND CLEAN. NOT ALOT OF VARIATION THOUGH (BLUES/GREYS)
 $light:      #e4e1d5;
 $dark:       #151f2d;
 $primary: #314874;
 $secondary: #0e7688;
-$info:      #9b6a0d;
+$info: #1a4669;
 $accent1:    #383b48;
 $accent2:    #64656d;
 $accent3:    #b2b7bb;
@@ -54,71 +27,9 @@ $success: #03864d;
 $warning: #c7b408;
 $danger: #a91206;
 
-//$light:      #e1e2e4;
-//$dark:       #04050a;
-//$primary:    #004c4e;
-//$secondary:  #09798a;
-//$info:       #07abca;
-//$accent1:    #8f0c36;
-//$accent2:    #576b90;
-//$accent3:    #aba9b0;
-//$success:    #00a548;
-//$warning:    #ecc700;
-//$danger:     #f4002f;
-
-//$light:      #e7e5e2;
-//$dark:       #000100;
-//$primary:    #242832;
-//$secondary:  #c32e32;
-//$info:       #f56868;
-//$accent1:    #333f46;
-//$accent2:    #146fb1;
-//$accent3:    #008bcb;
-//$success:    #009a56;
-//$warning:    #e0c800;
-//$danger:     #ee1100;
-
-
-// BIT LESS "BUSINESS" AND MORE CONTRAST WITH THE BROWNS. IS IT TOO 'BRANDED' THOUGH AND NOT GENERAL ENOUGH?
-//https://huemint.com/bootstrap-plus/#palette=dbdbdc-ffffff-101320-37414d-61769a-5799cf-ce9133-af8a60-bdac9a
-//$light:      #dbdbdc;
-//$dark:       #101320;
-//$primary:    #37414d;
-//$secondary:  #61769a;
-//$info:       #5799cf;
-//$accent1:    #ce9133;
-//$accent2:    #af8a60;
-//$accent3:    #bdac9a;
-//$success:    #1eb265;
-//$warning:    #e8ce1c;
-//$danger:     #fa0d0f;
-
-
-//$color-primary-lightest: #e9f7fc;
-//$color-primary-lighter: #a7e2f4;
-//$color-primary-light: #0cd5e4;
-//$color-primary: #13b1dd;
-//$color-primary-dark: #0b81a6;
-//$color-primary-darker: #075168;
-//
-//$color-secondary: #272b2b;
-//$color-secondary-light: #888888;
-//$color-secondary-lighter: #dedede;
-//
-//$color-text-primary: #272b2b;
-//$color-text-secondary: #5a6268;
-//$color-text-light: #dedede;
-//
-//$color-border: #d7d8d8;
-//$color-background: #f2f2f2;
-//
 $accordion-button-bg: fade-out($accent2, 0.4);
-
 $accordion-border-color: $light;
-
 $accordion-button-active-bg: $accent1;
 $accordion-button-active-color: $light;
-
-
 
 $offcanvas-horizontal-width: 40vw;
