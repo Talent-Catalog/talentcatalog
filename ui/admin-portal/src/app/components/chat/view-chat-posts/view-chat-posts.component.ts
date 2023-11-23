@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {JobChatType} from "../../../model/chat";
+import {CreateChatRequest, JobChatType} from "../../../model/chat";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {Partner} from "../../../model/partner";
 import {Job} from "../../../model/job";
@@ -29,7 +29,18 @@ export class ViewChatPostsComponent extends PostsComponentBase implements OnInit
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //todo display chat posts
+    this.fetchJobChat();
+  }
+
+  private fetchJobChat() {
+    const request: CreateChatRequest = {
+      type: this.jobChatType,
+      candidateOppId: this.candidateOpp?.id,
+      jobId: this.job?.id,
+      sourcePartnerId: this.sourcePartner?.id
+    }
+
+    this.requestJobChat(request);
   }
 
 }

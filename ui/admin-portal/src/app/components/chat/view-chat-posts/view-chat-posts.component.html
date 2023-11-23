@@ -1,1 +1,21 @@
-<p>view-chat-posts works!</p>
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+
+<div *ngFor="let post of posts" (click)="selectCurrent(post)"
+     [ngClass]="{'current': currentPost?.id == post.id}">
+  <app-view-post
+    [post]="post"
+  >
+  </app-view-post>
+</div>
+
+<app-create-update-post
+  [chat]="chat"
+>
+
+</app-create-update-post>
+
