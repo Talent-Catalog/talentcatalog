@@ -13,6 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+@import "~src/scss/variables";
 
 .custom-day {
   text-align: center;
@@ -30,4 +31,11 @@
 }
 .custom-day.faded {
   background-color: rgba(2, 117, 216, 0.5);
+}
+
+.hover-color-red {
+  &:hover {
+    background-color: $danger;
+    color: $white;
+  }
 }

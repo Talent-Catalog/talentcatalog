@@ -113,7 +113,7 @@
     <div class="d-flex justify-content-between">
 
       <div class="d-flex flex-wrap buttons-spacing flex-fill align-content-between">
-        <button class="btn btn-sm btn-success" [disabled]="!isSelection()"
+        <button class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
                 (click)="saveSelection()" title="Save Selection">
           <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
           <i class="fas fa-user-check"></i> to
@@ -372,22 +372,22 @@
                   {{candidate.candidateNumber}}
                 </a>
                 <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
-                  <i class="fas fa-external-link-alt is-link link-primary me-2" title="Show candidate in new tab"></i>
+                  <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
                 </a>
                 <a target="_blank" [href]="candidate.user.partner.websiteUrl">
-                  <i class="fas fa-hands-helping is-link" [title]="'Partner: ' + candidate.user.partner.name"></i>
+                  <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
                 </a>
                 <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
-                  <i class="fab fa-salesforce is-link" title="Show candidate in Salesforce"></i>
+                  <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
                 </a>
                 <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
-                  <i class="fab fa-google-drive is-link" title="Show candidate's Google Doc folder"></i>
+                  <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
                 </a>
                 <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
-                  <i class="fas fa-video is-link" title="Show candidate's one way video"></i>
+                  <i class="fas fa-video" title="Show candidate's one way video"></i>
                 </a>
                 <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
-                  <i class="fab fa-linkedin is-link" title="Show candidate's LinkedIn page"></i>
+                  <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
                 </a>
                 <app-cv-icon
                   *ngIf="isCandidateNameViewable()"

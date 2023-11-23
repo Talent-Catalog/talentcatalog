@@ -106,7 +106,7 @@ label,a > {
   }
 }
 
-a.is-link {
+a .is-link {
   color: $primary;
   cursor: pointer;
   &:hover {
@@ -153,4 +153,9 @@ ngx-wig {
 
 .text-accent-1 {
   color: $accent1;
+}
+
+.btn-accent-1 {
+  background-color: $accent1;
+  color: $white;
 }
