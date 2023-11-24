@@ -128,9 +128,9 @@
         </ng-template>
       </ng-container>
 
-      <!-- Chat with source partner-->
-      <ng-container ngbNavItem="Chat1">
-        <a ngbNavLink>Chat Candidate/Source</a>
+      <!-- Chat between source partner candidate-->
+      <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
+        <a ngbNavLink>Chat with candidate</a>
         <ng-template ngbNavContent>
           <app-view-chat-posts
             [candidateOpp]="opp"
@@ -141,8 +141,8 @@
       </ng-container>
 
       <!-- Chat including source partner and job creator-->
-      <ng-container ngbNavItem="Chat2">
-        <a ngbNavLink>Chat Candidate/Job creator/Source</a>
+      <ng-container ngbNavItem="CandidateRecruiting" *ngIf="candidateRecruitingTabVisible">
+        <a ngbNavLink>{{candidateRecruitingTabTitle}}</a>
         <ng-template ngbNavContent>
           <app-view-chat-posts
             [candidateOpp]="opp"

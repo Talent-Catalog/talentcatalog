@@ -10,6 +10,7 @@ import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
 import {ShortSavedList} from "../../../model/saved-list";
 import {LocalStorageService} from "angular-2-local-storage";
 import {JobChatType} from "../../../model/chat";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -25,9 +26,13 @@ export class ViewCandidateOppComponent implements OnInit {
   error: string;
   private lastTabKey: string = 'CaseLastTab';
   updating: boolean;
+  candidateProspectTabVisible: boolean;
+  candidateRecruitingTabVisible: boolean;
+  candidateRecruitingTabTitle: string = 'CandidateRecruiting'
 
   constructor(
-    private authService: AuthorizationService,
+    private authorizationService: AuthorizationService,
+    private authenticationService: AuthenticationService,
     private candidateOpportunityService: CandidateOpportunityService,
     private localStorageService: LocalStorageService,
     private modalService: NgbModal,
@@ -37,6 +42,8 @@ export class ViewCandidateOppComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectDefaultTab();
+    this.checkVisibility();
+
   }
 
   get getCandidateOpportunityStageName() {
@@ -44,7 +51,7 @@ export class ViewCandidateOppComponent implements OnInit {
   }
 
   get editable(): boolean {
-    return this.authService.canEditCandidateOpp(this.opp);
+    return this.authorizationService.canEditCandidateOpp(this.opp);
   }
 
   get JobChatType() {
@@ -81,7 +88,7 @@ export class ViewCandidateOppComponent implements OnInit {
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
   displaySavedList(list: ShortSavedList) {
@@ -108,4 +115,30 @@ export class ViewCandidateOppComponent implements OnInit {
     this.localStorageService.set(this.lastTabKey, id);
   }
 
+  private checkVisibility() {
+    const candidateStage = this.opp?.stage;
+    const candidatePartner = this.opp?.candidate?.user?.partner;
+    const recruiterPartner = this.opp?.jobOpp.recruiterPartner;
+    const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
+
+    //User is recruiter for this opp or default job creator
+    const userIsRecruitingPartner =
+      loggedInPartner.defaultJobCreator || loggedInPartner.id == recruiterPartner?.id;
+
+    //User is source partner responsible for candidate or default source partner
+    const userIsCandidatePartner =
+      loggedInPartner.defaultSourcePartner || loggedInPartner.id == candidatePartner?.id;
+
+    this.candidateProspectTabVisible = userIsCandidatePartner;
+
+    //todo Recruiters only see candidates past the CVReview stage.
+    this.candidateRecruitingTabVisible = userIsCandidatePartner || userIsRecruitingPartner;
+
+    //Label on candidateRecruiting chat depends on who the logged in user is.
+    if (userIsCandidatePartner) {
+      this.candidateRecruitingTabTitle = 'Chat with candidate & recruiter'
+    } else if (userIsRecruitingPartner) {
+      this.candidateRecruitingTabTitle = 'Chat with candidate & source partner'
+    }
+  }
 }
