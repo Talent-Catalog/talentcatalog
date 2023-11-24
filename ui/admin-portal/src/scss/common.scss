@@ -100,10 +100,6 @@ table {
   }
 }
 
-.scroll-select .multiselect-dropdown .dropdown-btn {
-  overflow-y: scroll !important;
-}
-
 .card-header {
   background-color: $accent2 !important;
   background-image: var(--bs-gradient);
@@ -111,20 +107,6 @@ table {
   font-weight: 400;
   color: $light !important;
   margin-bottom: 0;
-}
-
-.custom-primary .multiselect-dropdown .dropdown-btn .selected-item {
-  //background-color: $color-primary-dark !important;
-  //border: 1px solid $color-primary-dark !important;
-}
-
-.custom-primary .multiselect-item-checkbox input[type=checkbox]:checked + div:before {
-  //background-color: $color-primary-dark !important;
-  //border: 2px solid $color-primary-dark !important;
-}
-
-.custom-primary .multiselect-item-checkbox input[type=checkbox] + div:before {
-  //border: 2px solid $color-primary-dark !important;
 }
 
 .col-form-label i {
@@ -171,11 +153,3 @@ table {
 .side-panel-color {
   background-color: fade-out($accent3, 0.7);
 }
-
-//.text-alert {
-//  color: #ff8900;
-//}
-//
-//.text-tbb-primary {
-//  color: #13B1DD;
-//}

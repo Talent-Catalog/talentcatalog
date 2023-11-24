@@ -417,7 +417,7 @@
                 <span [title]="field.getTooltip(candidate)" [ngClass]="{
                 'text-danger': field.getValue(candidate) === 'Overdue',
                 'text-success' : field.getValue(candidate) == 'Completed',
-                'text-alert' : field.getValue(candidate) == 'Abandoned'}">
+                'text-warning' : field.getValue(candidate) == 'Abandoned'}">
 <!--                  todo Have switch on display of arrays vs non arrays.
 Non arrays or single value arrays, just display value
 
