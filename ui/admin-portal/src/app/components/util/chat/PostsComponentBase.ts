@@ -114,7 +114,7 @@ export abstract class PostsComponentBase {
     this.posts = posts;
   }
 
-  protected selectCurrent(post: ChatPost) {
+  selectCurrent(post: ChatPost) {
     this.currentPost = post;
   }
 
