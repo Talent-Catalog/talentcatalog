@@ -41,16 +41,12 @@ export class CandidateOppComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.selectedOpp) {
-      this.displayChat();
+      this.fetchJobChats();
     }
   }
 
   get JobChatType() {
     return JobChatType
-  }
-
-  private displayChat() {
-    this.fetchJobChats();
   }
 
   private fetchJobChats() {
@@ -70,13 +66,13 @@ export class CandidateOppComponent implements OnInit, OnChanges {
     forkJoin( {
       'sourceChat': this.chatService.getOrCreate(sourceChatRequest),
       'destinationChat': this.chatService.getOrCreate(destinationChatRequest),
-      'allJobCandidatesChatRequest': this.chatService.getOrCreate(allJobCandidatesChatRequest),
+      'allJobCandidatesChat': this.chatService.getOrCreate(allJobCandidatesChatRequest),
     }).subscribe(
       results => {
         this.loading = false;
         this.sourceChat = results['sourceChat'];
         this.destinationChat = results['destinationChat'];
-        this.allJobCandidatesChat = results['allJobCandidatesChatRequest'];
+        this.allJobCandidatesChat = results['allJobCandidatesChat'];
       },
       (error) => {
         this.error = error;

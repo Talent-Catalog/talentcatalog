@@ -14,4 +14,8 @@ export class ViewChatComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  get displayName(): any {
+    return this.chat.name ? this.chat.name : this.chat.id;
+  }
+
 }

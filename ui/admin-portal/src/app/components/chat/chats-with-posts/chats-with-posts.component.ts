@@ -22,6 +22,10 @@ export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit
   ngOnInit(): void {
   }
 
+  get selectedChatDisplayName(): any {
+    return this.selectedChat.name ? this.selectedChat.name : 'Chat ' + this.selectedChat.id;
+  }
+
   onChatSelected(chat: JobChat) {
     this.selectedChat = chat;
     this.chatSelection.emit(chat);
