@@ -66,7 +66,7 @@ export class RegistrationContactComponent implements OnInit {
     this.loading = true;
     this.candidate = null;
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', Validators.required],
       phone: [''],
       whatsapp: [''],
       // username: ['']
