@@ -30,12 +30,12 @@ export abstract class PostsComponentBase {
   chat: JobChat;
   private chatSubscription: Subscription;
 
-  protected currentPost: ChatPost;
+  currentPost: ChatPost;
 
-  protected posts: ChatPost[];
+  posts: ChatPost[];
 
-  protected loading: boolean;
-  protected error;
+  loading: boolean;
+  error;
 
   constructor(
     protected chatService: ChatService,
@@ -114,7 +114,7 @@ export abstract class PostsComponentBase {
     this.posts = posts;
   }
 
-  protected selectCurrent(post: ChatPost) {
+  selectCurrent(post: ChatPost) {
     this.currentPost = post;
   }
 
