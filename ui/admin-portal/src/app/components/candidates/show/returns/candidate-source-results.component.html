@@ -61,7 +61,7 @@
   <div class="table-responsive">
     <table class="table">
 
-      <thead>
+      <thead class="table-primary">
       <tr>
         <th class="candidate-number-row" (click)="toggleSort('id')">
           <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
@@ -79,14 +79,14 @@
 
       <tr *ngFor="let candidate of results?.content">
         <td>
-          <a [routerLink]="['/candidate',candidate.candidateNumber]">
+          <a class="fw-bold" [routerLink]="['/candidate',candidate.candidateNumber]">
             {{candidate.candidateNumber}}
+          </a>
+          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+            <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
           </a>
           <a target="_blank" [href]="candidate.user.partner.websiteUrl">
             <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
-          </a>
-          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
-            <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
           </a>
           <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
             <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>

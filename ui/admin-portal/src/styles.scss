@@ -13,40 +13,49 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+@import "~src/scss/variables";
 
-@import '~bootstrap/scss/bootstrap-reboot';
-@import '~bootstrap/scss/bootstrap';
+@import 'bootstrap/scss/bootstrap-reboot';
+@import 'bootstrap/scss/bootstrap';
 
 $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
-@import '~@fortawesome/fontawesome-free/scss/fontawesome.scss';
-@import '~@fortawesome/fontawesome-free/scss/brands.scss';
-@import '~@fortawesome/fontawesome-free/scss/solid.scss';
-@import '~@fortawesome/fontawesome-free/scss/regular.scss';
+@import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '@fortawesome/fontawesome-free/scss/brands.scss';
+@import '@fortawesome/fontawesome-free/scss/solid.scss';
+@import '@fortawesome/fontawesome-free/scss/regular.scss';
 
 @import "~src/scss/common";
 @import "~src/scss/page";
-@import "~src/scss/variables";
+
 @import "~src/scss/btn";
 @import "~src/scss/dragula";
-@import "~@ng-select/ng-select/themes/default.theme.css";
+@import "@ng-select/ng-select/themes/default.theme.css";
 
 body {
   padding-top: 6rem;
+  background-color: $light;
 }
 
 .nav-link {
   cursor: pointer;
+  color: $light;
 }
 
 .nav-tabs {
-  border-bottom: $nav-tabs-border-width solid $nav-tabs-border-color;
+  border-bottom: $nav-tabs-border-width solid $white;
 
   .nav-item {
     margin-bottom: -$nav-tabs-border-width;
   }
 
   .nav-link {
-    color: $color-primary-darker;
+    color: $dark;
+    background-color: $accent3;
+    border-color: $light;
+    &:hover {
+      background-color: $accent2;
+      color: $light;
+    }
 
     &.disabled {
       color: $nav-link-disabled-color;
@@ -57,8 +66,8 @@ body {
 
   .nav-link.active,
   .nav-item.show .nav-link {
-    color: $color-primary;
-    background-color: $nav-tabs-link-active-bg;
+    color: $light;
+    background-color: $accent1;
     border-color: $nav-tabs-link-active-border-color;
   }
 
@@ -70,61 +79,64 @@ h1 {
 }
 
 //Table row highlighting
-.table-hover> tbody> tr:hover{
-  background-color: fade-out($color-primary, 0.8)
+highlighting.table-hover> tbody> tr:hover{
+  background-color: $accent3
 }
 
 //Current item - the one whose detailed data is displayed
 tr.current {
-  background-color: fade-out($color-primary-darker, 0.8)
+  background-color: fade-out($accent2, 0.9)
 }
 
 //Selected item(s)- item is one of the selected ones (those with checked selection checkbox)
 tr.selected {
-  background-color: fade-out($color-secondary-lighter, 0.7)
+  background-color: fade-out($accent1, 0.7)
 }
 //end - Table row highlighting
 
 .dropdown-btn > span {
-  color: #6C757C;
+  color: $accent2;
 }
 
 /* FONT AWESOME */
-label,a > i.fas,i.fab,i.far {
-  margin-right: 5px;
+label,a > {
+  i.fas,i.fab,i.far {
+    margin-right: 5px;
+    //color: inherit;
+  }
 }
 
-a.is-link, a > i.is-link {
-  color: $color-primary;
+a .is-link {
+  color: $primary;
   cursor: pointer;
   &:hover {
-    color: $color-primary-dark;
+    color: $secondary;
   }
 }
 
 .ng-select.ng-select-disabled.disabled {
   &.ng-select-multiple {
     .ng-value-container .ng-value {
-      background-color: #d4d4d4;
+      background-color: $accent1;
     }
   }
   .ng-select-container {
-    background-color: #e9ecef;
+    background-color: $accent3;
     opacity: 1;
   }
 }
 
 // change disabled colour to display on visa intakes
-.ng-select.ng-select-disabled>.ng-select-container {
-  background-color: #f2f2f2;
-  .ng-value-label {
-    background-color: #f2f2f2;
-  }
-}
-
-.form-control:disabled {
-  background-color: #f2f2f2;
-}
+//.ng-select.ng-select-disabled>.ng-select-container {
+//  background-color: #f2f2f2;
+//  .ng-value-label {
+//    background-color: #f2f2f2;
+//  }
+//}
+//
+//.form-control:disabled {
+//  background-color: #f2f2f2;
+//}
 
 label {
   font-weight: 500;
@@ -137,4 +149,13 @@ ngx-wig {
 
 .custom-side-profile {
   overflow: scroll;
+}
+
+.text-accent-1 {
+  color: $accent1;
+}
+
+.btn-accent-1 {
+  background-color: $accent1;
+  color: $white;
 }

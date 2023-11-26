@@ -15,9 +15,9 @@
  */
 
 @import "~src/scss/variables";
-@import '~bootstrap/scss/bootstrap-reboot';
-@import '~bootstrap/scss/bootstrap';
-@import '~bootstrap/scss/pagination';
+@import 'bootstrap/scss/bootstrap-reboot';
+@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap/scss/pagination';
 
 .section {
   padding: 10px 0;
@@ -33,11 +33,11 @@
 
 .link,
 .link:not([href]):not([tabindex]){
-  color: $color-primary-darker;
+  color: $primary;
   cursor: pointer;
   text-decoration: $link-decoration;
   &:hover {
-    color: $color-primary-dark;
+    color: $secondary;
     text-decoration: $link-hover-decoration;
   }
 }
@@ -45,14 +45,15 @@
 .page-link {
   position: relative;
   display: block;
-  color: $color-primary;
-  background-color: $pagination-bg;
+  color: $accent1;
+  background-color: $accent3;
+  border-color: $light;
 
   &:hover {
     z-index: 2;
     text-decoration: none;
-    background-color: $color-primary;
-    color: $color-background;
+    background-color: $accent2;
+    color: $light;
   }
 
   &:focus {
@@ -65,46 +66,47 @@
 .page-item {
 
   &.active .page-link {
-    background-color: $color-primary;
-    border-color: $color-primary;
+    background-color: $accent2;
+    border-color: $accent2;
   }
 
   &.disabled .page-link {
-    color: $pagination-disabled-color;
+    color: $light;
+    background-color: $accent3;
     pointer-events: none;
+    border-color: $light;
     // Opinionated: remove the "hand" cursor set previously for .page-link
     cursor: auto;
-    background-color: $pagination-disabled-bg;
-    border-color: $pagination-disabled-border-color;
   }
 }
 
 table {
+  background-color: $white;
+  border: $white;
+  border-radius: 5px;
   td {
     white-space: nowrap;
+    a {
+      > i {
+        color: $info;
+        &:hover {
+          color: $accent1;
+        }
+      }
+      &:hover {
+        color: $secondary;
+      }
+    }
   }
 }
 
-.scroll-select .multiselect-dropdown .dropdown-btn {
-  overflow-y: scroll !important;
-}
-
 .card-header {
-  background-color: $color-secondary-lighter !important;
-}
-
-.custom-primary .multiselect-dropdown .dropdown-btn .selected-item {
-  background-color: $color-primary-dark !important;
-  border: 1px solid $color-primary-dark !important;
-}
-
-.custom-primary .multiselect-item-checkbox input[type=checkbox]:checked + div:before {
-  background-color: $color-primary-dark !important;
-  border: 2px solid $color-primary-dark !important;
-}
-
-.custom-primary .multiselect-item-checkbox input[type=checkbox] + div:before {
-  border: 2px solid $color-primary-dark !important;
+  background-color: $accent2 !important;
+  background-image: var(--bs-gradient);
+  font-size: 1.1em;
+  font-weight: 400;
+  color: $light !important;
+  margin-bottom: 0;
 }
 
 .col-form-label i {
@@ -130,15 +132,24 @@ table {
   overflow: initial;
 }
 
+.accordion-button {
+  font-size: 1.1rem;
+  color: $dark;
+  font-weight: 400;
+  background-image: var(--bs-gradient);
+}
+
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: #999 !important;
   opacity: 1; /* Firefox */
 }
 
-.text-alert {
-  color: #ff8900;
+//// The right hand side panels showing more detail of selected item
+.detail-panel {
+  border-radius: 5px;
+  padding: 1rem;
 }
 
-.text-tbb-primary {
-  color: #13B1DD;
+.side-panel-color {
+  background-color: fade-out($accent3, 0.7);
 }

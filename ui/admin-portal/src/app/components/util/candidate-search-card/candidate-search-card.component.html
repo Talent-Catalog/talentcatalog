@@ -13,7 +13,7 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-<div class="candidate-card" *ngIf="!!candidate">
+<div class="candidate-card side-panel-color" *ngIf="!!candidate">
   <div class="content">
   <button (click)="close()" type="button" class="btn-close text-reset float-end ms-4" aria-label="Close"></button>
 
@@ -85,7 +85,7 @@
           <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
         </a>
       </h3>
-      <button (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-secondary-light me-1">
+      <button (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-info me-1">
         General Notes
         <i *ngIf="!showNotes" class="fas fa-eye"></i>
         <i *ngIf="showNotes" class="fas fa-eye-slash"></i>

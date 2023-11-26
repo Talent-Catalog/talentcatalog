@@ -23,7 +23,7 @@
 <div *ngIf="!loading" id="VisaNewZealand">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h5>Visa New Zealand</h5>
-    <button class="btn btn-primary" (click)="exportAsPdf('VisaNewZealand')" [disabled]="saving">
+    <button class="btn btn-secondary" (click)="exportAsPdf('VisaNewZealand')" [disabled]="saving">
       <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
       Export PDF
     </button>
