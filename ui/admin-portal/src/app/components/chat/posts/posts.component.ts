@@ -12,6 +12,7 @@ import {PostsComponentBase} from "../../util/chat/PostsComponentBase";
 export class PostsComponent extends PostsComponentBase implements OnInit, OnChanges {
 
   @Input() chat: JobChat;
+  @Input() readOnly: boolean = false;
 
   constructor(
       chatService: ChatService,

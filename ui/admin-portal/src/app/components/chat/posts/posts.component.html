@@ -13,7 +13,7 @@
   </app-view-post>
 </div>
 
-<app-create-update-post
+<app-create-update-post *ngIf="!readOnly"
   [chat]="chat"
 >
 
