@@ -89,7 +89,7 @@
         </thead>
 
         <tbody>
-        <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
+        <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrnt(opp)"
             [ngClass]="{'current': currentOpp?.id == opp.id}">
 
           <td *ngIf="!showJobOppName" [title]="opp.name">

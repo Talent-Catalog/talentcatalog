@@ -137,8 +137,9 @@ export class ViewJobSourceContactsComponent implements OnInit {
   selectCurrent(partner: Partner) {
     if (this.selectable) {
       this.currentSourcePartner = partner;
-
       this.sourcePartnerSelection.emit(partner);
+    } else {
+      this.currentSourcePartner = this.sourcePartners.find(p => p.id = this.loggedInUserPartnerId)
     }
   }
 }

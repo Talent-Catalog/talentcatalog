@@ -39,6 +39,9 @@ body {
 .nav-link {
   cursor: pointer;
   color: $light;
+  &:hover {
+    color: $secondary;
+  }
 }
 
 .nav-tabs {
