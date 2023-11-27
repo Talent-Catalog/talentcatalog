@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -2665,11 +2666,12 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
+    @Scheduled(cron = "0 2 0 * * ?", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void syncLiveCandidatesToSf()
         throws SalesforceException, WebClientException {
-//        TODO: 👇 reinstate after successful test in staging (we ultimately only want this firing in prod)
-//        if ("https://login.salesforce.com/".equals(salesforceConfig.getBaseLoginUrl())) {
+//        TODO: 👇 replace with environment variable
+        if ("https://login.salesforce.com/".equals(salesforceConfig.getBaseLoginUrl())) {
             // Gather all live candidates
             List<CandidateStatus> statuses = new ArrayList<>(
                 EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
@@ -2685,34 +2687,30 @@ public class CandidateServiceImpl implements CandidateService {
             }
 
             // Iterate through batches to create/update candidate contact records
-//        TODO: 👇 reinstate after successful test in staging
-//            for (int i = 0; i < candidateBatches.size(); i += 1) {
-            for (int i = 0; i < 10; i += 1) {
+            for (int i = 0; i < candidateBatches.size(); i += 1) {
                 //Need ordered list so that can match with returned contacts.
                 List<Candidate> orderedCandidates = new ArrayList<>(candidateBatches.get(i));
                 upsertCandidatesToSf(orderedCandidates);
             }
         }
+    }
 
-        @Override
-        public void upsertCandidatesToSf (List<Candidate> orderedCandidates)
-            throws SalesforceException, WebClientException {
+    @Override
+    public void upsertCandidatesToSf(List<Candidate> orderedCandidates)
+        throws SalesforceException, WebClientException {
+        //Update Salesforce contacts
+        List<Contact> contacts =
+            salesforceService.createOrUpdateContacts(orderedCandidates);
 
-            //Update Salesforce contacts
-            List<Contact> contacts =
-                salesforceService.createOrUpdateContacts(orderedCandidates);
-
-            //Update the sfLink in all candidate records.
-            int nCandidates = orderedCandidates.size();
-            for (int i = 0; i < nCandidates; i++) {
-                Contact contact = contacts.get(i);
-                if (contact.getId() != null) {
-                    Candidate candidate = orderedCandidates.get(i);
-                    updateCandidateSalesforceLink(candidate,
-                        contact.getUrl(salesforceConfig.getBaseLightningUrl()));
-                }
+        //Update the sfLink in all TC candidate records.
+        int nCandidates = orderedCandidates.size();
+        for (int i = 0; i < nCandidates; i++) {
+            Contact contact = contacts.get(i);
+            if (contact.getId() != null) {
+                Candidate candidate = orderedCandidates.get(i);
+                updateCandidateSalesforceLink(candidate,
+                    contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             }
         }
-//        TODO: 👇 reinstate after successful test in staging
-//    }
+    }
 }

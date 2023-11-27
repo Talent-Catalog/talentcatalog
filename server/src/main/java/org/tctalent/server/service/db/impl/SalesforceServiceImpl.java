@@ -123,8 +123,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private static final String candidateNumberSFFieldName = "TBBid__c";
     private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
     private static final String candidateContactTypeSFFieldValue = "Candidate";
-//    TODO: replace 👇 with correct value for both prod and sandbox (which will need refreshing) before release
-    private static final String contactRecordTypeId = "012Uu0000000905IAA";
+    private static final String contactRecordTypeId = "012Uu000000093JIAQ";
 
     private boolean alertedDuplicateSFRecord = false;
 
@@ -1299,7 +1298,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setStatus(status);
 
             final String tcAccountCreated = String.valueOf(candidate.getCreatedDate());
-            setTcAccountCreated(tcAccountCreated);
+            setTcAccountCreated(tcAccountCreated.substring(0, 9));
 
             final String unhcrRegistered = String.valueOf(candidate.getUnhcrRegistered());
             if (unhcrRegistered != null) {
@@ -1314,39 +1313,23 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 .collect(Collectors.joining("; "));
             setLanguagesSpoken(languagesSpoken);
 
-            CandidateLanguage english = candidateLanguagesList.stream()
-                .filter(candidateLanguage -> "English".equals(candidateLanguage.getLanguage().getName()))
-                .findAny()
-                .orElse(null);
-            if (english != null) {
-                final String englishSpeakingLevel = String.valueOf(english.getSpokenLevel().getName());
+            final String englishSpeakingLevel = getSpecificLanguageSpeakingLevel(candidateLanguagesList, "English");
+            if (englishSpeakingLevel != null) {
                 setEnglishSpeakingLevel(englishSpeakingLevel);
             }
 
-            CandidateLanguage french = candidateLanguagesList.stream()
-                .filter(candidateLanguage -> "French".equals(candidateLanguage.getLanguage().getName()))
-                .findAny()
-                .orElse(null);
-            if (french != null) {
-                final String frenchSpeakingLevel = String.valueOf(french.getSpokenLevel().getName());
+            final String frenchSpeakingLevel = getSpecificLanguageSpeakingLevel(candidateLanguagesList, "French");
+            if (frenchSpeakingLevel != null) {
                 setFrenchSpeakingLevel(frenchSpeakingLevel);
             }
 
-            CandidateLanguage german = candidateLanguagesList.stream()
-                .filter(candidateLanguage -> "German".equals(candidateLanguage.getLanguage().getName()))
-                .findAny()
-                .orElse(null);
-            if (german != null) {
-                final String germanSpeakingLevel = String.valueOf(german.getSpokenLevel().getName());
+            final String germanSpeakingLevel = getSpecificLanguageSpeakingLevel(candidateLanguagesList, "German");
+            if (germanSpeakingLevel != null) {
                 setGermanSpeakingLevel(germanSpeakingLevel);
             }
 
-            CandidateLanguage spanish = candidateLanguagesList.stream()
-                .filter(candidateLanguage -> "Spanish".equals(candidateLanguage.getLanguage().getName()))
-                .findAny()
-                .orElse(null);
-            if (spanish != null) {
-                final String spanishSpeakingLevel = String.valueOf(spanish.getSpokenLevel().getName());
+            final String spanishSpeakingLevel = getSpecificLanguageSpeakingLevel(candidateLanguagesList, "Spanish");
+            if (spanishSpeakingLevel != null) {
                 setSpanishSpeakingLevel(spanishSpeakingLevel);
             }
 
@@ -1368,6 +1351,19 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             final boolean partnerContactConsent = candidate.getContactConsentPartners();
             setPartnerContactConsent(partnerContactConsent);
+        }
+
+        private String getSpecificLanguageSpeakingLevel(List<CandidateLanguage> candidateLanguagesList, String languageToFind) {
+            CandidateLanguage languageToCheck = candidateLanguagesList.stream()
+                .filter(candidateLanguage -> languageToFind.equals(candidateLanguage.getLanguage().getName()))
+                .findAny()
+                .orElse(null);
+            if (languageToCheck != null) {
+                String languageSpeakingLevel = String.valueOf(languageToCheck.getSpokenLevel().getName());
+                return languageSpeakingLevel;
+            } else {
+                return null;
+            }
         }
 
         public void setAccountId(String accountId) {
