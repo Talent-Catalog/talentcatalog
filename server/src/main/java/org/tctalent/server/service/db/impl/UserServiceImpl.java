@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.security.auth.login.AccountLockedException;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -694,6 +695,7 @@ public class UserServiceImpl implements UserService {
 
     //10pm Sunday night GMT
     @Scheduled(cron = "0 0 22 * * SUN", zone = "GMT")
+    @SchedulerLock(name = "UserService_searchStaffNotUsingMfa", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void checkMfaUsers() {
         List<User> users = searchStaffNotUsingMfa();
         if (users.size() > 0) {
