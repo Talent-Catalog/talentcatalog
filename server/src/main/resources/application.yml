@@ -221,3 +221,6 @@ email:
 #Support for in context language translation
 translation:
   password: ${TRANSLATION_PASSWORD:TGFM}
+
+#Identifies the running environment — AWS task definitions hold the corresponding value, e.g. 'prod'/'staging'
+environment: ${ENVIRONMENT:local}

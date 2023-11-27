@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "environment",
+      "type": "java.lang.String",
+      "description": "Identifies the running environment — AWS task definitions hold the corresponding value, e.g. prod/staging."
+  }
+] }
