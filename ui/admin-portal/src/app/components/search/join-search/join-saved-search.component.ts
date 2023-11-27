@@ -25,14 +25,7 @@ import {
 } from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  switchMap,
-  tap
-} from "rxjs/operators";
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {SavedSearch} from '../../../model/saved-search';
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
@@ -102,6 +95,8 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
         tap(() => this.searching = false)
       );
 
+    this.renderSavedSearchRow(this.selectedBaseSearch)
+
   }
 
   ngOnChanges (changes: SimpleChanges) {
@@ -117,7 +112,7 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
   }
 
   renderSavedSearchRow(savedSearch: SavedSearch) {
-    return '';
+    return savedSearch?.name;
   }
 
 
