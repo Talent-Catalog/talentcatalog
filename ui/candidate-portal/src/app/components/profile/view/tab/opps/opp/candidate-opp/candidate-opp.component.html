@@ -1,5 +1,7 @@
 <div class="d-sm-flex justify-content-between">
   <div class="card-body">
+    <app-error [error]="error"></app-error>
+
     <div class="row">
 
       <div class="mb-3 col-sm-12 col-md-4">
@@ -23,6 +25,18 @@
           {{ 'CANDIDATE-OPPS.TABLE.COMMENTS' | translate }}
         </label>
         <div class="col-12" id="closingComments" [innerHtml]="selectedOpp?.closingCommentsForCandidate">
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label" for="sourceChat">
+          {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
+        </label>
+        <div class="col-12" id="sourceChat">
+          <app-posts
+            [chat]="sourceChat"
+          >
+          </app-posts>
         </div>
       </div>
     </div>
