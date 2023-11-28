@@ -42,11 +42,11 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.tctalent.server.security.JwtAuthenticationEntryPoint;
 import org.tctalent.server.security.JwtAuthenticationFilter;
+import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.LanguageFilter;
 import org.tctalent.server.security.TcAuthenticationProvider;
 import org.tctalent.server.security.TcPasswordEncoder;
 import org.tctalent.server.security.TcUserDetailsService;
-import org.tctalent.server.security.JwtTokenProvider;
 
 /**
  * Talent Catalog security configuration.
@@ -259,6 +259,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // POST: SEARCH BY PHONE
                 .antMatchers(HttpMethod.POST, "/api/admin/candidate/findbyphone").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: CHAT - include USER but exclude READONLY
+                .antMatchers(HttpMethod.POST, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
+                .antMatchers(HttpMethod.GET, "/api/admin/chat-post/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "READONLY")
 
                 /*
                  * LIST ENDPOINTS
