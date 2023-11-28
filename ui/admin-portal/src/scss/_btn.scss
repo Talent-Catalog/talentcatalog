@@ -14,89 +14,75 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "variables";
+@import "~src/scss/variables";
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/buttons";
 
-.btn-primary {
-  @include button-variant(
-      // Regular button (background, border, color)
-      $color-primary, $color-primary, white,
-      // Hover
-      $color-primary-dark, $color-primary-dark, white,
-      // Active
-      $color-primary, $color-primary, white,
-      // Disabled
-      $color-secondary-lighter, $color-secondary-lighter, white);
-}
-
-.btn-outline-primary {
-  @include button-outline-variant($color-primary, white, $color-primary-dark, $color-primary-darker);
-
+.btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-info, .btn-warning {
+  color: $white;
   &:hover {
-    border-color: $color-primary;
-  }
-
-  &:not(:disabled):not(.disabled){
-    &:hover {
-      border-color: $color-primary-dark;
-      background: $color-primary-dark;
-    }
-
-    &:active {
-      background-color: $color-primary-darker;
-      border-color: $color-primary-darker;
-    }
+    color: $light;
   }
 }
 
 .btn-link {
-  color: $color-primary;
+  color: $accent1;
   background-color: transparent;
 
   &:hover {
-    color: $color-primary-dark;
+    color: $primary;
     text-decoration: none;
     background-color: transparent;
     border-color: transparent;
   }
 
   &:active {
-    color: $color-primary-darker;
+    color: $primary;
   }
 
   &:disabled,
   &.disabled {
-    color: $color-text-light;
+    color: $accent3;
   }
 }
 
 a {
-  color: $color-primary;
+  color: $primary;
   background-color: transparent;
   text-decoration: none;
 
   &:hover {
-    color: $color-primary-dark;
+    color: $secondary;
     text-decoration: none;
     background-color: transparent;
     border-color: transparent;
   }
 
   &:active {
-    color: $color-primary-darker;
+    color: $secondary;
   }
 
   &:disabled,
   &.disabled {
-    color: $color-text-light;
-    background-color: $color-secondary-light;
+    color: $light;
+    background-color: $accent2;
+  }
+}
+
+button {
+  a {
+    i {
+      color: $primary;
+      &:hover {
+        color: $secondary;
+      }
+    }
   }
 }
 
 .link {
-  color: $color-primary;
+  color: $info;
 }
 
 button:focus {

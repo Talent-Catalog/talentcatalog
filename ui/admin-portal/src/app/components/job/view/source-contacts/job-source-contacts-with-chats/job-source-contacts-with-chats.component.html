@@ -9,16 +9,15 @@
     </app-view-job-source-contacts>
   </div>
 
-  <div class="col-sm-{{sidePanelColWidth}} admin-panel detail-panel">
-    <div class="w-100">
+  <div class="col-sm-{{sidePanelColWidth}}">
+    <div class="detail-panel side-panel-color h-100">
       <div *ngIf="canToggleSizes()" class="float-end">
         <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
             class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
       </div>
 
-      <strong>{{chatHeader}}</strong>
+      <h5 class="text-center text-accent-1">{{chatHeader}}</h5>
       <div *ngIf="selectedSourcePartner">
-
         <div class="alert alert-danger" *ngIf="error">
           {{error}}
         </div>

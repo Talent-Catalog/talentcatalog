@@ -5,16 +5,25 @@
   {{error}}
 </div>
 
-<div *ngFor="let post of posts" (click)="selectCurrent(post)"
-    [ngClass]="{'current': currentPost?.id == post.id}">
-  <app-view-post
-    [post]="post"
-  >
-  </app-view-post>
+<div class="container">
+  <div class="d-flex flex-column">
+    <div *ngFor="let post of posts"
+         (click)="selectCurrent(post)"
+         class="post"
+         [ngClass]="{'current': currentPost?.id == post.id, 'from-me': post.createdBy.id == loggedInUser.id}">
+      <app-view-post
+        [post]="post">
+      </app-view-post>
+    </div>
+  </div>
+  <div>
+    <app-create-update-post *ngIf="!readOnly"
+      [chat]="chat"
+    >
+
+    </app-create-update-post>
+  </div>
+
+
 </div>
 
-<app-create-update-post *ngIf="!readOnly"
-  [chat]="chat"
->
-
-</app-create-update-post>

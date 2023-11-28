@@ -1,0 +1,15 @@
+@import "~src/scss/variables";
+
+.post {
+  background-color: $secondary;
+  background-image: var(--bs-gradient);
+  color: $white;
+  margin: 1em;
+  border-radius: 5px;
+  padding: 1em;
+  width: 70%;
+  &.from-me {
+    background-color: $primary;
+    align-self: end;
+  }
+}

@@ -1,10 +1,10 @@
 @import "src/scss/_variables.scss";
 
 .field {
-  background-color: $color-secondary-lighter;
+  background-color: $info;
   list-style: none;
   padding: 8px;
-  color: $color-text-primary;
+  color: $dark;
   margin-bottom: 0.5em;
   border-radius: 3px;
   text-align: center;
@@ -15,7 +15,7 @@
 }
 
 .gu-mirror {
-  background-color: $color-secondary-light;
+  background-color: $info;
 }
 
 .edit-btn {
