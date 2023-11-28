@@ -10,22 +10,32 @@
   </div>
 
   <div class="col-sm-{{sidePanelColWidth}}">
-    <div class="detail-panel side-panel-color h-100">
-      <div *ngIf="canToggleSizes()" class="float-end">
-        <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-            class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
+    <div *ngIf="canToggleSizes()" class="float-end">
+      <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+        class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
+    </div>
+    <div class="row detail-panel side-panel-color h-100">
+      <div class="col-3">
+          <div *ngIf="selectable">
+            <p class="mb-3 fw-bolder">Messages </p>
+            <ul class="nav flex-column nav-pills">
+              <li *ngFor="let partner of sourcePartners" (click)="onSourcePartnerSelected(partner)"
+                  [ngClass]="{'disabled': selectedSourcePartner?.id == partner.id}" class="nav-item">
+                <a class="nav-link" [ngClass]="{'active': selectedSourcePartner?.id == partner.id}">{{partner.name}}</a>
+              </li>
+            </ul>
+          </div>
       </div>
-
-      <h5 class="text-center text-accent-1">{{chatHeader}}</h5>
-      <div *ngIf="selectedSourcePartner">
-        <div class="alert alert-danger" *ngIf="error">
-          {{error}}
-        </div>
-
-        <app-posts
-            [chat]="selectedSourcePartnerChat"
-        >
-        </app-posts>
+      <div class="col-9 d-flex flex-column justify-content-between">
+        <h5 class="text-center text-accent-1">{{chatHeader}}</h5>
+          <div *ngIf="selectedSourcePartner">
+            <div class="alert alert-danger" *ngIf="error">
+              {{error}}
+            </div>
+            <app-posts
+              [chat]="selectedSourcePartnerChat">
+            </app-posts>
+          </div>
       </div>
     </div>
   </div>

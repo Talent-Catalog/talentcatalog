@@ -1,5 +1,3 @@
-<div class="avatar"></div>
-
 <div>
   <p *ngIf="post?.content" [ngClass]="{'html':isHtml(post.content), 'text':!isHtml(post.content)}" [innerHtml]="post.content"></p>
   <p class="post-audit">

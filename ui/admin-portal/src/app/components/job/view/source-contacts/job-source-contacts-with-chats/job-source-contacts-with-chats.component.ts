@@ -6,6 +6,7 @@ import {Job} from "../../../../../model/job";
 import {ChatService} from "../../../../../services/chat.service";
 import {AuthorizationService} from "../../../../../services/authorization.service";
 import {AuthenticationService} from "../../../../../services/authentication.service";
+import {PartnerService} from "../../../../../services/partner.service";
 
 @Component({
   selector: 'app-job-source-contacts-with-chats',
@@ -20,16 +21,19 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
 
   chatHeader: string;
   error: any;
+  loading: boolean;
   selectable: boolean = true;
   selectedSourcePartner: Partner;
   selectedSourcePartnerChat: JobChat;
+  sourcePartners: Partner[];
 
   constructor(
       private authenticationService: AuthenticationService,
       private authorizationService: AuthorizationService,
       private chatService: ChatService,
+      private partnerService: PartnerService
   ) {
-    super(5);
+    super(7);
   }
 
   ngOnInit(): void {
@@ -45,6 +49,10 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
       //Selection can't change
       this.selectable = false;
     }
+    this.partnerService.listSourcePartners(this.job).subscribe(
+      (sourcePartners) => {this.sourcePartners = sourcePartners; this.loading = false},
+      (error) => {this.error = error; this.loading = false}
+    )
   }
 
   ngOnChanges(changes: SimpleChanges): void {

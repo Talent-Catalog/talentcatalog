@@ -1,3 +1,17 @@
-h5 {
-  font-weight: 300;
+@import "~src/scss/variables";
+
+.nav-link {
+  font-size: 12px;
+  background-color: $accent2;
+  &:hover {
+    background-color: fade-out($accent1, 0.1);
+    color: $light;
+  }
+  &.active {
+    background-color: $info;
+  }
+}
+
+.nav-link {
+  margin-bottom: 5px;
 }
