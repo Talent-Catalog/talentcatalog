@@ -68,7 +68,7 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary" [disabled]="assignForm.invalid || loading || saving"
+  <button type="button" class="btn btn-success" [disabled]="assignForm.invalid || loading || saving"
           (click)="onSave()"><i class="fas fa-spinner fa-spin" *ngIf="saving"></i>Save
   </button>
   <button type="button" class="btn btn-secondary"

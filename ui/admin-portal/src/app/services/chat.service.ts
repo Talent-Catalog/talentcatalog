@@ -97,7 +97,6 @@ export class ChatService implements OnDestroy {
     if (!this.stompServiceConfigured) {
       let stompConfig = this.getRxStompConfig();
       this.rxStompService.configure(stompConfig);
-      console.log(Date(), 'Connecting to ' + stompConfig.brokerURL)
       this.rxStompService.activate();
       this.stompServiceConfigured = true;
     }

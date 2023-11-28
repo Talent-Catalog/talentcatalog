@@ -95,7 +95,10 @@
 
       <div class="mb-3">
         <label class="form-label" for="email">Email</label>
-        <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
+        <input type="email" class="form-control" id="email" formControlName="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$">
+        <div *ngIf="candidateForm.get('email').touched || candidateForm.get('email').dirty">
+          <small *ngIf="candidateForm.get('email').errors?.['pattern']" class="text-danger">Please enter valid email address</small>
+        </div>
       </div>
 
       <!-- PHONE # -->

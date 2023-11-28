@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -1237,6 +1238,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      */
     //Midnight GMT
     @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
+    @SchedulerLock(name = "SavedSearchService_notifySearchWatchers", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     @Transactional
     public void notifySearchWatchers() {
         String currentSearch = "";

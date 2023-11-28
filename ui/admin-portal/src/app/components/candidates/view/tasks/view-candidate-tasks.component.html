@@ -95,9 +95,9 @@
             </span>
           </div>
           <div *ngIf="ta.completedDate && !ta.abandonedDate" class="text-success font-r80">Completed: {{ta.completedDate | date}}</div>
-          <div *ngIf="ta.abandonedDate && !ta.completedDate" class="text-alert font-r80">Abandoned: {{ta.abandonedDate | date}}</div>
-          <div *ngIf="ta.abandonedDate < ta.completedDate" class="text-alert font-r80">Abandoned: {{ta.abandonedDate | date}}</div>
-          <div *ngIf="ta.completedDate && ta.abandonedDate" class="text-tbb-primary font-r80">Resolved by partner: {{ta.completedDate | date}}</div>
+          <div *ngIf="ta.abandonedDate && !ta.completedDate" class="text-warning font-r80">Abandoned: {{ta.abandonedDate | date}}</div>
+          <div *ngIf="ta.abandonedDate < ta.completedDate" class="text-warning font-r80">Abandoned: {{ta.abandonedDate | date}}</div>
+          <div *ngIf="ta.completedDate && ta.abandonedDate" class="text-secondary font-r80">Resolved by partner: {{ta.completedDate | date}}</div>
         </div>
 
         <!-- IF EDITABLE SHOW FULL RESULTS (COMMENTS, ANSWERS AND EDIT BUTTONS) -->

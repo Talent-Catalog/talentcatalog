@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+/*
+ * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,35 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "src/scss/_variables.scss";
-
-.flex {
-  display: flex;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.4);
-}
-
-.field {
-  background-color: $accent3;
-  list-style: none;
-  padding: 8px;
-  color: $dark;
-  margin-bottom: 0.5em;
-  border-radius: 3px;
-  text-align: center;
-}
-
-.container {
-  flex: 1;
-}
-.container:not(:last-child) {
-  margin-right: 8px;
-}
-
-.gu-mirror {
-  background-color: $accent3;
-}
-
-.dragula-container {
-  height: 100%;
-}
+CREATE TABLE shedlock (
+                          name VARCHAR(64),
+                          lock_until TIMESTAMP(3) NULL,
+                          locked_at TIMESTAMP(3) NULL,
+                          locked_by VARCHAR(255),
+                          PRIMARY KEY (name)
+);

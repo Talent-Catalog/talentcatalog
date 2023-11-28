@@ -1,3 +1,11 @@
-{{post?.createdBy.firstName}} {{post?.createdBy.lastName}}
-{{post?.createdDate | date: 'customDateTime'}}
-<p *ngIf="post?.content" [ngClass]="isHtml(post.content)?'html':'text'" [innerHtml]="post.content"></p>
+<div class="avatar"></div>
+
+<div>
+  <p *ngIf="post?.content" [ngClass]="{'html':isHtml(post.content), 'text':!isHtml(post.content)}" [innerHtml]="post.content"></p>
+  <p class="post-audit">
+    {{post?.createdBy.firstName}} {{post?.createdBy.lastName}}
+    {{post?.createdDate | date: 'customDateTime'}}
+  </p>
+</div>
+
+

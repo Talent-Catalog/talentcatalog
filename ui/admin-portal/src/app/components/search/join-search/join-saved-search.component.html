@@ -16,36 +16,42 @@
 
 <div class="row">
   <div class="col-12 col-md-4">
-    <label class="form-label" for="savedSearch">Base Search</label>
-    <input id="savedSearch"
-           type="text" class="form-control"
-           (selectItem)="selected($event.item.id)"
-           [ngbTypeahead]="doSavedSearchSearch"
-           [resultTemplate]="rt"
-           [inputFormatter]="renderSavedSearchRow"
-           [editable]="false"
-           [readOnly]="readonly"
-           placeholder="Type the name of a base search..."/>
-  </div>
-    <ng-template #rt let-r="result" let-t="term">
-      <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
-    </ng-template>
+      <label class="form-label" for="savedSearch">Base Search</label>
+      <div class="input-group">
+        <input id="savedSearch"
+               type="text" class="form-control"
+               (selectItem)="selected($event.item.id)"
+               [ngbTypeahead]="doSavedSearchSearch"
+               [resultTemplate]="rt"
+               placement="bottom-left"
+               [value]="this.selectedBaseSearch?.name"
+               [inputFormatter]="renderSavedSearchRow"
+               [readOnly]="readonly"
+               placeholder="Type the name of a base search..."/>
+          <button *ngIf="this.selectedBaseSearch" type="button" class="btn btn-danger" (click)="deleteSearch()" >
+            Remove base search <i class="fas fa-xmark ms-2"></i>
+          </button>
+      </div>
+      <ng-template #rt let-r="result" let-t="term">
+        <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
+      </ng-template>
+    </div>
 
-  <div *ngIf="this.selectedBaseSearch" class="d-flex">
-    <app-candidate-source
-      [candidateSource]="selectedBaseSearch"
-      [seeMore]="true"
-      [canLoad]="false"
-      [showWatch]="false"
-      [showOpen]="false"
-      [showSelect]="false"
-      [showLink]="false"
-      [showMore]="false"
-    >
-    </app-candidate-source>
-    <button type="button" class="btn btn-default" (click)="deleteSearch()" ><i
-      class="fas fa-trash"></i></button>
+
+
+  <div *ngIf="this.selectedBaseSearch" class="col-auto">
+      <app-candidate-source
+        [candidateSource]="selectedBaseSearch"
+        [seeMore]="true"
+        [canLoad]="false"
+        [showWatch]="false"
+        [showOpen]="false"
+        [showSelect]="false"
+        [showLink]="false"
+        [showMore]="false">
+      </app-candidate-source>
   </div>
+
 </div>
 
 

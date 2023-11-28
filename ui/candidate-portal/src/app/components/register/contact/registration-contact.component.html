@@ -23,8 +23,12 @@
     <!-- EMAIL -->
     <div class="mb-3">
       <label class="form-label" for="email">{{'REGISTRATION.CONTACT.LABEL.EMAIL' | translate }} <sup>*</sup></label>
-      <input type="email" class="form-control" id="email" placeholder="" [formControlName]="'email'">
-      <app-form-control-error [control]="form.controls.email"></app-form-control-error>
+      <input type="email" class="form-control" id="email" placeholder="" [formControlName]="'email'" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$">
+      <div *ngIf="form.get('email').touched || form.get('email').dirty" class="text-danger">
+        <small *ngIf="form.get('email').errors?.['pattern']">
+          {{ 'FORM.ERROR.EMAIL' | translate }}
+        </small>
+      </div>
     </div>
 
     <!-- PHONE # -->

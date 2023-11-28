@@ -7,14 +7,14 @@
 
   <!-- POST -->
   <div class="mb-3">
-    <label class="form-label" for="content">Post</label>
-    <ngx-wig id="content" formControlName="content"></ngx-wig>
+    <ngx-wig id="content" placeholder="Write your message..." formControlName="content"></ngx-wig>
   </div>
 
-  <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="onSend()"
+  <div class="d-flex justify-content-end">
+    <button type="button" class="btn btn-success " (click)="onSend()"
             [disabled]="postForm.invalid">
-      Send
+      Send <i class="fa-solid fa-paper-plane"></i>
     </button>
   </div>
+
 </form>
