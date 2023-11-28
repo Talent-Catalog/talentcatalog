@@ -1,4 +1,4 @@
-@import "~src/scss/variables";
+ @import "~src/scss/variables";
 
 .post-audit {
   margin-bottom: 0;
@@ -9,11 +9,6 @@
   font-size: 13px;
 }
 
-.avatar {
-  float: left;
-  max-width: 60px;
-  width: 100%;
-  margin-right: 20px;
-  border-radius: 50%;
-  background-color: red;
+p {
+  margin-bottom: 0;
 }
