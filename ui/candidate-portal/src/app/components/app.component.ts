@@ -18,7 +18,9 @@ import {Component, HostBinding, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {LanguageService} from '../services/language.service';
 import {LanguageLoader} from "../services/language.loader";
-import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
+import {AuthenticationService} from "../services/authentication.service";
+import {User} from "../model/user";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -33,11 +35,19 @@ export class AppComponent implements OnInit {
   loading: boolean;
 
   constructor(private translate: TranslateService,
+              private authenticationService: AuthenticationService,
+              private router: Router,
               private languageLoader: LanguageLoader,
               private languageService: LanguageService) {
   }
 
   ngOnInit(): void {
+
+    this.authenticationService.loggedInUser$.subscribe(
+      (user) => {
+        this.onChangedLogin(user);
+      }
+    )
 
     //Register for language translation upload start and end events - which
     //drive the loading status.
@@ -61,5 +71,12 @@ export class AppComponent implements OnInit {
     this.translate.setDefaultLang('en');
 
     this.translate.use('en');
+  }
+
+  private onChangedLogin(user: User) {
+    //If logged out - show login screen
+    if (user == null) {
+      this.router.navigate(['login']);
+    }
   }
 }

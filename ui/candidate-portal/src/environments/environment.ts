@@ -20,6 +20,8 @@
 
 export const environment = {
   production: false,
+  host: 'localhost:8080',
+  chatApiUrl: 'http://localhost:8080/api/admin',
   apiUrl: 'http://localhost:8080/api/portal',
   systemApiUrl: 'http://localhost:8080/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/dev.files.tbbtalent.org'

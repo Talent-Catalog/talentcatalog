@@ -15,12 +15,12 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {AuthService} from '../../services/auth.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {SystemLanguage} from '../../model/language';
 import {LanguageService} from '../../services/language.service';
 import {CandidateService} from "../../services/candidate.service";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
+import {AuthenticationService} from "../../services/authentication.service";
 
 @Component({
   selector: 'app-header',
@@ -38,10 +38,9 @@ export class HeaderComponent implements OnInit {
   websiteUrl: string;
   error: any;
 
-  constructor(public authService: AuthService,
+  constructor(public authenticationService: AuthenticationService,
               private brandingService: BrandingService,
               public candidateService: CandidateService,
-              private router: Router,
               private route: ActivatedRoute,
               public languageService: LanguageService) { }
 
@@ -71,14 +70,10 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout().subscribe(
-      () => {
-        // Clear candidate number in local storage (used to display in header)
-        this.candidateService.clearCandNumberStorage();
-        this.isNavbarCollapsed = true;
-        this.router.navigate(['']);
-      }
-    );
+    this.authenticationService.logout();
+    // Clear candidate number in local storage (used to display in header)
+    this.candidateService.clearCandNumberStorage();
+    this.isNavbarCollapsed = true;
   }
 
   setLanguage(language: string) {

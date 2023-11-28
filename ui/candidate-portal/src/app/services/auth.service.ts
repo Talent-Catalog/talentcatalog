@@ -25,7 +25,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {User} from "../model/user";
 import {LoginRequest, RegisterCandidateRequest} from "../model/candidate";
 
-export class AuthorizeInContextTranslationRequest {
+export class AuthenticateInContextTranslationRequest {
   password: string;
 }
 
@@ -38,7 +38,8 @@ export class AuthService {
 
   private user: User;
   private _user: BehaviorSubject<User> = new BehaviorSubject(this.getLoggedInUser());
-  public readonly user$: Observable<User> = this._user.asObservable();
+  //No longer used - replaced by AuthenticationService.loggedInUser
+  private readonly user$: Observable<User> = this._user.asObservable();
 
   constructor(private router: Router,
               private http: HttpClient,
@@ -58,18 +59,11 @@ export class AuthService {
     );
   }
 
-  authorizeInContextTranslation(password: string): Observable<void> {
-    const request: AuthorizeInContextTranslationRequest = {
-      password: password
-    }
-    return this.http.post<void>(`${this.apiUrl}/xlate`, request);
-  }
-
-  isAuthenticated(): boolean {
+  private isAuthenticated(): boolean {
     return this.getLoggedInUser() != null;
   }
 
-  getLoggedInUser(): User {
+  private getLoggedInUser(): User {
     if (!this.user) {
       // could be a page reload, check localstorage
       const user = this.localStorageService.get('user');
@@ -78,7 +72,7 @@ export class AuthService {
     return this.user;
   }
 
-  getToken(): string {
+  private getToken(): string {
     return this.localStorageService.get('access-token');
   }
 
