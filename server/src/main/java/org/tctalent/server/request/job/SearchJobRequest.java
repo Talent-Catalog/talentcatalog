@@ -42,6 +42,12 @@ public class SearchJobRequest extends SearchOpportunityRequest {
     private List<JobOpportunityStage> stages;
 
     /**
+     * If specified, match job opportunities if they match any of the countries
+     */
+    @Nullable
+    private List<Long> destinationIds;
+
+    /**
      * If specified, match job opportunities based on whether they have been starred by me
      */
     @Nullable

@@ -9,6 +9,7 @@ import {SearchOppsBy} from "../../../model/base";
 import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {SearchOpportunityRequest} from "../../../model/candidate-opportunity";
+import {CountryService} from "../../../services/country.service";
 
 @Component({
   selector: 'app-jobs',
@@ -31,9 +32,10 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     localStorageService: LocalStorageService,
     oppService: JobService,
     salesforceService: SalesforceService,
+    countryService: CountryService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(fb, authService, localStorageService, oppService, salesforceService, locale,
+    super(fb, authService, localStorageService, oppService, salesforceService, countryService, locale,
           "Jobs")
   }
 
