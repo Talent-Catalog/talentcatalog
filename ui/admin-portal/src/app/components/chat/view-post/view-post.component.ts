@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import { isHtml } from 'src/app/util/string';
+import {isHtml} from 'src/app/util/string';
 import {ChatPost} from "../../../model/chat";
 
 @Component({
@@ -10,6 +10,7 @@ import {ChatPost} from "../../../model/chat";
 export class ViewPostComponent implements OnInit {
 
   @Input() post: ChatPost;
+  @Input() fromMe: boolean;
 
   constructor() { }
 

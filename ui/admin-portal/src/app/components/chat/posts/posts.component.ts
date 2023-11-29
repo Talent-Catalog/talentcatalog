@@ -4,6 +4,8 @@ import {ChatPostService} from "../../../services/chat-post.service";
 import {Message} from "@stomp/stompjs";
 import {ChatService} from "../../../services/chat.service";
 import {Subscription} from "rxjs";
+import {AuthenticationService} from "../../../services/authentication.service";
+import {User} from "../../../model/user";
 
 @Component({
   selector: 'app-posts',
@@ -18,14 +20,17 @@ export class PostsComponent implements OnInit, OnChanges {
   posts: ChatPost[];
   loading: boolean;
   error;
+  loggedInUser: User;
   private chatSubscription: Subscription;
 
   constructor(
       private chatService: ChatService,
       private chatPostService: ChatPostService,
+      private authService: AuthenticationService
   ) {}
 
   ngOnInit(): void {
+    this.loggedInUser = this.authService.getLoggedInUser();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
