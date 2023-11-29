@@ -83,7 +83,6 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   destinations: Country[] = [];
 
-
   private filterKeySuffix: string = 'Filter';
   private myOppsOnlySuffix: string = 'MyOppsOnly';
   private savedStateKeyPrefix: string = 'BrowseKey';
