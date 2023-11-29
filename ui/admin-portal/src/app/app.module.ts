@@ -758,6 +758,11 @@ import {ManageChatsComponent} from './components/chat/manage-chats/manage-chats.
 import {
   JobSourceContactsWithChatsComponent
 } from './components/job/view/source-contacts/job-source-contacts-with-chats/job-source-contacts-with-chats.component';
+import {SearchHomeComponent} from './components/search/search-home/search-home.component';
+import {JobHomeComponent} from './components/job/job-home/job-home.component';
+import {
+  CandidatesHomeComponent
+} from './components/candidates/candidates-home/candidates-home.component';
 
 @NgModule({
   declarations: [
@@ -1062,7 +1067,10 @@ import {
     PostsComponent,
     ViewPostComponent,
     ManageChatsComponent,
-    JobSourceContactsWithChatsComponent
+    JobSourceContactsWithChatsComponent,
+    SearchHomeComponent,
+    JobHomeComponent,
+    CandidatesHomeComponent
   ],
   imports: [
     BrowserModule,
