@@ -23,6 +23,12 @@
           {{error}}
         </div>
 
+        <div class="flex-shrink-0 mb-3">
+          <button class="btn btn-sm btn-primary" type="button"
+                  (click)="onEditSource(null)">+ New List
+          </button>
+        </div>
+
         <form [formGroup]="searchForm" (ngSubmit)="search()">
           <div class="mb-3">
             <input type="text" class="form-control top" placeholder="Search..." aria-label="Search" formControlName="keyword"
