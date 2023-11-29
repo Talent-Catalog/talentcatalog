@@ -1,8 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
-import {Router} from "@angular/router";
-import {AuthorizationService} from "../../../services/authorization.service";
-import {JobService} from "../../../services/job.service";
 import {JobChat} from "../../../model/chat";
 
 @Component({
@@ -18,9 +15,6 @@ export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit
   selectedChat: JobChat;
 
   constructor(
-    private router: Router,
-    private authService: AuthorizationService,
-    private jobService: JobService
   ) {
     super(6);
   }

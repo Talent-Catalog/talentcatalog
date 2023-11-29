@@ -14,8 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import "~src/scss/variables";
+
 :host {
   font-size: 0.80rem;
+  background-color: $light;
 }
 
 .candidate-card {
@@ -25,6 +28,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .candidate-header {

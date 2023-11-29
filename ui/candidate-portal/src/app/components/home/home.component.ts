@@ -42,6 +42,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.lang = this.languageService.getSelectedLanguage();
+
     this.candidateService.getStatus().subscribe(
       (candidate) => {
         this.candidate = candidate || ({status: CandidateStatus.draft} as Candidate);

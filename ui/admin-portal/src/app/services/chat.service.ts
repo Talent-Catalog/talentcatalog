@@ -14,7 +14,7 @@ import {AuthenticationService} from "./authentication.service";
 })
 export class ChatService implements OnDestroy {
 
-  private apiUrl: string = environment.apiUrl + '/chat';
+  private apiUrl: string = environment.chatApiUrl + '/chat';
   private stompServiceConfigured = false;
   private destroyStompSubscriptions$ = new Subject<void>();
   private observables: Map<number, Observable<Message>> = new Map<number, Observable<Message>>();
@@ -97,7 +97,6 @@ export class ChatService implements OnDestroy {
     if (!this.stompServiceConfigured) {
       let stompConfig = this.getRxStompConfig();
       this.rxStompService.configure(stompConfig);
-      console.log(Date(), 'Connecting to ' + stompConfig.brokerURL)
       this.rxStompService.activate();
       this.stompServiceConfigured = true;
     }

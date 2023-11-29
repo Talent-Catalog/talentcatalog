@@ -13,13 +13,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+@import "~src/scss/variables";
 
 .selected {
   background-color: lightgray;
 }
 
 .starred {
-  color: red;
+  color: $warning;
 }
 
 .notstarred {
@@ -27,7 +28,7 @@
 }
 
 .watched {
-  color: red;
+  color: $success;
 }
 
 .notwatched {

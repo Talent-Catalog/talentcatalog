@@ -14,22 +14,28 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request;
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import {ViewChatComponent} from './view-chat.component';
 
-/**
- * Request to enable in context translation
- */
-@Getter
-@Setter
-@ToString
-public class AuthorizeInContextTranslationRequest {
+describe('ViewChatComponent', () => {
+  let component: ViewChatComponent;
+  let fixture: ComponentFixture<ViewChatComponent>;
 
-    /**
-     * Password supplied to be validated.
-     */
-    private String password;
-}
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ ViewChatComponent ]
+    })
+    .compileComponents();
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ViewChatComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

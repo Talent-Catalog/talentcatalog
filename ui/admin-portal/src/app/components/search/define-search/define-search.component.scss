@@ -14,6 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import "~src/scss/variables";
+
 :host {
   ::ng-deep .dropdown-btn {
     background-color: #fff;
@@ -36,8 +38,8 @@ label {
 }
 
 .filter-form {
-  background-color: #efefef;
   padding: 1em;
+  border-radius: 5px;
 
   ::ng-deep {
     .dropdown-btn {
@@ -96,6 +98,7 @@ $candidate-card-width: 375px;
 
     .candidate-number-row {
       max-width: 50px;
+      font-weight: 500;
     }
 
     tbody {
@@ -129,7 +132,7 @@ $candidate-card-width: 375px;
   }
 
   .active {
-    color: black;
+    color: $info;
     font-weight: bold;
   }
 }
@@ -148,7 +151,6 @@ $candidate-card-width: 375px;
     bottom: 0;
     z-index: 10;
     overflow-y: auto;
-    background-color: white;
 
     @media (max-width: 768px) {
       width: auto;
@@ -173,6 +175,8 @@ $candidate-card-width: 375px;
 // Making the search tip icon a button enables it to be keyboard-focusable, per Bootstrap doc advice https://getbootstrap.com/docs/5.0/components/tooltips/#markup - overriding the native button style fixes the visual aspect
 .search-tip-button {
   border: none;
+  background-color: inherit;
+  margin-left: 5px;
   padding: 0;
 }
 
