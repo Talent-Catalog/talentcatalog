@@ -40,6 +40,8 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {formatDate} from "@angular/common";
 import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
+import {CountryService} from "../../../services/country.service";
+import {Country} from "../../../model/country";
 
 @Directive()
 export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges {
@@ -79,6 +81,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   stages: EnumOption[] = [];
 
+  destinations: Country[] = [];
 
   private filterKeySuffix: string = 'Filter';
   private myOppsOnlySuffix: string = 'MyOppsOnly';
@@ -94,6 +97,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     private localStorageService: LocalStorageService,
     protected oppService: OpportunityService<T>,
     private salesforceService: SalesforceService,
+    protected countryService: CountryService,
     @Inject(LOCALE_ID) private locale: string,
     private stateKeysRoot: string
   ) {}
@@ -111,6 +115,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     }
 
     this.stages = this.loadStages();
+
+    this.countryService.listCountries().subscribe((destinations: Country[]): void => {
+      this.destinations = destinations;
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -138,7 +146,8 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
       myOppsOnly: [previousMyOppsOnly ? previousMyOppsOnly : false],
       showClosedOpps: [previousShowClosedOpps ? previousShowClosedOpps : false],
       showInactiveOpps: [previousShowInactiveOpps ? previousShowInactiveOpps : false],
-      selectedStages: [[]]
+      selectedStages: [[]],
+      destinationIds: []
     });
 
     this.subscribeToFilterChanges();
@@ -168,6 +177,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   get selectedStages(): string[] {
     return this.searchForm ? this.searchForm.value.selectedStages : "";
+  }
+
+  get selectedDestinationIds(): number[] {
+    return this.searchForm ? this.searchForm.value.destinationIds : null;
   }
 
   private savedStateKey(): string {
@@ -208,6 +221,8 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     req.sortDirection = this.sortDirection;
 
     req.stages = this.selectedStages;
+
+    req.destinationIds = this.selectedDestinationIds;
 
     switch (this.searchBy) {
       case SearchOppsBy.live:

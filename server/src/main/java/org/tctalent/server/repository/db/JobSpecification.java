@@ -85,8 +85,7 @@ public class JobSpecification {
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                 conjunction.getExpressions().add(
                         builder.or(
-                                builder.like(builder.lower(job.get("name")), likeMatchTerm),
-                                builder.like(builder.lower(job.get("country")), likeMatchTerm)
+                                builder.like(builder.lower(job.get("name")), likeMatchTerm)
                         ));
             }
 
@@ -103,6 +102,12 @@ public class JobSpecification {
             if (!Collections.isEmpty(stages)) {
                 conjunction.getExpressions().add(builder.isTrue(job.get("stage").in(stages)));
                 isStageFilterActive = true;
+            }
+
+            // DESTINATION
+            List<Long> destinationIds = request.getDestinationIds();
+            if (!Collections.isEmpty(destinationIds)) {
+                conjunction.getExpressions().add(builder.isTrue(job.get("country").in(destinationIds)));
             }
 
             //ACTIVE STAGES (ignored if doing stage filtering)
