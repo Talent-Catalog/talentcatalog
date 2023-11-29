@@ -24,7 +24,6 @@ import {
   SavedSearchTypeInfo,
   SavedSearchTypeSubInfo
 } from "../../services/saved-search.service";
-import {FormBuilder} from "@angular/forms";
 import {AuthorizationService} from "../../services/authorization.service";
 import {Partner} from "../../model/partner";
 import {AuthenticationService} from "../../services/authentication.service";
@@ -37,8 +36,9 @@ import {AuthenticationService} from "../../services/authentication.service";
 export class HomeComponent implements OnInit, AfterViewChecked {
 
   activeTabId: string;
-  private lastTabKey: string = 'HomeLastTab';
-  private lastCategoryTabKey: string = 'HomeLastCategoryTab';
+  protected defaultTabId: string;
+  protected lastTabKey: string = 'HomeLastTab';
+  protected lastCategoryTabKey: string = 'HomeLastCategoryTab';
   loggedInPartner: Partner;
 
   savedSearchTypeInfos: SavedSearchTypeInfo[];
@@ -46,11 +46,10 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   selectedSavedSearchSubtype: SavedSearchSubtype;
 
   constructor(
-    private fb: FormBuilder,
-    private localStorageService: LocalStorageService,
-    private savedSearchService: SavedSearchService,
-    private authService: AuthorizationService,
-    private authenticationService: AuthenticationService
+    protected localStorageService: LocalStorageService,
+    protected savedSearchService: SavedSearchService,
+    protected authService: AuthorizationService,
+    protected authenticationService: AuthenticationService
   ) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
@@ -75,7 +74,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   private selectDefaultTab() {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.setActiveTabId(defaultActiveTabID == null ? "LiveJobs" : defaultActiveTabID);
+    this.setActiveTabId(defaultActiveTabID == null ? this.defaultTabId : defaultActiveTabID);
 
     if (defaultActiveTabID == null) {
       this.setSelectedSavedSearchSubtype(this.savedSearchTypeSubInfos[0].savedSearchSubtype);
@@ -85,7 +84,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  private setActiveTabId(id: string) {
+  protected setActiveTabId(id: string) {
 
     this.activeTabId = id;
 
