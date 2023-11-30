@@ -90,12 +90,6 @@
         <div ngbDropdownMenu class="dropdown-menu-end">
           <div ngbDropdownItem disabled>{{loggedInUserInfo()}}</div>
           <div class="dropdown-divider"></div>
-          <a ngbDropdownItem [routerLink]="'/list'">New List</a>
-          <div class="dropdown-divider"></div>
-          <div *ngIf="isSystemAdminOnly()">
-            <a ngbDropdownItem [routerLink]="'/chat'">Manage Chats</a>
-            <div class="dropdown-divider"></div>
-          </div>
           <div *ngIf="isAnAdmin()">
             <a ngbDropdownItem [routerLink]="'/settings'">Settings</a>
             <div class="dropdown-divider"></div>
