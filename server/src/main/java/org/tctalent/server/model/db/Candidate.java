@@ -962,6 +962,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return intaked;
     }
 
+    @Transient
+    public String getIntakeDate() {
+        String intakeDate = "";
+        for (CandidateNote note : candidateNotes) {
+            if (note.getTitle().contains("Full Intake interview completed")) {
+                intakeDate = String.valueOf(note.getCreatedDate()).substring(0, 9);
+                break;
+            }
+        }
+        if (intakeDate.isEmpty()) {
+            for (CandidateNote note : candidateNotes) {
+                if (note.getTitle().contains("Mini Intake interview completed")) {
+                    intakeDate = String.valueOf(note.getCreatedDate()).substring(0, 9);
+                    break;
+                }
+            }
+        }
+        return intakeDate;
+    }
+
     public String getTcLink() {
         return "https://tctalent.org/admin-portal/candidate/" + candidateNumber;
     }

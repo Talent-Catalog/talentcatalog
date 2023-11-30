@@ -1289,6 +1289,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             final String intaked = candidate.getIntaked();
             setIntaked(intaked);
 
+            final String intakeDate = candidate.getIntakeDate();
+            if (!"".equals(intakeDate)) {
+                setIntakeDate(intakeDate);
+            }
+
             if (candidate.getDob() != null) {
             final String dateOfBirth = String.valueOf(candidate.getDob());
             setDateOfBirth(dateOfBirth);
@@ -1441,6 +1446,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public void setOccupations(String occupations) { super.put("Occupation_s__c", occupations); }
 
         public void setIntaked(String intaked) { super.put("Intaked__c", intaked); }
+
+        public void setIntakeDate(String intakeDate) { super.put("Intake_Date__c", intakeDate); }
 
         public void setTcContactConsent(boolean tcContactConsent) { super.put("TC_Contact_Consent__c", tcContactConsent); }
 
