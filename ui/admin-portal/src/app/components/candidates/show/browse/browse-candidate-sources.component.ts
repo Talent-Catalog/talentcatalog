@@ -87,6 +87,8 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   @Input() savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   @Output() subtypeChange = new EventEmitter<SavedSearchTypeSubInfo>();
 
+  protected readonly CandidateSourceType = CandidateSourceType;
+
   searchForm: FormGroup;
   public loading: boolean;
   error: any;
