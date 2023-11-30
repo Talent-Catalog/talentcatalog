@@ -7,18 +7,6 @@
     </ng-template>
   </ng-container>
 
-  <ng-container *ngIf="isSystemAdminOnly()" ngbNavItem="AllJobs">
-    <a ngbNavLink
-       title="View all jobs - system admins only"
-    >All Jobs</a>
-    <ng-template ngbNavContent>
-      <app-jobs-with-detail
-        [searchBy]="SearchOppsBy.all">
-        >
-      </app-jobs-with-detail>
-    </ng-template>
-  </ng-container>
-
   <ng-container ngbNavItem="LiveJobs">
     <a ngbNavLink
        title="Jobs associated with active opportunities which have been published on the TC"

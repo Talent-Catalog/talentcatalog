@@ -139,8 +139,4 @@ export class HomeComponent implements OnInit {
   ownsOpps(): boolean {
     return this.authService.ownsOpps();
   }
-
-  isSystemAdminOnly(): boolean {
-    return this.authService.isSystemAdminOnly();
-  }
 }
