@@ -14,27 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.education.major;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.domain.Sort;
-import org.tctalent.server.model.db.Status;
-import org.tctalent.server.request.PagedSearchRequest;
-
-@Getter
-@Setter
-public class SearchEducationMajorRequest extends PagedSearchRequest {
-
-    private String keyword;
-
-    private Status status;
-
-    private String language;
-
-    public SearchEducationMajorRequest() {
-        super(Sort.Direction.ASC, new String[]{"name"});
-    }
-
-}
-
+alter table candidate_visa_check drop column eligibility;
+alter table candidate_visa_check drop column assessment_notes;

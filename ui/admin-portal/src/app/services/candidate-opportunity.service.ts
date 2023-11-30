@@ -91,4 +91,10 @@ export class CandidateOpportunityService implements OpportunityService<Candidate
     }
     return observable;
   }
+
+  uploadOffer(id: number, formData: FormData): Observable<CandidateOpportunity> {
+    return this.http.post<CandidateOpportunity>(
+      `${this.apiUrl}/${id}/upload-offer`, formData);
+
+  }
 }

@@ -16,9 +16,6 @@
 
 package org.tctalent.server.request.candidate.visa;
 
-import org.springframework.lang.Nullable;
-import org.tctalent.server.model.db.VisaEligibility;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -28,8 +25,4 @@ import lombok.ToString;
 @ToString
 public class CreateCandidateVisaCheckRequest {
     private Long countryId;
-    @Nullable
-    private VisaEligibility eligibility;
-    @Nullable
-    private String assessmentNotes;
 }

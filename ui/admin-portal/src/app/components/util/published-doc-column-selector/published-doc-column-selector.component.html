@@ -52,7 +52,7 @@
       <div class="small mb-3 text-muted text-center">
         Drag away from column to remove.
       </div>
-      <div [dragula]="dragulaGroupName" [(dragulaModel)]="selectedColumns" class="dragula-container">
+      <div dragula="COLUMNS" [(dragulaModel)]="selectedColumns" class="dragula-container">
         <div *ngIf="!selectedColumns.length" class="text-center small mt-3">No Columns Selected</div>
         <div *ngFor="let field of selectedColumns; let i = index">
           <div ngbDropdown #dropdown=ngbDropdown class="d-flex">
@@ -84,17 +84,17 @@
         </div>
       </div>
     </div>
-    <button type="button" class="btn btn-primary" (click)="default()">
+    <button type="button" class="btn btn-info" (click)="default()">
       Reset to default
     </button>
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="!selectedColumns.length">
-    Ok
-  </button>
-  <button type="button" class="btn btn-primary" (click)="cancel()">
+  <button type="button" class="btn btn-accent-1" (click)="cancel()">
     Cancel
+  </button>
+  <button type="button" class="btn btn-success" (click)="submit()" [disabled]="!selectedColumns.length">
+    Publish
   </button>
 </div>
 

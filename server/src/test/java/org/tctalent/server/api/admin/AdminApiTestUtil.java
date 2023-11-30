@@ -17,6 +17,10 @@
 package org.tctalent.server.api.admin;
 
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Set;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateCitizenship;
@@ -37,6 +41,7 @@ import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
+import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Exam;
@@ -44,6 +49,7 @@ import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
+import org.tctalent.server.model.db.Industry;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Language;
@@ -68,11 +74,6 @@ import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.request.candidate.PublishedDocColumnProps;
-
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author sadatmalik
@@ -305,7 +306,6 @@ public class AdminApiTestUtil {
             candidateVisaCheck.setValidTravelDocsNotes( "These are some travel docs notes.");
             candidateVisaCheck.setPathwayAssessment(YesNoUnsure.No);
             candidateVisaCheck.setPathwayAssessmentNotes( "These are some pathway assessment notes.");
-            candidateVisaCheck.setAssessmentNotes( "These are some assessment notes.");
         }
         return candidateVisaCheck;
     }
@@ -553,5 +553,37 @@ public class AdminApiTestUtil {
         joi.setMinSalary("80k");
         joi.setVisaPathways("The visa pathways");
         return joi;
+    }
+
+  public static List<Country> getCountries() {
+        return List.of(
+            new Country("Jordan", Status.active),
+            new Country("Pakistan", Status.active),
+            new Country("Palestine", Status.active)
+        );
+  }
+
+    public static List<EducationLevel> getEducationLevels() {
+        return List.of(
+            new EducationLevel("Excellent", Status.active, 1),
+            new EducationLevel("Great", Status.active, 2),
+            new EducationLevel("Good", Status.active, 3)
+        );
+    }
+
+    public static List<EducationMajor> getEducationMajors() {
+        return List.of(
+            new EducationMajor("Computer Science", Status.active),
+            new EducationMajor("Mathematics", Status.active),
+            new EducationMajor("Psychology", Status.active)
+        );
+    }
+
+    public static List<Industry> getIndustries() {
+        return List.of(
+            new Industry("Tech", Status.active),
+            new Industry("Finance", Status.active),
+            new Industry("Health", Status.active)
+        );
     }
 }

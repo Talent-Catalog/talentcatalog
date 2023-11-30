@@ -11,6 +11,7 @@ import {ShortSavedList} from "../../../model/saved-list";
 import {LocalStorageService} from "angular-2-local-storage";
 import {JobChatType} from "../../../model/chat";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -26,6 +27,7 @@ export class ViewCandidateOppComponent implements OnInit {
   error: string;
   private lastTabKey: string = 'CaseLastTab';
   updating: boolean;
+  saving: boolean;
   candidateProspectTabVisible: boolean;
   candidateRecruitingTabVisible: boolean;
   candidateRecruitingTabTitle: string = 'CandidateRecruiting'
@@ -141,4 +143,42 @@ export class ViewCandidateOppComponent implements OnInit {
       this.candidateRecruitingTabTitle = 'Chat with candidate & source partner'
     }
   }
+  uploadOffer() {
+      const fileSelectorModal = this.modalService.open(FileSelectorComponent, {
+        centered: true,
+        backdrop: 'static'
+      })
+
+      fileSelectorModal.componentInstance.maxFiles = 1;
+      fileSelectorModal.componentInstance.closeButtonLabel = "Upload";
+      fileSelectorModal.componentInstance.title = "Select the candidate's job offer contract";
+
+      fileSelectorModal.result
+      .then((selectedFiles: File[]) => {
+        if (selectedFiles.length > 0) {
+          this.doUpload(selectedFiles[0]);
+        }
+      })
+      .catch(() => {});
+  }
+
+  private doUpload(file: File) {
+    const formData: FormData = new FormData();
+    formData.append('file', file);
+
+    this.error = null;
+    this.saving = true;
+    this.candidateOpportunityService.uploadOffer(this.opp.id, formData).subscribe(
+      opp => {
+        //Need event to bubble up and change job
+        this.candidateOppUpdated.emit(opp)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error
+        this.saving = false;
+      }
+    );
+  }
+
 }

@@ -691,6 +691,7 @@ const ALL_FIELDS = {
       "SOURCE-CHAT": null,
       "STAGE": null,
       "NONE": null,
+      "OFFER": null,
     },
     "OPP" : {
       "CHAT-RETURN": null,
