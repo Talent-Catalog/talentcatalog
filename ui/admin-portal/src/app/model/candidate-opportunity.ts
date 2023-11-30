@@ -80,6 +80,7 @@ export class SearchOpportunityRequest extends PagedSearchRequest {
   ownedByMyPartner?: boolean;
   sfOppClosed?: boolean;
   stages?: string[];
+  destinationIds?: number[];
 }
 
 
