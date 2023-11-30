@@ -87,8 +87,6 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   @Input() savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   @Output() subtypeChange = new EventEmitter<SavedSearchTypeSubInfo>();
 
-  protected readonly CandidateSourceType = CandidateSourceType;
-
   searchForm: FormGroup;
   public loading: boolean;
   error: any;
@@ -516,4 +514,6 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   subtypeChangeEvent($event: SavedSearchTypeSubInfo) {
     this.subtypeChange.emit($event);
   }
+
+  protected readonly CandidateSourceType = CandidateSourceType;
 }
