@@ -49,6 +49,7 @@ import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
+import org.tctalent.server.model.db.Industry;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Language;
@@ -576,6 +577,14 @@ public class AdminApiTestUtil {
             new EducationMajor("Computer Science", Status.active),
             new EducationMajor("Mathematics", Status.active),
             new EducationMajor("Psychology", Status.active)
+        );
+    }
+
+    public static List<Industry> getIndustries() {
+        return List.of(
+            new Industry("Tech", Status.active),
+            new Industry("Finance", Status.active),
+            new Industry("Health", Status.active)
         );
     }
 }
