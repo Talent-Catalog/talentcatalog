@@ -27,6 +27,7 @@ import {SearchResults} from '../../../../model/search-results';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {
+  getCandidateSourceNavigation,
   indexOfHasId,
   isSavedSearch,
   SavedSearchSubtype,
@@ -52,6 +53,7 @@ import {
   ContentUpdateType,
   CopySourceContentsRequest,
   isSavedList,
+  SavedList,
   SearchSavedListRequest
 } from '../../../../model/saved-list';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
@@ -398,12 +400,14 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       editModal.componentInstance.savedList = source;
 
       editModal.result
-        .then(() => {
-          //Refresh display
-          this.search();
-        })
-        .catch(() => { /* Isn't possible */
-        });
+      .then((savedList: SavedList) => {
+        const urlCommands = getCandidateSourceNavigation(savedList);
+        this.router.navigate(urlCommands);
+      })
+      .catch(() => {
+        //Refresh display
+        this.search();
+      });
     }
 
   }
