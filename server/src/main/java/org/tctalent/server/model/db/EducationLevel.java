@@ -21,8 +21,14 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "education_level")
 @SequenceGenerator(name = "seq_gen", sequenceName = "education_level_id_seq", allocationSize = 1)
 public class EducationLevel extends AbstractTranslatableDomainObject<Long> {
@@ -34,36 +40,10 @@ public class EducationLevel extends AbstractTranslatableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private EducationType educationType;
 
-    public EducationLevel() {
-    }
-
     public EducationLevel(String name, Status status, int level) {
         setName(name);
         this.status = status;
         this.level = level;
     }
 
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public EducationType getEducationType() {
-        return educationType;
-    }
-
-    public void setEducationType(EducationType educationType) {
-        this.educationType = educationType;
-    }
 }
