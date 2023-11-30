@@ -33,16 +33,20 @@
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
       <ul class="navbar-nav me-auto">
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/searches'">Searches</a>
+          <a title="Searches of Talent Catalog candidates"
+             class="nav-link" [routerLink]="'/searches'">Searches</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/jobs'">Jobs</a>
+          <a title="Jobs available to Talent Catalog candidates"
+             class="nav-link" [routerLink]="'/jobs'">Jobs</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/lists'">Lists</a>
+          <a title="Lists of Talent Catalog candidates"
+             class="nav-link" [routerLink]="'/lists'">Lists</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/infographics'">Stats</a>
+          <a title="Statistics about the Talent Catalog"
+             class="nav-link" [routerLink]="'/infographics'">Stats</a>
         </li>
       </ul>
 
