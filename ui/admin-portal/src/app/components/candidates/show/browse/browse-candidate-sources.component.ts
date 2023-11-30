@@ -98,6 +98,8 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   loggedInUser: User;
   stages = enumOptions(JobOpportunityStage);
 
+  readonly CandidateSourceType = CandidateSourceType;
+
   constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
@@ -514,6 +516,4 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   subtypeChangeEvent($event: SavedSearchTypeSubInfo) {
     this.subtypeChange.emit($event);
   }
-
-  protected readonly CandidateSourceType = CandidateSourceType;
 }
