@@ -158,7 +158,20 @@ ngx-wig {
   color: $accent1;
 }
 
+.text-accent-2 {
+  color: $accent2;
+}
+
+.text-accent-3 {
+  color: $accent3;
+}
+
 .btn-accent-1 {
   background-color: $accent1;
+  color: $white;
+}
+
+.btn-accent-2 {
+  background-color: $accent2;
   color: $white;
 }

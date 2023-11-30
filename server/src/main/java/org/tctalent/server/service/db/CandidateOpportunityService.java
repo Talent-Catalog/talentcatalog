@@ -16,11 +16,14 @@
 
 package org.tctalent.server.service.db;
 
+import java.io.IOException;
 import java.util.Collection;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
@@ -114,4 +117,18 @@ public interface CandidateOpportunityService {
      */
     CandidateOpportunity updateCandidateOpportunity(long id, CandidateOpportunityParams request)
         throws NoSuchObjectException;
+
+    /**
+     * Uploads the given file to the Candidate folder associated with the
+     * candidate opportunity with the given id.
+     * <p/>
+     * @param id ID of candidate opportunity
+     * @param file File containing the job offer contract
+     * @return Updated candidate opportunity
+     * @throws NoSuchObjectException if there is no Job with this id.
+     * @throws IOException           if there is a problem uploading the file.
+     * @throws InvalidRequestException if the job does not have a submission list
+     */
+    CandidateOpportunity uploadOffer(long id, MultipartFile file)
+        throws InvalidRequestException, NoSuchObjectException, IOException;
 }

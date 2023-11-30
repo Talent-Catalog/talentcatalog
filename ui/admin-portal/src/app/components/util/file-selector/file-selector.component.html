@@ -49,12 +49,12 @@
 </div>
 
 <div class="modal-footer">
-  <button [disabled]="!isValid()" type="button" class="btn btn-primary"
-          (click)="close()">
-    {{closeButtonLabel}}
-  </button>
-  <button type="button" class="btn btn-primary"
+  <button type="button" class="btn btn-accent-2"
           (click)="cancel()">
     Cancel
+  </button>
+  <button [disabled]="!isValid()" type="button" class="btn btn-success"
+          (click)="close()">
+    {{closeButtonLabel}}
   </button>
 </div>

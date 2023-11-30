@@ -687,6 +687,7 @@ const ALL_FIELDS = {
       "NAME": null,
       "STAGE": null,
       "NONE": null,
+      "OFFER": null,
     },
     "OPP" : {
       "RETURN": null,
