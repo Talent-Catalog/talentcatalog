@@ -19,10 +19,8 @@ package org.tctalent.server.api.admin;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,33 +44,27 @@ import org.tctalent.server.service.db.EducationMajorService;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/education-major")
+@RequiredArgsConstructor
 public class EducationMajorAdminApi {
 
     private final EducationMajorService educationMajorService;
     private final LanguageService languageService;
     private final DtoBuilder systemLanguageDtoBuilder = new SystemLanguageDtoBuilder();
 
-    @Autowired
-    public EducationMajorAdminApi(EducationMajorService educationMajorService,
-        LanguageService languageService) {
-        this.educationMajorService = educationMajorService;
-        this.languageService = languageService;
-    }
-
     @PostMapping("system/{langCode}")
     public Map<String, Object> addSystemLanguageTranslations(
         @PathVariable("langCode") String langCode, @RequestParam("file") MultipartFile file)
         throws EntityExistsException, IOException, NoSuchObjectException {
         SystemLanguage systemLanguage =
-            this.languageService.addSystemLanguageTranslations(
+            languageService.addSystemLanguageTranslations(
                 langCode, "education_major", file.getInputStream());
 
         return systemLanguageDtoBuilder.build(systemLanguage);
     }
 
-    @GetMapping()
+    @GetMapping
     public List<Map<String, Object>> listAllEducationMajors() {
         List<EducationMajor> educationMajors = educationMajorService.listActiveEducationMajors();
         return educationMajorDto().buildList(educationMajors);
@@ -80,19 +72,19 @@ public class EducationMajorAdminApi {
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchEducationMajorRequest request) {
-        Page<EducationMajor> nationalities = this.educationMajorService.searchEducationMajors(request);
+        Page<EducationMajor> nationalities = educationMajorService.searchEducationMajors(request);
         return educationMajorDto().buildPage(nationalities);
     }
 
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
-        EducationMajor educationMajor = this.educationMajorService.getEducationMajor(id);
+        EducationMajor educationMajor = educationMajorService.getEducationMajor(id);
         return educationMajorDto().build(educationMajor);
     }
 
     @PostMapping
     public Map<String, Object> create(@Valid @RequestBody CreateEducationMajorRequest request) throws EntityExistsException {
-        EducationMajor educationMajor = this.educationMajorService.createEducationMajor(request);
+        EducationMajor educationMajor = educationMajorService.createEducationMajor(request);
         return educationMajorDto().build(educationMajor);
     }
 
@@ -100,13 +92,13 @@ public class EducationMajorAdminApi {
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @Valid @RequestBody UpdateEducationMajorRequest request) throws EntityExistsException  {
 
-        EducationMajor educationMajor = this.educationMajorService.updateEducationMajor(id, request);
+        EducationMajor educationMajor = educationMajorService.updateEducationMajor(id, request);
         return educationMajorDto().build(educationMajor);
     }
 
     @DeleteMapping("{id}")
     public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
-        return this.educationMajorService.deleteEducationMajor(id);
+        return educationMajorService.deleteEducationMajor(id);
     }
 
 

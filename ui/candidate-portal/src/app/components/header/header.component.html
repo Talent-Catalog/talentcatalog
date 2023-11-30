@@ -51,7 +51,7 @@
       </div>
 
       <!-- ACCOUNT -->
-      <div class="navbar-nav mobile-menu-item" *ngIf="(authService.user$ | async)">
+      <div class="navbar-nav mobile-menu-item" *ngIf="(authenticationService.loggedInUser$ | async)">
         <div class="nav-item dropdown" ngbDropdown>
 
           <a class="nav-link" ngbDropdownToggle>
@@ -84,7 +84,7 @@
       </div>
 
       <!-- LOGIN -->
-      <a class="btn btn-link" [routerLink]="['/login']" *ngIf="!(authService.user$ | async)">
+      <a class="btn btn-link" [routerLink]="['/login']" *ngIf="!(authenticationService.loggedInUser$ | async)">
         {{ 'HEADER.NAV.LOGIN' | translate }}
       </a>
 

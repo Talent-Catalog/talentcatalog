@@ -1089,12 +1089,20 @@ import {
     {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
-    {provide: APP_INITIALIZER, useFactory: (envService: EnvService) => () => envService.init(), deps: [EnvService], multi: true},
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (envService: EnvService) => () => envService.init(),
+      deps: [EnvService],
+      multi: true
+    },
     {provide: RxStompService},
     AuthorizationService,
     RoleGuardService,
     Title,
     DatePipe, TitleCasePipe
+  ],
+  exports: [
+    PostsComponent
   ],
   bootstrap: [AppComponent]
 })

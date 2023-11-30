@@ -22,6 +22,7 @@ export const environment = {
   production: true,
   host: document.location.host,
   publishUrl: document.location.origin + '/published',
+  chatApiUrl: '/api/admin',
   apiUrl: '/api/admin',
   systemApiUrl: '/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org'

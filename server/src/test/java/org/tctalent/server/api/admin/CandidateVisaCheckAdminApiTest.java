@@ -16,23 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.CandidateVisaCheck;
-import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
-import org.tctalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
-import org.tctalent.server.service.db.CandidateVisaService;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -49,6 +32,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateVisaCheck;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.CandidateVisaCheck;
+import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
+import org.tctalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
+import org.tctalent.server.service.db.CandidateVisaService;
 
 /**
  *  Unit tests for Candidate Visa Check Admin Api endpoints.
@@ -115,7 +114,6 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.overallRiskNotes", is("These are some overall risk notes.")))
                 .andExpect(jsonPath("$.validTravelDocs", is("Valid")))
                 .andExpect(jsonPath("$.validTravelDocsNotes", is("These are some travel docs notes.")))
-                .andExpect(jsonPath("$.assessmentNotes", is("These are some assessment notes.")))
                 .andExpect(jsonPath("$.pathwayAssessment", is("No")))
                 .andExpect(jsonPath("$.pathwayAssessmentNotes", is("These are some pathway assessment notes.")));
 
@@ -155,7 +153,6 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.[0].overallRiskNotes", is("These are some overall risk notes.")))
                 .andExpect(jsonPath("$.[0].validTravelDocs", is("Valid")))
                 .andExpect(jsonPath("$.[0].validTravelDocsNotes", is("These are some travel docs notes.")))
-                .andExpect(jsonPath("$.[0].assessmentNotes", is("These are some assessment notes.")))
                 .andExpect(jsonPath("$.[0].pathwayAssessment", is("No")))
                 .andExpect(jsonPath("$.[0].pathwayAssessmentNotes", is("These are some pathway assessment notes.")));
 

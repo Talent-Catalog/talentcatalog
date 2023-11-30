@@ -16,10 +16,14 @@
 
 package org.tctalent.server.request.education.level;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.Sort;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.request.PagedSearchRequest;
 
+@Getter
+@Setter
 public class SearchEducationLevelRequest extends PagedSearchRequest {
 
     private String keyword;
@@ -32,28 +36,5 @@ public class SearchEducationLevelRequest extends PagedSearchRequest {
         super(Sort.Direction.ASC, new String[]{"level"});
     }
 
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
 }
 

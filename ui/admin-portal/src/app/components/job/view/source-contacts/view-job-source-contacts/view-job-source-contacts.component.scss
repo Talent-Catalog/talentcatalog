@@ -1,0 +1,5 @@
+@import "~src/scss/variables";
+
+.active {
+  background-color: fade-out($info, 0.4);
+}

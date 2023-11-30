@@ -26,6 +26,8 @@ export interface CandidateOpportunity extends Opportunity {
 
   closingCommentsForCandidate?: string;
   employerFeedback?: string;
+  fileOfferLink?: string;
+  fileOfferName?: string;
 
   candidate: ShortCandidate;
   jobOpp: ShortJob;
@@ -78,6 +80,7 @@ export class SearchOpportunityRequest extends PagedSearchRequest {
   ownedByMyPartner?: boolean;
   sfOppClosed?: boolean;
   stages?: string[];
+  destinationIds?: number[];
 }
 
 
