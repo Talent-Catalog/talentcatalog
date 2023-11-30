@@ -16,29 +16,17 @@
 
 package org.tctalent.server.request.industry;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.request.PagedSearchRequest;
 
+@Getter
+@Setter
 public class SearchIndustryRequest extends PagedSearchRequest {
 
     private String keyword;
 
     private Status status;
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 
 }
