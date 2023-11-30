@@ -16,9 +16,8 @@
 
 package org.tctalent.server.api.admin;
 
-import org.tctalent.server.util.dto.DtoBuilder;
-
 import javax.validation.constraints.NotNull;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -225,7 +224,6 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("overallRiskNotes")
                 .add("validTravelDocs")
                 .add("validTravelDocsNotes")
-                .add("assessmentNotes")
                 .add("pathwayAssessment")
                 .add("pathwayAssessmentNotes")
                 .add("createdBy", userDto())

@@ -306,7 +306,6 @@ public class AdminApiTestUtil {
             candidateVisaCheck.setValidTravelDocsNotes( "These are some travel docs notes.");
             candidateVisaCheck.setPathwayAssessment(YesNoUnsure.No);
             candidateVisaCheck.setPathwayAssessmentNotes( "These are some pathway assessment notes.");
-            candidateVisaCheck.setAssessmentNotes( "These are some assessment notes.");
         }
         return candidateVisaCheck;
     }

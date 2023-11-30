@@ -14,15 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.candidate.visa;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-@Getter
-@Setter
-@ToString
-public class CreateCandidateVisaCheckRequest {
-    private Long countryId;
-}
+alter table candidate_visa_check drop column eligibility;
+alter table candidate_visa_check drop column assessment_notes;
