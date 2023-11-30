@@ -570,4 +570,12 @@ public class AdminApiTestUtil {
             new EducationLevel("Good", Status.active, 3)
         );
     }
+
+    public static List<EducationMajor> getEducationMajors() {
+        return List.of(
+            new EducationMajor("Computer Science", Status.active),
+            new EducationMajor("Mathematics", Status.active),
+            new EducationMajor("Psychology", Status.active)
+        );
+    }
 }
