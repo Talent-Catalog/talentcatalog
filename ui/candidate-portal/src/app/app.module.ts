@@ -298,10 +298,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     DatePipe
 
   ],
-    exports: [
-        CandidateOppsComponent,
-        CandidateEducationCardComponent
-    ],
+  exports: [
+    CandidateOppsComponent,
+    CandidateEducationCardComponent,
+    FileUploadComponent
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

@@ -16,6 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
+import java.io.IOException;
 import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -26,7 +27,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -68,6 +71,14 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
         return candidateOpportunityDto().build(opp);
     }
 
+    @PostMapping("{id}/upload-offer")
+    public @NotNull Map<String, Object> uploadOffer(
+        @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
+        throws InvalidRequestException, IOException, NoSuchObjectException {
+        CandidateOpportunity opp = candidateOpportunityService.uploadOffer(id, file);
+        return candidateOpportunityDto().build(opp);
+    }
+
     private DtoBuilder candidateOpportunityDto() {
         return new DtoBuilder()
             .add("id")
@@ -86,6 +97,8 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
             .add("createdDate")
             .add("updatedBy", shortUserDto())
             .add("updatedDate")
+            .add("fileOfferLink")
+            .add("fileOfferName")
             ;
     }
 
