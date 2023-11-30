@@ -41,6 +41,7 @@ import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
+import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Exam;
@@ -562,4 +563,11 @@ public class AdminApiTestUtil {
         );
   }
 
+    public static List<EducationLevel> getEducationLevels() {
+        return List.of(
+            new EducationLevel("Excellent", Status.active, 1),
+            new EducationLevel("Great", Status.active, 2),
+            new EducationLevel("Good", Status.active, 3)
+        );
+    }
 }
