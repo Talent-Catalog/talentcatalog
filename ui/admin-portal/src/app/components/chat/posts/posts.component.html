@@ -20,7 +20,7 @@
     <p class="text-muted py-3 fw-light text-center fs-6">Send a message below to begin chat.</p>
   </ng-template>
   <div>
-    <app-create-update-post
+    <app-create-update-post *ngIf="!readOnly"
       [chat]="chat"
     >
 

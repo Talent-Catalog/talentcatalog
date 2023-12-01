@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {ViewChatComponent} from './view-chat.component';
+import {JobGroupChatsTabComponent} from './job-group-chats-tab.component';
 
-describe('ViewChatComponent', () => {
-  let component: ViewChatComponent;
-  let fixture: ComponentFixture<ViewChatComponent>;
+describe('JobGroupChatsTabComponent', () => {
+  let component: JobGroupChatsTabComponent;
+  let fixture: ComponentFixture<JobGroupChatsTabComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ViewChatComponent ]
+      declarations: [ JobGroupChatsTabComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ViewChatComponent);
+    fixture = TestBed.createComponent(JobGroupChatsTabComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

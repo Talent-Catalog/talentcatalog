@@ -117,12 +117,22 @@
 
         <!-- Source Partners -->
         <ng-container ngbNavItem="Source">
-          <a ngbNavLink>Partners</a>
+          <a ngbNavLink>Partners/Chats</a>
           <ng-template ngbNavContent>
             <app-job-source-contacts-tab
               [job]="job"
               [editable]="!loggedInUser.readOnly">
             </app-job-source-contacts-tab>
+          </ng-template>
+        </ng-container>
+
+        <!-- Group chats -->
+        <ng-container ngbNavItem="GroupChats" *ngIf="visible">
+          <a ngbNavLink>Group Chats</a>
+          <ng-template ngbNavContent>
+            <app-job-group-chats-tab
+              [job]="job">
+            </app-job-group-chats-tab>
           </ng-template>
         </ng-container>
 
