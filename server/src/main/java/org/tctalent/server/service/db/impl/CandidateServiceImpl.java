@@ -52,6 +52,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
@@ -203,6 +204,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     private static final Map<CandidateSubfolderType, String> candidateSubfolderNames;
     private static final String NOT_AUTHORIZED = "Hidden";
+
+    @Value("${environment}")
+    private String environment;
 
     static {
         candidateSubfolderNames = new HashMap<>();
@@ -2670,8 +2674,8 @@ public class CandidateServiceImpl implements CandidateService {
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void syncLiveCandidatesToSf()
         throws SalesforceException, WebClientException {
-//        TODO: 👇 replace with environment variable
-        if ("https://login.salesforce.com/".equals(salesforceConfig.getBaseLoginUrl())) {
+        // Live candidate sync only desirable from TC prod to SF prod due to sandbox object limit
+        if ("prod".equals(environment)) {
             // Gather all live candidates
             List<CandidateStatus> statuses = new ArrayList<>(
                 EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
