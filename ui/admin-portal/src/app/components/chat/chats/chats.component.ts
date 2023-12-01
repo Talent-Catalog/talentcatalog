@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {JobChat} from "../../../model/chat";
 
 @Component({
@@ -6,7 +14,7 @@ import {JobChat} from "../../../model/chat";
   templateUrl: './chats.component.html',
   styleUrls: ['./chats.component.scss']
 })
-export class ChatsComponent implements OnInit {
+export class ChatsComponent implements OnInit, OnChanges {
   @Input() chats: JobChat[];
   @Output() chatSelection = new EventEmitter();
 
@@ -18,6 +26,14 @@ export class ChatsComponent implements OnInit {
 
   ngOnInit(): void {
   }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.chats && this.chats.length > 0) {
+      this.selectCurrent(this.chats[0])
+    }
+  }
+
+
   selectCurrent(chat: JobChat) {
     this.currentChat = chat;
 

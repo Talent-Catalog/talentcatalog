@@ -98,6 +98,20 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     }
   }
 
+  get visible(): boolean {
+    const loggedInUser = this.authenticationService.getLoggedInUser();
+    let visible = false;
+    if (this.authService.isJobCreator()) {
+      //Only the actual job creator (and the default job creator) see this chat
+      visible = this.authService.isDefaultJobCreator() ? true :
+                this.job.jobCreator.id == loggedInUser.partner.id;
+    } else if (this.authService.isSourcePartner()) {
+      //All source partners see the chat
+      visible = true;
+    }
+    return visible;
+  }
+
   private checkSubmissionListContents() {
     const submissionList = this.job?.submissionList;
     if (submissionList == null) {
