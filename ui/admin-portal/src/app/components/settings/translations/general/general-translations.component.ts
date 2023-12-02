@@ -82,6 +82,7 @@ export class GeneralTranslationsComponent implements OnInit {
     }
 
     this.loading = true;
+    this.error = null;
     this.languageService.listSystemLanguages().subscribe(
       (result) => {
         this.languages = result;
@@ -90,6 +91,7 @@ export class GeneralTranslationsComponent implements OnInit {
       },
       (error) => {
         this.error = error;
+        this.loading = false;
       }
     )
     this.keys = Object.keys(ALL_FIELDS);
