@@ -29,7 +29,7 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
       private authorizationService: AuthorizationService,
       private chatService: ChatService,
   ) {
-    super(5);
+    super(7);
   }
 
   ngOnInit(): void {
@@ -92,6 +92,6 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
         name = this.job.jobCreator?.name;
       }
     }
-    this.chatHeader = "Chat " + name;
+    this.chatHeader = "Private chat with " + name;
   }
 }

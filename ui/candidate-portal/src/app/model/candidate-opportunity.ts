@@ -18,6 +18,8 @@ import {Opportunity} from "./base";
 import {ShortJob} from "./job";
 
 export interface CandidateOpportunity extends Opportunity {
+  fileOfferLink?: string;
+  fileOfferName?: string;
 
   closingCommentsForCandidate?: string;
   jobOpp: ShortJob;

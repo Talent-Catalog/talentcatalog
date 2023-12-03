@@ -77,8 +77,6 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
 
     private String validTravelDocsNotes;
 
-    private String assessmentNotes;
-
     @Enumerated(EnumType.STRING)
     private YesNoUnsure pathwayAssessment;
 

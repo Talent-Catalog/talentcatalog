@@ -284,8 +284,6 @@ export interface CandidateDestination {
 export interface CandidateVisa {
   id?: number;
   country?: Country;
-  eligibility?: VisaEligibility;
-  assessmentNotes?: string;
   protection?: YesNo;
   protectionGrounds?: string;
   tbbEligibilityAssessment?: TBBEligibilityAssessment;

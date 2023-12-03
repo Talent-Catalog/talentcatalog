@@ -20,7 +20,8 @@
     <div class="header">
       <h4>General Translations</h4>
       <div>
-        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-success" (click)="save()" [disabled]="saving">Save</button>
+        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-success"
+                (click)="save()" [disabled]="saving || error || saveError">Save</button>
       </div>
     </div>
 

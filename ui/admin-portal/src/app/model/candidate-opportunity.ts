@@ -26,6 +26,8 @@ export interface CandidateOpportunity extends Opportunity {
 
   closingCommentsForCandidate?: string;
   employerFeedback?: string;
+  fileOfferLink?: string;
+  fileOfferName?: string;
 
   candidate: ShortCandidate;
   jobOpp: ShortJob;

@@ -29,11 +29,10 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
     private activeModal: NgbActiveModal,
     config: NgbDropdownConfig) {
     config.placement = 'bottom-left';
+    dragulaService.createGroup("COLUMNS", {removeOnSpill: true})
   }
 
   ngOnInit(): void {
-    const dragulaGroup = this.dragulaService.find(this.dragulaGroupName);
-
     // Set default columns if no columns selected.
     if (this.selectedColumns.length === 0) {
       this.default();
