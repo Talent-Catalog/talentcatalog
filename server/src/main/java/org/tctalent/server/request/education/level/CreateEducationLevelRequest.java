@@ -18,9 +18,12 @@ package org.tctalent.server.request.education.level;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.tctalent.server.model.db.Status;
 
+@Getter
+@Setter
 public class CreateEducationLevelRequest {
 
     @NotBlank
@@ -31,25 +34,4 @@ public class CreateEducationLevelRequest {
 
     private int level;
 
-    public String getName() { return name; }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
 }

@@ -18,10 +18,8 @@ package org.tctalent.server.api.admin;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,16 +38,12 @@ import org.tctalent.server.request.industry.UpdateIndustryRequest;
 import org.tctalent.server.service.db.IndustryService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/industry")
+@RequiredArgsConstructor
 public class IndustryAdminApi {
 
     private final IndustryService industryService;
-
-    @Autowired
-    public IndustryAdminApi(IndustryService industryService) {
-        this.industryService = industryService;
-    }
 
     @GetMapping()
     public List<Map<String, Object>> listAllIndustries() {
@@ -59,19 +53,19 @@ public class IndustryAdminApi {
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchIndustryRequest request) {
-        Page<Industry> industries = this.industryService.searchIndustries(request);
+        Page<Industry> industries = industryService.searchIndustries(request);
         return industryDto().buildPage(industries);
     }
 
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
-        Industry industry = this.industryService.getIndustry(id);
+        Industry industry = industryService.getIndustry(id);
         return industryDto().build(industry);
     }
 
     @PostMapping
     public Map<String, Object> create(@Valid @RequestBody CreateIndustryRequest request) throws EntityExistsException {
-        Industry industry = this.industryService.createIndustry(request);
+        Industry industry = industryService.createIndustry(request);
         return industryDto().build(industry);
     }
 
@@ -79,13 +73,13 @@ public class IndustryAdminApi {
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @Valid @RequestBody UpdateIndustryRequest request) throws EntityExistsException  {
 
-        Industry industry = this.industryService.updateIndustry(id, request);
+        Industry industry = industryService.updateIndustry(id, request);
         return industryDto().build(industry);
     }
 
     @DeleteMapping("{id}")
     public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
-        return this.industryService.deleteIndustry(id);
+        return industryService.deleteIndustry(id);
     }
 
 

@@ -19,9 +19,7 @@ package org.tctalent.server.api.admin;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +44,7 @@ import org.tctalent.server.service.db.EducationLevelService;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/education-level")
 public class EducationLevelAdminApi {
 
@@ -66,13 +64,13 @@ public class EducationLevelAdminApi {
         @PathVariable("langCode") String langCode, @RequestParam("file") MultipartFile file)
         throws EntityExistsException, IOException, NoSuchObjectException {
         SystemLanguage systemLanguage =
-            this.languageService.addSystemLanguageTranslations(
+            languageService.addSystemLanguageTranslations(
                 langCode, "education_level", file.getInputStream());
 
         return systemLanguageDtoBuilder.build(systemLanguage);
     }
 
-    @GetMapping()
+    @GetMapping
     public List<Map<String, Object>> listAllLanguages() {
         List<EducationLevel> educationLevels = educationLevelService.listEducationLevels();
         return educationLevelDto().buildList(educationLevels);
@@ -80,19 +78,19 @@ public class EducationLevelAdminApi {
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchEducationLevelRequest request) {
-        Page<EducationLevel> languages = this.educationLevelService.searchEducationLevels(request);
+        Page<EducationLevel> languages = educationLevelService.searchEducationLevels(request);
         return educationLevelDto().buildPage(languages);
     }
 
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
-        EducationLevel educationLevel = this.educationLevelService.getEducationLevel(id);
+        EducationLevel educationLevel = educationLevelService.getEducationLevel(id);
         return educationLevelDto().build(educationLevel);
     }
 
     @PostMapping
     public Map<String, Object> create(@Valid @RequestBody CreateEducationLevelRequest request) throws EntityExistsException {
-        EducationLevel educationLevel = this.educationLevelService.createEducationLevel(request);
+        EducationLevel educationLevel = educationLevelService.createEducationLevel(request);
         return educationLevelDto().build(educationLevel);
     }
 
@@ -100,13 +98,13 @@ public class EducationLevelAdminApi {
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @Valid @RequestBody UpdateEducationLevelRequest request) throws EntityExistsException  {
 
-        EducationLevel educationLevel = this.educationLevelService.updateEducationLevel(id, request);
+        EducationLevel educationLevel = educationLevelService.updateEducationLevel(id, request);
         return educationLevelDto().build(educationLevel);
     }
 
     @DeleteMapping("{id}")
     public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
-        return this.educationLevelService.deleteEducationLevel(id);
+        return educationLevelService.deleteEducationLevel(id);
     }
 
     private DtoBuilder educationLevelDto() {

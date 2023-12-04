@@ -55,6 +55,21 @@
         formControlName="selectedStages">
       </ng-select>
     </div>
+
+<div class="mb-3">
+      <label class="form-label">Destination Country</label>
+      <ng-select
+        id="destinations"
+        [items]="destinations"
+        [multiple]="true"
+        [closeOnSelect]="true"
+        [searchable]="true"
+        placeholder="Select or type..."
+        bindLabel="name"
+        bindValue="id"
+        formControlName="destinationIds">
+      </ng-select>
+    </div>
   </form>
 </div>
 

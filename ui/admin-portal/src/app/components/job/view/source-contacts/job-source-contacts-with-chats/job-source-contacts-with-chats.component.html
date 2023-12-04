@@ -10,23 +10,25 @@
   </div>
 
   <div class="col-sm-{{sidePanelColWidth}}">
-    <div class="detail-panel side-panel-color h-100">
-      <div *ngIf="canToggleSizes()" class="float-end">
-        <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-            class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
-      </div>
+    <div *ngIf="canToggleSizes()" class="float-end">
+      <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+        class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
+    </div>
+    <div class="detail-panel side-panel-color h-100 d-flex flex-column" [ngClass]="selectedSourcePartner != null ? 'justify-content-between':'justify-content-center'">
 
-      <h5 class="text-center text-accent-1">{{chatHeader}}</h5>
-      <div *ngIf="selectedSourcePartner">
+      <div *ngIf="selectedSourcePartner; else noSelectedChat">
+        <h5 class="text-center text-accent-1 mb-3">{{chatHeader}}</h5>
         <div class="alert alert-danger" *ngIf="error">
           {{error}}
         </div>
-
         <app-posts
             [chat]="selectedSourcePartnerChat"
         >
         </app-posts>
       </div>
+      <ng-template #noSelectedChat>
+          <div class="text-muted py-4 fw-light text-center fs-5">Select partner from table to begin chat</div>
+      </ng-template>
     </div>
   </div>
 </div>

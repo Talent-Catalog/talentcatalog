@@ -758,6 +758,10 @@ import {ManageChatsComponent} from './components/chat/manage-chats/manage-chats.
 import {
   JobSourceContactsWithChatsComponent
 } from './components/job/view/source-contacts/job-source-contacts-with-chats/job-source-contacts-with-chats.component';
+import {ViewChatPostsComponent} from './components/chat/view-chat-posts/view-chat-posts.component';
+import {
+  JobGroupChatsTabComponent
+} from './components/job/view/tab/job-group-chats-tab/job-group-chats-tab.component';
 import {SearchHomeComponent} from './components/search/search-home/search-home.component';
 import {JobHomeComponent} from './components/job/job-home/job-home.component';
 import {
@@ -1068,6 +1072,8 @@ import {
     ViewPostComponent,
     ManageChatsComponent,
     JobSourceContactsWithChatsComponent,
+    ViewChatPostsComponent,
+    JobGroupChatsTabComponent,
     SearchHomeComponent,
     JobHomeComponent,
     CandidatesHomeComponent
@@ -1097,12 +1103,20 @@ import {
     {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
-    {provide: APP_INITIALIZER, useFactory: (envService: EnvService) => () => envService.init(), deps: [EnvService], multi: true},
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (envService: EnvService) => () => envService.init(),
+      deps: [EnvService],
+      multi: true
+    },
     {provide: RxStompService},
     AuthorizationService,
     RoleGuardService,
     Title,
     DatePipe, TitleCasePipe
+  ],
+  exports: [
+    PostsComponent
   ],
   bootstrap: [AppComponent]
 })

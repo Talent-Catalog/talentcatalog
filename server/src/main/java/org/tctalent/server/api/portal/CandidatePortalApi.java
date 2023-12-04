@@ -460,6 +460,8 @@ public class CandidatePortalApi {
             .add("createdDate")
             .add("updatedBy", userDto())
             .add("updatedDate")
+            .add("fileOfferLink")
+            .add("fileOfferName")
             ;
     }
 

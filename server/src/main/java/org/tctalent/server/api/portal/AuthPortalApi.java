@@ -34,7 +34,7 @@ import org.tctalent.server.exception.InvalidPasswordFormatException;
 import org.tctalent.server.exception.PasswordExpiredException;
 import org.tctalent.server.exception.ReCaptchaInvalidException;
 import org.tctalent.server.exception.UserDeactivatedException;
-import org.tctalent.server.request.AuthorizeInContextTranslationRequest;
+import org.tctalent.server.request.AuthenticateInContextTranslationRequest;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
@@ -65,7 +65,7 @@ public class AuthPortalApi {
     }
 
     @PostMapping("xlate")
-    public void authorizeInContextTranslation(@RequestBody AuthorizeInContextTranslationRequest request)
+    public void authorizeInContextTranslation(@RequestBody AuthenticateInContextTranslationRequest request)
             throws InvalidCredentialsException {
         final String password = translationConfig.getPassword();
         if (password == null || !password.equals(request.getPassword())) {

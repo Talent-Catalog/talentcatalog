@@ -11,6 +11,7 @@ import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
+import {CountryService} from "../../../services/country.service";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -52,10 +53,11 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
     localStorageService: LocalStorageService,
     oppService: CandidateOpportunityService,
     salesforceService: SalesforceService,
+    countryService: CountryService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(fb, authService, localStorageService, oppService, salesforceService, locale,
-      "Opps")
+    super(fb, authService, localStorageService, oppService, salesforceService, countryService, locale,
+        "Opps")
 
   }
 

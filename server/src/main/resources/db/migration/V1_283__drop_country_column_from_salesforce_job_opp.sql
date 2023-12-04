@@ -14,22 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-/**
- * Request to enable in context translation
- */
-@Getter
-@Setter
-@ToString
-public class AuthorizeInContextTranslationRequest {
-
-    /**
-     * Password supplied to be validated.
-     */
-    private String password;
-}
+alter table salesforce_job_opp drop column country;

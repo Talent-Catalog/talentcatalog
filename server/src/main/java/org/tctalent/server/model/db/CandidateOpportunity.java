@@ -75,6 +75,18 @@ public class CandidateOpportunity extends AbstractOpportunity {
     CandidateOpportunityStage stage;
 
     /**
+     * Url link to job offer contract file, if one exists
+     */
+    @Nullable
+    private String fileOfferLink;
+
+    /**
+     * Name of job offer contract file, if one exists
+     */
+    @Nullable
+    private String fileOfferName;
+
+    /**
      * Override standard setStage to automatically also update stageOrder and also closed
      * @param stage New job opportunity stage
      */

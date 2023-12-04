@@ -16,7 +16,11 @@
 
 package org.tctalent.server.api.admin;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,20 +35,13 @@ import org.tctalent.server.request.country.UpdateCountryRequest;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Map;
-
 @RestController()
 @RequestMapping("/api/admin/country")
+@RequiredArgsConstructor
 public class CountryAdminApi implements
         ITableApi<SearchCountryRequest, UpdateCountryRequest, UpdateCountryRequest> {
 
     private final CountryService countryService;
-
-    @Autowired
-    public CountryAdminApi(CountryService countryService) { this.countryService = countryService; }
 
     @Override
     public @NotNull List<Map<String, Object>> list() {
@@ -67,20 +64,20 @@ public class CountryAdminApi implements
     @Override
     public @NotNull Map<String, Object> searchPaged(
             @Valid SearchCountryRequest request) {
-        Page<Country> countries = this.countryService.searchCountries(request);
+        Page<Country> countries = countryService.searchCountries(request);
         return countryDto().buildPage(countries);
     }
 
     @Override
     public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
-        Country country = this.countryService.getCountry(id);
+        Country country = countryService.getCountry(id);
         return countryDto().build(country);
     }
 
     @Override
     public @NotNull Map<String, Object> create(@Valid UpdateCountryRequest request)
             throws EntityExistsException {
-        Country country = this.countryService.createCountry(request);
+        Country country = countryService.createCountry(request);
         return countryDto().build(country);
     }
 
@@ -88,14 +85,14 @@ public class CountryAdminApi implements
     public @NotNull Map<String, Object> update(
             long id, @Valid UpdateCountryRequest request)
             throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
-        Country country = this.countryService.updateCountry(id, request);
+        Country country = countryService.updateCountry(id, request);
         return countryDto().build(country);
     }
 
     @Override
     public boolean delete(long id)
             throws EntityReferencedException, InvalidRequestException {
-        return this.countryService.deleteCountry(id);
+        return countryService.deleteCountry(id);
     }
 
     private DtoBuilder countryDto() {

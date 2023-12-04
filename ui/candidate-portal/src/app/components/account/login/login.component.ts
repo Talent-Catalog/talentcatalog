@@ -21,6 +21,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ReCaptchaV3Service} from "ng-recaptcha";
 import {LoginRequest} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-login',
@@ -36,6 +37,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private builder: FormBuilder,
               private authService: AuthService,
+              private authenticationService: AuthenticationService,
               private candidateService: CandidateService,
               private reCaptchaV3Service: ReCaptchaV3Service,
               private route: ActivatedRoute,
@@ -69,13 +71,14 @@ export class LoginComponent implements OnInit {
     if (this.loading) { return; }
     this.loading = true;
 
-    const action = 'login';
-    this.reCaptchaV3Service.execute(action).subscribe(
-      (token) => this.loginWithToken(token),
-      (error) => {
-        console.log(error);
-      }
-    );
+    // const action = 'login';
+    // this.reCaptchaV3Service.execute(action).subscribe(
+    //   (token) => this.loginWithToken(token),
+    //   (error) => {
+    //     console.log(error);
+    //   }
+    // );
+    this.loginWithToken(null);
   }
 
   private loginWithToken(token: string) {
@@ -84,7 +87,7 @@ export class LoginComponent implements OnInit {
     req.password = this.password;
     req.reCaptchaV3Token = token;
 
-    this.authService.login(req)
+    this.authenticationService.login(req)
       .subscribe(() => {
         this.loading = false;
         // Get candidate number to save in storage to display in the header

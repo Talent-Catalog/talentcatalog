@@ -16,6 +16,10 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -32,8 +36,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
@@ -51,13 +58,18 @@ import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.SalesforceHelper;
+import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
@@ -69,12 +81,16 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
     private final UserService userService;
+    private final AuthService authService;
+    private final GoogleDriveConfig googleDriveConfig;
+    private final FileSystemService fileSystemService;
 
 
     public CandidateOpportunityServiceImpl(
             CandidateOpportunityRepository candidateOpportunityRepository,
             CandidateService candidateService, JobChatService jobChatService, SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
-            UserService userService) {
+            UserService userService, AuthService authService, GoogleDriveConfig googleDriveConfig,
+        FileSystemService fileSystemService) {
         this.candidateOpportunityRepository = candidateOpportunityRepository;
         this.candidateService = candidateService;
         this.jobChatService = jobChatService;
@@ -82,6 +98,9 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         this.salesforceJobOppService = salesforceJobOppService;
         this.salesforceService = salesforceService;
         this.userService = userService;
+        this.authService = authService;
+        this.googleDriveConfig = googleDriveConfig;
+        this.fileSystemService = fileSystemService;
     }
 
     /**
@@ -423,5 +442,67 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             opp.setEmployerFeedback(oppParams.getEmployerFeedback());
         }
         return candidateOpportunityRepository.save(opp);
+    }
+
+    @Override
+    public CandidateOpportunity uploadOffer(long id, MultipartFile file)
+        throws InvalidRequestException, NoSuchObjectException, IOException {
+
+        CandidateOpportunity opp = getCandidateOpportunity(id);
+        if (opp.getCandidate() == null) {
+            throw new InvalidRequestException("Opportunity " + id + " does not have candidate associated.");
+        }
+        GoogleFileSystemFile uploadedFile = uploadOfferFile(opp, file);
+        opp.setFileOfferLink(uploadedFile.getUrl());
+        opp.setFileOfferName(uploadedFile.getName());
+        opp.setAuditFields(authService.getLoggedInUser().orElse(null));
+        return candidateOpportunityRepository.save(opp);
+    }
+
+    private GoogleFileSystemFile uploadOfferFile(CandidateOpportunity opp, MultipartFile file)
+        throws IOException {
+        Candidate candidate = opp.getCandidate();
+
+        // Create the candidate folder where the job offer file will exist.
+        // If folder already exists this does nothing.
+        candidateService.createCandidateFolder(candidate.getId());
+
+        String folderLink = candidate.getFolderlink();
+
+        //Name of file being uploaded (this is the name it had on the
+        //originating computer).
+        String fileName = file.getOriginalFilename();
+
+        return uploadFile(folderLink, fileName, file);
+    }
+
+    private GoogleFileSystemFile uploadFile(String folderLink, String fileName,
+        MultipartFile file) throws IOException {
+
+        //Save to a temporary file
+        InputStream is = file.getInputStream();
+        File tempFile = File.createTempFile("offer", ".tmp");
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+            int read;
+            byte[] bytes = new byte[1024];
+            while ((read = is.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+        }
+
+        final GoogleFileSystemDrive candidateDataDrive = googleDriveConfig.getCandidateDataDrive();
+        final GoogleFileSystemFolder parentFolder = new GoogleFileSystemFolder(folderLink);
+
+        //Upload the file to its folder, with the correct name (not the temp
+        //file name).
+        GoogleFileSystemFile uploadedFile =
+            fileSystemService.uploadFile(candidateDataDrive, parentFolder, fileName, tempFile);
+
+        //Delete tempfile
+        if (!tempFile.delete()) {
+            log.error("Failed to delete temporary file " + tempFile);
+        }
+
+        return uploadedFile;
     }
 }
