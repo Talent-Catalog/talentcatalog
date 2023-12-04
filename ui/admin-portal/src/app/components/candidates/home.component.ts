@@ -59,8 +59,8 @@ export class HomeComponent implements OnInit {
     this.loggedInPartner = this.authenticationService.getLoggedInUser()?.partner;
 
     // This is called in order for the navigation tabs, this.nav, to be set.
-    // Make tall this in ngOnInit(). Do not do it ngAfterViewChecked() - doing so will throw
-    // NG0100 errors, because selectDefaultTabs() changes the activeTabId after the view has been
+    // Make this call in ngOnInit(). Do not do it ngAfterViewChecked() - doing so will throw
+    // NG0100 errors because selectDefaultTabs() changes the activeTabId after the view has been
     // checked.
     // See: https://angular.io/errors/NG0100
     this.selectDefaultTab();
