@@ -2674,7 +2674,7 @@ public class CandidateServiceImpl implements CandidateService {
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void syncLiveCandidatesToSf()
         throws SalesforceException, WebClientException {
-        // Live candidate sync only desirable from TC prod to SF prod due to sandbox object limit
+        // Live candidate sync only desirable from TC prod to SF prod due to sandbox object limit of 10,000
         if ("prod".equals(environment)) {
             // Gather all live candidates
             List<CandidateStatus> statuses = new ArrayList<>(
@@ -2702,11 +2702,11 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public void upsertCandidatesToSf(List<Candidate> orderedCandidates)
         throws SalesforceException, WebClientException {
-        //Update Salesforce contacts
+        // Update Salesforce contacts
         List<Contact> contacts =
             salesforceService.createOrUpdateContacts(orderedCandidates);
 
-        //Update the sfLink in all TC candidate records.
+        // Update the sfLink in all implicated TC candidate records
         int nCandidates = orderedCandidates.size();
         for (int i = 0; i < nCandidates; i++) {
             Contact contact = contacts.get(i);
