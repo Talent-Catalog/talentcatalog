@@ -400,16 +400,27 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       editModal.componentInstance.savedList = source;
 
       editModal.result
-      .then((savedList: SavedList) => {
-        const urlCommands = getCandidateSourceNavigation(savedList);
-        this.router.navigate(urlCommands);
-      })
-      .catch(() => {
-        //Refresh display
-        this.search();
-      });
+        .then(() => {
+          //Refresh display
+          this.search();
+        })
+        .catch(() => { /* Isn't possible */
+        });
     }
 
+  }
+
+  onNewList() {
+    const editModal = this.modalService.open(CreateUpdateListComponent);
+    // create a new list and open it
+    editModal.result
+    .then((savedList: SavedList) => {
+      const urlCommands = getCandidateSourceNavigation(savedList);
+      this.router.navigate(urlCommands);
+    })
+    .catch((error) => {
+      this.error = error;
+    });
   }
 
   onToggleStarred(source: CandidateSource) {
