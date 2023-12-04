@@ -414,12 +414,12 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     const editModal = this.modalService.open(CreateUpdateListComponent);
     // create a new list and open it
     editModal.result
-    .then((savedList: SavedList) => {
-      const urlCommands = getCandidateSourceNavigation(savedList);
+    .then((result: SavedList) => {
+      const urlCommands = getCandidateSourceNavigation(result);
       this.router.navigate(urlCommands);
     })
-    .catch((error) => {
-      this.error = error;
+    .catch(() => {
+      editModal.dismiss();
     });
   }
 
