@@ -32,7 +32,7 @@ export function isJob(opp: Opportunity): opp is Job {
 export interface ShortJob {
   id: number,
   name: string;
-  country?: string;
+  country?: Country;
   submissionList?: ShortSavedList;
   recruiterPartner?: ShortPartner;
 }
@@ -44,7 +44,6 @@ export interface Job extends Opportunity {
   opportunityScore: string;
   employerDescription: string;
   contactUser: User;
-  // Note: this country field comes from Salesforce, why it is a string and not a country object.
   country: Country;
   employer: string;
   exclusionList: SavedList;
