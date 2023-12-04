@@ -10,7 +10,7 @@
 
   <div class="py-2">
     <div class="d-flex justify-content-between align-items-center">
-      <h1 class="fs-5 fw-bold" [ngClass]="{'fs-2':!showBreadcrumb}">{{opp.name}}
+      <h1 [ngClass]="{'fs-5 fw-bold':!showBreadcrumb}">{{opp.name}}
         <span class="small text-muted">
         <a [routerLink]="['/opp',opp.id]">
           <i class="fas fa-expand" title="Open"></i>
