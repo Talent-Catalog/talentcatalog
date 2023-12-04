@@ -16,6 +16,9 @@
 
 package org.tctalent.server.model.db;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -24,6 +27,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.CollectionUtils;
 
 @Getter
 @Setter
@@ -112,4 +116,33 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     private YesNo englishThreshold;
 
     private String englishThresholdNotes;
+
+    /**
+     * String of the ids of the candidate dependants that are relocating as part of the visa job check.
+     * This is a simple string of ids to avoid a lengthy and unnecessary many-to-many relationship,
+     * as we don't need to track the inverse relationship of dependants and their associated visa job checks.
+     * It is a string as opposed to a List of ids due to the error: ''Basic' attribute type should not be a container'
+     */
+    private String relocatingDependantIds;
+
+    /**
+     * Get the string of relocating dependant ids and convert to a comma separated list of ids(long).
+     * @return List of candidate dependant ids
+     */
+    public List<Long> getRelocatingDependantIds() {
+        return relocatingDependantIds != null ?
+            Stream.of(relocatingDependantIds.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList()) : null;
+    }
+
+    /**
+     * Set the list of ids (long) to a string of ids comma separated to save to database.
+     */
+    public void setRelocatingDependantIds(List<Long> relocatingDependantIds) {
+        this.relocatingDependantIds = !CollectionUtils.isEmpty(relocatingDependantIds) ?
+            relocatingDependantIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(",")) : null;
+    }
 }
