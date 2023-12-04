@@ -2039,8 +2039,7 @@ public class SystemAdminApi {
     }
 
     @GetMapping("sf-update-live-candidates")
-    public String sfUpdateLiveCandidates() {
+    public void sfUpdateLiveCandidates() {
         candidateService.syncLiveCandidatesToSf();
-        return "started";
     }
 }

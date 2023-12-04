@@ -37,6 +37,7 @@ module "website" {
   email_password                  = var.email_password
   email_test_override             = var.email_test_override
   email_user                      = var.email_user
+  environment                     = var.environment
   drive_id                        = var.drive_id
   drive_rootfolder                = var.drive_rootfolder
   drive_list_folders_id           = var.drive_list_folders_id
