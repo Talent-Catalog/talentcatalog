@@ -40,9 +40,7 @@ import {
 import {ManageChatsComponent} from "./components/chat/manage-chats/manage-chats.component";
 import {SearchHomeComponent} from "./components/search/search-home/search-home.component";
 import {JobHomeComponent} from "./components/job/job-home/job-home.component";
-import {
-  CandidatesHomeComponent
-} from "./components/candidates/candidates-home/candidates-home.component";
+import {ListHomeComponent} from "./components/list/list-home/list-home.component";
 
 const routes: Routes = [
   {
@@ -111,7 +109,7 @@ const routes: Routes = [
       {
         path: 'lists',
         pathMatch: 'full',
-        component: CandidatesHomeComponent,
+        component: ListHomeComponent,
         data: {title: 'TC Candidate Lists'}
       },
       {

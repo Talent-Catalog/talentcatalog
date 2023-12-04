@@ -764,9 +764,7 @@ import {
 } from './components/job/view/tab/job-group-chats-tab/job-group-chats-tab.component';
 import {SearchHomeComponent} from './components/search/search-home/search-home.component';
 import {JobHomeComponent} from './components/job/job-home/job-home.component';
-import {
-  CandidatesHomeComponent
-} from './components/candidates/candidates-home/candidates-home.component';
+import {ListHomeComponent} from './components/list/list-home/list-home.component';
 
 @NgModule({
   declarations: [
@@ -1076,7 +1074,7 @@ import {
     JobGroupChatsTabComponent,
     SearchHomeComponent,
     JobHomeComponent,
-    CandidatesHomeComponent
+    ListHomeComponent
   ],
   imports: [
     BrowserModule,

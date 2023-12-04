@@ -3,14 +3,15 @@ import {SavedSearchService} from "../../../services/saved-search.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {HomeComponent} from "../home.component";
+import {HomeComponent} from "../../candidates/home.component";
+
 
 @Component({
-  selector: 'app-candidates-home',
-  templateUrl: './candidates-home.component.html',
-  styleUrls: ['./candidates-home.component.scss']
+  selector: 'app-list-home',
+  templateUrl: './list-home.component.html',
+  styleUrls: ['./list-home.component.scss']
 })
-export class CandidatesHomeComponent extends HomeComponent {
+export class ListHomeComponent extends HomeComponent {
 
   constructor(
     protected localStorageService: LocalStorageService,
