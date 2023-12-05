@@ -107,6 +107,10 @@ public class AdminApiTestUtil {
                     "test.candidate3@some.thing",
                     Role.user);
 
+    static User getUser() {
+        return caller;
+    }
+
     static List<Candidate> listOfCandidates() {
         return List.of(
                 new Candidate(candidate1, "+123-456-789", "+123-456-789", caller),
@@ -586,4 +590,30 @@ public class AdminApiTestUtil {
             new Industry("Health", Status.active)
         );
     }
+
+    public static PartnerImpl getPartner() {
+        PartnerImpl partner = new PartnerImpl();
+        partner.setName("TC Partner");
+        partner.setAbbreviation("TCP");
+        partner.setJobCreator(true);
+        partner.setSourcePartner(true);
+        partner.setLogo("logo_url");
+        partner.setWebsiteUrl("website_url");
+        partner.setRegistrationLandingPage("registration_landing_page");
+        partner.setNotificationEmail("notification@email.address");
+        partner.setStatus(Status.active);
+        return partner;
+    }
+
+    public static List<PartnerImpl> getListOfPartners() {
+        PartnerImpl partner1 = getPartner();
+        PartnerImpl partner2 = getPartner();
+        partner2.setName("TC Partner 2");
+        PartnerImpl partner3 = getPartner();
+        partner3.setName("TC Partner 3");
+        return List.of(
+          partner1, partner2, partner3
+        );
+    }
+
 }
