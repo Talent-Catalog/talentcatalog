@@ -49,7 +49,7 @@ class PublishedLinkAdminApiTest extends ApiTestBase {
 
   private static final String BASE_PATH = "/published";
 
-  private SavedList savedList = new SavedList();
+  private final SavedList savedList = new SavedList();
 
   @MockBean SavedListService savedListService;
 
