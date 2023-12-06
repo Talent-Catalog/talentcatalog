@@ -123,7 +123,7 @@ class RootRouteAdminApiTest extends ApiTestBase {
 
   @Test
   @DisplayName("redirect contains query string succeeds")
-  void RedirectContainsQueryStringSucceeds() throws Exception {
+  void redirectContainsQueryStringSucceeds() throws Exception {
 
     given(brandingService
         .getBrandingInfo(anyString()))
