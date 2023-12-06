@@ -17,6 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import java.net.URI;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,10 +73,9 @@ public class RootRouteAdminApi {
 
 
         if (showHeaders != null) {
-            headers.forEach((key, value) -> {
+            headers.forEach((key, value) ->
                 log.info(String.format(
-                    "Header '%s' = %s", key, String.join("|", value)));
-            });
+                    "Header '%s' = %s", key, String.join("|", value))));
             String ipAddress = request.getHeader("X-Forward-For");
             if(ipAddress == null) {
                 log.info("Ip address: " + request.getRemoteAddr());
@@ -110,12 +110,8 @@ public class RootRouteAdminApi {
         String landingPage = info.getLandingPage();
 
         //If we have a landing page, go there, otherwise go straight to candidate-portal/login.
-        String routingUrl;
-        if (landingPage != null) {
-            routingUrl = landingPage;
-        } else {
-            routingUrl = "/candidate-portal/login";
-        }
+        String routingUrl = Objects.requireNonNullElse(landingPage, "/candidate-portal/login");
+
         if (queryString != null) {
             routingUrl += "?" + queryString;
         }
