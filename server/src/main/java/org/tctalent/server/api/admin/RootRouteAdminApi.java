@@ -18,8 +18,7 @@ package org.tctalent.server.api.admin;
 
 import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +37,10 @@ import org.tctalent.server.util.SubdomainRedirectHelper;
 /**
  * Handle rerouting when user just types in a domain - eg just tctalent.org
  */
-@RestController()
+@RestController
 @RequestMapping("/")
+@Slf4j
 public class RootRouteAdminApi {
-    private static final Logger log = LoggerFactory.getLogger(RootRouteAdminApi.class);
 
     private final BrandingService brandingService;
     private final RootRequestService rootRequestService;
@@ -57,7 +56,7 @@ public class RootRouteAdminApi {
      * otherwise just go to candidate-portal/login.
      * @return Rerouted url or redirect for partner subdomains
      */
-    @GetMapping()
+    @GetMapping
     public Object route(
         HttpServletRequest request,
         @RequestHeader MultiValueMap<String, String> headers,
@@ -78,7 +77,7 @@ public class RootRouteAdminApi {
                     "Header '%s' = %s", key, String.join("|", value)));
             });
             String ipAddress = request.getHeader("X-Forward-For");
-            if(ipAddress== null) {
+            if(ipAddress == null) {
                 log.info("Ip address: " + request.getRemoteAddr());
             }
         }
