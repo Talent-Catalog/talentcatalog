@@ -73,6 +73,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.PublishedDocColumnProps;
 
 /**
@@ -277,6 +278,12 @@ public class AdminApiTestUtil {
         salesforceJobOpp.setId(135L);
         salesforceJobOpp.setSfId("sales-force-job-opp-id");
         return salesforceJobOpp;
+    }
+
+    static Opportunity getSalesforceOpportunity() {
+        Opportunity opportunity = new Opportunity();
+        opportunity.setName("SF Opportunity");
+        return opportunity;
     }
 
     static CandidateReviewStatusItem getCandidateReviewStatusItem() {
