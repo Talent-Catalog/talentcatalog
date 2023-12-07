@@ -34,6 +34,9 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 body {
   padding-top: 6rem;
   background-color: $light;
+  &.light {
+    background-color: $white;
+  }
 }
 
 .nav-link {

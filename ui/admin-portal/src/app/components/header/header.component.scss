@@ -23,6 +23,7 @@
 
 .navbar {
   background-color: $dark;
+  @include body-theme(light, (background-color: $info));
   width: 100%;
   height: 85px;
 

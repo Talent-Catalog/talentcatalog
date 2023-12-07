@@ -13,17 +13,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-@import 'bootstrap/scss/mixins';
 
 $white: #ffffff;
-$light:      #e4e1d5;
-$dark:       #151f2d;
-$primary: #314874;
-$secondary: #0e7688;
-$info: #9b6a0d;
-$accent1:    #383b48;
-$accent2:    #64656d;
-$accent3:    #b2b7bb;
+$light: #efefef;
+$dark: #64054d;
+$primary: #9a1884;
+$secondary: #4a309a;
+$info: #d55300;
+$accent1: #1c3bcb;
+$accent2: #5d68bb;
+$accent3: #7ebef1;
 $success: #03864d;
 $warning: #c7b408;
 $danger: #a91206;
@@ -34,11 +33,3 @@ $accordion-button-active-bg: $accent1;
 $accordion-button-active-color: $light;
 
 $offcanvas-horizontal-width: 40vw;
-
-@mixin body-theme($theme, $map) {
-  body.#{$theme} & {
-    @each $property, $value in $map {
-      #{$property}: $value;
-    }
-  }
-}

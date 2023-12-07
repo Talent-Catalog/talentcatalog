@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Renderer2} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {Title} from "@angular/platform-browser";
 import {filter, map} from "rxjs/operators";
@@ -36,12 +36,13 @@ export class AppComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private authenticationService: AuthenticationService,
     private router: Router,
-    private titleService: Title
+    private titleService: Title,
+    private renderer: Renderer2
   ) {
   }
 
   ngOnInit(): void {
-
+    this.renderer.addClass(document.body, 'light');
     this.authenticationService.loggedInUser$.subscribe(
       (user) => {
         this.onChangedLogin(user);
