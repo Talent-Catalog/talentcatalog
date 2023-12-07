@@ -21,7 +21,6 @@ import {CandidateService, UpdateCandidateSurvey} from "../../../services/candida
 import {AuthService} from "../../../services/auth.service";
 import {Candidate, RegisterCandidateRequest} from "../../../model/candidate";
 import {RegistrationService} from "../../../services/registration.service";
-import {ReCaptchaV3Service} from "ng-recaptcha";
 import {LanguageService} from "../../../services/language.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {BrandingService} from "../../../services/branding.service";
@@ -59,7 +58,6 @@ export class RegistrationContactComponent implements OnInit {
               private candidateService: CandidateService,
               private authService: AuthService,
               private authenticationService: AuthenticationService,
-              private reCaptchaV3Service: ReCaptchaV3Service,
               private registrationService: RegistrationService,
               private languageService: LanguageService) { }
 
@@ -166,13 +164,14 @@ export class RegistrationContactComponent implements OnInit {
       );
     } else {
       // The user has not yet registered - create an account for them
-      const action = 'registration';
-      this.reCaptchaV3Service.execute(action).subscribe(
-        (token) => this.getParamsAndRegister(token),
-        (error) => {
-          console.log(error);
-        }
-      );
+      // const action = 'registration';
+      // this.reCaptchaV3Service.execute(action).subscribe(
+      //   (token) => this.getParamsAndRegister(token),
+      //   (error) => {
+      //     console.log(error);
+      //   }
+      // );
+      this.getParamsAndRegister(null);
     }
   }
 

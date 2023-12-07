@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -41,22 +41,15 @@ import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/partner")
+@RequiredArgsConstructor
 public class PartnerAdminApi implements
         ITableApi<SearchPartnerRequest, UpdatePartnerRequest, UpdatePartnerRequest> {
 
     private final PartnerService partnerService;
     private final JobService jobService;
     private final UserService userService;
-
-    @Autowired
-    public PartnerAdminApi(PartnerService partnerService, JobService jobService,
-        UserService userService) {
-        this.partnerService = partnerService;
-        this.jobService = jobService;
-        this.userService = userService;
-    }
 
     @Override
     public @NotNull Map<String, Object> create(UpdatePartnerRequest request) throws EntityExistsException {

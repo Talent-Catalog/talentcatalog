@@ -30,7 +30,6 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
-import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
 import {
   RegistrationLandingComponent
@@ -258,7 +257,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     FormsModule,
     NgbModule,
-    RecaptchaV3Module,
     LocalStorageModule.forRoot({
       prefix: 'tbb-candidate-portal',
       storageType: 'localStorage'
@@ -290,7 +288,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
-    {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n},

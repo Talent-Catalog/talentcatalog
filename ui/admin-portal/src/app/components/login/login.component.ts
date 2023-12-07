@@ -18,7 +18,6 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LoginRequest} from "../../model/base";
-import {ReCaptchaV3Service} from "ng-recaptcha";
 import {User} from "../../model/user";
 import {EncodedQrImage} from "../../util/qr";
 import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
@@ -40,7 +39,6 @@ export class LoginComponent implements OnInit {
   constructor(private builder: FormBuilder,
               private authenticationService: AuthenticationService,
               private modalService: NgbModal,
-              private reCaptchaV3Service: ReCaptchaV3Service,
               private route: ActivatedRoute,
               private router: Router) {
   }

@@ -119,6 +119,7 @@ public class CandidateVisaJobCheckAdminApi
                 .add("occupationSubCategory")
                 .add("englishThreshold")
                 .add("englishThresholdNotes")
+                .add("relocatingDependantIds")
                 ;
     }
 

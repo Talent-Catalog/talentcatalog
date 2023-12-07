@@ -17,6 +17,7 @@
 package org.tctalent.server.request;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.PageRequest;
@@ -26,15 +27,15 @@ import org.springframework.data.domain.Sort.Direction;
 /**
  * Request that includes paging and sorting fields.
  */
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 public class PagedSearchRequest {
     private Integer pageSize;
     private Integer pageNumber;
     private Sort.Direction sortDirection;
     private String[] sortFields;
-
-    public PagedSearchRequest() {
-    }
 
     public PagedSearchRequest(Sort.Direction sortDirection, String[] sortFields) {
         this.sortDirection = sortDirection;

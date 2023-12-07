@@ -1,0 +1,34 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div *ngIf="editable" class="mb-3">
+    <label class="form-label" for="visaJobRelocatingDependantIds">Which dependants hope to relocate with the candidate?</label>
+    <div class="float-end">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <ng-select
+      id="visaJobRelocatingDependantIds"
+      [items]="dependants"
+      [multiple]="true"
+      placeholder="Select or type..."
+      bindValue="id"
+      bindLabel="relation"
+      [formControlName]="'visaJobRelocatingDependantIds'">
+      <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+        <div class="ng-value" *ngFor="let item of items">
+          <span class="ng-value-label">{{item.relation}}<span *ngIf="item?.name">: {{item?.name}}</span></span>
+          <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+        </div>
+      </ng-template>
+      <ng-template ng-option-tmp let-item="item">
+        <span>{{item.relation}}<span *ngIf="item?.name">: {{item.name}}</span></span>
+      </ng-template>
+    </ng-select>
+
+    <div class="form-text">If a dependant isn't listed in the dropdown, you may need to add the dependant to the Dependants section under the Full Intake tab.</div>
+  </div>
+</form>
