@@ -111,6 +111,11 @@ public class CandidateOpportunitySpecification {
             }
 
             //OWNERSHIP
+            //Ownership depends on the type of logged in user.
+            //If the user is a source partner then they own a candidate opportunity if they are
+            //the partner associated with the opportunity candidate.
+            //If the user is a job creator then they own a candidate opportunity if they are
+            //the partner associated with the opportunity job.
 
             //If owned by this user's partner
             if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
