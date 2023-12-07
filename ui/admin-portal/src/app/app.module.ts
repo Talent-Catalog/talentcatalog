@@ -762,6 +762,9 @@ import {ViewChatPostsComponent} from './components/chat/view-chat-posts/view-cha
 import {
   JobGroupChatsTabComponent
 } from './components/job/view/tab/job-group-chats-tab/job-group-chats-tab.component';
+import {
+  RelocatingDependantsComponent
+} from './components/candidates/visa/visa-job-assessments/relocating-dependants/relocating-dependants.component';
 
 @NgModule({
   declarations: [
@@ -1068,7 +1071,8 @@ import {
     ManageChatsComponent,
     JobSourceContactsWithChatsComponent,
     ViewChatPostsComponent,
-    JobGroupChatsTabComponent
+    JobGroupChatsTabComponent,
+    RelocatingDependantsComponent
   ],
   imports: [
     BrowserModule,

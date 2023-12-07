@@ -172,6 +172,13 @@
 
   <ngb-panel id="family-assessment" title="Family Assessment">
     <ng-template ngbPanelContent>
+      <div>
+        <app-relocating-dependants
+          [visaJobCheck]="selectedJobCheck"
+          [entity]="visaCheckRecord"
+          [dependants]="candidateIntakeData.candidateDependants">
+        </app-relocating-dependants>
+      </div>
       <div class="card card-body intake-data">
         <app-fixed-input [question]="'Marital status'" [answer]="candidateIntakeData?.maritalStatus"></app-fixed-input>
         <app-fixed-input [question]="'Spouse\'s highest level education'" [answer]="candidateIntakeData?.partnerEduLevel?.name"></app-fixed-input>
