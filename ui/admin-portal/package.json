@@ -37,7 +37,6 @@
     "karma-jasmine": "^5.1.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.37",
-    "ng-recaptcha": "^9.0.0",
     "ng2-charts": "^2.4.3",
     "ng2-dragula": "^2.1.1",
     "ngx-infinite-scroll": "^8.0.2",

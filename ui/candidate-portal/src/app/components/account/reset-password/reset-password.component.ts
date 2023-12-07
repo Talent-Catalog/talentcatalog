@@ -17,7 +17,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {UserService} from '../../../services/user.service';
-import {ReCaptchaV3Service} from "ng-recaptcha";
 import {SendResetPasswordEmailRequest} from "../../../model/candidate";
 
 @Component({
@@ -33,7 +32,6 @@ export class ResetPasswordComponent implements OnInit {
   updated: boolean;
 
   constructor(private fb: FormBuilder,
-              private reCaptchaV3Service: ReCaptchaV3Service,
               private userService: UserService) {
   }
 
@@ -64,13 +62,14 @@ export class ResetPasswordComponent implements OnInit {
     this.updated = false;
     this.error = null;
 
-    const action = 'resetPassword';
-    this.reCaptchaV3Service.execute(action).subscribe(
-      (token) => this.sendResetWithToken(token),
-      (error) => {
-        console.log(error);
-      }
-    );
+    // const action = 'resetPassword';
+    // this.reCaptchaV3Service.execute(action).subscribe(
+    //   (token) => this.sendResetWithToken(token),
+    //   (error) => {
+    //     console.log(error);
+    //   }
+    // );
+    this.sendResetWithToken(null);
   }
 
   private sendResetWithToken(token: string) {

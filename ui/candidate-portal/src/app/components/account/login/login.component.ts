@@ -18,7 +18,6 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../../services/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ReCaptchaV3Service} from "ng-recaptcha";
 import {LoginRequest} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -39,7 +38,6 @@ export class LoginComponent implements OnInit {
               private authService: AuthService,
               private authenticationService: AuthenticationService,
               private candidateService: CandidateService,
-              private reCaptchaV3Service: ReCaptchaV3Service,
               private route: ActivatedRoute,
               private router: Router) {
   }
