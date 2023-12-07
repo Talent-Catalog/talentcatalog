@@ -73,6 +73,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.PublishedDocColumnProps;
 
 /**
@@ -106,6 +107,10 @@ public class AdminApiTestUtil {
                     "candidate3",
                     "test.candidate3@some.thing",
                     Role.user);
+
+    static User getUser() {
+        return caller;
+    }
 
     static List<Candidate> listOfCandidates() {
         return List.of(
@@ -273,6 +278,12 @@ public class AdminApiTestUtil {
         salesforceJobOpp.setId(135L);
         salesforceJobOpp.setSfId("sales-force-job-opp-id");
         return salesforceJobOpp;
+    }
+
+    static Opportunity getSalesforceOpportunity() {
+        Opportunity opportunity = new Opportunity();
+        opportunity.setName("SF Opportunity");
+        return opportunity;
     }
 
     static CandidateReviewStatusItem getCandidateReviewStatusItem() {
@@ -586,4 +597,30 @@ public class AdminApiTestUtil {
             new Industry("Health", Status.active)
         );
     }
+
+    public static PartnerImpl getPartner() {
+        PartnerImpl partner = new PartnerImpl();
+        partner.setName("TC Partner");
+        partner.setAbbreviation("TCP");
+        partner.setJobCreator(true);
+        partner.setSourcePartner(true);
+        partner.setLogo("logo_url");
+        partner.setWebsiteUrl("website_url");
+        partner.setRegistrationLandingPage("registration_landing_page");
+        partner.setNotificationEmail("notification@email.address");
+        partner.setStatus(Status.active);
+        return partner;
+    }
+
+    public static List<PartnerImpl> getListOfPartners() {
+        PartnerImpl partner1 = getPartner();
+        PartnerImpl partner2 = getPartner();
+        partner2.setName("TC Partner 2");
+        PartnerImpl partner3 = getPartner();
+        partner3.setName("TC Partner 3");
+        return List.of(
+          partner1, partner2, partner3
+        );
+    }
+
 }

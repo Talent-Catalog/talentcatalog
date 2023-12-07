@@ -17,7 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,15 +33,11 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/sf")
+@RequiredArgsConstructor
 public class SalesforceAdminApi {
   private final SalesforceService salesforceService;
-
-  @Autowired
-  public SalesforceAdminApi(SalesforceService salesforceService) {
-    this.salesforceService = salesforceService;
-  }
 
   /**
    * Returns info (including "name") about the Salesforce opportunity corresponding to the given
