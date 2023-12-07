@@ -7,30 +7,39 @@
 
 <div class="searches" *ngIf="searchBy">
   <form [formGroup]="searchForm" (ngSubmit)="search()">
-    <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
-      <div>
-        <label class="form-label" [title]="myOppsOnlyTip"
-               for="myOppsOnly">{{myOppsOnlyLabel}}</label>
-        <input [title]="myOppsOnlyTip" type="checkbox" formControlName="myOppsOnly" id="myOppsOnly">
-      </div>
-      <div>
-        <label class="form-label" [title]="showClosedOppsTip"
-               for="showClosedOpps">{{showClosedOppsLabel}}</label>
-        <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox"
-               formControlName="showClosedOpps" id="showClosedOpps">
-      </div>
-      <div>
-        <label class="form-label" [title]="showInactiveOppsTip"
-               for="showInactiveOpps">{{showInactiveOppsLabel}}</label>
-        <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox"
-               formControlName="showInactiveOpps" id="showInactiveOpps">
-      </div>
-    </div>
-
     <div class="mb-3">
       <input #searchFilter type="text" class="form-control" placeholder="Search..."
              aria-label="Search" formControlName="keyword"
              id="keyword">
+    </div>
+
+    <div *ngIf="searchBy === SearchOppsBy.mine" class="mt-2 mb-3">
+      <div class="row">
+        <div class="col-md-2 me-md-5">
+          <div class="form-check">
+            <label class="form-label" [title]="myOppsOnlyTip"
+                   for="myOppsOnly">{{myOppsOnlyLabel}}</label>
+            <input [title]="myOppsOnlyTip" type="checkbox"
+                   formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
+          </div>
+        </div>
+        <div class="col-md-3 me-md-2">
+          <div class="form-check">
+            <label class="form-label" [title]="showClosedOppsTip"
+                   for="showClosedOpps">{{showClosedOppsLabel}}</label>
+            <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox"
+                   formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-check">
+            <label class="form-label" [title]="showInactiveOppsTip"
+                   for="showInactiveOpps">{{showInactiveOppsLabel}}</label>
+            <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox"
+                   formControlName="showInactiveOpps" id="showInactiveOpps" class="form-check-input">
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="mb-3">

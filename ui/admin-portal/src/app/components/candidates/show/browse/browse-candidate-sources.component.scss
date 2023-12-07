@@ -20,18 +20,26 @@
   justify-content: space-between;
   align-items: flex-end;
   padding: 1em;
-  max-width: 700px;
+  //max-width: 700px;
+}
+
+.admin-panel.left-panel {
+  padding: 1em 1em 1em 0;
 }
 
 .searches {
   margin: 0 0 2em 0;
   list-style-type: none;
   padding: 0;
-  width: 25em;
+  //width: 25em;
 }
 
 .searches .form-control {
   margin-top: 1em;
+}
+
+.searches .form-control.top {
+  margin-top: 0;
 }
 
 .searches li {

@@ -764,6 +764,9 @@ import {
 import {
   RelocatingDependantsComponent
 } from './components/candidates/visa/visa-job-assessments/relocating-dependants/relocating-dependants.component';
+import {SearchHomeComponent} from './components/search/search-home/search-home.component';
+import {JobHomeComponent} from './components/job/job-home/job-home.component';
+import {ListHomeComponent} from './components/list/list-home/list-home.component';
 
 @NgModule({
   declarations: [
@@ -1071,7 +1074,11 @@ import {
     JobSourceContactsWithChatsComponent,
     ViewChatPostsComponent,
     JobGroupChatsTabComponent,
-    RelocatingDependantsComponent
+    RelocatingDependantsComponent,
+    JobGroupChatsTabComponent,
+    SearchHomeComponent,
+    JobHomeComponent,
+    ListHomeComponent
   ],
   imports: [
     BrowserModule,

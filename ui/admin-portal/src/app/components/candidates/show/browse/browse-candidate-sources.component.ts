@@ -27,6 +27,7 @@ import {SearchResults} from '../../../../model/search-results';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {
+  getCandidateSourceNavigation,
   indexOfHasId,
   isSavedSearch,
   SavedSearchSubtype,
@@ -52,6 +53,7 @@ import {
   ContentUpdateType,
   CopySourceContentsRequest,
   isSavedList,
+  SavedList,
   SearchSavedListRequest
 } from '../../../../model/saved-list';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
@@ -97,6 +99,8 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   selectedIndex = 0;
   loggedInUser: User;
   stages = enumOptions(JobOpportunityStage);
+
+  readonly CandidateSourceType = CandidateSourceType;
 
   constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
@@ -404,6 +408,19 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         });
     }
 
+  }
+
+  onNewList() {
+    const editModal = this.modalService.open(CreateUpdateListComponent);
+    // create a new list and open it
+    editModal.result
+    .then((result: SavedList) => {
+      const urlCommands = getCandidateSourceNavigation(result);
+      this.router.navigate(urlCommands);
+    })
+    .catch(() => {
+      editModal.dismiss();
+    });
   }
 
   onToggleStarred(source: CandidateSource) {
