@@ -110,35 +110,64 @@ public class CandidateOpportunitySpecification {
                 }
             }
 
-            //OWNERSHIP
-            //Ownership depends on the type of logged in user.
-            //If the user is a source partner then they own a candidate opportunity if they are
-            //the partner associated with the opportunity candidate.
-            //If the user is a job creator then they own a candidate opportunity if they are
-            //the partner associated with the opportunity job.
+            Partner loggedInUserPartner;
+            if (loggedInUser != null
+                && (loggedInUserPartner = loggedInUser.getPartner()) != null) {
+                //OWNERSHIP
+                //This depends on the type of logged in user.
+                //If the user is a source partner then they own a candidate opportunity if they are
+                //the partner associated with the opportunity candidate.
+                //If the user is a job creator then they own a candidate opportunity if they are
+                //the partner associated with the opportunity job.
 
-            //If owned by this user's partner
-            if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
-                //Just check that the candidate associated with the opportunity is managed
-                //by the logged in user's partner.
-                if (loggedInUser != null) {
-                    Partner loggedInUserPartner = loggedInUser.getPartner();
-                    if (loggedInUserPartner != null) {
+                //todo jc - alternative is to have a source/destination flag on request
+                // then TBB could have two separate tabs
+                if (loggedInUserPartner.isJobCreator()) {
+                    //If opportunity job is owned by this user's partner
+                    if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+                        //Just check that the job associated with the opportunity was created
+                        //by the logged in user's partner.
+                        Join<Object, Object> jobOpp = opp.join("jobOpp");
+                        conjunction.getExpressions().add(builder.equal(
+                                jobOpp.get("jobCreator").get("id"), loggedInUserPartner.getId())
+                        );
+                    } else {
+                        //If owned by this user (ie by logged in user)
+                        if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
+                            if (loggedInUser.isJobCreator()) {
+                                Join<Object, Object> jobOpp = opp.join("jobOpp");
+                                //Not null contact user is me or I am createdBy user
+                                final Predicate matchContactUser = builder.and(
+                                    builder.isNotNull(jobOpp.get("contactUser")),
+                                    builder.equal(jobOpp.get("contactUser").get("id"),
+                                        loggedInUser.getId())
+                                );
+                                final Predicate matchCreatingUser = builder.and(
+                                    builder.isNull(jobOpp.get("contactUser")),
+                                    builder.equal(jobOpp.get("createdBy").get("id"),
+                                        loggedInUser.getId())
+                                );
+                                conjunction.getExpressions().add(
+                                    builder.or(matchContactUser, matchCreatingUser)
+                                );
+                            }
+                        }
+                    }
+                } else if (loggedInUserPartner.isSourcePartner()) {
+                    //If opportunity candidate owned by this user's source partner
+                    if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+                        //Just check that the candidate associated with the opportunity is managed
+                        //by the logged in user's partner.
                         Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
                         conjunction.getExpressions().add(
                             builder.equal(partner.get("id"), loggedInUserPartner.getId())
                         );
-                    }
-                }
-            } else {
-                //If owned by this user (ie by logged in user)
-                if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
-                    //In other words where the candidate opportunity's associated job
-                    //is one of the jobs that the logged in user has been nominated by their
-                    //partner to be the contact for.
-                    if (loggedInUser != null) {
-                        Partner loggedInUserPartner = loggedInUser.getPartner();
-                        if (loggedInUserPartner != null) {
+                    } else {
+                        //If owned by this user (ie by logged in user)
+                        if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
+                            //In other words where the candidate opportunity's associated job
+                            //is one of the jobs that the logged in user has been nominated by their
+                            //partner to be the contact for.
 
                             //Candidate must be owned by user's partner
                             Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
@@ -200,7 +229,6 @@ public class CandidateOpportunitySpecification {
                     }
                 }
             }
-
 
             return conjunction;
         };
