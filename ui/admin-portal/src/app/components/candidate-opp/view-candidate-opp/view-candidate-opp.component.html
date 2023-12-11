@@ -8,26 +8,26 @@
 
   </nav>
 
-  <div class="py-2">
+  <div class="py-3">
     <div class="d-flex justify-content-between align-items-center">
-      <h1 [ngClass]="{'fs-5 fw-bold':!showBreadcrumb}">{{opp.name}}
-        <span class="small text-muted">
-        <a [routerLink]="['/opp',opp.id]">
-          <i class="fas fa-expand" title="Open"></i>
-        </a>
-        <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
-          <i class="fab fa-salesforce link-info ms-2" title="Show opp in Salesforce"></i>
-        </a>
-        <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
-          <i class="fas fa-user link-info" title="Candidate"></i>
-        </a>
-        <a [routerLink]="['/job',opp.jobOpp.id]">
-          <i class="fa-solid fa-briefcase link-info" title="Job"></i>
-        </a>
-      </span>
+      <h1 [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{opp.name}}
+        <span class="small text-muted icon-padding">
+          <a [routerLink]="['/opp',opp.id]">
+            <i class="fas fa-expand" title="Open"></i>
+          </a>
+          <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
+            <i class="fab fa-salesforce link-info ms-2" title="Show opp in Salesforce"></i>
+          </a>
+          <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+            <i class="fas fa-user link-info" title="Candidate"></i>
+          </a>
+          <a [routerLink]="['/job',opp.jobOpp.id]">
+            <i class="fa-solid fa-briefcase link-info" title="Job"></i>
+          </a>
+        </span>
       </h1>
     </div>
-    <p class="text-accent-1 fst-italic" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6' : !showBreadcrumb}">
+    <p class="text-accent-1 fst-italic" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-0' : !showBreadcrumb}">
       Candidate Opportunity Case Number {{opp.id}}
     </p>
   </div>
