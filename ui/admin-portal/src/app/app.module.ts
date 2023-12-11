@@ -767,6 +767,7 @@ import {
 import {SearchHomeComponent} from './components/search/search-home/search-home.component';
 import {JobHomeComponent} from './components/job/job-home/job-home.component';
 import {ListHomeComponent} from './components/list/list-home/list-home.component';
+import {QuillModule} from 'ngx-quill'
 
 @NgModule({
   declarations: [
@@ -1096,7 +1097,8 @@ import {ListHomeComponent} from './components/list/list-home/list-home.component
       prefix: 'tbb-admin',
       storageType: 'localStorage'
     }),
-    DragulaModule.forRoot()
+    DragulaModule.forRoot(),
+    QuillModule.forRoot()
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

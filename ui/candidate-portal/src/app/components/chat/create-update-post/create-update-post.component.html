@@ -24,7 +24,7 @@
   <!-- POST -->
   <div class="mb-3">
     <label class="form-label" for="content">Post</label>
-    <ngx-wig id="content" formControlName="content"></ngx-wig>
+    <quill-editor id="content" placeholder="Write your message..." formControlName="content" sanitize="true" [modules]="toolbarOptions"></quill-editor>
   </div>
 
   <div class="modal-footer">
