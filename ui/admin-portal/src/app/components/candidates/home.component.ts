@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     private fb: FormBuilder,
     private localStorageService: LocalStorageService,
     private savedSearchService: SavedSearchService,
-    private authService: AuthorizationService,
+    private authorizationService: AuthorizationService,
     private authenticationService: AuthenticationService
   ) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
@@ -128,7 +128,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   }
 
   canCreateJob(): boolean {
-    return this.authService.canCreateJob();
+    return this.authorizationService.canCreateJob();
   }
 
   isExperimental() {
@@ -136,6 +136,14 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   }
 
   ownsOpps(): boolean {
-    return this.authService.ownsOpps();
+    return this.authorizationService.ownsOpps();
+  }
+
+  isJobCreator(): boolean {
+    return this.authorizationService.isJobCreator();
+  }
+
+  isSourcePartner(): boolean {
+    return this.authorizationService.isSourcePartner();
   }
 }
