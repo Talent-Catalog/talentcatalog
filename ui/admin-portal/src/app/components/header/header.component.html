@@ -32,23 +32,21 @@
 
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
       <ul class="navbar-nav me-auto">
-         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/'">Home</a>
-        </li>
-        <li *ngIf="canCreateJob()" class="nav-item" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="'/job'">New Job</a>
+        <li class="nav-item" [routerLinkActive]="'active'">
+          <a title="Searches of Talent Catalog candidates"
+             class="nav-link" [routerLink]="'/searches'">Searches</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/list'">New List</a>
+          <a title="Jobs available to Talent Catalog candidates"
+             class="nav-link" [routerLink]="'/jobs'">Jobs</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/search'">New Search</a>
+          <a title="Lists of Talent Catalog candidates"
+             class="nav-link" [routerLink]="'/lists'">Lists</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/infographics'">Stats</a>
-        </li>
-        <li *ngIf="isAnAdmin()" class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/settings'">Settings</a>
+          <a title="Statistics about the Talent Catalog"
+             class="nav-link" [routerLink]="'/infographics'">Stats</a>
         </li>
       </ul>
 
@@ -92,8 +90,8 @@
         <div ngbDropdownMenu class="dropdown-menu-end">
           <div ngbDropdownItem disabled>{{loggedInUserInfo()}}</div>
           <div class="dropdown-divider"></div>
-          <div *ngIf="isSystemAdminOnly()">
-            <a ngbDropdownItem [routerLink]="'/chat'">Manage Chats</a>
+          <div *ngIf="isAnAdmin()">
+            <a ngbDropdownItem [routerLink]="'/settings'">Settings</a>
             <div class="dropdown-divider"></div>
           </div>
           <button ngbDropdownItem (click)="logout()">Logout</button>

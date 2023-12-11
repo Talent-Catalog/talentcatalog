@@ -53,8 +53,8 @@ export class CreateUpdateListComponent implements OnInit {
   }
 
   get title(): string {
-    return this.create ? "Make New Saved List"
-      : "Update Existing Saved List";
+    return this.create ? "Create new candidate list"
+      : "Update existing candidate list";
   }
 
   get fixedControl() { return this.form.get('fixed'); }

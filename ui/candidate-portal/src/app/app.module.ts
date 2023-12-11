@@ -182,6 +182,7 @@ import {ChatsComponent} from "./components/chat/chats/chats.component";
 import {
   CreateUpdatePostComponent
 } from "./components/chat/create-update-post/create-update-post.component";
+import {QuillModule} from "ngx-quill";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -281,7 +282,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     FontAwesomeModule,
     NgSelectModule,
-    NgxWigModule
+    NgxWigModule,
+    QuillModule.forRoot()
   ],
   providers: [
     {provide: RedirectGuard},

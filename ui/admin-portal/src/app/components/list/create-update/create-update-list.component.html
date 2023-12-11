@@ -38,9 +38,9 @@
         </div>
       </div>
     </div>
-    <div class="mb-3">
+    <div class="form-check mb-3">
       <label class="form-label" for="fixed">Fixed?</label>
-      <input type="checkbox" formControlName="fixed" id="fixed">
+      <input type="checkbox" formControlName="fixed" id="fixed" class="form-check-input">
     </div>
 
     <app-joblink [joblink]="salesforceService.joblink(savedList)"

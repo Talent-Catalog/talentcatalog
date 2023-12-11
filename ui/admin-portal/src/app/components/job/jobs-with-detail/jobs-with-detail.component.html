@@ -1,6 +1,6 @@
 <div class="container-fluid mt-4">
   <div class="row">
-    <div class="col-sm-{{mainPanelColWidth}}">
+    <div class="col-md-{{mainPanelColWidth}} admin-panel left-panel">
 
       <app-jobs
         [searchBy]="searchBy"
@@ -10,7 +10,7 @@
 
     </div>
 
-    <div class="col-sm-{{sidePanelColWidth}} detail-panel side-panel-color">
+    <div class="col-md-{{sidePanelColWidth}} detail-panel side-panel-color">
       <div class="w-100">
         <div *ngIf="canToggleSizes()" class="float-end">
           <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i

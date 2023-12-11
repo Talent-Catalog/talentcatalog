@@ -30,10 +30,16 @@ export class CreateUpdatePostComponent implements OnInit {
   error: any;
   postForm: FormGroup;
 
+  toolbarOptions = {};
+
   constructor(
     private fb: FormBuilder,
     private rxStompService: RxStompService
-  ) { }
+  ) {
+    this.toolbarOptions = {
+      toolbar: [[{ 'list': 'ordered'}, { 'list': 'bullet' }],['bold', 'italic', 'underline'], ['link', 'image'] ]
+    };
+  }
 
   ngOnInit() {
     this.postForm = this.fb.group({
