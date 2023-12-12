@@ -1,12 +1,5 @@
 <nav ngbNav #navSearch="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
-  <ng-container ngbNavItem="NewSearch">
-    <a ngbNavLink title="Search TC candidate database">New Search</a>
-    <ng-template ngbNavContent>
-      <app-candidates-search></app-candidates-search>
-    </ng-template>
-  </ng-container>
-
   <ng-container ngbNavItem="MySearches">
     <a ngbNavLink title="Searches that I created">My Searches</a>
     <ng-template ngbNavContent>
@@ -53,6 +46,13 @@
         >
         </app-browse-candidate-sources>
       </div>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="NewSearch">
+    <a ngbNavLink title="Search TC candidate database">New Search</a>
+    <ng-template ngbNavContent>
+      <app-candidates-search></app-candidates-search>
     </ng-template>
   </ng-container>
 
