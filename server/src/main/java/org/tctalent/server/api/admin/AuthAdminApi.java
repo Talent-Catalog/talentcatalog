@@ -32,27 +32,25 @@ import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
-import org.tctalent.server.service.db.CaptchaService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
 /**
  * Rest controller that handles endpoints for user login, logout and Multi-Factor Authentication setup. Login
- * authentication requires a valid username and password; in addition to which Multi-Factor Authentication or a valid
- * Recaptcha tokens is required.
+ * authentication requires a valid username and password; in addition to which Multi-Factor Authentication is
+ * required.
  * <p/>
  * The controller delegates to the UserService for login authentication, logout processing, MFA setup and MFA
- * verification. And delegates to the CaptchaService for processing and verifying Recaptcha tokens.
+ * verification.
  */
-@RestController()
+@RestController
 @RequestMapping("/api/admin/auth")
 @Slf4j
 @RequiredArgsConstructor
 public class AuthAdminApi {
 
     private final UserService userService;
-    private final CaptchaService captchaService;
 
     @PostMapping("login")
     public Map<String, Object> login(@RequestBody LoginRequest request)
@@ -61,21 +59,12 @@ public class AuthAdminApi {
 
         JwtAuthenticationResponse response = userService.login(request);
 
-        //If we are using mfa don't worry about Captcha stuff
-        //It is sometimes not reliable (especially in test from localhost) - and unnecessary with MFA
         User user = response.getUser();
         if (user.getUsingMfa()) {
             //If they are not yet configured we skip verification but they will be required
             //to set up mfa as soon as they log in.
             if (user.getMfaConfigured()) {
                 userService.mfaVerify(request.getTotpToken());
-            }
-        } else {
-            final String reCaptchaV3Token = request.getReCaptchaV3Token();
-            if (reCaptchaV3Token != null) {
-                //Do check for automated logins. Throws exception if it looks
-                //automated.
-                captchaService.processCaptchaV3Token(reCaptchaV3Token, "login");
             }
         }
 

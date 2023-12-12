@@ -39,7 +39,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -49,16 +48,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.PasswordExpiredException;
-import org.tctalent.server.exception.ReCaptchaInvalidException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
-import org.tctalent.server.service.db.CaptchaService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
 /**
+ * Unit tests for Auth Admin Api - the login and mfa handler for the admin-portal.
+ *
  * @author smalik
  */
 @WebMvcTest(AuthAdminApi.class)
@@ -74,14 +73,12 @@ class AuthAdminApiTest extends ApiTestBase {
     private static final String USER_DEACTIVATED_MESSAGE = "Account deactivated";
     private static final String PASSWORD_EXPIRED_MESSAGE = "Password expired";
     private static final String QR_CODE_GEN_EXCEPTION_MESSAGE = "Error generating QR code";
-    private static final String RECAPTCHA_INVALID_MESSAGE = "reCaptcha was not successfully validated";
 
     private static final String INVALID_CREDENTIALS_CODE = "invalid_credentials";
     private static final String ACCOUNT_LOCKED_EXCEPTION = "account_locked";
     private static final String USER_DEACTIVATED_CODE = "user_deactivated";
     private static final String PASSWORD_EXPIRED_CODE = "password_expired";
     private static final String QR_CODE_GEN_ERROR_CODE = "qr_error";
-    private static final String RECAPTCHA_INVALID_CODE = "recaptcha_invalid";
 
     private LoginRequest loginRequest;
 
@@ -90,7 +87,6 @@ class AuthAdminApiTest extends ApiTestBase {
     @Autowired ObjectMapper objectMapper;
 
     @MockBean UserService userService;
-    @MockBean CaptchaService captchaService;
 
     @BeforeEach
     public void setUp() {
@@ -118,7 +114,6 @@ class AuthAdminApiTest extends ApiTestBase {
         doLoginAndVerifyResponse();
 
         verify(userService, never()).mfaVerify(any());
-        verify(captchaService, never()).processCaptchaV3Token(any(), any());
     }
 
     @Test
@@ -133,7 +128,6 @@ class AuthAdminApiTest extends ApiTestBase {
         doLoginAndVerifyResponse();
 
         verify(userService, never()).mfaVerify(any());
-        verify(captchaService, never()).processCaptchaV3Token(any(), any());
     }
 
     @Test
@@ -148,22 +142,6 @@ class AuthAdminApiTest extends ApiTestBase {
         doLoginAndVerifyResponse();
 
         verify(userService).mfaVerify(any());
-        verify(captchaService, never()).processCaptchaV3Token(any(), any());
-    }
-
-    @Test
-    @DisplayName("login succeeds - using reCaptcha with valid token")
-    void loginSucceedsUsingValidRecaptchaToken() throws Exception {
-        user.setUsingMfa(false);
-        loginRequest.setReCaptchaV3Token("valid-recaptcha-token");
-
-        given(userService.login(any(LoginRequest.class)))
-                .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
-
-        doLoginAndVerifyResponse();
-
-        verify(userService, never()).mfaVerify(any());
-        verify(captchaService).processCaptchaV3Token(any(), any());
     }
 
     private void doLoginAndVerifyResponse() throws Exception {
@@ -213,20 +191,6 @@ class AuthAdminApiTest extends ApiTestBase {
                 .given(userService).mfaVerify(any());
 
         doLoginAndVerifyFails(INVALID_CREDENTIALS_CODE, INVALID_CREDENTIALS_MESSAGE);
-    }
-
-    @Test
-    @DisplayName("login fails - using reCaptcha with invalid token")
-    void loginFailsUsingInvalidRecaptchaToken() throws Exception {
-        user.setUsingMfa(false);
-        loginRequest.setReCaptchaV3Token("invalid-recaptcha-token");
-
-        given(userService.login(any(LoginRequest.class)))
-                .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
-        BDDMockito.willThrow(new ReCaptchaInvalidException(RECAPTCHA_INVALID_MESSAGE))
-                .given(captchaService).processCaptchaV3Token(any(), any());
-
-        doLoginAndVerifyFails(RECAPTCHA_INVALID_CODE, RECAPTCHA_INVALID_MESSAGE);
     }
 
     private void doLoginAndVerifyFails(String errorCode, String message) throws Exception {
