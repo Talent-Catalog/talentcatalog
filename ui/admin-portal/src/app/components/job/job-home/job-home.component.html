@@ -34,7 +34,7 @@
 
   <ng-container *ngIf="isJobCreator()" ngbNavItem="MyCasesAsJobCreator">
     <a ngbNavLink title="Candidate cases associated with jobs created by my partner organization">
-      {{loggedInPartner.abbreviation}} Job Cases</a>
+      {{myCasesTabName(SearchOppsBy.mineAsJobCreator)}}</a>
     <ng-template ngbNavContent>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator"
@@ -45,7 +45,7 @@
 
   <ng-container *ngIf="isSourcePartner()" ngbNavItem="MyCasesAsSourcePartner">
     <a ngbNavLink title="Candidate cases managed by my partner organization">
-      {{loggedInPartner.abbreviation}} Source Cases</a>
+      {{myCasesTabName(SearchOppsBy.mineAsSourcePartner)}}</a>
     <ng-template ngbNavContent>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsSourcePartner"
