@@ -18,7 +18,6 @@
       <div class="row">
         <div class="col-md-2 me-md-5">
           <div class="form-check">
-        <label class="form-label" [title]="myOppsOnlyTip"
             <label class="form-label" [title]="myOppsOnlyTip"
                    for="myOppsOnly">{{myOppsOnlyLabel}}</label>
             <input [title]="myOppsOnlyTip" type="checkbox"
@@ -41,8 +40,9 @@
                    formControlName="showInactiveOpps" id="showInactiveOpps" class="form-check-input">
           </div>
         </div>
-
       </div>
+    </div>
+
     <div class="mb-3">
       <label class="form-label">Stage</label>
       <ng-select
