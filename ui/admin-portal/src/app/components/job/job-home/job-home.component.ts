@@ -21,7 +21,7 @@ export class JobHomeComponent extends HomeComponent {
     super(localStorageService, savedSearchService, authService, authenticationService);
     this.lastTabKey = 'JobsHomeLastTab';
     this.lastCategoryTabKey = 'JobsHomeLastCategoryTab';
-    this.defaultTabId = 'NewJob';
+    this.defaultTabId = 'LiveJobs';
   }
 
 }

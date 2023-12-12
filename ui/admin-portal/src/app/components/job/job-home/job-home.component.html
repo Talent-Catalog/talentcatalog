@@ -1,12 +1,5 @@
 <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
-  <ng-container *ngIf="canCreateJob()" ngbNavItem="NewJob">
-    <a ngbNavLink title="Create a new TC job">New Job</a>
-    <ng-template ngbNavContent>
-      <app-new-job></app-new-job>
-    </ng-template>
-  </ng-container>
-
   <ng-container ngbNavItem="LiveJobs">
     <a ngbNavLink
        title="Jobs associated with active opportunities which have been published on the TC"
@@ -46,6 +39,13 @@
         [searchBy]="SearchOppsBy.mineAsSourcePartner"
       >
       </app-candidate-opps-with-detail>
+    </ng-template>
+  </ng-container>
+
+  <ng-container *ngIf="canCreateJob()" ngbNavItem="NewJob">
+    <a ngbNavLink title="Create a new TC job">New Job</a>
+    <ng-template ngbNavContent>
+      <app-new-job></app-new-job>
     </ng-template>
   </ng-container>
 
