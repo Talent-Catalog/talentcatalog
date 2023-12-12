@@ -39,28 +39,24 @@ import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CaptchaService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/portal/auth")
 public class AuthPortalApi {
     private static final Logger log = LoggerFactory.getLogger(AuthPortalApi.class);
 
     private final UserService userService;
     private final CandidateService candidateService;
-    private final CaptchaService captchaService;
     private final TranslationConfig translationConfig;
 
     @Autowired
     public AuthPortalApi(UserService userService,
-        CaptchaService captchaService,
         CandidateService candidateService,
         TranslationConfig translationConfig) {
         this.userService = userService;
         this.candidateService = candidateService;
-        this.captchaService = captchaService;
         this.translationConfig = translationConfig;
     }
 
@@ -79,10 +75,6 @@ public class AuthPortalApi {
         InvalidPasswordFormatException, UserDeactivatedException,
         ReCaptchaInvalidException {
 
-        //Do check for automated logins. Throws exception if it looks
-        //automated.
-        captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "login");
-
         JwtAuthenticationResponse response = userService.login(request);
         return jwtDto().build(response);
     }
@@ -97,10 +89,6 @@ public class AuthPortalApi {
     public Map<String, Object> register(
         HttpServletRequest httpRequest, @Valid @RequestBody RegisterCandidateRequest request)
             throws AccountLockedException, ReCaptchaInvalidException {
-
-        //Do check for automated registrations. Throws exception if it looks
-        //automated.
-        captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "registration");
 
         LoginRequest loginRequest = candidateService.register(request, httpRequest);
 
