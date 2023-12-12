@@ -71,7 +71,7 @@ public class AuthPortalApi {
     }
 
     @PostMapping("logout")
-    public ResponseEntity logout() {
+    public ResponseEntity<Void> logout() {
         this.userService.logout();
         return ResponseEntity.ok().build();
     }
