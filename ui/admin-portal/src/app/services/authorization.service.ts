@@ -113,10 +113,12 @@ export class AuthorizationService {
 
   isCandidateOurs(candidate: ShortCandidate): boolean {
     let ours = false;
-    const loggedInUser = this.authenticationService.getLoggedInUser()
-    //Must be logged in
-    if (loggedInUser) {
-      ours = candidate.user?.partner?.id === loggedInUser.partner.id;
+    if (candidate) {
+      const loggedInUser = this.authenticationService.getLoggedInUser()
+      //Must be logged in
+      if (loggedInUser) {
+        ours = candidate.user?.partner?.id === loggedInUser.partner.id;
+      }
     }
     return ours;
   }
