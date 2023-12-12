@@ -20,9 +20,8 @@ import java.util.Map;
 import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,21 +43,13 @@ import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
 @RequestMapping("/api/portal/auth")
+@RequiredArgsConstructor
+@Slf4j
 public class AuthPortalApi {
-    private static final Logger log = LoggerFactory.getLogger(AuthPortalApi.class);
 
     private final UserService userService;
     private final CandidateService candidateService;
     private final TranslationConfig translationConfig;
-
-    @Autowired
-    public AuthPortalApi(UserService userService,
-        CandidateService candidateService,
-        TranslationConfig translationConfig) {
-        this.userService = userService;
-        this.candidateService = candidateService;
-        this.translationConfig = translationConfig;
-    }
 
     @PostMapping("xlate")
     public void authorizeInContextTranslation(@RequestBody AuthenticateInContextTranslationRequest request)
