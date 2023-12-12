@@ -62,10 +62,6 @@ export class AuthorizationService {
     return this.isDefaultSourcePartner();
   }
 
-  canCreateJob() : boolean {
-    return this.isJobCreator();
-  }
-
   canViewCandidateCountry(): boolean {
     let result: boolean = false;
     switch (this.getLoggedInRole()) {

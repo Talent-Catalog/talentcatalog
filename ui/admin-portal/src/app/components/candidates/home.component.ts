@@ -126,10 +126,6 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     return SavedSearchType;
   }
 
-  canCreateJob(): boolean {
-    return this.authorizationService.canCreateJob();
-  }
-
   isExperimental() {
     return false;
   }
