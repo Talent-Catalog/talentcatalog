@@ -16,8 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.SalesforceHelper.extractIdFromSfUrl;
-
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import java.nio.charset.StandardCharsets;
@@ -69,6 +67,7 @@ import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.EmployerCandidateDecision;
@@ -602,6 +601,22 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
 
         return opps;
+    }
+
+    @Override
+    @Nullable
+    public Account findAccount(String sfId)
+        throws SalesforceException, WebClientException {
+        Account account = null;
+        if (sfId != null) {
+            try {
+                account = findRecordFieldsFromId(
+                    "Account", sfId, "Id,Name,BillingCountry,Has_Hired_Internationally__c", Account.class);
+            } catch (NotFound ex) {
+                //Just return null if not found
+            }
+        }
+        return account;
     }
 
     @Override

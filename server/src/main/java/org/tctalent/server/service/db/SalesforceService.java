@@ -27,6 +27,7 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
@@ -143,6 +144,19 @@ public interface SalesforceService {
     @Nullable
     Contact findContact(@NonNull Candidate candidate)
             throws GeneralSecurityException, WebClientException;
+
+    /**
+     * Searches for a Salesforce Opportunity record (Employer or Candidate opportunity)
+     * corresponding to the given Salesforce id
+     * @param sfId Salesforce id
+     * @return Salesforce opportunity, null if none
+     * @throws SalesforceException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    @Nullable
+    Account findAccount(String sfId)
+            throws SalesforceException, WebClientException;
 
     /**
      * Searches for a Salesforce Opportunity record (Employer or Candidate opportunity)

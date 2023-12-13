@@ -54,6 +54,7 @@ import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
@@ -63,6 +64,7 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.repository.db.JobSpecification;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
@@ -320,8 +322,19 @@ public class JobServiceImpl implements JobService {
     @NonNull
     @Override
     public SalesforceJobOpp getJob(long id) throws NoSuchObjectException {
-        return salesforceJobOppRepository.findById(id)
+        SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
+
+        if (jobOpp.getEmployerEntity() == null) {
+            //Load employer entity from SF and update job opp
+            String accountId = jobOpp.getAccountId();
+            Account account = salesforceService.findAccount(accountId);
+            //TODO JC Create an employer and populate from account.
+            Employer employer = null;
+            jobOpp.setEmployerEntity(employer);
+            jobOpp = salesforceJobOppRepository.save(jobOpp);
+        }
+        return jobOpp;
     }
 
     @Override

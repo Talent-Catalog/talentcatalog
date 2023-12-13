@@ -14,20 +14,35 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-create table employer
-(
-    id                        bigserial not null primary key,
+package org.tctalent.server.model.sf;
 
-    country_id                bigint references country,
-    has_hired_internationally boolean,
+import com.fasterxml.jackson.annotation.JsonSetter;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-    name                      text,
-    sf_id                     text,
+/**
+ * Represents a Salesforce Account.
+ *
+ * @author John Cameron
+ */
+@Getter
+@Setter
+@ToString(callSuper = true)
+public class Account extends SalesforceObjectBase {
 
-    created_by                bigint references users,
-    created_date              timestamptz,
-    updated_by                bigint references users,
-    updated_date              timestamptz
-);
+    @JsonSetter("Name")
+    private String name;
 
-alter table salesforce_job_opp add column employer_id bigint references employer;
+    @JsonSetter("BillingCountry")
+    private String country;
+
+    @JsonSetter("Has_Hired_Internationally__c")
+    private String hasHiredInternationally;
+
+    @Override
+    String getSfObjectName() {
+        return "Account";
+    }
+
+}
