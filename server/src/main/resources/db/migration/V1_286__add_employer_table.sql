@@ -30,3 +30,4 @@ create table employer
     updated_date              timestamptz
 );
 
+alter table salesforce_job_opp add column employer_id bigint references employer;
