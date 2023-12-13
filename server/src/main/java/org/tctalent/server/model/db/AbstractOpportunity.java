@@ -32,7 +32,7 @@ import org.springframework.lang.Nullable;
 @Getter
 @Setter
 @MappedSuperclass
-public class AbstractOpportunity extends AbstractAuditableDomainObject<Long> {
+public class AbstractOpportunity extends AbstractSalesforceObject {
 
     /**
      * True if opportunity is closed
@@ -52,11 +52,6 @@ public class AbstractOpportunity extends AbstractAuditableDomainObject<Long> {
     private String closingComments;
 
     /**
-     * Name of opportunity
-     */
-    private String name;
-
-    /**
      * Next step for this opportunity
      */
     @Nullable
@@ -67,11 +62,6 @@ public class AbstractOpportunity extends AbstractAuditableDomainObject<Long> {
      */
     @Nullable
     private LocalDate nextStepDueDate;
-
-    /**
-     * ID of corresponding opportunity on Salesforce.
-     */
-    private String sfId;
 
     /**
      * Stage of opportunity expressed as number - 0 being first stage.
