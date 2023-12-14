@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * TODO CC doc
+ * Used to return any string url.
  *
  * @author Caroline Cameron
  */
