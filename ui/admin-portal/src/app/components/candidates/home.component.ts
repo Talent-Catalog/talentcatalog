@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewChecked, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy, SearchOppsBy} from "../../model/base"
@@ -33,7 +33,7 @@ import {AuthenticationService} from "../../services/authentication.service";
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewChecked {
+export class HomeComponent implements OnInit {
 
   activeTabId: string;
   protected defaultTabId: string;
@@ -57,11 +57,12 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   ngOnInit() {
     this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[0].categories;
     this.loggedInPartner = this.authenticationService.getLoggedInUser()?.partner;
-  }
-
-  ngAfterViewChecked(): void {
-    //This is called in order for the navigation tabs, this.nav, to be set.
-    this.selectDefaultTab()
+    // This is called in order for the navigation tabs, this.nav, to be set.
+    // Make this call in ngOnInit(). Do not do it ngAfterViewChecked() - doing so will throw
+    // NG0100 errors because selectDefaultTabs() changes the activeTabId after the view has been
+    // checked.
+    // See: https://angular.io/errors/NG0100
+    this.selectDefaultTab();
   }
 
   onTabChanged(event: NgbNavChangeEvent) {
