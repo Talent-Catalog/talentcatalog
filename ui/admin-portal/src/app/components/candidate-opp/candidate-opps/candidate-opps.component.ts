@@ -20,8 +20,9 @@ import {CountryService} from "../../../services/country.service";
 })
 export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateOpportunity> {
   /**
-   * Only one of these inputs should be selected - one does a search, the other just takes
-   * an array of opps.
+   * The opps to be displayed are either specified by this input - which just supplies an
+   * array of opps, or by the inherited searchBy input which does a search.
+   * Only one of those inputs should be selected.
    */
   @Input() candidateOpps: CandidateOpportunity[];
 

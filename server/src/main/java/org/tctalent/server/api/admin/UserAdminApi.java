@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.UsernameTakenException;
+import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.request.user.UpdateUserPasswordRequest;
@@ -130,7 +131,7 @@ public class UserAdminApi {
                 .add("lastLogin")
                 .add("usingMfa")
                 .add("mfaConfigured")
-                .add("partner", partnerDto())
+                .add("partner", PartnerDtoHelper.getPartnerDto())
                 ;
     }
 
@@ -138,15 +139,6 @@ public class UserAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
-                ;
-    }
-
-    private DtoBuilder partnerDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                .add("abbreviation")
-                .add("websiteUrl")
                 ;
     }
 

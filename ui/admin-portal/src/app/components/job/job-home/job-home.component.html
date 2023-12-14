@@ -1,12 +1,5 @@
 <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
-  <ng-container *ngIf="canCreateJob()" ngbNavItem="NewJob">
-    <a ngbNavLink title="Create a new TC job">New Job</a>
-    <ng-template ngbNavContent>
-      <app-new-job></app-new-job>
-    </ng-template>
-  </ng-container>
-
   <ng-container ngbNavItem="LiveJobs">
     <a ngbNavLink
        title="Jobs associated with active opportunities which have been published on the TC"
@@ -29,23 +22,42 @@
     </ng-template>
   </ng-container>
 
-  <ng-container *ngIf="canCreateJob()" ngbNavItem="MyJobs">
+  <ng-container *ngIf="isJobCreator()" ngbNavItem="MyJobs">
     <a ngbNavLink title="Jobs created by my partner organization">{{loggedInPartner.abbreviation}} Jobs</a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
-        [searchBy]="SearchOppsBy.mine">
+        [searchBy]="SearchOppsBy.mineAsJobCreator">
         >
       </app-jobs-with-detail>
     </ng-template>
   </ng-container>
 
-  <ng-container *ngIf="ownsOpps()" ngbNavItem="MyOpps">
-    <a ngbNavLink title="Candidate job opportunity cases managed by my partner organization">{{loggedInPartner.abbreviation}} Cases</a>
+  <ng-container *ngIf="isJobCreator()" ngbNavItem="MyCasesAsJobCreator">
+    <a ngbNavLink title="Candidate cases associated with jobs created by my partner organization">
+      {{myCasesTabName(SearchOppsBy.mineAsJobCreator)}}</a>
     <ng-template ngbNavContent>
       <app-candidate-opps-with-detail
-        [searchBy]="SearchOppsBy.mine"
+        [searchBy]="SearchOppsBy.mineAsJobCreator"
       >
       </app-candidate-opps-with-detail>
+    </ng-template>
+  </ng-container>
+
+  <ng-container *ngIf="isSourcePartner()" ngbNavItem="MyCasesAsSourcePartner">
+    <a ngbNavLink title="Candidate cases managed by my partner organization">
+      {{myCasesTabName(SearchOppsBy.mineAsSourcePartner)}}</a>
+    <ng-template ngbNavContent>
+      <app-candidate-opps-with-detail
+        [searchBy]="SearchOppsBy.mineAsSourcePartner"
+      >
+      </app-candidate-opps-with-detail>
+    </ng-template>
+  </ng-container>
+
+  <ng-container *ngIf="isJobCreator()" ngbNavItem="NewJob">
+    <a ngbNavLink title="Create a new TC job">New Job</a>
+    <ng-template ngbNavContent>
+      <app-new-job></app-new-job>
     </ng-template>
   </ng-container>
 
