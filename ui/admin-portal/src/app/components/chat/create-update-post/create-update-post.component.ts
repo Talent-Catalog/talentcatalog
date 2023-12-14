@@ -80,7 +80,7 @@ export class CreateUpdatePostComponent implements OnInit {
     this.saving = true;
     // Upload image to the job's Google Drive folder (subfolder: ChatUploads).
     // Then return the link to display in the content in an <img> tag for display.
-    this.chatPostService.uploadFile(this.chat.id, formData).subscribe(
+    return this.chatPostService.uploadFile(this.chat.id, formData).subscribe(
       linkToFile => {
         this.contentControl.patchValue(this.contentControl.value + ' <img src="' +  linkToFile + '">');
         this.saving = false;
