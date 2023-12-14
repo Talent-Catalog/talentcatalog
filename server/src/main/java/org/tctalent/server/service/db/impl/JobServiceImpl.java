@@ -81,6 +81,7 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
@@ -116,6 +117,7 @@ public class JobServiceImpl implements JobService {
     private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
     private final EmailHelper emailHelper;
+    private final EmployerService employerService;
     private final UserService userService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
@@ -136,6 +138,7 @@ public class JobServiceImpl implements JobService {
     public JobServiceImpl(
             AuthService authService, CandidateOpportunityService candidateOpportunityService,
             CandidateSavedListService candidateSavedListService, EmailHelper emailHelper,
+        EmployerService employerService,
         UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
         JobChatService jobChatService, PartnerService partnerService, SalesforceBridgeService salesforceBridgeService, SalesforceConfig salesforceConfig, SalesforceService salesforceService,
             SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
@@ -144,6 +147,7 @@ public class JobServiceImpl implements JobService {
         this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
         this.emailHelper = emailHelper;
+        this.employerService = employerService;
         this.userService = userService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
@@ -324,17 +328,26 @@ public class JobServiceImpl implements JobService {
     public SalesforceJobOpp getJob(long id) throws NoSuchObjectException {
         SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
+        return jobOpp = checkEmployerEntity(jobOpp);
+    }
 
+    private SalesforceJobOpp checkEmployerEntity(SalesforceJobOpp jobOpp) {
         if (jobOpp.getEmployerEntity() == null) {
             //Load employer entity from SF and update job opp
             String accountId = jobOpp.getAccountId();
             Account account = salesforceService.findAccount(accountId);
-            //TODO JC Create an employer and populate from account.
-            Employer employer = null;
+            //Find or create an employer and from an existing account.
+            Employer employer = employerService.findOrCreateEmployerFromSalesforceAccount(account);
             jobOpp.setEmployerEntity(employer);
             jobOpp = salesforceJobOppRepository.save(jobOpp);
         }
         return jobOpp;
+    }
+
+    private void checkEmployerEntities(Iterable<SalesforceJobOpp> jobs) {
+        for (SalesforceJobOpp job : jobs) {
+            checkEmployerEntity(job);
+        }
     }
 
     @Override
@@ -343,7 +356,7 @@ public class JobServiceImpl implements JobService {
         Page<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(
             JobSpecification.buildSearchQuery(request, loggedInUser),
             request.getPageRequest());
-
+        checkEmployerEntities(jobs);
         return jobs;
     }
 
@@ -504,6 +517,7 @@ public class JobServiceImpl implements JobService {
         User loggedInUser = userService.getLoggedInUser();
         List<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(
             JobSpecification.buildSearchQuery(request, loggedInUser));
+        checkEmployerEntities(jobs);
         return jobs;
     }
 

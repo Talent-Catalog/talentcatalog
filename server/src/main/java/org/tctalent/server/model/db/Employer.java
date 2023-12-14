@@ -43,7 +43,7 @@ public class Employer extends AbstractSalesforceObject {
      * References country object on database
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "country_object_id")
+    @JoinColumn(name = "country_id")
     private Country country;
 
     /**
