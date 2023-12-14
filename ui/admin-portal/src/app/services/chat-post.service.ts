@@ -3,6 +3,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {ChatPost} from "../model/chat";
+import {UrlDto} from "../model/url-dto";
 
 @Injectable({
   providedIn: 'root'
@@ -17,9 +18,9 @@ export class ChatPostService {
     return this.http.get<ChatPost[]>(`${this.apiUrl}/${chatId}/list`)
   }
 
-  uploadFile(chatId: number, formData): Observable<String> {
+  uploadFile(chatId: number, formData): Observable<UrlDto> {
     //We just want the link of the file returned, we don't need the object.
-    return this.http.post<String>(`${this.apiUrl}/${chatId}/upload`, formData)
+    return this.http.post<UrlDto>(`${this.apiUrl}/${chatId}/upload`, formData)
   }
 
 }
