@@ -17,4 +17,9 @@ export class ChatPostService {
     return this.http.get<ChatPost[]>(`${this.apiUrl}/${chatId}/list`)
   }
 
+  uploadFile(chatId: number, formData): Observable<String> {
+    //We just want the link of the file returned, we don't need the object.
+    return this.http.post<String>(`${this.apiUrl}/${chatId}/upload`, formData)
+  }
+
 }

@@ -16,14 +16,22 @@
 
 package org.tctalent.server.api.chat;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.api.admin.IJoinedTableApi;
+import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.request.chat.SearchChatPostRequest;
 import org.tctalent.server.request.chat.UpdateChatPostRequest;
@@ -46,6 +54,16 @@ public class ChatPostAdminApi implements
         return postDto().buildList(posts);
     }
 
+    @PostMapping("{id}/upload")
+    public String upload(
+        @PathVariable("id") long id, @RequestParam("file") MultipartFile file, HttpServletResponse response)
+        throws InvalidRequestException, IOException, NoSuchObjectException {
+        String fileUrl = chatPostService.uploadFile(id, file);
+        response.setContentType("text/plain");
+        // todo want to return just the URL of the file, which isn't saved as part of the object. How to return a string without a DTO?
+        return fileUrl;
+    }
+
     private DtoBuilder postDto() {
         return new DtoBuilder()
             .add("id")
@@ -60,6 +78,13 @@ public class ChatPostAdminApi implements
             .add("id")
             .add("firstName")
             .add("lastName")
+            ;
+    }
+
+    private DtoBuilder fileLinkDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("fileLink")
             ;
     }
 

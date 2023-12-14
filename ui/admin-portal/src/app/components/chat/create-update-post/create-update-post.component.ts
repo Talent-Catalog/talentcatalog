@@ -4,6 +4,7 @@ import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {ChatPostService} from "../../../services/chat-post.service";
 
 @Component({
   selector: 'app-create-update-post',
@@ -22,8 +23,10 @@ export class CreateUpdatePostComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private rxStompService: RxStompService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private chatPostService: ChatPostService
   ) {
+    // Doc: https://quilljs.com/docs/modules/toolbar/#handlers
     this.moduleOptions = {
       toolbar: {
         container: [
@@ -75,18 +78,18 @@ export class CreateUpdatePostComponent implements OnInit {
 
     this.error = null;
     this.saving = true;
-    // todo upload image to the job's google drive folder, then return the link to display in the content.
-    // this.candidateOpportunityService.uploadOffer(this.opp.id, formData).subscribe(
-    //   opp => {
-    //     //Need event to bubble up and change job
-    //     this.candidateOppUpdated.emit(opp)
-    //     this.saving = false;
-    //   },
-    //   (error) => {
-    //     this.error = error
-    //     this.saving = false;
-    //   }
-    // );
+    // Upload image to the job's Google Drive folder (subfolder: ChatUploads).
+    // Then return the link to display in the content in an <img> tag for display.
+    this.chatPostService.uploadFile(this.chat.id, formData).subscribe(
+      linkToFile => {
+        this.contentControl.patchValue(this.contentControl.value + ' <img src="' +  linkToFile + '">');
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error
+        this.saving = false;
+      }
+    );
   }
 
   get contentControl() { return this.postForm.get('content'); }
