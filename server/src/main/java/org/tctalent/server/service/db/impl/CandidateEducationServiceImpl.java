@@ -16,13 +16,19 @@
 
 package org.tctalent.server.service.db.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateEducation;
+import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.EducationMajor;
+import org.tctalent.server.model.db.EducationType;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateEducationRepository;
-import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.EducationMajorRepository;
 import org.tctalent.server.request.candidate.education.CreateCandidateEducationRequest;
@@ -30,40 +36,17 @@ import org.tctalent.server.request.candidate.education.UpdateCandidateEducationR
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateEducationService;
 import org.tctalent.server.service.db.CandidateService;
-
-import java.util.List;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateEducation;
-import org.tctalent.server.model.db.Country;
-import org.tctalent.server.model.db.EducationMajor;
-import org.tctalent.server.model.db.EducationType;
-import org.tctalent.server.model.db.User;
 import org.tctalent.server.util.audit.AuditHelper;
 
 @Service
+@AllArgsConstructor
 public class CandidateEducationServiceImpl implements CandidateEducationService {
 
     private final CandidateEducationRepository candidateEducationRepository;
     private final CountryRepository countryRepository;
     private final EducationMajorRepository educationMajorRepository;
-    private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final AuthService authService;
-
-    @Autowired
-    public CandidateEducationServiceImpl(CandidateEducationRepository candidateEducationRepository,
-                                         CountryRepository countryRepository,
-                                         EducationMajorRepository educationMajorRepository,
-                                         CandidateRepository candidateRepository,
-                                         CandidateService candidateService,
-                                         AuthService authService) {
-        this.candidateEducationRepository = candidateEducationRepository;
-        this.countryRepository = countryRepository;
-        this.educationMajorRepository = educationMajorRepository;
-        this.candidateRepository = candidateRepository;
-        this.candidateService = candidateService;
-        this.authService = authService;
-    }
 
     @Override
     public List<CandidateEducation> list(long id) {
