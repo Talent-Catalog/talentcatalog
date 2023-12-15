@@ -49,7 +49,7 @@ export class JobGroupChatsTabComponent implements OnInit, OnChanges {
         this.loading = false;
 
         const allJobCandidatesChat = results['allJobCandidatesChat'];
-        allJobCandidatesChat.name = "All associated with job plus shortlisted candidates";
+        allJobCandidatesChat.name = "All associated with job plus candidates who have accepted job offers";
 
         const allSourcePartnersChat = results['allSourcePartnersChat'];
         if (this.authorizationService.isSourcePartner()) {

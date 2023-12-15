@@ -16,7 +16,7 @@
 import {PagedSearchRequest} from "./base";
 import {ShortJob} from "./job";
 import {ShortCandidate} from "./candidate";
-import {Opportunity} from "./opportunity";
+import {Opportunity, OpportunityOwnershipType} from "./opportunity";
 
 export function isCandidateOpportunity(opp: Opportunity): opp is CandidateOpportunity {
   return opp ? 'jobOpp' in opp : false;
@@ -76,6 +76,7 @@ export enum CandidateOpportunityStage {
 export class SearchOpportunityRequest extends PagedSearchRequest {
   activeStages?: boolean;
   keyword?: string;
+  ownershipType?: OpportunityOwnershipType;
   ownedByMe?: boolean;
   ownedByMyPartner?: boolean;
   sfOppClosed?: boolean;
