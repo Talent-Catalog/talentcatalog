@@ -68,6 +68,7 @@ import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SystemLanguage;
 import org.tctalent.server.model.db.TBBEligibilityAssessment;
+import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.VisaEligibility;
@@ -620,6 +621,25 @@ public class AdminApiTestUtil {
         partner3.setName("TC Partner 3");
         return List.of(
           partner1, partner2, partner3
+        );
+    }
+
+    public static TaskAssignmentImpl getTaskAssignment() {
+        TaskAssignmentImpl ta = new TaskAssignmentImpl();
+        ta.setId(99L);
+        ta.setTask(getTask());
+        ta.setStatus(Status.active);
+        ta.setDueDate(LocalDate.of(2025, 1, 1));
+        ta.setCompletedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        ta.setAbandonedDate(OffsetDateTime.parse("2022-10-30T12:30:00+02:00"));
+        ta.setCandidateNotes("These are candidate notes.");
+        return ta;
+    }
+
+    public static List<TaskAssignmentImpl> getTaskAssignments() {
+        TaskAssignmentImpl taskAssignment = getTaskAssignment();
+        return List.of(
+            taskAssignment
         );
     }
 
