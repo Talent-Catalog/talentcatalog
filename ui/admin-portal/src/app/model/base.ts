@@ -105,7 +105,8 @@ export enum SearchBy {
  */
 export enum SearchOppsBy {
   all,
-  mine,
+  mineAsSourcePartner,
+  mineAsJobCreator,
   starredByMe,
   live
 }
