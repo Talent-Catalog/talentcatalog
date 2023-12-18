@@ -85,7 +85,7 @@ public class ChatPostServiceImpl implements ChatPostService {
         ChatPost post = getChatPost(id);
         GoogleFileSystemFile uploadedFile = uploadChatFile(post, file);
 
-        return uploadedFile.getUrl();
+        return createEmbedDisplayLink(uploadedFile);
     }
 
     private GoogleFileSystemFile uploadChatFile(ChatPost chat, MultipartFile file)
@@ -132,14 +132,22 @@ public class ChatPostServiceImpl implements ChatPostService {
         GoogleFileSystemFile uploadedFile =
             fileSystemService.uploadFile(listFoldersDrive, chatFolder, fileName, tempFile);
 
-        // Publish the file so that it can be viewed in the TC by anyone with the link
-        fileSystemService.publishFile(uploadedFile);
-
         //Delete tempfile
         if (!tempFile.delete()) {
             log.error("Failed to delete temporary file " + tempFile);
         }
 
         return uploadedFile;
+    }
+
+    /**
+     * In order for the image to display via the html in the post or the editor, we need to alter 
+     * the link. It needs to be a display link (not embed or preview).
+     * See here: https://support.google.com/drive/thread/34363118?hl=en&msgid=34384934
+     * @param uploadedFile which we want to display in the html of the post
+     * @return
+     */
+    private String createEmbedDisplayLink(GoogleFileSystemFile uploadedFile) {
+        return "https://drive.google.com/uc?export=view&id=" + uploadedFile.getId();
     }
 }
