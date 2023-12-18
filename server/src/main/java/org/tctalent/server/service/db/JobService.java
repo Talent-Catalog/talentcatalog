@@ -21,10 +21,12 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.request.job.JobInfoForSlackPost;
 import org.tctalent.server.request.job.JobIntakeData;
@@ -49,6 +51,19 @@ public interface JobService {
      */
     SalesforceJobOpp createJob(UpdateJobRequest request)
         throws EntityExistsException, SalesforceException;
+
+    /**
+     * Creates or updates a job associated with the given employer.
+     * If the request contains a non-null sfId that is used to identify an existing job which is
+     * to be updated. Otherwise, a new job is created.
+     *
+     * @param employer The employer associated with the job
+     * @param request Used to create/update job opportunity.
+     * @throws SalesforceException If there are errors relating to keys and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    SalesforceJobOpp createUpdateJob(@NonNull Employer employer, @NonNull UpdateJobRequest request)
+        throws SalesforceException, WebClientException;
 
     /**
      * Get the Job with the given id.

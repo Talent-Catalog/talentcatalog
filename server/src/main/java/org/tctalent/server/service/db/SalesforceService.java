@@ -240,6 +240,16 @@ public interface SalesforceService {
             throws WebClientException, SalesforceException;
 
     /**
+     * Creates or updates the Salesforce job opportunity on Salesforce.
+     * @param job TC job opportunity.
+     * @return Salesforce id (sfId) corresponding to created/updates Salesforce record
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    @NonNull
+    String createOrUpdateJobOpportunity(SalesforceJobOpp job);
+
+    /**
      * Creates or updates the Salesforce Candidate Opportunity records corresponding to the
      * given candidates for the given Employer job opportunity.
      * <p/>

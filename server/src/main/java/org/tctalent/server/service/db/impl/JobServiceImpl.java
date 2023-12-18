@@ -44,6 +44,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.EntityExistsException;
@@ -313,6 +314,39 @@ public class JobServiceImpl implements JobService {
         }
 
         return job;
+    }
+
+    @Override
+    public SalesforceJobOpp createUpdateJob(@NonNull Employer employer,
+        @NonNull UpdateJobRequest request) throws SalesforceException, WebClientException {
+        User loggedInUser = getLoggedInUser("create update job");
+
+        //The partner associated with the person who created the job is the job creator
+        final PartnerImpl loggedInUserPartner = loggedInUser.getPartner();
+        if (!loggedInUserPartner.isJobCreator()) {
+            throw new UnauthorisedActionException("create update job");
+        }
+
+        //Check if we already have a job for this Salesforce job opp.
+        String sfId = request.getSfId();
+        SalesforceJobOpp job = salesforceJobOppService.getJobOppById(sfId);
+        boolean create = job == null;
+        if (create) {
+            //No job exists, create one
+            job = new SalesforceJobOpp();
+            job.setEmployerEntity(employer);
+        }
+
+        job.setAuditFields(loggedInUser);
+
+        //Update from request
+        updateJobFromRequest(job, request);
+
+        //Update SF - set sfId.
+        sfId = salesforceService.createOrUpdateJobOpportunity(job);
+        job.setSfId(sfId);
+
+        return salesforceJobOppRepository.save(job);
     }
 
     private User getLoggedInUser(String operation) {

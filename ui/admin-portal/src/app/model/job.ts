@@ -109,6 +109,7 @@ export class SearchJobRequest extends SearchOpportunityRequest {
 
 export interface UpdateJobRequest extends OpportunityProgressParams {
   contactUserId?: number;
+  sfId?: string;
   sfJoblink?: string;
   submissionDueDate?: Date;
 }
