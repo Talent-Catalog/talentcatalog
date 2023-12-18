@@ -31,3 +31,5 @@ create table employer
 );
 
 alter table salesforce_job_opp add column employer_id bigint references employer;
+
+alter table partner add column employer_id bigint references employer;
