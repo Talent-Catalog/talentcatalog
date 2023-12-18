@@ -15,6 +15,7 @@ import {enumOptions} from "../../../../util/enum";
 import {FormComponentBase} from "../../../util/form/FormComponentBase";
 import {User} from "../../../../model/user";
 import {UserService} from "../../../../services/user.service";
+import {AuthorizationService} from "../../../../services/authorization.service";
 
 /*
   MODEL - mapping enums, display text send ids, create/update component
@@ -58,6 +59,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
 
   constructor(fb: FormBuilder,
               private activeModal: NgbActiveModal,
+              private authorizationService: AuthorizationService,
               private countryService: CountryService,
               private partnerService: PartnerService,
               private userService: UserService,
@@ -75,7 +77,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       autoAssignable: [this.partner?.autoAssignable],
       defaultContact: [this.partner?.defaultContact],
       defaultPartnerRef: [this.partner?.defaultPartnerRef],
-      employerPartner: [], //todo initialize
+      employerPartner: [this.partner?.employer ? true : false],
       jobCreator: [this.partner?.jobCreator],
       logo: [this.partner?.logo],
       name: [this.partner?.name, Validators.required],
