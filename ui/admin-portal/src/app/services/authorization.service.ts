@@ -62,10 +62,6 @@ export class AuthorizationService {
     return this.isDefaultSourcePartner();
   }
 
-  canCreateJob() : boolean {
-    return this.isJobCreator();
-  }
-
   canViewCandidateCountry(): boolean {
     let result: boolean = false;
     switch (this.getLoggedInRole()) {
@@ -113,10 +109,12 @@ export class AuthorizationService {
 
   isCandidateOurs(candidate: ShortCandidate): boolean {
     let ours = false;
-    const loggedInUser = this.authenticationService.getLoggedInUser()
-    //Must be logged in
-    if (loggedInUser) {
-      ours = candidate.user?.partner?.id === loggedInUser.partner.id;
+    if (candidate) {
+      const loggedInUser = this.authenticationService.getLoggedInUser()
+      //Must be logged in
+      if (loggedInUser) {
+        ours = candidate.user?.partner?.id === loggedInUser.partner.id;
+      }
     }
     return ours;
   }
@@ -323,7 +321,7 @@ export class AuthorizationService {
   /**
    * True is a user is logged in and they are solely responsible for certain candidate opportunities.
    * <p/>
-   * This will be source partners.
+   * This will be source partners and job creators
    */
   ownsOpps() {
     //Source partners own candidate opportunities for the candidates they manage
@@ -331,7 +329,8 @@ export class AuthorizationService {
 
     const loggedInUser = this.authenticationService.getLoggedInUser();
     if (loggedInUser) {
-      result = this.isDefaultSourcePartner() || this.isSourcePartner();
+      result = this.isDefaultSourcePartner() || this.isSourcePartner() ||
+      this.isDefaultJobCreator() || this.isJobCreator();
     }
 
     return result;
