@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit {
   constructor(
     protected localStorageService: LocalStorageService,
     protected savedSearchService: SavedSearchService,
-    protected authService: AuthorizationService,
+    protected authorizationService: AuthorizationService,
     protected authenticationService: AuthenticationService
   ) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
@@ -57,7 +57,6 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[0].categories;
     this.loggedInPartner = this.authenticationService.getLoggedInUser()?.partner;
-
     // This is called in order for the navigation tabs, this.nav, to be set.
     // Make this call in ngOnInit(). Do not do it ngAfterViewChecked() - doing so will throw
     // NG0100 errors because selectDefaultTabs() changes the activeTabId after the view has been
@@ -128,15 +127,19 @@ export class HomeComponent implements OnInit {
     return SavedSearchType;
   }
 
-  canCreateJob(): boolean {
-    return this.authService.canCreateJob();
-  }
-
   isExperimental() {
     return false;
   }
 
   ownsOpps(): boolean {
-    return this.authService.ownsOpps();
+    return this.authorizationService.ownsOpps();
+  }
+
+  isJobCreator(): boolean {
+    return this.authorizationService.isJobCreator();
+  }
+
+  isSourcePartner(): boolean {
+    return this.authorizationService.isSourcePartner();
   }
 }

@@ -75,3 +75,8 @@ export interface Opportunity extends Auditable, OpportunityIds {
   won: boolean;
 }
 
+export enum OpportunityOwnershipType {
+  AS_SOURCE_PARTNER,
+  AS_JOB_CREATOR
+}
+

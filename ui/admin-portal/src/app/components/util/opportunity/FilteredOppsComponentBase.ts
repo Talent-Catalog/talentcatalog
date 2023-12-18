@@ -35,7 +35,11 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
-import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
+import {
+  getOpportunityStageName,
+  Opportunity,
+  OpportunityOwnershipType
+} from "../../../model/opportunity";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {formatDate} from "@angular/common";
 import {OpportunityService} from "./OpportunityService";
@@ -231,25 +235,14 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
         req.sfOppClosed = false;
         break;
 
-      case SearchOppsBy.mine:
-        if (this.myOppsOnly) {
-          req.ownedByMe = true;
-        } else {
-          req.ownedByMyPartner = true;
-        }
+      case SearchOppsBy.mineAsSourcePartner:
+        req.ownershipType = OpportunityOwnershipType.AS_SOURCE_PARTNER;
+        this.populateOwnershipRequest(req);
+        break;
 
-        //Default - filters out closed opps and only includes active stages
-        req.sfOppClosed = false;
-        req.activeStages = true;
-
-        if (this.showInactiveOpps) {
-          //Turn off the active stages filter
-          req.activeStages = false;
-        }
-
-        if (this.showClosedOpps) {
-          req.sfOppClosed = true;
-        }
+      case SearchOppsBy.mineAsJobCreator:
+        req.ownershipType = OpportunityOwnershipType.AS_JOB_CREATOR;
+        this.populateOwnershipRequest(req);
         break;
     }
 
@@ -262,6 +255,28 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     )
 
   }
+
+  private populateOwnershipRequest(req: SearchOpportunityRequest) {
+    if (this.myOppsOnly) {
+      req.ownedByMe = true;
+    } else {
+      req.ownedByMyPartner = true;
+    }
+
+    //Default - filters out closed opps and only includes active stages
+    req.sfOppClosed = false;
+    req.activeStages = true;
+
+    if (this.showInactiveOpps) {
+      //Turn off the active stages filter
+      req.activeStages = false;
+    }
+
+    if (this.showClosedOpps) {
+      req.sfOppClosed = true;
+    }
+  }
+
 
   protected processSearchError(error: any) {
     this.error = error;
@@ -358,5 +373,4 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     const dateStr = date == null ? "???" : formatDate(date, "yyyy-MM-dd", this.locale);
     return dateStr + ': ' + (opp.nextStep ? opp.nextStep : '');
   }
-
 }
