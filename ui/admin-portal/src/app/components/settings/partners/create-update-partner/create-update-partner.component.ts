@@ -75,6 +75,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       autoAssignable: [this.partner?.autoAssignable],
       defaultContact: [this.partner?.defaultContact],
       defaultPartnerRef: [this.partner?.defaultPartnerRef],
+      employerPartner: [], //todo initialize
       jobCreator: [this.partner?.jobCreator],
       logo: [this.partner?.logo],
       name: [this.partner?.name, Validators.required],
@@ -145,6 +146,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       autoAssignable: this.form.value.autoAssignable,
       defaultContactId: this.form.value.defaultContact?.id,
       defaultPartnerRef: this.form.value.defaultPartnerRef,
+      employerSflink: this.form.value.employerPartner ? this.form.value.sflink : null,
       logo: this.form.value.logo,
       name: this.form.value.name,
       notificationEmail: this.form.value.notificationEmail,

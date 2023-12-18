@@ -16,12 +16,12 @@
 
 package org.tctalent.server.request.partner;
 
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -41,7 +41,16 @@ public class UpdatePartnerRequest {
      */
     private User defaultContact;
 
+    /**
+     * Redundant field containing looked up employer corresponding to {@link #employerSflink}.
+     * Should be populated from the sfLink before processing.
+     * Gets around mutual dependency between employer and partner services.
+     */
+    private Employer employer;
+
     private boolean defaultPartnerRef;
+
+    private String employerSflink;
 
     private boolean jobCreator;
 

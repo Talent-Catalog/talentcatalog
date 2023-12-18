@@ -27,6 +27,7 @@ export interface PartnerSimpleAttributes {
   abbreviation: string;
   autoAssignable: boolean;
   defaultPartnerRef: boolean;
+  employerSflink?: string;
   jobContact?: User;
   jobCreator: boolean;
   logo: string;

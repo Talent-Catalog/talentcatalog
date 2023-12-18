@@ -16,6 +16,10 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,6 +29,13 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.PartnerJobRelation;
+import org.tctalent.server.model.db.PartnerJobRelationKey;
+import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.PartnerJobRelationRepository;
 import org.tctalent.server.repository.db.PartnerRepository;
@@ -34,32 +45,13 @@ import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.PartnerService;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import org.tctalent.server.model.db.Country;
-import org.tctalent.server.model.db.PartnerImpl;
-import org.tctalent.server.model.db.PartnerJobRelation;
-import org.tctalent.server.model.db.PartnerJobRelationKey;
-import org.tctalent.server.model.db.SalesforceJobOpp;
-import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.User;
-
 @Service
+@AllArgsConstructor
 public class PartnerServiceImpl implements PartnerService {
     private final PartnerRepository partnerRepository;
     private final PartnerJobRelationRepository partnerJobRelationRepository;
     private final CountryService countryService;
     private static final Logger log = LoggerFactory.getLogger(PartnerServiceImpl.class);
-
-    public PartnerServiceImpl(
-        PartnerRepository partnerRepository,
-        CountryService countryService,
-        PartnerJobRelationRepository partnerJobRelationRepository) {
-        this.partnerRepository = partnerRepository;
-        this.countryService = countryService;
-        this.partnerJobRelationRepository = partnerJobRelationRepository;
-    }
 
     @Override
     public @NonNull PartnerImpl create(UpdatePartnerRequest request)
@@ -98,6 +90,7 @@ public class PartnerServiceImpl implements PartnerService {
 
         partner.setAbbreviation(request.getAbbreviation());
         partner.setDefaultContact(request.getDefaultContact());
+        partner.setEmployer(request.getEmployer());
         partner.setJobCreator(request.isJobCreator());
         partner.setLogo(request.getLogo());
         partner.setName(request.getName());

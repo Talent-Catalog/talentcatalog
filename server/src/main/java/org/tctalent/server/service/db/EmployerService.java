@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db;
 
+import org.springframework.lang.NonNull;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.sf.Account;
 
@@ -27,4 +29,12 @@ public interface EmployerService {
      */
     Employer findOrCreateEmployerFromSalesforceAccount(Account account);
 
+    /**
+     * Find employer (ie Salesforce account) matching given Salesforce url
+     * @param sflink Salesforce url of an account on Salesforce
+     * @return Matching employer
+     * @throws NoSuchObjectException if there is no Salesforce account matching that url.
+     */
+    @NonNull
+    Employer findEmployerFromSalesforceLink(String sflink) throws NoSuchObjectException;
 }

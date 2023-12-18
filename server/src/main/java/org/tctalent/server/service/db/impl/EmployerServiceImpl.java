@@ -18,15 +18,19 @@ package org.tctalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.repository.db.EmployerRepository;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.EmployerService;
+import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.util.SalesforceHelper;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +38,7 @@ public class EmployerServiceImpl implements EmployerService {
     private final CountryService countryService;
     private final EmailHelper emailHelper;
     private final EmployerRepository employerRepository;
+    private final SalesforceService salesforceService;
     private final UserService userService;
 
     @Override
@@ -59,5 +64,16 @@ public class EmployerServiceImpl implements EmployerService {
 
 
         return employerRepository.save(employer);
+    }
+
+    @Override
+    @NonNull
+    public Employer findEmployerFromSalesforceLink(String sflink) {
+        String sfId = SalesforceHelper.extractIdFromSfUrl(sflink);
+        Account account = salesforceService.findAccount(sfId);
+        if (account == null) {
+            throw new NoSuchObjectException("No such Salesforce account: " + sflink);
+        }
+        return findOrCreateEmployerFromSalesforceAccount(account);
     }
 }
