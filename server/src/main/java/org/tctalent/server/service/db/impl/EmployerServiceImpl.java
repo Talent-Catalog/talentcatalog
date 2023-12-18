@@ -43,37 +43,53 @@ public class EmployerServiceImpl implements EmployerService {
 
     @Override
     public Employer findOrCreateEmployerFromSalesforceAccount(Account account) {
-        Employer employer = new Employer();
-        employer.setName(account.getName());
-        employer.setSfId(account.getId());
-        employer.setCreatedBy(userService.getLoggedInUser());
-        employer.setCreatedDate(OffsetDateTime.now());
+        String sfId = account.getId();
+        //Look for it in TC first
+        Employer employer = employerRepository.findFirstBySfId(sfId).orElse(null);
+        if (employer == null) {
+            //Not already in TC, create it.
+            employer = new Employer();
+            employer.setName(account.getName());
+            employer.setSfId(sfId);
+            employer.setCreatedBy(userService.getLoggedInUser());
+            employer.setCreatedDate(OffsetDateTime.now());
 
-        String booleanAsString = account.getHasHiredInternationally();
-        Boolean hasHiredInternationally = booleanAsString == null ? null :
-            booleanAsString.toLowerCase().startsWith("y");
-        employer.setHasHiredInternationally(hasHiredInternationally);
+            String booleanAsString = account.getHasHiredInternationally();
+            Boolean hasHiredInternationally = booleanAsString == null ? null :
+                booleanAsString.toLowerCase().startsWith("y");
+            employer.setHasHiredInternationally(hasHiredInternationally);
 
-        final String accountCountry = account.getCountry();
-        Country country = countryService.findCountryByName(accountCountry);
-        employer.setCountry(country);
-        if (country == null ){
-            emailHelper.sendAlert("Salesforce country " + accountCountry +
-                " in SF account " + account.getName() + " not found in database.");
+            //todo Other account related fields - office size etc
+
+            final String accountCountry = account.getCountry();
+            Country country = countryService.findCountryByName(accountCountry);
+            employer.setCountry(country);
+            if (country == null ){
+                emailHelper.sendAlert("Salesforce country " + accountCountry +
+                    " in SF account " + account.getName() + " not found in database.");
+            }
+
+            employer = employerRepository.save(employer);
         }
 
-
-        return employerRepository.save(employer);
+        return employer;
     }
 
     @Override
     @NonNull
     public Employer findEmployerFromSalesforceLink(String sflink) {
         String sfId = SalesforceHelper.extractIdFromSfUrl(sflink);
-        Account account = salesforceService.findAccount(sfId);
-        if (account == null) {
-            throw new NoSuchObjectException("No such Salesforce account: " + sflink);
+
+        //Look for it in TC first
+        Employer employer = employerRepository.findFirstBySfId(sfId).orElse(null);
+        if (employer == null) {
+            //If not in TC, autocreate - assuming that it exists in Salesforce.
+            Account account = salesforceService.findAccount(sfId);
+            if (account == null) {
+                throw new NoSuchObjectException("No such Salesforce account: " + sflink);
+            }
+            employer = findOrCreateEmployerFromSalesforceAccount(account);
         }
-        return findOrCreateEmployerFromSalesforceAccount(account);
+        return employer;
     }
 }

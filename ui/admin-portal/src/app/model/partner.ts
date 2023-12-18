@@ -45,6 +45,11 @@ export interface PartnerSimpleAttributes {
   websiteUrl: string;
 }
 
+export interface Employer {
+  id: number;
+  name: string;
+  sfId: string;
+}
 
 export interface ShortPartner {
   id: number;
@@ -58,6 +63,7 @@ export interface Partner extends PartnerSimpleAttributes {
   defaultContact?: User;
   defaultJobCreator: boolean;
   defaultSourcePartner: boolean;
+  employer?: Employer;
   sourceCountries: Country[];
 }
 

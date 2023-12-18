@@ -16,11 +16,21 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.tctalent.server.model.db.Employer;
 
 public interface EmployerRepository extends JpaRepository<Employer, Long>,
     JpaSpecificationExecutor<Employer> {
+
+    /**
+     * Look up employer by sfId.
+     * @param sfId Salesforce id - stored in TC table.
+     * @return Optional employer
+     * See <a href="https://docs.spring.io/spring-data/data-commons/docs/current/reference/html/#repositories.query-methods.query-creation">
+     *     Spring magic </a>
+     */
+    Optional<Employer> findFirstBySfId(String sfId);
 
 }
