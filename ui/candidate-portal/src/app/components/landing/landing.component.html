@@ -38,23 +38,6 @@
           >{{ 'LANDING.REGISTER' | translate }}</a>
         </div>
         <hr/>
-
-        <div *ngIf="showUSAfghanInfo" class="text-center mt-1">
-          <div class="small">
-            {{ 'LANDING.USAFGHAN.HEADING1' | translate }}
-          </div>
-          <a class="btn btn-outline-secondary small-btn my-2" [routerLink]="'/register'"
-             [queryParams]="{lang: 'en', source: 'us-afghan'}" [queryParamsHandling]="'merge'">
-            {{ 'LANDING.REGISTER' | translate }}
-          </a>
-          <div class="small mt-2">
-            {{'LANDING.USAFGHAN.HEADING2' | translate }}
-            <div>
-              <a href="https://www.afghantalent.us/">AfghanTalent.us</a>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       <hr/>
