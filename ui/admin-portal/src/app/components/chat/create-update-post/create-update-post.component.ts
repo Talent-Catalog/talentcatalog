@@ -1,10 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
-import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPostService} from "../../../services/chat-post.service";
+import Quill from 'quill';
+import {ImageHandler, Options} from 'ngx-quill-upload';
 
 @Component({
   selector: 'app-create-update-post',
@@ -17,7 +18,7 @@ export class CreateUpdatePostComponent implements OnInit {
   error: any;
   saving: any;
   postForm: FormGroup;
-
+  quillEditorRef: Quill;
   moduleOptions = {};
 
   constructor(
@@ -26,70 +27,63 @@ export class CreateUpdatePostComponent implements OnInit {
     private modalService: NgbModal,
     private chatPostService: ChatPostService
   ) {
-    // Doc: https://quilljs.com/docs/modules/toolbar/#handlers
+    Quill.register('modules/imageHandler', ImageHandler);
     this.moduleOptions = {
-      toolbar: {
-        container: [
-          { 'list': 'ordered'},
-          { 'list': 'bullet' },
-          'bold',
-          'italic',
-          'underline',
-          'link',
-          'image',
-          ],
-        handlers: {
-          'image':  () => {
-            this.uploadImage();
-          }
-        }
-      },
+      // Doc for setting module toolbar options: https://quilljs.com/docs/modules/toolbar/
+      toolbar: [
+        { 'list': 'ordered'},
+        { 'list': 'bullet' },
+        'bold',
+        'italic',
+        'underline',
+        'link',
+        'image',
+      ],
+      // Doc for setting up image handler: https://www.npmjs.com/package/ngx-quill-upload
+      imageHandler: {
+        upload: (file) => {
+          return this.doUpload(file);// your uploaded image URL as Promise<string>
+        },
+        accepts: ['png', 'jpg', 'jpeg'] // Extensions to allow for images (Optional) | Default - ['jpg', 'jpeg', 'png']
+      } as Options,
     }
   }
 
   ngOnInit() {
     this.postForm = this.fb.group({
-      content: []
+      content: ['', Validators.required]
     });
   }
 
-  uploadImage() {
-    const fileSelectorModal = this.modalService.open(FileSelectorComponent, {
-      centered: true,
-      backdrop: 'static'
-    })
-
-    fileSelectorModal.componentInstance.maxFiles = 1;
-    fileSelectorModal.componentInstance.closeButtonLabel = "Upload";
-    fileSelectorModal.componentInstance.title = "Upload image to post";
-
-    fileSelectorModal.result
-    .then((selectedFiles: File[]) => {
-      if (selectedFiles.length > 0) {
-        this.doUpload(selectedFiles[0]);
-      }
-    })
-    .catch(() => {});
+  editorCreated(quill: Quill) {
+    this.quillEditorRef = quill;
   }
 
-  private doUpload(file: File) {
-    const formData: FormData = new FormData();
-    formData.append('file', file);
+  // Note: The image handler must return a Promise<String> so we need to convert our http request observable to a promise.
+  // The doc suggests using the toPromise() method on the subscription, however this is to be deprecated in new versions of Rxjs.
+  // Alternative option is create a new promise and resolve with the url string.
+  private doUpload(file: File): Promise<String> {
+    return new Promise ((resolve, reject) => {
+      const formData: FormData = new FormData();
+      formData.append('file', file);
 
-    this.error = null;
-    this.saving = true;
-    // Upload image to the job's Google Drive folder (subfolder: ChatUploads).
-    // Then return the link to display in the content in an <img> tag for display.
-    return this.chatPostService.uploadFile(this.chat.id, formData).subscribe(
-      urlDto => {
-        this.contentControl.patchValue(this.contentControl.value + ' <img src="' +  urlDto.url + '">');
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error
-        this.saving = false;
-      }
-    );
+      this.error = null;
+      this.saving = true;
+      // Upload image to the job's Google Drive folder (subfolder: ChatUploads).
+      // The url string will then be returned through the Promise, and embedded into the editor.
+      this.chatPostService.uploadFile(this.chat.id, formData).subscribe(
+        urlDto => {
+          const range = this.quillEditorRef.getSelection();
+          this.quillEditorRef.insertEmbed(urlDto)
+          this.saving = false;
+          resolve(urlDto.url);
+        },
+        (error) => {
+          reject(error)
+          this.error = error
+          this.saving = false;
+        });
+    })
   }
 
   get contentControl() { return this.postForm.get('content'); }

@@ -7,7 +7,12 @@
 
   <!-- POST -->
   <div class="my-3">
-    <quill-editor id="content" placeholder="Write your message..." formControlName="content" sanitize="true" [modules]="moduleOptions"></quill-editor>
+    <quill-editor id="content"
+                  placeholder="Write your message..."
+                  formControlName="content"
+                  [modules]="moduleOptions"
+                  (onEditorCreated)="editorCreated($event)">
+    </quill-editor>
   </div>
 
 
