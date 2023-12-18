@@ -16,6 +16,8 @@
 
 package org.tctalent.server.model.db.partner;
 
+import org.tctalent.server.model.db.Employer;
+
 /**
  * An employer in a destination country who connects directly to us, searching for suitable
  * candidates themselves.
@@ -25,5 +27,12 @@ package org.tctalent.server.model.db.partner;
  * @author John Cameron
  */
 public interface EmployerPartner extends JobCreator {
+
+    /**
+     * Employer associated with this partner
+     * @return Employer
+     */
+    Employer getEmployer();
+    void setEmployer(Employer employer);
 
 }

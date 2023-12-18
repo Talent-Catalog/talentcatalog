@@ -65,6 +65,17 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     private boolean defaultSourcePartner;
 
     /**
+     * Optional link to employer associated with partner - only used for employer partners.
+     * <p/>
+     * Note that link is One to One. In other words there can only be one partner
+     * associated with a given employer.
+     */
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employer_id")
+    private Employer employer;
+
+    /**
      * True if this partner is a job creator - ie the partner can have users who can create jobs
      */
     private boolean jobCreator;
@@ -135,7 +146,7 @@ public class PartnerImpl extends AbstractDomainObject<Long>
 
     public void setRegistrationLandingPage(@Nullable String registrationLandingPage) {
         if (registrationLandingPage != null) {
-            if (registrationLandingPage.trim().length() == 0) {
+            if (registrationLandingPage.trim().isEmpty()) {
                 registrationLandingPage = null;
             }
         }
