@@ -146,10 +146,10 @@ public interface SalesforceService {
             throws GeneralSecurityException, WebClientException;
 
     /**
-     * Searches for a Salesforce Opportunity record (Employer or Candidate opportunity)
+     * Searches for a Salesforce Account record (Employer)
      * corresponding to the given Salesforce id
      * @param sfId Salesforce id
-     * @return Salesforce opportunity, null if none
+     * @return Account, null if none
      * @throws SalesforceException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
