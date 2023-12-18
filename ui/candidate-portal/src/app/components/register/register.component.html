@@ -18,7 +18,7 @@
 
   <div class="container">
 
-    <h5 *ngIf="registrationService?.currentStep?.section === 0">
+    <h5 *ngIf="registrationService?.currentStep?.section > 0">
       {{ 'REGISTRATION.HEADER.STEP' | translate: {current: registrationService?.currentStep?.section, total: registrationService?.totalSections} }}
     </h5>
 
