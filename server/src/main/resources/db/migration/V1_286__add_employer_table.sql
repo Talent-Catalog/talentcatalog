@@ -32,4 +32,9 @@ create table employer
 
 alter table salesforce_job_opp add column employer_id bigint references employer;
 
+alter table salesforce_job_opp alter column sf_id drop not null;
+
 alter table partner add column employer_id bigint references employer;
+
+alter table saved_list drop column sf_job_opp_id;
+alter table saved_search drop column sf_job_opp_id;
