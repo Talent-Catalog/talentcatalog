@@ -8,7 +8,7 @@
 </nav>
 
 <div class="d-flex mb-3">
-  <div class="me-4">
+  <div *ngIf="isDefaultJobCreator()" class="me-4">
     <h5>Add a salesforce job link to begin</h5>
     <p>If a valid link, click displayed button to create the following:</p>
       <ul>
@@ -18,7 +18,19 @@
       </ul>
   </div>
 
-  <div class="d-flex flex-column flex-grow-1">
+  <div *ngIf="isEmployerPartner()" class="me-4">
+    <h5>Enter a job name - describing the role</h5>
+    <p>For example, "Full stack software engineer"</p>
+
+    <form [formGroup]="jobForm">
+      <div>
+        <input #role type="text" class="form-control" placeholder="Role..." formControlName="role"
+               id="role">
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="isDefaultJobCreator()" class="d-flex flex-column flex-grow-1">
     <app-joblink
       (updateError)="onJoblinkError($event)"
       (joblinkValidation)="onJoblinkValidation($event)">
@@ -77,6 +89,7 @@
           <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
             Creating folders
           </li>
+<!--          todo Text below needs to change-->
           <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
             The folder on Google Drive <a href="{{savedList.folderlink}}" target="_blank">here</a>
             is associated with this list and job.
@@ -92,6 +105,7 @@
         </div>
       </div>
 
+      <!--          todo Text below needs to change-->
       <div [ngSwitch]="creatingSFLinks">
         <ul class="fa-ul">
           <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>

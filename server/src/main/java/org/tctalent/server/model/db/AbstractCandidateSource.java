@@ -115,9 +115,6 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     @JoinColumn(name = "job_id")
     private SalesforceJobOpp sfJobOpp;
 
-    //TODO JC sf_job_opp_id field in saved_list and saved_search tables is no longer used?
-    //Replaced by job_id which locates SalesforceJobOpp which has sf_job_opp_id (mapped to sfId)?
-
     /**
      * Stored as comma separated list of watching user ids
      */

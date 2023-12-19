@@ -257,6 +257,12 @@ export class AuthorizationService {
     return loggedInUser == null ? false : loggedInUser.partner?.jobCreator;
   }
 
+  isEmployerPartner(): boolean {
+    const loggedInUser = this.authenticationService.getLoggedInUser();
+    const partner = loggedInUser == null ? null : loggedInUser.partner;
+    return partner == null ? false : partner.employer != null && partner.jobCreator;
+  }
+
   isSourcePartner(): boolean {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? false : loggedInUser.partner?.sourcePartner;

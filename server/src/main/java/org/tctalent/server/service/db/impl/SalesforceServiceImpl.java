@@ -206,6 +206,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
         classSfPathMap.put(EmployerOppStageUpdateRequest.class, "Opportunity");
+        classSfPathMap.put(JobOpportunityRequest.class, "Opportunity");
         classSfCompositePathMap.put(ContactRequestComposite.class, "Contact");
         classSfCompositePathMap.put(OpportunityRequestComposite.class, "Opportunity");
 

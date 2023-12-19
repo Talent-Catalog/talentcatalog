@@ -259,28 +259,51 @@ public class JobServiceImpl implements JobService {
             throw new UnauthorisedActionException("create job");
         }
 
-        //Check if we already have a job for this Salesforce job opp.
-        final String sfJoblink = request.getSfJoblink();
-        String sfId = SalesforceHelper.extractIdFromSfUrl(sfJoblink);
-        SalesforceJobOpp job = salesforceJobOppService.getJobOppById(sfId);
-        if (job != null) {
-            throw new EntityExistsException("job", job.getName() + " (" + job.getId() + ")" );
+        SalesforceJobOpp job;
+
+        //Different processing based on different types of job creator
+        if (loggedInUserPartner.isDefaultJobCreator()) {
+            //Old style (TBB) partner
+            //Check if we already have a job for this Salesforce job opp.
+            final String sfJoblink = request.getSfJoblink();
+            if (sfJoblink == null) {
+                throw new InvalidRequestException("Missing link to Salesforce opportunity");
+            }
+            String sfId = SalesforceHelper.extractIdFromSfUrl(sfJoblink);
+            job = salesforceJobOppService.getJobOppById(sfId);
+            if (job != null) {
+                throw new EntityExistsException("job",
+                    job.getName() + " (" + job.getId() + ")");
+            }
+
+            //Create job
+            job = salesforceJobOppService.createJobOpp(sfId);
+            if (job == null) {
+                throw new InvalidRequestException(
+                    "No such Salesforce opportunity: " + sfJoblink);
+            }
+
+            updateJobFromRequest(job, request);
+
+            job.setAuditFields(loggedInUser);
+
+            job.setJobCreator(loggedInUserPartner);
+
+            job = salesforceJobOppRepository.save(job);
+        } else if (loggedInUserPartner.getEmployer() != null) {
+            //Employer partner
+            job = createUpdateJob(loggedInUserPartner.getEmployer(), request);
+        } else {
+            //todo Eventually Recruiter partner will go here - expecting specification in the
+            //request of both the employer associated with the job as well as the name of the role.
+            throw new InvalidRequestException(
+                "Unsupported type of partner: " + loggedInUserPartner.getName());
         }
-
-        //Create job
-        job = salesforceJobOppService.createJobOpp(sfId);
-        if (job == null) {
-            throw new InvalidRequestException("No such Salesforce opportunity: " + sfJoblink);
-        }
-
-        updateJobFromRequest(job, request);
-
-        job.setAuditFields(loggedInUser);
 
         //Create submission list
         UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
         savedListInfoRequest.setRegisteredJob(true);
-        savedListInfoRequest.setSfJoblink(sfJoblink);
+        savedListInfoRequest.setSfJobOpp(job);
         SavedList submissionList = savedListService.createSavedList(savedListInfoRequest);
         job.setSubmissionList(submissionList);
 
@@ -298,8 +321,6 @@ public class JobServiceImpl implements JobService {
             exclusionList = savedListService.createSavedList(req);
         }
         job.setExclusionList(exclusionList);
-
-        job.setJobCreator(loggedInUserPartner);
 
         job = salesforceJobOppRepository.save(job);
 
@@ -335,6 +356,11 @@ public class JobServiceImpl implements JobService {
             //No job exists, create one
             job = new SalesforceJobOpp();
             job.setEmployerEntity(employer);
+            job.setJobCreator(loggedInUserPartner);
+        }
+
+        if (request.getRoleName() != null) {
+            job.setName(generateJobName(employer, request.getRoleName()));
         }
 
         job.setAuditFields(loggedInUser);
@@ -342,11 +368,18 @@ public class JobServiceImpl implements JobService {
         //Update from request
         updateJobFromRequest(job, request);
 
+        //Save job to TC so that it has an id.
+        job = salesforceJobOppRepository.save(job);
+
         //Update SF - set sfId.
         sfId = salesforceService.createOrUpdateJobOpportunity(job);
         job.setSfId(sfId);
 
         return salesforceJobOppRepository.save(job);
+    }
+
+    private static String generateJobName(@NonNull Employer employer, @NonNull String roleName) {
+        return employer.getName() + "-" + OffsetDateTime.now().getYear() + "-" + roleName;
     }
 
     private User getLoggedInUser(String operation) {
