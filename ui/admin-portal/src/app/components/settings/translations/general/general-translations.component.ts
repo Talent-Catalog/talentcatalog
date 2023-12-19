@@ -195,6 +195,7 @@ const ALL_FIELDS = {
         "PASSWORD": null
       },
       "BUTTON": {
+        "ALREADY": null,
         "FORGOT": null,
         "LOGIN": null
       }
@@ -266,9 +267,13 @@ const ALL_FIELDS = {
     },
     "REGISTRATION": {
       "HEADER": {
+        "ACCOUNT": {
+          "EXPLANATION": null
+        },
         "EXPLANATION": null,
         "STEP": null,
         "TITLE": {
+          "ACCOUNT": null,
           "CONTACT": null,
           "CONTACT/ALTERNATE": null,
           "CONTACT/ADDITIONAL": null,
