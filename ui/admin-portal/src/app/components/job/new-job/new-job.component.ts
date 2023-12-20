@@ -174,6 +174,7 @@ export class NewJobComponent implements OnInit {
     this.errorCreatingSFLinks = null;
     this.creatingSFLinks = Progress.Started;
 
+    //todo Need to add TCid
     const request: UpdateEmployerOpportunityRequest = {
       sfJoblink: this.salesforceService.joblink(this.savedList),
       fileJdLink: this.savedList.fileJdLink,

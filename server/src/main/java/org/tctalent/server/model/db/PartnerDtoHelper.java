@@ -80,7 +80,7 @@ public class PartnerDtoHelper {
             ;
     }
 
-    private static DtoBuilder employerDto() {
+    public static DtoBuilder employerDto() {
         return new DtoBuilder()
             .add("id")
             .add("name")

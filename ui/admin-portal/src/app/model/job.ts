@@ -15,7 +15,7 @@
  */
 import {SavedList, ShortSavedList} from "./saved-list";
 import {User} from "./user";
-import {ShortPartner} from "./partner";
+import {Employer, ShortPartner} from "./partner";
 import {SavedSearch} from "./saved-search";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
@@ -45,7 +45,7 @@ export interface Job extends Opportunity {
   employerDescription: string;
   contactUser: User;
   country: Country;
-  employer: string;
+  employerEntity: Employer;
   exclusionList: SavedList;
   jobSummary: string;
   publishedBy: User;

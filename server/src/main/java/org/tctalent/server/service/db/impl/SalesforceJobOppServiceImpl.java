@@ -154,6 +154,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         }
     }
 
+    //TODO JC If Employer (Account) records are autocreated, then we don't need to copy all these extra fields.
     /**
      * Copies a Salesforce opportunity record to a SalesforceJobOpp
      * @param op Salesforce opportunity retrieved from Salesforce

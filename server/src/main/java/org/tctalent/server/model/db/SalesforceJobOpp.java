@@ -88,6 +88,8 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private String description;
 
     //todo This will be redundant when we have switched to using employerEntity below.
+    //todo Problem is where Job opps are copied from opps on SF. Then we rely on special
+    //todo computed fields on SF like AccountName
     /**
      * Name of employer - maps to Account name on Salesforce
      */

@@ -44,6 +44,8 @@ import lombok.ToString;
  *
  * @author John Cameron
  */
+//todo Just get pure Opp fields - Account/Employer fields shoudl be picked up from Employer link
+//in opportunity.
 @Getter
 @Setter
 @ToString(callSuper = true)

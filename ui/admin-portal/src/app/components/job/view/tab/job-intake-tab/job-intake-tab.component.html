@@ -15,7 +15,7 @@
   <ngb-accordion #joi="ngbAccordion" [destroyOnHide]="false" activeIds="employer-details, position-details, immigration-considerations">
 
     <!-- GENERAL INFORMATION -->
-    <ngb-panel id="employer-details" title="Employer Details: {{job.employer}}">
+    <ngb-panel id="employer-details" title="Employer Details: {{job.employerEntity?.name}}">
       <ng-template ngbPanelContent>
         <div class="row cols-3 mb-2">
           <div class="col">
