@@ -356,6 +356,7 @@ public class JobServiceImpl implements JobService {
             //No job exists, create one
             job = new SalesforceJobOpp();
             job.setEmployerEntity(employer);
+            job.setCountry(employer.getCountry());
             job.setStage(JobOpportunityStage.prospect);
             job.setNextStep("");
             job.setJobCreator(loggedInUserPartner);
@@ -765,6 +766,7 @@ public class JobServiceImpl implements JobService {
         return salesforceJobOppRepository.save(job);
     }
 
+    //TODO JC Do we need to stop doing this?
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
     @SchedulerLock(name = "JobService_updateOpenJobs", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     @Async

@@ -1692,9 +1692,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setName(jobOpp.getName());
 
             setAccountId(jobOpp.getEmployerEntity().getSfId());
-            //todo Close date and other fields - including fields defaulting from Employer (Account) - eg office size etc
+            //todo Close date and other fields - including fields defaulting from Employer (Account) - eg office size etc, Country
+
             setClosingComments(jobOpp.getClosingComments());
-            setOwnerId(jobOpp.getOwnerId());
+
+            final JobOpportunityStage stage = jobOpp.getStage();
+            String stageName = stage == null ? null : stage.getSalesforceStageName();
+
+            setStageName(stageName);
+            setNextStep(jobOpp.getNextStep());
+            setNextStepDueDate(jobOpp.getNextStepDueDate());
+            setClosingComments(jobOpp.getClosingComments());
 
             LocalDateTime close = LocalDateTime.now().plusYears(1);
             setCloseDate(close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -1778,8 +1786,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         /**
          * Opportunity next step due date
          */
-        public void setNextStepDueDate(LocalDate nextStepDueDate) {
-            put("Next_Step_Due_Date__c", nextStepDueDate.toString());
+        public void setNextStepDueDate(@Nullable LocalDate nextStepDueDate) {
+            put("Next_Step_Due_Date__c", nextStepDueDate == null ? null : nextStepDueDate.toString());
         }
 
         /**
