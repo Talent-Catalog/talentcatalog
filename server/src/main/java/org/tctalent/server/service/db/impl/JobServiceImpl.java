@@ -356,6 +356,8 @@ public class JobServiceImpl implements JobService {
             //No job exists, create one
             job = new SalesforceJobOpp();
             job.setEmployerEntity(employer);
+            job.setStage(JobOpportunityStage.prospect);
+            job.setNextStep("");
             job.setJobCreator(loggedInUserPartner);
         }
 
