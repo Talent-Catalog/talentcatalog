@@ -48,7 +48,10 @@ export interface PartnerSimpleAttributes {
 export interface Employer {
   id: number;
   name: string;
+  description: string;
+  hasHiredInternationally: boolean;
   sfId: string;
+  website: string;
 }
 
 export interface ShortPartner {

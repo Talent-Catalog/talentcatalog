@@ -59,6 +59,7 @@ import lombok.Setter;
 @SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
 public class SalesforceJobOpp extends AbstractOpportunity {
 
+    //TODO JC Redundant
     /**
      * Salesforce id of account (ie employer) associated with opportunity
      */

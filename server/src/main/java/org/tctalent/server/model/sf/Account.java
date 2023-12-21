@@ -31,6 +31,12 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class Account extends SalesforceObjectBase {
 
+    @JsonSetter("Descriptions")
+    private String description;
+
+    @JsonSetter("Website")
+    private String website;
+
     @JsonSetter("Name")
     private String name;
 

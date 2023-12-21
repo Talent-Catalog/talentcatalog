@@ -165,15 +165,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         "Id,AccountId," + candidateNumberSFFieldName;
 
     private final String commonOpportunityFields =
-        "Id,Name,AccountId,Closing_Comments__c,CreatedDate,LastModifiedDate,NextStep,Next_Step_Due_Date__c,StageName,IsClosed,AccountCountry__c," +
-                "Account.Description, IsWon";
+        "Id,Name,AccountId,Closing_Comments__c,CreatedDate,LastModifiedDate,NextStep,Next_Step_Due_Date__c,StageName,IsClosed,IsWon";
     private final String candidateOpportunityRetrievalFields =
         commonOpportunityFields +
         ",Employer_Feedback__c,Closing_Comments_For_Candidate__c,Parent_Opportunity__c,Candidate_TC_id__c,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
         commonOpportunityFields +
-        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,AccountWebsite__c,AccountHasHiredInternationally__c,Opportunity_Score__c";
+        ",RecordTypeId,OwnerId,Hiring_Commitment__c,Opportunity_Score__c";
 
     private final EmailHelper emailHelper;
 
@@ -670,7 +669,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         if (sfId != null) {
             try {
                 account = findRecordFieldsFromId(
-                    "Account", sfId, "Id,Name,BillingCountry,Has_Hired_Internationally__c", Account.class);
+                    "Account", sfId, "Id,Name,BillingCountry,Description,Has_Hired_Internationally__c,Website", Account.class);
             } catch (NotFound ex) {
                 //Just return null if not found
             }

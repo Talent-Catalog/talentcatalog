@@ -44,33 +44,16 @@ import lombok.ToString;
  *
  * @author John Cameron
  */
-//todo Just get pure Opp fields - Account/Employer fields shoudl be picked up from Employer link
-//in opportunity.
 @Getter
 @Setter
 @ToString(callSuper = true)
 public class Opportunity extends SalesforceObjectBase {
 
-    @Getter
-    static public class Account {
-        @JsonSetter("Description")
-        private String description;
-    }
-
     @JsonSetter("Name")
     private String name;
 
-    @JsonSetter("Account")
-    private Account account;
-
     @JsonSetter("AccountId")
     private String accountId;
-
-    @JsonSetter("AccountCountry__c")
-    private String accountCountry;
-
-    @JsonSetter("AccountName__c")
-    private String accountName;
 
     @JsonSetter("Candidate_TC_id__c")
     private String candidateId;
@@ -122,12 +105,6 @@ public class Opportunity extends SalesforceObjectBase {
 
     @JsonSetter("Hiring_Commitment__c")
     private Long hiringCommitment;
-
-    @JsonSetter("AccountWebsite__c")
-    private String accountWebsite;
-
-    @JsonSetter("AccountHasHiredInternationally__c")
-    private String accountHasHiredInternationally;
 
     @Override
     String getSfObjectName() {

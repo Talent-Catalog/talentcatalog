@@ -30,7 +30,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.SalesforceException;
-import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.sf.Opportunity;
@@ -163,7 +162,6 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private void copyOpportunityToJobOpp(@NonNull Opportunity op, SalesforceJobOpp salesforceJobOpp) {
         //Update DB with data from op
         salesforceJobOpp.setName(op.getName());
-        salesforceJobOpp.setEmployer(op.getAccountName());
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
         salesforceJobOpp.setClosed(op.isClosed());
@@ -172,9 +170,6 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setWon(op.isWon());
         salesforceJobOpp.setHiringCommitment(op.getHiringCommitment());
         salesforceJobOpp.setOpportunityScore(op.getOpportunityScore());
-        salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite());
-        salesforceJobOpp.setEmployerHiredInternationally(op.getAccountHasHiredInternationally());
-        salesforceJobOpp.setEmployerDescription(op.getAccount() == null ? null : op.getAccount().getDescription());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());
@@ -219,17 +214,6 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             } catch (DateTimeParseException ex) {
                 log.error("Error decoding lastModifiedDate: " + lastModifiedDate + " in job op " + op.getName());
             }
-        }
-
-        //Post-processing
-
-        // Match a country object with the country name from Salesforce.
-        final String sfCountryName = op.getAccountCountry();
-        Country country = this.countryService.findCountryByName(sfCountryName);
-        salesforceJobOpp.setCountry(country);
-        if (country == null ){
-             emailHelper.sendAlert("Salesforce country " + sfCountryName +
-                 " in Job Opp " + op.getName() + " not found in database.");
         }
     }
 }

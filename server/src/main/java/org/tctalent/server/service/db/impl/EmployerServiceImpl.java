@@ -58,6 +58,8 @@ public class EmployerServiceImpl implements EmployerService {
             Boolean hasHiredInternationally = booleanAsString == null ? null :
                 booleanAsString.toLowerCase().startsWith("y");
             employer.setHasHiredInternationally(hasHiredInternationally);
+            employer.setDescription((account.getDescription()));
+            employer.setWebsite((account.getWebsite()));
 
             //todo Other account related fields - office size etc
 

@@ -38,11 +38,8 @@ export interface ShortJob {
 }
 
 export interface Job extends Opportunity {
-  employerWebsite: string;
-  employerHiredInternationally: boolean;
   hiringCommitment: string;
   opportunityScore: string;
-  employerDescription: string;
   contactUser: User;
   country: Country;
   employerEntity: Employer;

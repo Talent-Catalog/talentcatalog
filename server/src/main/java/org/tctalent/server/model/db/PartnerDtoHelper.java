@@ -84,7 +84,10 @@ public class PartnerDtoHelper {
         return new DtoBuilder()
             .add("id")
             .add("name")
+            .add("description")
+            .add("hasHiredInternationally")
             .add("sfId")
+            .add("website")
             ;
     }
     private static DtoBuilder userDto() {
