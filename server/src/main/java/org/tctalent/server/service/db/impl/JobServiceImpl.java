@@ -289,6 +289,12 @@ public class JobServiceImpl implements JobService {
 
             job.setJobCreator(loggedInUserPartner);
 
+            //Fetch employer corresponding to job's accountId
+            Account account = salesforceService.findAccount(job.getAccountId());
+            Employer employer = employerService.findOrCreateEmployerFromSalesforceAccount(account);
+            //... and use it set the job's country to the employer's country
+            job.setCountry(employer.getCountry());
+
             job = salesforceJobOppRepository.save(job);
         } else if (loggedInUserPartner.getEmployer() != null) {
             //Employer partner

@@ -23,6 +23,8 @@
         <label class="col-form-label"><i class="fa-solid fa-building"></i>Employer</label>
         <div class="form-control-plaintext">
           {{job.employerEntity?.name}}
+          <span *ngIf="job.employerEntity?.website">
+            <a target="_blank" href="{{job.employerEntity.website}}">({{job.employerEntity.website}})</a></span>
         </div>
       </div>
 
