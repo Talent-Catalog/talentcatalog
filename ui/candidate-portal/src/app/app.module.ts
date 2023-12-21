@@ -183,6 +183,9 @@ import {
   CreateUpdatePostComponent
 } from "./components/chat/create-update-post/create-update-post.component";
 import {QuillModule} from "ngx-quill";
+import {
+  RegistrationCreateAccountComponent
+} from './components/register/create-account/registration-create-account.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -249,7 +252,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     CreateUpdatePostComponent,
     PostsComponent,
     ViewPostComponent,
-    TruncatePipe
+    TruncatePipe,
+    RegistrationCreateAccountComponent
   ],
   imports: [
     BrowserModule,

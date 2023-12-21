@@ -1,0 +1,96 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+<div class="container">
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <form [formGroup]="registrationForm" *ngIf="!loading" (submit)="register()">
+
+    <app-error [error]="error"></app-error>
+
+    <!-- USERNAME (EMAIL) -->
+    <div class="mb-3">
+      <label class="form-label" for="username">{{'REGISTRATION.CONTACT.LABEL.USERNAME' | translate }} <sup>*</sup></label>
+      <input type="email" class="form-control" id="username" placeholder="" [formControlName]="'username'"
+             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$">
+      <div *ngIf="registrationForm.get('username').touched || registrationForm.get('username').dirty" class="text-danger">
+        <small *ngIf="registrationForm.get('username').errors?.['pattern']">
+          {{ 'FORM.ERROR.EMAIL' | translate }}
+        </small>
+      </div>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="mb-3">
+      <label class="form-label" for="password">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORD' | translate }} <sup>*</sup></label>
+      <input type="password" class="form-control" id="password" placeholder=""
+             [formControlName]="'password'">
+      <app-form-control-error [control]="registrationForm.controls.password"></app-form-control-error>
+    </div>
+
+    <!-- PASSWORD CONFIRMATION -->
+    <div class="mb-3">
+      <label class="form-label" for="passwordConfirmation">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION' | translate }}
+        <sup>*</sup></label>
+      <input type="password" class="form-control" id="passwordConfirmation" placeholder=""
+             [formControlName]="'passwordConfirmation'">
+      <app-form-control-error [control]="registrationForm.controls.passwordConfirmation"></app-form-control-error>
+    </div>
+
+    <hr class="my-4"/>
+
+    <div class="mb-3 form-check">
+      <input class="form-check-input" type="checkbox" id="contactConsentRegistration" [value]="false" [formControlName]="'contactConsentRegistration'">
+      <label class="form-check-label" for="contactConsentRegistration">
+        {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTREGISTRATION' | translate }}
+        <sup>*</sup>
+      </label>
+      <app-form-control-error [control]="registrationForm.controls.contactConsentRegistration"></app-form-control-error>
+    </div>
+
+    <div class="mb-3 form-check">
+      <input class="form-check-input" type="checkbox" id="contactConsentPartners" [value]="false" [formControlName]="'contactConsentPartners'">
+      <label class="form-check-label" for="contactConsentPartners">
+        {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTPARTNERS' | translate }}
+      </label>
+    </div>
+
+    <div class="text-center my-3">
+      <button type="submit" class="btn btn-primary w-75"
+         [routerLink]="'/register'"
+         [queryParamsHandling]="'merge'"
+         [disabled]="!registrationForm.valid"
+      >{{ 'LANDING.REGISTER' | translate }}</button>
+    </div>
+
+    <div class="text-center mt-2">
+      <a class="small" [routerLink]="'/login'">
+        {{ 'LOGIN.BUTTON.ALREADY' | translate }}
+      </a>
+    </div>
+  </form>
+
+  <hr/>
+
+  <h5><a target="_blank" href="https://talentbeyondboundaries.org/privacy-and-data-protection-policy">
+    {{ 'LANDING.HEADING3' | translate }}
+  </a>
+  </h5>
+
+  <div [innerHTML]="'LANDING.PARA3' | translate:{partner: getPartnerName()}"></div>
+
+
+</div>
