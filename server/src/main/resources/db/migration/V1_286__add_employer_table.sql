@@ -19,10 +19,12 @@ create table employer
     id                        bigserial not null primary key,
 
     country_id                bigint references country,
+    description               text,
     has_hired_internationally boolean,
 
     name                      text,
     sf_id                     text,
+    website                   text,
 
     created_by                bigint references users,
     created_date              timestamptz,
