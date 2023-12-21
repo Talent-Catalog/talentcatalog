@@ -97,7 +97,7 @@ public class ChatPostServiceImpl implements ChatPostService {
         throws IOException {
 
         //Name of file being uploaded - prefixed with job chat id.
-        String fileName = "ChatId" + chat.getId() + '-' + file.getOriginalFilename();
+        String fileName = chat.getId() + "-" + file.getOriginalFilename();
 
         //Save to a temporary file
         InputStream is = file.getInputStream();
