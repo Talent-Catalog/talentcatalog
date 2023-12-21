@@ -6,6 +6,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPostService} from "../../../services/chat-post.service";
 import Quill from 'quill';
 import {ImageHandler, Options} from 'ngx-quill-upload';
+import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
 @Component({
   selector: 'app-create-update-post',
@@ -30,15 +31,6 @@ export class CreateUpdatePostComponent implements OnInit {
     Quill.register('modules/imageHandler', ImageHandler);
     this.moduleOptions = {
       // Doc for setting module toolbar options: https://quilljs.com/docs/modules/toolbar/
-      toolbar: [
-        { 'list': 'ordered'},
-        { 'list': 'bullet' },
-        'bold',
-        'italic',
-        'underline',
-        'link',
-        'image',
-      ],
       // Doc for setting up image handler: https://www.npmjs.com/package/ngx-quill-upload
       imageHandler: {
         upload: (file) => {
@@ -98,5 +90,28 @@ export class CreateUpdatePostComponent implements OnInit {
       //Clear content.
       this.contentControl.patchValue(null);
     }
+  }
+
+  uploadFile() {
+    const fileSelectorModal = this.modalService.open(FileSelectorComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
+
+    fileSelectorModal.componentInstance.maxFiles = 1;
+    fileSelectorModal.componentInstance.closeButtonLabel = "Upload";
+    fileSelectorModal.componentInstance.title = "Select file to upload";
+    fileSelectorModal.componentInstance.validExtensions = ['pdf', 'doc', 'docx', 'txt'];
+
+    fileSelectorModal.result
+    .then((selectedFiles: File[]) => {
+      if (selectedFiles.length > 0) {
+        this.doUpload(selectedFiles[0]).then((url: String) => {
+          this.contentControl.patchValue(this.contentControl.value + " <a href=" + url + ">link to file</a>")
+        });
+      }
+    })
+    .catch(() => {
+    });
   }
 }
