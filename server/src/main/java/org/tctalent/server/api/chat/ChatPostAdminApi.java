@@ -60,7 +60,6 @@ public class ChatPostAdminApi implements
         throws InvalidRequestException, IOException, NoSuchObjectException {
         String fileUrl = chatPostService.uploadFile(id, file);
         UrlDto urlDto = new UrlDto(fileUrl);
-        // todo want to return just the URL of the file, which isn't saved as part of the object. How to return a string without a DTO?
         return urlDto;
     }
 
