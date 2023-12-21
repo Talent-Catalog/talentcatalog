@@ -1,0 +1,55 @@
+/*!
+ * Copyright (c) 2023 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+@import "~src/scss/variables";
+
+#posts {
+  overflow: scroll;
+  max-height: 60vh;
+}
+
+.post {
+  background-color: fade-out($accent1, 0.8);
+  background-image: var(--bs-gradient);
+  color: $dark;
+  margin: 0.2em;
+  border-radius: 5px;
+  padding: 0.4em 1em;
+  display: flex;
+  flex-direction: column;
+}
+
+.audit {
+  margin-bottom: 0;
+  font-size: 14px;
+  color: $accent1;
+}
+
+.content {
+  margin-top: 0.2em;
+  margin-bottom: 0;
+  img {
+    height: 500px;
+    display: block;
+    margin: 0.4em 0;
+  }
+  p {
+    margin-bottom: 0;
+  }
+}
+
+
+

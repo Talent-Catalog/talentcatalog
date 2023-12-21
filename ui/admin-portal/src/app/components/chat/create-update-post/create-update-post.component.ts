@@ -73,8 +73,6 @@ export class CreateUpdatePostComponent implements OnInit {
       // The url string will then be returned through the Promise, and embedded into the editor.
       this.chatPostService.uploadFile(this.chat.id, formData).subscribe(
         urlDto => {
-          const range = this.quillEditorRef.getSelection();
-          this.quillEditorRef.insertEmbed(urlDto)
           this.saving = false;
           resolve(urlDto.url);
         },

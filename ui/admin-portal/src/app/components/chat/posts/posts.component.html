@@ -5,12 +5,11 @@
   {{error}}
 </div>
 
-<div class="container">
+<div id="posts" class="container">
   <div *ngIf="posts?.length > 0; else noPosts" class="d-flex flex-column">
     <div *ngFor="let post of posts"
          (click)="selectCurrent(post)"
-         class="post"
-         [ngClass]="{'current': currentPost?.id == post.id, 'from-me': post.createdBy.id == loggedInUser.id}">
+         [ngClass]="{'current': currentPost?.id == post.id}">
       <app-view-post
         [post]="post">
       </app-view-post>
@@ -20,10 +19,9 @@
     <p class="text-muted py-3 fw-light text-center fs-6">Send a message below to begin chat.</p>
   </ng-template>
   <div>
-    <app-create-update-post *ngIf="!readOnly"
-      [chat]="chat"
-    >
-
+    <app-create-update-post
+      *ngIf="!readOnly"
+      [chat]="chat">
     </app-create-update-post>
   </div>
 
