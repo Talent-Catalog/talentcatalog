@@ -66,6 +66,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.model.db.SystemLanguage;
 import org.tctalent.server.model.db.TBBEligibilityAssessment;
 import org.tctalent.server.model.db.TaskImpl;
@@ -620,6 +621,14 @@ public class AdminApiTestUtil {
         partner3.setName("TC Partner 3");
         return List.of(
           partner1, partner2, partner3
+        );
+    }
+
+    public static List<SurveyType> getSurveyTypes() {
+        SurveyType surveyType1 = new SurveyType("Survey Type One", Status.active);
+        SurveyType surveyType2 = new SurveyType("Survey Type Two", Status.inactive);
+        return List.of(
+            surveyType1, surveyType2
         );
     }
 

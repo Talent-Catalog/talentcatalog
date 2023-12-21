@@ -69,13 +69,6 @@ export class LoginComponent implements OnInit {
     if (this.loading) { return; }
     this.loading = true;
 
-    // const action = 'login';
-    // this.reCaptchaV3Service.execute(action).subscribe(
-    //   (token) => this.loginWithToken(token),
-    //   (error) => {
-    //     console.log(error);
-    //   }
-    // );
     this.loginWithToken(null);
   }
 
