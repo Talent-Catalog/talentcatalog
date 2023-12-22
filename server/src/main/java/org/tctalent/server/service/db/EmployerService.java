@@ -46,4 +46,14 @@ public interface EmployerService {
      */
     @NonNull
     Employer findOrCreateEmployerFromSalesforceLink(String sflink) throws NoSuchObjectException;
+
+    /**
+     * Get the Employer with the given id.
+     * @param id ID of Employer to get
+     * @return Employer
+     * @throws NoSuchObjectException if there is no employer with this id.
+     */
+    @NonNull
+    Employer get(long id) throws NoSuchObjectException;
+
 }

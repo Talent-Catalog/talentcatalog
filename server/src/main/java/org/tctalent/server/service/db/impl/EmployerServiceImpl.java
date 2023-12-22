@@ -106,4 +106,11 @@ public class EmployerServiceImpl implements EmployerService {
         }
         return findOrCreateEmployerFromSalesforceId(sfId);
     }
+
+    @NonNull
+    @Override
+    public Employer get(long id) throws NoSuchObjectException {
+        return employerRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(Employer.class, id));
+    }
 }
