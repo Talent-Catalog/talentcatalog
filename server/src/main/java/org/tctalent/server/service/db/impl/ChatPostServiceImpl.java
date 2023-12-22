@@ -16,18 +16,34 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.configuration.GoogleDriveConfig;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.repository.db.ChatPostRepository;
+import org.tctalent.server.repository.db.JobChatRepository;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.ChatPostService;
+import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +51,12 @@ public class ChatPostServiceImpl implements ChatPostService {
 
     private final UserService userService;
     private final ChatPostRepository chatPostRepository;
+    private final GoogleDriveConfig googleDriveConfig;
+    private final FileSystemService fileSystemService;
+    private final JobChatRepository jobChatRepository;
+    private final CandidateService candidateService;
+
+    private static final Logger log = LoggerFactory.getLogger(ChatPostServiceImpl.class);
 
     @Override
     public ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat) {
@@ -55,9 +77,114 @@ public class ChatPostServiceImpl implements ChatPostService {
             .orElseThrow(() -> new NoSuchObjectException(ChatPost.class, id));
     }
 
-    @Override
     public List<ChatPost> listChatPosts(long chatId) {
         return chatPostRepository.findByJobChatId(chatId)
             .orElseThrow(() -> new NoSuchObjectException(JobChat.class, chatId));
+    }
+
+    @Override
+    public String uploadFile(long id, MultipartFile file)
+        throws InvalidRequestException, NoSuchObjectException, IOException {
+        JobChat chat = jobChatRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(JobChat.class, id));
+
+        GoogleFileSystemFile uploadedFile = uploadChatFile(chat, file);
+
+        return createEmbedDisplayLink(uploadedFile);
+    }
+
+    private GoogleFileSystemFile uploadChatFile(JobChat chat, MultipartFile file)
+        throws IOException {
+
+        //Name of file being uploaded - prefixed with job chat id.
+        String fileName = chat.getId() + "-" + file.getOriginalFilename();
+
+        //Save to a temporary file
+        InputStream is = file.getInputStream();
+        File tempFile = File.createTempFile("job", ".tmp");
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+            int read;
+            byte[] bytes = new byte[1024];
+            while ((read = is.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+        }
+
+        final GoogleFileSystemDrive drive = getGoogleDrive(chat);
+        final GoogleFileSystemFolder parentFolder = new GoogleFileSystemFolder(getFolderLink(chat));
+
+        // Store the chat post uploads to a new ChatUploads folder in the job's Google folder.
+        // If it doesn't exist, create it.
+        GoogleFileSystemFolder chatFolder;
+        String chatUploadFolderName = "ChatUploads";
+        chatFolder = fileSystemService.findAFolder(drive, parentFolder, chatUploadFolderName);
+        if (chatFolder == null) {
+            //No folder exists on drive, create it
+            chatFolder = fileSystemService.createFolder(
+                drive, parentFolder, chatUploadFolderName);
+            //Make publicly viewable
+            fileSystemService.publishFolder(chatFolder);
+        }
+
+        //Upload the file to its folder, with the correct name (not the temp file name).
+        GoogleFileSystemFile uploadedFile =
+            fileSystemService.uploadFile(drive, chatFolder, fileName, tempFile);
+
+        //Delete tempfile
+        if (!tempFile.delete()) {
+            log.error("Failed to delete temporary file " + tempFile);
+        }
+
+        return uploadedFile;
+    }
+
+    /**
+     * In order for the image to display via the html in the post or the editor, we need to alter 
+     * the link. It needs to be a display link (not embed or preview).
+     * See here: https://support.google.com/drive/thread/34363118?hl=en&msgid=34384934
+     * @param uploadedFile which we want to display in the html of the post
+     * @return
+     */
+    private String createEmbedDisplayLink(GoogleFileSystemFile uploadedFile) {
+        return "https://drive.google.com/uc?export=view&id=" + uploadedFile.getId();
+    }
+
+    /**
+     * Get the appropriate GoogleDrive folder link to save the chat post file upload to.
+     * Determined by if the chat is job related (has Job id) or is candidate opp related (has CandidateOpp id).
+     * If it's job related the folder will be the job's submission list folder.
+     * If it's candidate opp related, it will go in the candidate's folder.
+     * And if the candidate has no folder yet, we need to create it.
+     * @param chat JobChat we are uploading a file to
+     * @return the appropriate folder link to save the file to.
+     */
+    private String getFolderLink(JobChat chat) throws NoSuchObjectException, IOException {
+        String folderLink;
+        if (chat.getJobOpp() != null) {
+            folderLink = chat.getJobOpp().getSubmissionList().getFolderlink();
+        } else if (chat.getCandidateOpp() != null) {
+            folderLink = chat.getCandidateOpp().getCandidate().getFolderlink();
+            // If the candidate related to the candidate opportunity has no Google Drive folder, create it.
+            if (folderLink == null) {
+                long candidateId = chat.getCandidateOpp().getCandidate().getId();
+                Candidate candidate = this.candidateService.createCandidateFolder(candidateId);
+                folderLink = candidate.getFolderlink();
+            }
+        } else {
+            throw new NoSuchObjectException("No candidate opp or job associated with chat.");
+        }
+        return folderLink;
+    }
+
+    private GoogleFileSystemDrive getGoogleDrive(JobChat chat) throws NoSuchObjectException {
+        GoogleFileSystemDrive drive;
+        if (chat.getJobOpp() != null) {
+            drive = googleDriveConfig.getListFoldersDrive();
+        } else if (chat.getCandidateOpp() != null) {
+            drive = googleDriveConfig.getCandidateDataDrive();
+        } else {
+            throw new NoSuchObjectException("No candidate opp or job associated with chat.");
+        }
+        return drive;
     }
 }
