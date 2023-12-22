@@ -1462,6 +1462,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public String Talent_Catalog_List__c;
 
+        /**
+         * ID of Talent Catalog job entity
+         */
+        public Long TCid__c;
+
         public EmployerOpportunityRequest(UpdateEmployerOpportunityRequest request) {
             //Note that we now store the Root folder link in what used to be called the CVs folder
             //on SF. It is now displayed in SF as "List folder" - but it still has the old
@@ -1471,6 +1476,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             CVs_Folder__c = request.getFolderlink();
             Job_Description_Folder__c = request.getFolderjdlink();
             Talent_Catalog_List__c = request.getListlink();
+            TCid__c = request.getJobId();
         }
     }
 
