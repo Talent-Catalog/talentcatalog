@@ -112,10 +112,6 @@ class PartnerAdminApiTest extends ApiTestBase {
     request.setName("My TC Partner");
     request.setStatus(Status.active);
 
-    given(employerService
-        .findEmployerFromSalesforceLink(null))
-        .willReturn(null);
-
     given(partnerService
         .create(any(UpdatePartnerRequest.class)))
         .willReturn(partner);
@@ -280,10 +276,6 @@ class PartnerAdminApiTest extends ApiTestBase {
   void updatePartnerByIdSucceeds() throws Exception {
     UpdatePartnerRequest request = new UpdatePartnerRequest();
     request.setDefaultContactId(11L);
-
-    given(employerService
-        .findEmployerFromSalesforceLink(null))
-        .willReturn(null);
 
     given(userService
         .getUser(11L))

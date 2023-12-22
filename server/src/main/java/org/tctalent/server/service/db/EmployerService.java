@@ -30,11 +30,20 @@ public interface EmployerService {
     Employer findOrCreateEmployerFromSalesforceAccount(Account account);
 
     /**
+     * Find employer (ie Salesforce account) matching given Salesforce id
+     * @param sfId Salesforce id of an account on Salesforce
+     * @return Matching employer
+     * @throws NoSuchObjectException if there is no Salesforce account matching that sfId.
+     */
+    @NonNull
+    Employer findOrCreateEmployerFromSalesforceId(String sfId) throws NoSuchObjectException;
+
+    /**
      * Find employer (ie Salesforce account) matching given Salesforce url
      * @param sflink Salesforce url of an account on Salesforce
-     * @return Matching employer
+     * @return Matching employer.
      * @throws NoSuchObjectException if there is no Salesforce account matching that url.
      */
     @NonNull
-    Employer findEmployerFromSalesforceLink(String sflink) throws NoSuchObjectException;
+    Employer findOrCreateEmployerFromSalesforceLink(String sflink) throws NoSuchObjectException;
 }

@@ -404,16 +404,27 @@ public class JobServiceImpl implements JobService {
     public SalesforceJobOpp getJob(long id) throws NoSuchObjectException {
         SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
-        return jobOpp = checkEmployerEntity(jobOpp);
+        return checkEmployerEntity(jobOpp);
     }
 
-    private SalesforceJobOpp checkEmployerEntity(SalesforceJobOpp jobOpp) {
+    /**
+     * Checks whether given job has an associated employer entity.
+     * If it does, method just returns the job unchanged.
+     * If it does not have an employer, it will try and create one from the job's accountId.
+     * @param jobOpp Given job
+     * @return Job, updated with employer entity matching job's accountId
+     * @throws NoSuchObjectException if the job has a null or invalid Salesforce account id.
+     */
+    @NonNull
+    private SalesforceJobOpp checkEmployerEntity(@NonNull SalesforceJobOpp jobOpp)
+        throws NoSuchObjectException {
         if (jobOpp.getEmployerEntity() == null) {
-            //Load employer entity from SF and update job opp
             String accountId = jobOpp.getAccountId();
-            Account account = salesforceService.findAccount(accountId);
-            //Find or create an employer and from an existing account.
-            Employer employer = employerService.findOrCreateEmployerFromSalesforceAccount(account);
+            if (accountId == null) {
+                throw new NoSuchObjectException("Job " + jobOpp.getId() + " has null accountId");
+            }
+            //Find or create employer for this account.
+            Employer employer = employerService.findOrCreateEmployerFromSalesforceId(accountId);
             jobOpp.setEmployerEntity(employer);
             jobOpp = salesforceJobOppRepository.save(jobOpp);
         }
@@ -422,7 +433,11 @@ public class JobServiceImpl implements JobService {
 
     private void checkEmployerEntities(Iterable<SalesforceJobOpp> jobs) {
         for (SalesforceJobOpp job : jobs) {
-            checkEmployerEntity(job);
+            try {
+                checkEmployerEntity(job);
+            } catch (NoSuchObjectException ex) {
+                log.error("Could not create employer for job " + job.getId(), ex);
+            }
         }
     }
 
@@ -489,6 +504,13 @@ public class JobServiceImpl implements JobService {
         jobInfo.setTcJobLink(tcJobLink);
 
         return jobInfo;
+    }
+
+    @Async
+    @Override
+    public void createEmployerForAllJobs() {
+        List<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll();
+        checkEmployerEntities(jobs);
     }
 
     @Async
