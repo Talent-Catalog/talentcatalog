@@ -122,6 +122,7 @@ import {
   faEdit,
   faEllipsisH,
   faExternalLinkAlt,
+  faFileUpload,
   faFolderOpen,
   faGlobe,
   faQuestion,
@@ -186,6 +187,7 @@ import {QuillModule} from "ngx-quill";
 import {
   RegistrationCreateAccountComponent
 } from './components/register/create-account/registration-create-account.component';
+import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -253,7 +255,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     PostsComponent,
     ViewPostComponent,
     TruncatePipe,
-    RegistrationCreateAccountComponent
+    RegistrationCreateAccountComponent,
+    FileSelectorComponent
   ],
   imports: [
     BrowserModule,
@@ -326,7 +329,8 @@ export class AppModule {
       faTimes,
       faArrowLeft,
       faQuestionCircle,
-      faFolderOpen
+      faFolderOpen,
+      faFileUpload
     );
   }
 }
