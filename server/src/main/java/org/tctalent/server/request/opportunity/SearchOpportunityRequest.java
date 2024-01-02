@@ -23,7 +23,12 @@ import lombok.ToString;
 import org.tctalent.server.request.PagedSearchRequest;
 
 /**
- * Base class for search requests of either Job or Candidate opportunities
+ * Base class for search requests of either Job or Candidate opportunities (cases)
+ * <p/>
+ * An opportunity request can only request one kind of ownership at a time.
+ * You can't determine which kind of ownership to apply from the type of logged user
+ * (or their partner) because some partners can own opportunities in more than one way
+ * - for example TBB can be both a source partner and a job creator.
  *
  * @author John Cameron
  */
@@ -45,7 +50,19 @@ public class SearchOpportunityRequest extends PagedSearchRequest {
     private String keyword;
 
     /**
-     * If specified, match opportunities which are owned by me
+     * Indicates that search request can include ownership criteria - ie {@link #getOwnedByMe()}
+     * or {@link #getOwnedByMyPartner()}.
+     * <p/>
+     * If null any specified ownership criteria are ignored (because we don't know which kind of
+     * ownership to apply).
+     */
+    @Nullable
+    private OpportunityOwnershipType ownershipType;
+
+    /**
+     * If specified, match opportunities which are owned by me.
+     * <p/>
+     * Ignored if ownershipType is null
      */
     @Nullable
     private Boolean ownedByMe;
@@ -55,6 +72,8 @@ public class SearchOpportunityRequest extends PagedSearchRequest {
      * as I do.
      * eg if I work for TBB, setting this true means that I want to see all TBB opportunities,
      * not just the ones that I own.
+     * <p/>
+     * Ignored if ownershipType is null
      */
     @Nullable
     private Boolean ownedByMyPartner;

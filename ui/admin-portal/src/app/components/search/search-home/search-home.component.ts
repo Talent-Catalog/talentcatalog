@@ -21,7 +21,7 @@ export class SearchHomeComponent extends HomeComponent {
     super(localStorageService, savedSearchService, authService, authenticationService);
     this.lastTabKey = 'SearchHomeLastTab';
     this.lastCategoryTabKey = 'SearchHomeLastCategoryTab';
-    this.defaultTabId = 'NewSearch';
+    this.defaultTabId = 'MySearches';
   }
 
 }

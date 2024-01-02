@@ -46,50 +46,6 @@
              [formControlName]="'whatsapp'">
     </div>
 
-
-    <ng-container *ngIf="!authenticated">
-      <!--      <div class="mb-3">-->
-      <!--        <label class="form-label" for="username" >{{ 'REGISTRATION.CONTACT.LABEL.USERNAME' | translate}} <sup>*</sup></label>-->
-      <!--        <input type="username" class="form-control" id="username" placeholder="Enter username" [formControlName]="'username'">-->
-      <!--      </div>-->
-
-      <div class="mb-3">
-        <label class="form-label" for="password">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORD' | translate }} <sup>*</sup></label>
-        <input type="password" class="form-control" id="password" placeholder=""
-               [formControlName]="'password'">
-        <app-form-control-error [control]="form.controls.password"></app-form-control-error>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label" for="passwordConfirmation">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION' | translate }}
-          <sup>*</sup></label>
-        <input type="password" class="form-control" id="passwordConfirmation" placeholder=""
-               [formControlName]="'passwordConfirmation'">
-        <app-form-control-error [control]="form.controls.passwordConfirmation"></app-form-control-error>
-      </div>
-
-      <hr class="my-4"/>
-
-      <h5 class="mb-3 fw-bold">Email Communication Consent</h5>
-
-      <div class="mb-3 form-check">
-        <input class="form-check-input" type="checkbox" id="contactConsentRegistration" [value]="false" [formControlName]="'contactConsentRegistration'">
-        <label class="form-check-label" for="contactConsentRegistration">
-          {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTREGISTRATION' | translate }}
-          <sup>*</sup>
-        </label>
-        <app-form-control-error [control]="form.controls.contactConsentRegistration"></app-form-control-error>
-      </div>
-
-      <div class="mb-3 form-check">
-        <input class="form-check-input" type="checkbox" id="contactConsentPartners" [value]="false" [formControlName]="'contactConsentPartners'">
-        <label class="form-check-label" for="contactConsentPartners">
-          {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTPARTNERS' | translate }}
-        </label>
-      </div>
-
-    </ng-container>
-
   </form>
 
   <app-error [error]="error"></app-error>

@@ -5,12 +5,20 @@
   {{error}}
 </div>
 
-<div *ngFor="let post of posts" (click)="selectCurrent(post)"
-     [ngClass]="{'current': currentPost?.id == post.id}">
-  <app-view-post
-    [post]="post"
-  >
-  </app-view-post>
+<div id="posts">
+  <div *ngIf="posts?.length > 0; else noPosts" class="d-flex flex-column">
+
+    <div *ngFor="let post of posts" (click)="selectCurrent(post)"
+         [ngClass]="{'current': currentPost?.id == post.id}">
+      <app-view-post
+        [post]="post">
+      </app-view-post>
+    </div>
+  </div>
+
+  <ng-template #noPosts>
+    <p class="mb-0 text-muted py-3 fw-light text-center fs-6">Send a message below to begin chat.</p>
+  </ng-template>
 </div>
 
 <app-create-update-post

@@ -39,7 +39,7 @@ import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
 /**
- * Specification for sorting and searching {@link CandidateOpportunity} entities
+ * Specification for sorting and searching {@link CandidateOpportunity} entities.
  */
 public class CandidateOpportunitySpecification {
 
@@ -111,91 +111,135 @@ public class CandidateOpportunitySpecification {
             }
 
             //OWNERSHIP
+            //Can ony search by ownership criteria if the type of ownership is specified.
+            if (request.getOwnershipType() != null) {
+                //Can only determine ownership if we have a non null logged in user and associated
+                // partner
+                Partner loggedInUserPartner;
+                if (loggedInUser != null
+                    && (loggedInUserPartner = loggedInUser.getPartner()) != null) {
 
-            //If owned by this user's partner
-            if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
-                //Just check that the candidate associated with the opportunity is managed
-                //by the logged in user's partner.
-                if (loggedInUser != null) {
-                    Partner loggedInUserPartner = loggedInUser.getPartner();
-                    if (loggedInUserPartner != null) {
-                        Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
-                        conjunction.getExpressions().add(
-                            builder.equal(partner.get("id"), loggedInUserPartner.getId())
-                        );
-                    }
-                }
-            } else {
-                //If owned by this user (ie by logged in user)
-                if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
-                    //In other words where the candidate opportunity's associated job
-                    //is one of the jobs that the logged in user has been nominated by their
-                    //partner to be the contact for.
-                    if (loggedInUser != null) {
-                        Partner loggedInUserPartner = loggedInUser.getPartner();
-                        if (loggedInUserPartner != null) {
+                    switch (request.getOwnershipType()) {
+                        case AS_JOB_CREATOR -> {
+                            if (loggedInUserPartner.isJobCreator()) {
+                                //If the user is a job creator then they own a candidate opportunity
+                                // if they are the partner associated with the opportunity job.
 
-                            //Candidate must be owned by user's partner
-                            Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
-                            conjunction.getExpressions().add(
-                                builder.equal(partner.get("id"), loggedInUserPartner.getId())
-                            );
-
-                            //And...
-                            //The job for the candidate opp is in the jobs that logged in user is
-                            //the source contact for.
-                            //  or (if I am the default partner contact)
-                            //Nobody else is nominated as the contact, so use me
-                            Predicate ors = builder.disjunction();
-
-                            Long partnerId = loggedInUserPartner.getId();
-                            Long userId = loggedInUser.getId();
-
-                            //Create the Select subquery - giving all the jobs the user is contact for
-                            Subquery<SalesforceJobOpp> usersJobs = query.subquery(
-                                SalesforceJobOpp.class);
-                            Root<PartnerJobRelation> pjr = usersJobs.from(PartnerJobRelation.class);
-                            usersJobs.select(pjr.get("job")).where(
-                                builder.and(
-                                    builder.equal(pjr.get("partner").get("id"), partnerId),
-                                    builder.equal(pjr.get("contact").get("id"), userId)
-                                )
-                            );
-                            //Get the opp's jobOpp and check whether it is one of the above jobs
-                            Join<Object, Object> jobOpp = opp.join("jobOpp");
-                            ors.getExpressions().add(
-                                builder.in(jobOpp).value(usersJobs)
-                            );
-
-                            //Special case if I am the default partner contact
-
-                            //If so, we can add an "or" to the where clause if nobody else from this
-                            //partner has been nominated has been nominated as contact.
-                            User defaultContact = loggedInUserPartner.getDefaultContact();
-                            if (defaultContact != null && userId.equals(defaultContact.getId())) {
-                                //I am the default partner user.
-                                //If nobody else from this partner is contact for this job, then
-                                //it defaults to me
-                                Subquery<User> contact = query.subquery(User.class);
-                                Root<PartnerJobRelation> pjrc = contact.from(
-                                    PartnerJobRelation.class);
-                                contact.select(pjrc.get("contact")).where(
-                                    builder.and(
-                                        builder.equal(pjrc.get("partner").get("id"), partnerId),
-                                        builder.equal(pjrc.get("job").get("id"), jobOpp.get("id"))
-                                    )
-                                );
-                                ors.getExpressions().add(builder.isNull(contact));
+                                //If opportunity job is owned by this user's partner
+                                if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+                                    //Just check that the job associated with the opportunity was created
+                                    //by the logged in user's partner.
+                                    Join<Object, Object> jobOpp = opp.join("jobOpp");
+                                    conjunction.getExpressions().add(builder.equal(
+                                        jobOpp.get("jobCreator").get("id"), loggedInUserPartner.getId())
+                                    );
+                                } else {
+                                    //If owned by this user (ie by logged in user)
+                                    if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
+                                        if (loggedInUser.isJobCreator()) {
+                                            Join<Object, Object> jobOpp = opp.join("jobOpp");
+                                            //Not null contact user is me or I am createdBy user
+                                            final Predicate matchContactUser = builder.and(
+                                                builder.isNotNull(jobOpp.get("contactUser")),
+                                                builder.equal(jobOpp.get("contactUser").get("id"),
+                                                    loggedInUser.getId())
+                                            );
+                                            final Predicate matchCreatingUser = builder.and(
+                                                builder.isNull(jobOpp.get("contactUser")),
+                                                builder.equal(jobOpp.get("createdBy").get("id"),
+                                                    loggedInUser.getId())
+                                            );
+                                            conjunction.getExpressions().add(
+                                                builder.or(matchContactUser, matchCreatingUser)
+                                            );
+                                        }
+                                    }
+                                }
                             }
+                        }
+                        case AS_SOURCE_PARTNER -> {
+                            if (loggedInUserPartner.isSourcePartner()) {
+                                //If the user is a source partner then they own a candidate opportunity if they are
+                                //the partner associated with the opportunity candidate.
 
-                            if (ors.getExpressions().size() != 0) {
-                                conjunction.getExpressions().add(ors);
+                                //If opportunity candidate owned by this user's source partner
+                                if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+                                    //Just check that the candidate associated with the opportunity is managed
+                                    //by the logged in user's partner.
+                                    Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
+                                    conjunction.getExpressions().add(
+                                        builder.equal(partner.get("id"), loggedInUserPartner.getId())
+                                    );
+                                } else {
+                                    //If owned by this user (ie by logged in user)
+                                    if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
+                                        //In other words where the candidate opportunity's associated job
+                                        //is one of the jobs that the logged in user has been nominated by their
+                                        //partner to be the contact for.
+
+                                        //Candidate must be owned by user's partner
+                                        Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
+                                        conjunction.getExpressions().add(
+                                            builder.equal(partner.get("id"), loggedInUserPartner.getId())
+                                        );
+
+                                        //And...
+                                        //The job for the candidate opp is in the jobs that logged in user is
+                                        //the source contact for.
+                                        //  or (if I am the default partner contact)
+                                        //Nobody else is nominated as the contact, so use me
+                                        Predicate ors = builder.disjunction();
+
+                                        Long partnerId = loggedInUserPartner.getId();
+                                        Long userId = loggedInUser.getId();
+
+                                        //Create the Select subquery - giving all the jobs the user is contact for
+                                        Subquery<SalesforceJobOpp> usersJobs = query.subquery(
+                                            SalesforceJobOpp.class);
+                                        Root<PartnerJobRelation> pjr = usersJobs.from(PartnerJobRelation.class);
+                                        usersJobs.select(pjr.get("job")).where(
+                                            builder.and(
+                                                builder.equal(pjr.get("partner").get("id"), partnerId),
+                                                builder.equal(pjr.get("contact").get("id"), userId)
+                                            )
+                                        );
+                                        //Get the opp's jobOpp and check whether it is one of the above jobs
+                                        Join<Object, Object> jobOpp = opp.join("jobOpp");
+                                        ors.getExpressions().add(
+                                            builder.in(jobOpp).value(usersJobs)
+                                        );
+
+                                        //Special case if I am the default partner contact
+
+                                        //If so, we can add an "or" to the where clause if nobody else from this
+                                        //partner has been nominated has been nominated as contact.
+                                        User defaultContact = loggedInUserPartner.getDefaultContact();
+                                        if (defaultContact != null && userId.equals(defaultContact.getId())) {
+                                            //I am the default partner user.
+                                            //If nobody else from this partner is contact for this job, then
+                                            //it defaults to me
+                                            Subquery<User> contact = query.subquery(User.class);
+                                            Root<PartnerJobRelation> pjrc = contact.from(
+                                                PartnerJobRelation.class);
+                                            contact.select(pjrc.get("contact")).where(
+                                                builder.and(
+                                                    builder.equal(pjrc.get("partner").get("id"), partnerId),
+                                                    builder.equal(pjrc.get("job").get("id"), jobOpp.get("id"))
+                                                )
+                                            );
+                                            ors.getExpressions().add(builder.isNull(contact));
+                                        }
+
+                                        if (ors.getExpressions().size() != 0) {
+                                            conjunction.getExpressions().add(ors);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-
 
             return conjunction;
         };
