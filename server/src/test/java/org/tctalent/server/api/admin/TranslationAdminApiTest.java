@@ -76,9 +76,6 @@ class TranslationAdminApiTest extends ApiTestBase {
   private static final String EDUCATION_MAJOR_PATH = "/education_major";
   private static final String SURVEY_TYPE_PATH = "/survey_type";
   private static final String TRANSLATION_PATH = "/file/{language}";
-  private static final TaskImpl task = AdminApiTestUtil.getTask();
-  private static final Candidate candidate = AdminApiTestUtil.getCandidate();
-  private static final SavedList savedList = AdminApiTestUtil.getSavedList();
 
   private static final Translation translation = AdminApiTestUtil.getTranslation();
   private final Page<Country> countryPage = new PageImpl<>(
