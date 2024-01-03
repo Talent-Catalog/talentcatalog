@@ -23,7 +23,9 @@ import org.tctalent.server.request.candidate.PublishedDocColumnProps;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -607,6 +609,23 @@ public class AdminApiTestUtil {
         return List.of(
             taskAssignment
         );
+    }
+
+    public static Translation getTranslation() {
+        Translation trans = new Translation(
+                getUser(),
+                1L,
+                "Country",
+                "French",
+                "Australie"
+        );
+        return trans;
+    }
+
+    public static Map<String, Object> getTranslationFile() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("my key", "my value");
+        return map;
     }
 
 }
