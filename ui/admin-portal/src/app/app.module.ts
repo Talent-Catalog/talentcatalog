@@ -768,6 +768,7 @@ import {SearchHomeComponent} from './components/search/search-home/search-home.c
 import {JobHomeComponent} from './components/job/job-home/job-home.component';
 import {ListHomeComponent} from './components/list/list-home/list-home.component';
 import {QuillModule} from 'ngx-quill'
+import {GoogleMapsModule} from "@angular/google-maps";
 
 @NgModule({
   declarations: [
@@ -1093,6 +1094,7 @@ import {QuillModule} from 'ngx-quill'
     NgxWigModule,
     NgSelectModule,
     DirectiveModule,
+    GoogleMapsModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'
