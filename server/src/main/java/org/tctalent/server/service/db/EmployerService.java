@@ -29,6 +29,8 @@ public interface EmployerService {
      */
     Employer findOrCreateEmployerFromSalesforceAccount(Account account);
 
+    //todo How do I update Account from TC?
+
     /**
      * Find employer (ie Salesforce account) matching given Salesforce url
      * @param sflink Salesforce url of an account on Salesforce
