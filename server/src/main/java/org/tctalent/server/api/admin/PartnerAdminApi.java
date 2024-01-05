@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -125,12 +126,13 @@ public class PartnerAdminApi implements
         return PartnerDtoHelper.getPartnerDto().build(partner);
     }
 
+    @Nullable
     private Employer extractEmployerFromUpdatePartnerRequest(UpdatePartnerRequest request)
         throws NoSuchObjectException {
         Employer employer = null;
         final String employerSflink = request.getEmployerSflink();
         if (employerSflink != null) {
-            employer = employerService.findEmployerFromSalesforceLink(employerSflink);
+            employer = employerService.findOrCreateEmployerFromSalesforceLink(employerSflink);
         }
         return employer;
     }

@@ -69,7 +69,8 @@ public interface JobService {
      * Get the Job with the given id.
      * @param id Id of job to get
      * @return Job
-     * @throws NoSuchObjectException if there is no Job with this id.
+     * @throws NoSuchObjectException if there is no Job with this id or the job contains a
+     * bad accountId.
      */
     @NonNull
     SalesforceJobOpp getJob(long id) throws NoSuchObjectException;
@@ -96,7 +97,13 @@ public interface JobService {
     JobInfoForSlackPost extractJobInfoForSlack(long id, String tcJobLink) throws NoSuchObjectException;
 
     /**
-     * Loads ALL old jobs which had candidates, together with their candidate opps.
+     * Add employer link for all jobs, creating employer as needed
+     */
+    void createEmployerForAllJobs();
+
+    /**
+     * Loads ALL old jobs which had candidates, together with their candidate opps - creating TC
+     * jobs and cases as needed.
      */
     void loadJobOppsAndCandidateOpps();
 

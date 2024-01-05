@@ -14,41 +14,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.sf;
+package org.tctalent.server.model.db;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
- * Represents a Salesforce Account.
+ * Used to return any string url.
  *
- * @author John Cameron
+ * @author Caroline Cameron
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
-public class Account extends SalesforceObjectBase {
-
-    @JsonSetter("Description")
-    private String description;
-
-    @JsonSetter("Website")
-    private String website;
-
-    @JsonSetter("Name")
-    private String name;
-
-    @JsonSetter("BillingCountry")
-    private String country;
-
-    @JsonSetter("Has_Hired_Internationally__c")
-    private String hasHiredInternationally;
-
-    @Override
-    String getSfObjectName() {
-        return "Account";
-    }
-
+@AllArgsConstructor
+public class UrlDto {
+  private String url;
 }

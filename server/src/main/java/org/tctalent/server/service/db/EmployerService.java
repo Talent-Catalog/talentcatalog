@@ -32,11 +32,30 @@ public interface EmployerService {
     //todo How do I update Account from TC?
 
     /**
+     * Find employer (ie Salesforce account) matching given Salesforce id
+     * @param sfId Salesforce id of an account on Salesforce
+     * @return Matching employer
+     * @throws NoSuchObjectException if there is no Salesforce account matching that sfId.
+     */
+    @NonNull
+    Employer findOrCreateEmployerFromSalesforceId(String sfId) throws NoSuchObjectException;
+
+    /**
      * Find employer (ie Salesforce account) matching given Salesforce url
      * @param sflink Salesforce url of an account on Salesforce
-     * @return Matching employer
+     * @return Matching employer.
      * @throws NoSuchObjectException if there is no Salesforce account matching that url.
      */
     @NonNull
-    Employer findEmployerFromSalesforceLink(String sflink) throws NoSuchObjectException;
+    Employer findOrCreateEmployerFromSalesforceLink(String sflink) throws NoSuchObjectException;
+
+    /**
+     * Get the Employer with the given id.
+     * @param id ID of Employer to get
+     * @return Employer
+     * @throws NoSuchObjectException if there is no employer with this id.
+     */
+    @NonNull
+    Employer get(long id) throws NoSuchObjectException;
+
 }
