@@ -23,10 +23,7 @@ import org.tctalent.server.request.candidate.PublishedDocColumnProps;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author sadatmalik
@@ -626,6 +623,26 @@ public class AdminApiTestUtil {
         Map<String, Object> map = new HashMap<>();
         map.put("my key", "my value");
         return map;
+    }
+
+    public static User getFullUser() {
+        User u = new User("full_user",
+                "full",
+                "user",
+                "full.user@tbb.org",
+                Role.admin);
+        u.setJobCreator(true);
+        u.setApprover(caller);
+        u.setPurpose("Complete intakes");
+        u.setSourceCountries(new HashSet<>(List.of(new Country("Jordan", Status.active))));
+        u.setReadOnly(false);
+        u.setStatus(Status.active);
+        u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setCreatedBy(caller);
+        u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setUsingMfa(true);
+        u.setPartner(getPartner());
+        return u;
     }
 
 }
