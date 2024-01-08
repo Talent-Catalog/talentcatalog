@@ -16,7 +16,27 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,21 +50,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.user.SearchUserRequest;
+import org.tctalent.server.request.user.UpdateUserPasswordRequest;
+import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.UserService;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Unit tests for User Admin Api endpoints.
@@ -58,8 +70,8 @@ class UserAdminApiTest extends ApiTestBase {
   private static final long USER_ID = 465L;
 
   private static final String BASE_PATH = "/api/admin/user";
-  private static final String RESTRICTED_LIST_PATH = "/restricted";
-  private static final String DESTINATIONS_LIST_PATH = "/destinations";
+  private static final String UPDATE_PASSWORD_PATH = "/password/{id}";
+  private static final String MFA_RESET_PATH = "/mfa-reset/{id}";
   private static final String SEARCH_PATH = "/search";
   private static final String SEARCH_PAGED_PATH = "/search-paged";
 
@@ -71,6 +83,15 @@ class UserAdminApiTest extends ApiTestBase {
           PageRequest.of(0,10, Sort.unsorted()),
           1
       );
+  
+  private static final User fullUser = AdminApiTestUtil.getFullUser();
+  private static final User loggedInAdminUser = AdminApiTestUtil.getUser();
+  private static final User loggedInNonAdminUser = new User(
+      "nonAdminUser", 
+      "Not", 
+      "Admin", 
+      "notadmin@gmailcom", 
+      Role.limited);
 
   @MockBean AuthService authService;
   @MockBean UserService userService;
@@ -208,135 +229,243 @@ class UserAdminApiTest extends ApiTestBase {
     verify(userService).searchPaged(any(SearchUserRequest.class));
   }
 
-//  @Test
-//  @DisplayName("search paged countries succeeds")
-//  void searchPagedCountriesSucceeds() throws Exception {
-//    SearchUserRequest request = new SearchUserRequest();
-//
-//    given(userService
-//        .searchCountries(any(SearchUserRequest.class)))
-//        .willReturn(userPage);
-//
-//    mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
-//            .header("Authorization", "Bearer " + "jwt-token")
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(request))
-//            .accept(MediaType.APPLICATION_JSON))
-//
-//        .andDo(print())
-//        .andExpect(status().isOk())
-//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//        .andExpect(jsonPath("$.totalElements", is(3)))
-//        .andExpect(jsonPath("$.totalPages", is(1)))
-//        .andExpect(jsonPath("$.number", is(0)))
-//        .andExpect(jsonPath("$.hasNext", is(false)))
-//        .andExpect(jsonPath("$.hasPrevious", is(false)))
-//        .andExpect(jsonPath("$.content", notNullValue()))
-//        .andExpect(jsonPath("$.content.[0].name", is("Jordan")))
-//        .andExpect(jsonPath("$.content.[0].status", is("active")))
-//        .andExpect(jsonPath("$.content.[1].name", is("Pakistan")))
-//        .andExpect(jsonPath("$.content.[1].status", is("active")))
-//        .andExpect(jsonPath("$.content.[2].name", is("Palestine")))
-//        .andExpect(jsonPath("$.content.[2].status", is("active")));
-//
-//    verify(userService).searchCountries(any(SearchUserRequest.class));
-//  }
-//
-//  @Test
-//  @DisplayName("get user by id succeeds")
-//  void getUserByIdSucceeds() throws Exception {
-//
-//    given(userService
-//        .getUser(USER_ID))
-//        .willReturn(new User("Ukraine", Status.active));
-//
-//    mockMvc.perform(get(BASE_PATH + "/" + USER_ID)
-//            .header("Authorization", "Bearer " + "jwt-token")
-//            .accept(MediaType.APPLICATION_JSON))
-//
-//        .andDo(print())
-//        .andExpect(status().isOk())
-//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//        .andExpect(jsonPath("$", notNullValue()))
-//        .andExpect(jsonPath("$.name", is("Ukraine")))
-//        .andExpect(jsonPath("$.status", is("active")));
-//
-//    verify(userService).getUser(USER_ID);
-//  }
-//
-//  @Test
-//  @DisplayName("create user succeeds")
-//  void createUserSucceeds() throws Exception {
-//    UpdateUserRequest request = new UpdateUserRequest();
-//    request.setName("Ukraine");
-//    request.setStatus(Status.active);
-//
-//    given(userService
-//        .createUser(any(UpdateUserRequest.class)))
-//        .willReturn(new User("Ukraine", Status.active));
-//
-//    mockMvc.perform(post(BASE_PATH)
-//            .header("Authorization", "Bearer " + "jwt-token")
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(request))
-//            .accept(MediaType.APPLICATION_JSON))
-//
-//        .andDo(print())
-//        .andExpect(status().isOk())
-//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//        .andExpect(jsonPath("$", notNullValue()))
-//        .andExpect(jsonPath("$.name", is("Ukraine")))
-//        .andExpect(jsonPath("$.status", is("active")));
-//
-//    verify(userService).createUser(any(UpdateUserRequest.class));
-//  }
-//
-//  @Test
-//  @DisplayName("update user succeeds")
-//  void updateUserSucceeds() throws Exception {
-//    UpdateUserRequest request = new UpdateUserRequest();
-//    request.setName("Ukraine");
-//    request.setStatus(Status.active);
-//
-//    given(userService
-//        .updateUser(anyLong(), any(UpdateUserRequest.class)))
-//        .willReturn(new User("Ukraine", Status.active));
-//
-//    mockMvc.perform(put(BASE_PATH + "/" + USER_ID)
-//            .header("Authorization", "Bearer " + "jwt-token")
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(request))
-//            .accept(MediaType.APPLICATION_JSON))
-//
-//        .andDo(print())
-//        .andExpect(status().isOk())
-//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//        .andExpect(jsonPath("$", notNullValue()))
-//        .andExpect(jsonPath("$.name", is("Ukraine")))
-//        .andExpect(jsonPath("$.status", is("active")));
-//
-//    verify(userService).updateUser(anyLong(), any(UpdateUserRequest.class));
-//  }
-//
-//  @Test
-//  @DisplayName("delete user by id succeeds")
-//  void deleteUserByIdSucceeds() throws Exception {
-//
-//    given(userService
-//        .deleteUser(USER_ID))
-//        .willReturn(true);
-//
-//    mockMvc.perform(delete(BASE_PATH + "/" + USER_ID)
-//            .header("Authorization", "Bearer " + "jwt-token")
-//            .accept(MediaType.APPLICATION_JSON))
-//
-//        .andDo(print())
-//        .andExpect(status().isOk())
-//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//        .andExpect(jsonPath("$", notNullValue()))
-//        .andExpect(jsonPath("$", is(true)));
-//
-//    verify(userService).deleteUser(USER_ID);
-//  }
+  @Test
+  @DisplayName("get user by id succeeds")
+  void getUserByIdAdminRoleSucceeds() throws Exception {
+
+    given(userService.getUser(USER_ID)).willReturn(fullUser);
+    // The user returned here has an Admin role. See user object creation.
+    given(authService.getLoggedInUser()).willReturn(Optional.of(loggedInAdminUser));
+
+    mockMvc.perform(get(BASE_PATH + "/" + USER_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.username", is("full_user")))
+        .andExpect(jsonPath("$.firstName", is("full")))
+        .andExpect(jsonPath("$.lastName", is("user")))
+        .andExpect(jsonPath("$.email", is("full.user@tbb.org")))
+        .andExpect(jsonPath("$.role", is("admin")))
+        .andExpect(jsonPath("$.jobCreator", is(true)))
+        .andExpect(jsonPath("$.approver.firstName", is("test")))
+        .andExpect(jsonPath("$.approver.lastName", is("user")))
+        .andExpect(jsonPath("$.purpose", is("Complete intakes")))
+        .andExpect(jsonPath("$.sourceCountries.[0].name", is("Jordan")))
+        .andExpect(jsonPath("$.readOnly", is(false)))
+        .andExpect(jsonPath("$.status", is("active")))
+        .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.createdBy.role", is("admin")))
+        .andExpect(jsonPath("$.createdBy.status", is("active")))
+        .andExpect(jsonPath("$.createdBy.usingMfa", is(false)))
+        .andExpect(jsonPath("$.createdBy.mfaConfigured", is(false)))
+        .andExpect(jsonPath("$.lastLogin", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.usingMfa", is(true)))
+        .andExpect(jsonPath("$.mfaConfigured", is(false)))
+        .andExpect(jsonPath("$.partner.abbreviation", is("TCP")))
+        .andExpect(jsonPath("$.partner.jobCreator", is(true)))
+        .andExpect(jsonPath("$.partner.defaultJobCreator", is(false)))
+        .andExpect(jsonPath("$.partner.defaultPartnerRef", is(false)))
+        .andExpect(jsonPath("$.partner.defaultSourcePartner", is(false)))
+        .andExpect(jsonPath("$.partner.registrationLandingPage", is("registration_landing_page")))
+        .andExpect(jsonPath("$.partner.sourceCountries", is(empty())))
+        .andExpect(jsonPath("$.partner.notificationEmail", is("notification@email.address")))
+        .andExpect(jsonPath("$.partner.sourcePartner", is(true)))
+        .andExpect(jsonPath("$.partner.autoAssignable", is(false)))
+        .andExpect(jsonPath("$.partner.websiteUrl", is("website_url")))
+        .andExpect(jsonPath("$.partner.name", is("TC Partner")))
+        .andExpect(jsonPath("$.partner.logo", is("logo_url")))
+        .andExpect(jsonPath("$.partner.status", is("active")));
+
+    verify(userService).getUser(USER_ID);
+    verify(authService).getLoggedInUser();
+  }
+
+  @Test
+  @DisplayName("get user by id non admin role succeeds")
+  void getUserByIdNonAdminRoleSucceeds() throws Exception {
+
+    given(userService.getUser(USER_ID)).willReturn(fullUser);
+    // The user returned here has a limited role.
+    given(authService.getLoggedInUser()).willReturn(Optional.of(loggedInNonAdminUser));
+
+    mockMvc.perform(get(BASE_PATH + "/" + USER_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.role", is("admin")))
+        .andExpect(jsonPath("$.status", is("active")))
+        .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.lastLogin", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.usingMfa", is(true)))
+        .andExpect(jsonPath("$.mfaConfigured", is(false)));
+
+    verify(userService).getUser(USER_ID);
+    verify(authService).getLoggedInUser();
+  }
+
+  @Test
+  @DisplayName("create user succeeds")
+  void createUserSucceeds() throws Exception {
+    UpdateUserRequest request = new UpdateUserRequest();
+
+    given(userService
+        .createUser(any(UpdateUserRequest.class)))
+        .willReturn(fullUser);
+
+    mockMvc.perform(post(BASE_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.username", is("full_user")))
+        .andExpect(jsonPath("$.firstName", is("full")))
+        .andExpect(jsonPath("$.lastName", is("user")))
+        .andExpect(jsonPath("$.email", is("full.user@tbb.org")))
+        .andExpect(jsonPath("$.role", is("admin")))
+        .andExpect(jsonPath("$.jobCreator", is(true)))
+        .andExpect(jsonPath("$.approver.firstName", is("test")))
+        .andExpect(jsonPath("$.approver.lastName", is("user")))
+        .andExpect(jsonPath("$.purpose", is("Complete intakes")))
+        .andExpect(jsonPath("$.sourceCountries.[0].name", is("Jordan")))
+        .andExpect(jsonPath("$.readOnly", is(false)))
+        .andExpect(jsonPath("$.status", is("active")))
+        .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.createdBy.role", is("admin")))
+        .andExpect(jsonPath("$.createdBy.status", is("active")))
+        .andExpect(jsonPath("$.createdBy.usingMfa", is(false)))
+        .andExpect(jsonPath("$.createdBy.mfaConfigured", is(false)))
+        .andExpect(jsonPath("$.lastLogin", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.usingMfa", is(true)))
+        .andExpect(jsonPath("$.mfaConfigured", is(false)))
+        .andExpect(jsonPath("$.partner.abbreviation", is("TCP")))
+        .andExpect(jsonPath("$.partner.jobCreator", is(true)))
+        .andExpect(jsonPath("$.partner.defaultJobCreator", is(false)))
+        .andExpect(jsonPath("$.partner.defaultPartnerRef", is(false)))
+        .andExpect(jsonPath("$.partner.defaultSourcePartner", is(false)))
+        .andExpect(jsonPath("$.partner.registrationLandingPage", is("registration_landing_page")))
+        .andExpect(jsonPath("$.partner.sourceCountries", is(empty())))
+        .andExpect(jsonPath("$.partner.notificationEmail", is("notification@email.address")))
+        .andExpect(jsonPath("$.partner.sourcePartner", is(true)))
+        .andExpect(jsonPath("$.partner.autoAssignable", is(false)))
+        .andExpect(jsonPath("$.partner.websiteUrl", is("website_url")))
+        .andExpect(jsonPath("$.partner.name", is("TC Partner")))
+        .andExpect(jsonPath("$.partner.logo", is("logo_url")))
+        .andExpect(jsonPath("$.partner.status", is("active")));
+
+    verify(userService).createUser(any(UpdateUserRequest.class));
+  }
+
+  @Test
+  @DisplayName("update user succeeds")
+  void updateUserSucceeds() throws Exception {
+    UpdateUserRequest request = new UpdateUserRequest();
+
+    given(userService
+        .updateUser(anyLong(), any(UpdateUserRequest.class)))
+        .willReturn(fullUser);
+
+    mockMvc.perform(put(BASE_PATH + "/" + USER_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.username", is("full_user")))
+        .andExpect(jsonPath("$.firstName", is("full")))
+        .andExpect(jsonPath("$.lastName", is("user")))
+        .andExpect(jsonPath("$.email", is("full.user@tbb.org")))
+        .andExpect(jsonPath("$.role", is("admin")))
+        .andExpect(jsonPath("$.jobCreator", is(true)))
+        .andExpect(jsonPath("$.approver.firstName", is("test")))
+        .andExpect(jsonPath("$.approver.lastName", is("user")))
+        .andExpect(jsonPath("$.purpose", is("Complete intakes")))
+        .andExpect(jsonPath("$.sourceCountries.[0].name", is("Jordan")))
+        .andExpect(jsonPath("$.readOnly", is(false)))
+        .andExpect(jsonPath("$.status", is("active")))
+        .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.createdBy.role", is("admin")))
+        .andExpect(jsonPath("$.createdBy.status", is("active")))
+        .andExpect(jsonPath("$.createdBy.usingMfa", is(false)))
+        .andExpect(jsonPath("$.createdBy.mfaConfigured", is(false)))
+        .andExpect(jsonPath("$.lastLogin", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.usingMfa", is(true)))
+        .andExpect(jsonPath("$.mfaConfigured", is(false)))
+        .andExpect(jsonPath("$.partner.abbreviation", is("TCP")))
+        .andExpect(jsonPath("$.partner.jobCreator", is(true)))
+        .andExpect(jsonPath("$.partner.defaultJobCreator", is(false)))
+        .andExpect(jsonPath("$.partner.defaultPartnerRef", is(false)))
+        .andExpect(jsonPath("$.partner.defaultSourcePartner", is(false)))
+        .andExpect(jsonPath("$.partner.registrationLandingPage", is("registration_landing_page")))
+        .andExpect(jsonPath("$.partner.sourceCountries", is(empty())))
+        .andExpect(jsonPath("$.partner.notificationEmail", is("notification@email.address")))
+        .andExpect(jsonPath("$.partner.sourcePartner", is(true)))
+        .andExpect(jsonPath("$.partner.autoAssignable", is(false)))
+        .andExpect(jsonPath("$.partner.websiteUrl", is("website_url")))
+        .andExpect(jsonPath("$.partner.name", is("TC Partner")))
+        .andExpect(jsonPath("$.partner.logo", is("logo_url")))
+        .andExpect(jsonPath("$.partner.status", is("active")));
+
+    verify(userService).updateUser(anyLong(), any(UpdateUserRequest.class));
+  }
+
+  @Test
+  @DisplayName("update password succeeds")
+  void updatePasswordSucceeds() throws Exception {
+    UpdateUserPasswordRequest request = new UpdateUserPasswordRequest();
+
+    mockMvc.perform(put(BASE_PATH + "/" + UPDATE_PASSWORD_PATH
+            .replace("{id}", Long.toString(USER_ID)))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+    verify(userService).updateUserPassword(anyLong(), any(UpdateUserPasswordRequest.class));
+  }
+
+  @Test
+  @DisplayName("update mfa reset succeeds")
+  void updateMfaReset() throws Exception {
+
+    mockMvc.perform(put(BASE_PATH + "/" + MFA_RESET_PATH
+            .replace("{id}", Long.toString(USER_ID)))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+    verify(userService).mfaReset(USER_ID);
+  }
+
+  @Test
+  @DisplayName("delete user by id succeeds")
+  void deleteUserByIdSucceeds() throws Exception {
+
+    mockMvc.perform(delete(BASE_PATH + "/" + USER_ID)
+            .header("Authorization", "Bearer " + "jwt-token"))
+
+        .andExpect(status().isOk());
+
+    verify(userService).deleteUser(USER_ID);
+  }
 
 }
