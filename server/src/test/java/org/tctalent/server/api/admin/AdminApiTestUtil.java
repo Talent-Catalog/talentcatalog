@@ -507,7 +507,7 @@ public class AdminApiTestUtil {
         job.setCandidateOpportunities(Set.of(getCandidateOpportunity()));
         job.setCountry(new Country("Australia", Status.active));
         job.setDescription("This is a description.");
-        job.setEmployer("ABC Accounts");
+        job.setEmployerEntity(getEmployer());
         job.setExclusionList(getSavedList());
         job.setJobSummary("This is a job summary.");
         job.setOwnerId("321");
@@ -522,10 +522,7 @@ public class AdminApiTestUtil {
         job.setSuggestedSearches(Set.of(getSavedSearch()));
         job.setJobOppIntake(getJobOppIntake());
         job.setHiringCommitment(1L);
-        job.setEmployerWebsite("www.ABCAccounts.com");
-        job.setEmployerHiredInternationally("Yes");
         job.setOpportunityScore("Opp Score");
-        job.setEmployerDescription("This is an employer description.");
         job.setClosed(false);
         job.setWon(false);
         job.setClosingComments(null);
@@ -594,7 +591,10 @@ public class AdminApiTestUtil {
 
     public static Employer getEmployer() {
         Employer employer = new Employer();
-        employer.setName("TC Employer");
+        employer.setName("ABC Accounts");
+        employer.setWebsite("www.ABCAccounts.com");
+        employer.setDescription("This is an employer description.");
+        employer.setHasHiredInternationally(true);
         return employer;
     }
 

@@ -16,7 +16,28 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,28 +60,6 @@ import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.service.db.JobService;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Unit tests for Candidate Job Admin Api endpoints.
@@ -139,12 +138,12 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.contactUser.lastName", is("user")))
                 .andExpect(jsonPath("$.contactUser.email", is("test.contact@tbb.org")))
                 .andExpect(jsonPath("$.country.name", is("Australia")))
-                .andExpect(jsonPath("$.employer", is("ABC Accounts")))
-                .andExpect(jsonPath("$.employerWebsite", is("www.ABCAccounts.com")))
-                .andExpect(jsonPath("$.employerHiredInternationally", is("Yes")))
+                .andExpect(jsonPath("$.employerEntity.name", is("ABC Accounts")))
+                .andExpect(jsonPath("$.employerEntity.website", is("www.ABCAccounts.com")))
+                .andExpect(jsonPath("$.employerEntity.hasHiredInternationally", is(true)))
+                .andExpect(jsonPath("$.employerEntity.description", is("This is an employer description.")))
                 .andExpect(jsonPath("$.hiringCommitment", is(1)))
                 .andExpect(jsonPath("$.opportunityScore", is("Opp Score")))
-                .andExpect(jsonPath("$.employerDescription", is("This is an employer description.")))
                 .andExpect(jsonPath("$.name", is("Opp Name")))
                 .andExpect(jsonPath("$.nextStep", is("Next Step")))
                 .andExpect(jsonPath("$.nextStepDueDate", is("2020-01-01")))
@@ -184,12 +183,12 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.createdBy.email", is("test.user@tbb.org")))
 
                 .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
-                .andExpect(jsonPath("$.employer", is("ABC Accounts")))
+                .andExpect(jsonPath("$.employerEntity.name", is("ABC Accounts")))
+                .andExpect(jsonPath("$.employerEntity.website", is("www.ABCAccounts.com")))
+                .andExpect(jsonPath("$.employerEntity.hasHiredInternationally", is(true)))
+                .andExpect(jsonPath("$.employerEntity.description", is("This is an employer description.")))
                 .andExpect(jsonPath("$.hiringCommitment", is(1)))
-                .andExpect(jsonPath("$.employerWebsite", is("www.ABCAccounts.com")))
-                .andExpect(jsonPath("$.employerHiredInternationally", is("Yes")))
                 .andExpect(jsonPath("$.opportunityScore", is("Opp Score")))
-                .andExpect(jsonPath("$.employerDescription", is("This is an employer description.")))
                 .andExpect(jsonPath("$.exclusionList", notNullValue()))
                 .andExpect(jsonPath("$.jobSummary", is("This is a job summary.")))
                 .andExpect(jsonPath("$.name", is("Opp Name")))
@@ -272,12 +271,12 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.createdBy.email", is("test.user@tbb.org")))
 
                 .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
-                .andExpect(jsonPath("$.employer", is("ABC Accounts")))
+                .andExpect(jsonPath("$.employerEntity.name", is("ABC Accounts")))
+                .andExpect(jsonPath("$.employerEntity.website", is("www.ABCAccounts.com")))
+                .andExpect(jsonPath("$.employerEntity.hasHiredInternationally", is(true)))
+                .andExpect(jsonPath("$.employerEntity.description", is("This is an employer description.")))
                 .andExpect(jsonPath("$.hiringCommitment", is(1)))
-                .andExpect(jsonPath("$.employerWebsite", is("www.ABCAccounts.com")))
-                .andExpect(jsonPath("$.employerHiredInternationally", is("Yes")))
                 .andExpect(jsonPath("$.opportunityScore", is("Opp Score")))
-                .andExpect(jsonPath("$.employerDescription", is("This is an employer description.")))
                 .andExpect(jsonPath("$.exclusionList", notNullValue()))
                 .andExpect(jsonPath("$.jobSummary", is("This is a job summary.")))
                 .andExpect(jsonPath("$.name", is("Opp Name")))
