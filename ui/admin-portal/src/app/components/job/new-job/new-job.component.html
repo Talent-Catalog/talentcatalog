@@ -14,7 +14,7 @@
       <ul>
         <li>Create a job on the Talent Catalog</li>
         <li>Create submission list and exclusion list associated with job and connect with Salesforce joblink</li>
-        <li>Create google folders associated with list and connect to Salesforce joblink</li>
+        <li>Create storage folders associated with list and connect to Salesforce joblink</li>
       </ul>
   </div>
 
@@ -84,20 +84,13 @@
       <div [ngSwitch]="creatingFolders">
         <ul class="fa-ul">
           <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
-            Create folders associated with job's submission list
+            Create document storage folders associated with job's submission list
           </li>
           <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
-            Creating folders
+            Creating document storage folders
           </li>
-<!--          todo Text below needs to change-->
           <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
-            The folder on Google Drive <a href="{{savedList.folderlink}}" target="_blank">here</a>
-            is associated with this list and job.
-            When you publish a list, a Google Sheet containing the list data, including links to CVs,
-            is created in this folder which can be shared with employers.
-            There is also a <a href="{{savedList.folderjdlink}}" target="_blank">
-              subfolder for Job Descriptions</a>, which contains a Job Opportunity Intake document
-            to be filled out.
+            Created document storage folders
           </li>
         </ul>
         <div class="alert alert-danger" *ngIf="errorCreatingFolders">
@@ -105,20 +98,16 @@
         </div>
       </div>
 
-      <!--          todo Text below needs to change-->
       <div [ngSwitch]="creatingSFLinks">
         <ul class="fa-ul">
           <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
-            Add links to Salesforce Job Opportunity back to submission list and list folders
+            Link various Talent Catalog databases
           </li>
           <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
-            Creating Salesforce links
+            Linking databases
           </li>
           <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
-            The Salesforce job opportunity
-            <a href="{{salesforceService.joblink(savedList)}}" target="_blank">{{jobName}}</a> has links to the
-            above Talent catalog list and the list folders. This provides easy access to all relevant data
-            directly from Salesforce.
+            Databases linked.
           </li>
         </ul>
         <div class="alert alert-danger" *ngIf="errorCreatingSFLinks">
