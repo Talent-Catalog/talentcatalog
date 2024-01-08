@@ -40,7 +40,7 @@
       <div class="btn-group">
           <button class="btn btn-sm btn-primary border border-white" (click)="inputOldIntakeNote('Full Intake', $event.target)" [disabled]="saving">
             <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-            Input Original Intake
+            Input External Intake
           </button>
           <button class="btn btn-sm btn-success border border-white" (click)="createIntakeNote('Full Intake', 'start', $event.target)" [disabled]="saving || clickedOldIntake">
             Start New Intake
@@ -51,7 +51,7 @@
       </div>
       <div>
         <div class="text-muted small font-italic">- Before starting or updating the interview, please click appropriate button.</div>
-        <div class="text-muted small font-italic">- If entering an old intake click Input Original Intake and ignore other buttons.</div>
+        <div class="text-muted small font-italic">- If entering an external intake click 'Input External Intake' and ignore other buttons.</div>
         <div class="text-muted small font-italic">- This will create a note on the right to help track changes. Only click once per intake.</div>
       </div>
 
