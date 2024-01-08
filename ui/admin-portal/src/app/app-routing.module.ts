@@ -57,9 +57,9 @@ const routes: Routes = [
         redirectTo: '',
       },
       {
-        //Redirect old home to search-home
+        //Default to Jobs
         path: '',
-        redirectTo: 'searches',
+        redirectTo: 'jobs',
         pathMatch: 'full'
       },
       {
