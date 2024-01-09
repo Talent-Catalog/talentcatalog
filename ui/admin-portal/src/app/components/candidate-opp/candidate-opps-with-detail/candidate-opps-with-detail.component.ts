@@ -27,7 +27,7 @@ export class CandidateOppsWithDetailComponent extends MainSidePanelBase implemen
   selectedOpp: CandidateOpportunity;
 
   constructor() {
-    super(5);
+    super(6);
   }
 
   ngOnInit(): void {

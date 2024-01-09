@@ -17,7 +17,6 @@
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 import {DatePipe, TitleCasePipe} from '@angular/common';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -762,6 +761,13 @@ import {ViewChatPostsComponent} from './components/chat/view-chat-posts/view-cha
 import {
   JobGroupChatsTabComponent
 } from './components/job/view/tab/job-group-chats-tab/job-group-chats-tab.component';
+import {
+  RelocatingDependantsComponent
+} from './components/candidates/visa/visa-job-assessments/relocating-dependants/relocating-dependants.component';
+import {SearchHomeComponent} from './components/search/search-home/search-home.component';
+import {JobHomeComponent} from './components/job/job-home/job-home.component';
+import {ListHomeComponent} from './components/list/list-home/list-home.component';
+import {QuillModule} from 'ngx-quill'
 
 @NgModule({
   declarations: [
@@ -1068,7 +1074,12 @@ import {
     ManageChatsComponent,
     JobSourceContactsWithChatsComponent,
     ViewChatPostsComponent,
-    JobGroupChatsTabComponent
+    JobGroupChatsTabComponent,
+    RelocatingDependantsComponent,
+    JobGroupChatsTabComponent,
+    SearchHomeComponent,
+    JobHomeComponent,
+    ListHomeComponent
   ],
   imports: [
     BrowserModule,
@@ -1076,7 +1087,6 @@ import {
     HttpClientModule,
     ReactiveFormsModule,
     NgbModule,
-    RecaptchaV3Module,
     FormsModule,
     InfiniteScrollModule,
     ChartsModule,
@@ -1087,12 +1097,12 @@ import {
       prefix: 'tbb-admin',
       storageType: 'localStorage'
     }),
-    DragulaModule.forRoot()
+    DragulaModule.forRoot(),
+    QuillModule.forRoot()
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
-    {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {

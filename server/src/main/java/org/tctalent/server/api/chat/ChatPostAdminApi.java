@@ -16,15 +16,23 @@
 
 package org.tctalent.server.api.chat;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.api.admin.IJoinedTableApi;
+import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.UrlDto;
 import org.tctalent.server.request.chat.SearchChatPostRequest;
 import org.tctalent.server.request.chat.UpdateChatPostRequest;
 import org.tctalent.server.service.db.ChatPostService;
@@ -44,6 +52,15 @@ public class ChatPostAdminApi implements
     public List<Map<String, Object>> list(long chatId) {
         List<ChatPost> posts = chatPostService.listChatPosts(chatId);
         return postDto().buildList(posts);
+    }
+
+    @PostMapping("{id}/upload")
+    public UrlDto upload(
+        @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
+        throws InvalidRequestException, IOException, NoSuchObjectException {
+        String fileUrl = chatPostService.uploadFile(id, file);
+        UrlDto urlDto = new UrlDto(fileUrl);
+        return urlDto;
     }
 
     private DtoBuilder postDto() {

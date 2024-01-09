@@ -26,10 +26,13 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 
 @import "~src/scss/common";
 @import "~src/scss/page";
+@import "~src/scss/chat";
 
 @import "~src/scss/btn";
 @import "~src/scss/dragula";
 @import "@ng-select/ng-select/themes/default.theme.css";
+@import "quill/dist/quill.snow.css";
+@import 'quill/dist/quill.bubble.css';
 
 body {
   padding-top: 6rem;
@@ -175,3 +178,19 @@ ngx-wig {
   background-color: $accent2;
   color: $white;
 }
+
+// ngx-quill : quill-editor custom styles
+.ql-toolbar {
+  background-color: $accent3;
+  > button {
+    &:hover {
+      color: $white;
+    }
+  }
+}
+
+.ql-container {
+  background-color: $white;
+}
+
+

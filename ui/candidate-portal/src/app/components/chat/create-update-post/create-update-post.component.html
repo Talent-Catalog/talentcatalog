@@ -24,7 +24,30 @@
   <!-- POST -->
   <div class="mb-3">
     <label class="form-label" for="content">Post</label>
-    <ngx-wig id="content" formControlName="content"></ngx-wig>
+    <quill-editor id="content"
+                  placeholder="Write your message..."
+                  formControlName="content"
+                  [modules]="moduleOptions"
+                  (onEditorCreated)="editorCreated($event)">
+      <div quill-editor-toolbar>
+        <button class="ql-list" value="ordered"></button>
+        <button class="ql-list" value="bullet"></button>
+
+        <button class="ql-bold"></button>
+        <button class="ql-italic"></button>
+        <button class="ql-underline"></button>
+
+
+
+        <button class="ql-link"></button>
+        <button class="ql-image"></button>
+        <button class="custom-quill-btn" (click)="uploadFile()">
+          <fa-icon *ngIf="!saving" icon="file-upload" size="xs"></fa-icon>
+          <app-loading [loading]="saving"></app-loading>
+        </button>
+
+      </div>
+    </quill-editor>
   </div>
 
   <div class="modal-footer">

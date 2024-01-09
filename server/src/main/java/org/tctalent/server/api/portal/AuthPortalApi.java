@@ -20,9 +20,8 @@ import java.util.Map;
 import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,30 +38,18 @@ import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CaptchaService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/portal/auth")
+@RequiredArgsConstructor
+@Slf4j
 public class AuthPortalApi {
-    private static final Logger log = LoggerFactory.getLogger(AuthPortalApi.class);
 
     private final UserService userService;
     private final CandidateService candidateService;
-    private final CaptchaService captchaService;
     private final TranslationConfig translationConfig;
-
-    @Autowired
-    public AuthPortalApi(UserService userService,
-        CaptchaService captchaService,
-        CandidateService candidateService,
-        TranslationConfig translationConfig) {
-        this.userService = userService;
-        this.candidateService = candidateService;
-        this.captchaService = captchaService;
-        this.translationConfig = translationConfig;
-    }
 
     @PostMapping("xlate")
     public void authorizeInContextTranslation(@RequestBody AuthenticateInContextTranslationRequest request)
@@ -79,16 +66,12 @@ public class AuthPortalApi {
         InvalidPasswordFormatException, UserDeactivatedException,
         ReCaptchaInvalidException {
 
-        //Do check for automated logins. Throws exception if it looks
-        //automated.
-        captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "login");
-
         JwtAuthenticationResponse response = userService.login(request);
         return jwtDto().build(response);
     }
 
     @PostMapping("logout")
-    public ResponseEntity logout() {
+    public ResponseEntity<Void> logout() {
         this.userService.logout();
         return ResponseEntity.ok().build();
     }
@@ -97,10 +80,6 @@ public class AuthPortalApi {
     public Map<String, Object> register(
         HttpServletRequest httpRequest, @Valid @RequestBody RegisterCandidateRequest request)
             throws AccountLockedException, ReCaptchaInvalidException {
-
-        //Do check for automated registrations. Throws exception if it looks
-        //automated.
-        captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "registration");
 
         LoginRequest loginRequest = candidateService.register(request, httpRequest);
 

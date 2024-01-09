@@ -18,6 +18,7 @@
 @import "scss/typography";
 @import "scss/btn";
 @import "scss/overrides";
+@import "scss/chat";
 
 @import "scss/rtl";
 
@@ -25,6 +26,8 @@
 @import "scss/component/registration-step";
 
 @import "~@ng-select/ng-select/themes/default.theme.css";
+@import "quill/dist/quill.snow.css";
+@import 'quill/dist/quill.bubble.css';
 
 
 // Card specific
@@ -73,4 +76,13 @@ section {
 
 label {
   font-weight: 700;
+}
+
+// ngx-quill : quill-editor custom styles
+.ql-toolbar {
+  background-color: white;
+}
+
+.ql-container {
+  background-color: white;
 }

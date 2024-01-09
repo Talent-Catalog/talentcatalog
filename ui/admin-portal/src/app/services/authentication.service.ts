@@ -54,7 +54,10 @@ export class AuthenticationService implements OnDestroy {
         this.logout();
       } else {
         //Update logged-in user retrieved from storage
-        this.setLoggedInUser(user);
+        if (user != null) {
+          // don't want to set this to null as it effectively indicates a logout for any observers
+          this.setLoggedInUser(user);
+        }
       }
     }
 

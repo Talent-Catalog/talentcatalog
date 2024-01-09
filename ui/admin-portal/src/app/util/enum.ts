@@ -103,8 +103,11 @@ export function isEnumOptionArray(obj: Object): obj is EnumOption[] {
     if (obj.length > 0) {
       //Look at first item in array and check its type
       const item = obj[0];
+      // When sending ids in multiselect, we know enum option is false if the item is a number.
+      if (!isFinite(item)) {
+        gotOne = isEnumOption(item);
+      }
       //EnumOption objects have a key and a stringValue property.
-      gotOne = isEnumOption(item);
     }
   }
   return gotOne;

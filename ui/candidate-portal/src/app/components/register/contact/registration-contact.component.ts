@@ -15,16 +15,10 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {CandidateService, UpdateCandidateSurvey} from "../../../services/candidate.service";
-import {AuthService} from "../../../services/auth.service";
-import {Candidate, RegisterCandidateRequest} from "../../../model/candidate";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {CandidateService} from "../../../services/candidate.service";
+import {Candidate} from "../../../model/candidate";
 import {RegistrationService} from "../../../services/registration.service";
-import {ReCaptchaV3Service} from "ng-recaptcha";
-import {LanguageService} from "../../../services/language.service";
-import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
-import {BrandingService} from "../../../services/branding.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
@@ -50,18 +44,10 @@ export class RegistrationContactComponent implements OnInit {
 
   usAfghan: boolean;
 
-  partnerName: string;
-
   constructor(private fb: FormBuilder,
-              private router: Router,
-              private route: ActivatedRoute,
-              private brandingService: BrandingService,
               private candidateService: CandidateService,
-              private authService: AuthService,
               private authenticationService: AuthenticationService,
-              private reCaptchaV3Service: ReCaptchaV3Service,
-              private registrationService: RegistrationService,
-              private languageService: LanguageService) { }
+              private registrationService: RegistrationService) { }
 
   ngOnInit() {
     this.authenticated = false;
@@ -71,7 +57,6 @@ export class RegistrationContactComponent implements OnInit {
       email: ['', Validators.required],
       phone: [''],
       whatsapp: [''],
-      // username: ['']
     });
 
     if (this.authenticationService.isAuthenticated()) {
@@ -83,7 +68,6 @@ export class RegistrationContactComponent implements OnInit {
             email: candidate.user ? candidate.user.email : '',
             phone: candidate.phone,
             whatsapp: candidate.whatsapp,
-            // username: candidate.user ? response.user.username : ''
           });
           this.loading = false;
         },
@@ -94,38 +78,12 @@ export class RegistrationContactComponent implements OnInit {
       );
     } else {
 
-      //If we are not yet authenticated, look for us-afghan query parameter.
-      //(if we are authenticated we pick up US Afghan tagging from the survey type)
-
-      //Record if this is a US Afghan candidate
-      this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
-      this.languageService.setUsAfghan(this.usAfghan);
-
-      // Get the partner name from the branding info object.
-      this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
-
-      // The user has not registered - add the password fields to the reactive form
-      this.form.addControl('password', new FormControl('', [Validators.required, Validators.minLength(8)]));
-      this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
-
-      // The user has not registered - add the email consent fields
-      this.form.addControl('contactConsentRegistration', new FormControl(false, [Validators.requiredTrue]));
-      this.form.addControl('contactConsentPartners', new FormControl(false));
-
       this.loading = false;
     }
   }
 
   get email(): string {
     return this.form.value.email;
-  }
-
-  get password(): string {
-    return this.form.value.password;
-  }
-
-  get passwordConfirmation(): string {
-    return this.form.value.passwordConfirmation;
   }
 
   get phone(): string {
@@ -152,7 +110,8 @@ export class RegistrationContactComponent implements OnInit {
         return;
       }
 
-      // The user has already registered and is revisiting this page
+      // The user has already registered and is either revisiting this page or updating it for the
+      // first time
       this.candidateService.updateCandidateContact(this.form.value).subscribe(
         (response) => {
           this.registrationService.next();
@@ -165,80 +124,10 @@ export class RegistrationContactComponent implements OnInit {
         }
       );
     } else {
-      // The user has not yet registered - create an account for them
-      const action = 'registration';
-      this.reCaptchaV3Service.execute(action).subscribe(
-        (token) => this.getParamsAndRegister(token),
-        (error) => {
-          console.log(error);
-        }
-      );
+      // No special processing. We expect the user is logged on or has registered before reaching
+      // this step
+      this.saving = false;
     }
   }
 
-  private getParamsAndRegister(token: string) {
-    const params = this.route.snapshot.queryParamMap;
-    this.registerWithToken(token, params);
-  }
-
-  private registerWithToken(token: string, params: ParamMap) {
-    //Check for the partner query param and use it to configure the branding service.
-
-    const req: RegisterCandidateRequest = new RegisterCandidateRequest();
-    req.email = this.email;
-    req.phone = this.phone;
-    req.whatsapp = this.whatsapp;
-    req.password = this.password;
-    req.passwordConfirmation = this.passwordConfirmation;
-    req.reCaptchaV3Token = token;
-    req.partnerAbbreviation = this.brandingService.partnerAbbreviation;
-    //Populate query params
-    if (params.has('r')) {
-      req.referrerParam = params.get('r');
-    }
-    if (params.has('utm_source')) {
-      req.utmSource = params.get('utm_source');
-    }
-    if (params.has('utm_campaign')) {
-      req.utmCampaign = params.get('utm_campaign');
-    }
-    if (params.has('utm_medium')) {
-      req.utmMedium = params.get('utm_medium');
-    }
-    if (params.has('utm_content')) {
-      req.utmContent = params.get('utm_content');
-    }
-    if (params.has('utm_term')) {
-      req.utmContent = params.get('utm_term');
-    }
-    //Populate email consent
-    req.contactConsentRegistration = this.form.value.contactConsentRegistration;
-    req.contactConsentPartners = this.form.value.contactConsentPartners;
-
-    this.authService.register(req).subscribe(
-      (response) => {
-        // If successfully registered, check if US-Afghan and if so update the survey.
-        if (this.usAfghan) {
-          //Set special value of candidate survey type indicating US Afghan
-          const request: UpdateCandidateSurvey = {
-            surveyTypeId: US_AFGHAN_SURVEY_TYPE,
-          }
-          this.candidateService.updateCandidateSurvey(request).subscribe(
-            (res) => {
-              this.saving = false;
-            }, (error) => {
-              this.error = error;
-              this.saving = false;
-            }
-          )
-        }
-        this.registrationService.next();
-      },
-      (error) => {
-        // console.log(error);
-        this.error = error;
-        this.saving = false;
-      }
-    );
-  }
 }

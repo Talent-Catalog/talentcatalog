@@ -28,6 +28,11 @@ export class RegistrationService {
 
   public steps: RegistrationStep[] = [
     {
+      key: 'account',
+      title: 'Welcome to Talent Catalog!',
+      section: 0
+    },
+    {
       key: 'contact',
       title: 'How can we contact you?',
       section: 1

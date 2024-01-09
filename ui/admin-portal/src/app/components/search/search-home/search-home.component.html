@@ -1,0 +1,60 @@
+<nav ngbNav #navSearch="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+
+  <ng-container ngbNavItem="MySearches">
+    <a ngbNavLink title="Searches that I created">My Searches</a>
+    <ng-template ngbNavContent>
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.SavedSearch"
+        [searchBy]="SearchBy.mine" >
+      </app-browse-candidate-sources>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="SearchesSharedWithMe">
+    <a ngbNavLink title="Starred Searches (eg those I am working with)"><i class="fas fa-star"></i>Searches</a>
+    <ng-template ngbNavContent>
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.SavedSearch"
+        [searchBy]="SearchBy.sharedWithMe">
+      </app-browse-candidate-sources>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="MyWatchedSearches">
+    <a ngbNavLink title="Searches that I want to be notified of new candidates"><i class="fas fa-eye"></i>Searches</a>
+    <ng-template ngbNavContent>
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.SavedSearch"
+        [searchBy]="SearchBy.watched" >
+      </app-browse-candidate-sources>
+    </ng-template>
+  </ng-container>
+
+  <!--  Standard searches for occupations-->
+  <ng-container ngbNavItem="type:{{SavedSearchType[SavedSearchType.profession]}}">
+    <a ngbNavLink title="Searches of {{savedSearchTypeInfos[SavedSearchType.profession].title}}">Searches by {{savedSearchTypeInfos[SavedSearchType.profession].title}}</a>
+
+    <ng-template ngbNavContent>
+      <div *ngIf="savedSearchTypeSubInfos" class="no-gutters">
+        <app-browse-candidate-sources
+          [sourceType]="CandidateSourceType.SavedSearch"
+          [searchBy]="SearchBy.type"
+          [savedSearchType]="SavedSearchType.profession"
+          [savedSearchSubtype]="selectedSavedSearchSubtype"
+          [savedSearchTypeSubInfos]="savedSearchTypeSubInfos"
+          (subtypeChange)="onSavedSearchSubtypeChange($event)"
+        >
+        </app-browse-candidate-sources>
+      </div>
+    </ng-template>
+  </ng-container>
+
+  <ng-container ngbNavItem="NewSearch">
+    <a ngbNavLink title="Search TC candidate database">New Search</a>
+    <ng-template ngbNavContent>
+      <app-candidates-search></app-candidates-search>
+    </ng-template>
+  </ng-container>
+
+</nav>
+<div [ngbNavOutlet]="navSearch" class="mt-2"></div>

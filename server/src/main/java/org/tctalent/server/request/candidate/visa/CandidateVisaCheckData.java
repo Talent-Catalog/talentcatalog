@@ -16,6 +16,7 @@
 
 package org.tctalent.server.request.candidate.visa;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -84,4 +85,5 @@ public class CandidateVisaCheckData {
     private String visaJobOccupationSubCategory;
     private YesNo visaJobEnglishThreshold;
     private String visaJobEnglishThresholdNotes;
+    private List<Long> visaJobRelocatingDependantIds;
 }

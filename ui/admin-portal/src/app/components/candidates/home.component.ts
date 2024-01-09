@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewChecked, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy, SearchOppsBy} from "../../model/base"
@@ -24,7 +24,6 @@ import {
   SavedSearchTypeInfo,
   SavedSearchTypeSubInfo
 } from "../../services/saved-search.service";
-import {FormBuilder} from "@angular/forms";
 import {AuthorizationService} from "../../services/authorization.service";
 import {Partner} from "../../model/partner";
 import {AuthenticationService} from "../../services/authentication.service";
@@ -34,11 +33,12 @@ import {AuthenticationService} from "../../services/authentication.service";
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewChecked {
+export class HomeComponent implements OnInit {
 
   activeTabId: string;
-  private lastTabKey: string = 'HomeLastTab';
-  private lastCategoryTabKey: string = 'HomeLastCategoryTab';
+  protected defaultTabId: string;
+  protected lastTabKey: string = 'HomeLastTab';
+  protected lastCategoryTabKey: string = 'HomeLastCategoryTab';
   loggedInPartner: Partner;
 
   savedSearchTypeInfos: SavedSearchTypeInfo[];
@@ -46,11 +46,10 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   selectedSavedSearchSubtype: SavedSearchSubtype;
 
   constructor(
-    private fb: FormBuilder,
-    private localStorageService: LocalStorageService,
-    private savedSearchService: SavedSearchService,
-    private authService: AuthorizationService,
-    private authenticationService: AuthenticationService
+    protected localStorageService: LocalStorageService,
+    protected savedSearchService: SavedSearchService,
+    protected authorizationService: AuthorizationService,
+    protected authenticationService: AuthenticationService
   ) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
@@ -58,11 +57,12 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   ngOnInit() {
     this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[0].categories;
     this.loggedInPartner = this.authenticationService.getLoggedInUser()?.partner;
-  }
-
-  ngAfterViewChecked(): void {
-    //This is called in order for the navigation tabs, this.nav, to be set.
-    this.selectDefaultTab()
+    // This is called in order for the navigation tabs, this.nav, to be set.
+    // Make this call in ngOnInit(). Do not do it ngAfterViewChecked() - doing so will throw
+    // NG0100 errors because selectDefaultTabs() changes the activeTabId after the view has been
+    // checked.
+    // See: https://angular.io/errors/NG0100
+    this.selectDefaultTab();
   }
 
   onTabChanged(event: NgbNavChangeEvent) {
@@ -75,7 +75,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
   private selectDefaultTab() {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.setActiveTabId(defaultActiveTabID == null ? "LiveJobs" : defaultActiveTabID);
+    this.setActiveTabId(defaultActiveTabID == null ? this.defaultTabId : defaultActiveTabID);
 
     if (defaultActiveTabID == null) {
       this.setSelectedSavedSearchSubtype(this.savedSearchTypeSubInfos[0].savedSearchSubtype);
@@ -85,7 +85,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  private setActiveTabId(id: string) {
+  protected setActiveTabId(id: string) {
 
     this.activeTabId = id;
 
@@ -127,15 +127,19 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     return SavedSearchType;
   }
 
-  canCreateJob(): boolean {
-    return this.authService.canCreateJob();
-  }
-
   isExperimental() {
     return false;
   }
 
   ownsOpps(): boolean {
-    return this.authService.ownsOpps();
+    return this.authorizationService.ownsOpps();
+  }
+
+  isJobCreator(): boolean {
+    return this.authorizationService.isJobCreator();
+  }
+
+  isSourcePartner(): boolean {
+    return this.authorizationService.isSourcePartner();
   }
 }

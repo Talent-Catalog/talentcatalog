@@ -20,7 +20,6 @@ import {ViewCandidateComponent} from './components/candidates/view/view-candidat
 import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
 import {SettingsComponent} from "./components/settings/settings.component";
-import {HomeComponent} from "./components/candidates/home.component";
 import {InfographicComponent} from "./components/infographics/infographic.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {
@@ -36,12 +35,12 @@ import {
   ViewJobFromUrlComponent
 } from "./components/job/view/view-job-from-url/view-job-from-url.component";
 import {
-  JobsWithDetailComponent
-} from "./components/job/jobs-with-detail/jobs-with-detail.component";
-import {
   ViewCandidateOppFromUrlComponent
 } from "./components/candidate-opp/view-candidate-opp-from-url/view-candidate-opp-from-url.component";
 import {ManageChatsComponent} from "./components/chat/manage-chats/manage-chats.component";
+import {SearchHomeComponent} from "./components/search/search-home/search-home.component";
+import {JobHomeComponent} from "./components/job/job-home/job-home.component";
+import {ListHomeComponent} from "./components/list/list-home/list-home.component";
 
 const routes: Routes = [
   {
@@ -58,10 +57,16 @@ const routes: Routes = [
         redirectTo: '',
       },
       {
+        //Redirect old home to search-home
         path: '',
+        redirectTo: 'searches',
+        pathMatch: 'full'
+      },
+      {
+        path: 'searches',
         pathMatch: 'full',
-        component: HomeComponent,
-        data: {title: 'TC Home'}
+        component: SearchHomeComponent,
+        data: {title: 'TC Searches'}
       },
       {
         path: 'search',
@@ -80,6 +85,12 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'jobs',
+        pathMatch: 'full',
+        component: JobHomeComponent,
+        data: {title: 'TC Jobs'}
+      },
+      {
         path: 'job',
         children: [
           {
@@ -96,6 +107,12 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'lists',
+        pathMatch: 'full',
+        component: ListHomeComponent,
+        data: {title: 'TC Candidate Lists'}
+      },
+      {
         path: 'opp',
         children: [
           {
@@ -104,11 +121,6 @@ const routes: Routes = [
             data: {title: 'TC Opp'}
           },
         ]
-      },
-      {
-        path: 'jobs',
-        component: JobsWithDetailComponent,
-        data: {title: 'TC Jobs'}
       },
       {
         path: 'list',

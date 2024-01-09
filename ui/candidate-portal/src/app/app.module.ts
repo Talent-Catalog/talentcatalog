@@ -30,7 +30,6 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
-import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
 import {
   RegistrationLandingComponent
@@ -123,6 +122,7 @@ import {
   faEdit,
   faEllipsisH,
   faExternalLinkAlt,
+  faFileUpload,
   faFolderOpen,
   faGlobe,
   faQuestion,
@@ -183,6 +183,11 @@ import {ChatsComponent} from "./components/chat/chats/chats.component";
 import {
   CreateUpdatePostComponent
 } from "./components/chat/create-update-post/create-update-post.component";
+import {QuillModule} from "ngx-quill";
+import {
+  RegistrationCreateAccountComponent
+} from './components/register/create-account/registration-create-account.component';
+import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -249,7 +254,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     CreateUpdatePostComponent,
     PostsComponent,
     ViewPostComponent,
-    TruncatePipe
+    TruncatePipe,
+    RegistrationCreateAccountComponent,
+    FileSelectorComponent
   ],
   imports: [
     BrowserModule,
@@ -258,7 +265,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     FormsModule,
     NgbModule,
-    RecaptchaV3Module,
     LocalStorageModule.forRoot({
       prefix: 'tbb-candidate-portal',
       storageType: 'localStorage'
@@ -283,14 +289,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     FontAwesomeModule,
     NgSelectModule,
-    NgxWigModule
+    NgxWigModule,
+    QuillModule.forRoot()
   ],
   providers: [
     {provide: RedirectGuard},
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
-    {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n},
@@ -323,7 +329,8 @@ export class AppModule {
       faTimes,
       faArrowLeft,
       faQuestionCircle,
-      faFolderOpen
+      faFolderOpen,
+      faFileUpload
     );
   }
 }
