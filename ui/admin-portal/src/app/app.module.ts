@@ -767,7 +767,10 @@ import {
 import {SearchHomeComponent} from './components/search/search-home/search-home.component';
 import {JobHomeComponent} from './components/job/job-home/job-home.component';
 import {ListHomeComponent} from './components/list/list-home/list-home.component';
-import {QuillModule} from 'ngx-quill'
+import {QuillModule} from 'ngx-quill';
+import {
+  ChatReadStatusComponent
+} from './components/chat/chat-read-status/chat-read-status.component'
 
 @NgModule({
   declarations: [
@@ -1079,7 +1082,8 @@ import {QuillModule} from 'ngx-quill'
     JobGroupChatsTabComponent,
     SearchHomeComponent,
     JobHomeComponent,
-    ListHomeComponent
+    ListHomeComponent,
+    ChatReadStatusComponent
   ],
   imports: [
     BrowserModule,
