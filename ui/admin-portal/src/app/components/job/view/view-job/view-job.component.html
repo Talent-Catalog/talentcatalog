@@ -131,13 +131,12 @@
           <a ngbNavLink>
             Group Chats
             <app-chat-read-status
-              [chatReadStatus$]="chatReadStatus$"
+              [chats]="groupChats"
             ></app-chat-read-status>
           </a>
           <ng-template ngbNavContent>
             <app-job-group-chats-tab
               [job]="job"
-              (chatReadStatusCreated)="onChatReadStatusCreated($event)"
             >
             </app-job-group-chats-tab>
           </ng-template>

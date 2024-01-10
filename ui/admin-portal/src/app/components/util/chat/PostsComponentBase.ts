@@ -68,7 +68,7 @@ export abstract class PostsComponentBase {
 
     if (this.chat) {
       //Subscribe for updates on new chat
-      this.chatSubscription = this.chatService.subscribe(this.chat)
+      this.chatSubscription = this.chatService.watchChat(this.chat)
       .subscribe((message: Message) => {
         const payload: ChatPost = JSON.parse(message.body);
         this.addNewPost(payload);

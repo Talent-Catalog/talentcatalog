@@ -34,7 +34,9 @@ import {
 } from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 import {AuthenticationService} from "../../../../services/authentication.service";
-import {Observable} from "rxjs";
+import {forkJoin, Observable} from "rxjs";
+import {CreateChatRequest, JobChat, JobChatType} from "../../../../model/chat";
+import {ChatService} from "../../../../services/chat.service";
 
 /**
  * Display details of a job object passed in as an @Input.
@@ -53,6 +55,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   currentPrepItem: JobPrepItem;
   error: any;
   loading: boolean;
+  groupChats: JobChat[];
   loggedInUser: User;
   publishing: boolean;
   slacklink: string;
@@ -77,6 +80,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     private authService: AuthorizationService,
     private authenticationService: AuthenticationService,
     private candidateSourceService: CandidateSourceCandidateService,
+    private chatService: ChatService,
     private localStorageService: LocalStorageService,
     private jobService: JobService,
     private modalService: NgbModal,
@@ -97,7 +101,35 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     if (changes.job) {
       this.checkSubmissionListContents();
       this.jobPrepItems.forEach(j => j.job = this.job);
+      this.fetchJobChats();
     }
+  }
+
+  private fetchJobChats() {
+    const allCandidatesChatRequest: CreateChatRequest = {
+      type: JobChatType.AllJobCandidates,
+      jobId: this.job?.id
+    }
+    const allSourcePartnersChatRequest: CreateChatRequest = {
+      type: JobChatType.JobCreatorAllSourcePartners,
+      jobId: this.job?.id
+    }
+
+    forkJoin( {
+      'allJobCandidatesChat': this.chatService.getOrCreate(allCandidatesChatRequest),
+      'allSourcePartnersChat': this.chatService.getOrCreate(allSourcePartnersChatRequest),
+    }).subscribe(
+      results => {
+        this.loading = false;
+        const allJobCandidatesChat = results['allJobCandidatesChat'];
+        const allSourcePartnersChat = results['allSourcePartnersChat'];
+        this.groupChats = [allJobCandidatesChat, allSourcePartnersChat];
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
   }
 
   get visible(): boolean {
