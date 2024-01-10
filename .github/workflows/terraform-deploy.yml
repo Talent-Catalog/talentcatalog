@@ -51,7 +51,7 @@ jobs:
       - name: Init Terraform
         id: init
         run: |
-          terraform init
+          terraform init -upgrade
         working-directory: ${{ env.INFRA_PATH }}
 
       # Apply the infrastructure to the related environment
