@@ -75,6 +75,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
+import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
@@ -2675,7 +2676,7 @@ public class CandidateServiceImpl implements CandidateService {
     public void syncLiveCandidatesToSf()
         throws SalesforceException, WebClientException {
         // Live candidate sync only desirable from TC prod to SF prod due to sandbox object limit of 10,000
-        if ("prod".equals(environment)) {
+        if (environment.equals(Environment.prod.name())) {
             // Gather all live candidates
             List<CandidateStatus> statuses = new ArrayList<>(
                 EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
