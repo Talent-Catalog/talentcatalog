@@ -19,9 +19,8 @@ package org.tctalent.server.model.db;
 /**
  * Note that the string values of this enum MUST match the actual stage names for candidate
  * opportunities on Salesforce.
- * <p/>
  * See https://docs.google.com/document/d/1B6DmpYaONV_yNmyAqL76cu0TUQcpNgKtOmKELCkpRoc/edit#heading=h.qx7je1tuwoqv
- * <p/>
+ * 
  */
 public enum CandidateOpportunityStage {
         prospect ("Prospect"),
@@ -56,7 +55,8 @@ public enum CandidateOpportunityStage {
         candidateRejectsOffer ("Candidate rejects offer", true, false, false),
         candidateUnreachable ("Candidate unreachable", true, false, false),
         candidateWithdraws ("Candidate withdraws", true, false, false),
-        jobOfferRetracted ("Job offer retracted", true, false, false)
+        jobOfferRetracted ("Job offer retracted", true, false, false),
+        relocatedNoJobOfferPathway("Relocated no job offer pathway", true, false, false)
         ;
 
         private final String salesforceStageName;
