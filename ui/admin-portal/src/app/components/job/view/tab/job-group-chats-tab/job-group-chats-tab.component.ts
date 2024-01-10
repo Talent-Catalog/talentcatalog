@@ -1,9 +1,18 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../../../model/chat";
 import {ChatService} from "../../../../../services/chat.service";
-import {forkJoin} from "rxjs";
+import {combineLatest, forkJoin, Observable} from "rxjs";
 import {AuthorizationService} from "../../../../../services/authorization.service";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-job-group-chats-tab',
@@ -12,6 +21,7 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 })
 export class JobGroupChatsTabComponent implements OnInit, OnChanges {
   @Input() job: Job;
+  @Output() chatReadStatusCreated = new EventEmitter<Observable<boolean>>();
   chats: JobChat[];
 
   error: any;
@@ -59,6 +69,17 @@ export class JobGroupChatsTabComponent implements OnInit, OnChanges {
         }
 
         this.chats = [allJobCandidatesChat, allSourcePartnersChat];
+
+        let x: Observable<boolean>[] = [];
+        for (const chat of this.chats) {
+          x.push(this.chatService.getChatReadStatusObservable(chat));
+        }
+        const chatReadStatus$ = combineLatest(x).pipe(
+          map(statuses => statuses[0] && statuses[1])
+        );
+
+        this.chatReadStatusCreated.emit(chatReadStatus$);
+
       },
       (error) => {
         this.error = error;
@@ -66,4 +87,5 @@ export class JobGroupChatsTabComponent implements OnInit, OnChanges {
       }
     );
   }
+
 }

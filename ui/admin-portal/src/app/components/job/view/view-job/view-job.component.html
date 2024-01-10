@@ -128,10 +128,17 @@
 
         <!-- Group chats -->
         <ng-container ngbNavItem="GroupChats" *ngIf="visible">
-          <a ngbNavLink>Group Chats</a>
+          <a ngbNavLink>
+            Group Chats
+            <app-chat-read-status
+              [chatReadStatus$]="chatReadStatus$"
+            ></app-chat-read-status>
+          </a>
           <ng-template ngbNavContent>
             <app-job-group-chats-tab
-              [job]="job">
+              [job]="job"
+              (chatReadStatusCreated)="onChatReadStatusCreated($event)"
+            >
             </app-job-group-chats-tab>
           </ng-template>
         </ng-container>

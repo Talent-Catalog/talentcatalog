@@ -34,6 +34,7 @@ import {
 } from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 import {AuthenticationService} from "../../../../services/authentication.service";
+import {Observable} from "rxjs";
 
 /**
  * Display details of a job object passed in as an @Input.
@@ -48,6 +49,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   @Output() jobUpdated = new EventEmitter<Job>();
 
   activeTabId: string;
+  chatReadStatus$: Observable<boolean>;
   currentPrepItem: JobPrepItem;
   error: any;
   loading: boolean;
@@ -94,7 +96,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.job) {
       this.checkSubmissionListContents();
-      this.jobPrepItems.forEach(j => j.job = this.job)
+      this.jobPrepItems.forEach(j => j.job = this.job);
     }
   }
 
@@ -232,5 +234,9 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   canAccessSalesforce() {
     return this.authService.canAccessSalesforce();
+  }
+
+  onChatReadStatusCreated(chatReadStatus$: Observable<boolean>) {
+    this.chatReadStatus$ = chatReadStatus$;
   }
 }

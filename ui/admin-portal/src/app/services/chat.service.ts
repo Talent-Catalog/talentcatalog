@@ -5,7 +5,7 @@ import {merge, Observable, Subject, Subscription} from "rxjs";
 import {CreateChatRequest, JobChat} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
-import {map, takeUntil} from "rxjs/operators";
+import {map, startWith, takeUntil} from "rxjs/operators";
 import {RxStompConfig} from "@stomp/rx-stomp";
 import {AuthenticationService} from "./authentication.service";
 
@@ -25,14 +25,21 @@ export class ChatService implements OnDestroy {
   private destroyStompSubscriptions$ = new Subject<void>();
 
   /**
+   * Map of Chat id to Chat Read Status observable
+   */
+  private chatReadStatuses: Map<number, Observable<boolean>> = new Map<number, Observable<boolean>>();
+
+  /**
    * Map of Chat id to Observable for that chat
    */
   private observables: Map<number, Observable<Message>> = new Map<number, Observable<Message>>();
 
-  private authenticationServiceSubscription: Subscription = null;
+  /**
+   * Map of Chat id to MarkAsRead Subject for that chat
+   */
+  private markAsReads: Map<number, Subject<boolean>> = new Map<number, Subject<boolean>>();
 
-  //todo Should look this up from Map by chat id like observables
-  userMarkedChatAsRead$ = new Subject<void>();
+  private authenticationServiceSubscription: Subscription = null;
 
   constructor(
       private authenticationService: AuthenticationService,
@@ -56,6 +63,8 @@ export class ChatService implements OnDestroy {
     if (this.authenticationServiceSubscription) {
       this.authenticationServiceSubscription.unsubscribe();
     }
+
+    //todo Need to destroy new Observables
   }
 
   create(request: CreateChatRequest): Observable<JobChat> {
@@ -71,22 +80,35 @@ export class ChatService implements OnDestroy {
     return this.http.get<JobChat[]>(`${this.apiUrl}`)
   }
 
-  subscribeChatReadStatus(chat: JobChat): Observable<boolean> {
+  getChatReadStatusObservable(chat: JobChat): Observable<boolean> {
+    //Check if we already have one for this chat...
+    let chatReadStatus$ = this.chatReadStatuses.get(chat.id);
+    if (chatReadStatus$ == null) {
+      chatReadStatus$ = this.constructChatReadStatus(chat);
+      //Save observable for this chat.
+      this.chatReadStatuses.set(chat.id, chatReadStatus$);
+    }
+
+    return chatReadStatus$;
+  }
+
+  private constructChatReadStatus(chat: JobChat): Observable<boolean> {
     //New post events coming from server
     let newPosts$ = this.subscribe(chat).pipe(
       //New posts set the chat read status to false
       map(message => false),
     )
 
-    const userMarkedChatAsRead$ = this.getMarkedChatAsReadSubject(chat);
     //Events signalling that user has read the chat
+    //todo Get this from server
+    const isRead: boolean = true;
+    const userMarkedChatAsRead$ = this.getMarkedChatAsReadSubject(chat);
     let markedAsRead$ = userMarkedChatAsRead$.pipe(
-      //Read events come from the user saying that they have read the chat - so set read status to true
-      map(() => true)
+      startWith(isRead),
     )
 
-    let readObservable = merge(newPosts$, markedAsRead$);
-    return readObservable;
+    let chatReadStatus$ = merge(newPosts$, markedAsRead$);
+    return chatReadStatus$;
   }
 
   subscribe(chat: JobChat): Observable<Message> {
@@ -177,13 +199,20 @@ export class ChatService implements OnDestroy {
     return config;
   }
 
-  private getMarkedChatAsReadSubject(chat: JobChat): Subject<void> {
-    //todo Look up from chat in map
-    return this.userMarkedChatAsRead$;
+  private getMarkedChatAsReadSubject(chat: JobChat): Subject<boolean> {
+    //Check if we already have one for this chat..
+    let markAsRead = this.markAsReads.get(chat.id);
+    if (markAsRead == null) {
+      markAsRead = new Subject<boolean>();
+      //Save observable for this chat.
+      this.markAsReads.set(chat.id, markAsRead);
+    }
+
+    return markAsRead;
   }
 
   markChatAsRead(chat: JobChat) {
     const markChatAsRead$ = this.getMarkedChatAsReadSubject(chat);
-    markChatAsRead$.next();
+    markChatAsRead$.next(true);
   }
 }

@@ -1,3 +1,6 @@
 <div *ngIf="chat">
+  <app-chat-read-status
+    [chatReadStatus$]="chatReadStatus$"
+  ></app-chat-read-status>
   {{displayName}}
 </div>

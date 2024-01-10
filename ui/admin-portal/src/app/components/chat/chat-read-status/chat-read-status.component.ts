@@ -1,56 +1,39 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
-import {Job} from "../../../model/job";
-import {ChatService} from "../../../services/chat.service";
-import {Subject} from "rxjs";
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {Observable, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-chat-read-status',
   templateUrl: './chat-read-status.component.html',
   styleUrls: ['./chat-read-status.component.scss']
 })
-export class ChatReadStatusComponent implements OnInit, OnChanges {
+export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
 
-  @Input() job: Job;
+  @Input() chatReadStatus$: Observable<boolean>;
 
   unreadIndicator: string;
 
-  private allJobCandidatesChat: JobChat;
+  private subscription: Subscription;
 
-  userMarkedChatAsRead$ = new Subject<void>();
-
-  constructor(
-    private chatService: ChatService,
-  ) { }
+  constructor() { }
 
   ngOnInit(): void {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.job) {
-      this.loadChats()
+    if (this.chatReadStatus$ && !this.subscription) {
+      this.subscribeForChatUpdates();
     }
   }
 
-  private loadChats() {
-
-    const allCandidatesChatRequest: CreateChatRequest = {
-      type: JobChatType.AllJobCandidates,
-      jobId: this.job?.id
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
-
-    this.chatService.getOrCreate(allCandidatesChatRequest).subscribe(
-      (jobChat) => {
-        this.allJobCandidatesChat = jobChat;
-        this.subscribeForChatUpdates();
-      }
-    )
   }
 
   private subscribeForChatUpdates() {
-    if (this.allJobCandidatesChat) {
-      this.chatService
-      .subscribeChatReadStatus(this.allJobCandidatesChat).subscribe(
+    if (this.chatReadStatus$) {
+      this.subscription = this.chatReadStatus$.subscribe(
         (chatIsRead) => {
           this.unreadIndicator = chatIsRead ? '' : '*';
         }
