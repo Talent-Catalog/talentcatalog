@@ -446,10 +446,12 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
         throws EntityExistsException, RegisteredListException {
 
-        SalesforceJobOpp sfJobOpp = null;
-        final String sfJoblink = request.getSfJoblink();
-        if (sfJoblink != null) {
-            sfJobOpp = salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink);
+        SalesforceJobOpp sfJobOpp = request.getSfJobOpp();
+        if (sfJobOpp == null) {
+            final String sfJoblink = request.getSfJoblink();
+            if (sfJoblink != null) {
+                sfJobOpp = salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink);
+            }
         }
 
         final boolean isRegisteredList =

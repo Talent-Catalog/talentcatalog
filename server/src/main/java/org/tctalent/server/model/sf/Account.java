@@ -14,25 +14,41 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.partner;
+package org.tctalent.server.model.sf;
 
-import org.tctalent.server.model.db.Employer;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * An employer in a destination country who connects directly to us, searching for suitable
- * candidates themselves.
- * <p/>
- * By contrast, some employers prefer to work through a {@link RecruiterPartner}
+ * Represents a Salesforce Account.
  *
  * @author John Cameron
  */
-public interface EmployerPartner extends JobCreator {
+@Getter
+@Setter
+@ToString(callSuper = true)
+public class Account extends SalesforceObjectBase {
 
-    /**
-     * Employer associated with this partner
-     * @return Employer
-     */
-    Employer getEmployer();
-    void setEmployer(Employer employer);
+    @JsonSetter("Description")
+    private String description;
+
+    @JsonSetter("Website")
+    private String website;
+
+    @JsonSetter("Name")
+    private String name;
+
+    @JsonSetter("BillingCountry")
+    private String country;
+
+    @JsonSetter("Has_Hired_Internationally__c")
+    private String hasHiredInternationally;
+
+    @Override
+    String getSfObjectName() {
+        return "Account";
+    }
 
 }

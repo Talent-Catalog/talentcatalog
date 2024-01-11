@@ -15,7 +15,7 @@
   <ngb-accordion #joi="ngbAccordion" [destroyOnHide]="false" activeIds="employer-details, position-details, immigration-considerations">
 
     <!-- GENERAL INFORMATION -->
-    <ngb-panel id="employer-details" title="Employer Details: {{job.employer}}">
+    <ngb-panel id="employer-details" title="Employer Details: {{job.employerEntity?.name}}">
       <ng-template ngbPanelContent>
         <div class="row cols-3 mb-2">
           <div class="col">
@@ -24,7 +24,7 @@
           </div>
           <div class="col">
             <label>Company website: </label>
-            <span><a [href]="job.employerWebsite" target="_blank">{{job.employerWebsite}}</a></span>
+            <span><a [href]="job.employerEntity?.website" target="_blank">{{job.employerEntity.website}}</a></span>
           </div>
           <div class="col">
             <label>Opportunity Score: </label>
@@ -38,14 +38,14 @@
           </div>
           <div class="col">
             <label>Have they hired from abroad before? </label>
-            <span>{{job.employerHiredInternationally}}</span>
+            <span>{{job.employerEntity?.hasHiredInternationally}}</span>
           </div>
           <div class="col"></div>
         </div>
         <div class="row">
           <div class="col">
             <label>Employer description:</label>
-            <span>{{job.employerDescription}}</span>
+            <span>{{job.employerEntity?.description}}</span>
           </div>
         </div>
         <hr>

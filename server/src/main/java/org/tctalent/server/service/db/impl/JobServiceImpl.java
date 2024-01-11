@@ -44,6 +44,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.EntityExistsException;
@@ -54,6 +55,7 @@ import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
@@ -63,6 +65,7 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.repository.db.JobSpecification;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
@@ -79,6 +82,7 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
@@ -114,6 +118,7 @@ public class JobServiceImpl implements JobService {
     private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
     private final EmailHelper emailHelper;
+    private final EmployerService employerService;
     private final UserService userService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
@@ -134,6 +139,7 @@ public class JobServiceImpl implements JobService {
     public JobServiceImpl(
             AuthService authService, CandidateOpportunityService candidateOpportunityService,
             CandidateSavedListService candidateSavedListService, EmailHelper emailHelper,
+        EmployerService employerService,
         UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
         JobChatService jobChatService, PartnerService partnerService, SalesforceBridgeService salesforceBridgeService, SalesforceConfig salesforceConfig, SalesforceService salesforceService,
             SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
@@ -142,6 +148,7 @@ public class JobServiceImpl implements JobService {
         this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
         this.emailHelper = emailHelper;
+        this.employerService = employerService;
         this.userService = userService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
@@ -252,28 +259,57 @@ public class JobServiceImpl implements JobService {
             throw new UnauthorisedActionException("create job");
         }
 
-        //Check if we already have a job for this Salesforce job opp.
-        final String sfJoblink = request.getSfJoblink();
-        String sfId = SalesforceHelper.extractIdFromSfUrl(sfJoblink);
-        SalesforceJobOpp job = salesforceJobOppService.getJobOppById(sfId);
-        if (job != null) {
-            throw new EntityExistsException("job", job.getName() + " (" + job.getId() + ")" );
+        SalesforceJobOpp job;
+
+        //Different processing based on different types of job creator
+        if (loggedInUserPartner.isDefaultJobCreator()) {
+            //Old style (TBB) partner
+            //Check if we already have a job for this Salesforce job opp.
+            final String sfJoblink = request.getSfJoblink();
+            if (sfJoblink == null) {
+                throw new InvalidRequestException("Missing link to Salesforce opportunity");
+            }
+            String sfId = SalesforceHelper.extractIdFromSfUrl(sfJoblink);
+            job = salesforceJobOppService.getJobOppById(sfId);
+            if (job != null) {
+                throw new EntityExistsException("job",
+                    job.getName() + " (" + job.getId() + ")");
+            }
+
+            //Create job
+            job = salesforceJobOppService.createJobOpp(sfId);
+            if (job == null) {
+                throw new InvalidRequestException(
+                    "No such Salesforce opportunity: " + sfJoblink);
+            }
+
+            updateJobFromRequest(job, request);
+
+            job.setAuditFields(loggedInUser);
+
+            job.setJobCreator(loggedInUserPartner);
+
+            //Fetch employer corresponding to job's accountId
+            Account account = salesforceService.findAccount(job.getAccountId());
+            Employer employer = employerService.findOrCreateEmployerFromSalesforceAccount(account);
+            //... and use it set the job's country to the employer's country
+            job.setCountry(employer.getCountry());
+
+            job = salesforceJobOppRepository.save(job);
+        } else if (loggedInUserPartner.getEmployer() != null) {
+            //Employer partner
+            job = createUpdateJob(loggedInUserPartner.getEmployer(), request);
+        } else {
+            //todo Eventually Recruiter partner will go here - expecting specification in the
+            //request of both the employer associated with the job as well as the name of the role.
+            throw new InvalidRequestException(
+                "Unsupported type of partner: " + loggedInUserPartner.getName());
         }
-
-        //Create job
-        job = salesforceJobOppService.createJobOpp(sfId);
-        if (job == null) {
-            throw new InvalidRequestException("No such Salesforce opportunity: " + sfJoblink);
-        }
-
-        updateJobFromRequest(job, request);
-
-        job.setAuditFields(loggedInUser);
 
         //Create submission list
         UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
         savedListInfoRequest.setRegisteredJob(true);
-        savedListInfoRequest.setSfJoblink(sfJoblink);
+        savedListInfoRequest.setSfJobOpp(job);
         SavedList submissionList = savedListService.createSavedList(savedListInfoRequest);
         job.setSubmissionList(submissionList);
 
@@ -292,8 +328,6 @@ public class JobServiceImpl implements JobService {
         }
         job.setExclusionList(exclusionList);
 
-        job.setJobCreator(loggedInUserPartner);
-
         job = salesforceJobOppRepository.save(job);
 
         //Create the chats associated with this job
@@ -309,6 +343,54 @@ public class JobServiceImpl implements JobService {
         return job;
     }
 
+    @Override
+    public SalesforceJobOpp createUpdateJob(@NonNull Employer employer,
+        @NonNull UpdateJobRequest request) throws SalesforceException, WebClientException {
+        User loggedInUser = getLoggedInUser("create update job");
+
+        //The partner associated with the person who created the job is the job creator
+        final PartnerImpl loggedInUserPartner = loggedInUser.getPartner();
+        if (!loggedInUserPartner.isJobCreator()) {
+            throw new UnauthorisedActionException("create update job");
+        }
+
+        //Check if we already have a job for this Salesforce job opp.
+        String sfId = request.getSfId();
+        SalesforceJobOpp job = salesforceJobOppService.getJobOppById(sfId);
+        boolean create = job == null;
+        if (create) {
+            //No job exists, create one
+            job = new SalesforceJobOpp();
+            job.setEmployerEntity(employer);
+            job.setCountry(employer.getCountry());
+            job.setStage(JobOpportunityStage.prospect);
+            job.setNextStep("");
+            job.setJobCreator(loggedInUserPartner);
+        }
+
+        if (request.getRoleName() != null) {
+            job.setName(generateJobName(employer, request.getRoleName()));
+        }
+
+        job.setAuditFields(loggedInUser);
+
+        //Update from request
+        updateJobFromRequest(job, request);
+
+        //Save job to TC so that it has an id.
+        job = salesforceJobOppRepository.save(job);
+
+        //Update SF - set sfId.
+        sfId = salesforceService.createOrUpdateJobOpportunity(job);
+        job.setSfId(sfId);
+
+        return salesforceJobOppRepository.save(job);
+    }
+
+    private static String generateJobName(@NonNull Employer employer, @NonNull String roleName) {
+        return employer.getName() + "-" + OffsetDateTime.now().getYear() + "-" + roleName;
+    }
+
     private User getLoggedInUser(String operation) {
         User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
@@ -320,8 +402,43 @@ public class JobServiceImpl implements JobService {
     @NonNull
     @Override
     public SalesforceJobOpp getJob(long id) throws NoSuchObjectException {
-        return salesforceJobOppRepository.findById(id)
+        SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
+        return checkEmployerEntity(jobOpp);
+    }
+
+    /**
+     * Checks whether given job has an associated employer entity.
+     * If it does, method just returns the job unchanged.
+     * If it does not have an employer, it will try and create one from the job's accountId.
+     * @param jobOpp Given job
+     * @return Job, updated with employer entity matching job's accountId
+     * @throws NoSuchObjectException if the job has a null or invalid Salesforce account id.
+     */
+    @NonNull
+    private SalesforceJobOpp checkEmployerEntity(@NonNull SalesforceJobOpp jobOpp)
+        throws NoSuchObjectException {
+        if (jobOpp.getEmployerEntity() == null) {
+            String accountId = jobOpp.getAccountId();
+            if (accountId == null) {
+                throw new NoSuchObjectException("Job " + jobOpp.getId() + " has null accountId");
+            }
+            //Find or create employer for this account.
+            Employer employer = employerService.findOrCreateEmployerFromSalesforceId(accountId);
+            jobOpp.setEmployerEntity(employer);
+            jobOpp = salesforceJobOppRepository.save(jobOpp);
+        }
+        return jobOpp;
+    }
+
+    private void checkEmployerEntities(Iterable<SalesforceJobOpp> jobs) {
+        for (SalesforceJobOpp job : jobs) {
+            try {
+                checkEmployerEntity(job);
+            } catch (NoSuchObjectException ex) {
+                log.error("Could not create employer for job " + job.getId(), ex);
+            }
+        }
     }
 
     @Override
@@ -330,7 +447,7 @@ public class JobServiceImpl implements JobService {
         Page<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(
             JobSpecification.buildSearchQuery(request, loggedInUser),
             request.getPageRequest());
-
+        checkEmployerEntities(jobs);
         return jobs;
     }
 
@@ -387,6 +504,13 @@ public class JobServiceImpl implements JobService {
         jobInfo.setTcJobLink(tcJobLink);
 
         return jobInfo;
+    }
+
+    @Async
+    @Override
+    public void createEmployerForAllJobs() {
+        List<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll();
+        checkEmployerEntities(jobs);
     }
 
     @Async
@@ -491,6 +615,7 @@ public class JobServiceImpl implements JobService {
         User loggedInUser = userService.getLoggedInUser();
         List<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(
             JobSpecification.buildSearchQuery(request, loggedInUser));
+        checkEmployerEntities(jobs);
         return jobs;
     }
 
@@ -669,6 +794,7 @@ public class JobServiceImpl implements JobService {
         return salesforceJobOppRepository.save(job);
     }
 
+    //TODO JC Do we need to stop doing this?
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
     @SchedulerLock(name = "JobService_updateOpenJobs", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     @Async
