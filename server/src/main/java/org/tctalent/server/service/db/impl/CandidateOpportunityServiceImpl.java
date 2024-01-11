@@ -377,16 +377,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         List<Candidate> candidates, @NonNull CandidateOpportunityStage stage) {
 
         for (Candidate candidate : candidates) {
-            CandidateStatus status = candidate.getStatus();
-            CandidateStatus newStatus = null;
-            if (stage.isEmployed() && status != CandidateStatus.employed) {
-                //Auto set status to employed
-                newStatus = CandidateStatus.employed;
-            } else if (stage == CandidateOpportunityStage.notEligibleForTC
-                && status != CandidateStatus.ineligible) {
-                //Auto set status to ineligible
-                newStatus = CandidateStatus.ineligible;
-            }
+            final CandidateStatus newStatus = checkForNewStatus(stage, candidate);
 
             if (newStatus != null) {
                 UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
@@ -397,6 +388,26 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                candidateService.updateCandidateStatus(candidate, info);
             }
         }
+    }
+
+    @Nullable
+    private static CandidateStatus checkForNewStatus(CandidateOpportunityStage stage,
+        Candidate candidate) {
+        CandidateStatus status = candidate.getStatus();
+        CandidateStatus newStatus = null;
+        if (stage.isEmployed() && status != CandidateStatus.employed) {
+            //Auto set status to employed
+            newStatus = CandidateStatus.employed;
+        } else if (stage == CandidateOpportunityStage.notEligibleForTC
+            && status != CandidateStatus.ineligible) {
+            //Auto set status
+            newStatus = CandidateStatus.ineligible;
+        } else if (stage == CandidateOpportunityStage.relocatedNoJobOfferPathway
+            && status != CandidateStatus.withdrawn) {
+            //Auto set status
+            newStatus = CandidateStatus.withdrawn;
+        }
+        return newStatus;
     }
 
     @Override

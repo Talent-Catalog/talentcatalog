@@ -75,8 +75,6 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
-import org.tctalent.server.model.sf.Opportunity;
-import org.tctalent.server.request.candidate.PublishedDocColumnProps;
 
 /**
  * @author sadatmalik
@@ -637,6 +635,71 @@ public class AdminApiTestUtil {
         return List.of(
             surveyType1, surveyType2
         );
+    }
+
+    public static TaskAssignmentImpl getTaskAssignment() {
+        TaskAssignmentImpl ta = new TaskAssignmentImpl();
+        ta.setId(99L);
+        ta.setTask(getTask());
+        ta.setStatus(Status.active);
+        ta.setDueDate(LocalDate.of(2025, 1, 1));
+        return ta;
+    }
+
+    public static TaskAssignmentImpl getCompletedTaskAssignment() {
+        TaskAssignmentImpl ta = new TaskAssignmentImpl();
+        ta.setId(99L);
+        ta.setTask(getTask());
+        ta.setStatus(Status.active);
+        ta.setDueDate(LocalDate.of(2025, 1, 1));
+        ta.setCompletedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        ta.setAbandonedDate(OffsetDateTime.parse("2022-10-30T12:30:00+02:00"));
+        ta.setCandidateNotes("These are candidate notes.");
+        return ta;
+    }
+
+    public static List<TaskAssignmentImpl> getTaskAssignments() {
+        TaskAssignmentImpl taskAssignment = getCompletedTaskAssignment();
+        return List.of(
+            taskAssignment
+        );
+    }
+
+    public static Translation getTranslation() {
+        Translation trans = new Translation(
+                getUser(),
+                1L,
+                "Country",
+                "French",
+                "Australie"
+        );
+        return trans;
+    }
+
+    public static Map<String, Object> getTranslationFile() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("my key", "my value");
+        return map;
+    }
+
+    public static User getFullUser() {
+        User u = new User("full_user",
+                "full",
+                "user",
+                "full.user@tbb.org",
+                Role.admin);
+        u.setJobCreator(true);
+        u.setApprover(caller);
+        u.setPurpose("Complete intakes");
+        u.setSourceCountries(new HashSet<>(List.of(new Country("Jordan", Status.active))));
+        u.setReadOnly(false);
+        u.setStatus(Status.active);
+        u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setCreatedBy(caller);
+        u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setUsingMfa(true);
+        u.setPartner(getPartner());
+        return u;
     }
 
 }
