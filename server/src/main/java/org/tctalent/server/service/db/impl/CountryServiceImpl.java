@@ -17,6 +17,10 @@
 package org.tctalent.server.service.db.impl;
 
 import io.jsonwebtoken.lang.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,11 +47,6 @@ import org.tctalent.server.request.country.UpdateCountryRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.TranslationService;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.tctalent.server.util.locale.LocaleHelper;
 
 @Service
@@ -153,6 +152,11 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
             throw new NoSuchObjectException(Country.class, id);
         }
         return country;
+    }
+
+    @Override
+    public Country findCountryByName(String name) {
+        return countryRepository.findByNameIgnoreCase(name);
     }
 
     @Override

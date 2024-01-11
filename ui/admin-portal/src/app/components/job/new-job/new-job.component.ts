@@ -9,12 +9,16 @@ import {
 } from "../../../model/base";
 import {getCandidateSourceExternalHref} from "../../../model/saved-search";
 import {Location} from "@angular/common";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Router} from "@angular/router";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {SlackService} from "../../../services/slack.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {Job, UpdateJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {AuthenticationService} from "../../../services/authentication.service";
+import {Employer} from "../../../model/partner";
 
 @Component({
   selector: 'app-new-job',
@@ -22,7 +26,9 @@ import {JobService} from "../../../services/job.service";
   styleUrls: ['./new-job.component.scss']
 })
 export class NewJobComponent implements OnInit {
+  employer: Employer;
   jobName: string;
+  roleName: string;
   job: Job;
   savedList: SavedList;
   sfJoblink: string;
@@ -36,11 +42,13 @@ export class NewJobComponent implements OnInit {
   errorCreatingJob: string = null;
   errorCreatingSFLinks: string = null;
   errorPostingToSlack: string = null;
+  jobForm: FormGroup;
 
   constructor(
-    private authService: AuthorizationService,
+    private authorizationService: AuthorizationService,
+    private authenticationService: AuthenticationService,
+    private fb: FormBuilder,
     private jobService: JobService,
-    private route: ActivatedRoute,
     public salesforceService: SalesforceService,
     private savedListService: SavedListService,
     private slackService: SlackService,
@@ -48,6 +56,14 @@ export class NewJobComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit(): void {
+    if (this.isEmployerPartner()) {
+      this.employer = this.authenticationService.getLoggedInUser()?.partner?.employer;
+
+      this.jobForm = this.fb.group({
+        role: []
+      });
+      this.subscribeToJobFormChanges();
+    }
   }
 
   get listLink(): string {
@@ -74,6 +90,27 @@ export class NewJobComponent implements OnInit {
     return pct;
   }
 
+
+  private subscribeToJobFormChanges() {
+    this.jobForm.valueChanges
+    .pipe(
+      debounceTime(1000),
+      distinctUntilChanged()
+    )
+    .subscribe(() => {
+      this.roleName = this.jobForm.value.role;
+      this.jobName = this.generateJobName();
+    });
+  }
+
+  private generateJobName(): string {
+    let name = "";
+    if (this.roleName && this.employer) {
+
+      name = this.employer.name + "-" + (new Date()).getFullYear() + "-" + this.roleName;
+    }
+    return name;
+  }
 
   onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
     this.creatingJob = Progress.NotStarted;
@@ -102,6 +139,7 @@ export class NewJobComponent implements OnInit {
 
     this.creatingJob = Progress.Started;
     const request: UpdateJobRequest = {
+      roleName: this.roleName ? this.roleName : null,
       sfJoblink: this.sfJoblink ? this.sfJoblink : null
     };
     this.jobService.create(request).subscribe(
@@ -144,7 +182,8 @@ export class NewJobComponent implements OnInit {
       fileJoiName: this.savedList.fileJoiName,
       folderlink: this.savedList.folderlink,
       folderjdlink: this.savedList.folderjdlink,
-      listlink: this.listLink
+      listlink: this.listLink,
+      jobId: this.job.id
     };
     this.salesforceService.updateEmployerOpportunity(request).subscribe(
       () => {
@@ -199,5 +238,13 @@ export class NewJobComponent implements OnInit {
 
   doShowJob() {
     this.router.navigate(['job', this.job.id]);
+  }
+
+  isDefaultJobCreator() {
+    return this.authorizationService.isDefaultJobCreator()
+  }
+
+  isEmployerPartner() {
+    return this.authorizationService.isEmployerPartner();
   }
 }

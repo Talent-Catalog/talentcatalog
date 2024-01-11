@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -25,7 +26,6 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.repository.db.CandidateDependantRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
-import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.dependant.CreateCandidateDependantRequest;
 import org.tctalent.server.service.db.CandidateDependantService;
@@ -36,19 +36,10 @@ import org.tctalent.server.service.db.CandidateDependantService;
  * @author John Cameron
  */
 @Service
+@AllArgsConstructor
 public class CandidateDependantServiceImpl implements CandidateDependantService {
     private final CandidateDependantRepository candidateDependantRepository;
     private final CandidateRepository candidateRepository;
-    private final CountryRepository countryRepository;
-
-    public CandidateDependantServiceImpl(
-            CandidateDependantRepository candidateDependantRepository,
-            CandidateRepository candidateRepository,
-            CountryRepository countryRepository) {
-        this.candidateDependantRepository = candidateDependantRepository;
-        this.candidateRepository = candidateRepository;
-        this.countryRepository = countryRepository;
-    }
 
     @Override
     public CandidateDependant createDependant(

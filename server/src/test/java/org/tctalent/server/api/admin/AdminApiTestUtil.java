@@ -19,7 +19,10 @@ package org.tctalent.server.api.admin;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
@@ -44,6 +47,7 @@ import org.tctalent.server.model.db.DocumentStatus;
 import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
+import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.Exam;
 import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.FamilyRelations;
@@ -69,7 +73,9 @@ import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.model.db.SystemLanguage;
 import org.tctalent.server.model.db.TBBEligibilityAssessment;
+import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.TaskImpl;
+import org.tctalent.server.model.db.Translation;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
@@ -506,7 +512,7 @@ public class AdminApiTestUtil {
         job.setCandidateOpportunities(Set.of(getCandidateOpportunity()));
         job.setCountry(new Country("Australia", Status.active));
         job.setDescription("This is a description.");
-        job.setEmployer("ABC Accounts");
+        job.setEmployerEntity(getEmployer());
         job.setExclusionList(getSavedList());
         job.setJobSummary("This is a job summary.");
         job.setOwnerId("321");
@@ -521,10 +527,7 @@ public class AdminApiTestUtil {
         job.setSuggestedSearches(Set.of(getSavedSearch()));
         job.setJobOppIntake(getJobOppIntake());
         job.setHiringCommitment(1L);
-        job.setEmployerWebsite("www.ABCAccounts.com");
-        job.setEmployerHiredInternationally("Yes");
         job.setOpportunityScore("Opp Score");
-        job.setEmployerDescription("This is an employer description.");
         job.setClosed(false);
         job.setWon(false);
         job.setClosingComments(null);
@@ -591,6 +594,15 @@ public class AdminApiTestUtil {
         );
     }
 
+    public static Employer getEmployer() {
+        Employer employer = new Employer();
+        employer.setName("ABC Accounts");
+        employer.setWebsite("www.ABCAccounts.com");
+        employer.setDescription("This is an employer description.");
+        employer.setHasHiredInternationally(true);
+        return employer;
+    }
+
     public static List<Industry> getIndustries() {
         return List.of(
             new Industry("Tech", Status.active),
@@ -630,6 +642,71 @@ public class AdminApiTestUtil {
         return List.of(
             surveyType1, surveyType2
         );
+    }
+
+    public static TaskAssignmentImpl getTaskAssignment() {
+        TaskAssignmentImpl ta = new TaskAssignmentImpl();
+        ta.setId(99L);
+        ta.setTask(getTask());
+        ta.setStatus(Status.active);
+        ta.setDueDate(LocalDate.of(2025, 1, 1));
+        return ta;
+    }
+
+    public static TaskAssignmentImpl getCompletedTaskAssignment() {
+        TaskAssignmentImpl ta = new TaskAssignmentImpl();
+        ta.setId(99L);
+        ta.setTask(getTask());
+        ta.setStatus(Status.active);
+        ta.setDueDate(LocalDate.of(2025, 1, 1));
+        ta.setCompletedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        ta.setAbandonedDate(OffsetDateTime.parse("2022-10-30T12:30:00+02:00"));
+        ta.setCandidateNotes("These are candidate notes.");
+        return ta;
+    }
+
+    public static List<TaskAssignmentImpl> getTaskAssignments() {
+        TaskAssignmentImpl taskAssignment = getCompletedTaskAssignment();
+        return List.of(
+            taskAssignment
+        );
+    }
+
+    public static Translation getTranslation() {
+        Translation trans = new Translation(
+                getUser(),
+                1L,
+                "Country",
+                "French",
+                "Australie"
+        );
+        return trans;
+    }
+
+    public static Map<String, Object> getTranslationFile() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("my key", "my value");
+        return map;
+    }
+
+    public static User getFullUser() {
+        User u = new User("full_user",
+                "full",
+                "user",
+                "full.user@tbb.org",
+                Role.admin);
+        u.setJobCreator(true);
+        u.setApprover(caller);
+        u.setPurpose("Complete intakes");
+        u.setSourceCountries(new HashSet<>(List.of(new Country("Jordan", Status.active))));
+        u.setReadOnly(false);
+        u.setStatus(Status.active);
+        u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setCreatedBy(caller);
+        u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setUsingMfa(true);
+        u.setPartner(getPartner());
+        return u;
     }
 
 }

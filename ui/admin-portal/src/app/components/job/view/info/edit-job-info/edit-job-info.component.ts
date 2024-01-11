@@ -88,6 +88,7 @@ export class EditJobInfoComponent implements OnInit {
     this.error = null;
     this.saving = true;
     const request: UpdateJobRequest = {
+      sfId: this.job.sfId,
       contactUserId: this.contactUser,
       submissionDueDate: this.submissionDueDate
     }

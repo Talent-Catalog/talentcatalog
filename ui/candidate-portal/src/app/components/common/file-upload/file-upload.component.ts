@@ -49,6 +49,15 @@ export class FileUploadComponent implements OnInit {
     this.handleFileChanged(fileChangeEvent, 'file');
   }
 
+  @Input() validExtensions: string[] = [
+    'jpg',
+    'png',
+    'pdf',
+    'doc',
+    'docx',
+    'txt',
+  ];
+
   @Output() uploadStarted = new EventEmitter<{files: File[], type: string}>();
 
   error: any;

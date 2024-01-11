@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -29,36 +30,27 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.SalesforceException;
-import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.sf.Opportunity;
-import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
 
 @Service
+@AllArgsConstructor
 public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private static final OffsetDateTime FIRST_PUBLISHED_JOB_DATE =
         OffsetDateTime.parse("2022-11-01T00:00:00Z", DateTimeFormatter.ISO_DATE_TIME);
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SalesforceService salesforceService;
-    private final CountryRepository countryRepository;
+    private final CountryService countryService;
 
     private final EmailHelper emailHelper;
-
-    public SalesforceJobOppServiceImpl(SalesforceJobOppRepository salesforceJobOppRepository,
-        SalesforceService salesforceService, CountryRepository countryRepository,
-        EmailHelper emailHelper) {
-        this.salesforceJobOppRepository = salesforceJobOppRepository;
-        this.salesforceService = salesforceService;
-        this.countryRepository = countryRepository;
-        this.emailHelper = emailHelper;
-    }
 
     @Nullable
     @Override
@@ -169,7 +161,6 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private void copyOpportunityToJobOpp(@NonNull Opportunity op, SalesforceJobOpp salesforceJobOpp) {
         //Update DB with data from op
         salesforceJobOpp.setName(op.getName());
-        salesforceJobOpp.setEmployer(op.getAccountName());
         salesforceJobOpp.setAccountId(op.getAccountId());
         salesforceJobOpp.setOwnerId(op.getOwnerId());
         salesforceJobOpp.setClosed(op.isClosed());
@@ -178,9 +169,6 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         salesforceJobOpp.setWon(op.isWon());
         salesforceJobOpp.setHiringCommitment(op.getHiringCommitment());
         salesforceJobOpp.setOpportunityScore(op.getOpportunityScore());
-        salesforceJobOpp.setEmployerWebsite(op.getAccountWebsite());
-        salesforceJobOpp.setEmployerHiredInternationally(op.getAccountHasHiredInternationally());
-        salesforceJobOpp.setEmployerDescription(op.getAccount() == null ? null : op.getAccount().getDescription());
         JobOpportunityStage stage;
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());
@@ -225,17 +213,6 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             } catch (DateTimeParseException ex) {
                 log.error("Error decoding lastModifiedDate: " + lastModifiedDate + " in job op " + op.getName());
             }
-        }
-
-        //Post-processing
-
-        // Match a country object with the country name from Salesforce.
-        final String sfCountryName = op.getAccountCountry();
-        Country country = this.countryRepository.findByNameIgnoreCase(sfCountryName);
-        salesforceJobOpp.setCountry(country);
-        if (country == null ){
-             emailHelper.sendAlert("Salesforce country " + sfCountryName +
-                 " in Job Opp " + op.getName() + " not found in database.");
         }
     }
 }
