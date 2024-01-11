@@ -16,6 +16,8 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.tctalent.server.model.db.PartnerDtoHelper.employerDto;
+
 import java.io.IOException;
 import java.util.Map;
 import javax.validation.Valid;
@@ -170,13 +172,9 @@ public class JobAdminApi implements
             .add("country", countryDto())
             .add("createdBy", shortUserDto())
             .add("createdDate")
-            .add("employer")
-            .add("hiringCommitment")
-            .add("employerWebsite")
-            .add("employerHiredInternationally")
+            .add("employerEntity", employerDto())
             .add("hiringCommitment")
             .add("opportunityScore")
-            .add("employerDescription")
             .add("exclusionList", savedListBuilderSelector.selectBuilder())
             .add("jobSummary")
             .add("name")

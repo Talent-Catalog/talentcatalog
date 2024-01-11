@@ -16,13 +16,12 @@
 
 package org.tctalent.server.model.db;
 
-import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.util.dto.DtoBuilder;
-import org.tctalent.server.util.dto.DtoPropertyFilter;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.util.dto.DtoBuilder;
+import org.tctalent.server.util.dto.DtoPropertyFilter;
 
 /**
  *  DTOs for Partners
@@ -58,6 +57,7 @@ public class PartnerDtoHelper {
             .add("defaultJobCreator")
             .add("defaultSourcePartner")
             .add("defaultPartnerRef")
+            .add("employer", employerDto())
             .add("id")
             .add("jobContact", userDto())
             .add("jobCreator")
@@ -77,6 +77,17 @@ public class PartnerDtoHelper {
         return new DtoBuilder()
             .add("id")
             .add("name")
+            ;
+    }
+
+    public static DtoBuilder employerDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("description")
+            .add("hasHiredInternationally")
+            .add("sfId")
+            .add("website")
             ;
     }
     private static DtoBuilder userDto() {

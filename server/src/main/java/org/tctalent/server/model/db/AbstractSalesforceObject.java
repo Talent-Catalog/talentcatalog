@@ -14,25 +14,30 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.partner;
+package org.tctalent.server.model.db;
 
-import org.tctalent.server.model.db.Employer;
+import javax.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * An employer in a destination country who connects directly to us, searching for suitable
- * candidates themselves.
- * <p/>
- * By contrast, some employers prefer to work through a {@link RecruiterPartner}
+ * Base class of entities with corresponding objects on Salesforce.
  *
  * @author John Cameron
  */
-public interface EmployerPartner extends JobCreator {
+@Getter
+@Setter
+@MappedSuperclass
+public class AbstractSalesforceObject extends AbstractAuditableDomainObject<Long> {
 
     /**
-     * Employer associated with this partner
-     * @return Employer
+     * Name of object
      */
-    Employer getEmployer();
-    void setEmployer(Employer employer);
+    private String name;
+
+    /**
+     * ID of corresponding object on Salesforce.
+     */
+    private String sfId;
 
 }

@@ -27,6 +27,7 @@ export interface PartnerSimpleAttributes {
   abbreviation: string;
   autoAssignable: boolean;
   defaultPartnerRef: boolean;
+  employerSflink?: string;
   jobContact?: User;
   jobCreator: boolean;
   logo: string;
@@ -44,6 +45,14 @@ export interface PartnerSimpleAttributes {
   websiteUrl: string;
 }
 
+export interface Employer {
+  id: number;
+  name: string;
+  description: string;
+  hasHiredInternationally: boolean;
+  sfId: string;
+  website: string;
+}
 
 export interface ShortPartner {
   id: number;
@@ -57,6 +66,7 @@ export interface Partner extends PartnerSimpleAttributes {
   defaultContact?: User;
   defaultJobCreator: boolean;
   defaultSourcePartner: boolean;
+  employer?: Employer;
   sourceCountries: Country[];
 }
 

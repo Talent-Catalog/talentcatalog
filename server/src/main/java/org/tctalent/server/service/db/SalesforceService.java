@@ -27,6 +27,7 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
@@ -145,6 +146,19 @@ public interface SalesforceService {
             throws GeneralSecurityException, WebClientException;
 
     /**
+     * Searches for a Salesforce Account record (Employer)
+     * corresponding to the given Salesforce id
+     * @param sfId Salesforce id
+     * @return Account, null if none
+     * @throws SalesforceException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    @Nullable
+    Account findAccount(String sfId)
+            throws SalesforceException, WebClientException;
+
+    /**
      * Searches for a Salesforce Opportunity record (Employer or Candidate opportunity)
      * corresponding to the given Salesforce id
      * @param sfId Salesforce id
@@ -224,6 +238,16 @@ public interface SalesforceService {
     @NonNull
     List<Contact> createOrUpdateContacts(@NonNull Collection<Candidate> candidates)
             throws WebClientException, SalesforceException;
+
+    /**
+     * Creates or updates the Salesforce job opportunity on Salesforce.
+     * @param job TC job opportunity.
+     * @return Salesforce id (sfId) corresponding to created/updates Salesforce record
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    @NonNull
+    String createOrUpdateJobOpportunity(SalesforceJobOpp job);
 
     /**
      * Creates or updates the Salesforce Candidate Opportunity records corresponding to the
