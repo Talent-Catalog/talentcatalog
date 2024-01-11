@@ -79,7 +79,6 @@ public class CandidateVisaCheckData {
     private String visaJobOccupationCategory;
     private String visaJobOccupationSubCategory;
     private YesNo visaJobEnglishThreshold;
-    private String visaJobEnglishThresholdNotes;
     private List<Long> visaJobLanguagesRequired;
     private YesNo visaJobLanguagesThresholdMet;
     // todo remove this field once other notes field is renamed

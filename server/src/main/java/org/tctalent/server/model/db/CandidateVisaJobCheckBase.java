@@ -112,16 +112,13 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private YesNo englishThreshold;
 
-    //todo rename this field to language threshold notes
-    private String englishThresholdNotes;
-
     @Convert(converter = DelimitedIdConverter.class)
     private List<Long> languagesRequired;
 
     @Enumerated(EnumType.STRING)
     private YesNo languagesThresholdMet;
 
-    // todo remove this one and rename the englishthresholdnotes field to languages threshold notes
+    //todo rename this field to language threshold notes
     private String languagesThresholdNotes;
 
     /**

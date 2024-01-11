@@ -16,9 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -28,6 +25,10 @@ import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaJobCheckService;
 import org.tctalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-visa-job")
@@ -118,7 +119,9 @@ public class CandidateVisaJobCheckAdminApi
                 .add("occupationCategory")
                 .add("occupationSubCategory")
                 .add("englishThreshold")
-                .add("englishThresholdNotes")
+                .add("languagesRequired")
+                .add("languagesThresholdMet")
+                .add("languagesThresholdNotes")
                 .add("relocatingDependantIds")
                 ;
     }

@@ -22,7 +22,6 @@ export class JobEnglishThresholdComponent extends VisaCheckComponentBase impleme
     this.form = this.fb.group({
       visaJobId: [this.visaJobCheck?.id],
       visaJobEnglishThreshold: [this.visaJobCheck?.englishThreshold],
-      visaJobEnglishThresholdNotes: [this.visaJobCheck?.englishThresholdNotes],
     });
   }
 

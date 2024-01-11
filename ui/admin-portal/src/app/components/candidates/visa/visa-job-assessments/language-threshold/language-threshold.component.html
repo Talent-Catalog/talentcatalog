@@ -18,6 +18,7 @@
       [searchable]="true"
       placeholder="Select or type..."
       bindLabel="name"
+      bindValue="id"
       [formControlName]="'visaJobLanguagesRequired'">
     </ng-select>
   </div>
@@ -34,9 +35,9 @@
       bindValue="key"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="mb-3">
-    <label class="form-label" for="visaJobEnglishThresholdNotes">Notes on language thresholds</label>
+    <label class="form-label" for="visaJobLanguagesThresholdNotes">Notes on language thresholds</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="2"
-              id="visaJobEnglishThresholdNotes" [formControlName]="'visaJobEnglishThresholdNotes'"
+              id="visaJobLanguagesThresholdNotes" [formControlName]="'visaJobLanguagesThresholdNotes'"
               placeholder="" ></textarea>
   </div>
 </form>

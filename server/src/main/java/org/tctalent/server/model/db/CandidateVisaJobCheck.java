@@ -109,9 +109,6 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobEnglishThreshold() != null) {
             setEnglishThreshold(data.getVisaJobEnglishThreshold());
         }
-        if (data.getVisaJobEnglishThresholdNotes() != null) {
-            setEnglishThresholdNotes(data.getVisaJobEnglishThresholdNotes());
-        }
         if (data.getVisaJobLanguagesRequired() != null) {
             setLanguagesRequired(data.getVisaJobLanguagesRequired());
         }
