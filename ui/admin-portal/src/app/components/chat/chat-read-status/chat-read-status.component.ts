@@ -25,14 +25,9 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.chats) {
-      let allChatsRead:boolean = true;
-      for (const chat of this.chats) {
-        if (!this.chatService.isChatRead(chat)) {
-          allChatsRead = false;
-          break;
-        }
-      }
+    if (this.chats && this.chats.length > 0) {
+      let allChatsRead =
+        this.chats.find(chat => !this.chatService.isChatRead(chat)) == null;
       this.setIndicator(allChatsRead);
       this.subscribeForChatUpdates();
     }
@@ -56,8 +51,9 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
           x.push(this.chatService.getChatReadStatusObservable(chat));
         }
         const chatReadStatus$ = combineLatest(x).pipe(
-          //todo This only works for two - needs to loop through all statuses
-          map(statuses => statuses[0] && statuses[1])
+          //TODO TEST this
+          //For this to return isRead to be true for all chats, none can be false
+          map(statuses => statuses.find(isRead => false) == null)
         );
         this.subscription = chatReadStatus$.subscribe(
           (chatIsRead) => this.setIndicator(chatIsRead)
