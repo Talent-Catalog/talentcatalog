@@ -16,18 +16,14 @@
 
 package org.tctalent.server.model.db;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.CollectionUtils;
+
+import javax.persistence.*;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -112,10 +108,21 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
 
     private String occupationSubCategory;
 
+    //todo remove english threshold field, replaced with languagesThresholdMet field
     @Enumerated(EnumType.STRING)
     private YesNo englishThreshold;
 
+    //todo rename this field to language threshold notes
     private String englishThresholdNotes;
+
+    @Convert(converter = DelimitedIdConverter.class)
+    private List<Long> languagesRequired;
+
+    @Enumerated(EnumType.STRING)
+    private YesNo languagesThresholdMet;
+
+    // todo remove this one and rename the englishthresholdnotes field to languages threshold notes
+    private String languagesThresholdNotes;
 
     /**
      * String of the ids of the candidate dependants that are relocating as part of the visa job check.

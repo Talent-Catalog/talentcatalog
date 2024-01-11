@@ -16,17 +16,12 @@
 
 package org.tctalent.server.request.candidate.visa;
 
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tctalent.server.model.db.DocumentStatus;
-import org.tctalent.server.model.db.OtherVisas;
-import org.tctalent.server.model.db.RiskLevel;
-import org.tctalent.server.model.db.TBBEligibilityAssessment;
-import org.tctalent.server.model.db.VisaEligibility;
-import org.tctalent.server.model.db.YesNo;
-import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.model.db.*;
+
+import java.util.List;
 
 /**
  * TODO CC doc
@@ -85,5 +80,9 @@ public class CandidateVisaCheckData {
     private String visaJobOccupationSubCategory;
     private YesNo visaJobEnglishThreshold;
     private String visaJobEnglishThresholdNotes;
+    private List<Long> visaJobLanguagesRequired;
+    private YesNo visaJobLanguagesThresholdMet;
+    // todo remove this field once other notes field is renamed
+    private String visaJobLanguagesThresholdNotes;
     private List<Long> visaJobRelocatingDependantIds;
 }

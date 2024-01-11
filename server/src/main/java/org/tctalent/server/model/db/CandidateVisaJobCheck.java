@@ -16,13 +16,14 @@
 
 package org.tctalent.server.model.db;
 
-import javax.persistence.Entity;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
+
+import javax.persistence.Entity;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -110,6 +111,15 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         }
         if (data.getVisaJobEnglishThresholdNotes() != null) {
             setEnglishThresholdNotes(data.getVisaJobEnglishThresholdNotes());
+        }
+        if (data.getVisaJobLanguagesRequired() != null) {
+            setLanguagesRequired(data.getVisaJobLanguagesRequired());
+        }
+        if (data.getVisaJobLanguagesThresholdMet() != null) {
+            setLanguagesThresholdMet(data.getVisaJobLanguagesThresholdMet());
+        }
+        if (data.getVisaJobLanguagesThresholdNotes() != null) {
+            setLanguagesThresholdNotes(data.getVisaJobLanguagesThresholdNotes());
         }
         if (data.getVisaJobRelocatingDependantIds() != null) {
             setRelocatingDependantIds(data.getVisaJobRelocatingDependantIds());
