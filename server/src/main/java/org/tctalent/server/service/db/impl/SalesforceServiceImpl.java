@@ -16,8 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.SalesforceHelper.extractIdFromSfUrl;
-
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import java.nio.charset.StandardCharsets;
@@ -69,6 +67,7 @@ import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.EmployerCandidateDecision;
@@ -117,8 +116,41 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
     private static final String apiVersion = "v56.0";
+
+    /*
+     * Unique Salesforce external ID's used to determine in Salesforce "upserts" whether
+     * a corresponding Salesforce record exists which should be updated, or whether a new
+     * Salesforce record needs to be created.
+     * @see #executeUpsert(String, String, Object)
+     */
+    /**
+     * Unique external id for Salesforce Contact records.
+     * <p/>
+     * The TC candidate number is used as the unique value for this field
+     */
     private static final String candidateNumberSFFieldName = "TBBid__c";
+
+    /**
+     * Unique external id for Salesforce Candidate opportunity records
+     * <p/>
+     * The TC candidate number plus the SF ID of the associated job opportunity  is used as
+     * the unique value for this field
+     */
     private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
+
+    /**
+     * Unique external id for Salesforce Job opportunity records
+     * <p/>
+     * The ID of the associated job opportunity record in the TC is used as the unique value for
+     * this field
+     */
+    private static final String jobOpportunitySFFieldName = "TCid__c";
+
+
+    /**
+     * Value of Salesforce ContactType field, indicating that the Contact is a Talent Catalog
+     * candidate.
+     */
     private static final String candidateContactTypeSFFieldValue = "Candidate";
 
     private boolean alertedDuplicateSFRecord = false;
@@ -133,15 +165,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         "Id,AccountId," + candidateNumberSFFieldName;
 
     private final String commonOpportunityFields =
-        "Id,Name,AccountId,Closing_Comments__c,CreatedDate,LastModifiedDate,NextStep,Next_Step_Due_Date__c,StageName,IsClosed,AccountCountry__c," +
-                "Account.Description, IsWon";
+        "Id,Name,AccountId,Closing_Comments__c,CreatedDate,LastModifiedDate,NextStep,Next_Step_Due_Date__c,StageName,IsClosed,IsWon";
     private final String candidateOpportunityRetrievalFields =
         commonOpportunityFields +
         ",Employer_Feedback__c,Closing_Comments_For_Candidate__c,Parent_Opportunity__c,Candidate_TC_id__c,"
             + candidateOpportunitySFFieldName;
     private final String jobOpportunityRetrievalFields =
         commonOpportunityFields +
-        ",RecordTypeId,OwnerId,Hiring_Commitment__c,AccountName__c,AccountWebsite__c,AccountHasHiredInternationally__c,Opportunity_Score__c";
+        ",RecordTypeId,OwnerId,Hiring_Commitment__c,Opportunity_Score__c";
 
     private final EmailHelper emailHelper;
 
@@ -174,6 +205,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
         classSfPathMap.put(EmployerOppStageUpdateRequest.class, "Opportunity");
+        classSfPathMap.put(JobOpportunityRequest.class, "Opportunity");
         classSfCompositePathMap.put(ContactRequestComposite.class, "Contact");
         classSfCompositePathMap.put(OpportunityRequestComposite.class, "Opportunity");
 
@@ -276,6 +308,31 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
 
         return contacts;
+    }
+
+    @NonNull
+    @Override
+    public String createOrUpdateJobOpportunity(SalesforceJobOpp job) {
+        //Create a contact request using data from the candidate
+        JobOpportunityRequest request = new JobOpportunityRequest(null, job);
+
+        //Upsert request bodies should not include the external id because it is used as the unique
+        //key used to identify the record to be updated - specified in the PATCH uri, not in the
+        //request body.
+        request.remove(jobOpportunitySFFieldName);
+
+        String tcId = job.getId().toString();
+        //Execute and decode the response
+        UpsertResult result = executeUpsert(jobOpportunitySFFieldName, tcId, request);
+
+        assert result != null;
+        if (!result.isSuccess()) {
+            throw new SalesforceException("Update failed for job "
+                + tcId
+                + ": " + result.getErrorMessage());
+        }
+
+        return result.getId();
     }
 
     @Override
@@ -606,6 +663,22 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     @Nullable
+    public Account findAccount(String sfId)
+        throws SalesforceException, WebClientException {
+        Account account = null;
+        if (sfId != null) {
+            try {
+                account = findRecordFieldsFromId(
+                    "Account", sfId, "Id,Name,BillingCountry,Description,Has_Hired_Internationally__c,Website", Account.class);
+            } catch (NotFound ex) {
+                //Just return null if not found
+            }
+        }
+        return account;
+    }
+
+    @Override
+    @Nullable
     public Opportunity findOpportunity(String sfId)
         throws SalesforceException, WebClientException {
         return findOpportunity(sfId, "Id,Name,AccountId,OwnerId,AccountCountry__c");
@@ -857,9 +930,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      *     <li>update - HTTP status 200 (OK) </li>
      * </ul>
      *
-     * @param externalIdName Name of SF field containing an unique id used to identify SF records.
+     * @param externalIdName Name of SF field containing a unique id used to identify SF records.
      *                       For example the SF TBBid__c field on Contact records which we populate
-     *                       with candidate's candidateNumber.*
+     *                       with candidate's candidateNumber.
      * @param id             Value of the externalID
      * @param obj            Object supplying data used to update the Salesforce record.
      * @return ClientResponse
@@ -1277,7 +1350,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                     setAccountId(salesforceTbbAccountsConfig.getOtherAccount());
             }
 
-            setTBBid(Long.valueOf(candidate.getCandidateNumber()));
+            setTCid(Long.valueOf(candidate.getCandidateNumber()));
         }
 
         public void setAccountId(String accountId) {
@@ -1324,8 +1397,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             super.put("Source_Partner__c", sourcePartnerAccountId);
         }
 
-        public void setTBBid(Long tbbId) {
-            super.put(candidateNumberSFFieldName, tbbId);
+        public void setTCid(Long tcId) {
+            super.put(candidateNumberSFFieldName, tcId);
         }
     }
 
@@ -1389,6 +1462,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public String Talent_Catalog_List__c;
 
+        /**
+         * ID of Talent Catalog job entity
+         */
+        public Long TCid__c;
+
         public EmployerOpportunityRequest(UpdateEmployerOpportunityRequest request) {
             //Note that we now store the Root folder link in what used to be called the CVs folder
             //on SF. It is now displayed in SF as "List folder" - but it still has the old
@@ -1398,6 +1476,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             CVs_Folder__c = request.getFolderlink();
             Job_Description_Folder__c = request.getFolderjdlink();
             Talent_Catalog_List__c = request.getListlink();
+            TCid__c = request.getJobId();
         }
     }
 
@@ -1588,6 +1667,140 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public void setExternalCandidateOppId(String externalCandidateOppId) {
             put(candidateOpportunitySFFieldName, externalCandidateOppId);
+        }
+    }
+
+    /**
+     * See doc for {@link ContactRequest}
+     */
+    class JobOpportunityRequest extends LinkedHashMap<String, Object> {
+
+        public JobOpportunityRequest(
+            @Nullable CompositeAttributes attributes, SalesforceJobOpp jobOpp) {
+
+            if (attributes != null) {
+                setAttributes(attributes);
+            }
+
+            setRecordType(new RecordTypeField("Employer job"));
+
+            Partner partner = jobOpp.getJobCreator();
+
+            //Update candidate partner Salesforce account id
+            if (partner != null) {
+                String partnerSfAccountId = partner.getSfId();
+                if (partnerSfAccountId != null) {
+                    setRecruiterPartnerAccountId(partnerSfAccountId);
+                }
+            }
+
+            setName(jobOpp.getName());
+
+            setAccountId(jobOpp.getEmployerEntity().getSfId());
+            //todo Close date and other fields - including fields defaulting from Employer (Account) - eg office size etc, Country
+
+            setClosingComments(jobOpp.getClosingComments());
+
+            final JobOpportunityStage stage = jobOpp.getStage();
+            String stageName = stage == null ? null : stage.getSalesforceStageName();
+
+            setStageName(stageName);
+            setNextStep(jobOpp.getNextStep());
+            setNextStepDueDate(jobOpp.getNextStepDueDate());
+            setClosingComments(jobOpp.getClosingComments());
+
+            LocalDateTime close = LocalDateTime.now().plusYears(1);
+            setCloseDate(close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+            setExternalId(jobOpp.getId().toString());
+        }
+
+        public String getName() {
+            return (String) get("Name");
+        }
+
+        public void setAttributes(CompositeAttributes attributes) {
+            put("attributes", attributes);
+        }
+
+        /**
+         * This is the Salesforce record type for job opportunities.
+         *
+         * @param recordType Salesforce record type
+         */
+        public void setRecordType(RecordTypeField recordType) {
+            put("RecordType", recordType);
+        }
+
+        /**
+         * Id of associated Account.
+         */
+        public void setAccountId(String accountId) {
+            put("AccountId", accountId);
+        }
+
+        /**
+         * Required field for creating opportunity - set to a year from now
+         */
+        public void setCloseDate(String closeDate) {
+            put("CloseDate", closeDate);
+        }
+
+        /**
+         * Comments explaining why the opportunity was closed
+         */
+        public void setClosingComments(String comments) {
+            put("Closing_Comments__c", comments);
+        }
+
+        /**
+         * Name of opportunity
+         */
+        public void setName(String name) {
+            put("Name", name);
+        }
+
+        /**
+         * ID of opportunity owner
+         */
+        public void setOwnerId(String ownerId) {
+            put("OwnerId", ownerId);
+        }
+
+        /**
+         * Id of associated recruiter partner account record
+         */
+        public void setRecruiterPartnerAccountId(String partnerAccountId) {
+            put("Recruiter_Partner__c", partnerAccountId);
+        }
+
+        /**
+         * Set to stage - default is "Prospect"
+         */
+        public void setStageName(String stageName) {
+            put("StageName", stageName);
+        }
+
+        /**
+         * Opportunity next step
+         */
+        public void setNextStep(String nextStep) {
+            put("NextStep", nextStep);
+        }
+
+        /**
+         * Opportunity next step due date
+         */
+        public void setNextStepDueDate(@Nullable LocalDate nextStepDueDate) {
+            put("Next_Step_Due_Date__c", nextStepDueDate == null ? null : nextStepDueDate.toString());
+        }
+
+        /**
+         * This is the unique external id that defines all the job opportunities that we
+         * are going to "upsert".
+         */
+        public void setExternalId(String externalId) {
+            put(jobOpportunitySFFieldName, externalId);
         }
     }
 

@@ -50,7 +50,7 @@ public enum JobOpportunityStage {
         tooHighWage ("Too high wage", true, false),
         tooLong ("Too long", true, false);
 
-        public final String salesforceStageName;
+        private final String salesforceStageName;
         private final boolean closed;
         private final boolean won;
 
@@ -72,6 +72,10 @@ public enum JobOpportunityStage {
 
         public boolean isClosed() { return closed; }
         public boolean isWon() { return won; }
+
+        public String getSalesforceStageName() {
+                return salesforceStageName;
+        }
 
         public static JobOpportunityStage textToEnum(String label) {
                 for (JobOpportunityStage stage : JobOpportunityStage.values()) {

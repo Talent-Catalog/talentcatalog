@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -37,6 +39,7 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 import org.tctalent.server.request.partner.UpdatePartnerJobContactRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
+import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
@@ -47,12 +50,18 @@ import org.tctalent.server.service.db.UserService;
 public class PartnerAdminApi implements
         ITableApi<SearchPartnerRequest, UpdatePartnerRequest, UpdatePartnerRequest> {
 
+    private final EmployerService employerService;
     private final PartnerService partnerService;
     private final JobService jobService;
     private final UserService userService;
 
     @Override
-    public @NotNull Map<String, Object> create(UpdatePartnerRequest request) throws EntityExistsException {
+    public @NotNull Map<String, Object> create(UpdatePartnerRequest request)
+        throws EntityExistsException, NoSuchObjectException {
+
+        Employer employer = extractEmployerFromUpdatePartnerRequest(request);
+        request.setEmployer(employer);
+
         Partner partner = partnerService.create(request);
         return PartnerDtoHelper.getPartnerDto().build(partner);
     }
@@ -97,6 +106,10 @@ public class PartnerAdminApi implements
         User defaultContact = defaultContactId == null ? null : userService.getUser(defaultContactId);
         request.setDefaultContact(defaultContact);
 
+        //Populate Employer from data in request
+        Employer employer = extractEmployerFromUpdatePartnerRequest(request);
+        request.setEmployer(employer);
+
         Partner partner = partnerService.update(id, request);
         return PartnerDtoHelper.getPartnerDto().build(partner);
     }
@@ -111,6 +124,17 @@ public class PartnerAdminApi implements
         partnerService.updateJobContact(partner, job, contactUser);
         partner.setContextJobId(request.getJobId());
         return PartnerDtoHelper.getPartnerDto().build(partner);
+    }
+
+    @Nullable
+    private Employer extractEmployerFromUpdatePartnerRequest(UpdatePartnerRequest request)
+        throws NoSuchObjectException {
+        Employer employer = null;
+        final String employerSflink = request.getEmployerSflink();
+        if (employerSflink != null) {
+            employer = employerService.findOrCreateEmployerFromSalesforceLink(employerSflink);
+        }
+        return employer;
     }
 
 }

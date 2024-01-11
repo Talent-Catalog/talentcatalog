@@ -33,7 +33,22 @@ public class UpdateJobRequest extends OpportunityParams {
     private Long contactUserId;
 
     /**
-     * Url link to Salesforce EmployerJob opportunity
+     * Name of the role associated with the job - for example "Senior programmer"
+     */
+    @Nullable
+    private String roleName;
+
+    /**
+     * Id of associated  Salesforce job opportunity - which will need to be updated in sync with
+     * the TC Job. If null, a new Salesforce job opportunity needs to be created to match the
+     * TC job.
+     */
+    @Nullable
+    private String sfId;
+
+    /**
+     * Url link to Salesforce Job opportunity. Only used when creating a job from an existing
+     * Salesforce job opportunity
      */
     @Nullable
     private String sfJoblink;

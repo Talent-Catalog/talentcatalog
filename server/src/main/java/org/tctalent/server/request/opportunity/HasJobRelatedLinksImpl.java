@@ -70,4 +70,9 @@ public class HasJobRelatedLinksImpl {
    * Link to associated Google Drive Job Description subfolder
    */
   private String folderjdlink;
+
+  /**
+   * TC id of Job entity
+   */
+  private Long jobId;
 }

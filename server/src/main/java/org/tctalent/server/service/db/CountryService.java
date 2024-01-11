@@ -16,16 +16,16 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.request.country.SearchCountryRequest;
 import org.tctalent.server.request.country.UpdateCountryRequest;
-
-import java.util.List;
 
 public interface CountryService {
 
@@ -41,6 +41,14 @@ public interface CountryService {
      */
     @NonNull
     Country getCountry(long id) throws NoSuchObjectException;
+
+    /**
+     * Find country matching given name (case insensitive).
+     * @param name Country name
+     * @return country or null if none found
+     */
+    @Nullable
+    Country findCountryByName(String name);
 
     Country createCountry(UpdateCountryRequest request) throws EntityExistsException;
 

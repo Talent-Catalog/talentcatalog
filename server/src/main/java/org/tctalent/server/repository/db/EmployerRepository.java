@@ -14,25 +14,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.partner;
+package org.tctalent.server.repository.db;
 
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.tctalent.server.model.db.Employer;
 
-/**
- * An employer in a destination country who connects directly to us, searching for suitable
- * candidates themselves.
- * <p/>
- * By contrast, some employers prefer to work through a {@link RecruiterPartner}
- *
- * @author John Cameron
- */
-public interface EmployerPartner extends JobCreator {
+public interface EmployerRepository extends JpaRepository<Employer, Long>,
+    JpaSpecificationExecutor<Employer> {
 
     /**
-     * Employer associated with this partner
-     * @return Employer
+     * Look up employer by sfId.
+     * @param sfId Salesforce id - stored in TC table.
+     * @return Optional employer
+     * See <a href="https://docs.spring.io/spring-data/data-commons/docs/current/reference/html/#repositories.query-methods.query-creation">
+     *     Spring magic </a>
      */
-    Employer getEmployer();
-    void setEmployer(Employer employer);
+    Optional<Employer> findFirstBySfId(String sfId);
 
 }

@@ -57,6 +57,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 import org.tctalent.server.request.partner.UpdatePartnerJobContactRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
+import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
@@ -85,6 +86,7 @@ class PartnerAdminApiTest extends ApiTestBase {
           1
       );
 
+  @MockBean EmployerService employerService;
   @MockBean PartnerService partnerService;
   @MockBean JobService jobService;
   @MockBean UserService userService;
