@@ -46,8 +46,12 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
     if (this.chats) {
       this.unsubscribe();
       if (this.chats.length == 1) {
-        this.subscription = this.chatService.getChatReadStatusObservable(this.chats[0]).subscribe(
-          (chatIsRead) => this.setIndicator(chatIsRead)
+        this.subscription = this.chatService.getChatReadStatusObservable(this.chats[0])
+        .subscribe(
+          {
+            next: (chatIsRead) => this.setIndicator(chatIsRead),
+            error: (error) => this.unreadIndicator = '?'
+          }
         )
       } else if (this.chats.length > 1) {
 
