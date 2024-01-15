@@ -17,6 +17,7 @@ export class ViewChatPostsComponent extends PostsComponentBase implements OnInit
   @Input() job: Job;
   @Input() jobChatType: JobChatType;
   @Input() sourcePartner: Partner;
+  @Input() readOnly: boolean = false;
 
   constructor(
     chatService: ChatService,
