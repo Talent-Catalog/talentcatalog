@@ -341,10 +341,8 @@ export interface CandidateVisaJobCheck {
   eligiblePathways?: string;
   occupationCategory?: string;
   occupationSubCategory?: string;
-  // todo remove english threshold field
-  englishThreshold?: YesNo;
   languagesRequired?: string;
-  languagesThresholdMet?: string;
+  languagesThresholdMet?: YesNo;
   languagesThresholdNotes?: string;
   relocatingDependantIds?: number[];
 }
