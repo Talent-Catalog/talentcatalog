@@ -9,9 +9,10 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
 import {ShortSavedList} from "../../../model/saved-list";
 import {LocalStorageService} from "angular-2-local-storage";
-import {JobChatType} from "../../../model/chat";
+import {JobChat, JobChatType} from "../../../model/chat";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
+import {ChatService} from "../../../services/chat.service";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -28,6 +29,8 @@ export class ViewCandidateOppComponent implements OnInit {
   private lastTabKey: string = 'CaseLastTab';
   updating: boolean;
   saving: boolean;
+  candidateChat: JobChat;
+  candidateRecruitingChat: JobChat;
   candidateProspectTabVisible: boolean;
   candidateRecruitingTabVisible: boolean;
   candidateRecruitingTabTitle: string = 'CandidateRecruiting'
@@ -36,6 +39,7 @@ export class ViewCandidateOppComponent implements OnInit {
     private authorizationService: AuthorizationService,
     private authenticationService: AuthenticationService,
     private candidateOpportunityService: CandidateOpportunityService,
+    private chatService: ChatService,
     private localStorageService: LocalStorageService,
     private modalService: NgbModal,
     private salesforceService: SalesforceService,
@@ -181,4 +185,23 @@ export class ViewCandidateOppComponent implements OnInit {
     );
   }
 
+  onFetchedCandidateChat(chat: JobChat) {
+     this.candidateChat = chat;
+  }
+
+  onFetchedCandidateRecruitingChat(chat: JobChat) {
+     this.candidateRecruitingChat = chat;
+  }
+
+  onMarkCandidateChatAsRead() {
+    if (this.candidateChat) {
+      this.chatService.markChatAsRead(this.candidateChat);
+    }
+  }
+
+  onMarkCandidateRecruitingChatAsRead() {
+    if (this.candidateRecruitingChat) {
+      this.chatService.markChatAsRead(this.candidateRecruitingChat);
+    }
+  }
 }
