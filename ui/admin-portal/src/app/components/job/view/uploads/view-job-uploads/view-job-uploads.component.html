@@ -1,7 +1,7 @@
 <div class="card">
 
   <div class="card-header">
-    Formal job definitions. <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+    Job related uploads <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
   </div>
 
   <div class="card-body">
@@ -13,7 +13,7 @@
 
       <div class="col-10 col-sm">
         <label class="col-form-label" [ngClass]="{'alert alert-danger': highlightJD()}">
-          <i class="far fa-file"></i>Employer's Job Description (JD)
+          <i class="far fa-file"></i> Employer's Job Description (JD)
         </label>
 
         <div *ngIf="!job.submissionList?.fileJdLink" class="form-control-plaintext">
@@ -26,12 +26,39 @@
       </div>
       <div class="col-2 col-sm-auto" *ngIf="editable">
           <button title="Enter/change a link to the document" class="btn btn-sm btn-secondary me-2" (click)="editJDLink()">
-            <i class="fas fa-edit"></i>
+            <i class="fa-solid fa-link"></i>
           </button>
           <button title="Upload the document from your computer" class="btn btn-sm btn-primary" (click)="uploadJD()">
             <i class="fa-solid fa-upload"></i>
           </button>
         </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+
+      <div class="col-10 col-sm">
+        <label class="col-form-label">
+          <i class="fa-regular fa-handshake"></i>Interview guidance
+        </label>
+
+        <div *ngIf="!job.submissionList?.fileJdLink" class="form-control-plaintext">
+          Please upload, or link to, an interview guidance document. Once uploaded this doc will be shared with candidates via a button on their portal.
+        </div>
+        <div *ngIf="job.submissionList?.fileJdLink" class="form-control-plaintext">
+          <a target="_blank" href="{{job.submissionList.fileJdLink}}">
+            {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
+        </div>
+      </div>
+      <div class="col-2 col-sm-auto" *ngIf="editable">
+        <button title="Enter/change a link to the document" class="btn btn-sm btn-secondary me-2" (click)="editJDLink()">
+          <i class="fa-solid fa-link"></i>
+        </button>
+        <button title="Upload the document from your computer" class="btn btn-sm btn-primary" (click)="uploadInterviewGuide()">
+          Upload <i class="fa-solid fa-upload"></i>
+        </button>
+      </div>
     </div>
 
   </div>

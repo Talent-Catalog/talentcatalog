@@ -3,10 +3,7 @@ import {Job, JobDocType} from "../../../../../model/job";
 import {FileSelectorComponent} from "../../../../util/file-selector/file-selector.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {JobService} from "../../../../../services/job.service";
-import {
-  InputLinkComponent,
-  UpdateLinkRequest
-} from "../../../../util/input/input-link/input-link.component";
+import {InputLinkComponent, UpdateLinkRequest} from "../../../../util/input/input-link/input-link.component";
 import {JobPrepItem, JobPrepJD, JobPrepJOI} from "../../../../../model/job-prep-item";
 
 /*
@@ -44,6 +41,7 @@ export class ViewJobUploadsComponent implements OnInit {
       centered: true,
       backdrop: 'static'
     })
+    inputLinkModal.componentInstance.title = "Add/edit link to document"
 
     let initialValue: UpdateLinkRequest = {}
     switch (docType) {
@@ -139,5 +137,9 @@ export class ViewJobUploadsComponent implements OnInit {
 
   uploadJOI() {
     this.uploadJobDoc("joi")
+  }
+
+  uploadInterviewGuide() {
+    this.uploadJobDoc("interview")
   }
 }
