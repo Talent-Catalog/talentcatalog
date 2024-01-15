@@ -16,27 +16,17 @@
 
 package org.tctalent.server.model.db;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.service.db.CandidateSavedListService;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * There are two kinds of SavedList:
@@ -104,6 +94,18 @@ public class SavedList extends AbstractCandidateSource {
      */
     @Nullable
     private String fileJoiLink;
+
+    /**
+     * Name of interview guidance file, if one exists
+     */
+    @Nullable
+    private String fileInterviewGuidanceName;
+
+    /**
+     * Url link to interview guidance file, if one exists
+     */
+    @Nullable
+    private String fileInterviewGuidanceLink;
 
     /**
      * Url link to corresponding list folder on Google Drive, if one exists.

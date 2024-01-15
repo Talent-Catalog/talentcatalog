@@ -16,25 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,24 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
-import org.tctalent.server.exception.EntityExistsException;
-import org.tctalent.server.exception.InvalidRequestException;
-import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.SalesforceException;
-import org.tctalent.server.exception.UnauthorisedActionException;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateOpportunity;
-import org.tctalent.server.model.db.CandidateOpportunityStage;
-import org.tctalent.server.model.db.Employer;
-import org.tctalent.server.model.db.JobChatType;
-import org.tctalent.server.model.db.JobOppIntake;
-import org.tctalent.server.model.db.JobOpportunityStage;
-import org.tctalent.server.model.db.PartnerImpl;
-import org.tctalent.server.model.db.SalesforceJobOpp;
-import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.model.db.SavedSearch;
-import org.tctalent.server.model.db.SavedSearchType;
-import org.tctalent.server.model.db.User;
+import org.tctalent.server.exception.*;
+import org.tctalent.server.model.db.*;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.repository.db.JobSpecification;
@@ -80,25 +45,25 @@ import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.CandidateOpportunityService;
-import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.service.db.EmployerService;
-import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.JobChatService;
-import org.tctalent.server.service.db.JobOppIntakeService;
-import org.tctalent.server.service.db.JobService;
-import org.tctalent.server.service.db.PartnerService;
-import org.tctalent.server.service.db.SalesforceBridgeService;
-import org.tctalent.server.service.db.SalesforceJobOppService;
-import org.tctalent.server.service.db.SalesforceService;
-import org.tctalent.server.service.db.SavedListService;
-import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.*;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Service
 public class JobServiceImpl implements JobService {
@@ -846,6 +811,13 @@ public class JobServiceImpl implements JobService {
         savedListService.saveIt(submissionList);
     }
 
+    private void setJobInterviewGuidanceLink(SalesforceJobOpp job, String name, String url) {
+        SavedList submissionList = job.getSubmissionList();
+        submissionList.setFileInterviewGuidanceLink(url);
+        submissionList.setFileInterviewGuidanceName(name);
+        savedListService.saveIt(submissionList);
+    }
+
     private GoogleFileSystemFile uploadFile(String folderLink, String fileName,
         MultipartFile file) throws IOException {
 
@@ -913,6 +885,19 @@ public class JobServiceImpl implements JobService {
         }
         GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
         setJobJoiLink(job, uploadedFile.getName(), uploadedFile.getUrl());
+        return job;
+    }
+
+    @Override
+    public SalesforceJobOpp uploadInterviewGuidance(long id, MultipartFile file)
+            throws InvalidRequestException, NoSuchObjectException, IOException {
+
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+        setJobInterviewGuidanceLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
     }
 }
