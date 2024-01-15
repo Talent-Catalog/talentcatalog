@@ -118,7 +118,6 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private YesNo languagesThresholdMet;
 
-    //todo rename this field to language threshold notes
     private String languagesThresholdNotes;
 
     /**

@@ -24,7 +24,8 @@ import org.tctalent.server.model.db.*;
 import java.util.List;
 
 /**
- * TODO CC doc
+ * This is the data sent from the visa check intake, it contains visa check and visa job check data.
+ * This data is saved to the correct visa check via the visa country id and visa job check by visa job check id.
  *
  * @author Caroline Cameron
  */
@@ -78,10 +79,10 @@ public class CandidateVisaCheckData {
     private String visaJobEligiblePathways;
     private String visaJobOccupationCategory;
     private String visaJobOccupationSubCategory;
+    // todo remove this field once flyways to populate new languages fields has been run and so no longer need.
     private YesNo visaJobEnglishThreshold;
     private List<Long> visaJobLanguagesRequired;
     private YesNo visaJobLanguagesThresholdMet;
-    // todo remove this field once other notes field is renamed
     private String visaJobLanguagesThresholdNotes;
     private List<Long> visaJobRelocatingDependantIds;
 }
