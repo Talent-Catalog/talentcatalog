@@ -510,9 +510,6 @@ import {RxStompService} from "./services/rx-stomp.service";
 import {CreateUpdatePostComponent} from './components/chat/create-update-post/create-update-post.component';
 import {EnvService} from "./services/env.service";
 import {ExportPdfComponent} from './components/util/export-pdf/export-pdf.component';
-import {
-  JobEnglishThresholdComponent
-} from './components/candidates/visa/visa-job-assessments/job-english-threshold/job-english-threshold.component';
 import {ChatsComponent} from './components/chat/chats/chats.component';
 import {ChatsWithPostsComponent} from './components/chat/chats-with-posts/chats-with-posts.component';
 import {ViewChatComponent} from './components/chat/view-chat/view-chat.component';
@@ -831,7 +828,6 @@ import {
     OccupationSubcategoryComponent,
     CreateUpdatePostComponent,
     ExportPdfComponent,
-    JobEnglishThresholdComponent,
     ChatsComponent,
     ChatsWithPostsComponent,
     ViewChatComponent,
