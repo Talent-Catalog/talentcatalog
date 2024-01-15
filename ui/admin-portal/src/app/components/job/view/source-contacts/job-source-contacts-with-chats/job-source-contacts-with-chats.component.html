@@ -21,10 +21,10 @@
         <div class="alert alert-danger" *ngIf="error">
           {{error}}
         </div>
-        <app-posts
+        <app-view-chat-posts
             [chat]="selectedSourcePartnerChat"
         >
-        </app-posts>
+        </app-view-chat-posts>
       </div>
       <ng-template #noSelectedChat>
           <div class="text-muted py-4 fw-light text-center fs-5">Select partner from table to begin chat</div>

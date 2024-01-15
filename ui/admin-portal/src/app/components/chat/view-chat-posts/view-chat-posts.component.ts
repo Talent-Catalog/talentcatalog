@@ -30,7 +30,13 @@ export class ViewChatPostsComponent extends PostsComponentBase implements OnInit
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.fetchJobChat();
+    if (changes.chat) {
+      if (this.chat) {
+        this.onNewChat(this.chat);
+      }
+    } else {
+      this.fetchJobChat();
+    }
   }
 
   private fetchJobChat() {

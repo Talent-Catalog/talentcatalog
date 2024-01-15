@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {Directive, EventEmitter, Output} from "@angular/core";
+import {Directive, EventEmitter, Input, Output} from "@angular/core";
 import {ChatService} from "../../../services/chat.service";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {Subscription} from "rxjs";
@@ -27,9 +27,9 @@ import {ChatPost, CreateChatRequest, JobChat} from "../../../model/chat";
  */
 @Directive()
 export abstract class PostsComponentBase {
+  @Input() chat: JobChat;
   @Output() fetchedChat = new EventEmitter<JobChat>();
 
-  chat: JobChat;
   private chatSubscription: Subscription;
 
   currentPost: ChatPost;
