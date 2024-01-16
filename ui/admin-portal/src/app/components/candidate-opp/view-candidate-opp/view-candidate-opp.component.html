@@ -189,7 +189,6 @@
           <app-view-chat-posts
             [candidateOpp]="opp"
             [jobChatType]="JobChatType.CandidateProspect"
-            (fetchedChat)= "onFetchedCandidateChat($event)"
           >
           </app-view-chat-posts>
         </ng-template>
@@ -213,7 +212,6 @@
           <app-view-chat-posts
             [candidateOpp]="opp"
             [jobChatType]="JobChatType.CandidateRecruiting"
-            (fetchedChat)= "onFetchedCandidateRecruitingChat($event)"
           >
           </app-view-chat-posts>
         </ng-template>

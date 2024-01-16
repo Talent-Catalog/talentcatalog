@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {CandidateOpportunity, isCandidateOpportunity} from "../../../model/candidate-opportunity";
 import {EditCandidateOppComponent} from "../edit-candidate-opp/edit-candidate-opp.component";
 import {CandidateOpportunityParams} from "../../../model/candidate";
@@ -9,17 +17,18 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
 import {ShortSavedList} from "../../../model/saved-list";
 import {LocalStorageService} from "angular-2-local-storage";
-import {JobChat, JobChatType} from "../../../model/chat";
+import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {ChatService} from "../../../services/chat.service";
+import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'app-view-candidate-opp',
   templateUrl: './view-candidate-opp.component.html',
   styleUrls: ['./view-candidate-opp.component.scss']
 })
-export class ViewCandidateOppComponent implements OnInit {
+export class ViewCandidateOppComponent implements OnInit, OnChanges {
   @Input() opp: CandidateOpportunity;
   @Input() showBreadcrumb: boolean = true;
   @Output() candidateOppUpdated = new EventEmitter<CandidateOpportunity>();
@@ -27,6 +36,7 @@ export class ViewCandidateOppComponent implements OnInit {
   activeTabId: string;
   error: string;
   private lastTabKey: string = 'CaseLastTab';
+  loading: boolean;
   updating: boolean;
   saving: boolean;
   candidateChat: JobChat;
@@ -50,6 +60,41 @@ export class ViewCandidateOppComponent implements OnInit {
     this.selectDefaultTab();
     this.checkVisibility();
 
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.opp) {
+      this.fetchChats();
+    }
+  }
+
+
+  private fetchChats() {
+    const candidateProspectChatRequest: CreateChatRequest = {
+      type: JobChatType.CandidateProspect,
+      candidateOppId: this.opp?.id,
+    }
+    const candidateRecruitingChatRequest: CreateChatRequest = {
+      type: JobChatType.CandidateRecruiting,
+      candidateOppId: this.opp?.id,
+    }
+
+    this.loading = true;
+    this.error = null;
+    forkJoin( {
+      'candidateChat': this.chatService.getOrCreate(candidateProspectChatRequest),
+      'candidateRecruitingChat': this.chatService.getOrCreate(candidateRecruitingChatRequest),
+    }).subscribe(
+      results => {
+        this.loading = false;
+        this.candidateChat = results['candidateChat'];
+        this.candidateRecruitingChat = results['candidateRecruitingChat'];
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
   }
 
   get getCandidateOpportunityStageName() {
@@ -183,14 +228,6 @@ export class ViewCandidateOppComponent implements OnInit {
         this.saving = false;
       }
     );
-  }
-
-  onFetchedCandidateChat(chat: JobChat) {
-     this.candidateChat = chat;
-  }
-
-  onFetchedCandidateRecruitingChat(chat: JobChat) {
-     this.candidateRecruitingChat = chat;
   }
 
   onMarkCandidateChatAsRead() {
