@@ -174,7 +174,7 @@ import {NgxWigModule} from 'ngx-wig';
 import {TruncatePipe} from "./pipes/truncate.pipe";
 import {RxStompService} from "./services/rx-stomp.service";
 import {ViewPostComponent} from "./components/chat/view-post/view-post.component";
-import {PostsComponent} from "./components/chat/posts/posts.component";
+import {ViewChatPostsComponent} from "./components/chat/view-chat-posts/view-chat-posts.component";
 import {
   CreateUpdateChatComponent
 } from "./components/chat/create-update-chat/create-update-chat.component";
@@ -252,7 +252,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ViewChatComponent,
     CreateUpdateChatComponent,
     CreateUpdatePostComponent,
-    PostsComponent,
+    ViewChatPostsComponent,
     ViewPostComponent,
     TruncatePipe,
     RegistrationCreateAccountComponent,
