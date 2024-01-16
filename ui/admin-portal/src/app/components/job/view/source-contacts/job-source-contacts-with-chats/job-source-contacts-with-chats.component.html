@@ -18,6 +18,13 @@
 
       <div *ngIf="selectedSourcePartner; else noSelectedChat">
         <h5 class="text-center text-accent-1 mb-3">{{chatHeader}}</h5>
+
+        <div class="d-flex justify-content-end">
+          <button type="button" class="btn btn-success " (click)="onMarkChatAsRead()">
+            Mark as Read <i class="fa-solid"></i>
+          </button>
+        </div>
+
         <div class="alert alert-danger" *ngIf="error">
           {{error}}
         </div>
