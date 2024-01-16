@@ -751,7 +751,6 @@ import {ViewChatComponent} from './components/chat/view-chat/view-chat.component
 import {
   CreateUpdateChatComponent
 } from './components/chat/create-update-chat/create-update-chat.component';
-import {PostsComponent} from './components/chat/posts/posts.component';
 import {ViewPostComponent} from './components/chat/view-post/view-post.component';
 import {ManageChatsComponent} from './components/chat/manage-chats/manage-chats.component';
 import {
@@ -1072,7 +1071,6 @@ import {
     ChatsWithPostsComponent,
     ViewChatComponent,
     CreateUpdateChatComponent,
-    PostsComponent,
     ViewPostComponent,
     ManageChatsComponent,
     JobSourceContactsWithChatsComponent,
@@ -1122,7 +1120,7 @@ import {
     DatePipe, TitleCasePipe
   ],
   exports: [
-    PostsComponent
+    ViewChatPostsComponent
   ],
   bootstrap: [AppComponent]
 })
