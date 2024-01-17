@@ -704,7 +704,6 @@ const ALL_FIELDS = {
       "CHAT-RETURN": null,
       "CHAT-MARK-AS-READ": null,
       "JOB-RETURN": null,
-      "RETURN": null,
     },
   }
 }
