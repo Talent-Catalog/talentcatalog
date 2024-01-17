@@ -341,8 +341,9 @@ export interface CandidateVisaJobCheck {
   eligiblePathways?: string;
   occupationCategory?: string;
   occupationSubCategory?: string;
-  englishThreshold?: YesNo;
-  englishThresholdNotes?: string;
+  languagesRequired?: string;
+  languagesThresholdMet?: YesNo;
+  languagesThresholdNotes?: string;
   relocatingDependantIds?: number[];
 }
 /*

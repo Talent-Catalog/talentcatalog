@@ -37,13 +37,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateVisaJobCheck;
 
 /**
@@ -119,7 +115,9 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.occupationCategory", is("This is the occupation category.")))
                 .andExpect(jsonPath("$.occupationSubCategory", is("This is the occupation subcategory.")))
                 .andExpect(jsonPath("$.englishThreshold", is("Yes")))
-                .andExpect(jsonPath("$.englishThresholdNotes", is("These are some english threshold notes.")));
+                .andExpect(jsonPath("$.languagesRequired.[0]", is(342)))
+                .andExpect(jsonPath("$.languagesThresholdMet", is("Yes")))
+                .andExpect(jsonPath("$.languagesThresholdNotes", is("These are some language threshold notes.")));
 
         verify(candidateVisaJobCheckService).getVisaJobCheck(anyLong());
     }
