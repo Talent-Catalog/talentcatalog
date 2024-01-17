@@ -17,6 +17,7 @@ import {PagedSearchRequest} from "./base";
 import {ShortJob} from "./job";
 import {ShortCandidate} from "./candidate";
 import {Opportunity, OpportunityOwnershipType} from "./opportunity";
+import {CreateChatRequest, JobChatType} from "./chat";
 
 export function isCandidateOpportunity(opp: Opportunity): opp is CandidateOpportunity {
   return opp ? 'jobOpp' in opp : false;
@@ -32,6 +33,23 @@ export interface CandidateOpportunity extends Opportunity {
   candidate: ShortCandidate;
   jobOpp: ShortJob;
   stage: CandidateOpportunityStage;
+}
+
+export function getCandidateOpportunityChatRequests(opp: CandidateOpportunity): CreateChatRequest[] {
+  return [
+    {
+      type: JobChatType.CandidateRecruiting,
+      candidateOppId: opp?.id
+    },
+    {
+      type: JobChatType.CandidateProspect,
+      candidateOppId: opp?.id
+    },
+    {
+      type: JobChatType.AllJobCandidates,
+      jobId: opp?.jobOpp?.id
+    }
+  ];
 }
 
 export enum CandidateOpportunityStage {

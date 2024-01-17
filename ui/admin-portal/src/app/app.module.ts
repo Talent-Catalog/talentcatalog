@@ -1120,7 +1120,8 @@ import {
     DatePipe, TitleCasePipe
   ],
   exports: [
-    ViewChatPostsComponent
+    ViewChatPostsComponent,
+    ChatReadStatusComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -181,6 +181,9 @@ import {
 import {ViewChatComponent} from "./components/chat/view-chat/view-chat.component";
 import {ChatsComponent} from "./components/chat/chats/chats.component";
 import {
+  ChatReadStatusComponent
+} from "./components/chat/chat-read-status/chat-read-status.component";
+import {
   CreateUpdatePostComponent
 } from "./components/chat/create-update-post/create-update-post.component";
 import {QuillModule} from "ngx-quill";
@@ -254,6 +257,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     CreateUpdatePostComponent,
     ViewChatPostsComponent,
     ViewPostComponent,
+    ChatReadStatusComponent,
     TruncatePipe,
     RegistrationCreateAccountComponent,
     FileSelectorComponent

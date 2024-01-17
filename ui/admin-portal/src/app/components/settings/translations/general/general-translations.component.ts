@@ -702,6 +702,8 @@ const ALL_FIELDS = {
     },
     "OPP" : {
       "CHAT-RETURN": null,
+      "CHAT-MARK-AS-READ": null,
+      "JOB-RETURN": null,
       "RETURN": null,
     },
   }
