@@ -4,13 +4,10 @@ import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
-import {JobChat} from "../../../model/chat";
+import {JobChat, JobChatType} from "../../../model/chat";
 import {forkJoin, Observable} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
-import {
-  CandidateOpportunity,
-  getCandidateOpportunityChatRequests
-} from "../../../model/candidate-opportunity";
+import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-view-candidate',
@@ -79,8 +76,21 @@ export class ViewCandidateComponent implements OnInit {
     const collector =
       (chats$: Observable<JobChat>[], opp: CandidateOpportunity): Observable<JobChat>[] =>
       {
-        //todo where else can we use ths call? Notifuication on job name in job list?
-        const chatRequests = getCandidateOpportunityChatRequests(opp);
+        const chatRequests = [
+          {
+            type: JobChatType.CandidateRecruiting,
+            candidateOppId: opp?.id
+          },
+          {
+            type: JobChatType.CandidateProspect,
+            candidateOppId: opp?.id
+          },
+          {
+            type: JobChatType.AllJobCandidates,
+            jobId: opp?.jobOpp?.id
+          }
+        ];
+
         chatRequests.forEach(
           request => chats$.push(this.chatService.getOrCreate(request))
         );

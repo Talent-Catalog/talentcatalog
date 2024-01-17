@@ -8,12 +8,9 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
-import {
-  CandidateOpportunity,
-  getCandidateOpportunityChatRequests
-} from "../../../../../../model/candidate-opportunity";
+import {CandidateOpportunity} from "../../../../../../model/candidate-opportunity";
 import {forkJoin, Observable} from "rxjs";
-import {JobChat} from "../../../../../../model/chat";
+import {JobChat, JobChatType} from "../../../../../../model/chat";
 import {ChatService} from "../../../../../../services/chat.service";
 
 @Component({
@@ -63,16 +60,26 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   }
 
   fetchOppChats(opp: CandidateOpportunity) {
-    const collector =
-      (chats$: Observable<JobChat>[], opp: CandidateOpportunity): Observable<JobChat>[] =>
+    let chats$: Observable<JobChat>[] = [];
+
+    const chatRequests = [
       {
-        const chatRequests = getCandidateOpportunityChatRequests(opp);
-        chatRequests.forEach(
-          request => chats$.push(this.chatService.getOrCreate(request))
-        );
-        return chats$;
+        type: JobChatType.CandidateRecruiting,
+        candidateOppId: opp?.id
+      },
+      {
+        type: JobChatType.CandidateProspect,
+        candidateOppId: opp?.id
+      },
+      {
+        type: JobChatType.AllJobCandidates,
+        jobId: opp?.jobOpp?.id
       }
-    const chats$: Observable<JobChat>[] = [opp].reduce(collector, []);
+    ];
+
+    for (const request of chatRequests) {
+      chats$.push(this.chatService.getOrCreate(request))
+    }
 
     //Now fetch all those chats
     this.loading = true;
@@ -84,7 +91,6 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
         this.loading = false;
       }
     )
-
   }
 
   private fetchChats() {
