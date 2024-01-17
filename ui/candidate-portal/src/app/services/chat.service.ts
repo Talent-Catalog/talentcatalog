@@ -1,11 +1,11 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {merge, Observable, Subject, Subscription} from "rxjs";
+import {merge, Observable, of, Subject, Subscription} from "rxjs";
 import {CreateChatRequest, JobChat} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
-import {map, takeUntil} from "rxjs/operators";
+import {map, takeUntil, tap} from "rxjs/operators";
 import {RxStompConfig} from "@stomp/rx-stomp";
 import {AuthenticationService} from "./authentication.service";
 
@@ -37,6 +37,18 @@ export class ChatService implements OnDestroy {
    * Map of Chat id to Observable for that chat - this is where posts come in from server
    */
   private chatPosts: Map<number, Observable<Message>> = new Map<number, Observable<Message>>();
+
+  /**
+   * The same request should always return the same chat - and chats are really jut id's that don't
+   * change so we can cache them - which is what this Map does.
+   * <p/>
+   * Note however that although Typescript allows Objects as keys, the hash function uses the
+   * objects location in memory - which is no good for us here. So instead we convert the
+   * request in to string (using JSON.stringify) and use that as the key.
+   * See, for example, https://stackoverflow.com/questions/63948352/typescript-map-with-objects-as-keys
+   * @private
+   */
+  private chatByChatRequest: Map<string, JobChat> = new Map();
 
   /**
    * Map of Chat id to MarkAsRead Subject for that chat - this is where notifications come in
@@ -77,7 +89,19 @@ export class ChatService implements OnDestroy {
   }
 
   getOrCreate(request: CreateChatRequest): Observable<JobChat> {
-    return this.http.post<JobChat>(`${this.apiUrl}/get-or-create`, request)
+
+    //Typescript Maps hash on object reference (!), so can't use actual request object as key to map
+    const requestKey = JSON.stringify(request);
+
+    //Check if we have already fetched the chat matching this request - if so return cached value
+    const chat = this.chatByChatRequest.get(requestKey);
+    if (chat) {
+      return of(chat);
+    } else {
+      return this.http.post<JobChat>(`${this.apiUrl}/get-or-create`, request).pipe(
+        tap(chat => this.chatByChatRequest.set(requestKey, chat))
+      );
+    }
   }
 
   list(): Observable<JobChat[]> {
