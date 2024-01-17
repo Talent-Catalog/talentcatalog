@@ -17,71 +17,13 @@
 package org.tctalent.server.api.admin;
 
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateCertification;
-import org.tctalent.server.model.db.CandidateCitizenship;
-import org.tctalent.server.model.db.CandidateDependant;
-import org.tctalent.server.model.db.CandidateDestination;
-import org.tctalent.server.model.db.CandidateEducation;
-import org.tctalent.server.model.db.CandidateExam;
-import org.tctalent.server.model.db.CandidateJobExperience;
-import org.tctalent.server.model.db.CandidateLanguage;
-import org.tctalent.server.model.db.CandidateNote;
-import org.tctalent.server.model.db.CandidateOccupation;
-import org.tctalent.server.model.db.CandidateOpportunity;
-import org.tctalent.server.model.db.CandidateOpportunityStage;
-import org.tctalent.server.model.db.CandidateReviewStatusItem;
-import org.tctalent.server.model.db.CandidateSkill;
-import org.tctalent.server.model.db.CandidateVisaCheck;
-import org.tctalent.server.model.db.CandidateVisaJobCheck;
-import org.tctalent.server.model.db.Country;
-import org.tctalent.server.model.db.DependantRelations;
-import org.tctalent.server.model.db.DocumentStatus;
-import org.tctalent.server.model.db.EducationLevel;
-import org.tctalent.server.model.db.EducationMajor;
-import org.tctalent.server.model.db.EducationType;
-import org.tctalent.server.model.db.Employer;
-import org.tctalent.server.model.db.Exam;
-import org.tctalent.server.model.db.ExportColumn;
-import org.tctalent.server.model.db.FamilyRelations;
-import org.tctalent.server.model.db.Gender;
-import org.tctalent.server.model.db.HasPassport;
-import org.tctalent.server.model.db.Industry;
-import org.tctalent.server.model.db.JobOppIntake;
-import org.tctalent.server.model.db.JobOpportunityStage;
-import org.tctalent.server.model.db.Language;
-import org.tctalent.server.model.db.LanguageLevel;
-import org.tctalent.server.model.db.NoteType;
-import org.tctalent.server.model.db.Occupation;
-import org.tctalent.server.model.db.OtherVisas;
-import org.tctalent.server.model.db.PartnerImpl;
-import org.tctalent.server.model.db.Registration;
-import org.tctalent.server.model.db.ReviewStatus;
-import org.tctalent.server.model.db.RiskLevel;
-import org.tctalent.server.model.db.Role;
-import org.tctalent.server.model.db.SalesforceJobOpp;
-import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.model.db.SavedSearch;
-import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.SurveyType;
-import org.tctalent.server.model.db.SystemLanguage;
-import org.tctalent.server.model.db.TBBEligibilityAssessment;
-import org.tctalent.server.model.db.TaskAssignmentImpl;
-import org.tctalent.server.model.db.TaskImpl;
-import org.tctalent.server.model.db.Translation;
-import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.VisaEligibility;
-import org.tctalent.server.model.db.YesNo;
-import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.model.db.*;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.PublishedDocColumnProps;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.*;
 
 /**
  * @author sadatmalik
@@ -363,7 +305,9 @@ public class AdminApiTestUtil {
             candidateVisaJobCheck.setOccupationCategory("This is the occupation category.");
             candidateVisaJobCheck.setOccupationSubCategory("This is the occupation subcategory.");
             candidateVisaJobCheck.setEnglishThreshold(YesNo.Yes);
-            candidateVisaJobCheck.setEnglishThresholdNotes("These are some english threshold notes.");
+            candidateVisaJobCheck.setLanguagesRequired(List.of(342L, 344L));
+            candidateVisaJobCheck.setLanguagesThresholdMet(YesNo.Yes);
+            candidateVisaJobCheck.setLanguagesThresholdNotes("These are some language threshold notes.");
         }
         return candidateVisaJobCheck;
     }
