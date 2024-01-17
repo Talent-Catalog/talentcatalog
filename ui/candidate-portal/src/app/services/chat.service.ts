@@ -68,20 +68,35 @@ export class ChatService implements OnDestroy {
     this.authenticationServiceSubscription = this.authenticationService.loggedInUser$.subscribe(
       (user) => {
         if (user == null) {
-          //Disconnect chat on logout - ie when loggedInUser becomes null.
-          this.disconnect();
+          //Clean up chat on logout - ie when loggedInUser becomes null.
+          this.cleanUp();
         }
       }
     )
   }
 
   ngOnDestroy(): void {
+    //Note that there seems to be some doubt whether services are ever actually destroyed.
+    //See https://github.com/angular/angular/issues/37095#issuecomment-854792361
+    //I could never get this method to fire from with Intellij - JC.
+    //Note that we also call this.cleanup on a logout so that should tidy things up anyway.
+    this.cleanUp();
+  }
+
+  private cleanUp() {
     this.disconnect();
     if (this.authenticationServiceSubscription) {
       this.authenticationServiceSubscription.unsubscribe();
     }
 
-    //todo Need to destroy new Observables
+    this.completeMarkAsReads();
+
+    //Clean up data structures.
+    this.chatReadStatuses$.clear();
+    this.chatReadStatuses.clear();
+    this.chatPosts.clear();
+    this.chatByChatRequest.clear();
+
   }
 
   create(request: CreateChatRequest): Observable<JobChat> {
@@ -135,7 +150,9 @@ export class ChatService implements OnDestroy {
     //Set an initial value.
     userMarkedChatAsRead$.next(isRead);
 
-    let chatReadStatus$ = merge(newPosts$, userMarkedChatAsRead$);
+    let chatReadStatus$ = merge(newPosts$, userMarkedChatAsRead$).pipe(
+      takeUntil(this.destroyStompSubscriptions$)
+    );
     return chatReadStatus$;
   }
 
@@ -255,5 +272,10 @@ export class ChatService implements OnDestroy {
 
   private storeChatReadStatus(chat: JobChat, isRead: boolean) {
     this.chatReadStatuses.set(chat.id, isRead);
+  }
+
+  private completeMarkAsReads() {
+    this.markAsReads.forEach(subject => subject.complete());
+    this.markAsReads.clear();
   }
 }
