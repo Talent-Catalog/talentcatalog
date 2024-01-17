@@ -59,6 +59,7 @@ import lombok.Setter;
 @SequenceGenerator(name = "seq_gen", sequenceName = "salesforce_job_opp_tc_job_id_seq", allocationSize = 1)
 public class SalesforceJobOpp extends AbstractOpportunity {
 
+    //TODO JC Redundant
     /**
      * Salesforce id of account (ie employer) associated with opportunity
      */
@@ -87,10 +88,20 @@ public class SalesforceJobOpp extends AbstractOpportunity {
      */
     private String description;
 
+    //todo This will be redundant when we have switched to using employerEntity below.
+    //todo Problem is where Job opps are copied from opps on SF. Then we rely on special
+    //todo computed fields on SF like AccountName
     /**
      * Name of employer - maps to Account name on Salesforce
      */
     private String employer;
+
+    /**
+     * Link to employer associated with job.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employer_id")
+    private Employer employerEntity;
 
     /**
      * Optional exclusion list associated with job.

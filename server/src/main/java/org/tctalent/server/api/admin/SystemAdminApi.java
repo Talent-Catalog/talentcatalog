@@ -192,8 +192,15 @@ public class SystemAdminApi {
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
+
+    @GetMapping("create_employer_for_all_jobs")
+    public void createEmployerForAllJobs() {
+        jobService.createEmployerForAllJobs();
+    }
+
     /**
-     * This loads ALL historical data of jobs which had candidates.
+     * This loads ALL historical data of jobs which had candidates - creating jobs and cases
+     * on the TC as needed.
      */
     @GetMapping("load_job_opps_and_candidate_opps")
     public void loadJobOppsAndCandidateOpps() {

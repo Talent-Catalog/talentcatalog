@@ -21,6 +21,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.AbstractCandidateSource;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 
 /**
  * Base class for any Update/Create requests on candidate sources
@@ -50,6 +51,12 @@ public abstract class AbstractUpdateCandidateSourceRequest {
      */
     @Nullable
     private Boolean global;
+
+    /**
+     * @see AbstractCandidateSource
+     */
+    @Nullable
+    private SalesforceJobOpp sfJobOpp;
 
     /**
      * @see AbstractCandidateSource

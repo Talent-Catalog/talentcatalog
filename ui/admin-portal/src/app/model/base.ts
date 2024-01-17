@@ -188,6 +188,7 @@ export interface HasJobRelatedLinks {
   fileJoiName?: string;
   folderlink?: string;
   folderjdlink?: string;
+  jobId?: number;
 }
 
 export interface UpdateEmployerOpportunityRequest extends HasJobRelatedLinks {
