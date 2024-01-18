@@ -1630,6 +1630,24 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public List<DataRow> computeSourceCountryStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        List<DataRow> rows = toRows(candidateRepository.
+                countBySourceCountryOrderByCount(
+                        genderStr(gender),
+                        sourceCountryIds, dateFrom, dateTo));
+        return limitRows(rows, 15);
+    }
+
+    @Override
+    public List<DataRow> computeSourceCountryStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        List<DataRow> rows = toRows(candidateRepository.
+                countBySourceCountryOrderByCount(
+                        genderStr(gender),
+                        sourceCountryIds, dateFrom, dateTo, candidateIds));
+        return limitRows(rows, 15);
+    }
+
+    @Override
     public List<DataRow> computeOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.
                 countByOccupationOrderByCount(
