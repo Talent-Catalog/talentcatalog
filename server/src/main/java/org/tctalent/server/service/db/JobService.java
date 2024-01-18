@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db;
 
+import java.io.IOException;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,9 +33,6 @@ import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Service for managing {@link SalesforceJobOpp}
@@ -205,6 +204,18 @@ public interface JobService {
      */
     @NonNull
     SalesforceJobOpp updateJoiLink(long id, UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException;
+
+    /**
+     * Updates the interview guidance file link of the job with the given id
+     * @param id ID of job
+     * @param updateLinkRequest Details of link (name and url)
+     * @return Updated job
+     * @throws InvalidRequestException if the job does not have a submission list
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp updateInterviewGuidanceLink(long id, UpdateLinkRequest updateLinkRequest)
         throws InvalidRequestException, NoSuchObjectException;
 
     /**

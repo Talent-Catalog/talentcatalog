@@ -16,8 +16,21 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.tctalent.server.model.db.PartnerDtoHelper.employerDto;
+
+import java.io.IOException;
+import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -29,13 +42,6 @@ import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.util.Map;
-
-import static org.tctalent.server.model.db.PartnerDtoHelper.employerDto;
 
 @RestController()
 @RequestMapping("/api/admin/job")
@@ -123,6 +129,14 @@ public class JobAdminApi implements
         @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
         throws InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateJoiLink(id, updateLinkRequest);
+        return jobDto().build(job);
+    }
+
+    @PutMapping("{id}/interviewlink")
+    public @NotNull Map<String, Object> updateInterviewGuidanceLink(
+        @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateInterviewGuidanceLink(id, updateLinkRequest);
         return jobDto().build(job);
     }
 

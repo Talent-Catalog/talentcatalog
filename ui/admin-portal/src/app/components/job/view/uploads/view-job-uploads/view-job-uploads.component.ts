@@ -3,7 +3,10 @@ import {Job, JobDocType} from "../../../../../model/job";
 import {FileSelectorComponent} from "../../../../util/file-selector/file-selector.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {JobService} from "../../../../../services/job.service";
-import {InputLinkComponent, UpdateLinkRequest} from "../../../../util/input/input-link/input-link.component";
+import {
+  InputLinkComponent,
+  UpdateLinkRequest
+} from "../../../../util/input/input-link/input-link.component";
 import {JobPrepItem, JobPrepJD, JobPrepJOI} from "../../../../../model/job-prep-item";
 
 /*
@@ -53,6 +56,11 @@ export class ViewJobUploadsComponent implements OnInit {
       case "joi":
         initialValue.url = this.job.submissionList?.fileJoiLink;
         initialValue.name = this.job.submissionList?.fileJoiName;
+        break;
+
+      case "interview":
+        initialValue.url = this.job.submissionList?.fileInterviewGuidanceLink;
+        initialValue.name = this.job.submissionList?.fileInterviewGuidanceName;
         break;
     }
     inputLinkModal.componentInstance.initialValue = initialValue;
@@ -119,6 +127,10 @@ export class ViewJobUploadsComponent implements OnInit {
     this.editJobLink("jd")
   }
 
+  editInterviewGuidanceLink() {
+    this.editJobLink("interview")
+  }
+
   editJOILink() {
     this.editJobLink("joi")
   }
@@ -139,7 +151,7 @@ export class ViewJobUploadsComponent implements OnInit {
     this.uploadJobDoc("joi")
   }
 
-  uploadInterviewGuide() {
+  uploadInterviewGuidance() {
     this.uploadJobDoc("interview")
   }
 }
