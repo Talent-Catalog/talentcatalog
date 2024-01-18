@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -279,7 +280,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
-                .build();
+                .build()
+                .setPageable(Pageable.unpaged());
 
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
                 query, CandidateEs.class, IndexCoordinates.of("candidates"));

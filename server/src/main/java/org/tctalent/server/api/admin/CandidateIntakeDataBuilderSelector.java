@@ -16,8 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
 import org.tctalent.server.util.dto.DtoBuilder;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -266,7 +267,9 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("occupationCategory")
                 .add("occupationSubCategory")
                 .add("englishThreshold")
-                .add("englishThresholdNotes")
+                .add("languagesRequired")
+                .add("languagesThresholdMet")
+                .add("languagesThresholdNotes")
                 ;
     }
 

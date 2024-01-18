@@ -16,20 +16,16 @@
 
 package org.tctalent.server.request.candidate.visa;
 
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tctalent.server.model.db.DocumentStatus;
-import org.tctalent.server.model.db.OtherVisas;
-import org.tctalent.server.model.db.RiskLevel;
-import org.tctalent.server.model.db.TBBEligibilityAssessment;
-import org.tctalent.server.model.db.VisaEligibility;
-import org.tctalent.server.model.db.YesNo;
-import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.model.db.*;
+
+import java.util.List;
 
 /**
- * TODO CC doc
+ * This is the data sent from the visa check intake, it contains visa check and visa job check data.
+ * This data is saved to the correct visa check via the visa country id and visa job check by visa job check id.
  *
  * @author Caroline Cameron
  */
@@ -83,7 +79,10 @@ public class CandidateVisaCheckData {
     private String visaJobEligiblePathways;
     private String visaJobOccupationCategory;
     private String visaJobOccupationSubCategory;
+    // todo remove this field once flyways to populate new languages fields has been run and so no longer need.
     private YesNo visaJobEnglishThreshold;
-    private String visaJobEnglishThresholdNotes;
+    private List<Long> visaJobLanguagesRequired;
+    private YesNo visaJobLanguagesThresholdMet;
+    private String visaJobLanguagesThresholdNotes;
     private List<Long> visaJobRelocatingDependantIds;
 }
