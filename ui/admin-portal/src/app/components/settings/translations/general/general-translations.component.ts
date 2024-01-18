@@ -699,6 +699,7 @@ const ALL_FIELDS = {
       "STAGE": null,
       "NONE": null,
       "OFFER": null,
+      "INTERVIEW-GUIDANCE": null
     },
     "OPP" : {
       "CHAT-RETURN": null,
