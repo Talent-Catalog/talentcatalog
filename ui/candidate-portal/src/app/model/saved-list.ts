@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,14 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {SavedList} from "./saved-list";
-
-export interface ShortJob {
-  id: number,
+export interface SavedList {
+  id: number;
   name: string;
-  submissionList?: SavedList;
-
-  fileInterviewGuidanceLink?: string;
-  fileInterviewGuidanceName?: string;
+  fileInterviewGuidanceName: string;
+  fileInterviewGuidanceLink: string;
 }
-
