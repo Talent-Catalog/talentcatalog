@@ -20,8 +20,5 @@ export interface ShortJob {
   id: number,
   name: string;
   submissionList?: SavedList;
-
-  fileInterviewGuidanceLink?: string;
-  fileInterviewGuidanceName?: string;
 }
 
