@@ -20,10 +20,14 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.tctalent.server.model.db.ChatPost;
 
 public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
     JpaSpecificationExecutor<ChatPost> {
 
     Optional<List<ChatPost>> findByJobChatId(Long chatId);
+
+    @Query("SELECT p FROM ChatPost p WHERE JobChat.id = :chatId ORDER BY p.id DESC LIMIT 1")
+    ChatPost findLastChatPost(Long chatId);
 }

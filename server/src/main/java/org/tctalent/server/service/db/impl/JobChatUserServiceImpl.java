@@ -44,7 +44,7 @@ public class JobChatUserServiceImpl implements JobChatUserService {
 
         JobChatUserInfo info = new JobChatUserInfo();
 
-        ChatPost lastPost = chatPostService.getLastChatPost();
+        ChatPost lastPost = chatPostService.getLastChatPost(chat.getId());
         Long lastPostId = lastPost == null ? null : lastPost.getId();
         info.setLastPostId(lastPostId);
 

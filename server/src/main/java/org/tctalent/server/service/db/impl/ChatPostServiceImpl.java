@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.configuration.GoogleDriveConfig;
@@ -75,6 +76,13 @@ public class ChatPostServiceImpl implements ChatPostService {
     public ChatPost getChatPost(long id) throws NoSuchObjectException {
        return chatPostRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(ChatPost.class, id));
+    }
+
+    @Nullable
+    @Override
+    public ChatPost getLastChatPost(long chatId) {
+        ChatPost post = chatPostRepository.findLastChatPost(chatId);
+        return post;
     }
 
     public List<ChatPost> listChatPosts(long chatId) {
@@ -139,7 +147,7 @@ public class ChatPostServiceImpl implements ChatPostService {
     }
 
     /**
-     * In order for the image to display via the html in the post or the editor, we need to alter 
+     * In order for the image to display via the html in the post or the editor, we need to alter
      * the link. It needs to be a display link (not embed or preview).
      * See here: https://support.google.com/drive/thread/34363118?hl=en&msgid=34384934
      * @param uploadedFile which we want to display in the html of the post
