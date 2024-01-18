@@ -39,6 +39,8 @@ public interface ChatPostService {
     @NonNull
     ChatPost getChatPost(long id) throws NoSuchObjectException;
 
+    ChatPost getLastChatPost();
+
     List<ChatPost> listChatPosts(long chatId);
 
     /**
