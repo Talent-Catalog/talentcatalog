@@ -5,9 +5,8 @@ import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
 import {JobChat, JobChatType} from "../../../model/chat";
-import {forkJoin, Observable} from "rxjs";
+import {forkJoin} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
-import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-view-candidate',
@@ -20,8 +19,8 @@ export class ViewCandidateComponent implements OnInit {
   activeTabId: string;
   chatsForAllJobs: JobChat[];
 
-  error;
-  loading;
+  error: any;
+  loading: boolean;
   candidate: Candidate;
   usAfghan: boolean;
 
@@ -72,31 +71,19 @@ export class ViewCandidateComponent implements OnInit {
     //Get all candidate's opportunities
     let candidateOpportunities = this.candidate.candidateOpportunities;
 
-    //Scan through opportunities, collecting the chat observables from each opportunity into an array.
-    const collector =
-      (chats$: Observable<JobChat>[], opp: CandidateOpportunity): Observable<JobChat>[] =>
-      {
-        const chatRequests = [
-          {
-            type: JobChatType.CandidateRecruiting,
-            candidateOppId: opp?.id
-          },
-          {
-            type: JobChatType.CandidateProspect,
-            candidateOppId: opp?.id
-          },
-          {
-            type: JobChatType.AllJobCandidates,
-            jobId: opp?.jobOpp?.id
-          }
-        ];
-
-        chatRequests.forEach(
-          request => chats$.push(this.chatService.getOrCreate(request))
-        );
-        return chats$;
-      }
-    const chats$: Observable<JobChat>[] = candidateOpportunities.reduce(collector, []);
+    //Scan the opportunities to extract all their chats.
+    let chats$ = candidateOpportunities
+    //First map opportunities to stream of arrays of chat requests for each opportunity
+    .map(opp =>
+      [{type: JobChatType.CandidateRecruiting, candidateOppId: opp.id},
+      {type: JobChatType.CandidateProspect, candidateOppId: opp.id},
+      {type: JobChatType.AllJobCandidates, jobId: opp.jobOpp?.id}]
+    )
+    //Convert this stream of arrays of requests, into a stream of requests (ie flattening the arrays)
+    .reduce((accumulator,
+             requests) => accumulator.concat(requests), [])
+    //Lastly map the requests to Observable<JobChat> by calling the service with each request.
+    .map(request => this.chatService.getOrCreate(request));
 
     //Now fetch all those chats
     this.loading = true;
