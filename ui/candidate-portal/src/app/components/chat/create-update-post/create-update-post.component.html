@@ -23,7 +23,7 @@
 
   <!-- POST -->
   <div class="mb-3">
-    <label class="form-label" for="content">Post</label>
+    <label class="form-label" for="content">{{'CHAT.POST-HEADER' | translate}}</label>
     <quill-editor id="content"
                   placeholder="Write your message..."
                   formControlName="content"
@@ -53,7 +53,7 @@
   <div class="modal-footer">
     <button type="button" class="btn btn-primary" (click)="onSend()"
             [disabled]="postForm.invalid">
-      Send
+      {{'CHAT.POST-SEND' | translate}} <i class="fa-solid fa-paper-plane"></i>
     </button>
   </div>
 </form>

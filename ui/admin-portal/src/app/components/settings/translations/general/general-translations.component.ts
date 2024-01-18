@@ -705,5 +705,10 @@ const ALL_FIELDS = {
       "CHAT-MARK-AS-READ": null,
       "JOB-RETURN": null,
     },
+  },
+  "CHAT": {
+      "POST-HEADER": null,
+      "POST-SEND": null,
+      "NO-POSTS": null,
   }
 }
