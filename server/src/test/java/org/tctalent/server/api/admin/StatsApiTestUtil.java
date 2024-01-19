@@ -90,6 +90,13 @@ public class StatsApiTestUtil {
     );
   }
 
+  static List<DataRow> getSourceCountryStats() {
+    return List.of(
+        new DataRow("Lebanon", 7231L),
+        new DataRow("Jordan", 4396L)
+    );
+  }
+
   static List<DataRow> getStatusStats() {
     return List.of(
         new DataRow("pending", 1000L),
