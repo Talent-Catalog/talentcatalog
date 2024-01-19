@@ -21,6 +21,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.ChatPost;
 
 public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
@@ -28,6 +29,12 @@ public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
 
     Optional<List<ChatPost>> findByJobChatId(Long chatId);
 
-    @Query("SELECT p FROM ChatPost p WHERE JobChat.id = :chatId ORDER BY p.id DESC LIMIT 1")
-    ChatPost findLastChatPost(Long chatId);
+    @Query(
+        value="SELECT p FROM chat_post p WHERE p.job_chat_id = :chatId ORDER BY p.id DESC LIMIT 1",
+        nativeQuery = true
+        //Need native query because JPQL does not support LIMIT with the version we are running
+        //This post implies it does https://www.baeldung.com/spring-data-jpa-last-record but
+        //doesn't work for me.
+    )
+    ChatPost findLastChatPost(@Param("chatId") Long chatId);
 }
