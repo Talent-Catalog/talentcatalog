@@ -132,8 +132,8 @@ public class ChatAdminApi implements
         }
     }
 
-    @GetMapping("{chatId}/user/{userId}/get-post-info")
-    public JobChatUserInfo getUserReadChatInfo(
+    @GetMapping("{chatId}/user/{userId}/get-chat-user-info")
+    public JobChatUserInfo getJobChatUserInfo(
         @PathVariable("chatId") long chatId, @PathVariable("userId") long userId) {
 
         JobChat chat = chatService.getJobChat(chatId);
