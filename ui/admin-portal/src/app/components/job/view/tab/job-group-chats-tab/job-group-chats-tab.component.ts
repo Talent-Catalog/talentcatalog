@@ -66,4 +66,5 @@ export class JobGroupChatsTabComponent implements OnInit, OnChanges {
       }
     );
   }
+
 }

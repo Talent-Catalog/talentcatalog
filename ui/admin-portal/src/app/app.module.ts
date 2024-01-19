@@ -514,7 +514,6 @@ import {ChatsComponent} from './components/chat/chats/chats.component';
 import {ChatsWithPostsComponent} from './components/chat/chats-with-posts/chats-with-posts.component';
 import {ViewChatComponent} from './components/chat/view-chat/view-chat.component';
 import {CreateUpdateChatComponent} from './components/chat/create-update-chat/create-update-chat.component';
-import {PostsComponent} from './components/chat/posts/posts.component';
 import {ViewPostComponent} from './components/chat/view-post/view-post.component';
 import {ManageChatsComponent} from './components/chat/manage-chats/manage-chats.component';
 import {
@@ -529,6 +528,9 @@ import {SearchHomeComponent} from './components/search/search-home/search-home.c
 import {JobHomeComponent} from './components/job/job-home/job-home.component';
 import {ListHomeComponent} from './components/list/list-home/list-home.component';
 import {QuillModule} from 'ngx-quill';
+import {
+  ChatReadStatusComponent
+} from './components/chat/chat-read-status/chat-read-status.component'
 import {
   LanguageThresholdComponent
 } from './components/candidates/visa/visa-job-assessments/language-threshold/language-threshold.component'
@@ -832,7 +834,6 @@ import {
     ChatsWithPostsComponent,
     ViewChatComponent,
     CreateUpdateChatComponent,
-    PostsComponent,
     ViewPostComponent,
     ManageChatsComponent,
     JobSourceContactsWithChatsComponent,
@@ -842,6 +843,8 @@ import {
     JobGroupChatsTabComponent,
     SearchHomeComponent,
     JobHomeComponent,
+    ListHomeComponent,
+    ChatReadStatusComponent,
     ListHomeComponent,
     LanguageThresholdComponent
   ],
@@ -882,7 +885,8 @@ import {
     DatePipe, TitleCasePipe
   ],
   exports: [
-    PostsComponent
+    ViewChatPostsComponent,
+    ChatReadStatusComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormGroup} from "@angular/forms";
-import {TaskAssignment} from "../../../../../../../model/candidate";
+import {TaskAssignment} from "../../../../../../../model/task-assignment";
 
 @Component({
   selector: 'app-view-simple-task',

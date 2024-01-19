@@ -173,8 +173,19 @@
 
       <!-- Chat between source partner candidate-->
       <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
-        <a ngbNavLink>Chat with candidate</a>
+        <a ngbNavLink>Chat with candidate
+          <app-chat-read-status *ngIf="candidateChat"
+            [chats]="[candidateChat]"
+            >
+          </app-chat-read-status>
+        </a>
         <ng-template ngbNavContent>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-success " (click)="onMarkCandidateChatAsRead()">
+              Mark as Read <i class="fa-solid"></i>
+            </button>
+          </div>
+
           <app-view-chat-posts
             [candidateOpp]="opp"
             [jobChatType]="JobChatType.CandidateProspect"
@@ -185,8 +196,19 @@
 
       <!-- Chat including source partner and job creator-->
       <ng-container ngbNavItem="CandidateRecruiting" *ngIf="candidateRecruitingTabVisible">
-        <a ngbNavLink>{{candidateRecruitingTabTitle}}</a>
+        <a ngbNavLink>{{candidateRecruitingTabTitle}}
+          <app-chat-read-status *ngIf="candidateRecruitingChat"
+            [chats]="[candidateRecruitingChat]"
+          >
+          </app-chat-read-status>
+        </a>
         <ng-template ngbNavContent>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-success " (click)="onMarkCandidateRecruitingChatAsRead()">
+              Mark as Read <i class="fa-solid"></i>
+            </button>
+          </div>
+
           <app-view-chat-posts
             [candidateOpp]="opp"
             [jobChatType]="JobChatType.CandidateRecruiting"

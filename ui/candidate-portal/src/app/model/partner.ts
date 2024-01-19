@@ -15,7 +15,6 @@
  */
 import {Country} from "./country";
 import {User} from "./user";
-import {JobChat} from "./chat";
 
 /*
   MODEL - extending interfaces, update request extend object attributes, mapping enums
@@ -69,11 +68,6 @@ export interface Partner extends PartnerSimpleAttributes {
   defaultSourcePartner: boolean;
   employer?: Employer;
   sourceCountries: Country[];
-
-  //Temporary place to store job chat associated with partner - will depend on current job context.
-  //The underscore naming is a convention to distinguish this field from those that are
-  //uploaded from the server - not set according to context on the browser.
-  _jobChat?: JobChat;
 }
 
 export function sourceCountriesAsString(partner: Partner): string {

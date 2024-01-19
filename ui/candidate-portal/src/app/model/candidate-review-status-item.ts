@@ -14,16 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-// This file replaces environment.ts during build by using the `fileReplacements` array.
-// `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+import {User} from "./user";
+import {SavedSearch} from "./saved-search";
 
-export const environment = {
-  production: true,
-  host: document.location.host,
-  publishUrl: document.location.origin + '/published',
-  chatApiUrl: '/api/admin',
-  apiUrl: '/api/portal',
-  systemApiUrl: '/api/system',
-  s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org'
-};
+export interface CandidateReviewStatusItem {
+  id: number;
+  savedSearch: SavedSearch;
+  reviewStatus: string;
+  comment: string;
+  createdBy: User;
+  createdDate: number;
+  updatedBy: User
+  updatedDate: number;
+}

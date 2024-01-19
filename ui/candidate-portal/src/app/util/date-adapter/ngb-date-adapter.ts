@@ -24,7 +24,7 @@ export class CustomDateAdapter {
     if (!value) {
       return null;
     }
-    let [y, m, d] = value.split('-');
+    let [y, m, d] = value.toString().split('-');
     return {
       year: +y,
       month: +m,
@@ -35,7 +35,7 @@ export class CustomDateAdapter {
   // NgbDateStruct -> String
   toModel(date: NgbDateStruct): string {
     return date ?
-      date.year + "-" + ('0'+date.month).slice(-2) + "-" + ('0'+date.day).slice(-2) :
+      date.year + "-" + ('0' + date.month).slice(-2) + "-" + ('0' + date.day).slice(-2) :
       null;
   }
 }
@@ -47,7 +47,7 @@ export class CustomDateParserFormatter {
     if (!value) {
       return null;
     }
-    let [y, m, d] = value.split('-');
+    let [y, m, d] = value.toString().split('-');
     return {
       year: +y,
       month: +m,
@@ -57,7 +57,7 @@ export class CustomDateParserFormatter {
   // NgbDateStruct -> String
   format(date: NgbDateStruct): string {
     return date ?
-      date.year + "-" + ('0'+date.month).slice(-2) + "-" + ('0'+date.day).slice(-2) :
+      date.year + "-" + ('0' + date.month).slice(-2) + "-" + ('0' + date.day).slice(-2) :
       null;
   }
 }

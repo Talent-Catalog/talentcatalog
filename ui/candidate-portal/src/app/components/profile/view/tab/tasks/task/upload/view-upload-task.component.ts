@@ -1,9 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {forkJoin, Observable} from "rxjs";
-import {Candidate, TaskAssignment} from "../../../../../../../model/candidate";
+import {Candidate} from "../../../../../../../model/candidate";
 import {CandidateAttachment} from "../../../../../../../model/candidate-attachment";
 import {FormGroup} from "@angular/forms";
 import {TaskAssignmentService} from "../../../../../../../services/task-assignment.service";
+import {TaskAssignment} from "../../../../../../../model/task-assignment";
 
 @Component({
   selector: 'app-view-upload-task',
