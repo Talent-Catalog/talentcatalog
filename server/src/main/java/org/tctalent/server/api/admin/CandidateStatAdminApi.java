@@ -177,6 +177,14 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (Lebanon)",
             candidateService.computeNationalityStats(null, "lebanon", dateFrom, dateTo, sourceCountryIds)));
 
+        title = "Source Countries";
+        statReports.add(new StatReport(title,
+            candidateService.computeSourceCountryStats(null, dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (male)",
+            candidateService.computeSourceCountryStats(Gender.male, dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (female)",
+            candidateService.computeSourceCountryStats(Gender.female, dateFrom, dateTo, sourceCountryIds)));
+
         title = "Statuses";
         statReports.add(new StatReport(title,
             candidateService.computeStatusStats(null, null, dateFrom, dateTo, sourceCountryIds)));
@@ -323,6 +331,14 @@ public class CandidateStatAdminApi {
             candidateService.computeNationalityStats(null, "jordan", dateFrom, dateTo, candidateIds, sourceCountryIds)));
         statReports.add(new StatReport(title + " (Lebanon)",
             candidateService.computeNationalityStats(null, "lebanon", dateFrom, dateTo, candidateIds, sourceCountryIds)));
+
+        title = "Source Countries";
+        statReports.add(new StatReport(title,
+            candidateService.computeSourceCountryStats(null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (male)",
+            candidateService.computeSourceCountryStats(Gender.male, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (female)",
+            candidateService.computeSourceCountryStats(Gender.female, dateFrom, dateTo, candidateIds, sourceCountryIds)));
 
         title = "Statuses";
         statReports.add(new StatReport(title,
