@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
@@ -57,13 +58,14 @@ public class JobChatUserServiceImpl implements JobChatUserService {
     }
 
     @Override
-    public void markChatAsRead(@NonNull JobChat chat, @NonNull User user, @NonNull ChatPost post) {
+    public void markChatAsRead(@NonNull JobChat chat, @NonNull User user, @Nullable ChatPost post) {
 
         JobChatUserKey key = new JobChatUserKey(chat.getId(), user.getId());
         JobChatUser jcu = jobChatUserRepository.findById(key).orElse(null);
 
         if (jcu == null) {
             jcu = new JobChatUser();
+            jcu.setId(key);
             jcu.setChat(chat);
             jcu.setUser(user);
             jcu.setLastReadPost(post);

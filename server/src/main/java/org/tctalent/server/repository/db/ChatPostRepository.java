@@ -30,11 +30,11 @@ public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
     Optional<List<ChatPost>> findByJobChatId(Long chatId);
 
     @Query(
-        value="SELECT p FROM chat_post p WHERE p.job_chat_id = :chatId ORDER BY p.id DESC LIMIT 1",
+        value="SELECT id FROM chat_post p WHERE p.job_chat_id = :chatId ORDER BY p.id DESC LIMIT 1",
         nativeQuery = true
         //Need native query because JPQL does not support LIMIT with the version we are running
-        //This post implies it does https://www.baeldung.com/spring-data-jpa-last-record but
-        //doesn't work for me.
+        //This post implies it does https://www.baeldung.com/spring-data-jpa-last-record in
+        // Spring Data JPA version 3.2.
     )
-    ChatPost findLastChatPost(@Param("chatId") Long chatId);
+    Long findLastChatPost(@Param("chatId") Long chatId);
 }

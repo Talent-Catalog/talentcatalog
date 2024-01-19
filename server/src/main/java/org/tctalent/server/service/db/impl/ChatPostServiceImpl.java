@@ -81,7 +81,8 @@ public class ChatPostServiceImpl implements ChatPostService {
     @Nullable
     @Override
     public ChatPost getLastChatPost(long chatId) {
-        ChatPost post = chatPostRepository.findLastChatPost(chatId);
+        Long postId = chatPostRepository.findLastChatPost(chatId);
+        ChatPost post = postId == null ? null : getChatPost(postId);
         return post;
     }
 

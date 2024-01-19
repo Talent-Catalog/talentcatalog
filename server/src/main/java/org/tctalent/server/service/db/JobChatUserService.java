@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatUserInfo;
@@ -40,7 +41,8 @@ public interface JobChatUserService {
      * Records which post the given user has read up to in the given chat
      * @param chat Chat in question
      * @param user User in question
-     * @param post This is the post that the user has read up to in the chat
+     * @param post This is the post that the user has read up to in the chat. Can be null if there
+     *             are no posts in the chat.
      */
-    void markChatAsRead(@NonNull JobChat chat, @NonNull User user, @NonNull ChatPost post);
+    void markChatAsRead(@NonNull JobChat chat, @NonNull User user, @Nullable ChatPost post);
 }

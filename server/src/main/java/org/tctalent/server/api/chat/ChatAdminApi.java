@@ -108,6 +108,12 @@ public class ChatAdminApi implements
         return chatDto().build(jobChat);
     }
 
+    /**
+     * Records that the logged in user has read up to a given post in the given chat.
+     * @param chatId Id of chat
+     * @param postId Id of post that user has read up to. If zero, the user is recorded as
+     *               having read all posts currently in the chat.
+     */
     @PutMapping("{chatId}/post/{postId}/read")
     public void markAsReadUpto(
         @PathVariable("chatId") long chatId, @PathVariable("postId") long postId) {
@@ -115,7 +121,13 @@ public class ChatAdminApi implements
         User user = userService.getLoggedInUser();
         if (user != null) {
             JobChat chat = chatService.getJobChat(chatId);
-            ChatPost post = chatPostService.getChatPost(postId);
+            ChatPost post;
+            if (postId == 0) {
+                //Assume that the user has read the whole chat
+                post = chatPostService.getLastChatPost(chatId);
+            } else {
+                post = chatPostService.getChatPost(postId);
+            }
             jobChatUserService.markChatAsRead(chat, user, post);
         }
     }
