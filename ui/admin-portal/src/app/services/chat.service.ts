@@ -124,6 +124,13 @@ export class ChatService implements OnDestroy {
     return this.http.get<JobChat[]>(`${this.apiUrl}`)
   }
 
+  markAsReadUpto(chat: JobChat): Observable<void> {
+    const chatId = chat.id;
+    const postId = 0;
+    //If we already have the data return it, otherwise get it.
+    return this.http.put<void>(`${this.apiUrl}/${chatId}/post/${postId}/read`, null)
+  }
+
   getChatReadStatusObservable(chat: JobChat): Observable<boolean> {
     //Check if we already have one for this chat...
     let chatReadStatus$ = this.chatReadStatuses$.get(chat.id);
@@ -264,6 +271,9 @@ export class ChatService implements OnDestroy {
     this.storeChatReadStatus(chat, true);
     const markChatAsRead$ = this.getMarkedChatAsReadSubject(chat);
     markChatAsRead$.next(true);
+    this.markAsReadUpto(chat).subscribe({
+      error: error => {console.log("ChatService.markAsReadUpto: Error " + error )}
+    })
   }
 
   isChatRead(chat: JobChat): boolean {
