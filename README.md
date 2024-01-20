@@ -67,7 +67,9 @@ style XML** then select the intellij-java-google-style.xml file you downloaded f
 
 
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
-  > brew install gradle
+  ```
+  brew install gradle
+  ```
 
 - Node [https://nodejs.org/en/](https://nodejs.org/en/)
   
@@ -76,14 +78,17 @@ style XML** then select the intellij-java-google-style.xml file you downloaded f
     support LTS).
     - See [https://www.jetbrains.com/help/idea/angular.html](https://www.jetbrains.com/help/idea/angular.html) 
     and https://nodejs.org/en/about/releases/
-  
-  > brew install node@16
+  ```
+  brew install node@16
+  ```
     - Note the messages from brew at the end of the install. 
   You will have to manually set up the path.  
   
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
-  > npm install -g @angular/cli
+  ```
+  npm install -g @angular/cli
+  ```
   - To upgrade Angular versions, see https://update.angular.io/
 
 
@@ -98,24 +103,34 @@ style XML** then select the intellij-java-google-style.xml file you downloaded f
 - Elasticsearch (for text search)
     - Install Docker image. 
       See [Elastic search website](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
-      Just pull the image to install. See later for how to run. 
-    > docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.11
+      Just pull the image to install. See later for how to run.
+
+    ```
+    docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.11
+    ```
 
 - Kibana (for monitoring Elasticsearch)
     - Install Docker image.
       See [Elastic search website](https://www.elastic.co/guide/en/kibana/current/docker.html)
       Just pull the image to install. See later for how to run.
-    > docker pull docker.elastic.co/kibana/kibana:7.17.11
+   ```
+   docker pull docker.elastic.co/kibana/kibana:7.17.11
+   ```
 
 - Git - [see Git website](https://git-scm.com/downloads) - Not really necessary now with Intellij 
  which will prompt you install Git if needed
 
 
 - PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
-  - Homebrew - see https://wiki.postgresql.org/wiki/Homebrew 
-  >   brew install postgresql@14
-  > 
-  >   brew services restart postgresql@14
+  - Homebrew - see https://wiki.postgresql.org/wiki/Homebrew
+ 
+  ```
+  brew install postgresql@14
+  ```
+
+  ```
+  brew services restart postgresql@14
+  ```
 
 ### AWS management tools ###
 
@@ -128,14 +143,20 @@ from the Terraform definitions in the `infra` folder.
 Once installed, needs to be configured. Log in to your AWS account, click on user top right, 
    select Security Credentials, create access key, then download to CSV file. 
    Then, theoretically this should work
-  > aws configure import --csv path-to-downloaded-file.csv
-    
+   ```
+   aws configure import --csv path-to-downloaded-file.csv
+   ```
+ 
 ...but it doesn't currently (it fails saying that it is missing a User Name header). Instead,
 just run this and manually copy/paste the values from the CSV file as prompted.
-> aws configure
+   ```
+   aws configure
+   ```
 
 - Terraform (for setting up our AWS infrastructure)
-  > brew install terraform 
+   ```
+   brew install terraform 
+   ```
 
 Once installed, you can run Terraform from the directory containing your main Terraform
 file (main.tf).
@@ -146,33 +167,41 @@ file.
 
 Then you can run `init` (only need to do this once), and then `plan` or `apply`, as needed.
 
-  > terraform init
-  >
-  > terraform plan
-  > 
-  > terraform apply
+   ```
+   terraform init
+   ```
+   ```
+   terraform plan
+   ```
+   ``` 
+   terraform apply
+   ```
 
 ### Setup your local database ###
 
  Use the psql tool.
- > psql postgres
+   ```
+   psql postgres
+   ```
    
 Now you will see the command line prompt =#
 
-    CREATE DATABASE tctalent;
-    CREATE USER tctalent WITH SUPERUSER PASSWORD 'tctalent';
-    \q
+   ```
+   CREATE DATABASE tctalent;
+   CREATE USER tctalent WITH SUPERUSER PASSWORD 'tctalent';
+   \q
+   ```
 
 Ask another developer for a recent `pg_dump` of their test database - 
 matching the latest version of the code.
-    
-    pg_dump --file=path/to/file.sql --create --username=tctalent --host=localhost --port=5432
-
+   ```    
+   pg_dump --file=path/to/file.sql --create --username=tctalent --host=localhost --port=5432
+   ```
 
 Use `psql` to import that dump file into your newly created database.
-
-    psql -h localhost -d tctalent -U tctalent -f path/to/file.sql
-
+   ```
+   psql -h localhost -d tctalent -U tctalent -f path/to/file.sql
+   ```
 ### Download and edit the code ###
 
 - Clone [the repository](https://github.com/Talent-Catalog/talentcatalog.git) to your local system
@@ -180,11 +209,15 @@ Use `psql` to import that dump file into your newly created database.
 
 ### Run Elasticsearch ###
 
-Can run from Docker desktop for Mac, or (replacing appropriate version number)...
+Use `docker` to run from Docker desktop for Mac, or (replacing appropriate version number)...
 
-> docker rm elasticsearch
+   ```
+   docker rm elasticsearch
+   ```
 
-> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.11
+   ```
+   docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.11
+   ```
 
 Elasticsearch will run listening on port 9200. 
 You can verify this by going to [localhost:9200](http://localhost:9200) in your browser
@@ -193,10 +226,13 @@ You can verify this by going to [localhost:9200](http://localhost:9200) in your 
 
 Can run from Docker desktop for Mac, or (replacing appropriate version number)...
 
-> docker rm kibana
+   ```
+   docker rm kibana
+   ```
 
-> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.17.11
-
+   ```
+   docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.17.11
+   ```
 Kibana runs listening on port 5601. 
 You can verify this by going to [localhost:5601](http://localhost:5601) in your browser 
 
@@ -232,22 +268,25 @@ The "Candidate Portal" is an Angular Module and can be found in the directory
 Before running, make sure all the libraries have been downloaded locally by running `npm install` 
 from the root directory of the module (i.e. `talentcatalog\ui\candidate-portal`):
 
-> cd talentcatalog\ui\candidate-portal
->
-> npm install
+   ```
+   cd talentcatalog\ui\candidate-portal
+   npm install
+   ```
 
 It is also a good idea to install fsevents for MacOS which will greatly
 reduce your CPU usage
 
-> npm install fsevents
-> 
-> npm rebuild fsevents
- 
+   ```
+   npm install fsevents
+   npm rebuild fsevents
+   ``` 
  
 
 Then from within the same directory run: 
 
-> ng serve
+   ```
+   ng serve
+   ```
 
 You will see log similar to: 
 
@@ -276,9 +315,9 @@ The "Public Portal" is an Angular Module and can be found in the directory `tale
 As for the "Candidate Portal", make sure all libraries are installed locally.
 
 Then from within the same directory run:
-
-> ng serve
-
+   ```
+   ng serve
+   ```
 You will see log similar to:
 
 ```
@@ -308,9 +347,9 @@ The "Admin Portal" is an Angular Module and can be found in the directory
 As for the "Candidate Portal", make sure all libraries are installed locally.
 
 Then from within the same directory run: 
-
-> ng serve
-
+   ```
+   ng serve
+   ```
 You will see log similar to: 
 
 ```
@@ -357,7 +396,9 @@ Assuming that the package.json in each of the above directories has the right
 versions already in there you just need run the following commands in each
 directory.
 
-> npm install 
+   ```
+   npm install 
+   ```
 
 Note and fix any errors. "npm outdated" is good for identifying outdated libraries
 "npm update --save" will update versions to the latest version within the allowed versions 
@@ -365,13 +406,13 @@ specified by the package.json.
 
 Once all versions are updated for the current version of Angular, you can run the Angular
 update as follows.
->
-> ng update
-
+   ```
+   ng update
+   ```
 This will prompt you to update the Angular core and cli. For example: 
-
-> ng update @angular/core@13 @angular/cli@13
- 
+   ```
+   ng update @angular/core@13 @angular/cli@13
+   ```
 This will update package.json with the appropriate Angular versions which will drive updates of 
 other dependent libraries.
 
