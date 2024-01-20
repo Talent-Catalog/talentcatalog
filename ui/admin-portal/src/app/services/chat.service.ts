@@ -76,7 +76,9 @@ export class ChatService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    //Note that there seems to be some doubt whether services are ever actually destroyed.
+    //Note that there seems to be some doubt whether this is called when a service is destroyed.
+    //For example when a browser is refreshed - the constructor gets called on what is clearly a new
+    //service, but ngDestroy was never called on the previous service instance.
     //See https://github.com/angular/angular/issues/37095#issuecomment-854792361
     //I could never get this method to fire from with Intellij - JC.
     //Note that we also call this.cleanup on a logout so that should tidy things up anyway.
