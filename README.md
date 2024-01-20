@@ -90,6 +90,9 @@ style XML** then select the intellij-java-google-style.xml file you downloaded f
 - Docker
     - Install Docker Desktop for Mac - 
       see [docker website](https://hub.docker.com/editions/community/docker-ce-desktop-mac/)
+    - Note for Mac Silicon users. The current Docker doc (link above) implies that installing Rosetta is optional.
+      But if you don't do it you won't be able to install Docker.
+      You need to execute softwareupdate --install-rosetta just to run Docker for the first time after installing it.
 
 
 - Elasticsearch (for text search)
