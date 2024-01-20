@@ -184,8 +184,7 @@ Can run from Docker desktop for Mac, or (replacing appropriate version number)..
 
 > docker rm elasticsearch
 
-> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" 
-docker.elastic.co/elasticsearch/elasticsearch:7.17.11
+> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.11
 
 Elasticsearch will run listening on port 9200. 
 You can verify this by going to [localhost:9200](http://localhost:9200) in your browser
