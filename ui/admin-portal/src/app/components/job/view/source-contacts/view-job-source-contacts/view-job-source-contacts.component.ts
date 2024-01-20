@@ -14,6 +14,8 @@ import {
   HasNameSelectorComponent
 } from "../../../../util/has-name-selector/has-name-selector.component";
 import {AuthenticationService} from "../../../../../services/authentication.service";
+import {CreateChatRequest, JobChatType} from "../../../../../model/chat";
+import {ChatService} from "../../../../../services/chat.service";
 
 /*
 MODEL: Modal popups.
@@ -37,6 +39,7 @@ export class ViewJobSourceContactsComponent implements OnInit {
 
   constructor(
     private authenticationService: AuthenticationService,
+    private chatService: ChatService,
     private modalService: NgbModal,
     private partnerService: PartnerService,
     private userService: UserService
@@ -48,9 +51,16 @@ export class ViewJobSourceContactsComponent implements OnInit {
     this.error = null;
     this.loading = true;
     this.partnerService.listSourcePartners(this.job).subscribe(
-      (sourcePartners) => {this.sourcePartners = sourcePartners; this.loading = false},
+      (sourcePartners) => {this.setSourcePartners(sourcePartners); this.loading = false},
       (error) => {this.error = error; this.loading = false}
     )
+  }
+
+  private setSourcePartners(partners: Partner[]) {
+    this.sourcePartners = partners;
+
+    //Now populate all their chats
+    this.sourcePartners.forEach(partner => this.fetchSourcePartnerChat(partner));
   }
 
   editPartnerContact(partner: Partner) {
@@ -141,5 +151,19 @@ export class ViewJobSourceContactsComponent implements OnInit {
     } else {
       this.currentSourcePartner = this.sourcePartners.find(p => p.id = this.loggedInUserPartnerId)
     }
+  }
+
+  private fetchSourcePartnerChat(partner: Partner) {
+    const request: CreateChatRequest = {
+      type: JobChatType.JobCreatorSourcePartner,
+      jobId: this.job?.id,
+      sourcePartnerId: partner?.id
+    }
+
+    this.error = null;
+    this.chatService.getOrCreate(request).subscribe(
+      (chat) => {partner._jobChat = chat},
+      (error) => {this.error = error}
+    )
   }
 }

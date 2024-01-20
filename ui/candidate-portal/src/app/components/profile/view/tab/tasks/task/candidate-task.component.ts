@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Candidate, TaskAssignment, TaskType} from "../../../../../../model/candidate";
+import {Candidate} from "../../../../../../model/candidate";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {
   TaskAssignmentService,
@@ -25,6 +25,8 @@ import {
   UpdateUploadTaskAssignmentRequest
 } from "../../../../../../services/task-assignment.service";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
+import {TaskAssignment} from "../../../../../../model/task-assignment";
+import {TaskType} from "../../../../../../model/task";
 
 @Component({
   selector: 'app-candidate-task',

@@ -1,11 +1,11 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {CreateChatRequest, JobChatType} from "../../../model/chat";
-import {CandidateOpportunity} from "../../../model/candidate-opportunity";
-import {Partner} from "../../../model/partner";
-import {Job} from "../../../model/job";
+import {ChatPostService} from "../../../services/chat-post.service";
 import {ChatService} from "../../../services/chat.service";
 import {PostsComponentBase} from "../../util/chat/PostsComponentBase";
-import {ChatPostService} from "../../../services/chat-post.service";
+import {CandidateOpportunity} from "../../../model/candidate-opportunity";
+import {Job} from "../../../model/job";
+import {Partner} from "../../../model/partner";
 
 @Component({
   selector: 'app-view-chat-posts',

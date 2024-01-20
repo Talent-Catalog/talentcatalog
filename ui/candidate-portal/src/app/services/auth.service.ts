@@ -23,7 +23,8 @@ import {Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {User} from "../model/user";
-import {LoginRequest, RegisterCandidateRequest} from "../model/candidate";
+import {LoginRequest} from "../model/base";
+import {RegisterCandidateRequest} from "../model/candidate";
 
 export class AuthenticateInContextTranslationRequest {
   password: string;

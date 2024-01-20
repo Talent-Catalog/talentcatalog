@@ -1,5 +1,4 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {LoginRequest} from "../model/candidate";
 import {catchError, map} from "rxjs/operators";
 import {JwtResponse} from "../model/jwt-response";
 import {Observable, Subject, throwError} from "rxjs";
@@ -8,6 +7,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
 import {AuthenticateInContextTranslationRequest} from "./auth.service";
+import {LoginRequest} from "../model/base";
 
 /**
  * Manages authentication - ie login/logout.

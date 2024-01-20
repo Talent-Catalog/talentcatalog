@@ -1,5 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Candidate, Status, TaskAssignment, taskAssignmentSort} from "../../../../../model/candidate";
+import {Candidate} from "../../../../../model/candidate";
+import {TaskAssignment, taskAssignmentSort} from "../../../../../model/task-assignment";
+import {Status} from "../../../../../model/base";
 
 @Component({
   selector: 'app-candidate-tasks',
