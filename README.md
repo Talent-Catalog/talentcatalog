@@ -192,8 +192,10 @@ Now you will see the command line prompt =#
    \q
    ```
 
-Ask another developer for a recent `pg_dump` of their test database - 
-matching the latest version of the code.
+Ask Talent Catalog developers for a `pg_dump` of the database. Note that the dump does not have to be recent.
+The Talent Catalog software will automatically apply any requuired updates to the database definition, driven
+by Flyway files stored in GitHub. A standard dump file is kept specifically for getting new developers started.
+Just ask for a copy of the file.
    ```    
    pg_dump --file=path/to/file.sql --create --username=tctalent --host=localhost --port=5432
    ```
@@ -241,9 +243,10 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
 - Some secret information such as passwords and private keys are set in 
   environment variables - including programmatic access to Talent Catalog's Amazon AWS, 
   Google and Salesforce accounts. If these environment variables are not set
-  the application will fail at start up. Contact Talent Catalog if you need access to these
-  "secrets". On development computers they can be stored in a tc_secrets.txt file which you can 
-  hook into your computer's start up to set the relevant environment variables. 
+  the application will fail at start up. Contact other Talent Catalog developers for a copy of 
+  a "secrets" file suitable for developers.
+  On development computers you hook the file, tc_secrets.txt, into your computer's start up to
+  set the relevant environment variables. 
   For example add "source ~/tc_secrets.txt" to .bash_profile or .zshenv
   depending on whether you are running bash or zsh.
 
