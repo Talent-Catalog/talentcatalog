@@ -87,8 +87,10 @@ style XML** then select the intellij-java-google-style.xml file you downloaded f
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
   ```
-  npm install -g @angular/cli
+  npm install -g @angular/cli@16
   ```
+  - Note that we cannot use the most recent version of Angular CLI because it requires a version of node
+    greater than 16 (see note on node version above). See https://angular.io/guide/versions
   - To upgrade Angular versions, see https://update.angular.io/
 
 
