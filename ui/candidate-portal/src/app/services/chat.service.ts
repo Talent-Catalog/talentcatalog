@@ -31,6 +31,15 @@ export class ChatService implements OnDestroy {
    */
   private chatReadStatuses$: Map<number, Observable<boolean>> = new Map<number, Observable<boolean>>();
 
+  /**
+   * These record the current read status of each chat - which supports the {@link #isChatRead}
+   * method.
+   * <p/>
+   * Note that chatReadStatuses$ provide Observables for chat read status - so any time the status
+   * changes they will provide a new status. But they do not remember the current status.
+   *
+   * @private
+   */
   private chatReadStatuses: Map<number, boolean> = new Map<number, boolean>();
 
   /**
@@ -314,6 +323,15 @@ export class ChatService implements OnDestroy {
     return markAsRead;
   }
 
+  /**
+   * This returns the current read status of the given chat (Observables don't give you that -
+   * only changes).
+   * <p/>
+   * This is needed by code that wants to display the current read status now - without waiting
+   * for the next status change to come through on an Observable.
+   * @param chat Chat whose current read status is wanted
+   * @return True or False - or undefined if we don't know.
+   */
   isChatRead(chat: JobChat): boolean {
     return this.chatReadStatuses.get(chat.id);
   }
