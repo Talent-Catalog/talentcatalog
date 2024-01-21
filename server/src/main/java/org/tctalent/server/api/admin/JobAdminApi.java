@@ -132,7 +132,7 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
-    @PutMapping("{id}/interviewlink")
+    @PutMapping("{id}/interview-link")
     public @NotNull Map<String, Object> updateInterviewGuidanceLink(
         @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
         throws InvalidRequestException, NoSuchObjectException {
