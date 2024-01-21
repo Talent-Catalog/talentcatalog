@@ -137,4 +137,8 @@ export class CandidateOppComponent implements OnInit, OnChanges {
   unSelectChat() {
     this.selectedChat = null;
   }
+
+  onMarkChatAsRead() {
+    this.chatService.markChatAsRead(this.selectedChat);
+  }
 }

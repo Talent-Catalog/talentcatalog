@@ -4,6 +4,9 @@ import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
+import {JobChat, JobChatType} from "../../../model/chat";
+import {forkJoin} from "rxjs";
+import {ChatService} from "../../../services/chat.service";
 
 @Component({
   selector: 'app-view-candidate',
@@ -14,25 +17,28 @@ export class ViewCandidateComponent implements OnInit {
 
   private lastTabKey: string = 'CandidateLastTab';
   activeTabId: string;
+  chatsForAllJobs: JobChat[];
 
-  error;
-  loading;
+  error: any;
+  loading: boolean;
   candidate: Candidate;
   usAfghan: boolean;
 
   constructor(private candidateService: CandidateService,
+              private chatService: ChatService,
               private localStorageService: LocalStorageService) { }
 
   ngOnInit(): void {
-    this.getCandidate();
+    this.fetchCandidate();
     this.selectDefaultTab();
   }
 
-  getCandidate() {
+  fetchCandidate() {
     this.candidateService.getProfile().subscribe(
-      (response) => {
-        this.candidate = response;
-        this.usAfghan = response.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
+      (candidate) => {
+        this.setCandidate(candidate);
+        this.candidate = candidate;
+        this.usAfghan = candidate.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
         this.loading = false;
       },
       (error) => {
@@ -55,4 +61,39 @@ export class ViewCandidateComponent implements OnInit {
     this.localStorageService.set(this.lastTabKey, id);
   }
 
+  private setCandidate(candidate: Candidate) {
+    this.candidate = candidate;
+    this.fetchAllOpportunityChats();
+  }
+
+  private fetchAllOpportunityChats() {
+
+    //Get all candidate's opportunities
+    let candidateOpportunities = this.candidate.candidateOpportunities;
+
+    //Scan the opportunities to extract all their chats.
+    let chats$ = candidateOpportunities
+    //First map opportunities to stream of arrays of chat requests for each opportunity
+    .map(opp =>
+      [{type: JobChatType.CandidateRecruiting, candidateOppId: opp.id},
+      {type: JobChatType.CandidateProspect, candidateOppId: opp.id},
+      {type: JobChatType.AllJobCandidates, jobId: opp.jobOpp?.id}]
+    )
+    //Convert this stream of arrays of requests, into a stream of requests (ie flattening the arrays)
+    .reduce((accumulator,
+             requests) => accumulator.concat(requests), [])
+    //Lastly map the requests to Observable<JobChat> by calling the service with each request.
+    .map(request => this.chatService.getOrCreate(request));
+
+    //Now fetch all those chats
+    this.loading = true;
+    this.error = null;
+    forkJoin(chats$).subscribe(
+      (jobChats) => {this.chatsForAllJobs = jobChats; this.loading = false;},
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    )
+  }
 }

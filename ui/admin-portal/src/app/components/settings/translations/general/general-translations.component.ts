@@ -703,7 +703,13 @@ const ALL_FIELDS = {
     },
     "OPP" : {
       "CHAT-RETURN": null,
-      "RETURN": null,
+      "CHAT-MARK-AS-READ": null,
+      "JOB-RETURN": null,
     },
+  },
+  "CHAT": {
+      "POST-HEADER": null,
+      "POST-SEND": null,
+      "NO-POSTS": null,
   }
 }

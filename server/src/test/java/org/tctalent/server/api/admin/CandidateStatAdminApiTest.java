@@ -40,6 +40,7 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getReferrerStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationByOccupationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getRegistrationStats;
+import static org.tctalent.server.api.admin.StatsApiTestUtil.getSourceCountryStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getSpokenLanguageLevelStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getStatusStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getSurveyStats;
@@ -129,7 +130,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Gender
         .andExpect(jsonPath("$[0].name", is("Gender")))
@@ -166,7 +167,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Registrations
         .andExpect(jsonPath("$[1].name", is("Registrations")))
@@ -203,7 +204,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Registrations by Occupation
         .andExpect(jsonPath("$[2].name", is("Registrations (by occupations)")))
@@ -240,7 +241,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Birth year
         .andExpect(jsonPath("$[3].name", is("Birth years")))
@@ -277,7 +278,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Linkedin links
         .andExpect(jsonPath("$[6].name", is("LinkedIn links")))
@@ -312,7 +313,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Linkedin links by registration date
         .andExpect(jsonPath("$[7].name", is("LinkedIn links by candidate registration date")))
@@ -349,7 +350,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Unhcr registration date
         .andExpect(jsonPath("$[8].name", is("UNHCR Registered")))
@@ -386,7 +387,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Unhcr status
         .andExpect(jsonPath("$[9].name", is("UNHCR Status")))
@@ -425,7 +426,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Nationality
         .andExpect(jsonPath("$[10].name", is("Nationalities by Country")))
@@ -439,6 +440,41 @@ class CandidateStatAdminApiTest extends ApiTestBase {
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(5)).computeNationalityStats(any(), any(), any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("get all stats - source countries report succeeds")
+  void getAllStatsSourceCountryReportSucceeds() throws Exception {
+    CandidateStatsRequest request = new CandidateStatsRequest();
+
+    given(candidateService
+        .computeSourceCountryStats(any(), any(), any(), any()))
+        .willReturn(getSourceCountryStats());
+
+    mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$", hasSize(49)))
+
+        // Source Country
+        .andExpect(jsonPath("$[15].name", is("Source Countries")))
+        .andExpect(jsonPath("$[15].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[15].rows", notNullValue()))
+        .andExpect(jsonPath("$[15].rows", hasSize(2)))
+        .andExpect(jsonPath("$[15].rows[0].label", is("Lebanon")))
+        .andExpect(jsonPath("$[15].rows[0].value", is(7231)))
+        .andExpect(jsonPath("$[15].rows[1].label", is("Jordan")))
+        .andExpect(jsonPath("$[15].rows[1].value", is(4396)));
+
+    verify(authService).getLoggedInUser();
+    verify(candidateService, times(3)).computeSourceCountryStats(any(), any(), any(), any());
   }
 
   @Test
@@ -460,23 +496,23 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Statuses
-        .andExpect(jsonPath("$[15].name", is("Statuses")))
-        .andExpect(jsonPath("$[15].chartType", is("doughnut")))
-        .andExpect(jsonPath("$[15].rows", notNullValue()))
-        .andExpect(jsonPath("$[15].rows", hasSize(5)))
-        .andExpect(jsonPath("$[15].rows[0].label", is("pending")))
-        .andExpect(jsonPath("$[15].rows[0].value", is(1000)))
-        .andExpect(jsonPath("$[15].rows[1].label", is("incomplete")))
-        .andExpect(jsonPath("$[15].rows[1].value", is(2000)))
-        .andExpect(jsonPath("$[15].rows[2].label", is("active")))
-        .andExpect(jsonPath("$[15].rows[2].value", is(3000)))
-        .andExpect(jsonPath("$[15].rows[3].label", is("employed")))
-        .andExpect(jsonPath("$[15].rows[3].value", is(4000)))
-        .andExpect(jsonPath("$[15].rows[4].label", is("autonomousEmployment")))
-        .andExpect(jsonPath("$[15].rows[4].value", is(5000)));
+        .andExpect(jsonPath("$[18].name", is("Statuses")))
+        .andExpect(jsonPath("$[18].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[18].rows", notNullValue()))
+        .andExpect(jsonPath("$[18].rows", hasSize(5)))
+        .andExpect(jsonPath("$[18].rows[0].label", is("pending")))
+        .andExpect(jsonPath("$[18].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[18].rows[1].label", is("incomplete")))
+        .andExpect(jsonPath("$[18].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[18].rows[2].label", is("active")))
+        .andExpect(jsonPath("$[18].rows[2].value", is(3000)))
+        .andExpect(jsonPath("$[18].rows[3].label", is("employed")))
+        .andExpect(jsonPath("$[18].rows[3].value", is(4000)))
+        .andExpect(jsonPath("$[18].rows[4].label", is("autonomousEmployment")))
+        .andExpect(jsonPath("$[18].rows[4].value", is(5000)));
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(5)).computeStatusStats(any(), any(), any(), any(), any());
@@ -501,19 +537,19 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // Occupations
-        .andExpect(jsonPath("$[20].name", is("Occupations")))
-        .andExpect(jsonPath("$[20].chartType", is("doughnut")))
-        .andExpect(jsonPath("$[20].rows", notNullValue()))
-        .andExpect(jsonPath("$[20].rows", hasSize(3)))
-        .andExpect(jsonPath("$[20].rows[0].label", is("undefined")))
-        .andExpect(jsonPath("$[20].rows[0].value", is(1000)))
-        .andExpect(jsonPath("$[20].rows[1].label", is("Teacher")))
-        .andExpect(jsonPath("$[20].rows[1].value", is(2000)))
-        .andExpect(jsonPath("$[20].rows[2].label", is("Accountant")))
-        .andExpect(jsonPath("$[20].rows[2].value", is(3000)));
+        .andExpect(jsonPath("$[23].name", is("Occupations")))
+        .andExpect(jsonPath("$[23].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[23].rows", notNullValue()))
+        .andExpect(jsonPath("$[23].rows", hasSize(3)))
+        .andExpect(jsonPath("$[23].rows[0].label", is("undefined")))
+        .andExpect(jsonPath("$[23].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[23].rows[1].label", is("Teacher")))
+        .andExpect(jsonPath("$[23].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[23].rows[2].label", is("Accountant")))
+        .andExpect(jsonPath("$[23].rows[2].value", is(3000)));
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(3)).computeOccupationStats(any(), any(), any(), any());
@@ -538,19 +574,19 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // most common occupation
-        .andExpect(jsonPath("$[23].name", is("Most Common Occupations")))
-        .andExpect(jsonPath("$[23].chartType", is("doughnut")))
-        .andExpect(jsonPath("$[23].rows", notNullValue()))
-        .andExpect(jsonPath("$[23].rows", hasSize(3)))
-        .andExpect(jsonPath("$[23].rows[0].label", is("undefined")))
-        .andExpect(jsonPath("$[23].rows[0].value", is(1000)))
-        .andExpect(jsonPath("$[23].rows[1].label", is("Teacher")))
-        .andExpect(jsonPath("$[23].rows[1].value", is(2000)))
-        .andExpect(jsonPath("$[23].rows[2].label", is("Accountant")))
-        .andExpect(jsonPath("$[23].rows[2].value", is(3000)));
+        .andExpect(jsonPath("$[26].name", is("Most Common Occupations")))
+        .andExpect(jsonPath("$[26].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[26].rows", notNullValue()))
+        .andExpect(jsonPath("$[26].rows", hasSize(3)))
+        .andExpect(jsonPath("$[26].rows[0].label", is("undefined")))
+        .andExpect(jsonPath("$[26].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[26].rows[1].label", is("Teacher")))
+        .andExpect(jsonPath("$[26].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[26].rows[2].label", is("Accountant")))
+        .andExpect(jsonPath("$[26].rows[2].value", is(3000)));
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(3)).computeMostCommonOccupationStats(any(), any(), any(), any());
@@ -575,19 +611,19 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // max education level
-        .andExpect(jsonPath("$[26].name", is("Max Education Level")))
-        .andExpect(jsonPath("$[26].chartType", is("doughnut")))
-        .andExpect(jsonPath("$[26].rows", notNullValue()))
-        .andExpect(jsonPath("$[26].rows", hasSize(3)))
-        .andExpect(jsonPath("$[26].rows[0].label", is("Bachelor's Degree")))
-        .andExpect(jsonPath("$[26].rows[0].value", is(1000)))
-        .andExpect(jsonPath("$[26].rows[1].label", is("Primary School")))
-        .andExpect(jsonPath("$[26].rows[1].value", is(2000)))
-        .andExpect(jsonPath("$[26].rows[2].label", is("Doctoral Degree")))
-        .andExpect(jsonPath("$[26].rows[2].value", is(3000)));
+        .andExpect(jsonPath("$[29].name", is("Max Education Level")))
+        .andExpect(jsonPath("$[29].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[29].rows", notNullValue()))
+        .andExpect(jsonPath("$[29].rows", hasSize(3)))
+        .andExpect(jsonPath("$[29].rows[0].label", is("Bachelor's Degree")))
+        .andExpect(jsonPath("$[29].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[29].rows[1].label", is("Primary School")))
+        .andExpect(jsonPath("$[29].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[29].rows[2].label", is("Doctoral Degree")))
+        .andExpect(jsonPath("$[29].rows[2].value", is(3000)));
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(3)).computeMaxEducationStats(any(), any(), any(), any());
@@ -612,19 +648,19 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // languages
-        .andExpect(jsonPath("$[29].name", is("Languages")))
-        .andExpect(jsonPath("$[29].chartType", is("doughnut")))
-        .andExpect(jsonPath("$[29].rows", notNullValue()))
-        .andExpect(jsonPath("$[29].rows", hasSize(3)))
-        .andExpect(jsonPath("$[29].rows[0].label", is("English")))
-        .andExpect(jsonPath("$[29].rows[0].value", is(1000)))
-        .andExpect(jsonPath("$[29].rows[1].label", is("Arabic")))
-        .andExpect(jsonPath("$[29].rows[1].value", is(2000)))
-        .andExpect(jsonPath("$[29].rows[2].label", is("French")))
-        .andExpect(jsonPath("$[29].rows[2].value", is(3000)));
+        .andExpect(jsonPath("$[32].name", is("Languages")))
+        .andExpect(jsonPath("$[32].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[32].rows", notNullValue()))
+        .andExpect(jsonPath("$[32].rows", hasSize(3)))
+        .andExpect(jsonPath("$[32].rows[0].label", is("English")))
+        .andExpect(jsonPath("$[32].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[32].rows[1].label", is("Arabic")))
+        .andExpect(jsonPath("$[32].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[32].rows[2].label", is("French")))
+        .andExpect(jsonPath("$[32].rows[2].value", is(3000)));
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(3)).computeLanguageStats(any(), any(), any(), any());
@@ -649,17 +685,17 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // referrers
-        .andExpect(jsonPath("$[32].name", is("Referrers")))
-        .andExpect(jsonPath("$[32].chartType", is("bar")))
-        .andExpect(jsonPath("$[32].rows", notNullValue()))
-        .andExpect(jsonPath("$[32].rows", hasSize(2)))
-        .andExpect(jsonPath("$[32].rows[0].label", is("auntie rene")))
-        .andExpect(jsonPath("$[32].rows[0].value", is(1000)))
-        .andExpect(jsonPath("$[32].rows[1].label", is("uncle fred")))
-        .andExpect(jsonPath("$[32].rows[1].value", is(2000)));
+        .andExpect(jsonPath("$[35].name", is("Referrers")))
+        .andExpect(jsonPath("$[35].chartType", is("bar")))
+        .andExpect(jsonPath("$[35].rows", notNullValue()))
+        .andExpect(jsonPath("$[35].rows", hasSize(2)))
+        .andExpect(jsonPath("$[35].rows[0].label", is("auntie rene")))
+        .andExpect(jsonPath("$[35].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[35].rows[1].label", is("uncle fred")))
+        .andExpect(jsonPath("$[35].rows[1].value", is(2000)));
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(3)).computeReferrerStats(any(), any(), any(), any(), any());
@@ -684,19 +720,19 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // survey
-        .andExpect(jsonPath("$[35].name", is("Survey")))
-        .andExpect(jsonPath("$[35].chartType", is("doughnut")))
-        .andExpect(jsonPath("$[35].rows", notNullValue()))
-        .andExpect(jsonPath("$[35].rows", hasSize(3)))
-        .andExpect(jsonPath("$[35].rows[0].label", is("Facebook")))
-        .andExpect(jsonPath("$[35].rows[0].value", is(1000)))
-        .andExpect(jsonPath("$[35].rows[1].label", is("From a friend")))
-        .andExpect(jsonPath("$[35].rows[1].value", is(2000)))
-        .andExpect(jsonPath("$[35].rows[2].label", is("NGO")))
-        .andExpect(jsonPath("$[35].rows[2].value", is(3000)));
+        .andExpect(jsonPath("$[38].name", is("Survey")))
+        .andExpect(jsonPath("$[38].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[38].rows", notNullValue()))
+        .andExpect(jsonPath("$[38].rows", hasSize(3)))
+        .andExpect(jsonPath("$[38].rows[0].label", is("Facebook")))
+        .andExpect(jsonPath("$[38].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[38].rows[1].label", is("From a friend")))
+        .andExpect(jsonPath("$[38].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[38].rows[2].label", is("NGO")))
+        .andExpect(jsonPath("$[38].rows[2].value", is(3000)));
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(5)).computeSurveyStats(any(), any(), any(), any(), any());
@@ -721,19 +757,19 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$", hasSize(46)))
+        .andExpect(jsonPath("$", hasSize(49)))
 
         // spoken language
-        .andExpect(jsonPath("$[40].name", is("Spoken English Language Level")))
-        .andExpect(jsonPath("$[40].chartType", is("doughnut")))
-        .andExpect(jsonPath("$[40].rows", notNullValue()))
-        .andExpect(jsonPath("$[40].rows", hasSize(3)))
-        .andExpect(jsonPath("$[40].rows[0].label", is("Intermediate Proficiency")))
-        .andExpect(jsonPath("$[40].rows[0].value", is(1000)))
-        .andExpect(jsonPath("$[40].rows[1].label", is("Full Professional Proficiency")))
-        .andExpect(jsonPath("$[40].rows[1].value", is(2000)))
-        .andExpect(jsonPath("$[40].rows[2].label", is("Elementary Proficiency")))
-        .andExpect(jsonPath("$[40].rows[2].value", is(3000)));
+        .andExpect(jsonPath("$[43].name", is("Spoken English Language Level")))
+        .andExpect(jsonPath("$[43].chartType", is("doughnut")))
+        .andExpect(jsonPath("$[43].rows", notNullValue()))
+        .andExpect(jsonPath("$[43].rows", hasSize(3)))
+        .andExpect(jsonPath("$[43].rows[0].label", is("Intermediate Proficiency")))
+        .andExpect(jsonPath("$[43].rows[0].value", is(1000)))
+        .andExpect(jsonPath("$[43].rows[1].label", is("Full Professional Proficiency")))
+        .andExpect(jsonPath("$[43].rows[1].value", is(2000)))
+        .andExpect(jsonPath("$[43].rows[2].label", is("Elementary Proficiency")))
+        .andExpect(jsonPath("$[43].rows[2].value", is(3000)));
 
     verify(authService).getLoggedInUser();
     verify(candidateService, times(6)).computeSpokenLanguageLevelStats(any(), any(), any(), any(), any());

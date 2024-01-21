@@ -14,14 +14,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Opportunity} from "./base";
+import {PagedSearchRequest} from "./base";
 import {ShortJob} from "./job";
+import {Opportunity, OpportunityOwnershipType} from "./opportunity";
+import {ShortCandidate} from "./candidate";
+
+export function isCandidateOpportunity(opp: Opportunity): opp is CandidateOpportunity {
+  return opp ? 'jobOpp' in opp : false;
+}
 
 export interface CandidateOpportunity extends Opportunity {
+
+  closingCommentsForCandidate?: string;
+  employerFeedback?: string;
   fileOfferLink?: string;
   fileOfferName?: string;
 
-  closingCommentsForCandidate?: string;
+  candidate: ShortCandidate;
   jobOpp: ShortJob;
   stage: CandidateOpportunityStage;
 }
@@ -48,7 +57,7 @@ export enum CandidateOpportunityStage {
   relocating = "18. Relocating",
   relocated = "19. Relocated (candidate has arrived at employer's location)",
   settled = "20. Settled (candidate indicates no further need for support)",
-  durableSolution = "21. Durable solution (permanent residence, normal citizen rights)",
+  durableSolution = "21 Closed won. Durable solution (permanent residence, normal citizen rights)",
   noJobOffer = "Closed. No job offer",
   noVisa = "Closed. No visa",
   notFitForRole = "Closed. Not fit for role",
@@ -59,7 +68,20 @@ export enum CandidateOpportunityStage {
   candidateRejectsOffer = "Closed. Candidate rejects offer",
   candidateUnreachable = "Closed. Candidate unreachable",
   candidateWithdraws = "Closed. Candidate withdraws",
-  jobOfferRetracted = "Closed. Job offer retracted"
+  jobOfferRetracted = "Closed. Job offer retracted",
+  relocatedNoJobOfferPathway = "Closed. No job offer pathway (Canadian pathway - based on skills not job offer)"
 }
 
-
+/**
+ * Base class for both Job opportunity and candidate opportunity requests
+ */
+export class SearchOpportunityRequest extends PagedSearchRequest {
+  activeStages?: boolean;
+  keyword?: string;
+  ownershipType?: OpportunityOwnershipType;
+  ownedByMe?: boolean;
+  ownedByMyPartner?: boolean;
+  sfOppClosed?: boolean;
+  stages?: string[];
+  destinationIds?: number[];
+}

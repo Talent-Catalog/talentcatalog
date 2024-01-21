@@ -25,18 +25,21 @@
         <ng-template ngbNavContent>
           <app-candidate-tasks
             [candidate]="candidate"
-            (refresh)="getCandidate()">
+            (refresh)="fetchCandidate()">
           </app-candidate-tasks>
         </ng-template>
       </ng-container>
 
       <!-- Candidate Opportunities (Jobs) -->
       <ng-container ngbNavItem="Opps">
-        <a ngbNavLink>{{ 'PROFILE.TAB.OPPS' | translate }}</a>
+        <a ngbNavLink>{{ 'PROFILE.TAB.OPPS' | translate }}
+          <app-chat-read-status
+            [chats]="chatsForAllJobs"
+          ></app-chat-read-status>
+        </a>
         <ng-template ngbNavContent>
           <app-candidate-opps
-            [candidate]="candidate"
-            (refresh)="getCandidate()">
+            [candidate]="candidate">
           </app-candidate-opps>
         </ng-template>
       </ng-container>

@@ -16,6 +16,10 @@
 
 package org.tctalent.server.repository.db;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,11 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * See notes on "join fetch" in the doc for {@link #findByIdLoadCandidateOccupations}
@@ -513,6 +512,31 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
         @Param("dateFrom") LocalDate dateFrom,
         @Param("dateTo") LocalDate dateTo,
                                                   @Param("candidateIds") Set<Long> candidateIds);
+
+    /***************************************************************************
+     Count By Source Country
+     **************************************************************************/
+    String countBySourceCountrySelectSQL = "select sc.name, count(distinct c) as PeopleCount" +
+            " from candidate c left join users u on c.user_id = u.id" +
+            " left join country sc on c.country_id = sc.id " +
+            " left join country on c.country_id = country.id " +
+            " where c.country_id in (:sourceCountryIds) " +
+            " and " + countingStandardFilter + dateConditionFilter +
+            " and gender like :gender";
+    String countBySourceCountryGroupBySQL = " group by sc.name order by PeopleCount desc";
+    @Query(value = countBySourceCountrySelectSQL + excludeIneligible +
+            countBySourceCountryGroupBySQL, nativeQuery = true)
+    List<Object[]> countBySourceCountryOrderByCount(@Param("gender") String gender,
+                                                    @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                    @Param("dateFrom") LocalDate dateFrom,
+                                                    @Param("dateTo") LocalDate dateTo);
+    @Query(value = countBySourceCountrySelectSQL + candidatesCondition +
+            countBySourceCountryGroupBySQL, nativeQuery = true)
+    List<Object[]> countBySourceCountryOrderByCount(@Param("gender") String gender,
+                                                    @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                    @Param("dateFrom") LocalDate dateFrom,
+                                                    @Param("dateTo") LocalDate dateTo,
+                                                    @Param("candidateIds") Set<Long> candidateIds);
 
 
 

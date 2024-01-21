@@ -31,7 +31,11 @@
           <tbody>
           <tr *ngFor="let opp of opps" (click)="selectOpp(opp)">
             <td [title]="opp.jobOpp.name">
-                <div class="link underline">{{opp.jobOpp.name | truncate: 40}}</div>
+                <div class="link underline">
+                  <app-chat-read-status
+                    [chats]="getOppChats(opp)"
+                  ></app-chat-read-status>
+                  {{opp.jobOpp.name | truncate: 40}}</div>
             </td>
           </tr>
 
