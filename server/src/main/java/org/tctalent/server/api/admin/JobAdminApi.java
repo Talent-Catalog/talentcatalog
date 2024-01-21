@@ -116,7 +116,7 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
-    @PutMapping("{id}/jdlink")
+    @PutMapping("{id}/jd-link")
     public @NotNull Map<String, Object> updateJdLink(
         @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
         throws InvalidRequestException, NoSuchObjectException {
@@ -124,7 +124,7 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
-    @PutMapping("{id}/joilink")
+    @PutMapping("{id}/joi-link")
     public @NotNull Map<String, Object> updateJoiLink(
         @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
         throws InvalidRequestException, NoSuchObjectException {
