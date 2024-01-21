@@ -162,6 +162,12 @@ export class ChatService implements OnDestroy {
       chatReadStatus$ = this.constructChatReadStatus(chat);
       //Save observable for this chat.
       this.chatReadStatuses$.set(chat.id, chatReadStatus$);
+
+      //Subscribe internally to status here just to keep this.chatReadStatuses up to date - which drive the
+      //isChatRead method.
+      chatReadStatus$.subscribe(
+        (isRead) => this.storeChatReadStatus(chat, isRead)
+      )
     }
 
     return chatReadStatus$;
@@ -193,9 +199,6 @@ export class ChatService implements OnDestroy {
           }
           return isRead;
         }),
-
-        //Initialize chat read status
-        tap(isRead => this.storeChatReadStatus(chat, isRead)),
 
         //Now that we know whether the user has read the chat or not, switch to
         //our marked as read subject, initializing it with the isRead state returned from the server
@@ -232,13 +235,6 @@ export class ChatService implements OnDestroy {
 
       //Save observable for this chat.
       this.chatPosts.set(chat.id, observable);
-
-      //Now that we are watching for chat posts, create a ChatReadStatus for the chat and subscribe
-      //internally to it here just to keep this.chatReadStatuses up to date - which drive the
-      //isChatRead method.
-      this.getChatReadStatusObservable(chat).subscribe(
-        (isRead) => this.storeChatReadStatus(chat, isRead)
-      )
     }
 
     return observable;
