@@ -106,6 +106,18 @@ public class SavedList extends AbstractCandidateSource {
     private String fileJoiLink;
 
     /**
+     * Name of interview guidance file, if one exists
+     */
+    @Nullable
+    private String fileInterviewGuidanceName;
+
+    /**
+     * Url link to interview guidance file, if one exists
+     */
+    @Nullable
+    private String fileInterviewGuidanceLink;
+
+    /**
      * Url link to corresponding list folder on Google Drive, if one exists.
      * <p/>
      * This is the alpha named folder beneath the folder numerically named folder taken from the

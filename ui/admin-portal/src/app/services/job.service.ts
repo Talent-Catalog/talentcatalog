@@ -50,7 +50,7 @@ export class JobService implements OpportunityService<Job> {
   }
 
   updateJobLink(id: number, docType: JobDocType, updateLinkRequest: UpdateLinkRequest): Observable<Job> {
-    return this.http.put<Job>(`${this.apiUrl}/${id}/${docType}link`, updateLinkRequest);
+    return this.http.put<Job>(`${this.apiUrl}/${id}/${docType}-link`, updateLinkRequest);
   }
 
   updateStarred(id: number, starred: boolean): Observable<Job> {
