@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {combineLatest, Observable, Subscription} from "rxjs";
+import {combineLatest, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {JobChat} from "../../../model/chat";
 import {map} from "rxjs/operators";
@@ -36,17 +36,22 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   computeIndicatorFromStaticStatus() {
-    //If any of the chats are don't know, then we don't now
-    const dontKnow =
-      this.chats.find(chat => this.chatService.isChatRead(chat) == null) != null;
-
-    if (dontKnow) {
+    if (this.chats == null) {
       this.setIndicator(null);
     } else {
-      //All read is true if none of them are false
-      let allChatsRead =
-        this.chats.find(chat => !this.chatService.isChatRead(chat)) == null;
-      this.setIndicator(allChatsRead);
+      //If any of the chats are don't know, then we don't now
+      if (this.chats && this.chats.length > 0) {
+        const dontKnow =
+          this.chats.find(chat => this.chatService.isChatRead(chat) == null) != null;
+        if (dontKnow) {
+          this.setIndicator(null);
+        } else {
+          //All read is true if none of them are false
+          let allChatsRead =
+            this.chats.find(chat => !this.chatService.isChatRead(chat)) == null;
+          this.setIndicator(allChatsRead);
+        }
+      }
     }
   }
 
