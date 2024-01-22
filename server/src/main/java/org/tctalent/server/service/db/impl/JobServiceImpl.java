@@ -661,6 +661,23 @@ public class JobServiceImpl implements JobService {
 
         return salesforceJobOppRepository.save(job);
     }
+    
+    @Override
+    @NonNull
+    public SalesforceJobOpp updateInterviewGuidanceLink(long id, UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException {
+        User loggedInUser = getLoggedInUser("update interview guidance file");
+
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        setJobInterviewGuidanceLink(job, updateLinkRequest.getName(), updateLinkRequest.getUrl());
+
+        job.setAuditFields(loggedInUser);
+
+        return salesforceJobOppRepository.save(job);
+    }
 
     @Override
     public void updateIntakeData(long id, JobIntakeData data) throws NoSuchObjectException {
@@ -846,6 +863,13 @@ public class JobServiceImpl implements JobService {
         savedListService.saveIt(submissionList);
     }
 
+    private void setJobInterviewGuidanceLink(SalesforceJobOpp job, String name, String url) {
+        SavedList submissionList = job.getSubmissionList();
+        submissionList.setFileInterviewGuidanceLink(url);
+        submissionList.setFileInterviewGuidanceName(name);
+        savedListService.saveIt(submissionList);
+    }
+
     private GoogleFileSystemFile uploadFile(String folderLink, String fileName,
         MultipartFile file) throws IOException {
 
@@ -913,6 +937,19 @@ public class JobServiceImpl implements JobService {
         }
         GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
         setJobJoiLink(job, uploadedFile.getName(), uploadedFile.getUrl());
+        return job;
+    }
+
+    @Override
+    public SalesforceJobOpp uploadInterviewGuidance(long id, MultipartFile file)
+            throws InvalidRequestException, NoSuchObjectException, IOException {
+
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+        setJobInterviewGuidanceLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
     }
 }

@@ -7,6 +7,7 @@
     <thead class="table-primary">
     <tr>
       <th *ngIf="editable"></th>
+      <th></th>
       <th>Partner</th>
       <th>Contact</th>
       <th>Email</th>
@@ -21,6 +22,12 @@
           <button type="button" class="btn btn-default" (click)="editPartnerContact(partner)"><i
             class="fas fa-edit" title="Change partner details"></i></button>
         </div>
+      </td>
+      <td>
+        <app-chat-read-status *ngIf="partner._jobChat"
+          [chats]="[partner._jobChat]"
+        >
+        </app-chat-read-status>
       </td>
       <td>{{partner.name}} {{sourceCountries(partner)}}</td>
       <td>{{partner.jobContact?.firstName}} {{partner.jobContact?.lastName}}</td>

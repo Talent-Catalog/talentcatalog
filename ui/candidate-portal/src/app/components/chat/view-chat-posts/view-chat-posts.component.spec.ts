@@ -16,21 +16,21 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {PostsComponent} from './posts.component';
+import {ViewChatPostsComponent} from './view-chat-posts.component';
 
 describe('PostsComponent', () => {
-  let component: PostsComponent;
-  let fixture: ComponentFixture<PostsComponent>;
+  let component: ViewChatPostsComponent;
+  let fixture: ComponentFixture<ViewChatPostsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PostsComponent ]
+      declarations: [ ViewChatPostsComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PostsComponent);
+    fixture = TestBed.createComponent(ViewChatPostsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

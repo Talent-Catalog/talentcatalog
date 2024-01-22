@@ -34,6 +34,11 @@ import {
 } from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 import {AuthenticationService} from "../../../../services/authentication.service";
+import {forkJoin, Observable} from "rxjs";
+import {CreateChatRequest, JobChat, JobChatType} from "../../../../model/chat";
+import {ChatService} from "../../../../services/chat.service";
+import {PartnerService} from "../../../../services/partner.service";
+import {Partner} from "../../../../model/partner";
 
 /**
  * Display details of a job object passed in as an @Input.
@@ -48,9 +53,12 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   @Output() jobUpdated = new EventEmitter<Job>();
 
   activeTabId: string;
+  chatReadStatus$: Observable<boolean>;
   currentPrepItem: JobPrepItem;
   error: any;
   loading: boolean;
+  groupChats: JobChat[];
+  partnerChats: JobChat[];
   loggedInUser: User;
   publishing: boolean;
   slacklink: string;
@@ -75,9 +83,11 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     private authService: AuthorizationService,
     private authenticationService: AuthenticationService,
     private candidateSourceService: CandidateSourceCandidateService,
+    private chatService: ChatService,
     private localStorageService: LocalStorageService,
     private jobService: JobService,
     private modalService: NgbModal,
+    private partnerService: PartnerService,
     private salesforceService: SalesforceService,
     private slackService: SlackService,
     private location: Location,
@@ -94,8 +104,71 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.job) {
       this.checkSubmissionListContents();
-      this.jobPrepItems.forEach(j => j.job = this.job)
+      this.jobPrepItems.forEach(j => j.job = this.job);
+      this.fetchJobChats();
+      this.fetchPartnerChats();
     }
+  }
+
+  private fetchJobChats() {
+    const allCandidatesChatRequest: CreateChatRequest = {
+      type: JobChatType.AllJobCandidates,
+      jobId: this.job?.id
+    }
+    const allSourcePartnersChatRequest: CreateChatRequest = {
+      type: JobChatType.JobCreatorAllSourcePartners,
+      jobId: this.job?.id
+    }
+
+    this.loading = true;
+    this.error = null;
+    forkJoin( {
+      'allJobCandidatesChat': this.chatService.getOrCreate(allCandidatesChatRequest),
+      'allSourcePartnersChat': this.chatService.getOrCreate(allSourcePartnersChatRequest),
+    }).subscribe(
+      results => {
+        this.loading = false;
+        const allJobCandidatesChat = results['allJobCandidatesChat'];
+        const allSourcePartnersChat = results['allSourcePartnersChat'];
+        this.groupChats = [allJobCandidatesChat, allSourcePartnersChat];
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
+  }
+
+  private fetchPartnerChats() {
+    this.partnerService.listSourcePartners(this.job).subscribe(
+    (sourcePartners) => {this.fetchChats(sourcePartners); this.loading = false},
+    (error) => {this.error = error; this.loading = false}
+     )
+  }
+
+  private fetchChats(sourcePartners: Partner[]) {
+
+    //Map sourcePartners array to array of their corresponding chats for this job
+    let jobChatObservables: Observable<JobChat>[] =
+      sourcePartners.map((partner) => {
+           const request: CreateChatRequest = {
+              type: JobChatType.JobCreatorSourcePartner,
+              jobId: this.job?.id,
+              sourcePartnerId: partner.id
+            }
+            return this.chatService.getOrCreate(request);
+      } )
+
+    //Now fetch all those source partner chats
+    this.loading = true;
+    this.error = null;
+    forkJoin(jobChatObservables).subscribe(
+      (jobChats) => {this.partnerChats = jobChats; this.loading = false;},
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    )
   }
 
   get visible(): boolean {
@@ -232,5 +305,9 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   canAccessSalesforce() {
     return this.authService.canAccessSalesforce();
+  }
+
+  onChatReadStatusCreated(chatReadStatus$: Observable<boolean>) {
+    this.chatReadStatus$ = chatReadStatus$;
   }
 }

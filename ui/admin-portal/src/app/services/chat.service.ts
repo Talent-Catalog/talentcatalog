@@ -1,11 +1,11 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Observable, Subject, Subscription} from "rxjs";
+import {merge, Observable, of, Subject, Subscription} from "rxjs";
 import {CreateChatRequest, JobChat} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
-import {takeUntil} from "rxjs/operators";
+import {map, takeUntil, tap} from "rxjs/operators";
 import {RxStompConfig} from "@stomp/rx-stomp";
 import {AuthenticationService} from "./authentication.service";
 
@@ -16,33 +16,87 @@ export class ChatService implements OnDestroy {
 
   private apiUrl: string = environment.chatApiUrl + '/chat';
   private stompServiceConfigured = false;
+
+  /**
+   * All Observables coming from Stomp watches are piped with a takeUntil this subject.
+   * This allows us to unsubscribe from all of them by means of this subject.
+   * See unsubscribeAll below.
+   */
   private destroyStompSubscriptions$ = new Subject<void>();
-  private observables: Map<number, Observable<Message>> = new Map<number, Observable<Message>>();
+
+  /**
+   * Map of Chat id to Chat Read Status observable - this is constructed from the chatPosts and
+   * markAsReads - constructing an observable that can notify of changes to whether a user has
+   * fully read a chat.
+   */
+  private chatReadStatuses$: Map<number, Observable<boolean>> = new Map<number, Observable<boolean>>();
+
+  private chatReadStatuses: Map<number, boolean> = new Map<number, boolean>();
+
+  /**
+   * Map of Chat id to Observable for that chat - this is where posts come in from server
+   */
+  private chatPosts: Map<number, Observable<Message>> = new Map<number, Observable<Message>>();
+
+  /**
+   * The same request should always return the same chat - and chats are really jut id's that don't
+   * change so we can cache them - which is what this Map does.
+   * <p/>
+   * Note however that although Typescript allows Objects as keys, the hash function uses the
+   * objects location in memory - which is no good for us here. So instead we convert the
+   * request in to string (using JSON.stringify) and use that as the key.
+   * See, for example, https://stackoverflow.com/questions/63948352/typescript-map-with-objects-as-keys
+   * @private
+   */
+  private chatByChatRequest: Map<string, JobChat> = new Map();
+
+  /**
+   * Map of Chat id to MarkAsRead Subject for that chat - this is where notifications come in
+   * (locally) from user saying that they have read a chat.
+   */
+  private markAsReads: Map<number, Subject<boolean>> = new Map<number, Subject<boolean>>();
 
   private authenticationServiceSubscription: Subscription = null;
 
   constructor(
-      private authenticationService: AuthenticationService,
-      private http: HttpClient,
-      private rxStompService: RxStompService
+    private authenticationService: AuthenticationService,
+    private http: HttpClient,
+    private rxStompService: RxStompService
   ) {
 
     //Subscribe to authentication service so that we can detect logouts and disconnect on a logout.
     this.authenticationServiceSubscription = this.authenticationService.loggedInUser$.subscribe(
       (user) => {
         if (user == null) {
-          //Disconnect chat on logout - ie when loggedInUser becomes null.
-          this.disconnect();
+          //Clean up chat on logout - ie when loggedInUser becomes null.
+          this.cleanUp();
         }
       }
     )
   }
 
   ngOnDestroy(): void {
+    //Note that there seems to be some doubt whether services are ever actually destroyed.
+    //See https://github.com/angular/angular/issues/37095#issuecomment-854792361
+    //I could never get this method to fire from with Intellij - JC.
+    //Note that we also call this.cleanup on a logout so that should tidy things up anyway.
+    this.cleanUp();
+  }
+
+  private cleanUp() {
     this.disconnect();
     if (this.authenticationServiceSubscription) {
       this.authenticationServiceSubscription.unsubscribe();
     }
+
+    this.completeMarkAsReads();
+
+    //Clean up data structures.
+    this.chatReadStatuses$.clear();
+    this.chatReadStatuses.clear();
+    this.chatPosts.clear();
+    this.chatByChatRequest.clear();
+
   }
 
   create(request: CreateChatRequest): Observable<JobChat> {
@@ -50,7 +104,19 @@ export class ChatService implements OnDestroy {
   }
 
   getOrCreate(request: CreateChatRequest): Observable<JobChat> {
-    return this.http.post<JobChat>(`${this.apiUrl}/get-or-create`, request)
+
+    //Typescript Maps hash on object reference (!), so can't use actual request object as key to map
+    const requestKey = JSON.stringify(request);
+
+    //Check if we have already fetched the chat matching this request - if so return cached value
+    const chat = this.chatByChatRequest.get(requestKey);
+    if (chat) {
+      return of(chat);
+    } else {
+      return this.http.post<JobChat>(`${this.apiUrl}/get-or-create`, request).pipe(
+        tap(chat => this.chatByChatRequest.set(requestKey, chat))
+      );
+    }
   }
 
   list(): Observable<JobChat[]> {
@@ -58,10 +124,42 @@ export class ChatService implements OnDestroy {
     return this.http.get<JobChat[]>(`${this.apiUrl}`)
   }
 
-  subscribe(chat: JobChat): Observable<Message> {
+  getChatReadStatusObservable(chat: JobChat): Observable<boolean> {
+    //Check if we already have one for this chat...
+    let chatReadStatus$ = this.chatReadStatuses$.get(chat.id);
+    if (chatReadStatus$ == null) {
+      chatReadStatus$ = this.constructChatReadStatus(chat);
+      //Save observable for this chat.
+      this.chatReadStatuses$.set(chat.id, chatReadStatus$);
+    }
 
-    //Check if we already have an observable for this chat.
-    let observable = this.observables.get(chat.id);
+    return chatReadStatus$;
+  }
+
+  private constructChatReadStatus(chat: JobChat): Observable<boolean> {
+    //New post events coming from server
+    let newPosts$ = this.watchChat(chat).pipe(
+      //New posts set the chat read status to false
+      map(message => false),
+    )
+
+    //Events signalling that user has read the chat
+    //todo Should come from server
+    const isRead: boolean = this.isChatRead(chat);
+    const userMarkedChatAsRead$ = this.getMarkedChatAsReadSubject(chat);
+    //Set an initial value.
+    userMarkedChatAsRead$.next(isRead);
+
+    let chatReadStatus$ = merge(newPosts$, userMarkedChatAsRead$).pipe(
+      takeUntil(this.destroyStompSubscriptions$)
+    );
+    return chatReadStatus$;
+  }
+
+  watchChat(chat: JobChat): Observable<Message> {
+
+    //Check if we already have an observable for this chat..
+    let observable = this.chatPosts.get(chat.id);
     if (observable == null) {
 
       //Not yet subscribed to this chat - subscribe and save the observable.
@@ -73,7 +171,11 @@ export class ChatService implements OnDestroy {
       .pipe(takeUntil(this.destroyStompSubscriptions$));
 
       //Save observable for this chat.
-      this.observables.set(chat.id, observable);
+      this.chatPosts.set(chat.id, observable);
+
+      this.getChatReadStatusObservable(chat).subscribe(
+        (isRead) => this.storeChatReadStatus(chat, isRead)
+      )
     }
 
     return observable;
@@ -144,5 +246,36 @@ export class ChatService implements OnDestroy {
     }
 
     return config;
+  }
+
+  private getMarkedChatAsReadSubject(chat: JobChat): Subject<boolean> {
+    //Check if we already have one for this chat..
+    let markAsRead = this.markAsReads.get(chat.id);
+    if (markAsRead == null) {
+      markAsRead = new Subject<boolean>();
+      //Save observable for this chat.
+      this.markAsReads.set(chat.id, markAsRead);
+    }
+
+    return markAsRead;
+  }
+
+  markChatAsRead(chat: JobChat) {
+    this.storeChatReadStatus(chat, true);
+    const markChatAsRead$ = this.getMarkedChatAsReadSubject(chat);
+    markChatAsRead$.next(true);
+  }
+
+  isChatRead(chat: JobChat): boolean {
+    return this.chatReadStatuses.get(chat.id);
+  }
+
+  private storeChatReadStatus(chat: JobChat, isRead: boolean) {
+    this.chatReadStatuses.set(chat.id, isRead);
+  }
+
+  private completeMarkAsReads() {
+    this.markAsReads.forEach(subject => subject.complete());
+    this.markAsReads.clear();
   }
 }

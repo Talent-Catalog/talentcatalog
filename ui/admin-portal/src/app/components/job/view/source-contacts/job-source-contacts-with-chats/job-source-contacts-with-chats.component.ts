@@ -94,4 +94,11 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
     }
     this.chatHeader = "Private chat with " + name;
   }
+
+  onMarkChatAsRead() {
+    if (this.selectedSourcePartnerChat) {
+      this.chatService.markChatAsRead(this.selectedSourcePartnerChat);
+    }
+
+  }
 }

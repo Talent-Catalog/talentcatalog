@@ -17,6 +17,7 @@ export class ViewChatPostsComponent extends PostsComponentBase implements OnInit
   @Input() job: Job;
   @Input() jobChatType: JobChatType;
   @Input() sourcePartner: Partner;
+  @Input() readOnly: boolean = false;
 
   constructor(
     chatService: ChatService,
@@ -29,7 +30,13 @@ export class ViewChatPostsComponent extends PostsComponentBase implements OnInit
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.fetchJobChat();
+    if (changes.chat) {
+      if (this.chat) {
+        this.onNewChat(this.chat);
+      }
+    } else {
+      this.fetchJobChat();
+    }
   }
 
   private fetchJobChat() {

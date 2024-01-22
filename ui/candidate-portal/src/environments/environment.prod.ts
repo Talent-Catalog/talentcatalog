@@ -21,6 +21,7 @@
 export const environment = {
   production: true,
   host: document.location.host,
+  publishUrl: document.location.origin + '/published',
   chatApiUrl: '/api/admin',
   apiUrl: '/api/portal',
   systemApiUrl: '/api/system',
