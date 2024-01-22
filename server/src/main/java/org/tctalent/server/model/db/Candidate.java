@@ -569,6 +569,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
+    private YesNo monitoringEvaluationConsent;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
     private YesNoUnsure partnerRegistered;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -1816,6 +1820,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getMaritalStatusNotes() { return maritalStatusNotes; }
 
     public void setMaritalStatusNotes(@Nullable String maritalStatusNotes) { this.maritalStatusNotes = maritalStatusNotes; }
+
+    @Nullable
+    public YesNo getMonitoringEvaluationConsent() {return monitoringEvaluationConsent;}
+
+    public void setMonitoringEvaluationConsent(@Nullable YesNo monitoringEvaluationConsent) {
+        this.monitoringEvaluationConsent = monitoringEvaluationConsent;
+    }
 
     @Nullable
     public String getPartnerRef() {

@@ -200,6 +200,7 @@ export interface CandidateIntakeData {
   militaryEnd?: string;
   maritalStatus?: MaritalStatus;
   maritalStatusNotes?: string;
+  monitoringEvaluationConsent?: YesNo;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
