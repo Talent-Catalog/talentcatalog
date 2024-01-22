@@ -44,6 +44,7 @@ export class ViewJobUploadsComponent implements OnInit {
       centered: true,
       backdrop: 'static'
     })
+    inputLinkModal.componentInstance.title = "Add/edit link to document"
 
     let initialValue: UpdateLinkRequest = {}
     switch (docType) {
@@ -55,6 +56,11 @@ export class ViewJobUploadsComponent implements OnInit {
       case "joi":
         initialValue.url = this.job.submissionList?.fileJoiLink;
         initialValue.name = this.job.submissionList?.fileJoiName;
+        break;
+
+      case "interview":
+        initialValue.url = this.job.submissionList?.fileInterviewGuidanceLink;
+        initialValue.name = this.job.submissionList?.fileInterviewGuidanceName;
         break;
     }
     inputLinkModal.componentInstance.initialValue = initialValue;
@@ -121,6 +127,10 @@ export class ViewJobUploadsComponent implements OnInit {
     this.editJobLink("jd")
   }
 
+  editInterviewGuidanceLink() {
+    this.editJobLink("interview")
+  }
+
   editJOILink() {
     this.editJobLink("joi")
   }
@@ -139,5 +149,9 @@ export class ViewJobUploadsComponent implements OnInit {
 
   uploadJOI() {
     this.uploadJobDoc("joi")
+  }
+
+  uploadInterviewGuidance() {
+    this.uploadJobDoc("interview")
   }
 }

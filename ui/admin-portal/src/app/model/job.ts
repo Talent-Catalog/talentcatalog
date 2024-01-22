@@ -61,7 +61,7 @@ export function getJobExternalHref(router: Router, location: Location, job: Job)
   return getExternalHref(router, location, ['job', job.id]);
 }
 
-export type JobDocType = "jd" | "joi";
+export type JobDocType = "jd" | "joi" | "interview";
 
 /**
  * Note that the string values of this enum MUST match the actual stage names for job

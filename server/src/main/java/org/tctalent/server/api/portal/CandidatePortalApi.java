@@ -469,6 +469,16 @@ public class CandidatePortalApi {
         return new DtoBuilder()
             .add("id")
             .add("name")
+            .add("submissionList", savedListDto())
+            ;
+    }
+
+    private DtoBuilder savedListDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("fileInterviewGuidanceLink")
+            .add("fileInterviewGuidanceName")
             ;
     }
 

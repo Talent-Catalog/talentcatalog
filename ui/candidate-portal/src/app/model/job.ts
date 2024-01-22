@@ -14,12 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import {SavedList} from "./saved-list";
 import {Country} from "./country";
 import {User} from "./user";
 import {Employer, ShortPartner} from "./partner";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
-import {SavedList, ShortSavedList} from "./saved-list";
 import {SavedSearch} from "./saved-search";
 import {getExternalHref} from "../util/url";
 import {Opportunity, OpportunityProgressParams} from "./opportunity";
@@ -33,8 +33,8 @@ export function isJob(opp: Opportunity): opp is Job {
 export interface ShortJob {
   id: number,
   name: string;
+  submissionList?: SavedList;
   country?: Country;
-  submissionList?: ShortSavedList;
   recruiterPartner?: ShortPartner;
 }
 

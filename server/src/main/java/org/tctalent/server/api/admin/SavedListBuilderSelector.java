@@ -50,6 +50,8 @@ public class SavedListBuilderSelector {
                 .add("fileJdName")
                 .add("fileJoiLink")
                 .add("fileJoiName")
+                .add("fileInterviewGuidanceLink")
+                .add("fileInterviewGuidanceName")
                 .add("folderlink")
                 .add("folderjdlink")
                 .add("publishedDocLink")

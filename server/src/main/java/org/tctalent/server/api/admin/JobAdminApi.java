@@ -116,7 +116,7 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
-    @PutMapping("{id}/jdlink")
+    @PutMapping("{id}/jd-link")
     public @NotNull Map<String, Object> updateJdLink(
         @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
         throws InvalidRequestException, NoSuchObjectException {
@@ -124,11 +124,19 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
-    @PutMapping("{id}/joilink")
+    @PutMapping("{id}/joi-link")
     public @NotNull Map<String, Object> updateJoiLink(
         @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
         throws InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateJoiLink(id, updateLinkRequest);
+        return jobDto().build(job);
+    }
+
+    @PutMapping("{id}/interview-link")
+    public @NotNull Map<String, Object> updateInterviewGuidanceLink(
+        @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateInterviewGuidanceLink(id, updateLinkRequest);
         return jobDto().build(job);
     }
 
@@ -161,6 +169,14 @@ public class JobAdminApi implements
         @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
         throws InvalidRequestException, IOException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.uploadJoi(id, file);
+        return jobDto().build(job);
+    }
+
+    @PostMapping("{id}/upload/interview")
+    public @NotNull Map<String, Object> uploadInterviewGuidance(
+            @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
+            throws InvalidRequestException, IOException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.uploadInterviewGuidance(id, file);
         return jobDto().build(job);
     }
 

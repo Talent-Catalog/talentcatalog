@@ -45,6 +45,8 @@ export interface SavedList extends CandidateSource {
   fileJdName?: string;
   fileJoiLink?: string;
   fileJoiName?: string;
+  fileInterviewGuidanceLink?: string;
+  fileInterviewGuidanceName?: string;
   folderlink?: string;
   folderjdlink?: string;
   publishedDocLink?: string;
