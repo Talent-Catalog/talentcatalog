@@ -2045,5 +2045,8 @@ public class SystemAdminApi {
         this.targetPwd = targetPwd;
     }
 
-
+    @GetMapping("sf-update-live-candidates")
+    public void sfUpdateLiveCandidates() {
+        candidateService.syncLiveCandidatesToSf();
+    }
 }

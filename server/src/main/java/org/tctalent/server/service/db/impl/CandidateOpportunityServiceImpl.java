@@ -50,7 +50,6 @@ import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateOpportunitySpecification;
@@ -179,23 +178,10 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     public void createUpdateCandidateOpportunities(Collection<Candidate> candidates,
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
         throws SalesforceException, WebClientException {
-
         //Need ordered list so that can match with returned contacts.
         List<Candidate> orderedCandidates = new ArrayList<>(candidates);
 
-        //Update Salesforce contacts
-        List<Contact> contacts =
-            salesforceService.createOrUpdateContacts(orderedCandidates);
-
-        //Update the sfLink in all candidate records.
-        int nCandidates = orderedCandidates.size();
-        for (int i = 0; i < nCandidates; i++) {
-            Contact contact = contacts.get(i);
-            if (contact.getId() != null) {
-                Candidate candidate = orderedCandidates.get(i);
-                candidateService.updateCandidateSalesforceLink(candidate, contact.getUrl(salesforceConfig.getBaseLightningUrl()));
-            }
-        }
+        candidateService.upsertCandidatesToSf(orderedCandidates);
 
         //If we have a Salesforce job opportunity, we can also update associated candidate opps.
         if (sfJobOpp != null) {
