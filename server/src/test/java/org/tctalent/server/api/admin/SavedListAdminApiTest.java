@@ -65,7 +65,6 @@ class SavedListAdminApiTest extends ApiTestBase {
     private static final long SAVED_LIST_ID = 1L;
 
     private static final String BASE_PATH = "/api/admin/saved-list";
-    private static final String RESTRICTED_LIST_PATH = "/restricted";
     private static final String COPY_PATH = "/copy/{id}";
     private static final String SEARCH_PAGED_PATH = "/search-paged";
     private static final String SEARCH_PATH = "/search";
