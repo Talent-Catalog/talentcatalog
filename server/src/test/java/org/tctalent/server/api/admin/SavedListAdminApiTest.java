@@ -16,24 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,12 +32,31 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tctalent.server.request.list.ContentUpdateType;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SavedListAdminApi.class)
 @AutoConfigureMockMvc
@@ -249,21 +251,31 @@ class SavedListAdminApiTest extends ApiTestBase {
     @Test
     @DisplayName("copy saved list succeeds")
     void copySavedListSucceeds() throws Exception {
+        // Set up the request to save to my test savedList (id = 1). Not sure if mocking a full request is neccessary,
+        // but tried as part of trying to fix content type not set problem.
         CopySourceContentsRequest request = new CopySourceContentsRequest();
-        long sourceListId = 123L;
-        
-        SavedList sourceList = new SavedList();
-        sourceList.setId(sourceListId);
+        request.setSavedListId(0L);
+        request.setNewListName("test list");
+        request.setSourceListId(SAVED_LIST_ID);
+        request.setUpdateType(ContentUpdateType.add);
+
+        // Set up the source list which I am copying across to my test saved list.
+        SavedList targetList = new SavedList();
+        targetList.setId(11L);
+        targetList.setName("test list");
+
         
         given(savedListService
-            .get(sourceListId))
-            .willReturn(sourceList);
-        
-        given(candidateSavedListService
-            .copy(sourceList, request))
+            .get(SAVED_LIST_ID))
             .willReturn(savedList);
 
-        mockMvc.perform(put(BASE_PATH + COPY_PATH.replace("{id}", Long.toString(sourceListId)))
+        // todo this stub is returning null when debugging - can't figure out why.
+        //  Getting java.lang.AssertionError: Content type not set. Nothing is being returned in the response body.
+        given(candidateSavedListService
+            .copy(savedList, request))
+            .willReturn(targetList);
+
+        mockMvc.perform(put(BASE_PATH + COPY_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -275,8 +287,8 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.id", is(1)));
 
-        verify(savedListService).get(sourceListId);
-        verify(candidateSavedListService).copy(sourceList, request);
+        verify(savedListService).get(anyLong());
+        verify(candidateSavedListService).copy(savedList, request);
     }
 //
 //    @Test
