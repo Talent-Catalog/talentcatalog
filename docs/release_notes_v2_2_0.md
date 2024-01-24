@@ -68,10 +68,10 @@ be reported on with an appropriate status.
     <div class="card-body">
       <div class="card-title">Employer-ready Navigation</div>
       <div class="card-description">
-        The main menu and sub-menus have been restructured according to user feedback to make it
-easier for new and existing users to navigate the Talent Catalog. Clicking on a main menu item: Jobs, 
-Searches, Lists, or Stats will open all tabs related to that main menu item. So Jobs opens all things
-jobs related, Searches opens all things search related, and so on.
+        The TC main menu and sub-menus have been restructured in alignment with user feedback to make
+the TC easier for new and existing users to navigate. The main menu has been simplified to these items: 
+Jobs, Searches, Lists, and Stats; each of which opens to all related tabs. For example click on Jobs for all things
+jobs related, Searches for all things search related, and so on.
       </div>
     </div>
   </div>
