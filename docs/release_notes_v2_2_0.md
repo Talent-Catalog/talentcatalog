@@ -42,7 +42,7 @@ Check out the newest features and enhancements.
 
 ## General Improvements
 
-- Central and accessible home for interview guidance where key stakeholders can easily access it 
+- Central and accessible home for interview guidance from employers, where key stakeholders can easily access it 
 without having to dig through email, Slack threads, or Trengo conversations.
 - Support upload of written job offers from recruiters and employers directly through the TC
 candidate opportunity page so that candidates are able to see and consider their offers.
@@ -77,7 +77,7 @@ jobs related, Searches for all things search related, and so on.
   </div>
 
   <div class="card-no-border">
-    <img src="./assets/images/v220/Widened Color Palette.png" alt="Widened Color Palette" class="card-image">
+    <img src="./assets/images/v220/WidenedColorPalette.png" alt="Widened Color Palette" class="card-image">
     <div class="card-body">
       <div class="card-title">Widened Color Palette</div>
       <div class="card-description">
