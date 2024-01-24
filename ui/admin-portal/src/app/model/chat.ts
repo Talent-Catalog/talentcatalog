@@ -25,6 +25,11 @@ export interface JobChat {
   name?: string;
 }
 
+export interface JobChatUserInfo {
+  lastReadPostId?: number;
+  lastPostId?: number;
+}
+
 export interface ChatPost {
   content: string;
   createdBy: User;
