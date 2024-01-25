@@ -942,6 +942,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return s.toString();
     }
 
+    // At present, intakes are not an object but rather are informally constituted by fields in the candidate profile that are only filled when an intake is conducted;
+    // the 'Complete Intake' button — which intakers should click but don't have to — creates a candidate note that's used here to provide metadata; clearly this is an area for future improvement
     @Transient
     public String getIntaked() {
         String intaked = "-";
@@ -960,6 +962,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             }
         }
         return intaked;
+    }
+
+    @Transient
+    public String getIntakeDate() {
+        String intakeDate = "";
+        for (CandidateNote note : candidateNotes) {
+            if (note.getTitle().contains("Full Intake interview completed")) {
+                intakeDate = String.valueOf(note.getCreatedDate()).substring(0, 9);
+                break;
+            }
+        }
+        if (intakeDate.isEmpty()) {
+            for (CandidateNote note : candidateNotes) {
+                if (note.getTitle().contains("Mini Intake interview completed")) {
+                    intakeDate = String.valueOf(note.getCreatedDate()).substring(0, 9);
+                    break;
+                }
+            }
+        }
+        return intakeDate;
     }
 
     public String getTcLink() {

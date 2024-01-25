@@ -506,4 +506,19 @@ public interface CandidateService {
      * @param request This request contains the list of candidate ids selected from a list. These are the candidates that are to have their tasks resolved.
      */
     void resolveOutstandingTaskAssignments(ResolveTaskAssignmentsRequest request);
+
+    /**
+     * Syncs all live (status incomplete, pending, active) TC candidates to Salesforce
+     * Scheduled to happen each GMT nighttime
+     * Shedlock used to avoid duplicate method call
+     */
+    void syncLiveCandidatesToSf();
+
+    /**
+     * Upserts candidates to SF contacts and updates their TC profile SF links
+     * @param orderedCandidates - candidates must be ordered for final step of updating SF links to work
+     */
+    void upsertCandidatesToSf(List<Candidate> orderedCandidates);
+
+
 }

@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,18 +45,21 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -71,6 +75,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
+import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
@@ -200,6 +205,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     private static final Map<CandidateSubfolderType, String> candidateSubfolderNames;
     private static final String NOT_AUTHORIZED = "Hidden";
+
+    @Value("${environment}")
+    private String environment;
 
     static {
         candidateSubfolderNames = new HashMap<>();
@@ -2676,6 +2684,55 @@ public class CandidateServiceImpl implements CandidateService {
                     }
                 }
                 taskAssignmentRepository.save(ta);
+            }
+        }
+    }
+
+    @Override
+    @Scheduled(cron = "0 2 0 * * ?", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+    public void syncLiveCandidatesToSf()
+        throws SalesforceException, WebClientException {
+        // Live candidate sync only desirable from TC prod to SF prod due to sandbox object limit of 10,000
+        if (environment.equals(Environment.prod.name())) {
+            // Gather all live candidates
+            List<CandidateStatus> statuses = new ArrayList<>(
+                EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
+                    CandidateStatus.incomplete));
+            List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
+
+            // Split them into batches of 200 gathered in another list (to stay on the right side of SF REST API call record limit)
+            int batchSize = 200;
+            List<List<Candidate>> candidateBatches = new ArrayList<>();
+            for (int i = 0; i < candidates.size(); i += batchSize) {
+                candidateBatches.add(
+                    candidates.subList(i, Math.min(i + batchSize, candidates.size())));
+            }
+
+            // Iterate through batches to create/update candidate contact records
+            for (int i = 0; i < candidateBatches.size(); i += 1) {
+                //Need ordered list so that can match with returned contacts.
+                List<Candidate> orderedCandidates = new ArrayList<>(candidateBatches.get(i));
+                upsertCandidatesToSf(orderedCandidates);
+            }
+        }
+    }
+
+    @Override
+    public void upsertCandidatesToSf(List<Candidate> orderedCandidates)
+        throws SalesforceException, WebClientException {
+        // Update Salesforce contacts
+        List<Contact> contacts =
+            salesforceService.createOrUpdateContacts(orderedCandidates);
+
+        // Update the sfLink in all implicated TC candidate records
+        int nCandidates = orderedCandidates.size();
+        for (int i = 0; i < nCandidates; i++) {
+            Contact contact = contacts.get(i);
+            if (contact.getId() != null) {
+                Candidate candidate = orderedCandidates.get(i);
+                updateCandidateSalesforceLink(candidate,
+                    contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             }
         }
     }
