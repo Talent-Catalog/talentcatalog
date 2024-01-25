@@ -71,6 +71,7 @@ export abstract class PostsComponentBase {
     this.posts = [];
 
     if (this.chat) {
+      console.log('Subscribing for posts on chat ' + chat.id)
       //Subscribe for updates on new chat
       this.chatSubscription = this.chatService.watchChat(this.chat)
       .subscribe((message: Message) => {

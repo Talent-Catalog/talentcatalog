@@ -16,28 +16,38 @@
 
 package org.tctalent.server.api.chat;
 
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.api.admin.ITableApi;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.chat.CreateChatRequest;
 import org.tctalent.server.request.chat.SearchChatRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.service.db.JobChatUserService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is the api where new chats can be created and updated.
@@ -52,9 +62,12 @@ public class ChatAdminApi implements
     ITableApi<SearchChatRequest, CreateChatRequest, CreateChatRequest> {
 
     private final CandidateOpportunityService candidateOpportunityService;
+    private final ChatPostService chatPostService;
     private final JobChatService chatService;
+    private final JobChatUserService jobChatUserService;
     private final JobService jobService;
     private final PartnerService partnerService;
+    private final UserService userService;
 
     @Override
     @PostMapping
@@ -95,6 +108,41 @@ public class ChatAdminApi implements
             jobOpp, sourcePartner, candidateOpp);
         return chatDto().build(jobChat);
     }
+
+    /**
+     * Records that the logged in user has read up to a given post in the given chat.
+     * @param chatId Id of chat
+     * @param postId Id of post that user has read up to. If zero, the user is recorded as
+     *               having read all posts currently in the chat.
+     */
+    @PutMapping("{chatId}/post/{postId}/read")
+    public void markAsReadUpto(
+        @PathVariable("chatId") long chatId, @PathVariable("postId") long postId) {
+
+        User user = userService.getLoggedInUser();
+        if (user != null) {
+            JobChat chat = chatService.getJobChat(chatId);
+            ChatPost post;
+            if (postId == 0) {
+                //Assume that the user has read the whole chat
+                post = chatPostService.getLastChatPost(chatId);
+            } else {
+                post = chatPostService.getChatPost(postId);
+            }
+            jobChatUserService.markChatAsRead(chat, user, post);
+        }
+    }
+
+    @GetMapping("{chatId}/user/{userId}/get-chat-user-info")
+    public JobChatUserInfo getJobChatUserInfo(
+        @PathVariable("chatId") long chatId, @PathVariable("userId") long userId) {
+
+        JobChat chat = chatService.getJobChat(chatId);
+        User user = userService.getUser(userId);
+        JobChatUserInfo info = jobChatUserService.getJobChatUserInfo(chat, user);
+        return info;
+    }
+
 
     private DtoBuilder chatDto() {
         return new DtoBuilder()

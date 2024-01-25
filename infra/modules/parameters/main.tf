@@ -58,6 +58,12 @@ resource "aws_ssm_parameter" "email_user" {
   value = var.email_user
 }
 
+resource "aws_ssm_parameter" "environment" {
+  name  = "/${var.app}/${var.env}/ENVIRONMENT"
+  type  = "String"
+  value = var.environment
+}
+
 resource "aws_ssm_parameter" "drive_id" {
   name  = "/${var.app}/${var.env}/GOOGLE_DRIVE_CANDIDATEDATADRIVEID"
   type  = "SecureString"

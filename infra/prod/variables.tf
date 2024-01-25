@@ -98,6 +98,11 @@ variable "email_user" {
   description = "Email user"
 }
 
+variable "environment" {
+  type        = string
+  description = "Denotes running environment"
+}
+
 variable "drive_id" {
   type        = string
   description = "Google drive candidate drive ID"

@@ -16,19 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -50,7 +37,6 @@ import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateOpportunitySpecification;
@@ -70,6 +56,20 @@ import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
@@ -179,23 +179,10 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     public void createUpdateCandidateOpportunities(Collection<Candidate> candidates,
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
         throws SalesforceException, WebClientException {
-
         //Need ordered list so that can match with returned contacts.
         List<Candidate> orderedCandidates = new ArrayList<>(candidates);
 
-        //Update Salesforce contacts
-        List<Contact> contacts =
-            salesforceService.createOrUpdateContacts(orderedCandidates);
-
-        //Update the sfLink in all candidate records.
-        int nCandidates = orderedCandidates.size();
-        for (int i = 0; i < nCandidates; i++) {
-            Contact contact = contacts.get(i);
-            if (contact.getId() != null) {
-                Candidate candidate = orderedCandidates.get(i);
-                candidateService.updateCandidateSalesforceLink(candidate, contact.getUrl(salesforceConfig.getBaseLightningUrl()));
-            }
-        }
+        candidateService.upsertCandidatesToSf(orderedCandidates);
 
         //If we have a Salesforce job opportunity, we can also update associated candidate opps.
         if (sfJobOpp != null) {

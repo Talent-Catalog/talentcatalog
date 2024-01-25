@@ -16,15 +16,17 @@
 
 package org.tctalent.server.model.db;
 
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.annotations.Formula;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.api.admin.SavedSearchAdminApi;
+import org.tctalent.server.model.es.CandidateEs;
+import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.util.SalesforceHelper;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -40,16 +42,15 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import org.apache.commons.beanutils.NestedNullException;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.annotations.Formula;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
-import org.tctalent.server.api.admin.SavedSearchAdminApi;
-import org.tctalent.server.model.es.CandidateEs;
-import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.util.SalesforceHelper;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "candidate")
@@ -946,6 +947,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return s.toString();
     }
 
+    // At present, intakes are not an object but rather are informally constituted by fields in the candidate profile that are only filled when an intake is conducted;
+    // the 'Complete Intake' button — which intakers should click but don't have to — creates a candidate note that's used here to provide metadata; clearly this is an area for future improvement
     @Transient
     public String getIntaked() {
         String intaked = "-";
@@ -964,6 +967,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             }
         }
         return intaked;
+    }
+
+    @Transient
+    public String getIntakeDate() {
+        String intakeDate = "";
+        for (CandidateNote note : candidateNotes) {
+            if (note.getTitle().contains("Full Intake interview completed")) {
+                intakeDate = String.valueOf(note.getCreatedDate()).substring(0, 9);
+                break;
+            }
+        }
+        if (intakeDate.isEmpty()) {
+            for (CandidateNote note : candidateNotes) {
+                if (note.getTitle().contains("Mini Intake interview completed")) {
+                    intakeDate = String.valueOf(note.getCreatedDate()).substring(0, 9);
+                    break;
+                }
+            }
+        }
+        return intakeDate;
     }
 
     public String getTcLink() {

@@ -16,15 +16,17 @@
 
 package org.tctalent.server.service.db;
 
-import java.io.IOException;
-import java.util.List;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.chat.Post;
+
+import java.io.IOException;
+import java.util.List;
 
 public interface ChatPostService {
 
@@ -38,6 +40,14 @@ public interface ChatPostService {
      */
     @NonNull
     ChatPost getChatPost(long id) throws NoSuchObjectException;
+
+    /**
+     * Returns the last post in the given chat.
+     * @param chatId ID of chat
+     * @return Last post, null if there are no posts.
+     */
+    @Nullable
+    ChatPost getLastChatPost(long chatId);
 
     List<ChatPost> listChatPosts(long chatId);
 
