@@ -20,8 +20,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -132,5 +134,24 @@ class SavedSearchAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.occupationIds", is("8577,8484")));
 
     verify(savedSearchService).createSavedSearch(any(UpdateSavedSearchRequest.class));
+  }
+
+  @Test
+  @DisplayName("delete by id returns true")
+  void deleteByIdReturnsTrue() throws Exception {
+    long id = 123L;
+
+    given(savedSearchService
+            .deleteSavedSearch(anyLong()))
+            .willReturn(true);
+
+    mockMvc.perform(delete(BASE_PATH + "/" + id)
+                    .header("Authorization", "Bearer " + "jwt-token"))
+
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$", is(true)));
+
+    verify(savedSearchService).deleteSavedSearch(anyLong());
   }
 }
