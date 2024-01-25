@@ -16,11 +16,6 @@
 
 package org.tctalent.server.configuration;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +42,12 @@ import org.tctalent.server.security.LanguageFilter;
 import org.tctalent.server.security.TcAuthenticationProvider;
 import org.tctalent.server.security.TcPasswordEncoder;
 import org.tctalent.server.security.TcUserDetailsService;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Talent Catalog security configuration.
