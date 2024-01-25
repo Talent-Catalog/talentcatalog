@@ -1432,6 +1432,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             final boolean partnerContactConsent = candidate.getContactConsentPartners();
             setPartnerContactConsent(partnerContactConsent);
+
+            final String monitoringEvaluationConsent = String.valueOf(candidate.getMonitoringEvaluationConsent());
+            setMonitoringEvaluationConsent(monitoringEvaluationConsent);
         }
 
         private String getSpecificLanguageSpeakingLevel(List<CandidateLanguage> candidateLanguagesList, String languageToFind) {
@@ -1529,6 +1532,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public void setTcContactConsent(boolean tcContactConsent) { super.put("TC_Contact_Consent__c", tcContactConsent); }
 
         public void setPartnerContactConsent(boolean partnerContactConsent) { super.put("Partner_Contact_Consent__c", partnerContactConsent); }
+
+        public void setMonitoringEvaluationConsent(String monitoringEvaluationConsent) { super.put("Monitoring_Evaluation_Consent__c", monitoringEvaluationConsent); }
     }
 
     /**
