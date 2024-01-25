@@ -16,8 +16,6 @@
 
 package org.tctalent.server.api.chat;
 
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -47,6 +45,9 @@ import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is the api where new chats can be created and updated.

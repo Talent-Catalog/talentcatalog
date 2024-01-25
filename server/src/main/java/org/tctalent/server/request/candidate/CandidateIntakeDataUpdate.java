@@ -16,12 +16,11 @@
 
 package org.tctalent.server.request.candidate;
 
+import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.time.LocalDate;
-import java.util.List;
 import org.tctalent.server.model.db.AvailImmediateReason;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
@@ -153,6 +152,7 @@ public class CandidateIntakeDataUpdate {
 
     private MaritalStatus maritalStatus;
     private String maritalStatusNotes;
+    private YesNo monitoringEvaluationConsent;
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;

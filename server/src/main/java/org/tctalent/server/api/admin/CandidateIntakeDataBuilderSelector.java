@@ -16,9 +16,8 @@
 
 package org.tctalent.server.api.admin;
 
-import org.tctalent.server.util.dto.DtoBuilder;
-
 import javax.validation.constraints.NotNull;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -102,6 +101,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("maritalStatus")
                 .add("maritalStatusNotes")
+                .add("monitoringEvaluationConsent")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", educationLevelDto())
