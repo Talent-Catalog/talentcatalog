@@ -16,5 +16,28 @@ their own recruitment process.
         alt="Candidate Registration and Consents" class="card-image">
 </div>
 
+This update allows employers to create jobs without requiring access to Salesforce, see below. 
+Employers can also communicate directly regarding the job using the new Talent Catalog 
+<a href="./JobChats">Job Chats</a> feature.
+
 # Job Creation
 
+Employers using the Talent Catalog will not need direct access to Salesforce. In this update 
+employers can create jobs directly from the Talent Catalog. There is no need to manually create the 
+job opportunity in Salesforce. The process is automated so the employer need only enter the name
+of the job, for example "System tester", and simply press enter. In the background, the job 
+opportunity is automatically created in Salesforce using the standard opportunity name, together 
+with submission lists, document storage folders, and other administrative tasks.
+
+<div class="card-image-container">
+  <img src="./../assets/images/v220/EmployerAccessJobCreation.png" 
+        alt="Candidate Registration and Consents" class="card-image">
+</div>
+
+Once the job is created, the employer sees the job in the Talent Catalog the same as any other 
+admin user would see.
+
+<div class="card-image-container">
+  <img src="./../assets/images/v220/EmployerAccessShowJob.png" 
+        alt="Candidate Registration and Consents" class="card-image">
+</div>
