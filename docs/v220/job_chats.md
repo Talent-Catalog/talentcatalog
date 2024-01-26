@@ -70,4 +70,3 @@ support partner and of course the destination partner or employer.
   <img src="./../assets/images/v220/JobChatsCandidate.png" 
         alt="Candidate Registration and Consents" class="card-image">
 </div>
-
