@@ -4,6 +4,24 @@ sass:
   style: compressed
 ---
 
+With tha advent of direct employer access it means that not all users of the Talent Catalog will be
+on Slack. This has been one of the drivers behind the need for Job Chats to be placed directly 
+within Talent Catalog, allowing all users to communicate with each other. We've also acknowledged 
+that there are often multiple modes of communication, such as Slack, email, WhatsApp, Trengo; and 
+that sometimes there can be non-standard ways in which, for instance, Slack communication channels 
+are created. All of this can lead to a confusing communication landscape and communication fatigue
+for users.
+
+The intention behind Job Chats is to provide a unified, automated, centrally accessible and secure
+way for Talent Catalog users (employers, destinations, source partner, and candidates) to 
+communicate with each other regarding job opportunities and candidate relocation. The video demos 
+and sections below introduce Job Chats from the perspective of the different kinds of Talent Catalog
+users. 
+
+You can of course continue to use Slack and other modes of communication, as you currently use, but
+we hope in time you will see the value of using Job Chats directly in the Talent Catalog.
+
+
 # Employers and Destination Partners
 
 Destination partners, including employers such as Iress, can communicate about jobs and candidate 
