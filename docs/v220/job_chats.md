@@ -57,15 +57,14 @@ depending on the nature and need of the communication.
 
 Candidates have always been able to see their registration profile in the Talent Catalog candidate
 portal. They have tasks in the candidate portal, which are planned to be used more extensively in 
-the future to help scale through automation. With this update, under the new Jobs tab, candidates 
-are now able to send and receive job opportunity related communications directly from the Talent 
-Catalog.
+the future to help scale through automation. In this release, under the new Jobs tab, candidates 
+can send and receive job opportunity related communications directly from the Talent Catalog.
 
 Candidates can communicate one-to-one with their local source partner, for example TBB or CRS in 
 Indonesia. They can communicate with their local partner plus the employer (or destination partner) 
-when they are up to at least CV review stage. Lastly, upon accepting a job offer, they can 
-communicate with the relocating cohort of candidates, their local support partner and of course the
-destination partner or employer.
+when they reach a certain stage in the process - up to at least CV review stage. Lastly, upon 
+accepting a job offer, they can communicate with the relocating cohort of candidates, their local 
+support partner and of course the destination partner or employer.
 
 <div class="card-image-container-narrow">
   <img src="./../assets/images/v220/JobChatsCandidate.png" 
