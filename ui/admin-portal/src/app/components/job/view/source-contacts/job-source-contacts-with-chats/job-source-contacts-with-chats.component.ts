@@ -29,7 +29,7 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
       private authorizationService: AuthorizationService,
       private chatService: ChatService,
   ) {
-    super(7);
+    super(5);
   }
 
   ngOnInit(): void {
