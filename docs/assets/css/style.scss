@@ -35,6 +35,10 @@ body {
   margin-bottom: 50px;
 }
 
+.main-content :first-child {
+  margin-top: 12px;
+}
+
 .card-container {
   display: flex;
   flex-wrap: wrap;
