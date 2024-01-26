@@ -7,15 +7,15 @@ sass:
 # Employers and Destination Partners
 
 Destination partner, including employers such as Iress, can communicate about jobs and candidate 
-cases with other interested parties such as source partners and candidates themselves, directly 
+cases with other interested parties such as source partners and candidates, directly 
 from the Talent Catalog using Job Chats. This means that there is no need for an employer to use
 Slack. Job Chats provides a standard and unified way to communicate about jobs and candidate cases.
 
-Employers (and destination partners) can communicate directly with individual source partners 
-regarding a job opportunity. They may also communicate in group chats with all source partners at 
-once. For candidates and cohorts who have received and accepted job offers a special group chat 
-focussed on the candidates' successful relocation is also available to the employer and all parties, 
-including candidates, concerned with relocation.
+For example, employers (and destination partners) can communicate directly with individual source 
+partners regarding a job opportunity. They may also communicate in **group chats** with all source 
+partners at once. For candidates and cohorts who have received and accepted job offers a special 
+group chat focussed on relocation is also available for the employer and all parties, including 
+candidates, to communicate.
 
 <div class="card-image-container">
   <img src="./../assets/images/v220/JobChatsEmployer.png" 
