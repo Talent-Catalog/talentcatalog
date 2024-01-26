@@ -148,6 +148,7 @@ export class ViewJobSourceContactsComponent implements OnInit {
     if (this.selectable) {
       this.currentSourcePartner = partner;
       this.sourcePartnerSelection.emit(partner);
+
     }
   }
 
