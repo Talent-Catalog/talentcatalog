@@ -13,7 +13,7 @@ are created. All of this can lead to a confusing communication landscape and com
 for users.
 
 The intention behind Job Chats is to provide a unified, automated, centrally-accessible, and secure
-way for Talent Catalog users (employers, destinations, source partner, and candidates) to 
+way for Talent Catalog users (employers, destinations, source partners, and candidates) to 
 communicate with each other regarding job opportunities and candidate relocation. The <a href="">
 video demos</a> and sections below introduce Job Chats from the perspective of the different kinds 
 of Talent Catalog users. 
@@ -26,8 +26,7 @@ we hope in time you will see the value of using Job Chats directly in the Talent
 
 Destination partners, including employers such as Iress, can communicate about jobs and candidate 
 cases with other interested parties, such as source partners and candidates, directly from the 
-Talent Catalog using Job Chats. This means that there is no need for an employer to use Slack. Job 
-Chats provides a standard and unified way to communicate about jobs and candidate cases.
+Talent Catalog using Job Chats.
 
 For example, employers (and destination partners) can communicate directly with individual source 
 partners regarding a job opportunity. They may also communicate in **group chats** with all source 
