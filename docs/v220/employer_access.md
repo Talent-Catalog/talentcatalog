@@ -24,11 +24,9 @@ Employers may also communicate directly regarding the job using the new Talent C
 
 In this update employers can create jobs directly from the Talent Catalog. There is no need to 
 manually create the job opportunity in Salesforce. The process is automated so the employer need 
-only enter the name of the job, for example "System tester", and simply press enter. 
-
-In the background, the job opportunity is automatically created in Salesforce with the standard 
-opportunity name, together with submission lists, document storage folders, and other administrative 
-tasks.
+only enter the name of the job, for example "System tester", and simply press enter. In the 
+background, the job opportunity is automatically created in Salesforce with the standard opportunity 
+name, together with submission lists, document storage folders, and other administrative tasks.
 
 <div class="card-image-container">
   <img src="./../assets/images/v220/EmployerAccessJobCreation.png" 
