@@ -12,11 +12,11 @@ that sometimes there can be non-standard ways in which, for instance, Slack comm
 are created. All of this can lead to a confusing communication landscape and communication fatigue
 for users.
 
-The intention behind Job Chats is to provide a unified, automated, centrally accessible and secure
+The intention behind Job Chats is to provide a unified, automated, centrally-accessible, and secure
 way for Talent Catalog users (employers, destinations, source partner, and candidates) to 
-communicate with each other regarding job opportunities and candidate relocation. The video demos 
-and sections below introduce Job Chats from the perspective of the different kinds of Talent Catalog
-users. 
+communicate with each other regarding job opportunities and candidate relocation. The <a href="">
+video demos</a> and sections below introduce Job Chats from the perspective of the different kinds 
+of Talent Catalog users. 
 
 You can of course continue to use Slack and other modes of communication, as you currently use, but
 we hope in time you will see the value of using Job Chats directly in the Talent Catalog.
