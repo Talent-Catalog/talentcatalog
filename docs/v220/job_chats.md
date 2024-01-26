@@ -6,10 +6,10 @@ sass:
 
 # Employers and Destination Partners
 
-Destination partner, including employers such as Iress, can communicate about jobs and candidate 
-cases with other interested parties, such as source partners and candidates, directly 
-from the Talent Catalog using Job Chats. This means that there is no need for an employer to use
-Slack. Job Chats provides a standard and unified way to communicate about jobs and candidate cases.
+Destination partners, including employers such as Iress, can communicate about jobs and candidate 
+cases with other interested parties, such as source partners and candidates, directly from the 
+Talent Catalog using Job Chats. This means that there is no need for an employer to use Slack. Job 
+Chats provides a standard and unified way to communicate about jobs and candidate cases.
 
 For example, employers (and destination partners) can communicate directly with individual source 
 partners regarding a job opportunity. They may also communicate in **group chats** with all source 
@@ -26,9 +26,9 @@ candidates, to communicate.
 # Source Partner Job Chats
 
 Source partners like TBB, CRS, and others who are working individual candidate cases can send and 
-receive communications directly from the Talent Catalog regarding a specific candidate
-case. They can communicate one-to-one with the candidate, or with both the candidate and employer 
-together depending on the nature and need of the communication.
+receive communications directly from the Talent Catalog regarding a particular candidate case. They 
+may communicate one-to-one with the candidate, or with both the candidate and employer together 
+depending on the nature and need of the communication.
 
 <div class="card-image-container">
   <img src="./../assets/images/v220/JobChatsSource.png" 
@@ -41,7 +41,8 @@ together depending on the nature and need of the communication.
 Candidates have always been able to see their registration profile in the Talent Catalog candidate
 portal. They have tasks in the candidate portal, which are planned to be used more extensively in 
 the future to help scale through automation. With this update, under the new Jobs tab, candidates 
-are now also able to send and receive job related communications directly from the Talent Catalog.
+are now able to send and receive job opportunity related communications directly from the Talent 
+Catalog.
 
 <div class="card-image-container-narrow">
   <img src="./../assets/images/v220/JobChatsCandidate.png" 
