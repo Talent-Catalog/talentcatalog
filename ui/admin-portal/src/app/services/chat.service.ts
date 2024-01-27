@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {merge, Observable, of, Subject, Subscription} from "rxjs";
+import {merge, Observable, of, Subject} from "rxjs";
 import {CreateChatRequest, JobChat, JobChatUserInfo} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
@@ -65,24 +65,11 @@ export class ChatService implements OnDestroy {
    */
   private markAsReads: Map<number, Subject<boolean>> = new Map<number, Subject<boolean>>();
 
-  private authenticationServiceSubscription: Subscription = null;
-
   constructor(
     private authenticationService: AuthenticationService,
     private http: HttpClient,
     private rxStompService: RxStompService
-  ) {
-
-    //Subscribe to authentication service so that we can detect logouts and disconnect on a logout.
-    this.authenticationServiceSubscription = this.authenticationService.loggedInUser$.subscribe(
-      (user) => {
-        if (user == null) {
-          //Clean up chat on logout - ie when loggedInUser becomes null.
-          this.cleanUp();
-        }
-      }
-    )
-  }
+  ) {}
 
   ngOnDestroy(): void {
     //Note that there seems to be some doubt whether this is called when a service is destroyed.
@@ -94,11 +81,8 @@ export class ChatService implements OnDestroy {
     this.cleanUp();
   }
 
-  private cleanUp() {
+  cleanUp() {
     this.disconnect();
-    if (this.authenticationServiceSubscription) {
-      this.authenticationServiceSubscription.unsubscribe();
-    }
 
     this.completeMarkAsReads();
 
