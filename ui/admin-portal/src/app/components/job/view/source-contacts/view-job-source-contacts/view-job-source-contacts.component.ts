@@ -135,6 +135,18 @@ export class ViewJobSourceContactsComponent implements OnInit {
     return canEdit;
   }
 
+  isShowReadStatus(partner: Partner) {
+    let showStatus: boolean;
+
+    if (this.selectable) {
+      showStatus = partner._jobChat != null;
+    } else {
+      //Only showstatus if the partner is me
+      showStatus = this.loggedInUserPartnerId === partner.id;
+    }
+    return showStatus;
+  }
+
   sourceCountries(partner: Partner) {
     let ret = "";
     const s = sourceCountriesAsString(partner);
