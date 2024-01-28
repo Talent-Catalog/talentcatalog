@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {CreateChatRequest, JobChatType} from "../../../model/chat";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {Partner} from "../../../model/partner";
@@ -12,7 +12,8 @@ import {ChatPostService} from "../../../services/chat-post.service";
   templateUrl: './view-chat-posts.component.html',
   styleUrls: ['./view-chat-posts.component.scss']
 })
-export class ViewChatPostsComponent extends PostsComponentBase implements OnInit, OnChanges {
+export class ViewChatPostsComponent extends PostsComponentBase
+  implements OnInit, OnChanges, OnDestroy {
   @Input() candidateOpp: CandidateOpportunity;
   @Input() job: Job;
   @Input() jobChatType: JobChatType;
