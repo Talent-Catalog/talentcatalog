@@ -76,7 +76,7 @@ cleaned from the database.
       <div class="card-title">Employer-ready Navigation</div>
       <div class="card-description">
         We've reorganised the TC main menu and sub-menus to make it easier for new and existing 
-users to navigate. The main menu is now simply: Jobs, Searches, Lists, and Stats. Clicking on Jobs 
+users to navigate. The main menu is now simply: **Jobs**, **Searches**, **Lists**, and **Stats**. Clicking on Jobs 
 navigates to all things jobs related, Searches for all things search related, and so on.
       </div>
     </div>
@@ -87,10 +87,10 @@ navigates to all things jobs related, Searches for all things search related, an
     <div class="card-body">
       <div class="card-title">Widened Color Palette</div>
       <div class="card-description">
-        The new version supports greater colour contrast for easier visual navigation. This is an important 
-update that addresses reports from some users for whom the old bright blue and teal colour scheme did not contrast 
-well on the white background, leading to eye strain and difficulty to read during prolonged periods 
-of use by some users. We hope the new muted yet strongly contrasted colour scheme is an improvement.
+        With this release we bid farewell to the old bright blue and teal colour scheme, which did
+not contrast terribly well against the white background. In some cases leading to eye strain to 
+read over prolonged periods of use. We hope the new muted yet strongly contrasted colours comes as a
+significantly more accessible enhancement.
       </div>
     </div>
   </div>
