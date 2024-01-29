@@ -104,6 +104,7 @@ public class ChatPostServiceImpl implements ChatPostService {
             .add("firstName")
             .add("lastName")
             .add("partner", partnerDto())
+            .add("role")
             ;
     }
 
