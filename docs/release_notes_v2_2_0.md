@@ -49,8 +49,8 @@ or Trengo conversations.
 Catalog, allowing candidates to easily view and consider their offers within the platform.
 - Jobs related tabs now support filtering of jobs based on destination country, so users can 
 quickly narrow down listings according to preferred employment locations.
-- Modification to candidate intake to facilitate the collection of consents from candidates 
-- interested in participating in World Bank surveys.
+- Candidate intake now supports the collection of consents from candidates interested in 
+participating in World Bank surveys.
 
 ## Data Improvements
 
