@@ -30,6 +30,7 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
+
   /**
    * Returns a string containing info about the given user
    * @param user User
@@ -42,10 +43,19 @@ export class UserService {
       s = "";
     } else {
       const name = useUsername ? user.username : user.firstName + ' ' + user.lastName;
-      s = name + " (" + user.partner?.abbreviation
-        + (showRole ? " " + user.role : "") + ")";
+      let extras: string;
+      if (this.isCandidate(user)) {
+        extras = user.partner?.abbreviation + " candidate"
+      } else {
+        extras = user.partner?.abbreviation + (showRole ? " " + user.role : "")
+      }
+      s = name + " (" + extras + ")";
     }
     return s;
+  }
+
+  static isCandidate(user: User): boolean {
+    return user.role === "user";
   }
 
   getMyUser(): Observable<User> {
