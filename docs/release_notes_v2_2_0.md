@@ -42,12 +42,12 @@ Check out the newest features and enhancements.
 
 ## General Improvements
 
-- Interview guidance from employers can be saved directly in the Talent Catalog, giving 
+- Interview guidance from employers can now be saved directly in the Talent Catalog, giving 
 administrators quick and convenient access without the need to sift through emails, Slack threads, 
 or Trengo conversations.
-- Administrators can upload written job offers from recruiters and employers directly through the 
-Talent Catalog, allowing candidates to easily view and consider their offers within the platform.
-- TC Jobs related tabs now support filtering of jobs based on destination country, to quickly narrow
+- Administrators can upload written job offers from recruiters and employers directly to the Talent
+Catalog, allowing candidates to easily view and consider their offers within the platform.
+- Jobs related tabs now support filtering of jobs based on destination country, to quickly narrow
 down listings according to preferred employment locations.
 
 ## Data Improvements
