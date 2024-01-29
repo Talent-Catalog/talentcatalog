@@ -101,7 +101,7 @@ significantly more accessible enhancement.
 ## Other UI / UX Enhancements
 
 - The user role previously known as "Source Partner Admin" has been updated to "Partner Admin" for 
-clarity, as it was confusingly named for destination partner users.
+clarity, to avoid confusion for destination partner users.
 - For convenience, source partners may now view and update the progress of a selected case directly 
 from the right-hand case detail panel.
 - Candidate work experience input fields now handle rich-text formatting, contributing to the 
