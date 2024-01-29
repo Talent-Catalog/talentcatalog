@@ -47,19 +47,22 @@ administrators quick and convenient access without the need to sift through emai
 or Trengo conversations.
 - Administrators can upload written job offers from recruiters and employers directly to the Talent
 Catalog, allowing candidates to easily view and consider their offers within the platform.
-- Jobs related tabs now support filtering of jobs based on destination country, to quickly narrow
-down listings according to preferred employment locations.
+- Jobs related tabs now support filtering of jobs based on destination country, so users can 
+quickly narrow down listings according to preferred employment locations.
+- Modification to candidate intake to facilitate the collection of consents from candidates 
+- interested in participating in World Bank surveys.
 
 ## Data Improvements
 
-- Support intake of consents from candidates wishing to participate in World Bank surveys.
-- Provide additional stats reports for viewing registration data by source location.
-- Tidy up Salesforce opportunity records, adhering to the <a href="https://www.ilo.org/public/english/bureau/stat/isco/index.htm">
-International Standard Classification of Occupations (ISCO)</a>.
-- Remove unused TC data fields which have been renamed to new fields and are no longer required.
-- Support tagging of candidates that relocate through Canada’s no job offer pathway so that they can 
-be reported on with an appropriate status.
-- Optimise full candidate searches yielding about 15x faster database search performance.
+- Addition of new TC stats reports for viewing registration data based on the source location
+- Tidy up of Salesforce opportunity records to ensure occupation categories adhere with the 
+<a href="https://www.ilo.org/public/english/bureau/stat/isco/index.htm">International Standard 
+Classification of Occupations (ISCO)</a>.
+- Removal of unused TC data fields that have been replaced with new fields in previous releases and 
+are now obsolete.
+- Support for the tagging of candidates relocating through Canada’s no job offer pathway, so they 
+can be reported on with the appropriate status.
+- Optimisation of full candidate searches giving up to 15x faster database search performance.
 
 
 # UI / UX Enhancements
