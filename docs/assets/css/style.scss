@@ -35,10 +35,6 @@ body {
   margin-bottom: 50px;
 }
 
-.main-content :first-child {
-  margin-top: 12px;
-}
-
 .card-container {
   display: flex;
   flex-wrap: wrap;
@@ -106,6 +102,7 @@ body {
   max-width: 90%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  padding-top: 12px;
 }
 
 .card-image-container-narrow {
