@@ -42,11 +42,13 @@ Check out the newest features and enhancements.
 
 ## General Improvements
 
-- Central and accessible home for interview guidance from employers, where key stakeholders can easily access it 
-without having to dig through email, Slack threads, or Trengo conversations.
-- Support upload of written job offers from recruiters and employers directly through the TC
-candidate opportunity page so that candidates are able to see and consider their offers.
-- Add support for filtering jobs by destination country in TC Jobs related tabs.
+- Interview guidance from employers can be saved directly in the Talent Catalog, giving 
+administrators quick and convenient access without the need to sift through emails, Slack threads, 
+or Trengo conversations.
+- Administrators can upload written job offers from recruiters and employers directly through the 
+Talent Catalog, allowing candidates to easily view and consider their offers within the platform.
+- TC Jobs related tabs now support filtering of jobs based on destination country, to quickly narrow
+down listings according to preferred employment locations.
 
 ## Data Improvements
 
@@ -58,6 +60,7 @@ International Standard Classification of Occupations (ISCO)</a>.
 - Support tagging of candidates that relocate through Canada’s no job offer pathway so that they can 
 be reported on with an appropriate status.
 - Optimise full candidate searches yielding about 15x faster database search performance.
+
 
 # UI / UX Enhancements
 
