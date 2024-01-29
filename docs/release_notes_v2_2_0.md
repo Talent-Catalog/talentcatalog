@@ -75,9 +75,9 @@ cleaned from the database.
     <div class="card-body">
       <div class="card-title">Employer-ready Navigation</div>
       <div class="card-description">
-        The TC main menu and sub-menus have been restructured to make the TC easier for new and 
-existing users to navigate. The main menu has been simplified to: Jobs, Searches, Lists, and Stats.
-Click on Jobs for all things jobs related, Searches for all things search related, and so on.
+        We've reorganised the TC main menu and sub-menus to make it easier for new and existing 
+users to navigate. The main menu is now simply: Jobs, Searches, Lists, and Stats. Clicking on Jobs 
+navigates to all things jobs related, Searches for all things search related, and so on.
       </div>
     </div>
   </div>
