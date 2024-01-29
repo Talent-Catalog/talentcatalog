@@ -42,7 +42,7 @@ Check out the newest features and enhancements.
 
 ## General Improvements
 
-- Interview guidance from employers can now be saved directly in the Talent Catalog, giving 
+- Interview guidance from employers can now be maintained directly in the Talent Catalog, giving 
 administrators quick and convenient access without the need to sift through emails, Slack threads, 
 or Trengo conversations.
 - Administrators can upload written job offers from recruiters and employers directly to the Talent
@@ -51,18 +51,19 @@ Catalog, allowing candidates to easily view and consider their offers within the
 quickly narrow down listings according to preferred employment locations.
 - Candidate intake now supports the collection of consents from candidates interested in 
 participating in World Bank surveys.
+- Reports for viewing candidate registration data based on source locations are now available in TC
+stats.
 
 ## Data Improvements
 
-- New TC stats reports have been added for viewing registration data based on source locations.
 - Salesforce opportunity records have been tidied up so that occupation categories adhere with the 
 <a href="https://www.ilo.org/public/english/bureau/stat/isco/index.htm">International Standard 
 Classification of Occupations (ISCO)</a>.
 - Full candidate searches are now optimised giving up to 15x faster database search performance.
 - Candidates relocating through Canada’s no job offer pathway can now be tagged, so they can be 
 reported on with the appropriate status.
-- Obsolete TC data fields that have been replaced with new fields in previous releases have been 
-removed.
+- Obsolete TC data fields that were replaced with new fields in previous releases have now been 
+removed from the database.
 
 
 # UI / UX Enhancements
