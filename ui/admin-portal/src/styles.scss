@@ -91,7 +91,7 @@ highlighting.table-hover> tbody> tr:hover{
 
 //Current item - the one whose detailed data is displayed
 tr.current {
-  background-color: fade-out($accent2, 0.9)
+  background-color: fade-out($accent1, 0.7)
 }
 
 //Selected item(s)- item is one of the selected ones (those with checked selection checkbox)
