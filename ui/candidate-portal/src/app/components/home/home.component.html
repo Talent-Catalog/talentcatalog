@@ -38,7 +38,7 @@
       <!-- PENDING - prompt the user to review their profile -->
       <ng-container *ngSwitchCase="'pending'">
         <p>
-          {{ 'HOME.PENDING.EXPLANATION' | translate }}
+          {{ 'HOME.PENDING.EXPLANATION' | translate:{partner: getPartnerName()} }}
         </p>
 
         <div class="text-start">
@@ -49,7 +49,7 @@
       <!-- ACTIVE - prompt the user to review their profile -->
       <ng-container *ngSwitchCase="'active'">
         <p>
-          {{ 'HOME.ACTIVE.EXPLANATION' | translate }}
+          {{ 'HOME.ACTIVE.EXPLANATION' | translate:{partner: getPartnerName()} }}
         </p>
 
         <div class="text-start">
