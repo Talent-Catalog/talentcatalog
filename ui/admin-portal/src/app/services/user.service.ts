@@ -29,6 +29,25 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
+
+  /**
+   * Returns a string containing info about the given user
+   * @param user User
+   * @param useUsername True if username should be used instead of first and last name
+   * @param showRole True if the user's role should be returned
+   */
+  static userToString(user: User, useUsername: boolean, showRole: boolean): string {
+    let s: string;
+    if (user == null) {
+      s = "";
+    } else {
+      const name = useUsername ? user.username : user.firstName + ' ' + user.lastName;
+      s = name + " (" + user.partner?.abbreviation
+        + (showRole ? " " + user.role : "") + ")";
+    }
+    return s;
+  }
+
   search(request: SearchUserRequest): Observable<User[]> {
     return this.http.post<User[]>(`${this.apiUrl}/search`, request);
   }

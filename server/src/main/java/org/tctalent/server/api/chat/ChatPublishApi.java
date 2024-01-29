@@ -27,7 +27,6 @@ import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
-import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * This is where websocket connections are handled.
@@ -64,31 +63,7 @@ public class ChatPublishApi {
     public Map<String, Object> sendPost(Post post, @DestinationVariable Long chatId) {
         JobChat jobChat = jobChatService.getJobChat(chatId);
         ChatPost chatPost = chatPostService.createPost(post, jobChat);
-        return chatPostDto().build(chatPost);
-    }
-
-    private DtoBuilder chatPostDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("content")
-            .add("createdDate")
-            .add("createdBy", userDto())
-            .add("jobChat", jobChatDto())
-            .add("updatedDate")
-            .add("updatedBy", userDto())
-            ;
-    }
-    private DtoBuilder jobChatDto() {
-        return new DtoBuilder()
-            .add("id")
-            ;
-    }
-    private DtoBuilder userDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("firstName")
-            .add("lastName")
-            ;
+        return chatPostService.getChatPostDtoBuilder().build(chatPost);
     }
 
 }
