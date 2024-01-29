@@ -7,20 +7,20 @@ sass:
 # Candidate Registration
 
 Candidates registering with the Talent Catalog are now prompted to first create an account before
-proceeding with creating their candidate profile. They must provide an email address, which will be
-used as their username, together with creating a password.
+proceeding with creating their candidate profile. They must provide a valid email address, which 
+will subsequently become their username, and set a password.
 
 <div class="card-image-container">
-  <img src="./../assets/images/v220/CandidateRegistrationAndConsents.png" 
+  <img src="./../assets/images/v220/CandidateRegistrationAndConsentsWithHighlights.png" 
         alt="Candidate Registration and Consents" class="card-image">
 </div>
 
 # Candidate Consents
 
-Before the candidate is able to register, they must also explicitly consent to being contactable by
-their source partner organisation, for instance TBB. In such cases where for instance the candidate
-has not fully completed their registration, TBB will be able to contact them using their email 
-contact details to prompt them to complete their registration.
+Before candidates can complete their registration, they must explicitly consent to being contacted 
+by their source partner organization, such as TBB. In instances where candidates have not finished 
+their registration, their source partner may use their email address to contact them to prompt for 
+completion.
 
-An additional consent to be contactable by Talent Catalog partners may or may not be given at the 
-candidates preference and discretion. 
+Additionally, candidates may choose to provide consent to be contacted by Talent Catalog partners 
+at their discretion.
