@@ -35,7 +35,7 @@ Check out the newest features and enhancements.
   <a href="./v220/candidate_registration_and_consents" class="card">
     <img src="./assets/images/v220/CandidateRegistrationAndConsents.png" 
             alt="Improved Candidate Registration And Consents" class="card-image">
-    <div class="card-title">Candidate Account Creation And Consents</div>
+    <div class="card-title">Candidate Accounts And Consents</div>
   </a>
 
 </div>
