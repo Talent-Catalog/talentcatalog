@@ -35,7 +35,7 @@ export interface ShortJob {
   name: string;
   submissionList?: SavedList;
   country?: Country;
-  recruiterPartner?: ShortPartner;
+  jobCreator?: ShortPartner;
 }
 
 export interface Job extends Opportunity {
