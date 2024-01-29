@@ -4,7 +4,7 @@ sass:
   style: compressed
 ---
 
-With tha advent of direct employer access it means that not all users of the Talent Catalog will be
+With the advent of direct employer access it means that not all users of the Talent Catalog will be
 on Slack. This has been one of the drivers behind the need for Job Chats to be placed directly 
 within Talent Catalog, allowing all users to communicate with each other. We've also acknowledged 
 that there are often multiple modes of communication, such as Slack, email, WhatsApp, Trengo; and 
@@ -22,7 +22,7 @@ You can of course continue to use Slack and other modes of communication, as you
 we hope in time you will see the value of using Job Chats directly in the Talent Catalog.
 
 
-# Employers and Destination Partners
+# Employers and Other Destination Partners
 
 Destination partners, including employers such as Iress, can communicate about jobs and candidate 
 cases with other interested parties, such as source partners and candidates, directly from the 
@@ -65,6 +65,11 @@ Indonesia. They can communicate with their local partner plus the employer (or d
 when they reach a certain stage in the process - up to at least CV review stage. Lastly, upon 
 accepting a job offer, they can communicate with the relocating cohort of candidates, their local 
 support partner and of course the destination partner or employer.
+
+Note that Job chats have been designed to ensure that the source partner will always be a 
+participant in any candidate chats. Coming soon in the next update to Job Chats, candidates will be 
+able to select if they would optionally like to be notified about new chat posts by email.
+
 
 <div class="card-image-container-narrow">
   <img src="./../assets/images/v220/JobChatsCandidate.png" 
