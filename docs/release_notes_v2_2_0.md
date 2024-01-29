@@ -54,15 +54,15 @@ participating in World Bank surveys.
 
 ## Data Improvements
 
-- Addition of new TC stats reports for viewing registration data based on the source location
-- Tidy up of Salesforce opportunity records to ensure occupation categories adhere with the 
+- Addition of new TC stats reports for viewing registration data based on source locations.
+- Tidy up of Salesforce opportunity records so that occupation categories adhere with the 
 <a href="https://www.ilo.org/public/english/bureau/stat/isco/index.htm">International Standard 
 Classification of Occupations (ISCO)</a>.
-- Removal of unused TC data fields that have been replaced with new fields in previous releases and 
-are now obsolete.
-- Support for the tagging of candidates relocating through Canada’s no job offer pathway, so they 
-can be reported on with the appropriate status.
 - Optimisation of full candidate searches giving up to 15x faster database search performance.
+- Support for the tagging of candidates that relocate through Canada’s no job offer pathway, so they 
+can be reported on with the appropriate status.
+- Removal of unused TC data fields that have been replaced with new fields in previous releases and
+are now obsolete.
 
 
 # UI / UX Enhancements
