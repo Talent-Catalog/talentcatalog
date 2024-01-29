@@ -49,21 +49,21 @@ or Trengo conversations.
 Catalog, allowing candidates to easily view and consider their offers within the platform.
 - Jobs related tabs now support filtering of jobs based on destination country, so users can 
 quickly narrow down listings according to preferred employment locations.
-- Candidate intake now supports the collection of consents from candidates interested in 
+- Candidate intake will now support the collection of consents from candidates interested in 
 participating in World Bank surveys.
-- Reports for viewing candidate registration data based on source locations are now available in TC
-stats.
 
 ## Data Improvements
 
+- Reports for viewing candidate registration data based on source locations are now available in TC
+stats.
 - Salesforce opportunity records have been tidied up so that occupation categories adhere with the 
 <a href="https://www.ilo.org/public/english/bureau/stat/isco/index.htm">International Standard 
 Classification of Occupations (ISCO)</a>.
 - Full candidate searches are now optimised giving up to 15x faster database search performance.
-- Candidates relocating through Canada’s no job offer pathway can now be tagged, so they can be 
+- Candidates relocating through Canada’s no job offer pathway may now be tagged, so they can be 
 reported on with the appropriate status.
-- Obsolete TC data fields that were replaced with new fields in previous releases have now been 
-removed from the database.
+- Obsolete TC data fields that were replaced with new fields in previous releases have been 
+cleaned from the database.
 
 
 # UI / UX Enhancements
@@ -75,10 +75,9 @@ removed from the database.
     <div class="card-body">
       <div class="card-title">Employer-ready Navigation</div>
       <div class="card-description">
-        The TC main menu and sub-menus have been restructured in alignment with user feedback to make
-the TC easier for new and existing users to navigate. The main menu has been simplified to these items: 
-Jobs, Searches, Lists, and Stats; each of which opens to all related tabs. For example click on Jobs for all things
-jobs related, Searches for all things search related, and so on.
+        The TC main menu and sub-menus have been restructured to make the TC easier for new and 
+existing users to navigate. The main menu has been simplified to: Jobs, Searches, Lists, and Stats.
+Click on Jobs for all things jobs related, Searches for all things search related, and so on.
       </div>
     </div>
   </div>
