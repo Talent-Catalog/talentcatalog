@@ -90,8 +90,8 @@ search related, and so on.
       <div class="card-description">
         With this release we bid farewell to the old bright blue and teal colour scheme, which did
 not contrast terribly well against the white background. In some cases leading to eye strain over 
-prolonged periods of use. We hope the new muted yet strongly contrasted colours comes as a 
-significantly more accessible enhancement.
+prolonged periods of use. We hope the new muted yet strongly contrasted colours will be 
+significantly more accessible for all.
       </div>
     </div>
   </div>
