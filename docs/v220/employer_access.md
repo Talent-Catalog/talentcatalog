@@ -40,3 +40,18 @@ other admin user would see.
   <img src="./../assets/images/v220/EmployerAccessShowJob.png" 
         alt="Candidate Registration and Consents" class="card-image">
 </div>
+
+# New Employer Partners
+
+When a new employer has been approved for Talent Catalog access, System Admins can create the 
+employer as a TC partner by navigating to Settings | Partners | Add and filling out the Add New 
+Partner details:
+
+<div class="card-image-container-narrow">
+  <img src="./../assets/images/v220/CreateNewEmployerPartner.png" 
+        alt="Candidate Registration and Consents" class="card-image">
+</div>
+
+Admins should remember to select Job Creator and Employer Partner, adding the employer's salesforce 
+account link. Once the Employer Partner is created, new users can be created and assigned to the 
+new Partner in the usual way.
