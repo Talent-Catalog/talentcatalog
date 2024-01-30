@@ -150,11 +150,13 @@ now allows us to conduct routine system and database performance tests, for earl
 performance issues or bottlenecks. Forthcoming releases will build further on this.
 
 ## Code Refactoring
-- Server and client support for 2-way network conversations (with multicast to subscribers) via 
-websockets. Chat API endpoints will use websockets on the server + stomp API on the client (i.e. 
-admin-portal and candidate-portal)..
-- SourcePartnerAdmin role to be refactored to PartnerAdmin role - the former no longer makes sense for destination partner.
-- TC developers will use Google Code styles as the coding style standard for all contributors.
+- In this release we've implemented server and client support for two-way network conversations 
+using websockets, with multicast capabilities to subscribers. Chat API endpoints can use websockets 
+on the server side with Stomp API on the client side (admin-portal and candidate-portal).
+- The SourcePartnerAdmin role has been refactored to the PartnerAdmin role, as the former no longer 
+made sense in the context of destination partners.
+- To ensure consistency and readability of our codebase going forward, TC developers will adhere to 
+Google Code styles as the coding standard for all contributors.
 
 ## Continuous Integration & Deployment
 - Pushing changes to developer branches will trigger a build with a complete cycle of unit testing and performance testing - triggering failure alerts for early detection of bugs.
