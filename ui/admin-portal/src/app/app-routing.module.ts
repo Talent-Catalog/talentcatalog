@@ -197,7 +197,8 @@ const routes: Routes = [
     path: 'login',
     component: LoginComponent,
     data: {
-      hideHeader: true
+      hideHeader: true,
+      title: 'TC Login'
     }
   },
   {
