@@ -95,9 +95,9 @@
         </ng-select>
       </div>
 
-      <div class="mb-3">
-        <label class="form-label" for="jobCreator">Job Creator?</label>
-        <input type="checkbox" formControlName="jobCreator" id="jobCreator">
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="jobCreator" formControlName="jobCreator">
+        <label class="form-check-label" for="jobCreator">Job Creator?</label>
       </div>
 
       <!-- Approver if required — will be a TC admin user -->
@@ -147,14 +147,14 @@
         <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
       </div>
 
-      <div class="mb-3">
-        <label class="form-label" for="readOnly">Read Only?</label>
-        <input type="checkbox" formControlName="readOnly" id="readOnly">
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="readOnly" formControlName="readOnly">
+        <label class="form-check-label" for="readOnly">Read Only?</label>
       </div>
 
-      <div class="mb-3">
-        <label class="form-label" for="usingMfa">Authentication app?</label>
-        <input type="checkbox" formControlName="usingMfa" id="usingMfa">
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="usingMfa" formControlName="usingMfa">
+        <label class="form-check-label" for="usingMfa">Authentication app?</label>
       </div>
 
       <div class="modal-footer">
