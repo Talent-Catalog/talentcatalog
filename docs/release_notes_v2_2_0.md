@@ -166,19 +166,24 @@ detection and resolution of breaking code.
 process that is to be used for any and all out-of-band quick fixing of production issues.
 
 ## Cloud Enhancements
-- The Elasticsearch version is upgraded from the end-of-life v7.12 to v7.17.11. The elasticsearch index must be rebuilt following the previous release v2.1.0 and the old 7.12 clusters are to be safely decommissioned.
-- Move the Elasticsearch production cluster to the US for proximity to the TC cloud hosting, which is also resident in the US. 
-Having both services relatively co-located alleviates trans-atlantic network hops when performing elastic searches, thus improving network search performance.
-- Postgres version 11 reaches end of life on AWS in February. Upgrade to version 14 before this happens.
-- Upgraded to AWS provisioned storage. This is AWS's recommended data storage type for the Talent Catalog.
-- Upgraded to 4 Cpu RDS database to scale with peak system usage.
+- Elasticsearch's versions have been upgraded from the end-of-life v7.12 to v7.17.11. 
+- The elasticsearch index has been rebuilt and the old v7.12 clusters have been safely decommissioned.
+- The Elasticsearch production clusters have been migrated to the US for proximity to the TC cloud 
+hosting, which also resides in the US. Co-locating both services will alleviate unnecessary 
+transatlantic network hops when running elastic searches, with improved network search performance.
+- Postgres DB version 11 reaches end of life on AWS in February 2024, and has therefore been 
+upgraded to Postgres DB version 14.7 with this release.
+- Data storage has been upgraded to AWS provisioned storage, which is AWS's recommended data storage
+type for Talent Catalog production data.
+- Last but not least, we've upgraded to a 4 Cpu RDS database to allow the application to scale with
+peak system usage.
 
 
 
 ---
 
-Thank you for using Talent Catalog! Your feedback and support are invaluable to us. If you encounter any issues or have
-suggestions for improvement, please don't hesitate to [contact us](mailto:support@talentcatalog.net) or
+Thank you for using Talent Catalog! Your feedback and support are invaluable to us. If you encounter 
+any issues or have suggestions for improvement, please don't hesitate to [contact us](mailto:support@talentcatalog.net) or
 [open an issue on GitHub](https://github.com/Talent-Catalog/talentcatalog/issues).
 
 *[Access the latest version](https://tctalent.org/admin-portal/login)*
