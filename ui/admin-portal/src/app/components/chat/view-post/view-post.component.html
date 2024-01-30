@@ -1,9 +1,7 @@
 <div class="post">
   <p class="audit">
-   <strong> {{post?.createdBy.firstName}} {{post?.createdBy.lastName}}: </strong>
+   <strong> {{createdBy}}: </strong>
     <small>{{post?.createdDate | date: 'customDateTime'}}</small>
   </p>
   <p class="content" *ngIf="post?.content" [ngClass]="{'html':isHtml(post.content), 'text':!isHtml(post.content)}" [innerHtml]="post.content"></p>
 </div>
-
-

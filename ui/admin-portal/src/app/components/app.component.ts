@@ -21,6 +21,7 @@ import {filter, map} from "rxjs/operators";
 import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
 import {Subscription} from "rxjs";
+import {ChatService} from "../services/chat.service";
 
 @Component({
   selector: 'app-root',
@@ -35,6 +36,7 @@ export class AppComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private authenticationService: AuthenticationService,
+    private chatService: ChatService,
     private router: Router,
     private titleService: Title
   ) {
@@ -55,10 +57,15 @@ export class AppComponent implements OnInit {
     //Only show standard header if logged on (ie loggedInUser is not null)
     this.showHeader = user != null
 
-    //If logged out - show login screen
+    //If logged out...
     if (user == null) {
-      this.router.navigate(['login']);
+      this.onLogout();
     }
+  }
+
+  private onLogout() {
+    this.chatService.cleanUp();
+    this.router.navigate(['login']);
   }
 
   private subscribeForTitleChanges() {

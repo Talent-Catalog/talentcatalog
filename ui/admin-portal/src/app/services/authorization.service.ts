@@ -130,7 +130,7 @@ export class AuthorizationService {
       const loggedInUser = this.authenticationService.getLoggedInUser()
       //Must be logged in
       if (loggedInUser) {
-        ours = job.recruiterPartner?.id === loggedInUser.partner.id;
+        ours = job.jobCreator?.id === loggedInUser.partner.id;
       }
       return ours;
     */
@@ -168,7 +168,7 @@ export class AuthorizationService {
 
   /**
    * True if currently logged-in user works for the default source partner or a SourcePartner or
-   * RecruiterPartner.
+   * JobCreator.
    * @private
    */
   private commonSeniorPartnerAuth(): boolean {

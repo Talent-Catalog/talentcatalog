@@ -88,7 +88,9 @@ export class AuthenticationService implements OnDestroy {
   }
 
   logout() {
-    this.http.post(`${this.apiUrl}/logout`, null);
+    this.http.post(`${this.apiUrl}/logout`, null).subscribe({
+      next: () => {}
+    })
     this.localStorageService.remove('user');
     this.localStorageService.remove('access-token');
     localStorage.clear();

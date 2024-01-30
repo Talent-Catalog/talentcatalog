@@ -528,12 +528,13 @@ import {SearchHomeComponent} from './components/search/search-home/search-home.c
 import {JobHomeComponent} from './components/job/job-home/job-home.component';
 import {ListHomeComponent} from './components/list/list-home/list-home.component';
 import {QuillModule} from 'ngx-quill';
-import {
-  ChatReadStatusComponent
-} from './components/chat/chat-read-status/chat-read-status.component'
+import {ChatReadStatusComponent} from './components/chat/chat-read-status/chat-read-status.component'
 import {
   LanguageThresholdComponent
-} from './components/candidates/visa/visa-job-assessments/language-threshold/language-threshold.component'
+} from './components/candidates/visa/visa-job-assessments/language-threshold/language-threshold.component';
+import {
+  MonitoringEvaluationConsentComponent
+} from './components/candidates/intake/monitoring-evaluation-consent/monitoring-evaluation-consent.component'
 
 @NgModule({
   declarations: [
@@ -846,7 +847,8 @@ import {
     ListHomeComponent,
     ChatReadStatusComponent,
     ListHomeComponent,
-    LanguageThresholdComponent
+    LanguageThresholdComponent,
+    MonitoringEvaluationConsentComponent
   ],
   imports: [
     BrowserModule,

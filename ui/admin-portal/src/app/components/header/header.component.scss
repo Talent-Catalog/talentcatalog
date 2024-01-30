@@ -59,6 +59,8 @@ li.nav-item {
   margin-right: 20px;
 }
 
-.nav-item.active a {
-  color: $secondary;
+.nav-link.active {
+  background-color: $primary;
 }
+
+

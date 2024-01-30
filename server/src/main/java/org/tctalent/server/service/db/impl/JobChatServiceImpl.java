@@ -34,6 +34,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.JobChatRepository;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +62,13 @@ public class JobChatServiceImpl implements JobChatService {
         }
 
         return jobChatRepository.save(chat);
+    }
+
+    @Override
+    public DtoBuilder getJobChatDtoBuilder() {
+        return new DtoBuilder()
+            .add("id")
+            ;
     }
 
     @Override

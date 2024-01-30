@@ -7,7 +7,8 @@ import {map} from "rxjs/operators";
 /**
  * Component which takes an array of chats and sets the unreadIndicator to unread ('*") if
  * any of the chats is unread.
- * Otherwise it sets the unread indicator to blank.
+ * If all chats are read it sets the unread indicator to blank.
+ * If we don't know the status of one or more chats is sets the indicator to '?'.
  */
 @Component({
   selector: 'app-chat-read-status',
@@ -30,11 +31,27 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.chats && this.chats.length > 0) {
-      let allChatsRead =
-        this.chats.find(chat => !this.chatService.isChatRead(chat)) == null;
-      this.setIndicator(allChatsRead);
       this.subscribeForChatUpdates();
+      this.computeIndicatorFromStaticStatus();
+  }
+
+  computeIndicatorFromStaticStatus() {
+    if (this.chats == null) {
+      this.setIndicator(null);
+    } else {
+      //If any of the chats are don't know, then we don't now
+      if (this.chats && this.chats.length > 0) {
+        const dontKnow =
+          this.chats.find(chat => this.chatService.isChatRead(chat) == null) != null;
+        if (dontKnow) {
+          this.setIndicator(null);
+        } else {
+          //All read is true if none of them are false
+          let allChatsRead =
+            this.chats.find(chat => !this.chatService.isChatRead(chat)) == null;
+          this.setIndicator(allChatsRead);
+        }
+      }
     }
   }
 
@@ -46,18 +63,20 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
     if (this.chats) {
       this.unsubscribe();
       if (this.chats.length == 1) {
-        this.subscription = this.chatService.getChatReadStatusObservable(this.chats[0])
+        this.subscription = this.chatService.getChatIsRead$(this.chats[0])
         .subscribe(
           {
-            next: (chatIsRead) => this.setIndicator(chatIsRead),
+            next: (chatIsRead) => {
+              this.setIndicator(chatIsRead);
+            },
             error: (error) => this.unreadIndicator = '?'
           }
         )
       } else if (this.chats.length > 1) {
 
-        //Construct array of chat read statues from array of chats
+        //Construct array of chat read statuses from array of chats
         let chatReadStatuses$ = this.chats.map(
-          (chat) => this.chatService.getChatReadStatusObservable(chat));
+          (chat) => this.chatService.getChatIsRead$(chat));
 
         //Combine the latest values of all the statuses and return a single status which is true
         //only if all are true (ie none are false)
@@ -66,14 +85,20 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
           map(statuses =>  statuses.find(isRead => isRead == false) == null)
         );
         this.subscription = chatReadStatus$.subscribe(
-          (chatIsRead) => this.setIndicator(chatIsRead)
+          (chatIsRead) => {
+            this.setIndicator(chatIsRead);
+          }
         )
       }
     }
   }
 
   private setIndicator(chatIsRead: boolean) {
-    this.unreadIndicator = chatIsRead ? '' : '*';
+    if (chatIsRead == null) {
+      this.unreadIndicator = '?'
+    } else {
+      this.unreadIndicator = chatIsRead ? '' : '*';
+    }
   }
 
   private unsubscribe() {
