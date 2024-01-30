@@ -100,22 +100,21 @@ significantly more accessible for all.
 
 ## Other UI / UX Enhancements
 
-- The user role previously known as "Source Partner Admin" has been updated to "Partner Admin" for 
-clarity, to avoid naming confusion for destination partner users.
+- The user role previously known as "Source Partner Admin" has been updated to "Partner Admin", 
+- avoiding any naming confusion for destination partner users.
 - For convenience, source partners may now view and update the progress of a selected case directly 
 from the right-hand case detail panel.
-- Candidate work experience input fields now handle rich-text formatting, contributing to the 
-generation of more visually appealing and well-formatted Talent Catalog CVs.
+- Candidate work experience input fields accept rich-text formatting, which contributes to the 
+generation of more visually appealing and well-formatted Talent Catalog CVs downstream.
 
 
 # Security Fixes
 
-- Update Cross-Origin Request Sharing (CORS) Urls - CORS is a security feature that controls how web 
-pages in one domain can request and interact with resources from another domain. It allows or 
-restricts web applications to make requests for resources from a different origin. This release 
-tightens permitted CORS Urls.
-- TC login security has been standardised on multi-factor authentication (MFA) and will therefore 
-no longer require Recaptcha, which has thus been retired from the web portals
+- Updated Cross-Origin Request Sharing (CORS) URL handling: CORS, a security feature governing web
+page interactions across different domains, has been updated in this release. The update 
+tightens the permitted CORS URLs.
+- TC login security has been standardised on Multi-factor authentication (MFA). As a result, the
+need for Recaptcha has been eliminated and retired from the web portals.
 
 
 # Bug Fixes
