@@ -84,13 +84,13 @@ search related, and so on.
   </div>
 
   <div class="card-no-border">
-    <img src="./assets/images/v220/WidenedColorPalette.png" alt="Widened Color Palette" class="card-image">
+    <img src="./assets/images/v220/WidenedColourPalette.png" alt="Widened Colour Palette" class="card-image">
     <div class="card-body">
-      <div class="card-title">Widened Color Palette</div>
+      <div class="card-title">Widened Colour Palette</div>
       <div class="card-description">
         With this release we bid farewell to the old bright blue and teal colour scheme, which did
-not contrast terribly well against the white background. In some cases leading to eye strain to 
-read over prolonged periods of use. We hope the new muted yet strongly contrasted colours comes as a
+not contrast terribly well against the white background. In some cases leading to eye strain over 
+prolonged periods of use. We hope the new muted yet strongly contrasted colours comes as a 
 significantly more accessible enhancement.
       </div>
     </div>
