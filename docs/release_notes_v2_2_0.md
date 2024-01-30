@@ -143,24 +143,27 @@ search, are now resolved.
 ## Test Coverage
 
 - This release expands our unit test coverage by ~30% across various components, including 
-JobAdminApi, PartnerAdminApi, UserAdminApi, CandidateStatAdminApi, and more. Continued investment in
-test coverage, tends to increase code quality and system robustness.
-- The introduction of Gatling/Scala performance testing harnesses to our build lifecycle within TC, 
-now allows us to conduct routine system and database performance tests, for early detection of any 
+JobAdminApi, PartnerAdminApi, UserAdminApi, CandidateStatAdminApi, and more, with incremental 
+effects on code quality and system robustness.
+- The introduction of Gatling/Scala performance testing harnesses to the TC build lifecycle, will 
+now execute routine system and database performance tests, for the early detection of any 
 performance issues or bottlenecks. Forthcoming releases will build further on this.
 
 ## Code Refactoring
 - In this release we've implemented server and client support for two-way network conversations 
 using websockets, with multicast capabilities to subscribers. Chat API endpoints can use websockets 
-on the server side with Stomp API on the client side (admin-portal and candidate-portal).
+on the server side with Stomp API integrated on the client side (admin-portal and candidate-portal).
 - The SourcePartnerAdmin role has been refactored to the PartnerAdmin role, as the former no longer 
 made sense in the context of destination partners.
 - To ensure consistency and readability of our codebase going forward, TC developers will adhere to 
 Google Code styles as the coding standard for all contributors.
 
 ## Continuous Integration & Deployment
-- Pushing changes to developer branches will trigger a build with a complete cycle of unit testing and performance testing - triggering failure alerts for early detection of bugs.
-- Agree and document a hot-fix branching process to enable quick fixes of production issues without deviating the staging branch.
+- Pushing changes to developer branches will now trigger a full build and a complete cycle of unit 
+testing and performance testing - failure alerts will be notified to contributors for the early 
+detection and resolution of breaking code.
+- We've documented our agreed [hot-fix branching](https://github.com/Talent-Catalog/talentcatalog/wiki/Release#hotfix-branches)
+process that is to be used for any and all out-of-band quick fixing of production issues.
 
 ## Cloud Enhancements
 - The Elasticsearch version is upgraded from the end-of-life v7.12 to v7.17.11. The elasticsearch index must be rebuilt following the previous release v2.1.0 and the old 7.12 clusters are to be safely decommissioned.
