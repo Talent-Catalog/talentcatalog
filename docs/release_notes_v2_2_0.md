@@ -27,7 +27,7 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <a href="./v220/candidate_data_in_salesforce" class="card">
-    <img src="./assets/images/v220/CandidateDataInSalesforce.png" 
+    <img src="./assets/images/v220/CandidateRecord.png" 
             alt="Candidate Data in Salesforce" class="card-image">
     <div class="card-title">Nightly Candidate Data Sync</div>
   </a>
