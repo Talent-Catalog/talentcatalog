@@ -20,6 +20,9 @@ This update allows employers to create jobs without requiring access to Salesfor
 Employers may also communicate directly regarding the job using the new Talent Catalog 
 <a href="./job_chats">Job Chats</a> feature.
 
+Check out John's [video demo](https://drive.google.com/file/d/1jtU0bf11nrm2WTsvTivfgx-g3zqgOdb7/view)
+for a quick introduction to Employer Access. 
+
 # Job Creation
 
 In this update employers can create jobs directly from the Talent Catalog. There is no need to 

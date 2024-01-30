@@ -14,9 +14,9 @@ for users.
 
 The intention behind Job Chats is to provide a unified, automated, centrally-accessible, and secure
 way for Talent Catalog users (employers, destinations, source partners, and candidates) to 
-communicate with each other regarding job opportunities and candidate relocation. The <a href="">
-video demos</a> and sections below introduce Job Chats from the perspective of the different kinds 
-of Talent Catalog users. 
+communicate with each other regarding job opportunities and candidate relocation. The sections 
+and video demos below introduce Job Chats from the perspective of the different kinds of Talent 
+Catalog users. 
 
 You can of course continue to use Slack and other modes of communication, as you currently use, but
 we hope in time you will see the value of using Job Chats directly in the Talent Catalog.
@@ -39,6 +39,8 @@ candidates, to communicate.
         alt="Candidate Registration and Consents" class="card-image">
 </div>
 
+Check out John's [video demo](https://drive.google.com/file/d/1sTVl_ZpytKZZOeM-WDxfbd8VSKRLRHnZ/view) 
+introducing Job Chats for destination partners.
 
 # Source Partner Job Chats
 
@@ -52,6 +54,8 @@ depending on the nature and need of the communication.
         alt="Candidate Registration and Consents" class="card-image">
 </div>
 
+Take a look at John's [video demo](https://drive.google.com/file/d/1_vZbVJral4vyTfnTjSNZ40weHtXZyz7Y/view) 
+introducing Job Chats from the source partner's perspective.
 
 # Candidate Job Chats
 
@@ -70,8 +74,11 @@ Note that Job chats have been designed to ensure that the source partner will al
 participant in any candidate chats. Coming soon in the next update to Job Chats, candidates will be 
 able to select if they would optionally like to be notified about new chat posts by email.
 
-
 <div class="card-image-container-narrow">
   <img src="./../assets/images/v220/JobChatsCandidate.png" 
         alt="Candidate Registration and Consents" class="card-image">
 </div>
+
+This [video demo](https://drive.google.com/file/d/1mJnevOzXKw4LUh3Jwmakt9PH3ArQ0Rvt/view) from John
+introduces Job Chats from the perspective of a candidate.
+
