@@ -119,14 +119,23 @@ need for Recaptcha has been eliminated and retired from the web portals.
 
 # Bug Fixes
 
-- SF opportunities are incorrectly updating the country to “USA”. Our standard country name is “United States”. Fix the underlying issue causing this and fix the incorrect data entries.
-- There is an issue where shareable attachments are sometimes not displaying - fix this.
-- Description is a required field when creating a job experience - add consistent validation for this field.
-- Watched searches built on other watched searches are not working - fix this. (We expect that employers will benefit from using these kinds of searches for daily alerts on potential candidates).
-- Scheduled tasks are currently fired multiple times - once for each TC service in the AWS cloud - fix this. Only one instance of a task should fire regardless of how many services are running.
-- Published fields cannot be removed by dragging them away from the “select fields to publish” modal - fix this.
-- Unreachable candidate statuses are incorrectly reporting as “incomplete” registrations in the candidate portal - correct this.
-- There is a reported issue with some search results not matching with the stats totals for that search - investigate and fix this.
+- Shareable attachments were intermittently not displaying as expected, now resolved.
+- Watched searches built on other watched searches were not functioning as expected. We anticipate
+that employers partners will benefit from using these kinds of searches for daily email alerts on 
+potential candidates - now resolved.
+- An issue where opportunities in Salesforce were incorrectly updating the country to "USA" instead
+of our standard country name, "United States," is resolved.
+- "Description," a required field when creating a job experience, is now consistently validated
+to ensure it is populated.
+- Scheduled tasks were firing multiple times in the AWS cloud services, whereas only one instance 
+of a task should fire regardless of how many services are deployed. This is now resolved with the
+introduction of Shedlock.
+- An issue where published fields could not be removed by dragging them away from the "select fields
+to publish" modal, is resolved.
+- "Unreachable" candidate statuses were incorrectly reporting as "incomplete" registrations in the 
+candidate portal, now resolved.
+- User reports of discrepancies where some search results did not match the total stats for that 
+search, are now resolved.
 
 
 # Developer Notes
