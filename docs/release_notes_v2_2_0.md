@@ -142,11 +142,12 @@ search, are now resolved.
 
 ## Test Coverage
 
-- Expanded unit test coverage by ~30% across various components, including JobAdminApi, PartnerAdminApi, UserAdminApi, CandidateStatAdminApi, 
-and more, ensuring more robust test coverage and code quality.
-- Implemented Gatling/Scala performance testing harnesses to be able to routinely run system and 
-database performance tests in the TC build lifecycle, for early alerting of performance issues and 
-bottlenecks. Forthcoming releases will build further on this.
+- This release expands our unit test coverage by ~30% across various components, including 
+JobAdminApi, PartnerAdminApi, UserAdminApi, CandidateStatAdminApi, and more. Continued investment in
+test coverage, tends to increase code quality and system robustness.
+- The introduction of Gatling/Scala performance testing harnesses to our build lifecycle within TC, 
+now allows us to conduct routine system and database performance tests, for early detection of any 
+performance issues or bottlenecks. Forthcoming releases will build further on this.
 
 ## Code Refactoring
 - Server and client support for 2-way network conversations (with multicast to subscribers) via 
