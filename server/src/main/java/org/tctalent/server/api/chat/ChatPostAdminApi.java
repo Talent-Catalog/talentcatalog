@@ -36,7 +36,6 @@ import org.tctalent.server.model.db.UrlDto;
 import org.tctalent.server.request.chat.SearchChatPostRequest;
 import org.tctalent.server.request.chat.UpdateChatPostRequest;
 import org.tctalent.server.service.db.ChatPostService;
-import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/admin/chat-post")
@@ -51,7 +50,7 @@ public class ChatPostAdminApi implements
     @GetMapping("{id}/list")
     public List<Map<String, Object>> list(long chatId) {
         List<ChatPost> posts = chatPostService.listChatPosts(chatId);
-        return postDto().buildList(posts);
+        return chatPostService.getChatPostDtoBuilder().buildList(posts);
     }
 
     @PostMapping("{id}/upload")
@@ -62,22 +61,4 @@ public class ChatPostAdminApi implements
         UrlDto urlDto = new UrlDto(fileUrl);
         return urlDto;
     }
-
-    private DtoBuilder postDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("content")
-            .add("createdDate")
-            .add("createdBy", userDto())
-            ;
-    }
-
-    private DtoBuilder userDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("firstName")
-            .add("lastName")
-            ;
-    }
-
 }

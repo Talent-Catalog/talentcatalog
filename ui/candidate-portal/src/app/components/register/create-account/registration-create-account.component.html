@@ -55,7 +55,7 @@
     <div class="mb-3 form-check">
       <input class="form-check-input" type="checkbox" id="contactConsentRegistration" [value]="false" [formControlName]="'contactConsentRegistration'">
       <label class="form-check-label" for="contactConsentRegistration">
-        {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTREGISTRATION' | translate }}
+        {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTREGISTRATION' | translate:{partner: getPartnerName()}  }}
         <sup>*</sup>
       </label>
       <app-form-control-error [control]="registrationForm.controls.contactConsentRegistration"></app-form-control-error>

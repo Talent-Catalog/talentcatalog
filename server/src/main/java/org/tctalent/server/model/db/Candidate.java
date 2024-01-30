@@ -16,15 +16,17 @@
 
 package org.tctalent.server.model.db;
 
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.annotations.Formula;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.api.admin.SavedSearchAdminApi;
+import org.tctalent.server.model.es.CandidateEs;
+import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.util.SalesforceHelper;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -40,16 +42,15 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import org.apache.commons.beanutils.NestedNullException;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.annotations.Formula;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
-import org.tctalent.server.api.admin.SavedSearchAdminApi;
-import org.tctalent.server.model.es.CandidateEs;
-import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.util.SalesforceHelper;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "candidate")
@@ -566,6 +567,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private String maritalStatusNotes;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo monitoringEvaluationConsent;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -1838,6 +1843,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getMaritalStatusNotes() { return maritalStatusNotes; }
 
     public void setMaritalStatusNotes(@Nullable String maritalStatusNotes) { this.maritalStatusNotes = maritalStatusNotes; }
+
+    @Nullable
+    public YesNo getMonitoringEvaluationConsent() {return monitoringEvaluationConsent;}
+
+    public void setMonitoringEvaluationConsent(@Nullable YesNo monitoringEvaluationConsent) {
+        this.monitoringEvaluationConsent = monitoringEvaluationConsent;
+    }
 
     @Nullable
     public String getPartnerRef() {

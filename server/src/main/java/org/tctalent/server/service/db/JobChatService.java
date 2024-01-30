@@ -27,6 +27,7 @@ import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface JobChatService {
 
@@ -44,6 +45,12 @@ public interface JobChatService {
     @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
         @Nullable PartnerImpl sourcePartner, @Nullable CandidateOpportunity candidateOpp)
             throws EntityExistsException;
+
+    /**
+     * Return a DtoBuilder for JobChats
+     * @return DtoBuilder that builds a DTO object
+     */
+    DtoBuilder getJobChatDtoBuilder();
 
     /**
      * Finds a job chat matching the given type and paramteres, creating one if needed.

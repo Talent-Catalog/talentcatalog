@@ -20,6 +20,7 @@ import {Candidate, CandidateStatus} from "../../model/candidate";
 import {User} from "../../model/user";
 import {LanguageService} from "../../services/language.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../model/survey-type";
+import {BrandingService} from "../../services/branding.service";
 
 @Component({
   selector: 'app-home',
@@ -34,9 +35,11 @@ export class HomeComponent implements OnInit {
   candidate: Candidate;
   user: User;
   lang: string;
+  partnerName: string;
 
   constructor(private candidateService: CandidateService,
-              private languageService: LanguageService) {
+              private languageService: LanguageService,
+              private brandingService: BrandingService) {
   }
 
   ngOnInit() {
@@ -69,6 +72,8 @@ export class HomeComponent implements OnInit {
       }
     );
 
+    this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
+
   }
 
   /**
@@ -85,6 +90,10 @@ export class HomeComponent implements OnInit {
       }
     }
     return name;
+  }
+
+  getPartnerName(): string {
+    return this.partnerName;
   }
 }
 

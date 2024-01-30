@@ -1,6 +1,7 @@
 import {Component, HostListener, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {isHtml} from 'src/app/util/string';
 import {ChatPost} from "../../../model/chat";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-view-post',
@@ -22,7 +23,6 @@ export class ViewPostComponent implements OnInit {
   }
 
   @Input() post: ChatPost;
-  @Input() fromMe: boolean;
 
   constructor() { }
 
@@ -31,6 +31,11 @@ export class ViewPostComponent implements OnInit {
 
   get isHtml() {
     return isHtml;
+  }
+
+  get createdBy(): string {
+    let user = this.post.createdBy;
+    return UserService.userToString(user, false, false);
   }
 
 }
