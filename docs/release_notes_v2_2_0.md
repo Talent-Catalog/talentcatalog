@@ -167,15 +167,16 @@ process that is to be used for any and all out-of-band quick fixing of productio
 
 ## Cloud Enhancements
 - Elasticsearch's versions have been upgraded from the end-of-life v7.12 to v7.17.11. 
-- The elasticsearch index has been rebuilt and the old v7.12 clusters have been safely decommissioned.
-- The Elasticsearch production clusters have been migrated to the US for proximity to the TC cloud 
+- The elasticsearch index has been rebuilt and the old v7.12 clusters have been safely 
+decommissioned.
+- Elasticsearch production clusters have been migrated to the US for proximity to the TC cloud 
 hosting, which also resides in the US. Co-locating both services will alleviate unnecessary 
 transatlantic network hops when running elastic searches, with improved network search performance.
 - Postgres DB version 11 reaches end of life on AWS in February 2024, and has therefore been 
 upgraded to Postgres DB version 14.7 with this release.
 - Data storage has been upgraded to AWS provisioned storage, which is AWS's recommended data storage
 type for Talent Catalog production data.
-- Last but not least, we've upgraded to a 4 Cpu RDS database to allow the application to scale with
+- Last but not least, we've upgraded to a 4 CPU RDS database to allow the application to scale with
 peak system usage.
 
 
