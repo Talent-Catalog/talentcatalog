@@ -73,7 +73,7 @@ cleaned from the database.
   <div class="card-no-border">
     <img src="./assets/images/v220/EmployerReadyNavigation.png" alt="Employer-ready Navigation" class="card-image">
     <div class="card-body">
-      <div class="card-title">Employer-ready Navigation</div>
+      <div class="card-title">Employer-Ready Navigation</div>
       <div class="card-description">
         We've reorganised the TC main menu and sub-menus to make it easier for new and existing 
 users to navigate. The main menu is now simply: <em>Jobs</em>, <em>Searches</em>, <em>Lists</em>, 
