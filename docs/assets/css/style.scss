@@ -68,6 +68,10 @@ body {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
 }
 
+.card-description:hover {
+  text-underline: none;
+}
+
 .card-no-border {
   width: calc(50% - 16px);
   box-sizing: border-box;

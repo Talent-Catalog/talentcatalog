@@ -17,16 +17,23 @@ Check out the newest features and enhancements.
     <div class="card-body">
       <div class="card-title">Employer Access</div>
       <div class="card-description">
-        This update allows employers to be able to directly access the Talent Catalog. Any employer
-can now request a login to the Talent Catalog, where they can create and submit their own jobs, do
-their own searches for candidates, and manage their own recruitment process.
+        Employers can now directly access the Talent Catalog. Any employer can request a login to 
+the Talent Catalog, where they can create and submit their own jobs, do their own searches for 
+candidates, and manage their own recruitment process.
       </div>
     </div>
  </a>
 
   <a href="./v220/job_chats" class="card">
     <img src="./assets/images/v220/JobChats.png" alt="Job Chats" class="card-image">
-    <div class="card-title">Job Chats</div>
+    <div class="card-body">
+      <div class="card-title">Job Chats</div>
+      <div class="card-description">
+        Job Chats introduces a unified way for Talent Catalog users to communicate with each other. 
+Employers, destinations, source partners and candidates can all communicate regarding job 
+opportunities and candidate relocation directly from the Talent Catalog.
+      </div>
+    </div>
   </a>
 
 </div>
@@ -36,13 +43,27 @@ their own searches for candidates, and manage their own recruitment process.
   <a href="./v220/candidate_data_in_salesforce" class="card">
     <img src="./assets/images/v220/CandidateRecord.png" 
             alt="Candidate Data in Salesforce" class="card-image">
-    <div class="card-title">Nightly Candidate Data Sync</div>
+    <div class="card-body">
+      <div class="card-title">Nightly Candidate Data Sync</div>
+      <div class="card-description">
+        All active candidate profiles will now be updated nightly from the Talent Catalog to 
+Salesforce. This update provides new capabilities for reporting and analysis, with potential to 
+connect third party tools for candidate communication, data visualisation and more
+      </div>
+    </div>
   </a>
 
   <a href="./v220/candidate_registration_and_consents" class="card">
     <img src="./assets/images/v220/CandidateRegistrationAndConsents.png" 
             alt="Improved Candidate Registration And Consents" class="card-image">
-    <div class="card-title">Candidate Accounts And Consents</div>
+    <div class="card-body">
+      <div class="card-title">Candidate Accounts And Consents</div>
+      <div class="card-description">
+        A rework of the candidate registration process means all candidates registering with the 
+Talent Catalog must first create a user account and give their explicit consent to being contacted 
+regarding their registration and employment opportunities.
+      </div>
+    </div>
   </a>
 
 </div>
