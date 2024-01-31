@@ -38,6 +38,7 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
+import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
@@ -448,6 +449,7 @@ public class AdminApiTestUtil {
         savedList.setUpdatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         savedList.setUsers(Set.of(caller));
         savedList.setTasks(Set.of(getTask()));
+        savedList.setCandidateSavedLists(getSetOfCandidateSavedLists());
 
         return savedList;
     }
@@ -720,4 +722,25 @@ public class AdminApiTestUtil {
         return u;
     }
 
+  public static List<SavedSearch> getListOfSavedSearches() {
+      SavedSearch savedSearch1 = getSavedSearch();
+      SavedSearch savedSearch2 = getSavedSearch();
+      savedSearch2.setName("Saved Search 2");
+      SavedSearch savedSearch3 = getSavedSearch();
+      savedSearch3.setName("Saved Search 3");
+      return List.of(
+          savedSearch1, savedSearch2, savedSearch3
+      );
+  }
+
+  public static CandidateSavedList getCandidateSavedList() {
+        CandidateSavedList csl = new CandidateSavedList();
+        csl.setCandidate(getCandidate());
+        return csl;
+  }
+
+  public static Set<CandidateSavedList> getSetOfCandidateSavedLists() {
+        Set<CandidateSavedList> scsl = Set.of(getCandidateSavedList());
+        return scsl;
+  }
 }
