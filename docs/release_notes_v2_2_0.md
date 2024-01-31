@@ -29,9 +29,9 @@ candidates, and manage their own recruitment process.
     <div class="card-body">
       <div class="card-title">Job Chats</div>
       <div class="card-description">
-        Job Chats are a unified way for Talent Catalog users to communicate. Employers, destinations, 
-source partners and candidates can all communicate regarding job opportunities and candidate 
-relocation directly from the Talent Catalog.
+        Job Chats introduce a unified way for Talent Catalog users to communicate. Employers, 
+destinations, source partners and candidates can all communicate regarding job opportunities and 
+candidate relocation directly from the Talent Catalog.
       </div>
     </div>
   </a>
@@ -59,8 +59,8 @@ third party tools for candidate communication, data visualisation and more
     <div class="card-body">
       <div class="card-title">Candidate Accounts And Consents</div>
       <div class="card-description">
-        All candidates registering with the Talent Catalog must first create a user account and 
-give their explicit consent to being contacted regarding their registration and employment 
+        Candidates registering with the Talent Catalog must now explicitly create a user account 
+and explicitly give their consent to being contacted regarding their registration and employment 
 opportunities.
       </div>
     </div>
