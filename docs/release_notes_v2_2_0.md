@@ -4,7 +4,7 @@ sass:
   style: compressed
 ---
 
-## Version 2.2.0 (January 31, 2024)
+## Version 2.2.0 
 
 Check out the newest features and enhancements.
 
@@ -48,7 +48,7 @@ candidate relocation directly from the Talent Catalog.
       <div class="card-description">
         Active candidate profiles will now be updated nightly from the Talent Catalog to 
 Salesforce. This opens new capabilities for reporting and analysis, and potential to connect 
-third party tools for candidate communication, data visualisation and more
+third party tools for candidate communication, data visualisation and more.
       </div>
     </div>
   </a>
