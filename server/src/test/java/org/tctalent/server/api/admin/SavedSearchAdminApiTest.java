@@ -158,26 +158,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .createSavedSearch(any(UpdateSavedSearchRequest.class)))
         .willReturn(savedSearch);
 
-    mockMvc.perform(post(BASE_PATH)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$.id", is(123)))
-        .andExpect(jsonPath("$.name", is("My Search")))
-        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
-        .andExpect(jsonPath("$.fixed", is(false)))
-        .andExpect(jsonPath("$.global", is(false)))
-        .andExpect(jsonPath("$.savedSearchType", is("other")))
-        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
-        .andExpect(jsonPath("$.statuses", is("active,pending")))
-        .andExpect(jsonPath("$.gender", is("male")))
-        .andExpect(jsonPath("$.occupationIds", is("8577,8484")));
+    createSavedSearchAndVerifyResponse(BASE_PATH, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).createSavedSearch(any(UpdateSavedSearchRequest.class));
   }
@@ -204,28 +185,13 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get by id succeeds")
   void getByIdSucceeds() throws Exception {
+    final String path = "/" + SAVED_SEARCH_ID;
+
     given(savedSearchService
         .getSavedSearch(anyLong()))
         .willReturn(savedSearch);
 
-    mockMvc.perform(get(BASE_PATH + "/" + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$.id", is(123)))
-        .andExpect(jsonPath("$.name", is("My Search")))
-        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
-        .andExpect(jsonPath("$.fixed", is(false)))
-        .andExpect(jsonPath("$.global", is(false)))
-        .andExpect(jsonPath("$.savedSearchType", is("other")))
-        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
-        .andExpect(jsonPath("$.statuses", is("active,pending")))
-        .andExpect(jsonPath("$.gender", is("male")))
-        .andExpect(jsonPath("$.occupationIds", is("8577,8484")));
+    readSavedSearchAndVerifyResponse(path);
 
     verify(savedSearchService).getSavedSearch((anyLong()));
   }
@@ -338,33 +304,15 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("update saved search by id succeeds")
   void updateSavedSearchByIdSucceeds() throws Exception {
+    final String path = "/" + SAVED_SEARCH_ID;
+
     UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
 
     given(savedSearchService
           .updateSavedSearch(anyLong(), any(UpdateSavedSearchRequest.class)))
           .willReturn(savedSearch);
 
-    mockMvc.perform(put(BASE_PATH + "/" + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$.id", is(123)))
-        .andExpect(jsonPath("$.name", is("My Search")))
-        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
-        .andExpect(jsonPath("$.fixed", is(false)))
-        .andExpect(jsonPath("$.global", is(false)))
-        .andExpect(jsonPath("$.savedSearchType", is("other")))
-        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
-        .andExpect(jsonPath("$.statuses", is("active,pending")))
-        .andExpect(jsonPath("$.gender", is("male")))
-        .andExpect(jsonPath("$.occupationIds", is("8577,8484"))
-        );
+    updateSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).updateSavedSearch(anyLong(), any(UpdateSavedSearchRequest.class));
   }
@@ -377,14 +325,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
     ClearSelectionRequest request = new ClearSelectionRequest();
     request.setUserId(userId);
 
-    mockMvc.perform(put(BASE_PATH + CLEAR_SELECTION_PATH + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk());
+    updateSavedSearch(CLEAR_SELECTION_PATH, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).clearSelection(anyLong(), anyLong());
   }
@@ -392,33 +333,15 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("create from default saved search succeeds")
   void createFromDefaultSavedSearchSucceeds() throws Exception {
+    final String path = BASE_PATH + CREATE_FROM_DEFAULT_PATH;
+
     CreateFromDefaultSavedSearchRequest request = new CreateFromDefaultSavedSearchRequest();
 
     given(savedSearchService
         .createFromDefaultSavedSearch(any(CreateFromDefaultSavedSearchRequest.class)))
         .willReturn(savedSearch);
 
-    mockMvc.perform(post(BASE_PATH + CREATE_FROM_DEFAULT_PATH)
-        .header("Authorization", "Bearer " + "jwt-token")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(request))
-        .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$.id", is(123)))
-        .andExpect(jsonPath("$.name", is("My Search")))
-        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
-        .andExpect(jsonPath("$.fixed", is(false)))
-        .andExpect(jsonPath("$.global", is(false)))
-        .andExpect(jsonPath("$.savedSearchType", is("other")))
-        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
-        .andExpect(jsonPath("$.statuses", is("active,pending")))
-        .andExpect(jsonPath("$.gender", is("male")))
-        .andExpect(jsonPath("$.occupationIds", is("8577,8484"))
-        );
+    createSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).createFromDefaultSavedSearch(any(CreateFromDefaultSavedSearchRequest.class));
   }
@@ -506,14 +429,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .getSelectionListForLoggedInUser(anyLong()))
         .willReturn(savedList);
 
-    mockMvc.perform(put(BASE_PATH + UPDATE_SELECTED_STATUSES_PATH + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk());
+    updateSavedSearch(UPDATE_SELECTED_STATUSES_PATH, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).getSelectionListForLoggedInUser(anyLong());
     verify(candidateService).updateCandidateStatus(any(UpdateCandidateStatusRequest.class));
@@ -555,14 +471,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .getSelectionList(anyLong(), anyLong()))
         .willReturn(savedList);
 
-    mockMvc.perform(put(BASE_PATH + SELECT_CANDIDATE_PATH + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk());
+    updateSavedSearch(SELECT_CANDIDATE_PATH, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).getSelectionList(anyLong(), anyLong());
     verify(savedListService).removeCandidateFromList(anyLong(), any(UpdateExplicitSavedListContentsRequest.class));
@@ -583,14 +492,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .getSelectionList(anyLong(), anyLong()))
         .willReturn(savedList);
 
-    mockMvc.perform(put(BASE_PATH + SELECT_CANDIDATE_PATH + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk());
+    updateSavedSearch(SELECT_CANDIDATE_PATH, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).getSelectionList(anyLong(), anyLong());
     verify(savedListService).mergeSavedList(anyLong(), any(UpdateExplicitSavedListContentsRequest.class));
@@ -603,26 +505,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .getDefaultSavedSearch())
         .willReturn(savedSearch);
 
-    mockMvc.perform(get(BASE_PATH + GET_DEFAULT_PATH)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$.id", is(123)))
-        .andExpect(jsonPath("$.name", is("My Search")))
-        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
-        .andExpect(jsonPath("$.fixed", is(false)))
-        .andExpect(jsonPath("$.global", is(false)))
-        .andExpect(jsonPath("$.savedSearchType", is("other")))
-        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
-        .andExpect(jsonPath("$.statuses", is("active,pending")))
-        .andExpect(jsonPath("$.gender", is("male")))
-        .andExpect(jsonPath("$.occupationIds", is("8577,8484"))
-        );
+    readSavedSearchAndVerifyResponse(GET_DEFAULT_PATH);
 
     verify(savedSearchService).getDefaultSavedSearch();
   }
@@ -659,6 +542,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("add shared user by id succeeds")
   void addSharedUserByIdSucceeds() throws Exception {
+    final String path = ADD_SHARED_USER_PATH + SAVED_SEARCH_ID;
+
     UpdateSharingRequest request = new UpdateSharingRequest();
     request.setUserId(11L);
 
@@ -666,26 +551,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .addSharedUser(anyLong(), any(UpdateSharingRequest.class)))
         .willReturn(savedSearch);
 
-    mockMvc.perform(put(BASE_PATH + ADD_SHARED_USER_PATH + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$.id", is(123)))
-        .andExpect(jsonPath("$.name", is("My Search")))
-        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
-        .andExpect(jsonPath("$.fixed", is(false)))
-        .andExpect(jsonPath("$.global", is(false)))
-        .andExpect(jsonPath("$.savedSearchType", is("other")))
-        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
-        .andExpect(jsonPath("$.statuses", is("active,pending")))
-        .andExpect(jsonPath("$.gender", is("male")))
-        .andExpect(jsonPath("$.occupationIds", is("8577,8484"))
-        );
+    updateSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).addSharedUser(anyLong(), any(UpdateSharingRequest.class));
   }
@@ -693,6 +559,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("remove shared user by id succeeds")
   void removeSharedUserByIdSucceeds() throws Exception {
+    final String path = REMOVE_SHARED_USER_PATH + SAVED_SEARCH_ID;
+
     UpdateSharingRequest request = new UpdateSharingRequest();
     request.setUserId(11L);
 
@@ -700,26 +568,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .removeSharedUser(anyLong(), any(UpdateSharingRequest.class)))
         .willReturn(savedSearch);
 
-    mockMvc.perform(put(BASE_PATH + REMOVE_SHARED_USER_PATH + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$.id", is(123)))
-        .andExpect(jsonPath("$.name", is("My Search")))
-        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
-        .andExpect(jsonPath("$.fixed", is(false)))
-        .andExpect(jsonPath("$.global", is(false)))
-        .andExpect(jsonPath("$.savedSearchType", is("other")))
-        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
-        .andExpect(jsonPath("$.statuses", is("active,pending")))
-        .andExpect(jsonPath("$.gender", is("male")))
-        .andExpect(jsonPath("$.occupationIds", is("8577,8484"))
-        );
+    updateSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).removeSharedUser(anyLong(), any(UpdateSharingRequest.class));
   }
@@ -727,6 +576,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("add watcher by id succeeds")
   void addWatcherByIdSucceeds() throws Exception {
+    final String path = ADD_WATCHER_PATH + SAVED_SEARCH_ID;
+
     UpdateWatchingRequest request = new UpdateWatchingRequest();
     request.setUserId(11L);
 
@@ -734,26 +585,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .addWatcher(anyLong(), any(UpdateWatchingRequest.class)))
         .willReturn(savedSearch);
 
-    mockMvc.perform(put(BASE_PATH + ADD_WATCHER_PATH + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$.id", is(123)))
-        .andExpect(jsonPath("$.name", is("My Search")))
-        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
-        .andExpect(jsonPath("$.fixed", is(false)))
-        .andExpect(jsonPath("$.global", is(false)))
-        .andExpect(jsonPath("$.savedSearchType", is("other")))
-        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
-        .andExpect(jsonPath("$.statuses", is("active,pending")))
-        .andExpect(jsonPath("$.gender", is("male")))
-        .andExpect(jsonPath("$.occupationIds", is("8577,8484"))
-        );
+    updateSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).addWatcher(anyLong(), any(UpdateWatchingRequest.class));
   }
@@ -761,6 +593,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("remove watcher by id succeeds")
   void removeWatcherByIdSucceeds() throws Exception {
+    final String path = REMOVE_WATCHER_PATH + SAVED_SEARCH_ID;
+
     UpdateWatchingRequest request = new UpdateWatchingRequest();
     request.setUserId(11L);
 
@@ -768,26 +602,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .removeWatcher(anyLong(), any(UpdateWatchingRequest.class)))
         .willReturn(savedSearch);
 
-    mockMvc.perform(put(BASE_PATH + REMOVE_WATCHER_PATH + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", notNullValue()))
-        .andExpect(jsonPath("$.id", is(123)))
-        .andExpect(jsonPath("$.name", is("My Search")))
-        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
-        .andExpect(jsonPath("$.fixed", is(false)))
-        .andExpect(jsonPath("$.global", is(false)))
-        .andExpect(jsonPath("$.savedSearchType", is("other")))
-        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
-        .andExpect(jsonPath("$.statuses", is("active,pending")))
-        .andExpect(jsonPath("$.gender", is("male")))
-        .andExpect(jsonPath("$.occupationIds", is("8577,8484"))
-        );
+    updateSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).removeWatcher(anyLong(), any(UpdateWatchingRequest.class));
   }
@@ -799,15 +614,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
     request.setCandidateId(11L);
     request.setContextNote("Some context.");
 
-    mockMvc.perform(put(BASE_PATH + UPDATE_CONTEXT_PATH + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk()
-        );
+    updateSavedSearch(UPDATE_CONTEXT_PATH, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).updateCandidateContextNote(anyLong(), any(UpdateCandidateContextNoteRequest.class));
   }
@@ -818,15 +625,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
     UpdateCandidateSourceDescriptionRequest request = new UpdateCandidateSourceDescriptionRequest();
     request.setDescription("A very descriptive description.");
 
-    mockMvc.perform(put(BASE_PATH + UPDATE_DESCRIPTION_PATH + SAVED_SEARCH_ID)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk()
-        );
+    updateSavedSearch(UPDATE_DESCRIPTION_PATH, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).updateDescription(anyLong(), any(UpdateCandidateSourceDescriptionRequest.class));
   }
@@ -836,16 +635,88 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   void addDisplayedFieldsByIdSucceeds() throws Exception {
     UpdateDisplayedFieldPathsRequest request = new UpdateDisplayedFieldPathsRequest();
 
-    mockMvc.perform(put(BASE_PATH + UPDATE_FIELDS_PATH + SAVED_SEARCH_ID)
+    updateSavedSearch(UPDATE_FIELDS_PATH, objectMapper.writeValueAsString(request));
+
+    verify(savedSearchService).updateDisplayedFieldPaths(anyLong(), any(UpdateDisplayedFieldPathsRequest.class));
+  }
+
+  private void updateSavedSearchAndVerifyResponse(String path, String body) throws Exception {
+    mockMvc.perform(put(BASE_PATH + path)
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request))
+            .content(body)
             .accept(MediaType.APPLICATION_JSON))
 
         .andDo(print())
-        .andExpect(status().isOk()
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(123)))
+        .andExpect(jsonPath("$.name", is("My Search")))
+        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
+        .andExpect(jsonPath("$.fixed", is(false)))
+        .andExpect(jsonPath("$.global", is(false)))
+        .andExpect(jsonPath("$.savedSearchType", is("other")))
+        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
+        .andExpect(jsonPath("$.statuses", is("active,pending")))
+        .andExpect(jsonPath("$.gender", is("male")))
+        .andExpect(jsonPath("$.occupationIds", is("8577,8484"))
         );
+  }
 
-    verify(savedSearchService).updateDisplayedFieldPaths(anyLong(), any(UpdateDisplayedFieldPathsRequest.class));
+  private void updateSavedSearch(String path, String body) throws Exception {
+    mockMvc.perform(put(BASE_PATH + path + SAVED_SEARCH_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body)
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk());
+  }
+
+  private void readSavedSearchAndVerifyResponse(String path) throws Exception {
+    mockMvc.perform(get(BASE_PATH + path)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(123)))
+        .andExpect(jsonPath("$.name", is("My Search")))
+        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
+        .andExpect(jsonPath("$.fixed", is(false)))
+        .andExpect(jsonPath("$.global", is(false)))
+        .andExpect(jsonPath("$.savedSearchType", is("other")))
+        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
+        .andExpect(jsonPath("$.statuses", is("active,pending")))
+        .andExpect(jsonPath("$.gender", is("male")))
+        .andExpect(jsonPath("$.occupationIds", is("8577,8484")));
+  }
+
+  private void createSavedSearchAndVerifyResponse(String path, String body) throws Exception {
+    mockMvc.perform(post(path)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body)
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(123)))
+        .andExpect(jsonPath("$.name", is("My Search")))
+        .andExpect(jsonPath("$.description", is("This is a search about nothing.")))
+        .andExpect(jsonPath("$.fixed", is(false)))
+        .andExpect(jsonPath("$.global", is(false)))
+        .andExpect(jsonPath("$.savedSearchType", is("other")))
+        .andExpect(jsonPath("$.simpleQueryString", is("search + term")))
+        .andExpect(jsonPath("$.statuses", is("active,pending")))
+        .andExpect(jsonPath("$.gender", is("male")))
+        .andExpect(jsonPath("$.occupationIds", is("8577,8484")));
   }
 }
