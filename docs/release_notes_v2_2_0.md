@@ -100,12 +100,12 @@ significantly more accessible for all.
 
 ## Other UI / UX Enhancements
 
-- The user role previously known as "Source Partner Admin" has been updated to "Partner Admin", 
-- avoiding any naming confusion for destination partner users.
 - For convenience, source partners may now view and update the progress of a selected case directly 
 from the right-hand case detail panel.
 - Candidate work experience input fields accept rich-text formatting, which contributes to the 
 generation of more visually appealing and well-formatted Talent Catalog CVs downstream.
+- The user role previously known as "Source Partner Admin" has been updated to "Partner Admin",
+to avoid any naming confusion for destination partner users.
 
 
 # Security Fixes
