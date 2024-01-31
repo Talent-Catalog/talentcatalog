@@ -54,6 +54,7 @@ import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
 import org.tctalent.server.model.db.Industry;
+import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Language;
@@ -574,6 +575,13 @@ public class AdminApiTestUtil {
         return joi;
     }
 
+  public static JobChat getChat() {
+        JobChat chat = new JobChat();
+        chat.setId(99L);
+        chat.setJobOpp(getJob());
+        return chat;
+  }
+
   public static List<Country> getCountries() {
         return List.of(
             new Country("Jordan", Status.active),
@@ -712,5 +720,4 @@ public class AdminApiTestUtil {
         u.setPartner(getPartner());
         return u;
     }
-
 }
