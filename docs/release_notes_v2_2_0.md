@@ -29,9 +29,9 @@ candidates, and manage their own recruitment process.
     <div class="card-body">
       <div class="card-title">Job Chats</div>
       <div class="card-description">
-        Job Chats introduces a unified way for Talent Catalog users to communicate with each other. 
-Employers, destinations, source partners and candidates can all communicate regarding job 
-opportunities and candidate relocation directly from the Talent Catalog.
+        Job Chats are a unified way for Talent Catalog users to communicate. Employers, destinations, 
+source partners and candidates can all communicate regarding job opportunities and candidate 
+relocation directly from the Talent Catalog.
       </div>
     </div>
   </a>
@@ -46,9 +46,9 @@ opportunities and candidate relocation directly from the Talent Catalog.
     <div class="card-body">
       <div class="card-title">Nightly Candidate Data Sync</div>
       <div class="card-description">
-        All active candidate profiles will now be updated nightly from the Talent Catalog to 
-Salesforce. This update provides new capabilities for reporting and analysis, with potential to 
-connect third party tools for candidate communication, data visualisation and more
+        Active candidate profiles will now be updated nightly from the Talent Catalog to 
+Salesforce. This opens new capabilities for reporting and analysis, and potential to connect 
+third party tools for candidate communication, data visualisation and more
       </div>
     </div>
   </a>
@@ -59,9 +59,9 @@ connect third party tools for candidate communication, data visualisation and mo
     <div class="card-body">
       <div class="card-title">Candidate Accounts And Consents</div>
       <div class="card-description">
-        A rework of the candidate registration process means all candidates registering with the 
-Talent Catalog must first create a user account and give their explicit consent to being contacted 
-regarding their registration and employment opportunities.
+        All candidates registering with the Talent Catalog must first create a user account and 
+give their explicit consent to being contacted regarding their registration and employment 
+opportunities.
       </div>
     </div>
   </a>
