@@ -14,8 +14,15 @@ Check out the newest features and enhancements.
 
   <a href="./v220/employer_access" class="card">
     <img src="./assets/images/v220/EmployerAccess.png" alt="Employer Access" class="card-image">
-    <div class="card-title">Employer Access</div>
-  </a>
+    <div class="card-body">
+      <div class="card-title">Employer Access</div>
+      <div class="card-description">
+        This update allows employers to be able to directly access the Talent Catalog. Any employer
+can now request a login to the Talent Catalog, where they can create and submit their own jobs, do
+their own searches for candidates, and manage their own recruitment process.
+      </div>
+    </div>
+ </a>
 
   <a href="./v220/job_chats" class="card">
     <img src="./assets/images/v220/JobChats.png" alt="Job Chats" class="card-image">
