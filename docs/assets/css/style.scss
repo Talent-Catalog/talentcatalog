@@ -86,6 +86,13 @@ body {
   justify-content: space-between;
 }
 
+@media screen and (max-width: 768px) {
+  .card-no-border {
+    width: 100%;
+    margin: 16px 0;
+  }
+}
+
 .card-title {
   font-size: 1.35em;
   font-weight: normal;
