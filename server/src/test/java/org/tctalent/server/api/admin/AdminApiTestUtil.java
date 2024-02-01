@@ -415,6 +415,15 @@ public class AdminApiTestUtil {
         return task;
     }
 
+    public static List<TaskImpl> getListOfTasks() {
+        TaskImpl task1 = getTask();
+        TaskImpl task2 = getTask();
+        task2.setName("test task 2");
+        TaskImpl task3 = getTask();
+        task3.setName("test task 3");
+        return List.of(task1, task2, task3);
+    }
+
     static SavedList getSavedList() {
         SavedList savedList = new SavedList();
         savedList.setId(1L);
