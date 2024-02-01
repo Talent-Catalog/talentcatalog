@@ -193,8 +193,8 @@ Google Code styles as the coding standard for all contributors.
 - Pushing changes to developer branches will now trigger a full build and a complete cycle of unit 
 testing and performance testing - failure alerts will be notified to contributors for the early 
 detection and resolution of breaking code.
-- We've documented our agreed [hot-fix branching](https://github.com/Talent-Catalog/talentcatalog/wiki/Release#hotfix-branches)
-process that is to be used for any and all out-of-band quick fixing of production issues.
+- We've introduced [hot-fix branching](https://github.com/Talent-Catalog/talentcatalog/wiki/Release#hotfix-branches) 
+which is to be used for out-of-band quick fixing of production issues.
 
 ## Cloud Enhancements
 - Elasticsearch's versions have been upgraded from the end-of-life v7.12 to v7.17.11. 
