@@ -602,6 +602,17 @@ public class AdminApiTestUtil {
         return post;
     }
 
+    public static List<ChatPost> getListOfPosts() {
+        ChatPost post1 = getChatPost();
+        ChatPost post2 = getChatPost();
+        post2.setContent("Post 2");
+        ChatPost post3 = getChatPost();
+        post2.setContent("Post 3");
+        return List.of(
+            post1, post2, post3
+        );
+    }
+
   public static List<Country> getCountries() {
         return List.of(
             new Country("Jordan", Status.active),
