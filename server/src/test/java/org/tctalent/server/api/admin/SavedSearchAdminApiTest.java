@@ -84,6 +84,8 @@ import org.tctalent.server.service.db.UserService;
 class SavedSearchAdminApiTest extends ApiTestBase {
 
   private static final long SAVED_SEARCH_ID = 123L;
+  private static final long USER_ID = 11L;
+  private static final long CANDIDATE_ID = 11L;
   private static final String BASE_PATH = "/api/admin/saved-search";
   private static final String SEARCH_PATH = "/search";
   private static final String SEARCH_PAGED_PATH = "/search-paged";
@@ -166,13 +168,11 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("delete by id returns true")
   void deleteByIdReturnsTrue() throws Exception {
-    long id = 123L;
-
     given(savedSearchService
         .deleteSavedSearch(anyLong()))
         .willReturn(true);
 
-    mockMvc.perform(delete(BASE_PATH + "/" + id)
+    mockMvc.perform(delete(BASE_PATH + "/" + SAVED_SEARCH_ID)
             .header("Authorization", "Bearer " + "jwt-token"))
 
         .andExpect(status().isOk())
@@ -185,7 +185,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get by id succeeds")
   void getByIdSucceeds() throws Exception {
-    final String path = "/" + SAVED_SEARCH_ID;
+    String path = "/" + SAVED_SEARCH_ID;
 
     given(savedSearchService
         .getSavedSearch(anyLong()))
@@ -302,9 +302,9 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("update saved search by id succeeds")
-  void updateSavedSearchByIdSucceeds() throws Exception {
-    final String path = "/" + SAVED_SEARCH_ID;
+  @DisplayName("update saved search succeeds")
+  void updateSavedSearchSucceeds() throws Exception {
+    String path = "/" + SAVED_SEARCH_ID;
 
     UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
 
@@ -318,12 +318,10 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("clears selection by id succeeds")
-  void clearsSelectionById() throws Exception {
-    long userId = 11L;
-
+  @DisplayName("clears selection succeeds")
+  void clearsSelectionSucceeds() throws Exception {
     ClearSelectionRequest request = new ClearSelectionRequest();
-    request.setUserId(userId);
+    request.setUserId(USER_ID);
 
     updateSavedSearch(CLEAR_SELECTION_PATH, objectMapper.writeValueAsString(request));
 
@@ -333,7 +331,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("create from default saved search succeeds")
   void createFromDefaultSavedSearchSucceeds() throws Exception {
-    final String path = BASE_PATH + CREATE_FROM_DEFAULT_PATH;
+    String path = BASE_PATH + CREATE_FROM_DEFAULT_PATH;
 
     CreateFromDefaultSavedSearchRequest request = new CreateFromDefaultSavedSearchRequest();
 
@@ -347,8 +345,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("save selection by id succeeds")
-  void saveSelectionByIdSucceeds() throws Exception {
+  @DisplayName("save selection succeeds")
+  void saveSelectionSucceeds() throws Exception {
     CopySourceContentsRequest request = new CopySourceContentsRequest();
     UpdateCandidateStatusInfo update = new UpdateCandidateStatusInfo();
     update.setStatus(CandidateStatus.active);
@@ -362,7 +360,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .copy(any(SavedList.class), any(CopySourceContentsRequest.class)))
         .willReturn(savedList);
 
-    mockMvc.perform(put(BASE_PATH + SAVE_SELECTION_PATH + savedSearch.getId())
+    mockMvc.perform(put(BASE_PATH + SAVE_SELECTION_PATH + SAVED_SEARCH_ID)
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -420,8 +418,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("update selected statuses by id succeeds")
-  void updateSelectedStatusesByIdSucceeds() throws Exception {
+  @DisplayName("update selected statuses succeeds")
+  void updateSelectedStatusesSucceeds() throws Exception {
     UpdateCandidateStatusInfo request = new UpdateCandidateStatusInfo();
     request.setStatus(CandidateStatus.employed);
 
@@ -436,9 +434,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("get selection count by id succeeds")
-  public void getSelectionCountByIdSucceeds() throws Exception {
-
+  @DisplayName("get selection count succeeds")
+  public void getSelectionCountSucceeds() throws Exception {
     given(savedSearchService
         .getSelectionListForLoggedInUser(anyLong()))
         .willReturn(savedList);
@@ -458,14 +455,11 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("select and remove candidate by id succeeds")
-  void selectAndRemoveCandidateByIdSucceeds() throws Exception {
-    long userId = 11L;
-    long candidateId = 62L;
-
+  @DisplayName("select and remove candidate succeeds")
+  void selectAndRemoveCandidateSucceeds() throws Exception {
     SelectCandidateInSearchRequest request = new SelectCandidateInSearchRequest();
-    request.setUserId(userId);
-    request.setCandidateId(candidateId);
+    request.setUserId(USER_ID);
+    request.setCandidateId(CANDIDATE_ID);
 
     given(savedSearchService
         .getSelectionList(anyLong(), anyLong()))
@@ -480,12 +474,9 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("select and add candidate by id succeeds")
   void selectAndAddCandidateByIdSucceeds() throws Exception {
-    long userId = 11L;
-    long candidateId = 62L;
-
     SelectCandidateInSearchRequest request = new SelectCandidateInSearchRequest();
-    request.setUserId(userId);
-    request.setCandidateId(candidateId);
+    request.setUserId(USER_ID);
+    request.setCandidateId(CANDIDATE_ID);
     request.setSelected(true);
 
     given(savedSearchService
@@ -545,7 +536,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
     final String path = ADD_SHARED_USER_PATH + SAVED_SEARCH_ID;
 
     UpdateSharingRequest request = new UpdateSharingRequest();
-    request.setUserId(11L);
+    request.setUserId(USER_ID);
 
     given(savedSearchService
         .addSharedUser(anyLong(), any(UpdateSharingRequest.class)))
@@ -557,12 +548,12 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("remove shared user by id succeeds")
-  void removeSharedUserByIdSucceeds() throws Exception {
-    final String path = REMOVE_SHARED_USER_PATH + SAVED_SEARCH_ID;
+  @DisplayName("remove shared user succeeds")
+  void removeSharedUserSucceeds() throws Exception {
+    String path = REMOVE_SHARED_USER_PATH + SAVED_SEARCH_ID;
 
     UpdateSharingRequest request = new UpdateSharingRequest();
-    request.setUserId(11L);
+    request.setUserId(USER_ID);
 
     given(savedSearchService
         .removeSharedUser(anyLong(), any(UpdateSharingRequest.class)))
@@ -574,12 +565,12 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("add watcher by id succeeds")
-  void addWatcherByIdSucceeds() throws Exception {
-    final String path = ADD_WATCHER_PATH + SAVED_SEARCH_ID;
+  @DisplayName("add watcher succeeds")
+  void addWatcherSucceeds() throws Exception {
+    String path = ADD_WATCHER_PATH + SAVED_SEARCH_ID;
 
     UpdateWatchingRequest request = new UpdateWatchingRequest();
-    request.setUserId(11L);
+    request.setUserId(USER_ID);
 
     given(savedSearchService
         .addWatcher(anyLong(), any(UpdateWatchingRequest.class)))
@@ -591,12 +582,12 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("remove watcher by id succeeds")
-  void removeWatcherByIdSucceeds() throws Exception {
-    final String path = REMOVE_WATCHER_PATH + SAVED_SEARCH_ID;
+  @DisplayName("remove watcher succeeds")
+  void removeWatcherSucceeds() throws Exception {
+    String path = REMOVE_WATCHER_PATH + SAVED_SEARCH_ID;
 
     UpdateWatchingRequest request = new UpdateWatchingRequest();
-    request.setUserId(11L);
+    request.setUserId(USER_ID);
 
     given(savedSearchService
         .removeWatcher(anyLong(), any(UpdateWatchingRequest.class)))
@@ -608,10 +599,10 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("update context note by id succeeds")
-  void addContextNoteByIdSucceeds() throws Exception {
+  @DisplayName("update context note succeeds")
+  void addContextNoteSucceeds() throws Exception {
     UpdateCandidateContextNoteRequest request = new UpdateCandidateContextNoteRequest();
-    request.setCandidateId(11L);
+    request.setCandidateId(CANDIDATE_ID);
     request.setContextNote("Some context.");
 
     updateSavedSearch(UPDATE_CONTEXT_PATH, objectMapper.writeValueAsString(request));
@@ -620,8 +611,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("update description by id succeeds")
-  void addDescriptionByIdSucceeds() throws Exception {
+  @DisplayName("update description succeeds")
+  void addDescriptionSucceeds() throws Exception {
     UpdateCandidateSourceDescriptionRequest request = new UpdateCandidateSourceDescriptionRequest();
     request.setDescription("A very descriptive description.");
 
@@ -631,8 +622,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("update displayed fields by id succeeds")
-  void addDisplayedFieldsByIdSucceeds() throws Exception {
+  @DisplayName("update displayed fields succeeds")
+  void addDisplayedFieldSucceeds() throws Exception {
     UpdateDisplayedFieldPathsRequest request = new UpdateDisplayedFieldPathsRequest();
 
     updateSavedSearch(UPDATE_FIELDS_PATH, objectMapper.writeValueAsString(request));
@@ -719,4 +710,5 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.gender", is("male")))
         .andExpect(jsonPath("$.occupationIds", is("8577,8484")));
   }
+
 }

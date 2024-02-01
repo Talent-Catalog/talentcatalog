@@ -733,13 +733,13 @@ public class AdminApiTestUtil {
       );
   }
 
-  public static CandidateSavedList getCandidateSavedList() {
+  static CandidateSavedList getCandidateSavedList() {
         CandidateSavedList csl = new CandidateSavedList();
         csl.setCandidate(getCandidate());
         return csl;
   }
 
-  public static Set<CandidateSavedList> getSetOfCandidateSavedLists() {
+  static Set<CandidateSavedList> getSetOfCandidateSavedLists() {
         Set<CandidateSavedList> scsl = Set.of(getCandidateSavedList());
         return scsl;
   }
