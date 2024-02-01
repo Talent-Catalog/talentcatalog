@@ -20,12 +20,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -44,10 +47,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.api.admin.ApiTestBase;
 import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
+import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.chat.CreateChatRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.ChatPostService;
@@ -65,9 +71,15 @@ import org.tctalent.server.service.db.impl.JobChatServiceImpl;
 class ChatAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/chat";
     private static final String GET_OR_CREATE_PATH = "/get-or-create";
+    private static final String GET_CHAT_USER_INFO = "/get-chat-user-info";
+    private static final String POST = "/post";
+    private static final String READ = "/read";
+    private static final String USER = "/user";
 
     private static final JobChat chat = AdminApiTestUtil.getChat();
     private static final List<JobChat> chatList = AdminApiTestUtil.getListOfChats();
+    private static final ChatPost post = AdminApiTestUtil.getChatPost();
+    private static final JobChatUserInfo info = AdminApiTestUtil.getJobChatUserInfo();
 
 
     @Autowired
@@ -181,10 +193,59 @@ class ChatAdminApiTest extends ApiTestBase {
     }
 
     @Test
-    void markAsReadUpto() {
+    void markAsReadUpto() throws Exception {
+
+        given(chatService.getJobChat(anyLong()))
+            .willReturn(chat);
+
+        given(chatPostService.getLastChatPost(anyLong()))
+            .willReturn(post);
+
+        given(chatPostService.getChatPost(anyLong()))
+            .willReturn(post);
+
+        given(userService.getLoggedInUser())
+            .willReturn(user);
+
+
+        //For moment just testing that post id is passed as zero - meaning read whole post
+        mockMvc.perform(put(BASE_PATH + "/" + chat.getId() + POST + "/0" + READ)
+                .header("Authorization", "Bearer " + "jwt-token")
+                )
+
+            .andDo(print())
+            .andExpect(status().isOk());
+
+
+        verify(jobChatUserService).markChatAsRead(chat, user, post);
     }
 
     @Test
-    void getJobChatUserInfo() {
+    void getJobChatUserInfo() throws Exception {
+
+        given(chatService.getJobChat(anyLong()))
+            .willReturn(chat);
+
+        given(jobChatUserService.getJobChatUserInfo(any(JobChat.class), any(User.class)))
+            .willReturn(info);
+
+        given(userService.getUser(anyLong()))
+            .willReturn(user);
+
+
+        mockMvc.perform(get(
+            BASE_PATH + "/" + chat.getId() + USER + "/123" + GET_CHAT_USER_INFO)
+                .header("Authorization", "Bearer " + "jwt-token")
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.lastReadPostId", is(100)))
+            .andExpect(jsonPath("$.lastPostId", is(123)));
+
+
+        verify(jobChatUserService).getJobChatUserInfo(chat, user);
     }
 }

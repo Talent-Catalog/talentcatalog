@@ -41,6 +41,7 @@ import org.tctalent.server.model.db.CandidateReviewStatusItem;
 import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
@@ -55,6 +56,7 @@ import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
 import org.tctalent.server.model.db.Industry;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Language;
@@ -582,16 +584,23 @@ public class AdminApiTestUtil {
         return chat;
   }
 
-public static List<JobChat> getListOfChats() {
-    JobChat chat1 = getChat();
-    JobChat chat2 = getChat();
-    chat2.setId(100L);
-    JobChat chat3 = getChat();
-    chat2.setId(101L);
-    return List.of(
-        chat1, chat2, chat3
-    );
-}
+    public static List<JobChat> getListOfChats() {
+        JobChat chat1 = getChat();
+        JobChat chat2 = getChat();
+        chat2.setId(100L);
+        JobChat chat3 = getChat();
+        chat2.setId(101L);
+        return List.of(
+            chat1, chat2, chat3
+        );
+    }
+
+    public static ChatPost getChatPost() {
+        ChatPost post = new ChatPost();
+        post.setId(199L);
+        post.setContent("Post 1");
+        return post;
+    }
 
   public static List<Country> getCountries() {
         return List.of(
@@ -632,6 +641,13 @@ public static List<JobChat> getListOfChats() {
             new Industry("Finance", Status.active),
             new Industry("Health", Status.active)
         );
+    }
+
+    public static JobChatUserInfo getJobChatUserInfo() {
+        JobChatUserInfo info = new JobChatUserInfo();
+        info.setLastPostId(123L);
+        info.setLastReadPostId(100L);
+        return info;
     }
 
     public static PartnerImpl getPartner() {
