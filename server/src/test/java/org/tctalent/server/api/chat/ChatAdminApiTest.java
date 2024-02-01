@@ -17,12 +17,14 @@
 package org.tctalent.server.api.chat;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -30,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +64,11 @@ import org.tctalent.server.service.db.impl.JobChatServiceImpl;
 @AutoConfigureMockMvc
 class ChatAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/chat";
+    private static final String GET_OR_CREATE_PATH = "/get-or-create";
+
     private static final JobChat chat = AdminApiTestUtil.getChat();
+    private static final List<JobChat> chatList = AdminApiTestUtil.getListOfChats();
+
 
     @Autowired
     MockMvc mockMvc;
@@ -69,7 +76,7 @@ class ChatAdminApiTest extends ApiTestBase {
     ObjectMapper objectMapper;
     @Autowired
     ChatAdminApi chatAdminApi;
-    
+
     @MockBean
     JobChatServiceImpl chatService;
     @MockBean
@@ -101,12 +108,12 @@ class ChatAdminApiTest extends ApiTestBase {
     @Test
     void create() throws Exception {
         CreateChatRequest request = new CreateChatRequest();
-        
+
         given(chatService.createJobChat(
-            nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class), 
+            nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
             nullable(CandidateOpportunity.class)))
             .willReturn(chat);
-        
+
         mockMvc.perform(post(BASE_PATH)
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
@@ -123,15 +130,54 @@ class ChatAdminApiTest extends ApiTestBase {
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
             nullable(CandidateOpportunity.class)
         );
-        
     }
 
     @Test
-    void list() {
+    void list() throws Exception {
+        given(chatService.listJobChats())
+            .willReturn(chatList);
+
+        mockMvc.perform(get(BASE_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$", hasSize(3)))
+            .andExpect(jsonPath("$.[0].id", is(chat.getId().intValue())));
+
+
+        verify(chatService).listJobChats();
+
     }
 
     @Test
-    void getOrCreate() {
+    void getOrCreate() throws Exception {
+        CreateChatRequest request = new CreateChatRequest();
+
+        given(chatService.getOrCreateJobChat(
+            nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
+            nullable(CandidateOpportunity.class)))
+            .willReturn(chat);
+
+        mockMvc.perform(post(BASE_PATH + GET_OR_CREATE_PATH)
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.id", is(chat.getId().intValue())));
+
+        verify(chatService).getOrCreateJobChat(
+            nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
+            nullable(CandidateOpportunity.class)
+        );
     }
 
     @Test

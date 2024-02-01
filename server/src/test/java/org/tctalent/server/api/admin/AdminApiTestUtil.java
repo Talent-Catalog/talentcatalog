@@ -582,6 +582,17 @@ public class AdminApiTestUtil {
         return chat;
   }
 
+public static List<JobChat> getListOfChats() {
+    JobChat chat1 = getChat();
+    JobChat chat2 = getChat();
+    chat2.setId(100L);
+    JobChat chat3 = getChat();
+    chat2.setId(101L);
+    return List.of(
+        chat1, chat2, chat3
+    );
+}
+
   public static List<Country> getCountries() {
         return List.of(
             new Country("Jordan", Status.active),
