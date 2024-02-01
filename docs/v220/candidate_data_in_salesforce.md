@@ -30,8 +30,9 @@ only the necessary fields and widgets. Most importantly, Salesforce candidate da
 assurance.
 
 Some specific identified uses for the data will be, for example, to update the Talent Beyond 
-Boundaries <a href="https://tbb.sopact.com/superset/dashboard/p/6oA7PE4BRrx/">impact dashboard</a>;
-to maintain current contact lists in Campaign Monitor for all consenting candidates; and for 
-the efficient updating of the<a href="https://www.talentbeyondboundaries.org/talent-snapshot?">
-Talent Catalog snapshot</a>.
+Boundaries <a href="https://tbb.sopact.com/superset/dashboard/p/6oA7PE4BRrx/" target="_blank">
+impact dashboard</a>; to maintain current contact lists in Campaign Monitor for all consenting 
+candidates; and for the efficient updating of the 
+<a href="https://www.talentbeyondboundaries.org/talent-snapshot?" target="_blank">Talent Catalog 
+snapshot</a>.
 

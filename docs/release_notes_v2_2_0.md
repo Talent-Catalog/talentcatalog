@@ -85,7 +85,7 @@ participating in World Bank surveys.
 - Reports for viewing candidate registration data based on source locations are now available in TC
 stats.
 - Salesforce opportunity records have been tidied up so that occupation categories adhere with the 
-<a href="https://www.ilo.org/public/english/bureau/stat/isco/index.htm">International Standard 
+<a href="https://www.ilo.org/public/english/bureau/stat/isco/index.htm" target="_blank">International Standard 
 Classification of Occupations (ISCO)</a>.
 - Full candidate searches are now optimised giving up to 15x faster database search performance.
 - Candidates relocating through Canada’s no job offer pathway may now be tagged, so they can be 
@@ -106,7 +106,8 @@ cleaned from the database.
         We've reorganised the TC main menu and sub-menus to make it easier for new and existing 
 users to navigate. The main menu is now simply: <em>Jobs</em>, <em>Searches</em>, <em>Lists</em>, 
 and <em>Stats</em>. Clicking on Jobs navigates to all things jobs related, Searches for all things 
-search related, and so on.
+search related, and so on. <a href="https://tctalent-test.org/admin-portal/login" target="_blank">
+Login to our staging environment</a> to take a look.
       </div>
     </div>
   </div>
@@ -119,7 +120,9 @@ search related, and so on.
         With this release we bid farewell to the old bright blue and teal colour scheme, which did
 not contrast terribly well against the white background. In some cases leading to eye strain over 
 prolonged periods of use. We hope the new muted yet strongly contrasted colours will be 
-significantly more accessible for all.
+significantly more accessible for all. Here's John with a 
+<a href="https://drive.google.com/file/d/1ONFcuvZxKZKwEUcn9wmbBNM5t2c-5e8B/view" target="_blank">
+quick video</a> introduction.
       </div>
     </div>
   </div>
