@@ -16,37 +16,8 @@
 
 package org.tctalent.server.api.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.request.candidate.PublishedDocImportReport;
-import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
-import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
-import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
-import org.tctalent.server.request.link.UpdateShortNameRequest;
-import org.tctalent.server.request.list.SearchSavedListRequest;
-import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
-import org.tctalent.server.request.search.UpdateSharingRequest;
-import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.SalesforceService;
-import org.tctalent.server.service.db.SavedListService;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,6 +32,38 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.request.candidate.PublishListRequest;
+import org.tctalent.server.request.candidate.PublishedDocImportReport;
+import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
+import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
+import org.tctalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
+import org.tctalent.server.request.link.UpdateShortNameRequest;
+import org.tctalent.server.request.list.SearchSavedListRequest;
+import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tctalent.server.request.search.UpdateSharingRequest;
+import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.SalesforceService;
+import org.tctalent.server.service.db.SavedListService;
 
 @WebMvcTest(SavedListAdminApi.class)
 @AutoConfigureMockMvc
@@ -222,30 +225,29 @@ class SavedListAdminApiTest extends ApiTestBase {
         verify(savedListService).get(SAVED_LIST_ID);
     }
 
-    // todo test not working. it is returning empty list, not sure why.
-//    @Test
-//    @DisplayName("search saved lists succeeds")
-//    void searchSavedListsSucceeds() throws Exception {
-//        SearchSavedListRequest request = new SearchSavedListRequest();
-//        given(savedListService
-//            .listSavedLists(request))
-//            .willReturn(savedLists);
-//
-//        mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
-//                .header("Authorization", "Bearer " + "jwt-token")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(request))
-//                .accept(MediaType.APPLICATION_JSON))
-//
-//            .andDo(print())
-//            .andExpect(status().isOk())
-//            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//            .andExpect(jsonPath("$", notNullValue()))
-//            .andExpect(jsonPath("$").isArray())
-//            .andExpect(jsonPath("$", hasSize(1)));
-//
-//        verify(savedListService).listSavedLists(any(SearchSavedListRequest.class));
-//    }
+    @Test
+    @DisplayName("search saved lists succeeds")
+    void searchSavedListsSucceeds() throws Exception {
+        SearchSavedListRequest request = new SearchSavedListRequest();
+        given(savedListService
+            .listSavedLists(any(SearchSavedListRequest.class)))
+            .willReturn(savedLists);
+
+        mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$", hasSize(1)));
+
+        verify(savedListService).listSavedLists(any(SearchSavedListRequest.class));
+    }
 
     @Test
     @DisplayName("search paged saved lists succeeds")
@@ -299,50 +301,41 @@ class SavedListAdminApiTest extends ApiTestBase {
 
         verify(savedListService).updateSavedList(anyLong(), any(UpdateSavedListInfoRequest.class));
     }
-    
-    // todo test not working - returning content type not set. Not sure why.
-//    @Test
-//    @DisplayName("copy saved list succeeds")
-//    void copySavedListSucceeds() throws Exception {
-//        // Set up the request to save to my test savedList (id = 1). Not sure if mocking a full request is neccessary,
-//        // but tried as part of trying to fix content type not set problem.
-//        CopySourceContentsRequest request = new CopySourceContentsRequest();
-//        request.setSavedListId(0L);
-//        request.setNewListName("test list");
-//        request.setSourceListId(SAVED_LIST_ID);
-//        request.setUpdateType(ContentUpdateType.add);
-//
-//        // Set up the source list which I am copying across to my test saved list.
-//        SavedList targetList = new SavedList();
-//        targetList.setId(11L);
-//        targetList.setName("test list");
-//
-//
-//        given(savedListService
-//            .get(SAVED_LIST_ID))
-//            .willReturn(savedList);
-//
-//        // todo this stub is returning null when debugging - can't figure out why.
-//        //  Getting java.lang.AssertionError: Content type not set. Nothing is being returned in the response body.
-//        given(candidateSavedListService
-//            .copy(savedList, request))
-//            .willReturn(targetList);
-//
-//        mockMvc.perform(put(BASE_PATH + COPY_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
-//                .header("Authorization", "Bearer " + "jwt-token")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(request))
-//                .accept(MediaType.APPLICATION_JSON))
-//
-//            .andDo(print())
-//            .andExpect(status().isOk())
-//            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//            .andExpect(jsonPath("$", notNullValue()))
-//            .andExpect(jsonPath("$.id", is(1)));
-//
-//        verify(savedListService).get(anyLong());
-//        verify(candidateSavedListService).copy(savedList, request);
-//    }
+
+    @Test
+    @DisplayName("copy saved list succeeds")
+    void copySavedListSucceeds() throws Exception {
+        CopySourceContentsRequest request = new CopySourceContentsRequest();
+
+        // Set up the source list which I am copying across to my test saved list.
+        Long testTargetListId = 11L;
+        SavedList targetList = new SavedList();
+        targetList.setId(testTargetListId);
+        targetList.setName("test list");
+
+        given(savedListService
+            .get(SAVED_LIST_ID))
+            .willReturn(savedList);
+
+        given(candidateSavedListService
+            .copy(any(SavedList.class), any(CopySourceContentsRequest.class)))
+            .willReturn(targetList);
+
+        mockMvc.perform(put(BASE_PATH + COPY_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.id", is(testTargetListId.intValue())));
+
+        verify(savedListService).get(anyLong());
+        verify(candidateSavedListService).copy(any(SavedList.class), any(CopySourceContentsRequest.class));
+    }
 
     @Test
     @DisplayName("create folder succeeds")
@@ -435,34 +428,30 @@ class SavedListAdminApiTest extends ApiTestBase {
         verify(savedListService).importEmployerFeedback(anyLong());
     }
 
-    // todo another failing test with error Content type not set.
-    //  As with copy saved list succeeds test, I can't figure it out.
-    //  Will create new issue for these.
-//    @Test
-//    @DisplayName("publish saved list succeeds")
-//    void publishSavedListSucceeds() throws Exception {
-//        PublishListRequest request = new PublishListRequest();
-//        request.setColumns(new ArrayList<>());
-//        request.setPublishClosedOpps(false);
-//
-//        given(savedListService
-//                .publish(SAVED_LIST_ID, request))
-//                .willReturn(savedList);
-//
-//        mockMvc.perform(put(BASE_PATH + PUBLISH_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
-//                        .header("Authorization", "Bearer " + "jwt-token")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request))
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$", notNullValue()))
-//                .andExpect(jsonPath("$.id", is(1)));
-//
-//        verify(savedListService).publish(SAVED_LIST_ID, request);
-//    }
+    @Test
+    @DisplayName("publish saved list succeeds")
+    void publishSavedListSucceeds() throws Exception {
+        PublishListRequest request = new PublishListRequest();
+        request.setColumns(new ArrayList<>());
+
+        given(savedListService
+                .publish(anyLong(), any(PublishListRequest.class)))
+                .willReturn(savedList);
+
+        mockMvc.perform(put(BASE_PATH + PUBLISH_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.id", is(1)));
+
+        verify(savedListService).publish(anyLong(), any(PublishListRequest.class));
+    }
 
     @Test
     @DisplayName("update context note succeeds")
