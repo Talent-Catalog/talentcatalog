@@ -6,14 +6,19 @@
 </div>
 
 <!--Note: using use tr to pick scss style-->
-<tbody>
-<tr *ngFor="let chat of chats" (click)="selectCurrent(chat)"
-    [ngClass]="{'current': currentChat?.id == chat.id}">
-  <td>
-    <app-view-chat
-        [chat]="chat"
-    >
-    </app-view-chat>
-  </td>
-</tr>
-</tbody>
+<div class="table-responsive">
+  <table class="table table-hover">
+
+    <tbody>
+    <tr *ngFor="let chat of chats" (click)="selectCurrent(chat)"
+        [ngClass]="{'current': currentChat?.id == chat.id}">
+      <td>
+        <app-view-chat
+            [chat]="chat"
+        >
+        </app-view-chat>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

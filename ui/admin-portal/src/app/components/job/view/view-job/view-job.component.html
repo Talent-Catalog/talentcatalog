@@ -12,7 +12,7 @@
     {{error}}
   </div>
 
-  <div class="d-flex justify-content-between align-items-end">
+  <div class="d-flex justify-content-between align-items-center">
     <div>
       <h1 class="my-3">{{job.name}}
         <span class="ms-2">
@@ -35,7 +35,7 @@
 
 
     <div *ngIf="!job.publishedDate">
-      <button type="button" class="btn btn-outline-dark me-2"
+      <button type="button" class="btn btn-success me-2"
               (click)="publishJob()"
               title="Publish job so that others can see it">
       Publish Job</button>
@@ -117,7 +117,7 @@
 
         <!-- Source Partners -->
         <ng-container ngbNavItem="Source">
-          <a ngbNavLink>Partners/Chats
+          <a ngbNavLink [ngbTooltip]="'View partner details & start a chat'">Partners/Chats
             <app-chat-read-status
               [chats]="partnerChats"
             ></app-chat-read-status>
@@ -132,7 +132,7 @@
 
         <!-- Group chats -->
         <ng-container ngbNavItem="GroupChats" *ngIf="visible">
-          <a ngbNavLink>
+          <a ngbNavLink [ngbTooltip]="'Chats that involve more than one partner or candidate/s'">
             Group Chats
             <app-chat-read-status
               [chats]="groupChats"
