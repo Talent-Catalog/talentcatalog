@@ -46,7 +46,6 @@ import org.tctalent.server.service.db.JobChatUserService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
-import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * This is the api where new chats can be created and updated.
@@ -81,14 +80,14 @@ public class ChatAdminApi implements
 
         JobChat chat = chatService.createJobChat(request.getType(),
             jobOpp, sourcePartner, candidateOpp);
-        return chatDto().build(chat);
+        return chatService.getJobChatDtoBuilder().build(chat);
     }
 
     @Override
     @NonNull
     public List<Map<String, Object>> list() {
         List<JobChat> chats = chatService.listJobChats();
-        return chatDto().buildList(chats);
+        return chatService.getJobChatDtoBuilder().buildList(chats);
     }
 
 
@@ -105,7 +104,7 @@ public class ChatAdminApi implements
 
         JobChat jobChat = chatService.getOrCreateJobChat(request.getType(),
             jobOpp, sourcePartner, candidateOpp);
-        return chatDto().build(jobChat);
+        return chatService.getJobChatDtoBuilder().build(jobChat);
     }
 
     /**
@@ -140,12 +139,5 @@ public class ChatAdminApi implements
         User user = userService.getUser(userId);
         JobChatUserInfo info = jobChatUserService.getJobChatUserInfo(chat, user);
         return info;
-    }
-
-
-    private DtoBuilder chatDto() {
-        return new DtoBuilder()
-            .add("id")
-        ;
     }
 }

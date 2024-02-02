@@ -63,7 +63,7 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
     if (this.chats) {
       this.unsubscribe();
       if (this.chats.length == 1) {
-        this.subscription = this.chatService.getChatReadStatusObservable(this.chats[0])
+        this.subscription = this.chatService.getChatIsRead$(this.chats[0])
         .subscribe(
           {
             next: (chatIsRead) => {
@@ -74,9 +74,9 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
         )
       } else if (this.chats.length > 1) {
 
-        //Construct array of chat read statues from array of chats
+        //Construct array of chat read statuses from array of chats
         let chatReadStatuses$ = this.chats.map(
-          (chat) => this.chatService.getChatReadStatusObservable(chat));
+          (chat) => this.chatService.getChatIsRead$(chat));
 
         //Combine the latest values of all the statuses and return a single status which is true
         //only if all are true (ie none are false)

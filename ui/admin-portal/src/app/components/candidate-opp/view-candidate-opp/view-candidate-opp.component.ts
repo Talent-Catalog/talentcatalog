@@ -169,12 +169,12 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
   private checkVisibility() {
     const candidateStage = this.opp?.stage;
     const candidatePartner = this.opp?.candidate?.user?.partner;
-    const recruiterPartner = this.opp?.jobOpp.recruiterPartner;
+    const jobCreator = this.opp?.jobOpp.jobCreator;
     const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
 
     //User is recruiter for this opp or default job creator
-    const userIsRecruitingPartner =
-      loggedInPartner.defaultJobCreator || loggedInPartner.id == recruiterPartner?.id;
+    const userIsJobCreator =
+      loggedInPartner.defaultJobCreator || loggedInPartner.id == jobCreator?.id;
 
     //User is source partner responsible for candidate or default source partner
     const userIsCandidatePartner =
@@ -183,12 +183,12 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
     this.candidateProspectTabVisible = userIsCandidatePartner;
 
     //todo Recruiters only see candidates past the CVReview stage.
-    this.candidateRecruitingTabVisible = userIsCandidatePartner || userIsRecruitingPartner;
+    this.candidateRecruitingTabVisible = userIsCandidatePartner || userIsJobCreator;
 
     //Label on candidateRecruiting chat depends on who the logged in user is.
     if (userIsCandidatePartner) {
       this.candidateRecruitingTabTitle = 'Chat with candidate & recruiter'
-    } else if (userIsRecruitingPartner) {
+    } else if (userIsJobCreator) {
       this.candidateRecruitingTabTitle = 'Chat with candidate & source partner'
     }
   }

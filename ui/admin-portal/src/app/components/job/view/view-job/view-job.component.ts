@@ -80,7 +80,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   private lastTabKey: string = 'JobLastTab';
 
   constructor(
-    private authService: AuthorizationService,
+    private authorizationService: AuthorizationService,
     private authenticationService: AuthenticationService,
     private candidateSourceService: CandidateSourceCandidateService,
     private chatService: ChatService,
@@ -97,7 +97,6 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   }
 
   ngOnInit(): void {
-    this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
   }
 
@@ -105,12 +104,26 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     if (changes.job) {
       this.checkSubmissionListContents();
       this.jobPrepItems.forEach(j => j.job = this.job);
-      this.fetchJobChats();
-      this.fetchPartnerChats();
+      this.fetchGroupChats();
+      if (this.authorizationService.isSourcePartner() &&
+        !this.authorizationService.isDefaultSourcePartner()) {
+        //There is only one partner chat to be fetched - my one.
+        this.loggedInUser = this.authenticationService.getLoggedInUser();
+        let partner = this.loggedInUser.partner;
+        if (partner) {
+          this.fetchChats([partner]);
+        }
+      } else {
+        this.fetchPartnerChats();
+      }
     }
   }
 
-  private fetchJobChats() {
+  get editable(): boolean {
+    return this.loggedInUser && !this.loggedInUser.readOnly
+  }
+
+  private fetchGroupChats() {
     const allCandidatesChatRequest: CreateChatRequest = {
       type: JobChatType.AllJobCandidates,
       jobId: this.job?.id
@@ -174,11 +187,11 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   get visible(): boolean {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     let visible = false;
-    if (this.authService.isJobCreator()) {
+    if (this.authorizationService.isJobCreator()) {
       //Only the actual job creator (and the default job creator) see this chat
-      visible = this.authService.isDefaultJobCreator() ? true :
+      visible = this.authorizationService.isDefaultJobCreator() ? true :
                 this.job.jobCreator.id == loggedInUser.partner.id;
-    } else if (this.authService.isSourcePartner()) {
+    } else if (this.authorizationService.isSourcePartner()) {
       //All source partners see the chat
       visible = true;
     }
@@ -304,7 +317,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   }
 
   canAccessSalesforce() {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
   onChatReadStatusCreated(chatReadStatus$: Observable<boolean>) {

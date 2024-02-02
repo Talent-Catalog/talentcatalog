@@ -26,6 +26,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.chat.Post;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface ChatPostService {
 
@@ -39,6 +40,12 @@ public interface ChatPostService {
      */
     @NonNull
     ChatPost getChatPost(long id) throws NoSuchObjectException;
+
+    /**
+     * Return a DtoBuilder for ChatPosts
+     * @return DtoBuilder that builds DTO objects
+     */
+    DtoBuilder getChatPostDtoBuilder();
 
     /**
      * Returns the last post in the given chat.

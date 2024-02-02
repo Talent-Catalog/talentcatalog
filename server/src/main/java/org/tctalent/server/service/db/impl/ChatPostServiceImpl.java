@@ -42,6 +42,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -76,6 +77,42 @@ public class ChatPostServiceImpl implements ChatPostService {
     public ChatPost getChatPost(long id) throws NoSuchObjectException {
        return chatPostRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(ChatPost.class, id));
+    }
+
+    @Override
+    public DtoBuilder getChatPostDtoBuilder() {
+        return new DtoBuilder()
+            .add("id")
+            .add("content")
+            .add("createdDate")
+            .add("createdBy", userDto())
+            .add("jobChat", jobChatDto())
+            .add("updatedDate")
+            .add("updatedBy", userDto())
+            ;
+    }
+
+    private DtoBuilder jobChatDto() {
+        return new DtoBuilder()
+            .add("id")
+            ;
+    }
+
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("firstName")
+            .add("lastName")
+            .add("partner", partnerDto())
+            .add("role")
+            ;
+    }
+
+    private DtoBuilder partnerDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("abbreviation")
+            ;
     }
 
     @Nullable
