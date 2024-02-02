@@ -9,12 +9,6 @@
 <div class="table-responsive">
   <table class="table table-hover">
 
-    <thead class="table-primary">
-    <tr>
-      <th>Group Chats</th>
-    </tr>
-    </thead>
-
     <tbody>
     <tr *ngFor="let chat of chats" (click)="selectCurrent(chat)"
         [ngClass]="{'current': currentChat?.id == chat.id}">
