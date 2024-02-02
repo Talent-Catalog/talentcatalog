@@ -53,6 +53,9 @@ public class ChatPostAdminApi implements
         return chatPostService.getChatPostDtoBuilder().buildList(posts);
     }
 
+    /**
+     * Note that id is id of post, not chat
+     */
     @PostMapping("{id}/upload")
     public UrlDto upload(
         @PathVariable("id") long id, @RequestParam("file") MultipartFile file)

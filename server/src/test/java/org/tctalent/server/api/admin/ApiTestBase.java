@@ -51,7 +51,7 @@ public class ApiTestBase {
     @MockBean
     EmailHelper emailHelper;
 
-    void configureAuthentication() {
+    public void configureAuthentication() {
         user = new User(USER_NAME, FIRST_NAME, LAST_NAME, EMAIL, ROLE);
 
         when(jwtTokenProvider.validateToken(anyString())).thenReturn(true);
