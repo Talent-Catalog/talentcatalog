@@ -42,6 +42,7 @@ import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
@@ -55,6 +56,8 @@ import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
 import org.tctalent.server.model.db.Industry;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Language;
@@ -420,6 +423,15 @@ public class AdminApiTestUtil {
         return task;
     }
 
+    public static List<TaskImpl> getListOfTasks() {
+        TaskImpl task1 = getTask();
+        TaskImpl task2 = getTask();
+        task2.setName("test task 2");
+        TaskImpl task3 = getTask();
+        task3.setName("test task 3");
+        return List.of(task1, task2, task3);
+    }
+
     static SavedList getSavedList() {
         SavedList savedList = new SavedList();
         savedList.setId(1L);
@@ -583,6 +595,42 @@ public class AdminApiTestUtil {
         return joi;
     }
 
+  public static JobChat getChat() {
+        JobChat chat = new JobChat();
+        chat.setId(99L);
+        chat.setJobOpp(getJob());
+        return chat;
+  }
+
+    public static List<JobChat> getListOfChats() {
+        JobChat chat1 = getChat();
+        JobChat chat2 = getChat();
+        chat2.setId(100L);
+        JobChat chat3 = getChat();
+        chat2.setId(101L);
+        return List.of(
+            chat1, chat2, chat3
+        );
+    }
+
+    public static ChatPost getChatPost() {
+        ChatPost post = new ChatPost();
+        post.setId(199L);
+        post.setContent("Post 1");
+        return post;
+    }
+
+    public static List<ChatPost> getListOfPosts() {
+        ChatPost post1 = getChatPost();
+        ChatPost post2 = getChatPost();
+        post2.setContent("Post 2");
+        ChatPost post3 = getChatPost();
+        post2.setContent("Post 3");
+        return List.of(
+            post1, post2, post3
+        );
+    }
+
   public static List<Country> getCountries() {
         return List.of(
             new Country("Jordan", Status.active),
@@ -622,6 +670,13 @@ public class AdminApiTestUtil {
             new Industry("Finance", Status.active),
             new Industry("Health", Status.active)
         );
+    }
+
+    public static JobChatUserInfo getJobChatUserInfo() {
+        JobChatUserInfo info = new JobChatUserInfo();
+        info.setLastPostId(123L);
+        info.setLastReadPostId(100L);
+        return info;
     }
 
     public static PartnerImpl getPartner() {

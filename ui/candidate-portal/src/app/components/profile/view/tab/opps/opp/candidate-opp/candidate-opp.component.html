@@ -96,35 +96,49 @@
           </div>
 
 
-          <div>
-            <label class="form-label" for="chats">
-              {{ 'CANDIDATE-OPPS.TABLE.CHATS' | translate }}
-            </label>
-            <div id="chats">
-              <div class="link underline" (click)="setSelectedChatType(JobChatType.CandidateProspect)">
-                <app-chat-read-status
-                  [chats]="[sourceChat]"
-                >
-                </app-chat-read-status>
-                {{ getChatHeaderTranslationKey(JobChatType.CandidateProspect) | translate }}
-              </div>
-
-              <div class="link underline" (click)="setSelectedChatType(JobChatType.CandidateRecruiting)">
-                <app-chat-read-status
-                  [chats]="[destinationChat]"
-                >
-                </app-chat-read-status>
-                {{ getChatHeaderTranslationKey(JobChatType.CandidateRecruiting) | translate }}
-              </div>
-
-              <div class="link underline" (click)="setSelectedChatType(JobChatType.AllJobCandidates)">
-                <app-chat-read-status
-                  [chats]="[allJobCandidatesChat]"
-                >
-                </app-chat-read-status>
-                {{ getChatHeaderTranslationKey(JobChatType.AllJobCandidates) | translate }}
-              </div>
-            </div>
+          <div id="chats" class="table-responsive">
+            <table class="table table-hover bg-white">
+              <thead class="table-secondary">
+                <tr>
+                  <th>{{ 'CANDIDATE-OPPS.TABLE.CHATS' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr (click)="setSelectedChatType(JobChatType.CandidateProspect)">
+                  <td>
+                    <div class="link underline">
+                      <app-chat-read-status
+                        [chats]="[sourceChat]"
+                      >
+                      </app-chat-read-status>
+                      {{ getChatHeaderTranslationKey(JobChatType.CandidateProspect) | translate }}
+                    </div>
+                  </td>
+                </tr>
+                <tr (click)="setSelectedChatType(JobChatType.CandidateRecruiting)">
+                  <td>
+                    <div class="link underline">
+                      <app-chat-read-status
+                        [chats]="[destinationChat]"
+                      >
+                      </app-chat-read-status>
+                      {{ getChatHeaderTranslationKey(JobChatType.CandidateRecruiting) | translate }}
+                    </div>
+                  </td>
+                </tr>
+                <tr (click)="setSelectedChatType(JobChatType.AllJobCandidates)">
+                  <td>
+                    <div class="link underline">
+                    <app-chat-read-status
+                      [chats]="[allJobCandidatesChat]"
+                    >
+                    </app-chat-read-status>
+                    {{ getChatHeaderTranslationKey(JobChatType.AllJobCandidates) | translate }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

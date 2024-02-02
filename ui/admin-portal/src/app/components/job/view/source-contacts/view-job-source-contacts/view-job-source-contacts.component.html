@@ -6,7 +6,7 @@
 
     <thead class="table-primary">
     <tr>
-      <th *ngIf="editable"></th>
+      <th></th>
       <th></th>
       <th>Partner</th>
       <th>Contact</th>
@@ -16,7 +16,7 @@
 
     <tbody>
     <tr *ngFor="let partner of sourcePartners" (click)="selectCurrent(partner)"
-        [ngClass]="{'active': currentSourcePartner?.id == partner.id && selectable}">
+        [ngClass]="{'current': currentSourcePartner?.id == partner.id && selectable}">
       <td>
         <div class="btn-group" *ngIf="isEditable(partner)">
           <button type="button" class="btn btn-default" (click)="editPartnerContact(partner)"><i
