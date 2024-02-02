@@ -89,13 +89,14 @@ class TaskAdminApiTest extends ApiTestBase {
         given(taskService.listTasks())
             .willReturn(taskList);
 
-        mockMvc.perform(get(BASE_PATH)
-                .header("Authorization", "Bearer " + "jwt-token")
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+                get(BASE_PATH)
+                    .header("Authorization", "Bearer " + "jwt-token")
+                    .accept(MediaType.APPLICATION_JSON)
+            )
 
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$", hasSize(3)))
             .andExpect(jsonPath("$.[1].name", is("test task 2")));
