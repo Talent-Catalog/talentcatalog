@@ -117,7 +117,7 @@
 
         <!-- Source Partners -->
         <ng-container ngbNavItem="Source">
-          <a ngbNavLink>Partners/Chats
+          <a ngbNavLink [ngbTooltip]="'View partner details & start a chat'">Partners/Chats
             <app-chat-read-status
               [chats]="partnerChats"
             ></app-chat-read-status>
@@ -132,7 +132,7 @@
 
         <!-- Group chats -->
         <ng-container ngbNavItem="GroupChats" *ngIf="visible">
-          <a ngbNavLink>
+          <a ngbNavLink [ngbTooltip]="'Chats that involve more than one partner or candidate/s'">
             Group Chats
             <app-chat-read-status
               [chats]="groupChats"
