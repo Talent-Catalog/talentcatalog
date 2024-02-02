@@ -38,6 +38,7 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
+import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
@@ -453,6 +454,24 @@ public class AdminApiTestUtil {
         savedList.setUpdatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         savedList.setUsers(Set.of(caller));
         savedList.setTasks(Set.of(getTask()));
+
+        return savedList;
+    }
+
+    static SavedList getSavedListWithCandidates() {
+        SavedList savedList = getSavedList();
+
+        final Candidate candidate1 = getCandidate();
+        candidate1.setId(101L);
+        CandidateSavedList csl1 = new CandidateSavedList(candidate1, savedList);
+        final Candidate candidate2 = getCandidate();
+        candidate2.setId(102L);
+        CandidateSavedList csl2 = new CandidateSavedList(candidate2, savedList);
+        final Candidate candidate3 = getCandidate();
+        candidate3.setId(103L);
+        CandidateSavedList csl3 = new CandidateSavedList(candidate3, savedList);
+
+        savedList.setCandidateSavedLists(Set.of(csl1, csl2, csl3));
 
         return savedList;
     }
