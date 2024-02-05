@@ -182,7 +182,6 @@
           <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
           Feedback <i class="fas fa-globe"></i>
         </button>
-        <!-- todo should this button be here if there is no salesforce associated link? Currently appears even if no sf link, appears on all lists. -->
         <button *ngIf="isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
                 (click)="createUpdateSalesforce()"
                 title="Create or update candidates in Salesforce">
