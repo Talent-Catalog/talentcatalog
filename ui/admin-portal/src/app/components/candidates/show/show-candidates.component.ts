@@ -156,6 +156,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   loading: boolean;
   searching: boolean;
   closing: boolean;
+  adding: boolean;
   exporting: boolean;
   importing: boolean;
   importingFeedback: boolean;
