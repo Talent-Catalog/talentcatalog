@@ -211,6 +211,7 @@
           <ng-template #rt let-r="result" let-t="term">
             <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
           </ng-template>
+          <div *ngIf=adding class="small text-info text-center mt-1">Adding candidate to list <i class="fas fa-spinner fa-spin" ></i></div>
         </div>
 
         <div *ngIf="isSavedList()" class="flex-fill w-50 mx-2">

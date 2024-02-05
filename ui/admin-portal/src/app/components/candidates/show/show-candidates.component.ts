@@ -1322,15 +1322,18 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   addCandidateToList(candidate: Candidate) {
+    this.adding = true;
     const request: IHasSetOfCandidates = {
       candidateIds: [candidate.id]
     };
     this.savedListCandidateService.merge(this.candidateSource.id, request).subscribe(
       () => {
         this.doSearch(true);
+        this.adding = false;
       },
       (error) => {
         this.error = error;
+        this.adding = false;
       }
     );
 
