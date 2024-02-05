@@ -155,6 +155,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   error: any;
   loading: boolean;
   searching: boolean;
+  closing: boolean;
   exporting: boolean;
   importing: boolean;
   importingFeedback: boolean;
@@ -1819,6 +1820,16 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return this.authService.canAccessSalesforce();
   }
 
+  closeSelectedOpportunities() {
+    const editOpp = this.modalService.open(EditCandidateOppComponent, {size: 'lg'});
+    editOpp.componentInstance.closing = true;
+    editOpp.result
+    .then((info: CandidateOpportunityParams) => {
+      this.doCloseOpps(this.selectedCandidates, this.candidateSource.sfJobOpp, info)
+    })
+    .catch(() => { });
+  }
+
   closeOpportunity(candidate: Candidate) {
     const job = this.candidateSource.sfJobOpp;
     if (job) {
@@ -1826,22 +1837,31 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       editOpp.componentInstance.closing = true;
       editOpp.result
       .then((info: CandidateOpportunityParams) => {
-        this.doUpdateOpp(candidate, job, info)
+        this.doCloseOpps([candidate], job, info)
       })
       .catch(() => { });
     }
   }
 
-  private doUpdateOpp(candidate: Candidate, job: OpportunityIds, info: CandidateOpportunityParams) {
-    this.updating = true;
+  /**
+   *   This method is unique to the other create/update opportunity methods as we also want to deselect the selected opps.
+   *   Otherwise, closed opps will still be selected and may not be viewable unless the 'show closed cases' box is checked.
+   *   This could lead to these selected closed opps being targeted unintentionally by other methods which use selected candidates.
+   */
+  private doCloseOpps(candidates: Candidate[], job: OpportunityIds, info: CandidateOpportunityParams) {
+    this.closing = true;
     this.error = null;
-    this.candidateService.createUpdateOppsFromCandidates([candidate.id], job.sfId, info)
+
+    const candidateIds: number[] = candidates.map(c => c.id);
+    this.candidateService.createUpdateOppsFromCandidates(candidateIds, job.sfId, info)
     .subscribe(result => {
+        //Need to deselect any candidates being removed.
+        this.selectedCandidates = this.selectedCandidates.filter(c => !candidates.includes(c));
         //Refresh to display any changed stages
         this.doSearch(true);
-        this.updating = false;
+        this.closing = false;
       },
-      err => {this.error = err; this.updating = false; }
+      err => {this.error = err; this.closing = false; }
     );
   }
 }

@@ -145,10 +145,17 @@
           <i class="fas fa-sync"></i><i class="fas fa-user-check"></i>
         </button>
 
-        <button class="btn btn-sm btn-secondary" *ngIf="isSavedList()" [disabled]="!isSelection()"
+        <button class="btn btn-sm btn-secondary" *ngIf="!isJobList() && isContentModifiable()" [disabled]="!isSelection()"
                 (click)="removeSelectedCandidatesFromList()"
                 title="Remove Selection">
           Remove <i class="fas fa-user-check"></i>
+        </button>
+
+        <button class="btn btn-sm btn-secondary" *ngIf="isJobList()" [disabled]="!isSelection()"
+                (click)="closeSelectedOpportunities()"
+                title="Close Selection">
+          <i class="fas fa-spinner fa-spin" *ngIf=closing></i>
+          Close <i class="fas fa-user-check"></i>
         </button>
 
         <button  *ngIf="isImportable()" class="btn btn-sm btn-secondary" (click)="importCandidates()"
@@ -180,7 +187,7 @@
                 (click)="createUpdateSalesforce()"
                 title="Create or update candidates in Salesforce">
           <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
-          Update Case(s)
+          Update Case/s <i class="fa-solid fa-address-book"></i>
         </button>
 
         <button class="btn btn-sm btn-secondary" *ngIf="canResolveTasks()" [disabled]="!isSelection()"
