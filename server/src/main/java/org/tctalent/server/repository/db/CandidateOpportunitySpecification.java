@@ -17,6 +17,7 @@
 package org.tctalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -107,6 +108,19 @@ public class CandidateOpportunitySpecification {
                 //Otherwise the filter when true will only show closed opps - which we don't want.
                 if (!showClosed) {
                     conjunction.getExpressions().add(builder.equal(opp.get("closed"), false));
+                }
+            }
+
+            //OVERDUE - if true we only display overdue opps
+            if (request.getOverdue() != null) {
+                if (request.getOverdue()) {
+                    conjunction.getExpressions()
+                        .add(
+                            builder.and(
+                                builder.isNotNull(opp.get("nextStepDueDate")),
+                                builder.lessThan(opp.get("nextStepDueDate"), LocalDate.now())
+                            )
+                        );
                 }
             }
 

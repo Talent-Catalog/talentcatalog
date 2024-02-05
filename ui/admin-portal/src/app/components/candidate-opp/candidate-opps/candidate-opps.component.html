@@ -24,6 +24,14 @@
                    formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
           </div>
         </div>
+        <div class="col-md-3">
+          <div class="form-check">
+            <label class="form-label" [title]="overdueOppsOnlyTip"
+                   for="overdueOppsOnly">{{overdueOppsOnlyLabel}}</label>
+            <input *ngIf="selectedStages.length === 0" [title]="overdueOppsOnlyTip" type="checkbox"
+                   formControlName="overdueOppsOnly" id="overdueOppsOnly" class="form-check-input">
+          </div>
+        </div>
         <div class="col-md-3 me-md-2">
           <div class="form-check">
             <label class="form-label" [title]="showClosedOppsTip"
@@ -100,7 +108,8 @@
 
         <tbody>
         <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
-            [ngClass]="{'current': currentOpp?.id == opp.id}">
+            [title]="isOverdue(opp) ? 'The next step is overdue' : ''"
+            [ngClass]="{'current': currentOpp?.id == opp.id, 'alert alert-warning': isOverdue(opp)}">
           <td *ngIf="!preview">
             {{opp.nextStepDueDate}}
           </td>

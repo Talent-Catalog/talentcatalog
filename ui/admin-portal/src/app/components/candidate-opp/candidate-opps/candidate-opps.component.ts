@@ -42,6 +42,8 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   //Override text to replace "opps" text with "cases"
   myOppsOnlyLabel = "My cases only";
   myOppsOnlyTip = "Only show cases that I am the contact for";
+  overdueOppsOnlyLabel = "Overdue next step cases only";
+  overdueOppsOnlyTip = "Only show cases whose NextStep is overdue";
   showClosedOppsLabel = "Show closed cases";
   showClosedOppsTip = "Show cases that have been closed";
   showInactiveOppsLabel = "Show inactive cases";
@@ -76,5 +78,15 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
 
   protected loadStages(): EnumOption[] {
     return enumOptions(CandidateOpportunityStage);
+  }
+
+  isOverdue(opp: CandidateOpportunity) {
+    let overdue: boolean = false;
+    if (opp.nextStepDueDate) {
+      const today = new Date();
+      const dueDate = new Date(opp.nextStepDueDate);
+      overdue =  dueDate < today;
+    }
+    return overdue;
   }
 }

@@ -61,6 +61,8 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
    */
   myOppsOnlyLabel = "My opps only";
   myOppsOnlyTip = "Only show opps that I am the contact for";
+  overdueOppsOnlyLabel = "Overdue next step opps only";
+  overdueOppsOnlyTip = "Only show opps whose NextStep is overdue";
   showClosedOppsLabel = "Show closed opps";
   showClosedOppsTip = "Show opps that have been closed";
   showInactiveOppsLabel = "Show inactive opps";
@@ -89,6 +91,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   private filterKeySuffix: string = 'Filter';
   private myOppsOnlySuffix: string = 'MyOppsOnly';
+  private overdueOppsOnlySuffix: string = 'OverdueOppsOnly';
   private savedStateKeyPrefix: string = 'BrowseKey';
   private showClosedOppsSuffix: string = 'ShowClosedOpps';
   private showInactiveOppsSuffix: string = 'ShowInactiveOpps';
@@ -142,12 +145,14 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
     //Pick up previous options
     const previousMyOppsOnly: string = this.localStorageService.get(this.savedStateKey() + this.myOppsOnlySuffix);
+    const previousOverdueOppsOnly: string = this.localStorageService.get(this.savedStateKey() + this.overdueOppsOnlySuffix);
     const previousShowClosedOpps: string = this.localStorageService.get(this.savedStateKey() + this.showClosedOppsSuffix);
     const previousShowInactiveOpps: string = this.localStorageService.get(this.savedStateKey() + this.showInactiveOppsSuffix);
 
     this.searchForm = this.fb.group({
       keyword: [filter],
       myOppsOnly: [previousMyOppsOnly ? previousMyOppsOnly : false],
+      overdueOppsOnly: [previousOverdueOppsOnly ? previousOverdueOppsOnly : false],
       showClosedOpps: [previousShowClosedOpps ? previousShowClosedOpps : false],
       showInactiveOpps: [previousShowInactiveOpps ? previousShowInactiveOpps : false],
       selectedStages: [[]],
@@ -173,6 +178,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected get myOppsOnly(): boolean {
     return this.searchForm ? this.searchForm.value.myOppsOnly : false;
+  }
+
+  protected get overdueOppsOnly(): boolean {
+    return this.searchForm ? this.searchForm.value.overdueOppsOnly : false;
   }
 
   get SearchOppsBy() {
@@ -263,13 +272,19 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
       req.ownedByMyPartner = true;
     }
 
-    //Default - filters out closed opps and only includes active stages
+    //Default - filters out closed opps and only includes active stages but not only overdue opps
     req.sfOppClosed = false;
     req.activeStages = true;
+    req.overdue = false;
 
     if (this.showInactiveOpps) {
       //Turn off the active stages filter
       req.activeStages = false;
+    }
+
+    if (this.overdueOppsOnly) {
+      //Only show overdue opps
+      req.overdue = true;
     }
 
     if (this.showClosedOpps) {
