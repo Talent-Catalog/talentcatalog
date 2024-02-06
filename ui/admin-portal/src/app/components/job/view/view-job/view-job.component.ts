@@ -102,13 +102,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.job) {
+      this.loggedInUser = this.authenticationService.getLoggedInUser();
       this.checkSubmissionListContents();
       this.jobPrepItems.forEach(j => j.job = this.job);
       this.fetchGroupChats();
       if (this.authorizationService.isSourcePartner() &&
         !this.authorizationService.isDefaultSourcePartner()) {
         //There is only one partner chat to be fetched - my one.
-        this.loggedInUser = this.authenticationService.getLoggedInUser();
         let partner = this.loggedInUser.partner;
         if (partner) {
           this.fetchChats([partner]);
