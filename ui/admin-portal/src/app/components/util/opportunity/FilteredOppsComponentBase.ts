@@ -246,12 +246,12 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
       case SearchOppsBy.mineAsSourcePartner:
         req.ownershipType = OpportunityOwnershipType.AS_SOURCE_PARTNER;
-        this.populateOwnershipRequest(req);
+        this.populateRequestUsingContext(req);
         break;
 
       case SearchOppsBy.mineAsJobCreator:
         req.ownershipType = OpportunityOwnershipType.AS_JOB_CREATOR;
-        this.populateOwnershipRequest(req);
+        this.populateRequestUsingContext(req);
         break;
     }
 
@@ -265,7 +265,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   }
 
-  private populateOwnershipRequest(req: SearchOpportunityRequest) {
+  private populateRequestUsingContext(req: SearchOpportunityRequest) {
     if (this.myOppsOnly) {
       req.ownedByMe = true;
     } else {
