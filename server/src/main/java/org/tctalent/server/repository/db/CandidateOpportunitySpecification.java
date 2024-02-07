@@ -240,6 +240,7 @@ public class CandidateOpportunitySpecification {
                                             ors.getExpressions().add(builder.isNull(contact));
                                         }
 
+                                        //Only add ors if we have some
                                         if (!ors.getExpressions().isEmpty()) {
                                             conjunction.getExpressions().add(ors);
                                         }
