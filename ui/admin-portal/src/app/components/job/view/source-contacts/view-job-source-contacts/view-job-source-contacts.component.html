@@ -6,7 +6,8 @@
 
     <thead class="table-primary">
     <tr>
-      <th *ngIf="editable"></th>
+      <th></th>
+      <th></th>
       <th>Partner</th>
       <th>Contact</th>
       <th>Email</th>
@@ -15,12 +16,18 @@
 
     <tbody>
     <tr *ngFor="let partner of sourcePartners" (click)="selectCurrent(partner)"
-        [ngClass]="{'active': currentSourcePartner?.id == partner.id && selectable}">
+        [ngClass]="{'current': currentSourcePartner?.id == partner.id && selectable}">
       <td>
         <div class="btn-group" *ngIf="isEditable(partner)">
           <button type="button" class="btn btn-default" (click)="editPartnerContact(partner)"><i
             class="fas fa-edit" title="Change partner details"></i></button>
         </div>
+      </td>
+      <td>
+        <app-chat-read-status *ngIf="isShowReadStatus(partner)"
+          [chats]="[partner._jobChat]"
+        >
+        </app-chat-read-status>
       </td>
       <td>{{partner.name}} {{sourceCountries(partner)}}</td>
       <td>{{partner.jobContact?.firstName}} {{partner.jobContact?.lastName}}</td>

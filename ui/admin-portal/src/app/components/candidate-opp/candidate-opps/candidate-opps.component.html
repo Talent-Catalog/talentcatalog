@@ -67,6 +67,11 @@
         <!--          Header-->
         <thead class="table-primary">
         <tr>
+          <th *ngIf="!preview" (click)="toggleSort('nextStepDueDate', 'DESC')">
+            <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
+            Due
+          </th>
           <th *ngIf="!showJobOppName" (click)="toggleSort('name')">
             <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
@@ -87,11 +92,6 @@
                            *ngIf="searchBy"></app-sorted-by>
             Next step
           </th>
-          <th *ngIf="!preview" (click)="toggleSort('nextStepDueDate', 'DESC')">
-            <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"
-                           *ngIf="searchBy"></app-sorted-by>
-            Due
-          </th>
           <th *ngIf="preview">
             Next?
           </th>
@@ -101,7 +101,9 @@
         <tbody>
         <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
             [ngClass]="{'current': currentOpp?.id == opp.id}">
-
+          <td *ngIf="!preview">
+            {{opp.nextStepDueDate}}
+          </td>
           <td *ngIf="!showJobOppName" [title]="opp.name">
             {{opp.name | truncate: 25}}
             <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
@@ -124,9 +126,6 @@
           </td>
           <td *ngIf="!preview" [title]="getNextStepHoverString(opp)">
             {{opp.nextStep | truncate: 38}}
-          </td>
-          <td *ngIf="!preview">
-            {{opp.nextStepDueDate}}
           </td>
           <td *ngIf="preview">
             <div *ngIf="opp?.nextStep" [ngbPopover]="nextStepPopover" triggers="mouseenter:mouseleave" container="body">

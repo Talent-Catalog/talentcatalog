@@ -14,28 +14,38 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+package org.tctalent.server.model.db;
 
-import {PostsComponent} from './posts.component';
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-describe('PostsComponent', () => {
-  let component: PostsComponent;
-  let fixture: ComponentFixture<PostsComponent>;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import java.io.Serializable;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ PostsComponent ]
-    })
-    .compileComponents();
-  });
+/**
+ * Primary key for {@link JobChatUser}.
+ * See doc for that class.
+ *
+ * @author John Cameron
+ */
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor
+@Embeddable
+public class JobChatUserKey implements Serializable {
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PostsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    @Column(name = "job_chat_id")
+    private Long jobChatId;
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+    @Column(name = "user_id")
+    private Long userId;
+
+    public JobChatUserKey() {
+    }
+}

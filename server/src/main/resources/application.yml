@@ -135,11 +135,14 @@ server:
   tomcat:
     redirect-context-root: false
 
-#  todo These heroku entries don't do anything and should come out
-  url: https://tbbtalent-staging.herokuapp.com
+#  todo Unused?
+  url: https://tctalent.org
 web:
-  portal: ${WEB_PORTAL:https://tbbtalent-staging.herokuapp.com/candidate-portal}
-  admin: ${WEB_ADMIN:https://tbbtalent-staging.herokuapp.com/admin-portal}
+  #  todo Unused?
+  portal: https://tctalent.org/candidate-portal
+
+  # This is used in SiteRedirectController to redirect urls from the Version 1 TC to the Version 2 TC
+  admin: https://tctalent.org/admin-portal
 
 flyway:
   ignoreMissingMigrations: false

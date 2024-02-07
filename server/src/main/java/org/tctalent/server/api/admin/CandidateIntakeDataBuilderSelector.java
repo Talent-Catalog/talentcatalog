@@ -101,6 +101,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("maritalStatus")
                 .add("maritalStatusNotes")
+                .add("monitoringEvaluationConsent")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", educationLevelDto())
@@ -266,7 +267,9 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("occupationCategory")
                 .add("occupationSubCategory")
                 .add("englishThreshold")
-                .add("englishThresholdNotes")
+                .add("languagesRequired")
+                .add("languagesThresholdMet")
+                .add("languagesThresholdNotes")
                 ;
     }
 

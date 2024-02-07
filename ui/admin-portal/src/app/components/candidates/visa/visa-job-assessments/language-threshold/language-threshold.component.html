@@ -1,0 +1,43 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<form [formGroup]="form">
+  <div class="mb-3">
+    <label class="form-label" for="visaJobLanguagesRequired">Select languages required for role</label>
+    <div class="float-end">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <ng-select
+      id="visaJobLanguagesRequired"
+      [items]="languages"
+      [multiple]="true"
+      [searchable]="true"
+      placeholder="Select or type..."
+      bindLabel="name"
+      bindValue="id"
+      [formControlName]="'visaJobLanguagesRequired'">
+    </ng-select>
+  </div>
+  <div *ngIf="hasRequiredLanguages" class="mb-3">
+    <label  class="form-label" for="visaJobLanguagesRequired">Does candidate meet the selected language thresholds?</label>
+    <ng-select
+      id="visaJobLanguagesThresholdMet"
+      [formControlName]="'visaJobLanguagesThresholdMet'"
+      (clear)="setNoResponse('visaJobLanguagesThresholdMet')"
+      [items]="languagesThresholdMetOptions"
+      [clearOnBackspace]="false"
+      placeholder="Select"
+      bindLabel="stringValue"
+      bindValue="key"></ng-select>
+  </div>
+  <div *ngIf="hasNotes" class="mb-3">
+    <label class="form-label" for="visaJobLanguagesThresholdNotes">Notes on language thresholds</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="2"
+              id="visaJobLanguagesThresholdNotes" [formControlName]="'visaJobLanguagesThresholdNotes'"
+              placeholder="" ></textarea>
+  </div>
+</form>

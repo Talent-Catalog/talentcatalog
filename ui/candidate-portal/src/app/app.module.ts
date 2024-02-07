@@ -174,12 +174,15 @@ import {NgxWigModule} from 'ngx-wig';
 import {TruncatePipe} from "./pipes/truncate.pipe";
 import {RxStompService} from "./services/rx-stomp.service";
 import {ViewPostComponent} from "./components/chat/view-post/view-post.component";
-import {PostsComponent} from "./components/chat/posts/posts.component";
+import {ViewChatPostsComponent} from "./components/chat/view-chat-posts/view-chat-posts.component";
 import {
   CreateUpdateChatComponent
 } from "./components/chat/create-update-chat/create-update-chat.component";
 import {ViewChatComponent} from "./components/chat/view-chat/view-chat.component";
 import {ChatsComponent} from "./components/chat/chats/chats.component";
+import {
+  ChatReadStatusComponent
+} from "./components/chat/chat-read-status/chat-read-status.component";
 import {
   CreateUpdatePostComponent
 } from "./components/chat/create-update-post/create-update-post.component";
@@ -252,8 +255,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     ViewChatComponent,
     CreateUpdateChatComponent,
     CreateUpdatePostComponent,
-    PostsComponent,
+    ViewChatPostsComponent,
     ViewPostComponent,
+    ChatReadStatusComponent,
     TruncatePipe,
     RegistrationCreateAccountComponent,
     FileSelectorComponent

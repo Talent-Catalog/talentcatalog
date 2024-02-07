@@ -207,6 +207,18 @@ public interface JobService {
         throws InvalidRequestException, NoSuchObjectException;
 
     /**
+     * Updates the interview guidance file link of the job with the given id
+     * @param id ID of job
+     * @param updateLinkRequest Details of link (name and url)
+     * @return Updated job
+     * @throws InvalidRequestException if the job does not have a submission list
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp updateInterviewGuidanceLink(long id, UpdateLinkRequest updateLinkRequest)
+        throws InvalidRequestException, NoSuchObjectException;
+
+    /**
      * Updates whether or not the job wth the given id is starred by the current user
      * @param id ID of job
      * @param starred True if job should be starred, false if not
@@ -252,4 +264,20 @@ public interface JobService {
      */
     SalesforceJobOpp uploadJoi(long id, MultipartFile file)
         throws InvalidRequestException, NoSuchObjectException, IOException;
+
+    /**
+     * Uploads the given file to the JobDescription subfolder of the folder associated with the
+     * submission list of the job with the given id.
+     * <p/>
+     * Updates the interview guidance name and link fields of the submission list. The link will be the url of the
+     * uploaded file on Google.
+     * @param id ID of job
+     * @param file File containing the interview guidance
+     * @return Updated job
+     * @throws NoSuchObjectException if there is no Job with this id.
+     * @throws IOException           if there is a problem uploading the file.
+     * @throws InvalidRequestException if the job does not have a submission list
+     */
+    SalesforceJobOpp uploadInterviewGuidance(long id, MultipartFile file)
+            throws InvalidRequestException, NoSuchObjectException, IOException;
 }

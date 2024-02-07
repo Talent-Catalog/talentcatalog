@@ -16,14 +16,6 @@
 
 package org.tctalent.server.service.db;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,6 +59,15 @@ import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public interface CandidateService {
 
@@ -359,6 +360,9 @@ public interface CandidateService {
     List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
+    List<DataRow> computeSourceCountryStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeSourceCountryStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
+
     List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
@@ -503,4 +507,19 @@ public interface CandidateService {
      * @param request This request contains the list of candidate ids selected from a list. These are the candidates that are to have their tasks resolved.
      */
     void resolveOutstandingTaskAssignments(ResolveTaskAssignmentsRequest request);
+
+    /**
+     * Syncs all live (status incomplete, pending, active) TC candidates to Salesforce
+     * Scheduled to happen each GMT nighttime
+     * Shedlock used to avoid duplicate method call
+     */
+    void syncLiveCandidatesToSf();
+
+    /**
+     * Upserts candidates to SF contacts and updates their TC profile SF links
+     * @param orderedCandidates - candidates must be ordered for final step of updating SF links to work
+     */
+    void upsertCandidatesToSf(List<Candidate> orderedCandidates);
+
+
 }

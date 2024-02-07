@@ -31,6 +31,11 @@ import {TaskAssignment} from "./task-assignment";
 import {CandidateOpportunity} from "./candidate-opportunity";
 import {OpportunityProgressParams} from "./opportunity";
 import {Job} from "./job";
+import {CandidateCertification} from "./candidate-certification";
+import {CandidateEducation} from "./candidate-education";
+import {CandidateJobExperience} from "./candidate-job-experience";
+import {CandidateLanguage} from "./candidate-language";
+import {CandidateOccupation} from "./candidate-occupation";
 
 export interface ShortCandidate {
   candidateNumber: string;
@@ -100,6 +105,14 @@ export interface Candidate extends HasId {
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
   intaked: string;
+
+  //These are only used in the candidate portal on the browser code
+  candidateCertifications?: CandidateCertification[];
+  candidateEducations?: CandidateEducation[];
+  candidateJobExperiences?: CandidateJobExperience[];
+  candidateLanguages?: CandidateLanguage[];
+  candidateOccupations?: CandidateOccupation[];
+
 }
 
 export interface CandidateProperty {
@@ -187,6 +200,7 @@ export interface CandidateIntakeData {
   militaryEnd?: string;
   maritalStatus?: MaritalStatus;
   maritalStatusNotes?: string;
+  monitoringEvaluationConsent?: YesNo;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
@@ -341,8 +355,9 @@ export interface CandidateVisaJobCheck {
   eligiblePathways?: string;
   occupationCategory?: string;
   occupationSubCategory?: string;
-  englishThreshold?: YesNo;
-  englishThresholdNotes?: string;
+  languagesRequired?: string;
+  languagesThresholdMet?: YesNo;
+  languagesThresholdNotes?: string;
   relocatingDependantIds?: number[];
 }
 /*
@@ -395,6 +410,30 @@ export interface CandidateOpportunityParams extends OpportunityProgressParams {
   closingComments?: string;
   closingCommentsForCandidate?: string;
   employerFeedback?: string;
+}
+
+
+export class BaseCandidateContactRequest {
+  id: number;
+  email: string;
+  phone: string;
+  whatsapp: string;
+}
+
+export class RegisterCandidateRequest extends BaseCandidateContactRequest {
+  username: string;
+  password: string;
+  passwordConfirmation: string;
+  reCaptchaV3Token: string;
+  partnerAbbreviation: string;
+  referrerParam?: string;
+  utmCampaign?: string;
+  utmContent?: string;
+  utmMedium?: string;
+  utmSource?: string;
+  utmTerm?: string;
+  contactConsentRegistration?: string;
+  contactConsentPartners?: string;
 }
 
 export interface UpdateCandidateOppsRequest {
@@ -731,4 +770,9 @@ export function getDestinationOccupationSubcatLink(countryId: number): string {
     case 6191:
       return 'this is a test link for australia to use';
   }
+}
+
+export class SendResetPasswordEmailRequest {
+  email: string;
+  reCaptchaV3Token: string;
 }

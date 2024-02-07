@@ -56,6 +56,9 @@ public class SlackAdminApi {
     return new PostJobToSlackResponse(slackChannelUrl);
   }
 
+  /**
+   * Post job to Slack given a job id and a link to the job on the TC
+   */
   @PostMapping("{id}/post-job")
   public PostJobToSlackResponse postJob(@PathVariable("id") long id, @RequestBody String tcJobLink) {
     JobInfoForSlackPost jobInfo = jobService.extractJobInfoForSlack(id, tcJobLink);

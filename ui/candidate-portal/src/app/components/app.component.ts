@@ -21,6 +21,7 @@ import {LanguageLoader} from "../services/language.loader";
 import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
 import {Router} from "@angular/router";
+import {ChatService} from "../services/chat.service";
 
 @Component({
   selector: 'app-root',
@@ -36,6 +37,7 @@ export class AppComponent implements OnInit {
 
   constructor(private translate: TranslateService,
               private authenticationService: AuthenticationService,
+              private chatService: ChatService,
               private router: Router,
               private languageLoader: LanguageLoader,
               private languageService: LanguageService) {
@@ -74,9 +76,15 @@ export class AppComponent implements OnInit {
   }
 
   private onChangedLogin(user: User) {
-    //If logged out - show login screen
+    //If logged out
     if (user == null) {
-      this.router.navigate(['login']);
+      this.onLogout();
     }
+  }
+
+  private onLogout() {
+    this.chatService.cleanUp();
+    //Show login screen
+    this.router.navigate(['login']);
   }
 }

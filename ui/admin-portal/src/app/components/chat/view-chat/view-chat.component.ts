@@ -9,6 +9,7 @@ import {JobChat} from "../../../model/chat";
 export class ViewChatComponent implements OnInit {
 
   @Input() chat: JobChat
+
   constructor() { }
 
   ngOnInit(): void {

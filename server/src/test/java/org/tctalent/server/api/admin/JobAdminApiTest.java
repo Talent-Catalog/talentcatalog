@@ -77,12 +77,14 @@ class JobAdminApiTest extends ApiTestBase {
     private static final String UPDATE_INTAKE_DATA = "/{id}/intake";
     private static final String PUBLISH_JOB = "/{id}/publish";
     private static final String REMOVE_SEARCH = "/{id}/remove-search";
-    private static final String UPDATE_JD_LINK = "/{id}/jdlink";
-    private static final String UPDATE_JOI_LINK = "/{id}/joilink";
+    private static final String UPDATE_JD_LINK = "/{id}/jd-link";
+    private static final String UPDATE_JOI_LINK = "/{id}/joi-link";
+    private static final String UPDATE_INTERVIEW_LINK = "/{id}/interview-link";
     private static final String UPDATE_STARRED = "/{id}/starred";
     private static final String UPDATE_SUMMARY = "/{id}/summary";
     private static final String UPLOAD_JD = "/{id}/upload/jd";
     private static final String UPLOAD_JOI = "/{id}/upload/joi";
+    private static final String UPLOAD_INTERVIEW_GUIDANCE = "/{id}/upload/interview";
     private static final String SEARCH_PATH = "/search-paged";
     private static final SalesforceJobOpp job = AdminApiTestUtil.getJob();
 
@@ -505,6 +507,31 @@ class JobAdminApiTest extends ApiTestBase {
 
         verify(jobService).updateJoiLink(anyLong(), any(UpdateLinkRequest.class));
     }
+    
+    @Test
+    @DisplayName("update interview guidance link succeeds")
+    void updateInterviewGuidanceLinkSucceeds() throws Exception {
+        UpdateLinkRequest request = new UpdateLinkRequest();
+
+        given(jobService
+                .updateInterviewGuidanceLink(anyLong(), any(UpdateLinkRequest.class)))
+                .willReturn(job);
+
+        mockMvc.perform(put(BASE_PATH + "/" + UPDATE_INTERVIEW_LINK.replace("{id}", String.valueOf(JOB_ID)))
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.id", is(99)))
+                .andExpect(jsonPath("$.sfId", is("123456")));
+
+        verify(jobService).updateInterviewGuidanceLink(anyLong(), any(UpdateLinkRequest.class));
+    }
 
     @Test
     @DisplayName("update starred succeeds")
@@ -602,5 +629,29 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.submissionList.fileJoiLink", notNullValue()));
 
         verify(jobService).uploadJoi(anyLong(), any(MultipartFile.class));
+    }
+
+    @Test
+    @DisplayName("upload interview guidance succeeds")
+    void uploadInterviewGuidanceSucceeds() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "file.txt", "text/plain", "some content".getBytes());
+
+        given(jobService
+            .uploadInterviewGuidance(anyLong(), any(MultipartFile.class)))
+            .willReturn(job);
+
+        mockMvc.perform(multipart(BASE_PATH + "/" + UPLOAD_INTERVIEW_GUIDANCE.replace("{id}", String.valueOf(JOB_ID)))
+                .file("file", file.getBytes())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.id", is(99)))
+            .andExpect(jsonPath("$.submissionList.fileInterviewGuidanceLink", notNullValue()));
+
+        verify(jobService).uploadInterviewGuidance(anyLong(), any(MultipartFile.class));
     }
 }

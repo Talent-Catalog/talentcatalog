@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {JobChat} from "../../../model/chat";
+import {ChatService} from "../../../services/chat.service";
 
 @Component({
   selector: 'app-chats-with-posts',
@@ -15,6 +16,7 @@ export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit
   selectedChat: JobChat;
 
   constructor(
+    private chatService: ChatService
   ) {
     super(6);
   }
@@ -29,5 +31,11 @@ export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit
   onChatSelected(chat: JobChat) {
     this.selectedChat = chat;
     this.chatSelection.emit(chat);
+  }
+
+  onMarkChatAsRead() {
+    if (this.selectedChat) {
+      this.chatService.markChatAsRead(this.selectedChat);
+    }
   }
 }

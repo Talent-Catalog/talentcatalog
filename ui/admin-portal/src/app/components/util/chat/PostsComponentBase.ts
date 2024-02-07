@@ -13,11 +13,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {Directive} from "@angular/core";
+import {Directive, EventEmitter, Input, OnDestroy, Output} from "@angular/core";
 import {ChatService} from "../../../services/chat.service";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {Subscription} from "rxjs";
-import {Message} from "@stomp/stompjs";
 import {ChatPost, CreateChatRequest, JobChat} from "../../../model/chat";
 
 /**
@@ -26,8 +25,10 @@ import {ChatPost, CreateChatRequest, JobChat} from "../../../model/chat";
  *
  */
 @Directive()
-export abstract class PostsComponentBase {
-  chat: JobChat;
+export abstract class PostsComponentBase implements OnDestroy{
+  @Input() chat: JobChat;
+  @Output() fetchedChat = new EventEmitter<JobChat>();
+
   private chatSubscription: Subscription;
 
   currentPost: ChatPost;
@@ -41,6 +42,11 @@ export abstract class PostsComponentBase {
     protected chatService: ChatService,
     protected chatPostService: ChatPostService,
   ) {}
+
+  ngOnDestroy(): void {
+    this.unsubscribe();
+  }
+
   protected requestJobChat(request: CreateChatRequest) {
     if (request) {
       this.error = null;
@@ -57,22 +63,22 @@ export abstract class PostsComponentBase {
 
   protected onNewChat(chat: JobChat) {
     this.chat = chat;
+    //Notify that chat has been fetched.
+    this.fetchedChat.emit(this.chat);
 
     //Get rid of any existing subscription to previous chat
-    if (this.chatSubscription) {
-      this.chatSubscription.unsubscribe();
-    }
+    this.unsubscribe();
 
     //Clear existing posts
     this.posts = [];
 
     if (this.chat) {
+      console.log('Subscribing for posts on chat ' + chat.id)
       //Subscribe for updates on new chat
-      this.chatSubscription = this.chatService.subscribe(this.chat)
-      .subscribe((message: Message) => {
-        const payload: ChatPost = JSON.parse(message.body);
-        this.addNewPost(payload);
-      });
+      this.chatSubscription = this.chatService.getChatPosts$(this.chat).subscribe({
+          next: (post) => this.addNewPost(post)
+        }
+      );
 
       //Fetch all existing posts for this chat
       this.loadPosts();
@@ -118,4 +124,10 @@ export abstract class PostsComponentBase {
     this.currentPost = post;
   }
 
+  private unsubscribe() {
+    if (this.chatSubscription) {
+      this.chatSubscription.unsubscribe();
+      this.chatSubscription = null;
+    }
+  }
 }

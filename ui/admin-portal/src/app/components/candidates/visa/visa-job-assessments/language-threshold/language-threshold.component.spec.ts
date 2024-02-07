@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {PostsComponent} from './posts.component';
+import {LanguageThresholdComponent} from './language-threshold.component';
 
-describe('PostsComponent', () => {
-  let component: PostsComponent;
-  let fixture: ComponentFixture<PostsComponent>;
+describe('LanguageThresholdComponent', () => {
+  let component: LanguageThresholdComponent;
+  let fixture: ComponentFixture<LanguageThresholdComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PostsComponent ]
+      declarations: [ LanguageThresholdComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PostsComponent);
+    fixture = TestBed.createComponent(LanguageThresholdComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

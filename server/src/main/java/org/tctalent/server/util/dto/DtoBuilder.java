@@ -101,24 +101,22 @@ public class DtoBuilder {
         return this;
     }
 
-    public @Nullable List<Map<String, Object>> buildList(
+    public @NonNull List<Map<String, Object>> buildList(
             @Nullable Collection<?> sourceList) {
+        List<Map<String, Object>> results = new ArrayList<>();
         if (sourceList != null) {
-            List<Map<String, Object>> results = new ArrayList<>();
             for (Object source : sourceList) {
                 if( collectionItemFilter == null || !collectionItemFilter.ignoreItem(source)) {
                     results.add(build(source));
                 }
             }
-            return results;
-        } else {
-            return null;
         }
+        return results;
     }
 
-    public @Nullable Map<String, Object> buildPage(@Nullable Page<?> page) {
+    public @NonNull Map<String, Object> buildPage(@Nullable Page<?> page) {
+        Map<String, Object> result = new HashMap<>();
         if (page != null) {
-            Map<String, Object> result = new HashMap<>();
             result.put("totalElements", page.getTotalElements());
             result.put("totalPages", page.getTotalPages());
             result.put("number", page.getNumber());
@@ -126,23 +124,19 @@ public class DtoBuilder {
             result.put("hasNext", page.hasNext());
             result.put("hasPrevious", page.hasPrevious());
             result.put("content", buildList(page.getContent()));
-            return result;
-        } else {
-            return null;
         }
+        return result;
     }
 
-    public @Nullable Map<String, Object> buildReport(
+    public @NonNull Map<String, Object> buildReport(
             @Nullable StatReport statReport) {
+        Map<String, Object> result = new HashMap<>();
         if (statReport != null) {
-            Map<String, Object> result = new HashMap<>();
             result.put("name", statReport.getName());
             result.put("chartType", statReport.getChartType());
             result.put("rows", buildList(statReport.getRows()));
-            return result;
-        } else {
-            return null;
         }
+        return result;
     }
 
     private Object getPropertyValue(@NonNull Object source, @NonNull String propertyName)
@@ -170,12 +164,14 @@ public class DtoBuilder {
      * return responses over HTTP.
      *
      * @param source Object to be converted to a JSon style Map<String, String|Map>
-     * @return Null if source is null
+     * @return Empty map if source is null
      */
-    public @Nullable Map<String, Object> build(@Nullable Object source) {
+    public @NonNull Map<String, Object> build(@Nullable Object source) {
+        Map<String, Object> map = new HashMap<>();
 
         if (source == null) {
-            return null;
+            //Return empty map
+            return map;
         }
 
         String propertyToTranslate = null;
@@ -186,7 +182,6 @@ public class DtoBuilder {
             translationContainingTranslation = translatable.translation();
         }
 
-        Map<String, Object> map = new HashMap<>();
         for (MappedProperty property : mappedProperties) {
 
             //Skip if property is excluded by a propertyFilter. Property is ignored.

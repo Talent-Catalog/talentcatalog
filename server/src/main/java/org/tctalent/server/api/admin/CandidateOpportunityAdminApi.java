@@ -134,6 +134,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
             .add("name")
             .add("country", countryDto())
             .add("submissionList", shortSavedListDto())
+            .add("jobCreator", shortPartnerDto())
             ;
     }
 

@@ -38,9 +38,11 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
+import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
@@ -54,6 +56,8 @@ import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
 import org.tctalent.server.model.db.Industry;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Language;
@@ -69,6 +73,7 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.model.db.SystemLanguage;
@@ -363,7 +368,9 @@ public class AdminApiTestUtil {
             candidateVisaJobCheck.setOccupationCategory("This is the occupation category.");
             candidateVisaJobCheck.setOccupationSubCategory("This is the occupation subcategory.");
             candidateVisaJobCheck.setEnglishThreshold(YesNo.Yes);
-            candidateVisaJobCheck.setEnglishThresholdNotes("These are some english threshold notes.");
+            candidateVisaJobCheck.setLanguagesRequired(List.of(342L, 344L));
+            candidateVisaJobCheck.setLanguagesThresholdMet(YesNo.Yes);
+            candidateVisaJobCheck.setLanguagesThresholdNotes("These are some language threshold notes.");
         }
         return candidateVisaJobCheck;
     }
@@ -394,7 +401,13 @@ public class AdminApiTestUtil {
     static SavedSearch getSavedSearch() {
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setId(123L);
+        savedSearch.setDescription("This is a search about nothing.");
         savedSearch.setName("My Search");
+        savedSearch.setSavedSearchType(SavedSearchType.other);
+        savedSearch.setSimpleQueryString("search + term");
+        savedSearch.setStatuses("active,pending");
+        savedSearch.setGender(Gender.male);
+        savedSearch.setOccupationIds("8577,8484");
         return savedSearch;
     }
 
@@ -408,6 +421,15 @@ public class AdminApiTestUtil {
         task.setOptional(false);
         task.setHelpLink("http://help.link");
         return task;
+    }
+
+    public static List<TaskImpl> getListOfTasks() {
+        TaskImpl task1 = getTask();
+        TaskImpl task2 = getTask();
+        task2.setName("test task 2");
+        TaskImpl task3 = getTask();
+        task3.setName("test task 3");
+        return List.of(task1, task2, task3);
     }
 
     static SavedList getSavedList() {
@@ -426,6 +448,8 @@ public class AdminApiTestUtil {
         savedList.setFileJdName("JobDescriptionFileName");
         savedList.setFileJoiLink("http://file.joi.link");
         savedList.setFileJoiName("JoiFileName");
+        savedList.setFileInterviewGuidanceLink("http://file.interview.guidance.link");
+        savedList.setFileInterviewGuidanceName("InterviewGuidanceFileName");
         savedList.setFolderlink("http://folder.link");
         savedList.setFolderjdlink("http://folder.jd.link");
         savedList.setPublishedDocLink("http://published.doc.link");
@@ -437,6 +461,25 @@ public class AdminApiTestUtil {
         savedList.setUpdatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         savedList.setUsers(Set.of(caller));
         savedList.setTasks(Set.of(getTask()));
+        savedList.setCandidateSavedLists(getSetOfCandidateSavedLists());
+
+        return savedList;
+    }
+
+    static SavedList getSavedListWithCandidates() {
+        SavedList savedList = getSavedList();
+
+        final Candidate candidate1 = getCandidate();
+        candidate1.setId(101L);
+        CandidateSavedList csl1 = new CandidateSavedList(candidate1, savedList);
+        final Candidate candidate2 = getCandidate();
+        candidate2.setId(102L);
+        CandidateSavedList csl2 = new CandidateSavedList(candidate2, savedList);
+        final Candidate candidate3 = getCandidate();
+        candidate3.setId(103L);
+        CandidateSavedList csl3 = new CandidateSavedList(candidate3, savedList);
+
+        savedList.setCandidateSavedLists(Set.of(csl1, csl2, csl3));
 
         return savedList;
     }
@@ -570,6 +613,42 @@ public class AdminApiTestUtil {
         return joi;
     }
 
+  public static JobChat getChat() {
+        JobChat chat = new JobChat();
+        chat.setId(99L);
+        chat.setJobOpp(getJob());
+        return chat;
+  }
+
+    public static List<JobChat> getListOfChats() {
+        JobChat chat1 = getChat();
+        JobChat chat2 = getChat();
+        chat2.setId(100L);
+        JobChat chat3 = getChat();
+        chat2.setId(101L);
+        return List.of(
+            chat1, chat2, chat3
+        );
+    }
+
+    public static ChatPost getChatPost() {
+        ChatPost post = new ChatPost();
+        post.setId(199L);
+        post.setContent("Post 1");
+        return post;
+    }
+
+    public static List<ChatPost> getListOfPosts() {
+        ChatPost post1 = getChatPost();
+        ChatPost post2 = getChatPost();
+        post2.setContent("Post 2");
+        ChatPost post3 = getChatPost();
+        post2.setContent("Post 3");
+        return List.of(
+            post1, post2, post3
+        );
+    }
+
   public static List<Country> getCountries() {
         return List.of(
             new Country("Jordan", Status.active),
@@ -609,6 +688,13 @@ public class AdminApiTestUtil {
             new Industry("Finance", Status.active),
             new Industry("Health", Status.active)
         );
+    }
+
+    public static JobChatUserInfo getJobChatUserInfo() {
+        JobChatUserInfo info = new JobChatUserInfo();
+        info.setLastPostId(123L);
+        info.setLastReadPostId(100L);
+        return info;
     }
 
     public static PartnerImpl getPartner() {
@@ -709,4 +795,25 @@ public class AdminApiTestUtil {
         return u;
     }
 
+  public static List<SavedSearch> getListOfSavedSearches() {
+      SavedSearch savedSearch1 = getSavedSearch();
+      SavedSearch savedSearch2 = getSavedSearch();
+      savedSearch2.setName("Saved Search 2");
+      SavedSearch savedSearch3 = getSavedSearch();
+      savedSearch3.setName("Saved Search 3");
+      return List.of(
+          savedSearch1, savedSearch2, savedSearch3
+      );
+  }
+
+  static CandidateSavedList getCandidateSavedList() {
+        CandidateSavedList csl = new CandidateSavedList();
+        csl.setCandidate(getCandidate());
+        return csl;
+  }
+
+  static Set<CandidateSavedList> getSetOfCandidateSavedLists() {
+        Set<CandidateSavedList> scsl = Set.of(getCandidateSavedList());
+        return scsl;
+  }
 }

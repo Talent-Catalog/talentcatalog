@@ -24,6 +24,7 @@ import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} fro
 import {User} from "../../model/user";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
 import {AuthenticationService} from "../../services/authentication.service";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-header',
@@ -147,9 +148,10 @@ export class HeaderComponent implements OnInit {
     if (this.loggedInUser == null) {
       info = "Not logged in";
     } else {
-      info = this.loggedInUser.username + " (" + this.loggedInUser.partner?.abbreviation
-        + " " + this.loggedInUser.role + ")";
+      let user = this.loggedInUser;
+      info = UserService.userToString(user, true, true);
     }
+
     return info;
   }
 
