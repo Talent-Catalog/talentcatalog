@@ -135,39 +135,35 @@ public class CandidateOpportunitySpecification {
 
                     switch (request.getOwnershipType()) {
                         case AS_JOB_CREATOR -> {
-                            if (loggedInUserPartner.isJobCreator()) {
-                                //If the user is a job creator then they own a candidate opportunity
-                                // if they are the partner associated with the opportunity job.
+                            //If the user is a job creator then they own a candidate opportunity
+                            // if they are the partner associated with the opportunity job.
 
-                                //If opportunity job is owned by this user's partner
-                                if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
-                                    //Just check that the job associated with the opportunity was created
-                                    //by the logged in user's partner.
+                            //If opportunity job is owned by this user's partner
+                            if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+                                //Just check that the job associated with the opportunity was created
+                                //by the logged in user's partner.
+                                Join<Object, Object> jobOpp = opp.join("jobOpp");
+                                conjunction.getExpressions().add(builder.equal(
+                                    jobOpp.get("jobCreator").get("id"), loggedInUserPartner.getId())
+                                );
+                            } else {
+                                //If owned by this user (ie by logged in user)
+                                if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
                                     Join<Object, Object> jobOpp = opp.join("jobOpp");
-                                    conjunction.getExpressions().add(builder.equal(
-                                        jobOpp.get("jobCreator").get("id"), loggedInUserPartner.getId())
+                                    //Not null contact user is me or I am createdBy user
+                                    final Predicate matchContactUser = builder.and(
+                                        builder.isNotNull(jobOpp.get("contactUser")),
+                                        builder.equal(jobOpp.get("contactUser").get("id"),
+                                            loggedInUser.getId())
                                     );
-                                } else {
-                                    //If owned by this user (ie by logged in user)
-                                    if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
-                                        if (loggedInUser.isJobCreator()) {
-                                            Join<Object, Object> jobOpp = opp.join("jobOpp");
-                                            //Not null contact user is me or I am createdBy user
-                                            final Predicate matchContactUser = builder.and(
-                                                builder.isNotNull(jobOpp.get("contactUser")),
-                                                builder.equal(jobOpp.get("contactUser").get("id"),
-                                                    loggedInUser.getId())
-                                            );
-                                            final Predicate matchCreatingUser = builder.and(
-                                                builder.isNull(jobOpp.get("contactUser")),
-                                                builder.equal(jobOpp.get("createdBy").get("id"),
-                                                    loggedInUser.getId())
-                                            );
-                                            conjunction.getExpressions().add(
-                                                builder.or(matchContactUser, matchCreatingUser)
-                                            );
-                                        }
-                                    }
+                                    final Predicate matchCreatingUser = builder.and(
+                                        builder.isNotNull(jobOpp.get("createdBy")),
+                                        builder.equal(jobOpp.get("createdBy").get("id"),
+                                            loggedInUser.getId())
+                                    );
+                                    conjunction.getExpressions().add(
+                                        builder.or(matchContactUser, matchCreatingUser)
+                                    );
                                 }
                             }
                         }
