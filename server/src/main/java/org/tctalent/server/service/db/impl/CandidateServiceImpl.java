@@ -17,8 +17,34 @@
 package org.tctalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -32,7 +58,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -145,34 +170,6 @@ import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
-
-import javax.servlet.http.HttpServletRequest;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 
 /**
@@ -2692,20 +2689,59 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+//    TODO: Uncomment once troubleshooting done 👇
+//    @Override
+//    @Scheduled(cron = "0 0 2 * * ?", zone = "GMT")
+//    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+//                    lockAtMostFor = "PT23H")
+//    public void syncLiveCandidatesToSf()
+//        throws SalesforceException, WebClientException {
+//        // Live candidate sync only desirable from TC prod to SF prod
+//        // due to SF sandbox object limit of 10,000
+//        if (environment.equalsIgnoreCase(Environment.prod.name())) {
+//            // Gather all live/sfLink-having candidates
+//            List<CandidateStatus> statuses = new ArrayList<>(
+//                EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
+//                    CandidateStatus.incomplete));
+//            List<Candidate> candidates = candidateRepository
+//                .findByStatusesOrSfLinkIsNotNull(statuses);
+//
+//            // Split them into batches of 200 gathered in another list
+//            // (to stay on the right side of SF REST API call record limit)
+//            int batchSize = 200;
+//            List<List<Candidate>> candidateBatches = new ArrayList<>();
+//            for (int i = 0; i < candidates.size(); i += batchSize) {
+//                candidateBatches.add(
+//                    candidates.subList(i, Math.min(i + batchSize, candidates.size())));
+//            }
+//
+//            // Iterate through batches to create/update candidate contact records
+//            for (int i = 0; i < candidateBatches.size(); i += 1) {
+//                //Need ordered list so that can match with returned contacts.
+//                List<Candidate> orderedCandidates = new ArrayList<>(candidateBatches.get(i));
+//                upsertCandidatesToSf(orderedCandidates);
+//            }
+//        }
+//    }
+
+// TODO: Just for testing in staging - delete when done 👇
     @Override
-    @Scheduled(cron = "0 2 0 * * ?", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void syncLiveCandidatesToSf()
         throws SalesforceException, WebClientException {
-        // Live candidate sync only desirable from TC prod to SF prod due to sandbox object limit of 10,000
-        if (environment.equals(Environment.prod.name())) {
-            // Gather all live candidates
+        log.error("This is the environment variable inside square brackets (mine): [" + environment + "]");
+
+        // Live candidate sync only desirable from TC prod to SF prod
+        // due to SF sandbox object limit of 10,000
+        if (environment.equalsIgnoreCase(Environment.staging.name())) {
+            // Gather all live/sfLink-having candidates
             List<CandidateStatus> statuses = new ArrayList<>(
                 EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
                     CandidateStatus.incomplete));
-            List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
+            List<Candidate> candidates = candidateRepository
+                .findByStatusesOrSfLinkIsNotNull(statuses);
 
-            // Split them into batches of 200 gathered in another list (to stay on the right side of SF REST API call record limit)
+            // Split them into batches of 200 gathered in another list
+            // (to stay on the right side of SF REST API call record limit)
             int batchSize = 200;
             List<List<Candidate>> candidateBatches = new ArrayList<>();
             for (int i = 0; i < candidates.size(); i += batchSize) {
@@ -2714,7 +2750,8 @@ public class CandidateServiceImpl implements CandidateService {
             }
 
             // Iterate through batches to create/update candidate contact records
-            for (int i = 0; i < candidateBatches.size(); i += 1) {
+            // Limited to 2,000 records (10 batches of 200) just for testing
+            for (int i = 0; i < 10; i++) {
                 //Need ordered list so that can match with returned contacts.
                 List<Candidate> orderedCandidates = new ArrayList<>(candidateBatches.get(i));
                 upsertCandidatesToSf(orderedCandidates);
