@@ -240,7 +240,7 @@ public class CandidateOpportunitySpecification {
                                             ors.getExpressions().add(builder.isNull(contact));
                                         }
 
-                                        if (ors.getExpressions().size() != 0) {
+                                        if (!ors.getExpressions().isEmpty()) {
                                             conjunction.getExpressions().add(ors);
                                         }
                                     }
