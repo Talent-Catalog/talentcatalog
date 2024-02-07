@@ -153,7 +153,7 @@
 
         <button class="btn btn-sm btn-secondary" *ngIf="isJobList()" [disabled]="!isSelection()"
                 (click)="closeSelectedOpportunities()"
-                title="Close Selection">
+                title="Close selected candidate cases. Not removed from list but hidden unless 'Show closed cases' checkbox is checked.">
           <i class="fas fa-spinner fa-spin" *ngIf=closing></i>
           Remove (Close) <i class="fas fa-user-check"></i>
         </button>
@@ -184,7 +184,7 @@
         </button>
         <button *ngIf="isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
                 (click)="createUpdateSalesforce()"
-                title="Create or update candidates in Salesforce">
+                title="Create or update selected candidate cases">
           <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
           Update Case/s <i class="fa-solid fa-address-book"></i>
         </button>
