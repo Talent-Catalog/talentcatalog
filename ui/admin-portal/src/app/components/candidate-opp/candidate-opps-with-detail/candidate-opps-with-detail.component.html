@@ -1,6 +1,6 @@
-<div class="container-fluid mt-4">
+<div class="container-fluid my-4">
   <div class="row">
-    <div class="col-md-{{mainPanelColWidth}} admin-panel left-panel">
+    <div class="col-md-{{mainPanelColWidth}} admin-panel left-panel h-100">
 
       <app-candidate-opps
         [searchBy]="searchBy"
@@ -11,23 +11,25 @@
     </div>
 
     <div class="col-md-{{sidePanelColWidth}} detail-panel side-panel-color">
-      <div class="w-100">
-        <div *ngIf="canToggleSizes()" class="float-end">
-          <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-            class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
-        </div>
-
-        <div *ngIf="selectedOpp">
-          <div class="alert alert-danger" *ngIf="error">
-            {{error}}
+      <div class="floating-col">
+        <div class="w-100">
+          <div *ngIf="canToggleSizes()" class="float-end">
+            <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+              class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
           </div>
 
-          <app-view-candidate-opp
-            [opp]="selectedOpp"
-            [showBreadcrumb]="false"
-            (candidateOppUpdated)="onCandidateOppUpdated($event)"
-          >
-          </app-view-candidate-opp>
+          <div *ngIf="selectedOpp">
+            <div class="alert alert-danger" *ngIf="error">
+              {{error}}
+            </div>
+
+            <app-view-candidate-opp
+              [opp]="selectedOpp"
+              [showBreadcrumb]="false"
+              (candidateOppUpdated)="onCandidateOppUpdated($event)"
+            >
+            </app-view-candidate-opp>
+          </div>
         </div>
       </div>
     </div>
