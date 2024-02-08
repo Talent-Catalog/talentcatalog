@@ -2708,6 +2708,7 @@ public class CandidateServiceImpl implements CandidateService {
 //
 //            // Split them into batches of 200 gathered in another list
 //            // (to stay on the right side of SF REST API call record limit)
+//            // TODO: add a log statement here
 //            int batchSize = 200;
 //            List<List<Candidate>> candidateBatches = new ArrayList<>();
 //            for (int i = 0; i < candidates.size(); i += batchSize) {
@@ -2728,7 +2729,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public void syncLiveCandidatesToSf()
         throws SalesforceException, WebClientException {
-        log.error("This is the environment variable inside square brackets (mine): [" + environment + "]");
+        log.info("This is the environment variable inside square brackets (mine): [" + environment + "]");
 
         // Live candidate sync only desirable from TC prod to SF prod
         // due to SF sandbox object limit of 10,000
