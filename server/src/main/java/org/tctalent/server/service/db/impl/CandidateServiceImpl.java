@@ -2726,6 +2726,7 @@ public class CandidateServiceImpl implements CandidateService {
 //    }
 
 // TODO: Just for testing in staging - delete when done 👇
+// TODO: this is pointing to the old findByStatuses repo method - there's a new one that needs checking and then reinstating once all good.
     @Override
     public void syncLiveCandidatesToSf()
         throws SalesforceException, WebClientException {
@@ -2734,18 +2735,20 @@ public class CandidateServiceImpl implements CandidateService {
         // Live candidate sync only desirable from TC prod to SF prod
         // due to SF sandbox object limit of 10,000
         if (environment.equalsIgnoreCase(Environment.staging.name())) {
+            log.info("Initiating search");
             // Gather all live/sfLink-having candidates
             List<CandidateStatus> statuses = new ArrayList<>(
                 EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
                     CandidateStatus.incomplete));
             List<Candidate> candidates = candidateRepository
-                .findByStatusesOrSfLinkIsNotNull(statuses);
+                .findByStatuses(statuses);
 
             // Split them into batches of 200 gathered in another list
             // (to stay on the right side of SF REST API call record limit)
             int batchSize = 200;
             List<List<Candidate>> candidateBatches = new ArrayList<>();
             for (int i = 0; i < candidates.size(); i += batchSize) {
+                log.info("Creating a new batch");
                 candidateBatches.add(
                     candidates.subList(i, Math.min(i + batchSize, candidates.size())));
             }
@@ -2753,8 +2756,10 @@ public class CandidateServiceImpl implements CandidateService {
             // Iterate through batches to create/update candidate contact records
             // Limited to 2,000 records (10 batches of 200) just for testing
             for (int i = 0; i < 10; i++) {
+                log.info("Iterating through a batch — creating an ordered list first");
                 //Need ordered list so that can match with returned contacts.
                 List<Candidate> orderedCandidates = new ArrayList<>(candidateBatches.get(i));
+                log.info("Upserting batch to SF");
                 upsertCandidatesToSf(orderedCandidates);
             }
         }
