@@ -145,10 +145,17 @@
           <i class="fas fa-sync"></i><i class="fas fa-user-check"></i>
         </button>
 
-        <button class="btn btn-sm btn-secondary" *ngIf="isSavedList()" [disabled]="!isSelection()"
+        <button class="btn btn-sm btn-secondary" *ngIf="!isJobList() && isContentModifiable()" [disabled]="!isSelection()"
                 (click)="removeSelectedCandidatesFromList()"
                 title="Remove Selection">
           Remove <i class="fas fa-user-check"></i>
+        </button>
+
+        <button class="btn btn-sm btn-secondary" *ngIf="isJobList()" [disabled]="!isSelection()"
+                (click)="closeSelectedOpportunities()"
+                title="Close selected candidate cases. Not removed from list but hidden unless 'Show closed cases' checkbox is checked.">
+          <i class="fas fa-spinner fa-spin" *ngIf=closing></i>
+          Remove (Close) <i class="fas fa-user-check"></i>
         </button>
 
         <button  *ngIf="isImportable()" class="btn btn-sm btn-secondary" (click)="importCandidates()"
@@ -175,12 +182,11 @@
           <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
           Feedback <i class="fas fa-globe"></i>
         </button>
-        <!-- todo should this button be here if there is no salesforce associated link? Currently appears even if no sf link, appears on all lists. -->
         <button *ngIf="isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
                 (click)="createUpdateSalesforce()"
-                title="Create or update candidates in Salesforce">
+                title="Create or update selected candidate cases">
           <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
-          Update Case(s)
+          Update Case/s <i class="fa-solid fa-address-book"></i>
         </button>
 
         <button class="btn btn-sm btn-secondary" *ngIf="canResolveTasks()" [disabled]="!isSelection()"
@@ -204,6 +210,7 @@
           <ng-template #rt let-r="result" let-t="term">
             <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
           </ng-template>
+          <div *ngIf=adding class="small text-info text-center mt-1">Adding candidate to list <i class="fas fa-spinner fa-spin" ></i></div>
         </div>
 
         <div *ngIf="isSavedList()" class="flex-fill w-50 mx-2">
