@@ -50,6 +50,12 @@ public class SearchOpportunityRequest extends PagedSearchRequest {
     private String keyword;
 
     /**
+     * If specified, only match opportunities where nextStep is overdue.
+     */
+    @Nullable
+    private Boolean overdue;
+
+    /**
      * Indicates that search request can include ownership criteria - ie {@link #getOwnedByMe()}
      * or {@link #getOwnedByMyPartner()}.
      * <p/>

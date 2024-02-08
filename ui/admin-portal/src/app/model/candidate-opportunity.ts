@@ -77,6 +77,7 @@ export enum CandidateOpportunityStage {
 export class SearchOpportunityRequest extends PagedSearchRequest {
   activeStages?: boolean;
   keyword?: string;
+  overdue?: boolean;
   ownershipType?: OpportunityOwnershipType;
   ownedByMe?: boolean;
   ownedByMyPartner?: boolean;
