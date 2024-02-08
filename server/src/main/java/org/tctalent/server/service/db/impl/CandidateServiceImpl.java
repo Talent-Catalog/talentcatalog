@@ -45,7 +45,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -2690,31 +2689,79 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+//    TODO: Uncomment once troubleshooting done 👇
+//    @Override
+//    @Scheduled(cron = "0 0 2 * * ?", zone = "GMT")
+//    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+//                    lockAtMostFor = "PT23H")
+//    public void syncLiveCandidatesToSf()
+//        throws SalesforceException, WebClientException {
+//        // Live candidate sync only desirable from TC prod to SF prod
+//        // due to SF sandbox object limit of 10,000
+//        if (environment.equalsIgnoreCase(Environment.prod.name())) {
+//            // Gather all live/sfLink-having candidates
+//            List<CandidateStatus> statuses = new ArrayList<>(
+//                EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
+//                    CandidateStatus.incomplete));
+//            List<Candidate> candidates = candidateRepository
+//                .findByStatusesOrSfLinkIsNotNull(statuses);
+//
+//            // Split them into batches of 200 gathered in another list
+//            // (to stay on the right side of SF REST API call record limit)
+//            // TODO: add a log statement here
+//            int batchSize = 200;
+//            List<List<Candidate>> candidateBatches = new ArrayList<>();
+//            for (int i = 0; i < candidates.size(); i += batchSize) {
+//                candidateBatches.add(
+//                    candidates.subList(i, Math.min(i + batchSize, candidates.size())));
+//            }
+//
+//            // Iterate through batches to create/update candidate contact records
+//            for (int i = 0; i < candidateBatches.size(); i += 1) {
+//                //Need ordered list so that can match with returned contacts.
+//                List<Candidate> orderedCandidates = new ArrayList<>(candidateBatches.get(i));
+//                upsertCandidatesToSf(orderedCandidates);
+//            }
+//        }
+//    }
+
+// TODO: Just for testing in staging - delete when done 👇
+// TODO: this is pointing to the old findByStatuses repo method - there's a new one that needs checking and then reinstating once all good.
     @Override
 //    @Scheduled(cron = "0 2 0 * * ?", zone = "GMT")
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void syncLiveCandidatesToSf()
         throws SalesforceException, WebClientException {
-        // Live candidate sync only desirable from TC prod to SF prod due to sandbox object limit of 10,000
-        if (environment.equals(Environment.prod.name())) {
-            // Gather all live candidates
+        log.info("This is the environment variable inside square brackets (mine): [" + environment + "]");
+
+        // Live candidate sync only desirable from TC prod to SF prod
+        // due to SF sandbox object limit of 10,000
+        if (environment.equalsIgnoreCase(Environment.staging.name())) {
+            log.info("Initiating search");
+            // Gather all live/sfLink-having candidates
             List<CandidateStatus> statuses = new ArrayList<>(
                 EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
                     CandidateStatus.incomplete));
-            List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
+            List<Candidate> candidates = candidateRepository
+                .findByStatuses(statuses);
 
-            // Split them into batches of 200 gathered in another list (to stay on the right side of SF REST API call record limit)
+            // Split them into batches of 200 gathered in another list
+            // (to stay on the right side of SF REST API call record limit)
             int batchSize = 200;
             List<List<Candidate>> candidateBatches = new ArrayList<>();
             for (int i = 0; i < candidates.size(); i += batchSize) {
+                log.info("Creating a new batch");
                 candidateBatches.add(
                     candidates.subList(i, Math.min(i + batchSize, candidates.size())));
             }
 
             // Iterate through batches to create/update candidate contact records
-            for (int i = 0; i < candidateBatches.size(); i += 1) {
+            // Limited to 2,000 records (10 batches of 200) just for testing
+            for (int i = 0; i < 10; i++) {
+                log.info("Iterating through a batch — creating an ordered list first");
                 //Need ordered list so that can match with returned contacts.
                 List<Candidate> orderedCandidates = new ArrayList<>(candidateBatches.get(i));
+                log.info("Upserting batch to SF");
                 upsertCandidatesToSf(orderedCandidates);
             }
         }
