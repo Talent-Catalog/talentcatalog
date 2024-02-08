@@ -41,7 +41,6 @@ import {
   OpportunityOwnershipType
 } from "../../../model/opportunity";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {formatDate} from "@angular/common";
 import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
 import {CountryService} from "../../../services/country.service";
@@ -384,8 +383,6 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   }
 
   getNextStepHoverString(opp: CandidateOpportunity) {
-    const date = opp == null ? null : opp.updatedDate;
-    const dateStr = date == null ? "???" : formatDate(date, "yyyy-MM-dd", this.locale);
-    return dateStr + ': ' + (opp.nextStep ? opp.nextStep : '');
+    return (opp.nextStep ? opp.nextStep : '');
   }
 }

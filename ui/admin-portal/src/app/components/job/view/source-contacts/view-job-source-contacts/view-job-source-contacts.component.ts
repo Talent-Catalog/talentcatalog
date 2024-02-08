@@ -177,4 +177,12 @@ export class ViewJobSourceContactsComponent implements OnInit {
       (error) => {this.error = error}
     )
   }
+
+  jobContact(partner: Partner): User {
+    let user = partner?.jobContact;
+    if (!user) {
+      user = partner?.defaultContact;
+    }
+    return user;
+  }
 }

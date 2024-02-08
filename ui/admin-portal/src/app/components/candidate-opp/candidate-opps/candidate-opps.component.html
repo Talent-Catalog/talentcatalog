@@ -32,6 +32,8 @@
                    formControlName="overdueOppsOnly" id="overdueOppsOnly" class="form-check-input">
           </div>
         </div>
+      </div>
+      <div class="row">
         <div class="col-md-3 me-md-2">
           <div class="form-check">
             <label class="form-label" [title]="showClosedOppsTip"
@@ -78,7 +80,7 @@
           <th *ngIf="!preview" (click)="toggleSort('nextStepDueDate', 'DESC')">
             <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
-            Due
+            NS Due
           </th>
           <th *ngIf="!showJobOppName" (click)="toggleSort('name')">
             <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"
