@@ -14,20 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import {
-  getCandidateSourceNavigation,
-  isSavedSearch,
-  SavedSearchGetRequest
-} from '../../../../model/saved-search';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {getCandidateSourceNavigation, isSavedSearch, SavedSearchGetRequest} from '../../../../model/saved-search';
 import {CandidateService} from '../../../../services/candidate.service';
 import {Candidate} from '../../../../model/candidate';
 import {SearchResults} from '../../../../model/search-results';
@@ -38,9 +26,7 @@ import {
   CandidateSourceResultsCacheService
 } from '../../../../services/candidate-source-results-cache.service';
 import {CandidateSource, defaultReviewStatusFilter} from '../../../../model/base';
-import {
-  CandidateSourceCandidateService
-} from '../../../../services/candidate-source-candidate.service';
+import {CandidateSourceCandidateService} from '../../../../services/candidate-source-candidate.service';
 import {SavedListGetRequest} from '../../../../model/saved-list';
 import {AuthorizationService} from '../../../../services/authorization.service';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
@@ -159,7 +145,7 @@ constructor(
         this.pageNumber = 1;
       }
       if (!this.pageSize) {
-        this.pageSize = 20;
+        this.pageSize = 12;
       }
       if (!this.sortField) {
         this.sortField = 'id';
