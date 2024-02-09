@@ -30,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.api.admin.SystemAdminApi;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.ExportFailedException;
@@ -508,13 +509,15 @@ public interface CandidateService {
     void resolveOutstandingTaskAssignments(ResolveTaskAssignmentsRequest request);
 
     /**
-     * Syncs all live (status incomplete, pending, active) TC candidates, or those with a Salesforce Link, to Salesforce
-     * Scheduled for 2am GMT every day
-     * Shedlock used to avoid duplicate method call
+     * Syncs all live (status incomplete, pending, active) TC candidates, or those with a Salesforce Link, to Salesforce.
+     * Scheduled for 1800 GMT every Sunday as it's quite time-consuming.
+     * Shedlock is used to avoid duplicate method call.
+     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates(), which can be called from 12 hours
+     * past the original scheduled call (to give it plenty of time to complete).
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */
-    void syncLiveCandidatesToSf();
+    void syncCandidatesToSf();
 
     /**
      * Upserts candidates to SF contacts and updates their TC profile SF links
