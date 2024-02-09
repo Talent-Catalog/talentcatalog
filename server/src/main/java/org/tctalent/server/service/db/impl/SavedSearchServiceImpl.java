@@ -258,61 +258,27 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
-    // TODO: this method has a lot in common with doSearchCandidates - would potentially benefit from some refactoring
     @Override
     public @NotNull Set<Long> searchCandidates(long savedSearchId)
         throws NoSuchObjectException {
         SearchCandidateRequest searchRequest =
             loadSavedSearch(savedSearchId);
 
-        Set<Long> candidateIds = new HashSet<>();
-
         // Compute the candidates which should be excluded from search
-        Set<Candidate> excludedCandidates = computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
+        Set<Candidate> excludedCandidates =
+            computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
 
         // Modify request, doing standard defaults
         addDefaultsToSearchCandidateRequest(searchRequest);
 
+        Set<Long> candidateIds = new HashSet<>();
         String simpleQueryString = searchRequest.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             // This is an elasticsearch request
 
-            BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-
-            // If this is a saved search, add it to searchIds to guard against search
-            // built on itself in addElasticQuery()
-            // If it's not, add the terms to the query builder
-            List<Long> searchIds = new ArrayList<>();
-            if (searchRequest.getSavedSearchId() != null) {
-                searchIds.add(searchRequest.getSavedSearchId());
-            } else {
-                boolQueryBuilder = computeElasticQuery(boolQueryBuilder, searchRequest,
-                                                        simpleQueryString, excludedCandidates);
-            }
-
-            // Gather all searches to be joined
-            if (!searchRequest.getSearchJoinRequests().isEmpty()) {
-                for (SearchJoinRequest searchJoinRequest : searchRequest.getSearchJoinRequests()) {
-                    searchIds = addElasticQuery(searchJoinRequest, searchIds);
-                }
-            }
-
-            if (!searchIds.isEmpty()) {
-                // Iterate through any joined searches, adding their conditions to the builder
-                for (int i = 0; i < searchIds.size(); i++) {
-                    SearchCandidateRequest request = this.loadSavedSearch(searchIds.get(i));
-
-                    // Get the keyword search term
-                    String simpleStringQuery = request.getSimpleQueryString();
-
-                    // Compute the candidates which should be excluded from search
-                    Set<Candidate> excludeCandidates =
-                        computeCandidatesExcludedFromSearchCandidateRequest(request);
-
-                    boolQueryBuilder = computeElasticQuery(boolQueryBuilder, request,
-                        simpleStringQuery, excludeCandidates);
-                }
-            }
+            // Combine any joined searches (processed as elastic irrespective of keyword search)
+            BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
+                simpleQueryString, excludedCandidates);
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
@@ -908,7 +874,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private BoolQueryBuilder computeElasticQuery(BoolQueryBuilder boolQueryBuilder,
         SearchCandidateRequest request, @Nullable String simpleQueryString,
-        @Nullable Collection <Candidate> excludedCandidates) {
+        @Nullable Collection<Candidate> excludedCandidates) {
     /*
        Constructing a filtered simple query that looks like this:
 
@@ -930,10 +896,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         User user = userService.getLoggedInUser();
 
-        // Not every base search will contain an elastic search term,
-        // so we need option of skipping this step
+        // Not every base search will contain an elastic search term, since we're processing
+        // joined regular searches here too — so we need the option to skip this step
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            //Create a simple query string builder from the given string
+            // Create a simple query string builder from the given string
             SimpleQueryStringBuilder simpleQueryStringBuilder =
                 QueryBuilders.simpleQueryStringQuery(simpleQueryString);
 
@@ -1179,25 +1145,33 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         } return builder;
     }
 
-    private List<Long> addElasticQuery(SearchJoinRequest searchJoinRequest,
-                                        List<Long> savedSearchIds) {
+    private BoolQueryBuilder addElasticQuery(BoolQueryBuilder boolQueryBuilder,
+        SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
         // We don't want searches built on themselves
-        // TODO: check error-handling with JC — is the 'else' required here or would it break anyway?
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
-        } else {
-            savedSearchIds.add(searchJoinRequest.getSavedSearchId());
+        }
+        savedSearchIds.add(searchJoinRequest.getSavedSearchId());
 
-            SearchCandidateRequest request = loadSavedSearch(searchJoinRequest.getSavedSearchId());
+        SearchCandidateRequest request = loadSavedSearch(searchJoinRequest.getSavedSearchId());
 
-            // Like addQuery() this method uses recursion to get every nested SearchJoinRequest
-            if (!request.getSearchJoinRequests().isEmpty()) {
-                for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
-                    savedSearchIds = addElasticQuery(joinRequest, savedSearchIds);
-                }
+        // Get the keyword search term, if any
+        String simpleStringQuery = request.getSimpleQueryString();
+
+        // Compute the candidates that should be excluded from search
+        Set<Candidate> excludeCandidates =
+            computeCandidatesExcludedFromSearchCandidateRequest(request);
+
+        boolQueryBuilder = computeElasticQuery(boolQueryBuilder, request,
+            simpleStringQuery, excludeCandidates);
+
+        // Like addQuery() this method uses recursion to get every nested SearchJoinRequest
+        if (!request.getSearchJoinRequests().isEmpty()) {
+            for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
+                boolQueryBuilder = addElasticQuery(boolQueryBuilder, joinRequest, savedSearchIds);
             }
         }
-        return savedSearchIds;
+        return boolQueryBuilder;
     }
 
     private Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
@@ -1536,7 +1510,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         Page<Candidate> candidates;
 
         // Compute the candidates which should be excluded from search
-        Set<Candidate> excludedCandidates = computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
+        Set<Candidate> excludedCandidates =
+            computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
 
         // Modify request, doing standard defaults
         addDefaultsToSearchCandidateRequest(searchRequest);
@@ -1545,42 +1520,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             // This is an elasticsearch request
 
-            BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-
-            // If this is a saved search, add it to searchIds to guard against search
-            // built on itself in addElasticQuery()
-            // If it's not, add the terms to the query builder
-            List<Long> searchIds = new ArrayList<>();
-            if (searchRequest.getSavedSearchId() != null) {
-                searchIds.add(searchRequest.getSavedSearchId());
-            } else {
-                boolQueryBuilder = computeElasticQuery(boolQueryBuilder, searchRequest,
-                                                        simpleQueryString, excludedCandidates);
-            }
-
-            // Gather all searches to be joined
-            if (!searchRequest.getSearchJoinRequests().isEmpty()) {
-                for (SearchJoinRequest searchJoinRequest : searchRequest.getSearchJoinRequests()) {
-                    searchIds = addElasticQuery(searchJoinRequest, searchIds);
-                }
-            }
-
-            if (!searchIds.isEmpty()) {
-                // Iterate through any saved/joined searches, adding their conditions to the builder
-                for (int i = 0; i < searchIds.size(); i++) {
-                    SearchCandidateRequest request = this.loadSavedSearch(searchIds.get(i));
-
-                    // Get the keyword search term
-                    String simpleStringQuery = request.getSimpleQueryString();
-
-                    // Compute the candidates which should be excluded from search
-                    Set<Candidate> excludeCandidates =
-                        computeCandidatesExcludedFromSearchCandidateRequest(request);
-
-                    boolQueryBuilder = computeElasticQuery(boolQueryBuilder, request,
-                        simpleStringQuery, excludeCandidates);
-                }
-            }
+            // Combine any joined searches (processed as elastic irrespective of keyword search)
+            BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
+                simpleQueryString, excludedCandidates);
 
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
@@ -1611,14 +1553,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             for (Candidate candidate : unsorted) {
                 mapById.put(candidate.getId(), candidate);
             }
-            //Now construct a candidate list sorted according to the original
-            //list of ids.
+            //Now construct a candidate list sorted according to the original list of ids.
             List<Candidate> candidateList = new ArrayList<>();
+
             for (Long candidateId : candidateIds) {
                 candidateList.add(mapById.get(candidateId));
             }
+
             candidates = new PageImpl<>(candidateList, searchRequest.getPageRequest(),
                 hits.getTotalHits());
+
         } else {
             Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
             candidates = candidateRepository.findAll(query, searchRequest.getPageRequestWithoutSort());
@@ -1678,6 +1622,28 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 }
             }
         }
+    }
+
+    private BoolQueryBuilder processElasticRequest(SearchCandidateRequest searchRequest,
+        String simpleQueryString, Set<Candidate> excludedCandidates) {
+        // If saved search, add to searchIds to guard against circular dependencies
+        List<Long> searchIds = new ArrayList<>();
+        if (searchRequest.getSavedSearchId() != null) {
+            searchIds.add(searchRequest.getSavedSearchId());
+        }
+
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+
+        boolQueryBuilder = computeElasticQuery(boolQueryBuilder, searchRequest,
+            simpleQueryString, excludedCandidates);
+
+        // Add any joined searches to the builder
+        if (!searchRequest.getSearchJoinRequests().isEmpty()) {
+            for (SearchJoinRequest searchJoinRequest : searchRequest.getSearchJoinRequests()) {
+                boolQueryBuilder = addElasticQuery(boolQueryBuilder, searchJoinRequest, searchIds);
+            }
+        }
+        return boolQueryBuilder;
     }
 
 }
