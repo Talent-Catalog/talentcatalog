@@ -105,6 +105,10 @@ export interface Candidate extends HasId {
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
   intaked: string;
+  miniIntakeCompletedBy: User;
+  miniIntakeCompletedDate: number;
+  fullIntakeCompletedBy: User;
+  fullIntakeCompletedDate: number;
 
   //These are only used in the candidate portal on the browser code
   candidateCertifications?: CandidateCertification[];

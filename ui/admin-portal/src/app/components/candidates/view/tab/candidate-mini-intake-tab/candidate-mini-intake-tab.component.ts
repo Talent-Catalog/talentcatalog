@@ -51,10 +51,10 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
               languageLevelService: LanguageLevelService,
               noteService: CandidateNoteService,
               authenticationService: AuthenticationService,
+              modalService: NgbModal,
               private candidateCitizenshipService: CandidateCitizenshipService,
-              private candidateExamService: CandidateExamService,
-              private modalService: NgbModal) {
-    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authenticationService)
+              private candidateExamService: CandidateExamService) {
+    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authenticationService, modalService)
   }
 
   public inputOldIntakeNote(formName: string, button) {
