@@ -22,9 +22,9 @@
 </div>
 
 <div *ngIf="!loading" id="MiniIntakeForm">
-  <div class="d-flex justify-content-between mb-2 ms-2 align-items-end">
+  <div class="d-flex justify-content-between mb-3 ms-2 align-items-end">
     <div class="d-flex flex-column justify-content-between">
-      <h5>Mini Intake</h5>
+      <h4 class="mb-3">Mini Intake</h4>
       <div class="d-flex">
         <app-export-pdf [candidate]="candidate" [idToExport]="'MiniIntakeForm'"></app-export-pdf>
 
@@ -55,8 +55,6 @@
       </ng-template>
     </div>
   </div>
-
-  <hr/>
 
   <div>
     <ngb-accordion #miniIntake="ngbAccordion" [destroyOnHide]="false">
