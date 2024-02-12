@@ -72,11 +72,11 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
   private fetchChats() {
     const candidateProspectChatRequest: CreateChatRequest = {
       type: JobChatType.CandidateProspect,
-      candidateOppId: this.opp?.id,
+      candidateId: this.opp?.candidate?.id,
     }
     const candidateRecruitingChatRequest: CreateChatRequest = {
       type: JobChatType.CandidateRecruiting,
-      candidateOppId: this.opp?.id,
+      candidateId: this.opp?.candidate?.id,
     }
 
     this.loading = true;

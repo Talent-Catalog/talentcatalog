@@ -26,7 +26,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -44,7 +44,7 @@ public class JobChatServiceImpl implements JobChatService {
     private final JobChatRepository jobChatRepository;
 
     public @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
-        @Nullable PartnerImpl sourcePartner, @Nullable CandidateOpportunity candidateOpp) {
+        @Nullable PartnerImpl sourcePartner, @Nullable Candidate candidate) {
         JobChat chat = new JobChat();
         chat.setCreatedBy(userService.getLoggedInUser());
         chat.setCreatedDate(OffsetDateTime.now());
@@ -57,8 +57,8 @@ public class JobChatServiceImpl implements JobChatService {
         if (sourcePartner != null) {
             chat.setSourcePartner(sourcePartner);
         }
-        if (candidateOpp != null) {
-            chat.setCandidateOpp(candidateOpp);
+        if (candidate != null) {
+            chat.setCandidate(candidate);
         }
 
         return jobChatRepository.save(chat);
@@ -91,18 +91,18 @@ public class JobChatServiceImpl implements JobChatService {
 
     @Override
     public @NonNull JobChat createCandidateOppChat(
-        @NonNull JobChatType type, @NonNull CandidateOpportunity candidateOpp) {
+        @NonNull JobChatType type, @NonNull Candidate candidate) {
         if (type != JobChatType.CandidateProspect &&
             type != JobChatType.CandidateRecruiting) {
             throw new InvalidRequestException("Unsupported type: " + type);
         }
-        return createJobChat(type, null, null, candidateOpp);
+        return createJobChat(type, null, null, candidate);
     }
 
     @Override
     @NonNull
     public JobChat getOrCreateJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
-        @Nullable PartnerImpl sourcePartner, @Nullable CandidateOpportunity candidateOpp)
+        @Nullable PartnerImpl sourcePartner, @Nullable Candidate candidate)
         throws InvalidRequestException {
         if (type == null) {
             throw new InvalidRequestException("Missing JobChatType");
@@ -128,15 +128,15 @@ public class JobChatServiceImpl implements JobChatService {
             }
 
             case CandidateProspect, CandidateRecruiting -> {
-                if (candidateOpp == null) {
-                    throw new InvalidRequestException("Missing candidate opp");
+                if (candidate == null) {
+                    throw new InvalidRequestException("Missing candidate");
                 }
-                yield(jobChatRepository.findByTypeAndCandidateOpp(type, candidateOpp.getId()));
+                yield(jobChatRepository.findByTypeAndCandidateOpp(type, candidate.getId()));
             }
         };
 
         if (jobChat == null) {
-            jobChat = createJobChat(type, job, sourcePartner, candidateOpp);
+            jobChat = createJobChat(type, job, sourcePartner, candidate);
         }
         return jobChat;
     }

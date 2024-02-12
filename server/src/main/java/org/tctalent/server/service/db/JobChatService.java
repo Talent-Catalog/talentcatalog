@@ -22,7 +22,7 @@ import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -35,15 +35,16 @@ public interface JobChatService {
      * Creates a new job chat.
      * <p/>
      * Parameters which are not needed for job type may be null.
-     * @param type Type of Job Chat
-     * @param job Job associated with chat
+     *
+     * @param type          Type of Job Chat
+     * @param job           Job associated with chat
      * @param sourcePartner Source partner associated with chat
-     * @param candidateOpp Candidate opportunity associated with chat
+     * @param candidate     Candidate associated with chat
      * @return Created job chat
      * @throws EntityExistsException if there is already a job chat matching the given request.
      */
     @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
-        @Nullable PartnerImpl sourcePartner, @Nullable CandidateOpportunity candidateOpp)
+        @Nullable PartnerImpl sourcePartner, @Nullable Candidate candidate)
             throws EntityExistsException;
 
     /**
@@ -56,15 +57,16 @@ public interface JobChatService {
      * Finds a job chat matching the given type and paramteres, creating one if needed.
      * <p/>
      * Parameters which are not needed for job type may be null.
-     * @param type Type of Job Chat
-     * @param job Job associated with chat
+     *
+     * @param type          Type of Job Chat
+     * @param job           Job associated with chat
      * @param sourcePartner Source partner associated with chat
-     * @param candidateOpp Candidate opportunity associated with chat
+     * @param candidate     Candidate associated with chat
      * @return Found or created job chat
      * @throws InvalidRequestException if required objects for this chat type are missing (null).
      */
     @NonNull JobChat getOrCreateJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
-        @Nullable PartnerImpl sourcePartner, @Nullable CandidateOpportunity candidateOpp)
+        @Nullable PartnerImpl sourcePartner, @Nullable Candidate candidate)
         throws InvalidRequestException;
 
     /**
@@ -93,14 +95,15 @@ public interface JobChatService {
 
     /**
      * Creates a JobChat associated with a Candidate Opportunity
-     * @param type Should be {@link JobChatType#CandidateProspect} or
-     * {@link JobChatType#CandidateRecruiting}
-     * @param candidateOpp Candidate opportunity associated with job chat
+     *
+     * @param type      Should be {@link JobChatType#CandidateProspect} or
+     *                  {@link JobChatType#CandidateRecruiting}
+     * @param candidate Candidate associated with job chat
      * @return created JobChat
      * @throws InvalidRequestException if type is not allowed
      */
     @NonNull JobChat createCandidateOppChat(
-        @NonNull JobChatType type, @NonNull CandidateOpportunity candidateOpp)
+        @NonNull JobChatType type, @NonNull Candidate candidate)
         throws InvalidRequestException;
 
     /**
