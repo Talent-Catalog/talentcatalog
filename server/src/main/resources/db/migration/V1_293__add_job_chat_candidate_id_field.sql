@@ -16,6 +16,14 @@
 
 alter table job_chat add column candidate_id bigint references candidate;
 
+-- Indexes
+create index job_chat_candidate_id_idx on job_chat(candidate_id);
+create index job_chat_job_id_idx on job_chat(job_id);
+create index job_chat_source_partner_id_idx on job_chat(source_partner_id);
+create index job_chat_type_idx on job_chat(type);
+
 -- Populate new field with candidate id taken from candidate associated with candidate opp
 -- associated with existing candidate_opp_id field
--- todo update sql
+update job_chat set candidate_id = opp.candidate_id from candidate_opportunity opp
+where candidate_opp_id is not null and candidate_opp_id = opp.id;
+
