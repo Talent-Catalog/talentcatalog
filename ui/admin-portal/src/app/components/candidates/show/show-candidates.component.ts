@@ -242,7 +242,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (isSavedList(this.candidateSource)) {
       this.searchForm = this.fb.group({
         keyword: [''],
-        showClosedOpps: []
+        showClosedOpps: [false]
       });
       this.subscribeToFilterChanges();
 
